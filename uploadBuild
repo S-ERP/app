@@ -1,2 +1,2 @@
  #!/bin/bash
- scp -r build 2.2:/home/servisofts/servicios/darmotos/entornos/darmotos/
+ scp -r build 2.2:/home/servisofts/servicios/s-erp/entornos/s-erp/
