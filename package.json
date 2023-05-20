@@ -10,7 +10,7 @@
   },
   "author": "SERVISOFTS S.R.L.",
   "license": "ISC",
-  "dependencies": {
+  "dependencies": { 
     "@react-native-community/geolocation": "^2.0.2",
     "google-map-react": "^2.1.6",
     "react": "^17.0.1",
