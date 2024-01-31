@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { SHr, SList, SLoad, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../../Model';
+import Config from '../../../../Config';
 
 export default class PuntoVentaTipoPago extends Component {
     constructor(props) {
@@ -45,7 +46,7 @@ export default class PuntoVentaTipoPago extends Component {
 
                     } else {
                         SNavigation.navigate("/contabilidad/cuentas", {
-                            codigo: "1-1-1",
+                            codigo: Config.cuenta_contable.punto_venta_tipo_pago.cuenta,
                             onSelect: (cuenta) => {
                                 Model.punto_venta_tipo_pago.Action.registro({
                                     data: {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { SHr, SLoad, SMath, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SInput, SLoad, SMath, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import Components from '../../Components';
 import Model from '../../Model';
 
@@ -37,6 +37,7 @@ class index extends Component {
             <SView col={"xs-12"} row center>
                 <SText fontSize={14}>{this.params?.detalle}</SText>
                 <SView flex />
+                <SInput />
                 <SText fontSize={18}>Bs. {SMath.formatMoney(this.params?.monto)}</SText>
             </SView>
             <SHr height={8} />
@@ -44,12 +45,19 @@ class index extends Component {
         </SView>
     }
     getData() {
-    
+
         var data = Model.punto_venta_tipo_pago.Action.getAll({ key_punto_venta: this.params.key_punto_venta });
         if (!data) return <SLoad />
         var tipos = Object.values(data).map(o => o.key_tipo_pago);
+
+        if (tipos.length <= 0) return (<SView col={"xs-12"} center>
+            <SHr h={16}/>
+            <SText>No hay tipos de pagos activos para este punto de venta, porfavor active un punto de venta desde, Sucursales / Punto de ventas / Habilitar Tipo de pago</SText>
+            <SHr h={16}/>
+        </SView>)
+        // return <SText>{JSON.stringify(tipos)}</SText>
         return <Components.empresa.tipo_pago.Select include={tipos} onSelect={(tp) => {
-         
+
             if (this.params.onSelect) {
                 this.params.onSelect(tp);
                 SNavigation.goBack();

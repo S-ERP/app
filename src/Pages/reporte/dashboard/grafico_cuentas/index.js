@@ -58,7 +58,7 @@ class index extends Component {
                             {arr.map((obj, i) => {
                                 let porc = (obj.monto / max) * 100
                                 return <Graphic.Barra x={((size + separation) * (i)) + 8} width={size} porcentaje={porc}
-                                    label={this.cuentas_contables[obj.key_cuenta_contable].codigo + " - " + this.cuentas_contables[obj.key_cuenta_contable].descripcion}
+                                    label={this.cuentas_contables[obj.key_cuenta_contable]?.codigo + " - " + this.cuentas_contables[obj.key_cuenta_contable]?.descripcion}
                                     monto={obj.monto}
                                 />
                             })}

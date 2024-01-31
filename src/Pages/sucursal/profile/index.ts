@@ -1,5 +1,5 @@
 import { SPage } from "servisofts-component";
-import Model from "../../../Model/";
+import Model from "../../../Model";
 import root from "./root";
 import almacen from "./almacen";
 import punto_venta from "./punto_venta";

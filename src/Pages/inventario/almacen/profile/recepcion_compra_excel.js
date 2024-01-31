@@ -100,9 +100,13 @@ class index extends DPA.profile {
                         callback()
                     }).catch(e => {
                         callback()
-                        this.setState({ loading: false, error: e.error })
+                        this.setState({ loading: false, error: "Error en el fomato excel, mas informacion en `https://github.com/servisofts/darmotos/wiki/Importar-productos-de-manera-masiva`" })
                     })
-                }} />
+                }}
+                onError={e => {
+                    this.setState({ loading: false, error: "Error en el fomato excel, mas informacion en `https://github.com/servisofts/darmotos/wiki/Importar-productos-de-manera-masiva`" })
+                }}
+            />
         </SView>
     }
     $footer() {

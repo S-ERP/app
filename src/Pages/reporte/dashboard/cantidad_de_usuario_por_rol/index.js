@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SHr, SList, SLoad, SScrollView2, SScrollView3, SText, STheme, SUuid, SView } from 'servisofts-component';
+import { SHr, SList, SList2, SLoad, SScrollView2, SScrollView3, SText, STheme, SUuid, SView } from 'servisofts-component';
 import { connect } from 'react-redux';
 import Model from '../../../../Model';
 import Item from "./Item"
@@ -39,7 +39,7 @@ class index extends Component {
             data={new Array(8).fill("1")}
             render={(o) => <SLoad type='skeleton' {...ItemStyle} />}
         />
-        return <SList
+        return <SList2
             col={"xs-12"}
             order={[{ key: "descripcion", order: "asc" }]}
             // style={{

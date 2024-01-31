@@ -21,7 +21,7 @@ class index extends Component {
     render_cuentas() {
 
         return <SList data={this.cuentas}
-            filter={obj => obj.codigo.startsWith("1") || obj.codigo.startsWith("4") || obj.codigo.startsWith("5")}
+            // filter={obj => obj.codigo.startsWith("1") || obj.codigo.startsWith("4") || obj.codigo.startsWith("5") ||}
             render={(obj) => {
                 return <SView col={"xs-12"} >
                     <SView col={"xs-12"} row>

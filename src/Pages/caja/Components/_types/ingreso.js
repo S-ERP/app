@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { SButtom, SHr, SInput, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../../Model';
 import PopupMontoDetalle from '../PopupMontoDetalle';
+import Config from '../../../../Config';
 
 export default class ingreso {
     static key = "ingreso";
@@ -14,12 +15,17 @@ export default class ingreso {
     static getEstado(obj) {
         return <SText color={STheme.color.success}>{"confirmada"}</SText>
     }
+    static onDeleteCajaDetalle(obj) {
+        return new Promise((resolve, reject) => {
+            resolve("Dont required")
+        })
+    }
     static action(obj) {
 
     }
     static onPress(caja, punto_venta_tipo_pago) {
         SNavigation.navigate("/contabilidad/cuentas", {
-            codigo: "4-2",
+            codigo: Config.cuenta_contable.caja_ingreso.cuenta,
             // key_cuenta: "3038c20e-12f5-46b5-b70a-129fb634b241",
             onSelect: (cuenta_contable) => {
                 SNavigation.goBack();
@@ -42,6 +48,7 @@ export default class ingreso {
                                     "monto": monto,
                                     "tipo": this.key,
                                     "key_tipo_pago": tipo_pago.key,
+                                    "fecha": caja.fecha,
                                     cuentas: [{ key_cuenta_contable: cuenta_contable.key, monto: monto }],
                                 }
                                 //Registramos el caja_detalle

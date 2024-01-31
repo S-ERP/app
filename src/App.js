@@ -1,5 +1,5 @@
 import React from 'react';
-import { SComponentContainer, SNavigation } from 'servisofts-component';
+import { SComponentContainer, SNavigation , SText, STheme} from 'servisofts-component';
 import SSocket, { setProps } from 'servisofts-socket';
 import Redux, { store } from './Redux';
 import Config from "./Config";
@@ -8,6 +8,7 @@ import Pages from './Pages';
 import BackgroundImage from './Components/BackgroundImage';
 import NavBar from './Components/NavBar';
 
+import { version } from "../package.json"
 
 setProps(Config.socket);
 
@@ -38,6 +39,8 @@ const App = (props) => {
                     };
                 }}
             />
+            <SText style={{position: "absolute", bottom: 2, right: 2, }} fontSize={10} color={STheme.color.lightGray}>v{version}</SText>
+
         </SComponentContainer>
     </Redux>
 }

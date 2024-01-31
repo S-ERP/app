@@ -37,7 +37,7 @@ class index extends DPA.list {
                     key_usuario: Model.usuario.Action.getKey(),
                     data: {
                         key: obj.key_producto,
-                        key_cliente: objcliente.key_usuario,
+                        key_cliente: obj.cliente.key_usuario,
                     }
                 }).then(r => {
                     Model.compra_venta_detalle.Action.entregar({
@@ -59,6 +59,7 @@ class index extends DPA.list {
     }
     $getData() {
         if (!this.props.data) return null;
+        if (!this.props.data.key) return null;
         this.productos = Model.producto.Action.getAllByKeyAlmacen(this.props.data.key);
         this.ventas_sin_entregar = Model.compra_venta_detalle.Action.ventasSinEntregar({});
         if (!this.productos || !this.ventas_sin_entregar) return null;

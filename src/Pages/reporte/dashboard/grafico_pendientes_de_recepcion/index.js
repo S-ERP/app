@@ -3,7 +3,7 @@ import { SHr, SImage, SList, SLoad, SNavigation, SPopup, SScrollView2, SScrollVi
 import { connect } from 'react-redux';
 import Model from '../../../../Model';
 import SSocket from "servisofts-socket"
-import { SCharts } from 'servisofts-charts'
+// import { SCharts } from 'servisofts-charts'
 class index extends Component {
     constructor(props) {
         super(props);
@@ -43,7 +43,7 @@ class index extends Component {
         // console.log(this.data_chart)
         return <>
             <SView {...props_imp}>
-                <SCharts
+                {/* <SCharts
                     type='barras_verticales'
                     config={{
                         grosor: 70,
@@ -58,7 +58,7 @@ class index extends Component {
                             onPress: () => { SNavigation.replace("/sucursal/profile/almacen", { pk: obj.key }) }
                         })
                     }}
-                />
+                /> */}
             </SView>
         </>
 

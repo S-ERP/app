@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { SButtom, SHr, SInput, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../../Model';
 import PopupMontoDetalle from '../PopupMontoDetalle';
+import Config from '../../../../Config';
 
 export default class index {
     static key = "ingreso_banco";
@@ -17,10 +18,15 @@ export default class index {
     static action(obj) {
 
     }
+    static onDeleteCajaDetalle(obj) {
+        return new Promise((resolve, reject) => {
+            resolve("Dont required")
+        })
+    }
     static onPress(caja, punto_venta_tipo_pago) {
         //Pedimos el monto y el detalle
         SNavigation.navigate("/contabilidad/cuentas", {
-            codigo: "1-1-1-2-1",
+            codigo: Config.cuenta_contable.caja_ingreso_banco.cuenta,
             key_cuenta: "f30fe343-cfb5-4770-8adb-4f11a1316259",
             onSelect: (cuenta_contable) => {
                 SNavigation.goBack();
@@ -42,6 +48,7 @@ export default class index {
                                     "monto": monto,
                                     "tipo": this.key,
                                     "key_tipo_pago": tipo_pago.key,
+                                    "fecha": caja.fecha,
                                     cuentas: [{ key_cuenta_contable: cuenta_contable.key, monto: parseFloat(monto) * -1 }],
                                 }
                                 //Registramos el caja_detalle

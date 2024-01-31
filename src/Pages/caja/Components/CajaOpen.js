@@ -33,7 +33,8 @@ class CajaOpen extends Component {
             <SHr />
             <SView col={"xs-12"} row>
                 <SView flex>
-                    <SText color={STheme.color.text} fontSize={12}>{"Apertura el " + new SDate(data.fecha_on).toString("DAY, dd de MONTH del yyyy a las hh:mm")}</SText>
+                    <SText color={STheme.color.text} fontSize={12}>{"Registrada el " + new SDate(data.fecha_on).toString("DAY, dd de MONTH del yyyy a las hh:mm")}</SText>
+                    <SText color={STheme.color.text} fontSize={12}>{"para la fecha " + new SDate(data.fecha,"yyyy-MM-dd").toString("DAY, dd de MONTH del yyyy")}</SText>
                     <SHr />
                     <SText color={STheme.color.warning} fontSize={12}>{data.fecha_cierre ? new SDate(data.fecha_cierre).toString("DAY, dd de MONTH del yyyy a las hh:mm") : "La caja se encuentra abierta."}</SText>
                 </SView>
@@ -58,7 +59,7 @@ class CajaOpen extends Component {
                 filter={obj => obj.estado != 0}
                 data={caja_detales}
                 render={(obj) => {
-                    return <CajaDetalleItem data={obj} />
+                    return <CajaDetalleItem data={obj} caja={data} />
                 }}
             />
             <SHr height={100} />

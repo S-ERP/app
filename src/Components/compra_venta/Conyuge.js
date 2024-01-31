@@ -42,7 +42,7 @@ export default class Conyuge extends Component {
             if (this.props.disabled) {
                 return <SView>
                     <SHr height={16} />
-                    <SText>{"SIN CONYUGE"}</SText>
+                    <SText>{"SIN CO-DEUDOR"}</SText>
                     <SHr height={16} />
                 </SView>
             }
@@ -53,7 +53,7 @@ export default class Conyuge extends Component {
                 }} card onPress={() => {
                     this.seleccionarCliente()
                 }}>
-                    <SText bold color={STheme.color.danger} >{"SELECCIONE EL CONYUGE"}</SText>
+                    <SText bold color={STheme.color.danger} >{"SELECCIONE EL CO-DEUDOR"}</SText>
                 </SView>
                 <SHr height={24} />
             </SView>
@@ -69,7 +69,7 @@ export default class Conyuge extends Component {
             urlFoto = SSocket.api.root + "usuario/" + key_usuario;
         }
         return <SView col={"xs-12"} center >
-            <SText color={STheme.color.lightGray} col={"xs-12"}>Conyuge</SText>
+            <SText color={STheme.color.lightGray} col={"xs-12"}>Co-deudor</SText>
             <SHr />
             <SView col={"xs-12"} center onPress={onPress}>
                 <SView width={40} height={40} style={{ padding: 4 }}>

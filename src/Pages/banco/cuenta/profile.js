@@ -6,6 +6,7 @@ import C_cuenta_movimiento_list_by_cuenta from "./movimiento/Components/list_by_
 import item from './item';
 import { CuentaContable } from 'servisofts-rn-contabilidad';
 import Components from '../../../Components';
+import Config from '../../../Config';
 
 class index extends DPA.profile {
     constructor(props) {
@@ -43,7 +44,7 @@ class index extends DPA.profile {
         if (!this.data) return <SLoad />
         return <Components.contabilidad.cuenta_contable.Select
             key_cuenta_contable={this.data.key_cuenta_contable}
-            codigo={"1-1-1-2"}
+            codigo={Config.cuenta_contable.banco_cuenta.cuenta}
             onChange={(cuenta) => {
                 Model.banco_cuenta.Action.editar({
                     data: {

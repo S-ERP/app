@@ -3,7 +3,7 @@ import { SHr, SImage, SList, SLoad, SNavigation, SPopup, SScrollView2, SScrollVi
 import { connect } from 'react-redux';
 import Model from '../../../../Model';
 import SSocket from "servisofts-socket"
-import { SCharts } from 'servisofts-charts'
+// import { SCharts } from 'servisofts-charts'
 class index extends Component {
     constructor(props) {
         super(props);
@@ -70,13 +70,13 @@ class index extends Component {
                 })
             }}>
                 <SView col={"xs-12"} colSquare center >
-                    <SCharts
+                    {/* <SCharts
                         type='torta'
                         // stroke={STheme.color.text}
                         // strokeWidth={2}
                         data={data}
                         fill={STheme.color.card}
-                    />
+                    /> */}
                     <SView style={{
                         position: "absolute",
                         borderRadius: 100,

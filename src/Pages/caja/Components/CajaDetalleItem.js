@@ -19,8 +19,14 @@ export default class CajaDetalleItem extends Component {
         var data = obj.data;
         if (!data) return null;
         var tipo = _types[data.type]
+        if (this.state.loading) return <SLoad />
         return <SView onPress={() => {
-            tipo.action(obj);
+            this.setState({ loading: true })
+            tipo.action(obj).then(e => {
+                this.setState({ loading: false })
+            }).catch(e => {
+                this.setState({ loading: false })
+            })
         }}>{tipo.getEstado(obj)}</SView>
     }
 
@@ -61,9 +67,9 @@ export default class CajaDetalleItem extends Component {
     }
 
     getAjustes() {
-        if (!Model.usuarioPage.Action.getPermiso({ url: "/caja", permiso: "eliminar_movimiento" })) {
-            return null;
-        }
+        // if (!Model.usuarioPage.Action.getPermiso({ url: "/caja", permiso: "eliminar_movimiento" })) {
+        //     return null;
+        // }
         return <SView width={30} height={30} style={{
             position: "absolute",
             right: 0,
@@ -72,7 +78,8 @@ export default class CajaDetalleItem extends Component {
             alignItems: "flex-end"
         }} onPress={() => {
             PopupAjustes.open({
-                data: this.props.data
+                data: this.props.data,
+                caja: this.props.caja,
             });
 
         }}>

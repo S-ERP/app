@@ -1,0 +1,5 @@
+#!/bin/bash
+
+. .env
+
+scp -r build/* $SSH_USER@$SSH_IP:$SSH_PATH/

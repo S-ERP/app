@@ -53,11 +53,19 @@ const totales = ({ codigo_cuenta, label, props }) => {
     let ingresos = [];
     Object.values(props.data).map((o) => {
         let cuenta = props.cuentas.find(a => a.key == o.key_cuenta_contable);
-        if (cuenta.codigo.startsWith(codigo_cuenta)) {
-            total += o.monto;
-            cuenta.monto = o.monto;
-            ingresos.push(cuenta)
+        if (cuenta && cuenta.codigo) {
+            for (let i = 0; i < codigo_cuenta.length; i++) {
+                const element_cc = codigo_cuenta[i];
+                if (cuenta.codigo.startsWith(element_cc)) {
+                    total += o.monto;
+                    cuenta.monto = o.monto;
+                    ingresos.push(cuenta)
+                }
+
+            }
+
         }
+
 
     })
     return [
@@ -156,7 +164,7 @@ const totales = ({ codigo_cuenta, label, props }) => {
 }
 export default (props) => {
     return [
-        ...totales({ codigo_cuenta: "4", label: "ingresos", props }),
+        ...totales({ codigo_cuenta: ["4"], label: "ingresos", props }),
         {
             "type": "div",
             "style": {
@@ -165,7 +173,8 @@ export default (props) => {
             },
             "childrens": []
         },
-        ...totales({ codigo_cuenta: "5", label: "egresos", props }),
+        ...totales({ codigo_cuenta: ["5", "6"], label: "egresos", props }),
+        // ...totales({ codigo_cuenta: "6", label: "egresos", props }),
     ]
 
 }

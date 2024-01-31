@@ -44,14 +44,14 @@ export default class index extends Component {
                 this.pp.guardarCuotas().then((e) => {
                     console.log(e);
                     if (e.tipo_pago != "contado") {
-                        if (!this.data.garante) {
-                            SPopup.alert("Deve ingresar el garante para vender al credito")
-                            return;
-                        }
-                        if (!this.data.conyuge) {
-                            SPopup.alert("Deve ingresar el conyuge para vender al credito")
-                            return;
-                        }
+                        // if (!this.data.garante) {
+                        //     SPopup.alert("Deve ingresar el garante para vender al credito")
+                        //     return;
+                        // }
+                        // if (!this.data.conyuge) {
+                        //     SPopup.alert("Deve ingresar el conyuge para vender al credito")
+                        //     return;
+                        // }
                     }
                     Model.compra_venta.Action.changeState({ data: this.data, state: "vendido" }).then((resp) => {
                         Model.producto.Action.CLEAR();
@@ -90,10 +90,9 @@ export default class index extends Component {
                 <Components.compra_venta.Separador data={this.data} />
                 <Cliente data={this.data} disabled />
                 <Components.compra_venta.Separador data={this.data} />
-
-                <Components.compra_venta.Garante data={this.data} disabled={!this.isAdmin} />
-                <Components.compra_venta.Separador data={this.data} />
                 <Components.compra_venta.Conyuge data={this.data} disabled={!this.isAdmin} />
+                <Components.compra_venta.Separador data={this.data} />
+                <Components.compra_venta.Garante data={this.data} disabled={!this.isAdmin} />
                 <Components.compra_venta.Separador data={this.data} />
                 <Detalle data={this.data} disabled />
                 <Components.compra_venta.Separador data={this.data} />

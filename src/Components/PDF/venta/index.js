@@ -16,7 +16,7 @@ class index extends Component {
     componentDidMount() {
         if (!this.props.data) return;
         if (!this.cuotas) return;
-        this.handlePress();
+        // this.handlePress();
     }
 
     getPlanDePagos() {

@@ -1,5 +1,5 @@
 import { SPage } from "servisofts-component";
-import Model from "../../../../Model/";
+import Model from "../../../../Model";
 import recepcion_compra from "./recepcion_compra";
 import recepcion_compra_excel from "./recepcion_compra_excel";
 import pendiente_entrega from "./pendiente_entrega";

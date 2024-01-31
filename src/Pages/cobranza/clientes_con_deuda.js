@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SDate, SHr, SIcon, SList, SLoad, SMath, SNavigation, SPage, SText, STheme, SView, SUuid, ExportExcel, SExcel } from 'servisofts-component';
+import { SDate, SHr, SIcon, SList, SLoad, SMath, SNavigation, SPage, SText, STheme, SView, SUuid, ExportExcel, SExcel, SPopup } from 'servisofts-component';
 import { MenuButtom } from 'servisofts-rn-roles_permisos';
 import Model from '../../Model';
 import usuario from '../usuario';

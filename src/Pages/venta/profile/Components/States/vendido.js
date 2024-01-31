@@ -36,9 +36,9 @@ export default class index extends Component {
             <Components.compra_venta.Separador data={this.data} />
             <Cliente data={this.data} disabled />
             <Components.compra_venta.Separador data={this.data} />
-            <Components.compra_venta.Garante data={this.data} disabled />
-            <Components.compra_venta.Separador data={this.data} />
             <Components.compra_venta.Conyuge data={this.data} disabled />
+            <Components.compra_venta.Separador data={this.data} />
+            <Components.compra_venta.Garante data={this.data} disabled />
             <Components.compra_venta.Separador data={this.data} />
             <Detalle data={this.data} disabled />
             <Components.compra_venta.Separador data={this.data} />

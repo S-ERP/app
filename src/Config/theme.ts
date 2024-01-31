@@ -11,7 +11,7 @@ const theme: SThemeThemes = {
         info: '#97989d',
         background: '#ffffff',
         card: '#EBBCBD33',
-        font: "Roboto"
+        font: "OpenSans"
     },
     dark: {
         barStyle: 'light-content',
@@ -22,7 +22,7 @@ const theme: SThemeThemes = {
         info: '#6E6F74',
         background: '#000000',
         card: '#F7282F22',
-        font: "Roboto"
+        font: "OpenSans"
     }
 }
 

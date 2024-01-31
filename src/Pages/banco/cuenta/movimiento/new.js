@@ -3,6 +3,7 @@ import { Parent } from '.';
 import { SNavigation, SPopup, SView } from 'servisofts-component';
 import Model from '../../../../Model';
 import Components from '../../../../Components';
+import Config from '../../../../Config';
 
 class index extends DPA.new {
     constructor(props) {
@@ -24,6 +25,7 @@ class index extends DPA.new {
     }
     $onSubmit(data) {
         data.key_cuenta = this.$params.key_cuenta
+        data.key_cuenta_banco = this.$params.key_cuenta
         if (data.type == "egreso") {
             data.monto = data.monto * -1;
         }
@@ -32,6 +34,7 @@ class index extends DPA.new {
             SPopup.alert("Deve seleccionar una cuenta contable");
             return;
         }
+        data.key_cuenta_contable = cc.key
         Parent.model.Action.registro({
             data: data,
             key_usuario: Model.usuario.Action.getKey(),
@@ -44,7 +47,7 @@ class index extends DPA.new {
     }
     $header() {
         return <SView col={"xs-12"}>
-            <Components.contabilidad.cuenta_contable.Select codigo={"3"} ref={ref => this.cuenta_contable_input = ref} />
+            <Components.contabilidad.cuenta_contable.Select codigo={Config.cuenta_contable.banco_cuenta_movimiento.cuenta} ref={ref => this.cuenta_contable_input = ref} />
         </SView>
     }
 }

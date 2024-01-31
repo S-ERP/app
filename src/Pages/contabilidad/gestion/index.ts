@@ -1,5 +1,5 @@
 import { SPage } from "servisofts-component";
-import Model from "../../../Model/";
+import Model from "../../../Model";
 import list from "./list";
 import table from "./table";
 import _new from "./new";

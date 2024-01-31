@@ -11,7 +11,6 @@ class index extends DPA.new {
         });
     }
 
-
     $inputs() {
         var inp = super.$inputs();
         // inp["observacion"].type ="textArea"

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SHr, SImage, SList, SLoad, SNavigation, SPopup, SText, STheme, SUuid, SView } from 'servisofts-component';
+import { SHr, SImage, SList, SList2, SLoad, SNavigation, SPopup, SText, STheme, SUuid, SView } from 'servisofts-component';
 import { connect } from 'react-redux';
 import Model from '../../../../Model';
 import SSocket from "servisofts-socket"
@@ -87,7 +87,7 @@ class index extends Component {
                 <SText bold flex fontSize={18}>{label}</SText>
             </SView>
             <SHr />
-            <SList space={0}
+            <SList2 space={0}
                 data={["cotizacion", "aprobado", "vendido", "comprado", "denegado"]}
                 horizontal
                 key={SUuid()}

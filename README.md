@@ -1,12 +1,16 @@
-# app
-S-ERP App react-native with servisofts-component
+./gradlew clean --info --stacktrace         
+ export PATH=$PATH:/Applications/CMake.app/Contents/bin/
+./gradlew assembleDebug                                 
 
 
-```bash
-#Comandos q use para clonar
-rickypazd@Ricardos-MacBook-Pro app % rsync -r --exclude-from='/Users/rickypazd/Documents/GitHub/darmotos/app/.gitignore' /Users/rickypazd/Documents/GitHub/darmotos/app/* .   
-rickypazd@Ricardos-MacBook-Pro app % cp /Users/rickypazd/Documents/GitHub/darmotos/app/.gitignore .
-rickypazd@Ricardos-MacBook-Pro app % cp /Users/rickypazd/Documents/GitHub/darmotos/app/.eslintrc.js . 
-rickypazd@Ricardos-MacBook-Pro app % 
+adb devices
+     List of devices attached
+    AGT0219828000767        device
 
-```
+    
+cd app/build/outputs/apk/debug 
+adb install app-debug.apk 
+
+
+
+

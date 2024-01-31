@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { SButtom, SHr, SInput, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../../Model';
 import PopupMontoDetalle from '../PopupMontoDetalle';
+import Config from '../../../../Config';
 
 export default class index {
     static key = "egreso_banco";
-    static descripcion = "Egreso de banco"
+    static descripcion = "Egreso a banco"
     static icon = "Egreso"
     static permiso = "allow_egreso_banco"
     static isActive(obj) {
@@ -14,13 +15,18 @@ export default class index {
     static getEstado(obj) {
         return <SText color={STheme.color.success}>{"confirmada"}</SText>
     }
+    static onDeleteCajaDetalle(obj) {
+        return new Promise((resolve, reject) => {
+            resolve("Dont required")
+        })
+    }
     static action(obj) {
 
     }
     static onPress(caja, punto_venta_tipo_pago) {
         //Pedimos el monto y el detalle
         SNavigation.navigate("/contabilidad/cuentas", {
-            codigo: "1-1-1-2-1",
+            codigo: Config.cuenta_contable.caja_egreso_banco.cuenta,
             key_cuenta: "f30fe343-cfb5-4770-8adb-4f11a1316259",
             onSelect: (cuenta_contable) => {
                 SNavigation.goBack();
@@ -38,6 +44,7 @@ export default class index {
                             onSelect: (tipo_pago) => {
                                 var caja_detalle = {
                                     "key_caja": caja.key,
+                                    "fecha": caja.fecha,
                                     "descripcion": detalle,
                                     "monto": monto,
                                     "tipo": this.key,

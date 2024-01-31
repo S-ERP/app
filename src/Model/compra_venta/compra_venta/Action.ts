@@ -58,6 +58,25 @@ export default class Action extends SAction {
             key_usuario: Model.usuario.Action.getKey()
         })
     }
+
+    editarCompraVenta(data) {
+        return new Promise((resolve, reject) => {
+            SSocket.sendPromise({
+                ...this.model.info,
+                type: "editarCompraVenta",
+                key_usuario: Model.usuario.Action.getKey(),
+                ...data
+            }).then((resp: any) => {
+                this._dispatch({
+                    ...resp,
+                    type: "editar"
+                })
+                resolve(resp);
+            }).catch(e => {
+                reject(e);
+            })
+        })
+    }
     getClientes() {
         return new Promise((resolve, reject) => {
             SSocket.sendPromise({

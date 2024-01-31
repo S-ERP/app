@@ -27,6 +27,18 @@ class index extends Component {
 
     }
 
+    render_amortizaciones(obj) {
+        // <SText>{JSON.stringify(obj.cuota_amortizacion)}</SText>
+        if (!obj) return null;
+        if (!obj.cuota_amortizacion) return null;
+        return <SView col={"xs-12"} style={{
+            alignItems: "flex-end"
+        }}><SText color={STheme.color.lightGray}>Amortizaciones</SText>
+            {Object.values(obj.cuota_amortizacion).map((a, i) => {
+                return <SText fontSize={10}>{i + 1} - {SMath.formatMoney(a.monto)}</SText>
+            })}
+        </SView>
+    }
     render_data() {
         var cuotas = this.state.data
         if (!cuotas) return <SLoad />
@@ -50,14 +62,24 @@ class index extends Component {
             buscador
             space={0}
             limit={10}
-            filter={a => a.estado != "2"}
+            // filter={a => a.estado != "2"}
             render={(obj) => {
                 var compra_venta = Model.compra_venta.Action.getByKey(obj.key_compra_venta);
                 var isSelect = this.state.select[obj.key];
                 if (!compra_venta) return <SLoad />
                 var isRetrasada = new SDate(obj.fecha).isBefore(new SDate())
+                let total_amortizado = 0;
+                let cantidad_pagos = 0;
+                if (obj.cuota_amortizacion) {
+                    Object.values(obj.cuota_amortizacion).map((a, i) => {
+                        total_amortizado = parseFloat(a.monto)
+                        cantidad_pagos++;
+                    })
+                }
+
                 return <SView col={"xs-12"} style={{
-                    padding: 8, opacity: !isSelect ? 0.5 : 1
+                    padding: 8,
+                    opacity: !isSelect ? 0.7 : 1
                 }} onPress={() => {
                     if (!this.state.select[obj.key]) {
                         this.state.select[obj.key] = obj;
@@ -86,16 +108,17 @@ class index extends Component {
                             {!obj.amortizaciones ? "" : <SText style={{ alignItems: 'end', textAlign: "end" }} color={STheme.color.danger} fontSize={12}>-{SMath.formatMoney(obj.amortizaciones ?? 0)}</SText>}
                             <SText color={STheme.color.danger} fontSize={10}>{isRetrasada ? "Pendiente de pago" : ""}</SText>
                         </SView>
+                        <SView col={"xs-12"}>
+                            <SText flex fontSize={10} color={STheme.color.lightGray} >Total Amortizado: {total_amortizado}</SText>
+                            {/* <SText flex fontSize={10} color={STheme.color.lightGray} >Interes: {interes ?? 0}</SText> */}
+                        </SView>
+                        {this.render_amortizaciones(obj)}
                         <SHr />
-                        {/* <SView col={"xs-12"}>
-                            <SText flex fontSize={10} color={STheme.color.lightGray} >Capital: {capital ?? 0}</SText>
-                            <SText flex fontSize={10} color={STheme.color.lightGray} >Interes: {interes ?? 0}</SText>
-                            <SText flex fontSize={10} color={STheme.color.lightGray} >Saldo capital: {saldo_capital ?? 0}</SText>
-                            <SText flex fontSize={10} color={STheme.color.lightGray} >Pagos acumulados: {pagos_acumulados ?? 0}</SText>
-                        </SView> */}
+
                         {/* <SHr /> */}
                         <SHr height={1} color={STheme.color.card} />
                     </SView>
+
                     {/* <SText>{obj.codigo}</SText>
                     <SText>{obj.descripcion}</SText>
                     <SText>{obj.tipo}</SText>

@@ -9,7 +9,7 @@ export default ({ }) => {
         "childrens": [
             {
                 "type": "text",
-                "childrens": "CONDOMINIO SANTA MARIA",
+                "childrens": "DARMOTOS",
                 "style": {
                     "width": 90,
                     "fontSize": 12,

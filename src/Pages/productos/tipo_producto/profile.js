@@ -4,6 +4,7 @@ import { Parent } from "."
 import Components from '../../../Components';
 import Model from '../../../Model';
 import Editar_tipo_producto_inventario_dato from './Components/Editar_tipo_producto_inventario_dato';
+import Config from '../../../Config';
 
 class index extends DPA.profile {
     constructor(props) {
@@ -36,7 +37,7 @@ class index extends DPA.profile {
         }
         return <Components.contabilidad.cuenta_contable.Select
             defaultValue={cuenta_contable}
-            codigo={"4"}
+            codigo={Config.cuenta_contable.tipo_producto_credito.cuenta}
             onChange={(cuenta) => {
                 Model.tipo_producto.Action.editar({
                     data: {
@@ -56,7 +57,7 @@ class index extends DPA.profile {
         }
         return <Components.contabilidad.cuenta_contable.Select
             defaultValue={cuenta_contable}
-            codigo={"4"}
+            codigo={Config.cuenta_contable.tipo_producto_contado.cuenta}
             onChange={(cuenta) => {
                 Model.tipo_producto.Action.editar({
                     data: {

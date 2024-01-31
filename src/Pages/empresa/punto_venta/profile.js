@@ -35,26 +35,26 @@ class index extends DPA.profile {
         return Parent.model.Action.getByKey(this.pk, { key_sucursal: this.$params.key_sucursal });
     }
 
-    getCuentaContable() {
-        if (!this.data) return <SLoad />
-        var cuenta_contable = null;
-        if (this.data.key_cuenta_contable) {
-            cuenta_contable = Model.cuenta_contable.Action.getByKey(this.data.key_cuenta_contable);
-            if (!cuenta_contable) return <SLoad />
-        }
-        return <Components.contabilidad.cuenta_contable.Select
-            defaultValue={cuenta_contable}
-            codigo={"1"}
-            onChange={(cuenta) => {
-                Parent.model.Action.editar({
-                    data: {
-                        ...this.data,
-                        key_cuenta_contable: cuenta.key
-                    },
-                    key_usuario: Model.usuario.Action.getKey()
-                })
-            }} />
-    }
+    // getCuentaContable() {
+    //     if (!this.data) return <SLoad />
+    //     var cuenta_contable = null;
+    //     if (this.data.key_cuenta_contable) {
+    //         cuenta_contable = Model.cuenta_contable.Action.getByKey(this.data.key_cuenta_contable);
+    //         if (!cuenta_contable) return <SLoad />
+    //     }
+    //     return <Components.contabilidad.cuenta_contable.Select
+    //         // defaultValue={cuenta_contable}
+    //         codigo={"1"}
+    //         onChange={(cuenta) => {
+    //             Parent.model.Action.editar({
+    //                 data: {
+    //                     ...this.data,
+    //                     key_cuenta_contable: cuenta.key
+    //                 },
+    //                 key_usuario: Model.usuario.Action.getKey()
+    //             })
+    //         }} />
+    // }
     $footer() {
         return <SView col={"xs-12"} >
             {/* {this.getCuentaContable()} */}

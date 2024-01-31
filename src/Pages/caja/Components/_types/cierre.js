@@ -18,6 +18,12 @@ export default class index {
     static getEstado(obj) {
         return <SText color={STheme.color.success}>{"confirmada"}</SText>
     }
+
+    static onDeleteCajaDetalle(obj) {
+        return new Promise((resolve, reject) => {
+            resolve("Dont required")
+        })
+    }
     static action(obj) {
 
     }

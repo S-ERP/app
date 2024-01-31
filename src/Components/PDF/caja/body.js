@@ -66,14 +66,14 @@ const builItem = (obj) => {
                     "color": "#000000"
                 }
             },
-            {
-                "type": "text",
-                "childrens": "PERICO DE LOS PALOTES",
-                "style": {
-                    "fontSize": 10,
-                    "color": "#666666"
-                }
-            }
+            // {
+            //     "type": "text",
+            //     "childrens": "PERICO DE LOS PALOTES",
+            //     "style": {
+            //         "fontSize": 10,
+            //         "color": "#666666"
+            //     }
+            // }
         ]
     }
 }
