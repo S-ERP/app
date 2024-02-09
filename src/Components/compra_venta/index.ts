@@ -12,6 +12,7 @@ import PlanDePagos from "./PlanDePagos"
 import StateTiqueta from "./StateTiqueta"
 import QRVenta from "./QRVenta"
 import QRCompra from "./QRCompra"
+import GenerarAsiento from "./GenerarAsiento"
 export default { 
     TipoDePago,
     Separador,
@@ -25,6 +26,7 @@ export default {
     Garante,
     PlanDePagos,
     StateTiqueta,
+    GenerarAsiento,
     QRVenta,
     QRCompra
 

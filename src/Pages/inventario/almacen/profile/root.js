@@ -38,7 +38,7 @@ class index extends DPA.profile {
             {/* <SHr /> */}
             {/* <GraficoPorTipos key_almacen={this.pk} /> */}
             <SHr />
-            <GraficoPorEstado key_almacen={this.pk} />
+            {/* <GraficoPorEstado key_almacen={this.pk} /> */}
             <SHr />
 
             <SText fontSize={16} bold>Menu</SText>

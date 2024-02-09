@@ -7,7 +7,7 @@ import inventario from "./inventario";
 import compra_venta from "./compra_venta";
 import caja from "./caja";
 import notification from "./notification";
-import darmotos from "./darmotos";
+import serp from "./serp";
 
 const Model = {
     ...Usuario.Model,
@@ -18,7 +18,7 @@ const Model = {
     ...compra_venta,
     ...caja,
     ...notification,
-    ...darmotos
+    ...serp
 }
 
 Usuario.init({

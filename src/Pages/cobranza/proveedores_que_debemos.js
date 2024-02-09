@@ -68,7 +68,8 @@ class index extends Component {
                         }
                     });
                 }}>
-                    <SText fontSize={18} bold>{obj.usuario.Nombres} {obj.usuario.Apellidos}</SText>
+                    <SText fontSize={12}>{obj?.key_usuario}</SText>
+                    <SText fontSize={18} bold>{obj?.usuario?.Nombres} {obj?.usuario?.Apellidos}</SText>
                     <SHr />
                     <SText fontSize={14} color={STheme.color.lightGray}>Monto de la deuda:{"\t"} Bs.{SMath.formatMoney(obj.monto, 2, ".")}</SText>
                     <SText fontSize={14} color={STheme.color.lightGray}># Cuotas pendientes{"\t"} {obj.cantidad}</SText>

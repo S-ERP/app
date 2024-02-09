@@ -7,7 +7,7 @@ class index extends DPA.new {
     constructor(props) {
         super(props, {
             Parent: Parent,
-            excludes: ["key", "fecha_on", "key_usuario", "key_servicio", "estado", "cliente", "proveedor", "tipo", "state", "key_sucursal"]
+            excludes: ["key", "fecha_on", "key_usuario", "key_servicio", "estado", "cliente", "proveedor", "tipo", "state", "key_sucursal", "key_empresa"]
         });
     }
     $allowAccess() {
@@ -21,6 +21,7 @@ class index extends DPA.new {
     $onSubmit(data) {
         data.tipo = "compra"
         data.tipo_pago = "contado"
+        data.key_empresa = Model.empresa.Action.getSelect()?.key
         Parent.model.Action.registro({
             data: data,
             key_usuario: Model.usuario.Action.getKey()

@@ -7,7 +7,7 @@ class index extends DPA.edit {
     constructor(props) {
         super(props, {
             Parent: Parent,
-            excludes: []
+            excludes: ["key_empresa"]
         });
     }
     $allowAccess() {

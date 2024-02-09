@@ -3,7 +3,7 @@ import { Parent } from ".."
 import { SDate, SHr, SInput, SList, SLoad, SMath, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../Model';
 import { MenuPages } from 'servisofts-rn-roles_permisos';
-import SCharts from 'servisofts-charts';
+// import SCharts from 'servisofts-charts';
 
 class index extends DPA.profile {
     constructor(props) {
@@ -61,7 +61,7 @@ class index extends DPA.profile {
                 </SView>
             </SView>
             <SView width={252} flex>
-                <SCharts
+                {/* <SCharts
                     type='barras_verticales'
                     config={{ grosor: 80, separacion: 8, }}
                     data={[
@@ -70,7 +70,7 @@ class index extends DPA.profile {
                         { key: "c", val: this.state.data["cobrado"]?.sum ?? 0, label: "Cobrado", color: "#C2CCF0", info: "Bs." + SMath.formatMoney(this.state.data["cobrado"]?.sum ?? 0, 0) },
                         // { key: "d", val: this.state.data["cotizacion"]?.sum ?? 0, label: "Cotizacion", color: "#FF66FF", info: SMath.formatMoney(this.state.data["cotizacion"]?.sum ?? 0) },
                     ]}
-                    fill={STheme.color.card} />
+                    fill={STheme.color.card} /> */}
             </SView>
         </SView>
     }

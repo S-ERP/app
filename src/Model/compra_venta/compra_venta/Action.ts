@@ -44,9 +44,17 @@ export default class Action extends SAction {
         return statesi[key];
 
     }
-    getAll(extra) {
-        if (!Model.usuario.Action.getKey()) return null;
+    // getAll(extra) {
+    //     if (!Model.usuario.Action.getKey()) return null;
+    //     return super.getAll({
+    //         key_usuario: Model.usuario.Action.getKey()
+    //     })
+    // }
+    getAll() {
+        var empresa: any = Model.empresa.Action.getSelect();
+        if (!empresa) return null;
         return super.getAll({
+            key_empresa: empresa.key,
             key_usuario: Model.usuario.Action.getKey()
         })
     }
@@ -94,6 +102,7 @@ export default class Action extends SAction {
         return new Promise((resolve, reject) => {
             SSocket.sendPromise({
                 ...this.model.info,
+                key_empresa: Model.empresa.Action.getSelect()?.key,
                 type: "getDeudaProveedores",
                 key_usuario: Model.usuario.Action.getKey()
             }).then((resp: any) => {
@@ -107,6 +116,7 @@ export default class Action extends SAction {
         return new Promise((resolve, reject) => {
             SSocket.sendPromise({
                 ...this.model.info,
+                key_empresa: Model.empresa.Action.getSelect()?.key,
                 type: "getClientesDeudores",
                 key_usuario: Model.usuario.Action.getKey()
             }).then((resp: any) => {

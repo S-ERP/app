@@ -8,7 +8,7 @@ class index extends DPA.list {
             Parent: Parent,
             title: "Tipos de productos.",
             itemType: "2",
-            excludes: ["key", "fecha_on", "key_usuario", "estado", "key_servicio", "observacion"]
+            excludes: ["key", "fecha_on", "key_usuario", "estado", "key_servicio", "observacion", "key_empresa", "key_cuenta_contable"]
         });
     }
     $allowNew() {

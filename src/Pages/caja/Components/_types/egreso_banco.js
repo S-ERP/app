@@ -25,14 +25,13 @@ export default class index {
     }
     static onPress(caja, punto_venta_tipo_pago) {
         //Pedimos el monto y el detalle
-        SNavigation.navigate("/contabilidad/cuentas", {
-            codigo: Config.cuenta_contable.caja_egreso_banco.cuenta,
-            key_cuenta: "f30fe343-cfb5-4770-8adb-4f11a1316259",
-            onSelect: (cuenta_contable) => {
+        SNavigation.navigate("/banco", {
+            cuenta: true,
+            onSelect: (cuenta_banco) => {
                 SNavigation.goBack();
                 PopupMontoDetalle.open({
                     title: this.descripcion,
-                    detail: cuenta_contable.codigo + " - " + cuenta_contable.descripcion,
+                    detail: cuenta_banco?.descripcion + " " + cuenta_banco?.observacion,
                     onSubmit: ({ monto, detalle }) => {
                         //Pedimos el tipo de pago
                         SNavigation.navigate("/caja/tipo_pago", {
@@ -46,14 +45,15 @@ export default class index {
                                     "key_caja": caja.key,
                                     "fecha": caja.fecha,
                                     "descripcion": detalle,
-                                    "monto": monto,
+                                    "monto": monto * -1,
                                     "tipo": this.key,
                                     "key_tipo_pago": tipo_pago.key,
-                                    cuentas: [{ key_cuenta_contable: cuenta_contable.key, monto: monto }],
+                                    key_cuenta_banco: cuenta_banco.key_cuenta_contable
                                 }
                                 //Registramos el caja_detalle
                                 Model.caja_detalle.Action.registro({
                                     data: caja_detalle,
+                                    key_empresa: Model.empresa.Action.getSelect()?.key,
                                     key_usuario: Model.usuario.Action.getKey()
                                 }).then((resp) => {
                                     console.log(resp)

@@ -7,7 +7,7 @@ class index extends DPA.new {
     constructor(props) {
         super(props, {
             Parent: Parent,
-            excludes: ["key", "fecha_on", "key_usuario", "key_servicio", "estado", "key_empresa"]
+            excludes: ["key", "fecha_on", "key_usuario", "key_servicio", "estado", "key_empresa", "codigo"]
         });
     }
     $allowAccess() {

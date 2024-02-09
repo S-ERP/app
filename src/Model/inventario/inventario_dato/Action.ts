@@ -1,14 +1,14 @@
 import { SAction } from "servisofts-model";
 import Model from "../..";
 export default class Action extends SAction {
-    // getAll() {
-    //     var empresa: any = Model.empresa.Action.getSelect();
-    //     if (!empresa) return null;
-    //     return super.getAll({
-    //         key_empresa: empresa.key,
-    //         key_usuario: Model.usuario.Action.getKey()
-    //     })
-    // }
+    getAll() {
+        var empresa: any = Model.empresa.Action.getSelect();
+        if (!empresa) return null;
+        return super.getAll({
+            key_empresa: empresa.key,
+            key_usuario: Model.usuario.Action.getKey()
+        })
+    }
 
     getAllByKeyProducto(key_producto) {
         var producto = Model.producto.Action.getByKey(key_producto, {}, null);
@@ -28,7 +28,7 @@ export default class Action extends SAction {
         Object.values(dato_tp).map((dr: any) => {
             var dato = datos[dr.key_inventario_dato]
             if (!dato) return;
-            dato.tpid=dr;
+            dato.tpid = dr;
             resp[dato.key] = dato;
         })
         return resp;

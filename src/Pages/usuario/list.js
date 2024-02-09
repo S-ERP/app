@@ -22,6 +22,7 @@ class index extends DPA.list {
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "table" });
     }
     $allowAccess() {
+        return true;
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "ver" });
     }
     $menu() {
@@ -59,7 +60,7 @@ class index extends DPA.list {
         return data.estado != "0"
     }
     $getData() {
-        return Parent.model.Action.getAll();
+        return Parent.model.Action.getAll({ force: true });
     }
 }
 export default connect(index);

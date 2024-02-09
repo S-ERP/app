@@ -13,7 +13,19 @@ class index extends DPA.edit {
 
 
 
-   
+    $inputs() {
+        let inp = super.$inputs();
+
+        inp["tipo"].type = "select";
+        inp["tipo"].isRequired = true;
+        if (!inp["tipo"].defaultValue) {
+            inp["tipo"].defaultValue = "producto";
+        }
+        inp["tipo"].options = ["producto", "servicio"]
+
+        return inp;
+    }
+
     $allowAccess() {
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "edit" })
     }

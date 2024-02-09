@@ -21,6 +21,7 @@ class index extends DPA.new {
     $onSubmit(data) {
         data.tipo = "venta"
         data.tipo_pago = "contado"
+        data.key_empresa = Model.empresa.Action.getSelect()?.key
         Parent.model.Action.registro({
             data: data,
             key_usuario: Model.usuario.Action.getKey()

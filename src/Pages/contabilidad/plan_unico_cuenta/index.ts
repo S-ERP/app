@@ -1,5 +1,5 @@
 import { SPage } from "servisofts-component";
-import Model from "../../../Model";
+import Model from "../../../Model/";
 import Root from "./root";
 const model = Model.cuenta_contable;
 

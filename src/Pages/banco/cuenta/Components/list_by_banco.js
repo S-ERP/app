@@ -32,6 +32,10 @@ class index extends DPA.list {
         super.onNew({ key_banco: this.$params.key_banco })
     }
     $onSelect(obj) {
+        if(this.props.onSelect){
+            this.props.onSelect(obj)
+            return;
+        }
         SNavigation.navigate(Parent.path, { pk: obj.key, key_banco: this.$params.key_banco })
     }
     $getData() {

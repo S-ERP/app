@@ -31,12 +31,12 @@ export default class BackgroundImage extends Component<type> {
             ...this.props.style,
         }}>
             {/* <SGradient colors={["#000000", "#44000044"]} /> */}
-            <SImage src={source} style={{
+            {/* <SImage src={source} style={{
                 width: "100%",
                 height: "100%",
                 resizeMode: "cover",
                 opacity: 0.6,
-            }} />
+            }} /> */}
             {/* <View style={{
                 width: "100%",
                 height: "100%",

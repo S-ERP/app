@@ -11,7 +11,7 @@ class index extends Component {
     }
 
     componentDidMount() {
-        Linking.openURL("https://github.com/servisofts/darmotos/wiki");
+        Linking.openURL("https://github.com/S-ERP/.github/wiki");
         SNavigation.goBack();
     }
     render() {

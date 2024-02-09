@@ -7,6 +7,7 @@ class index extends DPA.profile {
     constructor(props) {
         super(props, {
             Parent: Parent,
+            params:["onSelect?"],
             excludes: ["key", "key_usuario", "estado"],
             // item: item
         });
@@ -27,7 +28,7 @@ class index extends DPA.profile {
     $footer() {
         return <SView col={"xs-12"}>
             <SHr />
-            <C_banco_cuenta_list_by_banco key_banco={this.pk} />
+            <C_banco_cuenta_list_by_banco key_banco={this.pk} onSelect={this.$params?.onSelect} />
         </SView>
     }
 }

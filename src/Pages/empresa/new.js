@@ -14,6 +14,7 @@ class index extends DPA.new {
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "new" })
     }
     $onSubmit(data) {
+        data.key_servicio = "1427e867-c4f7-4602-a1aa-5deabf2d0372";
         Parent.model.Action.registro({
             data: data,
             key_usuario: Model.usuario.Action.getKey()

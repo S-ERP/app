@@ -11,7 +11,7 @@ class index extends DPA.profile {
         super(props, {
             Parent: Parent,
             title: "Detalle del tipo de producto.",
-            excludes: ["key", "key_usuario", "key_servicio", "estado"]
+            excludes: ["key", "key_usuario", "key_servicio", "estado", "key_cuenta_contable"]
 
         });
     }
@@ -28,41 +28,41 @@ class index extends DPA.profile {
         return Parent.model.Action.getByKey(this.pk);
     }
 
-    getCuentaContableCredito() {
-        if (!this.data) return <SLoad />
-        var cuenta_contable = null;
-        if (this.data.key_cuenta_contable_credito) {
-            cuenta_contable = Model.cuenta_contable.Action.getByKey(this.data.key_cuenta_contable_credito);
-            if (!cuenta_contable) return <SLoad />
-        }
-        return <Components.contabilidad.cuenta_contable.Select
-            defaultValue={cuenta_contable}
-            codigo={Config.cuenta_contable.tipo_producto_credito.cuenta}
-            onChange={(cuenta) => {
-                Model.tipo_producto.Action.editar({
-                    data: {
-                        ...this.data,
-                        key_cuenta_contable_credito: cuenta.key
-                    },
-                    key_usuario: Model.usuario.Action.getKey()
-                })
-            }} />
-    }
+    // getCuentaContableCredito() {
+    //     if (!this.data) return <SLoad />
+    //     var cuenta_contable = null;
+    //     if (this.data.key_cuenta_contable_credito) {
+    //         cuenta_contable = Model.cuenta_contable.Action.getByKey(this.data.key_cuenta_contable_credito);
+    //         if (!cuenta_contable) return <SLoad />
+    //     }
+    //     return <Components.contabilidad.cuenta_contable.Select
+    //         defaultValue={cuenta_contable}
+    //         codigo={Config.cuenta_contable.tipo_producto_credito.cuenta}
+    //         onChange={(cuenta) => {
+    //             Model.tipo_producto.Action.editar({
+    //                 data: {
+    //                     ...this.data,
+    //                     key_cuenta_contable_credito: cuenta.key
+    //                 },
+    //                 key_usuario: Model.usuario.Action.getKey()
+    //             })
+    //         }} />
+    // }
     getCuentaContable() {
         if (!this.data) return <SLoad />
         var cuenta_contable = null;
-        if (this.data.key_cuenta_contable_contado) {
-            cuenta_contable = Model.cuenta_contable.Action.getByKey(this.data.key_cuenta_contable_contado);
+        if (this.data.key_cuenta_contable) {
+            cuenta_contable = Model.cuenta_contable.Action.getByKey(this.data.key_cuenta_contable);
             if (!cuenta_contable) return <SLoad />
         }
         return <Components.contabilidad.cuenta_contable.Select
             defaultValue={cuenta_contable}
-            codigo={Config.cuenta_contable.tipo_producto_contado.cuenta}
+            codigo={"1"}
             onChange={(cuenta) => {
                 Model.tipo_producto.Action.editar({
                     data: {
                         ...this.data,
-                        key_cuenta_contable_contado: cuenta.key
+                        key_cuenta_contable: cuenta.key
                     },
                     key_usuario: Model.usuario.Action.getKey()
                 })
@@ -71,11 +71,11 @@ class index extends DPA.profile {
     $footer() {
         return <SView col={"xs-12"}>
             <SHr />
-            <SText color={STheme.color.lightGray}>Cuenta contable al contado</SText>
+            <SText color={STheme.color.lightGray}>Cuenta contable</SText>
             {this.getCuentaContable()}
             <SHr />
-            <SText color={STheme.color.lightGray}>Cuenta contable al credito</SText>
-            {this.getCuentaContableCredito()}
+            {/* <SText color={STheme.color.lightGray}>Cuenta contable al credito</SText> */}
+            {/* {this.getCuentaContableCredito()} */}
             <Editar_tipo_producto_inventario_dato key_tipo_producto={this.pk} />
         </SView>
 

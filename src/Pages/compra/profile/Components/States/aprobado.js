@@ -78,6 +78,7 @@ export default class index extends Component {
             </SView>
             <SHr height={16} />
             <Components.compra_venta.Exportar data={this.data} />
+           
             <SHr height={50} />
             <Components.compra_venta.Participantes data={this.data} />
             <SHr height={50} />

@@ -13,7 +13,7 @@ export default class Proveedor extends Component {
 
     seleccionarProveedor() {
         SNavigation.navigate("/rol/profile/usuarios", {
-            pk: "b9c32543-ca5a-40f6-97b6-643633cbee9e", onSelect: (obj) => {
+            pk: "861f095d-6251-4d48-8d0e-e38a2aee7157", onSelect: (obj) => {
                 var proveedor = {
                     nit: obj.CI,
                     razon_social: obj.Nombres + " " + obj.Apellidos,

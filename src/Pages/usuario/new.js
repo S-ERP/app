@@ -13,13 +13,13 @@ class index extends DPA.new {
         });
     }
     $allowAccess() {
+        // return true;
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "new" })
     }
     $inputs() {
         var inputs = super.$inputs();
         inputs["Password"].type = "password"
         inputs["Correo"].type = "email"
-        // inputs["Telefono"].type = "phone"
         inputs["rep_pass"] = { label: "Rep. Password", type: "password", required: true }
         return inputs;
     }
@@ -82,7 +82,9 @@ class index extends DPA.new {
 
     $footer() {
         if (!this._params.key_rol) return <SView col={"xs-12"} center>
-            <SButtom type='danger'>Confirmar</SButtom>
+            <SButtom type='danger' onPress={() => {
+                this.form.submit()
+            }}>Confirmar</SButtom>
         </SView>;
         return <DatosDocumentosEditar key_rol={this._params.key_rol} onSubmit={() => {
             return new Promise((resolve, reject) => {

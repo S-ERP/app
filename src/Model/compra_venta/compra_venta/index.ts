@@ -12,6 +12,7 @@ export default new SModel<Action, Reducer>({
     Columns: {
         "key_servicio": { type: "text", fk: "servicio" },
         "key_sucursal": { type: "text", fk: "sucursal" },
+        "key_empresa": { type: "text", fk: "empresa"},
         "descripcion": { type: "text", notNull: true, editable: true, label: "Descripcion" },
         "observacion": { type: "text", editable: true, label: "Observacion" },
         "state": { type: "text", label: "State" },
@@ -20,7 +21,7 @@ export default new SModel<Action, Reducer>({
         "proveedor": { type: "json" },
         "key": { type: "text", pk: true },
         "key_usuario": { type: "text", fk: "usuario" },
-        "fecha_on": { type: "timestamp", label: "F. Creacion"},
+        "fecha_on": { type: "timestamp", label: "F. Creacion" },
         "estado": { type: "integer" },
     },
     Action,

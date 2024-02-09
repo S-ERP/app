@@ -24,9 +24,12 @@ const App = (props) => {
         >
             <SNavigation
 
+                linking={{
+                    prefixes:["https://serp.com/app"]
+                }}
                 props={{
                     navBar: NavBar,
-                    title: 'Darmotos', pages: Pages
+                    title: 'Servisofts ERP', pages: Pages
                 }}
             />
             <SSocket

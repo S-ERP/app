@@ -39,6 +39,7 @@ export default class Action extends SAction {
             var reducer = this._getReducer();
             const petition = {
                 ...this.model.info,
+                key_empresa: Model.empresa.Action.getSelect()?.key,
                 type: "getPendientes",
                 estado: "cargando",
                 ...extra

@@ -63,8 +63,11 @@ class CajaClose extends Component {
                 <SButtom type='danger' onPress={() => {
                     this.setState({ loading: true })
                     let fecha = this.fecha_ref.getValue();
+                    // console.log(this.props.punto_venta);
+                    // return;
                     Model.caja.Action.registro({
                         data: {
+                            key_cuenta_contable: this.props.punto_venta?.key_cuenta_contable,
                             key_punto_venta: this.props.punto_venta.key,
                             key_sucursal: this.props.sucursal.key,
                             fraccionar_moneda: !!this.props.punto_venta.fraccionar_moneda,

@@ -21,14 +21,14 @@ class index extends Component {
         if (!cuotas) return <SLoad />
 
         var cuotas_aux = {};
-        
-        Object.values(cuotas).map(cuota=>{
-            if(cuota.tipo==="compra"){
-                if(cuota.proveedor.nit == this.props.route.params.nit){
+
+        Object.values(cuotas).map(cuota => {
+            if (cuota.tipo === "compra") {
+                if (cuota.proveedor.nit == this.props.route.params.nit) {
                     cuotas_aux[cuota.key] = cuota;
                 }
-            }else{
-                if(cuota.cliente.nit == this.props.route.params.nit){
+            } else {
+                if (cuota.cliente.nit == this.props.route.params.nit) {
                     cuotas_aux[cuota.key] = cuota;
                 }
             }
@@ -40,7 +40,7 @@ class index extends Component {
             order={[{ key: "fecha", type: "date", order: "asc" }]}
             data={cuotas}
             render={(obj) => {
-                return <SView col={"xs-12"}  card style={{
+                return <SView col={"xs-12"} card style={{
                     padding: 8
                 }} onPress={() => {
                     if (this.onSelect) {
@@ -63,7 +63,7 @@ class index extends Component {
                     //     console.error(e);
                     // })
                 }}>
-                    <SView row >
+                    <SView row  col={"xs-12"}>
                         <SView row>
                             <SText>{obj.codigo}</SText>
                             <SView width={8} />
@@ -71,7 +71,7 @@ class index extends Component {
                         </SView>
                         <SView flex />
                         <SView>
-                            <SView center style={{padding:5, borderRadius:10}} backgroundColor={obj.tipo=="compra"?STheme.color.danger:STheme.color.success}>
+                            <SView center style={{ padding: 5, borderRadius: 10 }} backgroundColor={obj.tipo == "compra" ? STheme.color.danger : STheme.color.success}>
                                 <SText bold fontSize={16}>{obj.tipo}</SText>
                             </SView>
                             <SHr height={20}></SHr>
@@ -81,10 +81,10 @@ class index extends Component {
                         </SView>
                     </SView>
                     <SHr />
-                    <SText>{obj.tipo=="compra"?obj.proveedor.nit:obj.cliente.nit}</SText>
-                    <SText>{obj.tipo=="compra"?obj.proveedor.razon_social:obj.cliente.razon_social}</SText>
-                    <SText>{obj.tipo=="compra"?obj.proveedor.telefono:obj.cliente.telefono}</SText>
-                    <SText>{obj.tipo=="compra"?obj.proveedor.correo:obj.cliente.correo}</SText>
+                    <SText>{obj.tipo == "compra" ? obj.proveedor.nit : obj.cliente.nit}</SText>
+                    <SText>{obj.tipo == "compra" ? obj.proveedor.razon_social : obj.cliente.razon_social}</SText>
+                    <SText>{obj.tipo == "compra" ? obj.proveedor.telefono : obj.cliente.telefono}</SText>
+                    <SText>{obj.tipo == "compra" ? obj.proveedor.correo : obj.cliente.correo}</SText>
                     <SText>{obj.tipo}</SText>
                 </SView>
             }}
@@ -93,11 +93,10 @@ class index extends Component {
     }
     render() {
         return (
-            <SPage title={'Pendientes'}>
+            <SPage title={'Pendientes'} disableScroll>
                 <SView col={"xs-12"}>
                     {this.render_data()}
                 </SView>
-                <SView style={{height:150}}></SView>
             </SPage>
         );
     }

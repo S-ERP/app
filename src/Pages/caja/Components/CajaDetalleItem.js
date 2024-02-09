@@ -86,6 +86,12 @@ export default class CajaDetalleItem extends Component {
             <SIcon name='Engranaje' fill={STheme.color.lightGray} width={16} height={16} />
         </SView>
     }
+    getComprobante(obj) {
+        if (!obj.key_comprobante) return null;
+        return <SText fontSize={12} underLine color={STheme.color.blue} onPress={() => {
+            SNavigation.navigate("/contabilidad/asiento_contable/profile", { pk: obj.key_comprobante })
+        }}>Ver comprobante {obj.codigo_comprobante}</SText>
+    }
     render() {
         var obj = this.props.data;
         // console.log(obj)
@@ -107,6 +113,7 @@ export default class CajaDetalleItem extends Component {
                 {this.getTipo(obj)}
             </SView>
             {this.getCuentas(obj)}
+            {this.getComprobante(obj)}
 
             {this.getAjustes()}
         </SView>

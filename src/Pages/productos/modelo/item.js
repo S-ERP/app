@@ -22,12 +22,11 @@ class index extends DPA.item {
     }
     $render(){
         let item = super.$render();
-        if (!this.data?.marca?.key) return null;
-        if (!this.data?.tipo_producto?.key) return null;
+        // if (!this.data?.marca?.key) return null;
+        // if (!this.data?.tipo_producto?.key) return null;
         return item;
     }
     $renderContent() {
-        
         return <SView col={"xs-12"}>
             {this.buildLabel({ label: "Tipo", value: this.data.tipo_producto?.descripcion })}
             {this.buildLabel({ label: "Marca", value: this.data.marca?.descripcion })}

@@ -98,7 +98,7 @@ class index extends DPA.item {
                 {this.getImages()}
                 <SHr />
                 <SText fontSize={18} >Bs. {SMath.formatMoney(precio_venta)}</SText>
-                <SText fontSize={10} color={STheme.color.lightGray}>Bs. {SMath.formatMoney(precio_venta_credito)} Al credito</SText>
+                {/* <SText fontSize={10} color={STheme.color.lightGray}>Bs. {SMath.formatMoney(precio_venta_credito)} Al credito</SText> */}
             </SView>
 
             {this.getEstado()}

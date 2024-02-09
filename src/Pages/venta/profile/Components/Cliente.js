@@ -13,7 +13,7 @@ export default class Cliente extends Component {
 
     seleccionarCliente() {
         SNavigation.navigate("/rol/profile/usuarios", {
-            pk: "51ee8a95-094b-41eb-8819-4afa1f349394", onSelect: (obj) => {
+            pk: "aa715032-1391-46de-b158-164714ddd0b5", onSelect: (obj) => {
                 var cliente = {
                     nit: obj.CI,
                     razon_social: obj.Nombres + " " + obj.Apellidos,

@@ -1,4 +1,4 @@
-import { SView } from 'servisofts-component';
+import { SNavigation, SView } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
 import Model from '../../Model';
@@ -11,6 +11,7 @@ class index extends DPA.list {
             Parent: Parent,
             excludes: ["key", "fecha_on", "key_usuario", "key_servicio", "estado", "lat", "lng", "observacion", "key_empresa"],
             // item: Item,
+            params:["cuenta?"],
             onRefresh: (resolve) => {
                 Parent.model.Action.CLEAR();
                 resolve();
@@ -24,6 +25,16 @@ class index extends DPA.list {
         super.onNew({ key_empresa: this.empresa?.key })
     }
 
+    $onSelect(obj) {
+        if (this?.$params?.cuenta) {
+            SNavigation.navigate("/banco/profile", {
+                pk: obj.key,
+                onSelect: super.$onSelect.bind(this)
+            })
+            return;
+        }
+        return super.$onSelect(obj);
+    }
     $allowTable() {
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "table" });
     }

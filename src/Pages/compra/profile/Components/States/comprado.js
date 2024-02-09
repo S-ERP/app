@@ -44,6 +44,8 @@ export default class index extends Component {
 
 
             <Components.compra_venta.Exportar data={this.data} />
+            <SHr height={16} />
+            <Components.compra_venta.GenerarAsiento data={this.data} />
             <SView col={"xs-12"} row center>
                 {/* <SView card style={{ padding: 16 }} onPress={() => {
                     Model.compra_venta.Action.changeState({ data: this.data, state: "denegado" })

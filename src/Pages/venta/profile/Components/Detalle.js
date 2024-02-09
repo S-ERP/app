@@ -57,22 +57,22 @@ export default class Detalle extends Component {
                         SPopup.alert("No se encontro tipo producto");
                         return true;
                     }
-                    if (!resp?.modelo?.tipo_producto?.key_cuenta_contable_credito) {
-                        SPopup.alert("No se encontro tipo producto key_cuenta_contable_credito");
+                    if (!resp?.modelo?.tipo_producto?.key_cuenta_contable) {
+                        SPopup.alert("No se encontro tipo producto key_cuenta_contable");
                         return true;
                     }
-                    if (!resp?.modelo?.tipo_producto.key_cuenta_contable_contado) {
-                        SPopup.alert("No se encontro tipo producto key_cuenta_contable_contado");
-                        return true;
-                    }
+                    // if (!resp?.modelo?.tipo_producto.key_cuenta_contable_contado) {
+                    //     SPopup.alert("No se encontro tipo producto key_cuenta_contable_contado");
+                    //     return true;
+                    // }
                     var precio_unitario = resp.precio_venta;
-                    if (this.props.data.tipo_pago != "contado") {
-                        precio_unitario = resp.precio_venta_credito;
-                    }
+                    // if (this.props.data.tipo_pago != "contado") {
+                    // precio_unitario = resp.precio_venta_credito;
+                    // }
 
                     var exite_producto = Object.values(this.compra_venta_detalle).filter((cvd => {
                         let producto = cvd.productos.find(p => p.key_producto == resp.key)
-                        if(producto){
+                        if (producto) {
                             return true;
                         }
                         return false;
@@ -95,9 +95,7 @@ export default class Detalle extends Component {
                             descuento: 0,
                             data: {
                                 precio_venta: resp.precio_venta,
-                                precio_venta_credito: resp.precio_venta_credito,
-                                key_cuenta_contable_contado: resp?.modelo?.tipo_producto.key_cuenta_contable_contado,
-                                key_cuenta_contable_credito: resp?.modelo?.tipo_producto.key_cuenta_contable_credito,
+                                key_cuenta_contable: resp?.modelo?.tipo_producto.key_cuenta_contable,
                             }
                         },
                         key_producto: resp.key,

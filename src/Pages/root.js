@@ -5,6 +5,7 @@ import { SButtom, SHr, SIcon, SImage, SNavigation, SPage, SText, STheme, SView }
 import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
 import SSocket from "servisofts-socket"
 import Model from '../Model';
+import Components from '../Components';
 class index extends Component {
     constructor(props) {
         super(props);
@@ -37,19 +38,14 @@ class index extends Component {
                 end()
 
             }}>
-                <SHr height={8} />
-                <SView col={"xs-12"} center
-                >
-                    <SText fontSize={18} center>{"Bienvenido al sistema comercial "}</SText>
-                    <SHr />
-                    <SView width={200}>
-                        <SIcon name={"logoCompleto"} fill={STheme.color.secondary} />
-                    </SView>
-                </SView>
+                <SHr height={32} />
+                <Components.Container>
+                    <Components.empresa.Select />
+                </Components.Container>
                 <SHr height={32} />
 
                 <MenuPages path={"/"} permiso={"page"}>
-                    <MenuButtom label={"Migrador2"} url={"/bots/amortizaciones"} icon={<SIcon name={"Box"}  fill='#f098a7'/>} />
+                    {/* <MenuButtom label={"Migrador2"} url={"/bots/amortizaciones"} icon={<SIcon name={"Box"} fill='#f098a7' />} /> */}
                     <MenuButtom label={"Mi perfil"} url={"/profile"} icon={this.getIconProfile()} />
                     {/* <MenuButtom label={"Test"} url={"/test"} /> */}
                 </MenuPages>

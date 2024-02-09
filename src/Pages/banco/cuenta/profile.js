@@ -1,6 +1,6 @@
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
-import { SHr, SList, SLoad, SNavigation, SText, SView } from 'servisofts-component';
+import { SHr, SList, SLoad, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../Model';
 import C_cuenta_movimiento_list_by_cuenta from "./movimiento/Components/list_by_cuenta";
 import item from './item';
@@ -57,6 +57,9 @@ class index extends DPA.profile {
     }
     $footer() {
         return <SView col={"xs-12"}>
+            <SHr h={20} />
+            <SText color={STheme.color.lightGray}>Cuenta contable que corresponde a esta cuenta bancaria:</SText>
+            <SHr />
             {this.getCuentaContable()}
             <SHr />
             <C_cuenta_movimiento_list_by_cuenta key_cuenta={this.pk} />

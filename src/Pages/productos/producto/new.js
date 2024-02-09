@@ -18,7 +18,7 @@ class index extends DPA.new {
         inp["descripcion"].editable = true
         inp["precio_compra"].type = "money"
         inp["precio_venta"].type = "money"
-        inp["precio_venta_credito"].type = "money"
+        // inp["precio_venta_credito"].type = "money"
         inp["key_modelo"] = {
             ...inp["key_modelo"],
             editable: false,

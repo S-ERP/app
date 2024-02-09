@@ -23,9 +23,9 @@ class CajaOpen extends Component {
         var usuario = Model.usuario.Action.getByKey(data.key_usuario);
         var punto_venta_tipo_pago = Model.punto_venta_tipo_pago.Action.getAll({ key_punto_venta: data.key_punto_venta });
 
-        if (!caja_detales) return <SLoad />
-        if (!usuario) return <SLoad />
-        if (!punto_venta_tipo_pago) return <SLoad />
+        if (!caja_detales) return <SText>Cargando caja_detalles...</SText>
+        if (!usuario)  return <SText>Cargando usuario...</SText>
+        if (!punto_venta_tipo_pago)  return <SText>Cargando punto_venta_tipo_pago...</SText>
         // var monto_actual = Model.caja_detalle.Action.getMontoEnCaja({ key_caja: data.key });
         // console.log(data)
         return <SView center col={"xs-12"}>

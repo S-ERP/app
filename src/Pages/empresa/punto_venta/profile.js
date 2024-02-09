@@ -1,10 +1,11 @@
-import { SLoad, SNavigation, SView } from 'servisofts-component';
+import { SHr, SLoad, SNavigation, SText, SView } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
 import Components from '../../../Components';
 import Model from '../../../Model';
 import ListaMonedaDetalle from './Components/listaMonedaDetalle';
 import PuntoVentaTipoPago from './Components/PuntoVentaTipoPago';
+import Config from '../../../Config';
 
 class index extends DPA.profile {
     constructor(props) {
@@ -22,7 +23,7 @@ class index extends DPA.profile {
     onEdit() {
         SNavigation.navigate(Parent.path + "/edit", { pk: this.pk, key_sucursal: this.$params.key_sucursal })
     }
-    onDelete(){
+    onDelete() {
         SNavigation.navigate(Parent.path + "/delete", { pk: this.pk, key_sucursal: this.$params.key_sucursal })
     }
     $allowDelete() {
@@ -56,9 +57,23 @@ class index extends DPA.profile {
     //         }} />
     // }
     $footer() {
+        if (!this.data) return <SLoad />
         return <SView col={"xs-12"} >
             {/* {this.getCuentaContable()} */}
+            <SHr />
+            <SText>Cuenta de caja en moneda nacional:</SText>
+            <Components.contabilidad.cuenta_contable.Select key_cuenta_contable={this?.data?.key_cuenta_contable} codigo={"1"} ref={ref => this.cuenta_contable_input = ref} onChange={e => {
+                Parent.model.Action.editar({
+                    data: {
+                        ...this.data,
+                        key_cuenta_contable: e.key
+                    },
+                    key_usuario: Model.usuario.Action.getKey()
+                })
+            }} />
+            <SHr h={40} />
             <PuntoVentaTipoPago key_punto_venta={this.pk} />
+
         </SView>
     }
 

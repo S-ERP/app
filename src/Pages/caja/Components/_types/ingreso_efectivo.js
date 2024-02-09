@@ -35,7 +35,7 @@ export default class index {
                     detail: cuenta_contable.codigo + " - " + cuenta_contable.descripcion,
                     onSubmit: ({ monto, detalle }) => {
                         //Pedimos el tipo de pago
-                        if (caja.fraccionar_moneda) {
+                        if (!!caja.fraccionar_moneda) {
                             SNavigation.navigate("/caja/fraccionar", {
                                 "monto": monto,
                                 "detalle": detalle,
