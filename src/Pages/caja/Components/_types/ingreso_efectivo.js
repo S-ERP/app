@@ -26,7 +26,7 @@ export default class index {
     static onPress(caja, punto_venta_tipo_pago) {
         //Pedimos el monto y el detalle
         SNavigation.navigate("/contabilidad/cuentas", {
-            codigo:Config.cuenta_contable.caja_ingreso_efectivo.cuenta,
+            codigo: Config.cuenta_contable.caja_ingreso_efectivo.cuenta,
             // key_cuenta: "3038c20e-12f5-46b5-b70a-129fb634b241",
             onSelect: (cuenta_contable) => {
                 SNavigation.goBack();
@@ -55,12 +55,13 @@ export default class index {
                             "tipo": this.key,
                             "key_tipo_pago": "efectivo",
                             "fecha": caja.fecha,
-                            cuentas: [{ key_cuenta_contable: cuenta_contable.key, monto: monto }],
+                            key_cuenta_contable: cuenta_contable.key
+                            // cuentas: [{ key_cuenta_contable: cuenta_contable.key, monto: monto }],
                         }
                         //Registramos el caja_detalle
                         Model.caja_detalle.Action.registro({
                             data: caja_detalle,
-                            cuentas: [{ key_cuenta_contable: cuenta_contable.key, monto: monto }],
+                            key_empresa: Model.empresa.Action.getSelect()?.key,
                             key_usuario: Model.usuario.Action.getKey()
                         }).then((resp) => {
                             console.log(resp)

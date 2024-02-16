@@ -6,7 +6,7 @@ import Config from '../../../../Config';
 
 export default class index {
     static key = "ingreso_banco";
-    static descripcion = "Ingreso de banco"
+    static descripcion = "Retirar del banco"
     static icon = "Ingreso"
     static permiso = "allow_ingreso_banco"
     static isActive(obj) {

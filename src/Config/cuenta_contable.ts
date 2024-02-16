@@ -4,7 +4,7 @@ export default {
     // Cajas
     caja_ingreso: { cuenta: "4", label: "Cuentas a las que afecta el ingreso de caja." },
     caja_ingreso_efectivo: { cuenta: "4", label: "Cuentas de las que se puede realizar un ingreso de efectivo en caja." },
-    caja_egreso_efectivo: { cuenta: "6", label: "Cuentas disponibles para hacer un egreso en efectivo." },
+    caja_egreso_efectivo: { cuenta: "5", label: "Cuentas disponibles para hacer un egreso en efectivo." },
     caja_ingreso_banco: { cuenta: "1", label: "Cuenta de banco disponibles para retirar dinero para las cajas." },
     caja_egreso_banco: { cuenta: "1", label: "Cuentas de banco disponibles para enviar el dinero de las cajas." },
     // Productos

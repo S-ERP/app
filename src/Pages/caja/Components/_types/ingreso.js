@@ -49,11 +49,15 @@ export default class ingreso {
                                     "tipo": this.key,
                                     "key_tipo_pago": tipo_pago.key,
                                     "fecha": caja.fecha,
-                                    cuentas: [{ key_cuenta_contable: cuenta_contable.key, monto: monto }],
+                                    key_cuenta_contable: cuenta_contable.key,
+                                    key_cuenta_contable_banco: tipo_pago?.pvtp?.key_cuenta_contable,
+                                    // cuentas: [{ key_cuenta_contable: cuenta_contable.key, monto: monto }],
                                 }
                                 //Registramos el caja_detalle
                                 Model.caja_detalle.Action.registro({
                                     data: caja_detalle,
+                                    key_usuario: Model.usuario.Action.getKey(),
+                                    key_empresa: Model.empresa.Action.getSelect()?.key,
                                     key_usuario: Model.usuario.Action.getKey()
                                 }).then((resp) => {
                                     console.log(resp)

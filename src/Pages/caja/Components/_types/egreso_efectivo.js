@@ -62,12 +62,12 @@ export default class index {
                             "tipo": this.key,
                             "key_tipo_pago": "efectivo",
                             "fecha": caja.fecha,
-                            cuentas: [{ key_cuenta_contable: cuenta_contable.key, monto: monto }],
+                            key_cuenta_contable: cuenta_contable.key,
                         }
                         //Registramos el caja_detalle
                         Model.caja_detalle.Action.registro({
                             data: caja_detalle,
-                            cuentas: [{ key_cuenta_contable: cuenta_contable.key, monto: monto }],
+                            key_empresa: Model.empresa.Action.getSelect()?.key,
                             key_usuario: Model.usuario.Action.getKey()
                         }).then((resp) => {
                             console.log(resp)

@@ -51,15 +51,21 @@ class index extends Component {
         var tipos = Object.values(data).map(o => o.key_tipo_pago);
 
         if (tipos.length <= 0) return (<SView col={"xs-12"} center>
-            <SHr h={16}/>
+            <SHr h={16} />
             <SText>No hay tipos de pagos activos para este punto de venta, porfavor active un punto de venta desde, Sucursales / Punto de ventas / Habilitar Tipo de pago</SText>
-            <SHr h={16}/>
+            <SHr h={16} />
         </SView>)
+
         // return <SText>{JSON.stringify(tipos)}</SText>
         return <Components.empresa.tipo_pago.Select include={tipos} onSelect={(tp) => {
 
             if (this.params.onSelect) {
-                this.params.onSelect(tp);
+                const pvtp = Object.values(data).find(a => a.key_tipo_pago == tp.key);
+
+                this.params.onSelect({
+                    ...tp,
+                    pvtp: pvtp
+                });
                 SNavigation.goBack();
             }
 
