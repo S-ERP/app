@@ -9,7 +9,7 @@ import cierre from "./cierre"
 import ingreso_banco from "./ingreso_banco"
 export default {
     ingreso,
-    ingreso_efectivo,
+    // ingreso_efectivo,
     ingreso_banco,
     egreso_efectivo,
     egreso_banco,

@@ -14,6 +14,8 @@ export default new SModel<Action, Reducer>({
         "key_usuario": { type: "text", fk: "usuario" },
         "key_punto_venta": { type: "text", fk: "punto_venta", notNull: true },
         "key_tipo_pago": { type: "text", fk: "tipo_pago", notNull: true },
+        "key_cuenta_contable": { type: "text", fk: "cuenta_contable" },
+        "enviar_cierre_caja": { type: "boolean", },
     },
     Action,
     Reducer,

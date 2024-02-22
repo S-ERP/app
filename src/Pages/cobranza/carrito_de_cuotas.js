@@ -104,9 +104,12 @@ class index extends Component {
                         </SView>
                         <SView width={8} />
                         <SView>
-                            <SText style={{ alignItems: 'end', textAlign: "end" }} fontSize={14}>{SMath.formatMoney(obj.monto)}</SText>
+                            <SText style={{ alignItems: 'end', textAlign: "end" }}
+                                color={obj.estado == 2 ? STheme.color.success : STheme.color.warning}
+                                fontSize={14}>{SMath.formatMoney(obj.monto)}</SText>
                             {!obj.amortizaciones ? "" : <SText style={{ alignItems: 'end', textAlign: "end" }} color={STheme.color.danger} fontSize={12}>-{SMath.formatMoney(obj.amortizaciones ?? 0)}</SText>}
-                            <SText color={STheme.color.danger} fontSize={10}>{isRetrasada ? "Pendiente de pago" : ""}</SText>
+                            {obj.estado == 2 ? <SText color={STheme.color.success} >PAGADA</SText> : <SText color={STheme.color.danger} fontSize={10}>{isRetrasada ? "Pendiente de pago" : ""}</SText>}
+
                         </SView>
                         <SView col={"xs-12"}>
                             <SText flex fontSize={10} color={STheme.color.lightGray} >Total Amortizado: {total_amortizado}</SText>

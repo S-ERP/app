@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useRef, useState } from 'react';
 import { SButtom, SHr, SIcon, SInput, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import Container from '../../../../Components/Container';
 import Model from '../../../../Model';
@@ -30,8 +30,11 @@ export default class index {
     static onPress(data, punto_venta_tipo_pago) {
         SPopup.open({
             key: "caja_cierre",
-            content: <PopupPuntoVentaClose data={data} punto_venta_tipo_pago={punto_venta_tipo_pago} onPress={(setState) => {
+            content: <PopupPuntoVentaClose data={data} punto_venta_tipo_pago={punto_venta_tipo_pago} onPress={(setState, arqueo) => {
+                console.log(data, punto_venta_tipo_pago, arqueo);
+                return;
                 setState({ loading: true, error: "" })
+
                 Model.caja.Action.editar({
                     action: "cerrar",
                     data: {
@@ -55,6 +58,7 @@ export default class index {
 
 const PopupPuntoVentaClose = (props) => {
     const [state, setState] = useState({})
+    const ref = useRef(null);
     return <SView col={"xs-12"} height={1000} backgroundColor={STheme.color.background} style={{
         maxHeight: "100%"
     }} withoutFeedback>
@@ -67,7 +71,7 @@ const PopupPuntoVentaClose = (props) => {
             <SHr />
             <SText fontSize={14} center>{"Al cerrar la caja el monto de cada tipo de pago se enviaran al banco correspondiente y la caja quedara con 0."}</SText>
             <SHr height={32} />
-            <CajaArqueo key_caja={props.data.key} punto_venta_tipo_pago={props.punto_venta_tipo_pago} />
+            <CajaArqueo ref={ref} key_caja={props.data.key} punto_venta_tipo_pago={props.punto_venta_tipo_pago} />
             <SHr height={32} />
             <SText color={STheme.color.danger}>{state.error}</SText>
             <SView col={"xs-12"} row center>
@@ -82,7 +86,7 @@ const PopupPuntoVentaClose = (props) => {
                 <SView width={16} />
                 <SButtom type='outline' onPress={() => {
                     if (props.onPress) {
-                        props.onPress(setState);
+                        props.onPress(setState, ref.current.table);
                     }
                 }} loading={state.loading}>CONFIRMAR</SButtom>
             </SView>

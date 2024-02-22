@@ -47,7 +47,9 @@
     "xlsx-color": "^0.14.30"
   },
   "devDependencies": {
-    "react-scripts": "^4.0.3"
+    "react-scripts": "^4.0.3",
+    "@types/react": "17.0.2",
+    "@types/react-native": "^0.64.4"
   },
   "browserslist": {
     "production": [

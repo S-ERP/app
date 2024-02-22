@@ -44,6 +44,7 @@ class index extends Component {
             header={[
                 // { key: "index", label: "#" },
                 { key: "codigo_asiento", ...PropsAll },
+                { key: "fecha_on", ...PropsAll, order: "asc" },
                 { key: "tipo", ...PropsAll },
                 { key: "fecha", ...PropsAll },
                 {

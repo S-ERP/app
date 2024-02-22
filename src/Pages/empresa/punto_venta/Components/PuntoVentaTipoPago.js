@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SList, SLoad, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SList, SLoad, SNavigation, SPopup, SSwitch, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../../Model';
 import Config from '../../../../Config';
 
@@ -17,7 +17,27 @@ export default class PuntoVentaTipoPago extends Component {
         if (!cuenta_conta) return <SLoad />
         return <SText fontSize={10} color={STheme.color.lightGray}>{cuenta_conta?.codigo} {cuenta_conta?.descripcion}</SText>
     }
+    getSwitch(select) {
+        if (!select) return null;
+        return <SView row col={"xs-12"} center>
+            <SView flex />
+            <SText fontSize={10}>Enviar al cierre?</SText>
+            <SView width={8} />
+            <SSwitch value={select?.enviar_cierre_caja} onChange={e => {
+                Model.punto_venta_tipo_pago.Action.editar({
+                    data: {
+                        ...select,
+                        enviar_cierre_caja: e,
+                    },
+                    key_usuario: Model.usuario.Action.getKey()
+                }).then(e => {
 
+                }).catch(e => {
+                    SPopup.alert("Error al editar");
+                })
+            }} />
+        </SView>
+    }
     render_data() {
         if (!this.props.key_punto_venta) return <SText>Not Found! key_punto_venta</SText>
         var punto_venta_tipo_pago = Model.punto_venta_tipo_pago.Action.getAll({ key_punto_venta: this.props.key_punto_venta });
@@ -71,7 +91,7 @@ export default class PuntoVentaTipoPago extends Component {
                         <SText fontSize={10} color={STheme.color.lightGray}>{obj.observacion}</SText>
                         <SHr height={4} />
                         {this.getCuenta(select)}
-
+                        {this.getSwitch(select)}
                     </SView>
                 </SView>
             }}

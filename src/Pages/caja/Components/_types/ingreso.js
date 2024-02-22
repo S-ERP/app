@@ -51,6 +51,7 @@ export default class ingreso {
                                     "fecha": caja.fecha,
                                     key_cuenta_contable: cuenta_contable.key,
                                     key_cuenta_contable_banco: tipo_pago?.pvtp?.key_cuenta_contable,
+                                    enviar_cierre_caja: tipo_pago?.pvtp?.enviar_cierre_caja,
                                     // cuentas: [{ key_cuenta_contable: cuenta_contable.key, monto: monto }],
                                 }
                                 //Registramos el caja_detalle

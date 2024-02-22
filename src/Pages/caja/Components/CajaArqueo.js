@@ -5,7 +5,7 @@ import Model from '../../../Model';
 type PropsType = {
 
 }
-class CajaArqueo extends Component<PropsType> {
+export default class CajaArqueo extends Component<PropsType> {
 
     size = 60;
 
@@ -29,6 +29,7 @@ class CajaArqueo extends Component<PropsType> {
         return true;
     }
 
+    table = {}
 
     renderTipoPago(tipo_pago) {
         var movimientos = Object.values(this.caja_detalles).filter(o => o.key_tipo_pago == tipo_pago.key && o.estado != 0)
@@ -45,10 +46,14 @@ class CajaArqueo extends Component<PropsType> {
                 monto_egreso += aux;
             }
         });
+
+        this.table[tipo_pago.key] = monto;
+        
         var color = STheme.color.lightGray
         if (monto != 0) {
             color = monto >= 0 ? STheme.color.success : STheme.color.danger
         }
+
         return <SView col={"xs-12"} >
             <SHr />
             <SView col={"xs-12"} row>
@@ -134,7 +139,7 @@ class CajaArqueo extends Component<PropsType> {
         );
     }
 }
-const initStates = (state) => {
-    return { state }
-};
-export default connect(initStates)(CajaArqueo);
+// const initStates = (state) => {
+//     return { state }
+// };
+// export default connect(initStates)(CajaArqueo);

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SButtom, SDate, SHr, SInput, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SButtom, SDate, SHr, SInput, SNavigation, SPopup, SText, STheme, SUuid, SView } from 'servisofts-component';
 import Model from '../../../../Model';
 import PopupMontoDetalle from '../PopupMontoDetalle';
 import Popups from '../../../../Components/Popups';
@@ -48,11 +48,12 @@ export default class index {
                 },
                 key_usuario: Model.usuario.Action.getKey()
             }).then(e => {
-                var amortizacion = e.data;
-                obj.data.key_amortizacion = e.amortizaciones;
-                obj.cuentas = Object.values(e.cuentas);
+                // var amortizacion = e.data;
+                obj.data.key_amortizacion = e.data?.key;
+                // obj.cuentas = Object.values(e.cuentas);
                 Model.caja_detalle.Action.editar({
                     data: obj,
+                    key_empresa: Model.empresa.Action.getSelect()?.key,
                     key_usuario: Model.usuario.Action.getKey()
                 }).then((e) => {
                     resolve("Editado con exito");
@@ -84,6 +85,7 @@ export default class index {
                             _type: this.key,
                             onSelect: (tipo_pago) => {
 
+                                // Verificamos efectivo disponible
                                 if (tipo_pago.key == "efectivo") {
                                     var detalles = Model.caja_detalle.Action.getAll({ key_caja: caja.key });
                                     var movimientos = Object.values(detalles).filter(o => o.key_tipo_pago == "efectivo" && o.estado != 0)
@@ -94,26 +96,57 @@ export default class index {
                                         return;
                                     }
                                 }
-                                var caja_detalle = {
-                                    "key_caja": caja.key,
-                                    "descripcion": "Pago de servicio",
-                                    "monto": montoFinal * -1,
-                                    "tipo": this.key,
-                                    "key_tipo_pago": tipo_pago.key,
-                                    "fecha": caja.fecha,
-                                    "data": {
-                                        "type": "pago_servicio",
-                                        "key_cuotas": Object.keys(cuotas)
-                                    }
-                                }
-                                console.log(caja_detalle)
-                                Model.caja_detalle.Action.registro({
-                                    data: caja_detalle,
+                                const key_caja_detalle = SUuid();
+                                // Intentamos amortizar
+                                Model.cuota_amortizacion.Action.registro({
+                                    data: {
+                                        descripcion: "Amortizacion de cuota desde caja.",
+                                        observacion: "--",
+                                        monto: montoFinal,
+                                        fecha: caja.fecha,
+                                        key_cuotas: Object.keys(cuotas),
+                                        key_caja_detalle: key_caja_detalle
+                                    },
                                     key_usuario: Model.usuario.Action.getKey()
-                                }).then((resp) => {
-                                    console.log(resp)
+                                }).then(e => {
 
+                                    var caja_detalle = {
+                                        key: key_caja_detalle,
+                                        "key_caja": caja.key,
+                                        "descripcion": "Pago de servicio",
+                                        "monto": montoFinal * -1,
+                                        "tipo": this.key,
+                                        "key_tipo_pago": tipo_pago.key,
+                                        "fecha": caja.fecha,
+                                        "data": {
+                                            "type": "pago_servicio",
+                                            "key_cuotas": Object.keys(cuotas),
+                                            key_amortizacion: e?.data?.key
+                                        }
+                                    }
+                                    Model.caja_detalle.Action.registro({
+                                        data: caja_detalle,
+                                        key_empresa: Model.empresa.Action.getSelect()?.key,
+                                        key_usuario: Model.usuario.Action.getKey()
+                                    }).then((resp) => {
+                                        console.log(resp)
+
+                                    })
+                                    // obj.data.key_amortizacion = e.data?.key;
+                                    // Model.caja_detalle.Action.editar({
+                                    //     data: obj,
+                                    //     key_empresa: Model.empresa.Action.getSelect()?.key,
+                                    //     key_usuario: Model.usuario.Action.getKey()
+                                    // }).then((e) => {
+                                    //     resolve("Editado con exito");
+                                    // }).catch(e => {
+                                    //     reject("Error al editar el movimiento de caja");
+                                    // })
+                                }).catch(e => {
+                                    reject("Error al amortizar");
+                                    console.error(e);
                                 })
+
                             }
 
                         })
@@ -122,27 +155,5 @@ export default class index {
             }
         })
         return;
-        PopupMontoDetalle.open({
-            title: this.descripcion,
-            onSubmit: ({ monto, detalle }) => {
-                //Pedimos el tipo de pago
-                var caja_detalle = {
-                    "key_caja": caja.key,
-                    "descripcion": detalle,
-                    "monto": monto * -1,
-                    "tipo": "egreso",
-                    "key_tipo_pago": "efectivo",
-                }
-                //Registramos el caja_detalle
-                Model.caja_detalle.Action.registro({
-                    data: caja_detalle,
-                    key_usuario: Model.usuario.Action.getKey()
-                }).then((resp) => {
-                    console.log(resp)
-
-                })
-
-            }
-        });
     }
 }
