@@ -18,8 +18,8 @@ export default {
         inventario: 'https://inventario.servisofts.com/http/',
         // inventario: 'http://192.168.2.1:30039/',
         compra_venta: 'https://compraventa.servisofts.com/http/',
-        spdf: "http://192.168.2.1:30046/",
-        // spdf: "https://spdf.servisofts.com/http/",
+        // spdf: "http://192.168.2.1:30046/",
+        spdf: "https://spdf.servisofts.com/http/",
         // contabilidad: "https://contabilidad.servisofts.com/http/",
         contabilidad: "http://192.168.2.1:30011/",
         sqr: "https://qr.servisofts.com/http/"

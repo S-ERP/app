@@ -32,15 +32,14 @@ export default class index {
             key: "caja_cierre",
             content: <PopupPuntoVentaClose data={data} punto_venta_tipo_pago={punto_venta_tipo_pago} onPress={(setState, arqueo) => {
                 console.log(data, punto_venta_tipo_pago, arqueo);
-                return;
                 setState({ loading: true, error: "" })
-
                 Model.caja.Action.editar({
                     action: "cerrar",
                     data: {
                         ...data,
                     },
                     punto_venta_tipo_pago: punto_venta_tipo_pago,
+                    key_empresa: Model.empresa.Action.getSelect()?.key,
                     key_usuario: Model.usuario.Action.getKey()
                 }).then((e) => {
                     setState({ loading: false, error: "" })

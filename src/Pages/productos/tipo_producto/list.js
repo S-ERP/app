@@ -1,6 +1,7 @@
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
 import Model from '../../../Model';
+import { SText, STheme, SView } from 'servisofts-component';
 
 class index extends DPA.list {
     constructor(props) {
@@ -23,8 +24,26 @@ class index extends DPA.list {
     $filter(data) {
         return data.estado != 0
     }
+
+    $item(obj) {
+        let ITEM = super.$item(obj);
+        return <>
+            {ITEM}
+            <SView card padding={8}>
+                <SText col={"xs-12"} style={{ alignItems: "end" }} color={STheme.color.lightGray}>{obj?.cuenta_contable?.codigo} {obj?.cuenta_contable?.descripcion}</SText>
+            </SView>
+        </>
+    }
     $getData() {
-        return Parent.model.Action.getAll();
+
+        this.cuentas = Model.cuenta_contable.Action.getAll();
+        this.data = Parent.model.Action.getAll();
+        if (this.data && this.cuentas) {
+            Object.values(this.data).map(a => {
+                a.cuenta_contable = this.cuentas[a.key_cuenta_contable]
+            })
+        }
+        return this.data;
     }
 }
 export default connect(index);
