@@ -29,6 +29,8 @@ class index extends Component {
 
     render() {
         if (!Model.usuario.Action.getUsuarioLog()) {
+            console.log("ggggggg")
+
             SNavigation.replace("/login");
             return null;
         }

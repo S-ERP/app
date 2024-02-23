@@ -1,3 +1,7 @@
+
+nvm install 14.18.0
+nvm use 14.18.0
+
 ./gradlew clean --info --stacktrace         
  export PATH=$PATH:/Applications/CMake.app/Contents/bin/
 ./gradlew assembleDebug                                 
