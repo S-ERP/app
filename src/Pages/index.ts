@@ -1,7 +1,8 @@
 import { SPage, SPageListProps } from 'servisofts-component';
 
 import Root from './root';
-import login from './login';
+import login from './login/index';
+import registro from './registro';
 import profile from './profile';
 import usuario from './usuario';
 import empresa from './empresa';
@@ -25,7 +26,9 @@ import bots from './bots';
 import t2 from './t2';
 export default SPage.combinePages("/", {
     "": Root,
-    "login": login,
+    // "login": login,
+    ...login,
+    ...registro,
     "test": test,
     "wiki": wiki,
     t2,
