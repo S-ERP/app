@@ -47,7 +47,7 @@ class root extends Component {
                             Correo: { placeholder: "Correo", type: "email", isRequired: true, defaultValue: defaultData.Correo },
                             FechaNacimiento: { placeholder: "Fecha de Nacimiento", isRequired: false, type: "date", },
                             //telefono: { placeholder: "Celular", isRequired: true, type: "telefono", isRequired:true},
-                            Telefono: { placeholder: "Celular", isRequired: false, },
+                            Telefono: { placeholder: "Celular", isRequired: false,  type:"phone"},
                             CI: { placeholder: "Carnet de Identidad", isRequired: false, },
                             Password: { placeholder: "Password", isRequired: true, type: "password" },
                             RepPassword: { placeholder: "Repetir password", type: "password", isRequired: true },
