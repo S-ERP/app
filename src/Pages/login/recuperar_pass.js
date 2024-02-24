@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { connect } from 'react-redux';
 import { SButtom, SDate, SForm, SIcon, SLoad, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import CryptoJS from 'crypto-js';
-import { PButtom } from '../../Components';
+import PButtom from '../../Components/PButtom';
 import Model from '../../Model';
 
 
@@ -56,7 +56,7 @@ class recuperar_pass extends Component {
         return <SView col={"xs-11 md-8 xl-6"} row center style={{ height: 250, borderRadius: 8, }} backgroundColor={STheme.color.background} >
             <SView col={"xs-11"} height={40} />
             <SView col={"xs-11"}  >
-                <SIcon name={"InputPassword"} height={100} fill={STheme.color.primary} />
+                <SIcon name={"InputPassword"} height={100} fill={STheme.color.secondary} />
             </SView>
             <SView col={"xs-11"} height={15} />
             <SView col={"xs-12"} center  >
@@ -78,7 +78,7 @@ class recuperar_pass extends Component {
                         {this.getForm()}
                         <SView height={30} />
                         <SView col={"xs-11"} row center>
-                            <PButtom primary
+                            <PButtom secondary
                                 onPress={() => {
                                     this.form.submit();
                                 }} >RESTABLECER CONTRASEÑA</PButtom>

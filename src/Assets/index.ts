@@ -5,6 +5,7 @@ import logoCompleto, { ReactComponent as logoCompletoW } from './svg/logoComplet
 import profile2, { ReactComponent as profile2W } from './svg/profile2.svg';
 import IconChecked, { ReactComponent as IconCheckedW } from './svg/iconChecked.svg';
 import IconCheckedOk, { ReactComponent as IconCheckedOkW } from './svg/iconCheckedOk.svg';
+import InputPassword, { ReactComponent as InputPasswordW } from './svg/InputPassword.svg';
 
 
 const Assets: SAssets = {
@@ -14,6 +15,7 @@ const Assets: SAssets = {
         "profile2": { Native: profile2, Web: profile2W },
         "IconChecked": { Native: IconChecked, Web: IconCheckedW },
         "IconCheckedOk": { Native: IconCheckedOk, Web: IconCheckedOkW },
+        "InputPassword": { Native: InputPassword, Web: InputPasswordW },
     }
 }
 
