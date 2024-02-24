@@ -4,11 +4,13 @@ import usuario_dato from "./usuario_dato";
 import banco from "./banco";
 import banco_cuenta from "./banco_cuenta";
 import cuenta_movimiento from "./cuenta_movimiento";
+import tarea from "./tarea";
 export default {
     dato,
     rol_dato,
     usuario_dato,
     banco,
     banco_cuenta,
-    cuenta_movimiento
+    cuenta_movimiento,
+    tarea
 }

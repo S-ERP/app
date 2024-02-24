@@ -6,6 +6,7 @@ import empresa_moneda from "./empresa_moneda";
 import empresa_moneda_detalle from "./empresa_moneda_detalle";
 import tipo_pago from "./tipo_pago";
 import punto_venta_tipo_pago from "./punto_venta_tipo_pago";
+import empresa_usuario from "./empresa_usuario";
 export default {
     empresa,
     sucursal,
@@ -13,5 +14,6 @@ export default {
     empresa_moneda,
     empresa_moneda_detalle,
     tipo_pago,
-    punto_venta_tipo_pago
+    punto_venta_tipo_pago,
+    empresa_usuario
 }

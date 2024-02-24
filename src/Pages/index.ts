@@ -24,6 +24,8 @@ import notification from './notification';
 import reporte from './reporte';
 import bots from './bots';
 import t2 from './t2';
+import temp from './temp';
+import tarea from './tarea';
 export default SPage.combinePages("/", {
     "": Root,
     // "login": login,
@@ -49,6 +51,8 @@ export default SPage.combinePages("/", {
     ...cobranza,
     ...notification,
     ...reporte,
-    ...bots
+    ...bots,
+    ...temp,
+    ...tarea
 
 });
