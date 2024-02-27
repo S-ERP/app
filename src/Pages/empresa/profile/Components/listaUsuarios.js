@@ -35,6 +35,7 @@ class index extends DPA.list {
         SNavigation.navigate("/usuario", {
             onSelect: (a) => {
                 console.log(a);
+                // if(this.data.)
                 Model.empresa_usuario.Action.registro({
                     data: {
                         key_usuario: a.key,

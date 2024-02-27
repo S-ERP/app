@@ -3,7 +3,7 @@ import { Parent } from '.';
 import { SNavigation, SPopup } from 'servisofts-component';
 import Model from '../../Model';
 import DatosDocumentosEditar from './Components/DatosDocumentosEditar';
-
+import CryptoJS from 'crypto-js';
 class index extends DPA.edit {
     constructor(props) {
         super(props, {
@@ -21,10 +21,12 @@ class index extends DPA.edit {
         var inputs = super.$inputs();
         inputs["Password"].type = "password"
         inputs["Correo"].type = "email"
+
         // inputs["Telefono"].type = "phone"
         return inputs;
     }
     $onSubmit(data) {
+        // data["Password"] = CryptoJS.MD5(data["Password"]).toString();
         Parent.model.Action.editar({
             data: {
                 ...this.data,

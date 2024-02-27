@@ -22,6 +22,7 @@ class index extends DPA.edit {
                 ...this.data,
                 ...data
             },
+            key_empresa: this.data?.key,
             key_usuario: Model.usuario.Action.getKey()
         }).then((resp) => {
             SNavigation.goBack();

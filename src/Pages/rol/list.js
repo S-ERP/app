@@ -7,7 +7,7 @@ class index extends DPA.list {
         super(props, {
             Parent: Parent,
             excludes: ["key", "fecha_on", "key_servicio", "estado"],
-            itemType:"2",
+            itemType: "2",
             onRefresh: (resolve) => {
                 Parent.model.Action.CLEAR();
                 resolve();
@@ -24,7 +24,8 @@ class index extends DPA.list {
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "ver" });
     }
     $filter(data) {
-        return data.estado != 0
+
+        return data.estado != 0 && data.key_empresa == Model.empresa.Action.getSelect()?.key
     }
 
     $order() {

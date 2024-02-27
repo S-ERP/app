@@ -6,6 +6,7 @@ import _new from "./new";
 import profile from "./profile";
 import edit from "./edit";
 import _delete from "./delete";
+import reto from "./reto";
 const model = Model.tarea;
 
 export const Parent = {
@@ -15,6 +16,7 @@ export const Parent = {
 }
 export default SPage.combinePages(Parent.name, {
     "": list,
+    reto,
     "list": list,
     "table": table,
     "new": _new,

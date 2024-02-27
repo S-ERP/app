@@ -28,7 +28,8 @@ class index extends DPA.edit {
                 ...this.data,
                 ...data
             },
-            key_usuario: ""
+            key_empresa: Model.empresa.Action.getKey(),
+            key_usuario: Model.usuario.Action.getKey()
         }).then((resp) => {
             SNavigation.goBack();
         }).catch(e => {

@@ -12,6 +12,9 @@ export default class Action extends SAction {
 
         return this._getReducer().select;
     }
+    getKey() {
+        return this._getReducer().select?.key;
+    }
     setEmpresa(data) {
         SStorage.setItem("empresa_select", JSON.stringify(data));
         Model._events.CLEAR();

@@ -20,7 +20,8 @@ class index extends DPA.new {
         data.key_sucursal = this.$params["key_sucursal"]
         Parent.model.Action.registro({
             data: data,
-            key_usuario: Model.usuario.Action.getKey()
+            key_usuario: Model.usuario.Action.getKey(),
+            key_empresa: Model.empresa.Action.getKey()
         }).then((resp) => {
             this.$submitFile(resp.data.key);
             SNavigation.goBack();

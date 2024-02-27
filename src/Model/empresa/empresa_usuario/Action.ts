@@ -17,7 +17,7 @@ export default class Action extends SAction {
 
         var resp = super.getAll({
             key_empresa: key_empresa,
-            key_usuario: Model.usuario.Action.getKey()
+            // key_usuario: Model.usuario.Action.getKey()
         })
         return resp;
     }
@@ -29,7 +29,7 @@ export default class Action extends SAction {
             reducer.data = "";
             reducer.key_usuario = key_usuario;
         }
-        
+
         var resp = super.getAll({
             key_usuario: key_usuario,
             // key_usuario: Model.usuario.Action.getKey()

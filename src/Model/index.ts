@@ -33,7 +33,9 @@ Usuario.init({
         "Password": { type: "text", notNull: true, editable: true },
     },
 });
-Roles_permisos.init({});
+Roles_permisos.init({
+    modelusuario: Model.usuario,
+});
 
 export default {
     ...Model,

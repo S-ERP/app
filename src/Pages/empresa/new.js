@@ -19,6 +19,8 @@ class index extends DPA.new {
             data: data,
             key_usuario: Model.usuario.Action.getKey()
         }).then((resp) => {
+            Model.empresa.Action.setEmpresa(resp.data);
+            SNavigation.replace("/empresa/init")
             SNavigation.goBack();
         }).catch(e => {
             console.error(e);

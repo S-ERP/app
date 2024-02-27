@@ -27,8 +27,11 @@ import bots from './bots';
 import t2 from './t2';
 import temp from './temp';
 import tarea from './tarea';
+import menu from './menu';
+
 export default SPage.combinePages("/", {
     "": Root,
+    menu,
     // "login": login,
     ...login,
     ...registro,

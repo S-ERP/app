@@ -16,6 +16,8 @@ export default new SModel<Action, Reducer>({
         "service": { type: "text", editable: true },
         "component": { type: "text", editable: true },
         "type": { type: "text", editable: true },
+        "url": { type: "text", editable: true },
+
     },
     Action,
     Reducer,

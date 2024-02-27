@@ -22,7 +22,8 @@ class index extends DPA.new {
     $onSubmit(data) {
         Parent.model.Action.registro({
             data: data,
-            key_usuario: "",
+            key_usuario: Model.usuario.Action.getKey(),
+            key_empresa: Model.empresa.Action.getKey()
         }).then((resp) => {
             SNavigation.goBack();
         }).catch(e => {

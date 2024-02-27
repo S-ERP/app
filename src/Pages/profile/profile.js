@@ -1,7 +1,7 @@
 import DPA, { connect } from 'servisofts-page';
 import { SButtom, SHr, SImage, SInput, SList, SLoad, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../Model';
-import { EditarUsuarioRol } from 'servisofts-rn-roles_permisos';
+import { EditarUsuarioRol, EditarUsuarioRolEmpresa } from 'servisofts-rn-roles_permisos';
 import { Parent } from './index';
 import SSocket from 'servisofts-socket';
 class index extends DPA.profile {
@@ -66,6 +66,8 @@ class index extends DPA.profile {
             {this.renderEmpresa(this.$params["pk"])}
             <SHr h={50} />
             <EditarUsuarioRol key_usuario={this.$params["pk"]} disabled onlyActives />
+            <SHr h={50} />
+            <EditarUsuarioRolEmpresa key_usuario={this.$params["pk"]} key_empresa={Model.empresa.Action.getSelect()?.key} disabled onlyActives />
         </SView>
 
     }

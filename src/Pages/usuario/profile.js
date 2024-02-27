@@ -2,7 +2,7 @@ import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
 import { SForm, SHr, SInput, SList, SText, SView } from 'servisofts-component';
 import Model from '../../Model';
-import { EditarUsuarioRol } from 'servisofts-rn-roles_permisos';
+import { EditarUsuarioRol, EditarUsuarioRolEmpresa } from 'servisofts-rn-roles_permisos';
 import DatosDocumentos from './Components/DatosDocumentos';
 
 class index extends DPA.profile {
@@ -39,8 +39,11 @@ class index extends DPA.profile {
             <DatosDocumentos key_usuario={this.pk} />
             {/* <SHr height={16} /> */}
             {/* <DatosDocumentosEditar key_usuario={this.pk} /> */}
-            <SHr height={16} />
-            <EditarUsuarioRol key_usuario={this.pk} url={"/usuario"} permiso={"edit_rol"} />
+            <SHr height={50} />
+            <EditarUsuarioRolEmpresa key_usuario={this.pk} key_empresa={Model.empresa.Action.getSelect()?.key} url={"/usuario"} permiso={"edit_rol"} />
+            {/* <SHr height={50} /> */}
+            {/* <EditarUsuarioRol key_usuario={this.pk} url={"/usuario"} permiso={"edit_rol"} /> */}
+            
         </SView>
 
     }

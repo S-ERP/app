@@ -1,61 +1,101 @@
+//import liraries
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Linking } from 'react-native'
-import { SButtom, SHr, SIcon, SImage, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
-import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
-import SSocket from "servisofts-socket"
+import { View, Text, StyleSheet } from 'react-native';
+import { SHr, SImage, SList, SLoad, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import Model from '../Model';
-import Components from '../Components';
-class index extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
+import { connect } from 'react-redux';
+import Container from '../Components/Container';
+import SSocket from 'servisofts-socket';
 
-    getIconProfile() {
-        return <SView col={"xs-12"} height>
-            <SView col={"xs-12"} height style={{
-                padding: 8
-            }} >
-                <SIcon name={"profile2"} fill={STheme.color.card} />
-            </SView>
-            <SImage
-                src={SSocket.api.root + "usuario/" + Model.usuario.Action.getKey()}
-                style={{ position: "absolute", resizeMode: "cover", borderWidth: 2, borderRadius: 12, borderColor: STheme.color.card, overflow: 'hidden', }}
-            />
+// create a component
+class index extends Component {
+    getAcciones(usuario) {
+        return <SView row>
+            <SText padding={16} card onPress={() => {
+                SNavigation.navigate("/empresa")
+            }} center>Crear empresa</SText>
+            <SView width={8} />
+            <SText padding={16} card onPress={() => {
+                SNavigation.navigate("/empresa", {
+                    onSelect: (empresa) => {
+                        SPopup.confirm({
+                            title: "Seguro que quieres suscribirte a la empresa?",
+                            message: "Se agregara un acceso directo de la empresa en la venta de incio.",
+                            onPress: () => {
+                                if (!this.arr) return null;
+                                console.log(this.arr)
+                                let obj = Object.values(this.arr).find(a => a.key_empresa == empresa.key);
+                                if (obj) {
+                                    SPopup.alert("Ya participas en esta empresa.")
+                                    return;
+
+                                }
+                                Model.empresa_usuario.Action.registro({
+                                    data: {
+                                        key_usuario: usuario.key,
+                                        key_empresa: empresa.key,
+                                        alias: `${usuario.Nombres} ${usuario.Apellidos}`,
+                                        empresa: empresa
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }} center>Buscar empresa</SText>
         </SView>
     }
+    renderEmpresa = (usuario) => {
+        this.arr = Model.empresa_usuario.Action.getAllByKeyUsuario(usuario.key);
+        if (!this.arr) return <SLoad />
 
+        return <SView col={"xs-12"} center>
+            <SList
+                buscador
+                data={this.arr}
+                render={(a) => {
+                    return <SView col={"xs-12"} card padding={8} row onPress={() => {
+                        Model.empresa.Action.setEmpresa(a.empresa);
+                        SNavigation.navigate("/menu")
+                        // SNavigation.navigate("/empresa/profile", { pk: a.key_empresa })
+                    }}>
+                        <SView width={40} height={40} card>
+                            <SImage src={Model.empresa._get_image_download_path(SSocket.api, a?.empresa?.key)} />
+                        </SView>
+                        <SView width={8} />
+                        <SView flex>
+                            <SText bold fontSize={16}>{a?.empresa?.razon_social}</SText>
+                            <SText color={STheme.color.gray}>{a?.empresa?.nit}</SText>
+                            <SHr />
+                            <SText >Tu alias: {a?.alias}</SText>
+                        </SView>
+                    </SView>
+                }}
+            />
+        </SView>
+
+    }
     render() {
-        if (!Model.usuario.Action.getUsuarioLog()) {
-            console.log("ggggggg")
-
+        const usuario = Model.usuario.Action.getUsuarioLog();
+        if (!usuario) {
             SNavigation.replace("/login");
             return null;
         }
-        return (
-            <SPage title={''} onRefresh={(end) => {
-                Model.usuarioPage.Action.CLEAR();
-                end()
-
-            }}>
-                <SHr height={32} />
-                <Components.Container>
-                    <Components.empresa.Select />
-                </Components.Container>
-                <SHr height={32} />
-
-                <MenuPages path={"/"} permiso={"page"}>
-                    {/* <MenuButtom label={"Migrador2"} url={"/bots/amortizaciones"} icon={<SIcon name={"Box"} fill='#f098a7' />} /> */}
-                    <MenuButtom label={"Mi perfil"} url={"/profile"} icon={this.getIconProfile()} />
-                    {/* <MenuButtom label={"Test"} url={"/test"} /> */}
-                </MenuPages>
-                <SHr height={100} />
-            </SPage>
-        );
+        return <SPage>
+            <Container>
+                <SText fontSize={20} bold>{usuario.Nombres} {usuario.Apellidos}</SText>
+                <SText fontSize={14}>{usuario.Correo}</SText>
+                {/* <SText fontSize={14}>C.I.: {usuario.CI}</SText> */}
+                <SHr h={16} />
+                {this.getAcciones(usuario)}
+                <SHr h={16} />
+                {this.renderEmpresa(usuario)}
+            </Container>
+        </SPage>
     }
 }
+
+//make this component available to the app
 const initStates = (state) => {
     return { state }
 };
