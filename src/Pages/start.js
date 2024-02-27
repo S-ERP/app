@@ -42,17 +42,19 @@ class index extends Component {
                 <SView row center height={90}
                     style={{
                         borderRadius: 60,
-                        borderEndWidth: 5,
-                        borderEndColor: STheme.color.secondary + "55",
+                        borderTopWidth: 1,
+                        borderTopColor: "#818286",
+                        borderBottomWidth: 5,
+                        borderBottomColor: "#818286",
                         backgroundColor: STheme.color.white,
                     }} col={"xs-11"}>
                     <SView col={"xs-3"}>
                         <SIcon name="empresa" width={50} height/>
                     </SView>
                     <SView col={"xs-6"} center >
-                        <SText style={{color:"000000", fontSize:15}} >CREAR EMPRESA</SText>
+                        <SText style={{color:"000000", fontSize:18}} bold  >CREAR EMPRESA</SText>
                         <SHr></SHr>
-                        <SText style={{color:"000000", fontSize:15}} >Puedes construir tu propia empresa y personalizarla </SText>
+                        <SText style={{color:"000000", fontSize:15}} center >Puedes construir tu propia empresa y personalizarla.</SText>
                     </SView>
 
                 </SView>
@@ -61,17 +63,19 @@ class index extends Component {
                 <SView row center height={90}
                     style={{
                         borderRadius: 60,
-                        borderEndWidth: 5,
-                        borderEndColor: STheme.color.secondary + "55",
+                        borderTopWidth: 1,
+                        borderTopColor: "#818286",
+                        borderBottomWidth: 5,
+                        borderBottomColor: "#818286",
                         backgroundColor: STheme.color.white,
                     }} col={"xs-11"}>
                     <SView col={"xs-3"}>
                         <SIcon name="empresaBuscar" width={50} height/>
                     </SView>
                     <SView col={"xs-6"} center >
-                        <SText style={{color:"000000", fontSize:15}} >BUSCAR EMPRESA</SText>
+                        <SText style={{color:"000000", fontSize:18}} bold >BUSCAR EMPRESA</SText>
                         <SHr></SHr>
-                        <SText style={{color:"000000", fontSize:15}} >Puedes construir tu propia empresa y personalizarla </SText>
+                        <SText style={{color:"000000", fontSize:15}} center>Busca la empresa de tu preferencia para solicitar ser parte de ella.</SText>
                     </SView>
 
                 </SView>

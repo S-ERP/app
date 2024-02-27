@@ -1,5 +1,5 @@
 import React from 'react';
-import { SComponentContainer, SNavigation , SText, STheme} from 'servisofts-component';
+import { SComponentContainer, SIcon, SImage, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import SSocket, { setProps } from 'servisofts-socket';
 import Redux, { store } from './Redux';
 import Config from "./Config";
@@ -22,16 +22,21 @@ const App = (props) => {
             inputs={Config.inputs}
             theme={{ themes: Config.theme, initialTheme: "dark" }}
         >
+
             <SNavigation
 
                 linking={{
-                    prefixes:["https://serp.com/app"]
+                    prefixes: ["https://serp.com/app"]
                 }}
                 props={{
                     navBar: NavBar,
                     title: 'Servisofts ERP', pages: Pages
                 }}
             />
+            {/* <SView col={"xs-12"} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", overflow: "hidden", }} >
+                <SImage style={{ resizeMode: "cover" }} src={require('./Assets/png/bg1.png')} />
+            </SView> */}
+
             <SSocket
                 store={store}
                 identificarse={(props) => {
@@ -42,7 +47,7 @@ const App = (props) => {
                     };
                 }}
             />
-            <SText style={{position: "absolute", bottom: 2, right: 2, }} fontSize={10} color={STheme.color.lightGray}>v{version}</SText>
+            <SText style={{ position: "absolute", bottom: 2, right: 2, }} fontSize={10} color={STheme.color.lightGray}>v{version}</SText>
 
         </SComponentContainer>
     </Redux>

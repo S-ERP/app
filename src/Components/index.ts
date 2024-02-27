@@ -6,6 +6,7 @@ import label from "./label"
 import compra_venta from "./compra_venta"
 import caja from "./caja"
 import PButtom from "./PButtom"
+import PButtomFooter from "./PButtomFooter"
 export default {
     empresa,
     usuario,
@@ -15,4 +16,5 @@ export default {
     Container,
     caja,
     PButtom,
+    PButtomFooter
 }

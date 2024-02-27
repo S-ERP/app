@@ -9,6 +9,8 @@ import _delete from "./delete";
 import moneda from "./moneda";
 import punto_venta from "./punto_venta";
 import init from "./init"
+import start from "./start"
+import paso1 from "./paso1"
 const model = Model.empresa;
 
 export const Parent = {
@@ -17,7 +19,7 @@ export const Parent = {
     model
 }
 export default SPage.combinePages(Parent.name, {
-    "": list,
+    "": start,
     "list": list,
     init,
     "table": table,
@@ -26,5 +28,6 @@ export default SPage.combinePages(Parent.name, {
     "edit": edit,
     "delete": _delete,
     ...moneda,
-    ...punto_venta
+    ...punto_venta,
+    "paso1":paso1
 })
