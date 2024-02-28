@@ -6,6 +6,7 @@ import Model from '../Model';
 import { connect } from 'react-redux';
 import Container from '../Components/Container';
 import SSocket from 'servisofts-socket';
+import BoxMenu from '../Components/Popups/BoxMenu';
 
 const Card = ({ label, value, backgroundColor, onPress, icon }) => {
     return <SView col={"xs-12 sm-6 md-6 lg-6 xl-6 xxl-6"} center padding={8}
@@ -25,7 +26,7 @@ const Card = ({ label, value, backgroundColor, onPress, icon }) => {
                 <SIcon name={icon} width={40} height={40} />
             </SView>
             <SView col={"xs-9"} center>
-                <SText fontSize={18} bold color={STheme.color.black}>{value}</SText>
+                <SText fontSize={17} bold color={STheme.color.black}>{value}</SText>
 
                 <SText center fontSize={10} color={STheme.color.black}>{label}</SText>
                 {/* <SHr height={15} /> */}
@@ -143,7 +144,19 @@ class index extends Component {
         }
         return <SPage>
             <Container>
-                {/* <SHr height={10} /> */}
+                <SHr height={10} />
+                <SView col={"xs-12"} flex height style={{ alignItems: "flex-end" }}
+                    onPress={() => {
+                        SPopup.open({ key: "menuLat", content: <BoxMenu datas={this.props?.data} /> });
+                    }}
+                >
+                    <SView width={45} height={45} center backgroundColor={STheme.color.secondary} style={{ borderRadius: 30, zIndex:9 }}>
+                        <SIcon name="configurar" fill={STheme.color.primary} width={30} height={30} />
+                    </SView>
+                    <SView width={45} height={45} style={{position:"absolute", bottom:-8, right:-2.5}}>
+                        <SIcon name="bgBoton" width={45} height={45} />
+                    </SView>
+                </SView>
                 <SView width={150} height={150} style={{ padding: 4 }}>
                     <SView flex height card style={{ borderRadius: 100 }}>
                         <SImage src={SSocket.api.root + "usuario/" + Model.usuario.Action.getKey()} />
@@ -159,8 +172,9 @@ class index extends Component {
                 {this.getAcciones(usuario)}
                 <SHr h={16} />
                 {this.renderEmpresa(usuario)}
+                <SHr height={30} />
             </Container>
-        </SPage>
+        </SPage >
     }
 }
 

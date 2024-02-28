@@ -22,12 +22,6 @@ class PBarraFooter extends Component {
     var color = STheme.color.white;
     var isSelect = key == this.props.url;
 
-    // if (this.props.state.usuarioReducer.usuarioLog) {
-    //   if (url == 'login') {
-    //     title = 'PERFIL';
-    //     url = 'perfil';
-    //   }
-    // }
     return (
       <SView
         flex
@@ -41,31 +35,11 @@ class PBarraFooter extends Component {
             width: 80
           }}
           center>
-          <SView
-            height={5}
-            col={'xs-12'}
-            style={{
-              backgroundColor: "#7D7D7D",
-              borderBottomLeftRadius: 5,
-              borderBottomRightRadius: 5
-            }}></SView>
           <SHr height={10}></SHr>
-          {/* <SView height={23} colSquare center>
-            <SIcon name={icon} fill={STheme.color.primary} />
-          </SView>
-          <SView height={2} /> */}
           <SText fontSize={28} center color={color}>
             {title}
           </SText>
           <SHr height={10}></SHr>
-          <SView
-            height={5}
-            col={'xs-12'}
-            style={{
-              backgroundColor: isSelect ? STheme.color.primary : '',
-              borderTopLeftRadius: 5,
-              borderTopRightRadius: 5
-            }}></SView>
         </SView>
       </SView>
     );
@@ -78,28 +52,22 @@ class PBarraFooter extends Component {
           height={65}
           style={{
             position: 'absolute',
-            bottom: 0,
+            bottom: 20,
             borderWidth: 1,
             borderColor: STheme.color.darkGray,
             borderRadius: 40,
             overflow: "hidden",
-            borderBottomWidth: 2,
-            borderBottomColor: STheme.color.darkGray,
+            borderBottomWidth: 4,
+            borderBottomColor: STheme.color.black,
           }}>
-          {/* <SView height={8} col={'xs-12'} style={{}}>
-            <SGradient
-              colors={[STheme.color.barColor, STheme.color.darkGray + '22']}
-            />
-          </SView> */}
+
           <SView col={'xs-12'} row backgroundColor={STheme.color.darkGray}>
             {this.getItem({
               key: 'comenzar',
               title: this.props.label,
-              // icon: 'Inicio',
               url: this.props.url,
               params: {}
             })}
-
           </SView>
         </SView>
       </>

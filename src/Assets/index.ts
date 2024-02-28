@@ -12,6 +12,10 @@ import bg1, { ReactComponent as bg1W } from './svg/bg1.svg';
 import img1, { ReactComponent as img1W } from './svg/img1.svg';
 import construEmpresa, { ReactComponent as construEmpresaW } from './svg/construEmpresa.svg';
 import imgFranja, { ReactComponent as imgFranjaW } from './svg/imgFranja.svg';
+import configurar, { ReactComponent as configurarW } from './svg/configurar.svg';
+import bgBoton, { ReactComponent as bgBotonW } from './svg/bgBoton.svg';
+import cola, { ReactComponent as colaW } from './svg/cola.svg';
+import picture, { ReactComponent as pictureW } from './svg/picture.svg';
 
 
 const Assets: SAssets = {
@@ -28,6 +32,11 @@ const Assets: SAssets = {
         "img1": { Native: img1, Web: img1W },
         "construEmpresa": { Native: construEmpresa, Web: construEmpresaW },
         "imgFranja": { Native: imgFranja, Web: imgFranjaW },
+        "configurar": { Native: configurar, Web: configurarW },
+        "bgBoton": { Native: bgBoton, Web: bgBotonW },
+        "cola": { Native: cola, Web: colaW },
+        "picture": { Native: picture, Web: pictureW },
+        
         
     }
 }

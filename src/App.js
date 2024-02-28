@@ -1,5 +1,5 @@
 import React from 'react';
-import { SComponentContainer, SIcon, SImage, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SComponentContainer, SGradient, SIcon, SImage, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import SSocket, { setProps } from 'servisofts-socket';
 import Redux, { store } from './Redux';
 import Config from "./Config";
@@ -14,13 +14,29 @@ setProps(Config.socket);
 
 const App = (props) => {
     return <Redux>
+        {/* <SView
+            style={{
+                zIndex: 8,
+                position: "relative",
+            }}
+        > */}
+            {/* <SGradient deg={-50} colors={["#3A3A3A", STheme.color.black]}   style={{
+                zIndex: 8,
+                position: "relative",
+            }}/> */}
+        {/* </SView> */}
         <SComponentContainer
             debug
             socket={SSocket}
-            background={<BackgroundImage />}
+           
             assets={Assets}
             inputs={Config.inputs}
             theme={{ themes: Config.theme, initialTheme: "dark" }}
+            background={<SGradient deg={-50} colors={[STheme.color.card, STheme.color.secondary]}  />}
+            // style={{
+            //     zIndex: 9,
+            //     position: "relative",
+            // }}
         >
 
             <SNavigation
@@ -50,6 +66,8 @@ const App = (props) => {
             <SText style={{ position: "absolute", bottom: 2, right: 2, }} fontSize={10} color={STheme.color.lightGray}>v{version}</SText>
 
         </SComponentContainer>
+
+
     </Redux>
 }
 export default App;

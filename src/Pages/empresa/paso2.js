@@ -44,7 +44,7 @@ class index extends Component {
                         <SView col={"xs-8"} style={{ position: "relative", top: -6, left: 10, zIndex: 9 }}>
                             <SIcon name="cola" width={35} height={24} />
                         </SView> */}
-                        <Adornos.titulo label={"Debes ingresar todos los datos"} fontSize={18} />
+                        <Adornos.titulo label={"Sube el logo de tu empresa"} fontSize={18} />
 
                         <SView col={"xs-12"} center>
                             <SHr height={10} />
@@ -53,62 +53,17 @@ class index extends Component {
                         </SView>
                         {/* <SHr height={15} /> */}
                         <SView col={"xs-12"} center>
-                            <SForm
-                                ref={(form) => { this.form = form; }}
-                                row
-                                style={{
-                                    justifyContent: "space-between",
-                                }}
-                                inputProps={{
-                                    col: "xs-12",
-                                }}
-                                inputs={{
-                                    nombre: {
-                                        type: "nombre",
-                                        label: "NOMBRE",
-                                        placeholder: "NOMBRE",
-                                        icon: <SIcon name={"email"} />,
-                                        // validations: { required: true },
-                                        isRequired: true,
-                                    },
-                                    nit: {
-                                        type: "nit",
-                                        label: "NIT",
-                                        placeholder: "NIT",
-                                        icon: <SIcon name={"email"} />,
-                                        // validations: { required: true },
-                                        isRequired: true,
-                                    },
-                                    razon: {
-                                        type: "razon",
-                                        label: "RAZON SOCIAL",
-                                        placeholder: "RAZON SOCIAL",
-                                        icon: <SIcon name={"email"} />,
-                                        // validations: { required: true },
-                                        isRequired: true,
-                                    },
-                                }}
-
-                                onSubmit={(values) => {
-                                    this.form.submit();
-                                    // Model.usuario.Action.recuperarPass({ correo: (values.correo + "").toLowerCase() }).then(resp => {
-                                    //     SNavigation.navigate("/login/recuperar_codigo");
-                                    // }).catch(e => {
-                                    //     console.error(e);
-                                    // })
-                                }}
-                            >
-                            </SForm>
-                            <SHr height={15} />
+                           <SIcon name="picture" width={200} height={159} fill={STheme.color.darkGray}/>
+                            <SHr height={25} />
                             {/* <PButtom label="Siguiente" onPress={() => {
                                 this.form.submit();
                                 
                             }
                             } /> */}
 
-                            <BtnNext onPress={() => this.form.submit()}>{"SIGUIENTE"}</BtnNext>
+                            <BtnNext onPress={() => {}}>{"SIGUIENTE"}</BtnNext>
                             <SHr height={25} />
-                            <SView col={"xs-12"} center onPress={()=> {SNavigation.navigate("/empresa/paso2");}}>
+                            <SView col={"xs-12"} center onPress={()=> {}}>
                                 <SText center fontSize={18} bold color={STheme.color.text}>Configurar más tarde</SText>
                             </SView>
 

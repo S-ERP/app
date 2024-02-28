@@ -1,0 +1,33 @@
+import React, { Component } from 'react';
+import { SIcon, SText, STheme, SView } from 'servisofts-component';
+type PropsType = {
+    label: any,
+}
+export default class index extends Component<PropsType> {
+    static defaultProps = {
+        size: 40
+    }
+    constructor(props) {
+        super(props);
+        this.state = {
+        };
+    }
+    render() {
+        // return <SText col={"xs-12"} style={{
+        //     position: "absolute",
+        //     top: 2,
+        //     left: 2,
+        // }} color={STheme.color.lightGray} fontSize={10}>{this.props.label}</SText>
+
+        return <>
+            <SView col={"xs-8"} style={{ padding: 10, borderRadius: 25, borderWidth: 3, borderColor: STheme.color.black, backgroundColor: STheme.color.white, }} center>
+                <SText color={STheme.color.black} center fontSize={this.props.fontSize} bold>
+                {this.props.label}</SText>
+
+            </SView>
+            <SView col={"xs-8"} style={{ position: "relative", top: -6, left: 10, zIndex: 9 }}>
+                <SIcon name="cola" width={35} height={24} />
+            </SView>
+        </>
+    }
+}
