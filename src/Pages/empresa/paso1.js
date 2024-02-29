@@ -30,28 +30,8 @@ class index extends Component {
 
                 }}>
                     <Container >
-                        <SView col={"xs-12"} center>
-                            <SHr height={10} />
-                            <SImage src={require('../../Assets/png/franja.png')} style={{ width: " 100%", height: 100, borderRadius: 100, resizeMode: "contain" }} />
-                            <SHr height={10} />
-                        </SView>
-
-                        {/* <SView col={"xs-8"} style={{ padding: 10, borderRadius: 25, borderWidth: 3, borderColor: STheme.color.secondary, backgroundColor: STheme.color.white, }} center>
-                            <SText center fontSize={18} bold>
-                                Debes ingresar todos los datos:</SText>
-
-                        </SView>
-                        <SView col={"xs-8"} style={{ position: "relative", top: -6, left: 10, zIndex: 9 }}>
-                            <SIcon name="cola" width={35} height={24} />
-                        </SView> */}
                         <Adornos.titulo label={"Debes ingresar todos los datos"} fontSize={18} />
 
-                        <SView col={"xs-12"} center>
-                            <SHr height={10} />
-                            <SImage src={require('../../Assets/png/franja.png')} style={{ width: " 100%", height: 100, borderRadius: 100, resizeMode: "contain" }} />
-                            <SHr height={10} />
-                        </SView>
-                        {/* <SHr height={15} /> */}
                         <SView col={"xs-12"} center>
                             <SForm
                                 ref={(form) => { this.form = form; }}

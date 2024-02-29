@@ -30,7 +30,7 @@ class index extends Component {
 
             }}>
                 <Container >
-                    <SHr height={10} />
+                    {/* <SHr height={10} /> */}
                     {/* <SView col={"xs-8"} style={{ padding: 10, borderRadius: 25, borderWidth: 1, borderColor: STheme.color.secondary }} center>
                         <SText center fontSize={18} bold>Para iniciar esta nueva aventura necesitas crear tu empresa y personalizarla.
                         </SText>
@@ -39,11 +39,12 @@ class index extends Component {
                             ¡SIN MIEDO AL ÉXITO !</SText>
                     </SView> */}
                     <Adornos.titulo label={"Para iniciar esta nueva aventura necesitas crear tu empresa y personalizarla."} fontSize={20} />
-                    <SHr height={25} />
+                    {/* <SHr height={25} /> */}
                     <SView col={"xs-12"} center>
-                        <SIcon name="construEmpresa" width={250} height={196} />
+                        <SIcon name="construEmpresa" width={230} height={196} />
                     </SView>
                 </Container>
+                <SHr height={55} />
                 <PButtomFooter url={'/empresa/paso1'} label = {'COMENZAR'}  />
             </SPage>
         );
