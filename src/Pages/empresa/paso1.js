@@ -30,7 +30,7 @@ class index extends Component {
 
                 }}>
                     <Container >
-                        <Adornos.titulo label={"Debes ingresar todos los datos"} fontSize={18} />
+                        <Adornos.titulo label={"Debes ingresar los datos de tu empresa"} fontSize={18} />
 
                         <SView col={"xs-12"} center>
                             <SForm

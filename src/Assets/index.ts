@@ -16,6 +16,7 @@ import configurar, { ReactComponent as configurarW } from './svg/configurar.svg'
 import bgBoton, { ReactComponent as bgBotonW } from './svg/bgBoton.svg';
 import cola, { ReactComponent as colaW } from './svg/cola.svg';
 import picture, { ReactComponent as pictureW } from './svg/picture.svg';
+import hand, { ReactComponent as handW } from './svg/hand.svg';
 
 
 const Assets: SAssets = {
@@ -36,6 +37,8 @@ const Assets: SAssets = {
         "bgBoton": { Native: bgBoton, Web: bgBotonW },
         "cola": { Native: cola, Web: colaW },
         "picture": { Native: picture, Web: pictureW },
+        "hand": { Native: hand, Web: handW },
+        
         
         
     }
