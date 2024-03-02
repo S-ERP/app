@@ -13,6 +13,7 @@ class index extends Component {
         super(props);
         this.state = {
         };
+        this.pk = SNavigation.getParam("key");
     }
 
     render() {
@@ -31,19 +32,54 @@ class index extends Component {
                 }}>
                     <Container >
                         <Adornos.titulo label={"Sube el logo de tu empresa"} fontSize={18} />
-                        
-                        <SView col={"xs-12"} center>
-                           <SIcon name="picture" width={200} height={159} fill={STheme.color.darkGray}/>
-                            <SHr height={25} />
-                            {/* <PButtom label="Siguiente" onPress={() => {
-                                this.form.submit();
-                                
-                            }
-                            } /> */}
 
-                            <BtnNext onPress={() => {}}>{"SIGUIENTE"}</BtnNext>
+                        <SView col={"xs-12"} center>
+                            <SForm
+                                ref={(form) => { this.form = form; }}
+                                row
+                                style={{
+                                    justifyContent: "space-between",
+                                }}
+                                inputProps={{
+                                    col: "xs-12",
+                                }}
+                                inputs={{
+
+                                    foto: {
+                                        type: "image",
+                                        label: "Foto",
+                                        placeholder: "Foto",
+                                        isRequired: true,
+                                        defaultValue: SSocket.api.root + "empresa/" + this.pk,
+                                        style: {
+                                            height: 159
+                                        }
+                                    },
+                                   
+                                }}
+
+                                onSubmit={(data) => {
+
+                                    // this.form.submit();
+                                    data.key_servicio = "1427e867-c4f7-4602-a1aa-5deabf2d0372";
+                                    console.log("this.pk")
+                                    console.log(this.pk)
+                                    this.form.uploadFiles(
+                                        SSocket.api.root + "upload/empresa/" + this.pk,
+                                        "foto"
+                                    );
+                                    SNavigation.replace("/empresa/list", { key: this.pk })
+                                   
+                                }}
+                            >
+                            </SForm>
+
+                            {/* <SIcon name="picture" width={200} height={159} fill={STheme.color.darkGray} /> */}
                             <SHr height={25} />
-                            <SView col={"xs-12"} center onPress={()=> {}}>
+                          
+                            <BtnNext onPress={() => {this.form.submit() }}>{"SIGUIENTE"}</BtnNext>
+                            <SHr height={25} />
+                            <SView col={"xs-12"} center onPress={() => { SNavigation.navigate("/sucursal/paso1")}}>
                                 <SText center fontSize={18} bold color={STheme.color.text}>Configurar más tarde</SText>
                             </SView>
 
@@ -52,9 +88,7 @@ class index extends Component {
 
                     <SHr height={40} />
                 </SPage >
-                {/* <Container center >
-                    <PButtomFooter url={'paso1'} label="Siguiente" />
-                </Container> */}
+               
             </>
         );
     }

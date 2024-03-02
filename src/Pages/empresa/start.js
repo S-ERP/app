@@ -45,7 +45,7 @@ class index extends Component {
                     </SView>
                 </Container>
                 <SHr height={55} />
-                <PButtomFooter url={'/empresa/paso1'} label = {'COMENZAR'}  />
+                <PButtomFooter url={'/empresa/list'} label = {'COMENZAR'}  />
             </SPage>
         );
     }

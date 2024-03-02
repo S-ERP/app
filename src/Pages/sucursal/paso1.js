@@ -31,7 +31,7 @@ class index extends Component {
 
                 }}>
                     <Container >
-                        <Adornos.titulo label={"Debes ingresar los datos de tu empresa"} fontSize={18} />
+                        <Adornos.titulo label={"Crea tu sucursal central"} fontSize={18} />
 
                         <SView col={"xs-12"} center>
                             <SForm
@@ -45,20 +45,17 @@ class index extends Component {
                                 }}
                                 inputs={{
 
-                                    nit: {
-                                        type: "nit",
-                                        label: "NIT",
-                                        placeholder: "NIT",
-                                        icon: <SIcon name={"email"} />,
-                                        // validations: { required: true },
+                                    descripcion: {
+                                        type: "descripcion",
+                                        label: "Descripcion",
+                                        placeholder: "Descripcion",
                                         isRequired: true,
                                     },
-                                    razon_social: {
-                                        type: "razon_social",
-                                        label: "RAZON SOCIAL",
-                                        placeholder: "RAZON SOCIAL",
+                                    observacion: {
+                                        type: "observacion",
+                                        label: "Observacion",
+                                        placeholder: "Observacion",
                                         icon: <SIcon name={"email"} />,
-                                        // validations: { required: true },
                                         isRequired: true,
                                     },
                                 }}

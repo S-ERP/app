@@ -43,7 +43,7 @@ class index extends Component {
                 SNavigation.navigate("/empresa")
             }} center>Crear empresa</SText> */}
             <Card label={"Puedes construir tu propia empresa y personalizarla."} icon={"empresa"} value={"CREAR EMPRESA"} backgroundColor={STheme.color.success + "AA"} onPress={() => {
-                SNavigation.navigate("/empresa")
+                SNavigation.navigate("/empresa/new")
             }} />
             <Card label={"Busca la empresa de tu preferencia para solicitar ser parte de ella."} icon={"empresaBuscar"} value={"BUSCAR EMPRESA"} backgroundColor={STheme.color.success + "AA"} onPress={() => {
                 SNavigation.navigate("/empresa", {
@@ -158,7 +158,7 @@ class index extends Component {
                     </SView>
                 </SView>
                 <SView width={150} height={150} style={{ padding: 4 }}>
-                    <SView flex height card style={{ borderRadius: 100 }}>
+                    <SView flex height card style={{ borderRadius: 100, overflow:"hidden" }}>
                         <SImage src={SSocket.api.root + "usuario/" + Model.usuario.Action.getKey()} />
                     </SView>
                 </SView>

@@ -3,6 +3,7 @@ import Model from "../../Model";
 import list from "./list";
 import table from "./table";
 import _new from "./new";
+import new_ from "./new_";
 import profile from "./profile/index";
 import edit from "./edit";
 import _delete from "./delete";
@@ -20,11 +21,13 @@ export const Parent = {
     model
 }
 export default SPage.combinePages(Parent.name, {
-    "": start,
+    // "": start,
+    "": list,
     "list": list,
     init,
     "table": table,
     "new": _new,
+    "new_": new_,
     ...profile,
     "edit": edit,
     "delete": _delete,
