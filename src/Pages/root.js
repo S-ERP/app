@@ -1,11 +1,39 @@
 //import liraries
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { SHr, SImage, SList, SLoad, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SImage, SList, SLoad, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import Model from '../Model';
 import { connect } from 'react-redux';
 import Container from '../Components/Container';
 import SSocket from 'servisofts-socket';
+import BoxMenu from '../Components/Popups/BoxMenu';
+
+const Card = ({ label, value, backgroundColor, onPress, icon }) => {
+    return <SView col={"xs-12 sm-6 md-6 lg-6 xl-6 xxl-6"} center padding={8}
+
+    >
+        <SView col={"xs-12"} height={70} row card center
+            style={{
+                borderRadius: 60,
+                borderTopWidth: 1,
+                borderTopColor: "#818286",
+                borderBottomWidth: 5,
+                borderBottomColor: "#818286",
+                backgroundColor: STheme.color.white,
+            }}
+            onPress={onPress}>
+            <SView col={"xs-3"} center>
+                <SIcon name={icon} width={40} height={40} />
+            </SView>
+            <SView col={"xs-9"} center>
+                <SText fontSize={17} bold color={STheme.color.black}>{value}</SText>
+
+                <SText center fontSize={10} color={STheme.color.black}>{label}</SText>
+                {/* <SHr height={15} /> */}
+            </SView>
+        </SView>
+    </SView>
+}
 
 // create a component
 class index extends Component {
@@ -15,18 +43,25 @@ class index extends Component {
                 SNavigation.navigate("/empresa/new")
             }} center>Crear empresa</SText>
             <SView width={8} />
-            <SText padding={16} card onPress={() => {
+            {/* <SText padding={16} card onPress={() => {
+                SNavigation.navigate("/empresa")
+            }} center>Crear empresa</SText> */}
+            <Card label={"Puedes construir tu propia empresa y personalizarla."} icon={"empresa"} value={"CREAR EMPRESA"} backgroundColor={STheme.color.success + "AA"} onPress={() => {
+                SNavigation.navigate("/empresa/new")
+            }} />
+            <Card label={"Busca la empresa de tu preferencia para solicitar ser parte de ella."} icon={"empresaBuscar"} value={"BUSCAR EMPRESA"} backgroundColor={STheme.color.success + "AA"} onPress={() => {
                 SNavigation.navigate("/empresa", {
                     onSelect: (empresa) => {
                         SPopup.confirm({
-                            title: "Seguro que quieres suscribirte a la empresa?",
-                            message: "Se agregara un acceso directo de la empresa en la venta de incio.",
+                            title: "¿Seguro que quiéres suscribirte a la empresa?",
+                            message: "Se agregará un acceso directo de la empresa en la ventana de incio.",
                             onPress: () => {
                                 if (!this.arr) return null;
                                 console.log(this.arr)
                                 let obj = Object.values(this.arr).find(a => a.key_empresa == empresa.key);
                                 if (obj) {
-                                    SPopup.alert("Ya participas en esta empresa.")
+                                    // SPopup.alert("Ya participas en esta empresa.")
+                                    SPopup.alert("Ya eres parte de la empresa.")
                                     return;
 
                                 }
@@ -42,7 +77,37 @@ class index extends Component {
                         })
                     }
                 })
-            }} center>Buscar empresa</SText>
+            }} />
+            <SView width={8} />
+            {/* <SText padding={16} card onPress={() => {
+                SNavigation.navigate("/empresa", {
+                    onSelect: (empresa) => {
+                        SPopup.confirm({
+                            title: "¿Seguro que quiéres suscribirte a la empresa?",
+                            message: "Se agregará un acceso directo de la empresa en la ventana de incio.",
+                            onPress: () => {
+                                if (!this.arr) return null;
+                                console.log(this.arr)
+                                let obj = Object.values(this.arr).find(a => a.key_empresa == empresa.key);
+                                if (obj) {
+                                    // SPopup.alert("Ya participas en esta empresa.")
+                                    SPopup.alert("Ya eres parte de la empresa.")
+                                    return;
+
+                                }
+                                Model.empresa_usuario.Action.registro({
+                                    data: {
+                                        key_usuario: usuario.key,
+                                        key_empresa: empresa.key,
+                                        alias: `${usuario.Nombres} ${usuario.Apellidos}`,
+                                        empresa: empresa
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }} center>Buscar empresa</SText> */}
         </SView>
     }
     renderEmpresa = (usuario) => {
@@ -83,15 +148,37 @@ class index extends Component {
         }
         return <SPage>
             <Container>
-                <SText fontSize={20} bold>{usuario.Nombres} {usuario.Apellidos}</SText>
+                <SHr height={10} />
+                <SView col={"xs-12"} flex height style={{ alignItems: "flex-end" }}
+                    onPress={() => {
+                        SPopup.open({ key: "menuLat", content: <BoxMenu datas={this.props?.data} /> });
+                    }}
+                >
+                    <SView width={45} height={45} center backgroundColor={STheme.color.secondary} style={{ borderRadius: 30, zIndex: 9 }}>
+                        <SIcon name="configurar" fill={STheme.color.primary} width={30} height={30} />
+                    </SView>
+                    <SView width={45} height={45} style={{ position: "absolute", bottom: -8, right: -2.5 }}>
+                        <SIcon name="bgBoton" width={45} height={45} />
+                    </SView>
+                </SView>
+                <SView width={150} height={150} style={{ padding: 4 }}>
+                    <SView flex height card style={{ borderRadius: 100, overflow: "hidden" }}>
+                        <SImage src={SSocket.api.root + "usuario/" + Model.usuario.Action.getKey()} />
+                    </SView>
+                </SView>
+                <SText fontSize={20} bold>Hola, {usuario.Nombres} {usuario.Apellidos}</SText>
                 <SText fontSize={14}>{usuario.Correo}</SText>
+                <SHr height={15} />
+                <SIcon name="pregunta1" width={240} height={100} />
+                <SHr height={15} />
                 {/* <SText fontSize={14}>C.I.: {usuario.CI}</SText> */}
-                <SHr h={16} />
+                {/* <SHr h={16} /> */}
                 {this.getAcciones(usuario)}
                 <SHr h={16} />
                 {this.renderEmpresa(usuario)}
+                <SHr height={30} />
             </Container>
-        </SPage>
+        </SPage >
     }
 }
 

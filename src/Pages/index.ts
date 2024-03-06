@@ -60,5 +60,4 @@ export default SPage.combinePages("/", {
     ...bots,
     ...temp,
     ...tarea
-
 });

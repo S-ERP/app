@@ -37,7 +37,8 @@ const theme: SThemeThemes = {
         background: '#ffffff',
         // card: '#00000010',
         card: '#00000015',
-        font: "Roboto"
+        font: "Roboto",
+        accent: "#B5B5B7"
     },
     dark: {
         barStyle: 'light-content',
@@ -48,8 +49,9 @@ const theme: SThemeThemes = {
         info: '#6E6F74',
         background: '#000000',
         card: '#ffffff15',
-        font: "Roboto"
+        font: "Roboto",
         // card: '#ffffff10'
+        accent: "#3A3A3A"
     }
 }
 export default theme;
