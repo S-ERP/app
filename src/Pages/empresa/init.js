@@ -1,7 +1,7 @@
 //import liraries
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { SNavigation, SPage, SText } from 'servisofts-component';
+import { SNavigation, SPage, SText, SThread } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
 
@@ -13,6 +13,12 @@ export default class init extends Component {
     }
 
     async start() {
+
+        const participante_resp = await this.volver_participante()
+        if (participante_resp.estado != "exito") {
+            console.error("Ocurrio un error al volverte un participante de la empresa", participante_resp?.error)
+        }
+
         const rol_resp = await this.init_rol()
         if (rol_resp.estado != "exito") {
             console.error("Ocurrio un error al iniciar el rol", rol_resp?.error)
@@ -26,8 +32,11 @@ export default class init extends Component {
         if (set_rol_resp.estado != "exito") {
             console.error("Ocurrio un error al registrar al usuario en el rol", set_rol_resp?.error)
         }
+        new SThread(600, "cargando_emrpesa").start(() => {
+            Model.empresa.Action.setEmpresa(Model.empresa.Action.getSelect());
+            SNavigation.replace("/empresa/profile", { pk: Model.empresa.Action.getKey() })
+        })
 
-        SNavigation.goBack();
     }
     async init_rol() {
         return await SSocket.sendPromise({
@@ -67,6 +76,22 @@ export default class init extends Component {
                 "key_usuario": Model.usuario.Action.getKey()
             },
             "key_usuario": Model.usuario.Action.getKey(),
+        })
+    }
+    async volver_participante() {
+        const usuario = Model.usuario.Action.getUsuarioLog();
+        return await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "empresa",
+            "component": "empresa_usuario",
+            "type": "registro",
+            "estado": "cargando",
+            "data": {
+                "key_usuario": Model.usuario.Action.getKey(),
+                "key_empresa": Model.empresa.Action.getKey(),
+                "alias": `${usuario.Nombres} ${usuario.Apellidos}`,
+                "empresa": Model.empresa.Action.getSelect(),
+            },
         })
     }
 

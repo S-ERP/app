@@ -1,7 +1,7 @@
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
 import Model from '../../../Model';
-import { SText, STheme, SView } from 'servisofts-component';
+import { SHr, SText, STheme, SView } from 'servisofts-component';
 
 class index extends DPA.list {
     constructor(props) {
@@ -26,11 +26,12 @@ class index extends DPA.list {
     }
 
     $item(obj) {
-        let ITEM = super.$item(obj);
         return <>
-            {ITEM}
-            <SView card padding={8}>
-                <SText col={"xs-12"} style={{ alignItems: "end" }} color={STheme.color.lightGray}>{obj?.cuenta_contable?.codigo} {obj?.cuenta_contable?.descripcion}</SText>
+            <SView col={"xs-12"} card padding={4} onPress={this.$onSelect.bind(this, obj)}>
+                <SText bold col={"xs-12"} fontSize={16} >{obj?.descripcion}</SText>
+                <SText col={"xs-12"} fontSize={12} color={STheme.color.lightGray}>{obj?.cuenta_contable?.codigo} {obj?.cuenta_contable?.descripcion}</SText>
+                <SHr />
+                <SText col={"xs-12"} fontSize={12} color={STheme.color.lightGray}>{obj?.tipo}</SText>
             </SView>
         </>
     }

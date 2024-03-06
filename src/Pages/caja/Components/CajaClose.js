@@ -71,8 +71,10 @@ class CajaClose extends Component {
                             key_punto_venta: this.props.punto_venta.key,
                             key_sucursal: this.props.sucursal.key,
                             fraccionar_moneda: !!this.props.punto_venta.fraccionar_moneda,
+                            key_empresa: Model.empresa.Action.getKey(),
                             fecha: fecha
                         },
+                        key_empresa: Model.empresa.Action.getKey(),
                         key_usuario: Model.usuario.Action.getKey()
                     }).then((e) => {
                         this.setState({ loading: false })

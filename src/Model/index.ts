@@ -37,6 +37,12 @@ Roles_permisos.init({
     modelusuario: Model.usuario,
 });
 
+Contabilidad.init({
+    separador:".",
+    modelusuario: Model.usuario,
+    modelempresa: Model.empresa
+})
+
 export default {
     ...Model,
     ...SModel.declare(Model)

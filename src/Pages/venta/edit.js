@@ -27,13 +27,14 @@ class index extends DPA.edit {
     $onSubmit(data) {
         new SThread(1000, "esperarFoto", false).start(() => {
             let fecha = new SDate(data["_fecha"] + " " + data["_hora"], "yyyy-MM-dd hh:mm")
-            Parent.model.Action.editarCompraVenta({
+            // Parent.model.Action.editarCompraVenta({
+            Parent.model.Action.editar({
                 data: {
                     ...this.data,
                     ...data,
                     fecha_on: fecha.toString()
                 },
-                key_usuario: ""
+                key_usuario: Model.usuario.Action.getKey()
             }).then((resp) => {
                 SNavigation.goBack();
             }).catch(e => {

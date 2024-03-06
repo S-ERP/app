@@ -12,7 +12,7 @@ class index extends Component {
     getAcciones(usuario) {
         return <SView row>
             <SText padding={16} card onPress={() => {
-                SNavigation.navigate("/empresa")
+                SNavigation.navigate("/empresa/new")
             }} center>Crear empresa</SText>
             <SView width={8} />
             <SText padding={16} card onPress={() => {

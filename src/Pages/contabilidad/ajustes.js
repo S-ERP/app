@@ -23,11 +23,16 @@ class index extends Component {
         let existe = Object.values(this.mis_ajustes).find(a => a.key_ajuste == obj.key && a.key_empresa == this.state.key_empresa);
         return <SView col={"xs-12"} onPress={() => {
 
-        }}>
-            <SText bold fontSize={18}>{obj.descripcion}</SText>
-            <SText fontSize={14} color={STheme.color.lightGray}>{obj.observacion}</SText>
+        }} >
+            <SView col={"xs-12"} >
+                <SText bold fontSize={16}>{obj.descripcion}</SText>
+                {/* <SView width={8} /> */}
+                <SText fontSize={10} color={STheme.color.lightGray}>{obj.observacion}</SText>
+            </SView>
+
             <Components.contabilidad.cuenta_contable.Select codigo={""}
                 key_cuenta_contable={existe?.key_cuenta_contable}
+                selectAny
                 onChange={e => {
                     Model.ajuste_empresa.Action.registro({
                         key_empresa: this.state.key_empresa,
@@ -47,10 +52,11 @@ class index extends Component {
         this.mis_ajustes = Model.ajuste_empresa.Action.getAll();
         if (!this.mis_ajustes) return <SLoad />
 
-        return <SPage title={"Configura tus ajustes"} disableScroll>
+        return <SPage title={"Configura tus ajustes"} >
             <Container>
                 <SList
-                    space={50}
+                    scrollEnabled={false}
+                    space={8}
                     data={this.state?.data}
                     render={this.item.bind(this)}
                 />

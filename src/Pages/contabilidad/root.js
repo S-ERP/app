@@ -38,7 +38,7 @@ class index extends Component {
                         console.log(e);
                     }}
                 >
-                    {/* <MenuButtom label={"Crear Asiento"} url={"/contabilidad/asiento"} icon={<SIcon name={"Add"} />} /> */}
+                    <MenuButtom label={"Init"} url={"/contabilidad/init"} icon={<SIcon name={"Salir"} />} />
                     {/* <MenuButtom label={"Asientos"} url={gestion?.key ? "/contabilidad/gestion/profile" : "/contabilidad/gestion"} params={{ pk: gestion?.key }} icon={<SIcon name={"Box"} fill={"#6ff"} />} /> */}
                 </MenuPages>
             </SPage>

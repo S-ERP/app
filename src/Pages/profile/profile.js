@@ -1,5 +1,5 @@
 import DPA, { connect } from 'servisofts-page';
-import { SButtom, SHr, SImage, SInput, SList, SLoad, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SButtom, SHr, SImage, SInput, SList, SLoad, SNavigation, SPopup, SText, STheme, SThread, SView } from 'servisofts-component';
 import Model from '../../Model';
 import { EditarUsuarioRol, EditarUsuarioRolEmpresa } from 'servisofts-rn-roles_permisos';
 import { Parent } from './index';
@@ -37,7 +37,7 @@ class index extends DPA.profile {
             <SList
                 data={arr}
                 render={(a) => {
-                    return <SView col={"xs-12"} card padding={8} row>
+                    return <SView col={"xs-12"} card padding={8} row >
                         <SView width={40} height={40} card>
                             <SImage src={Model.empresa._get_image_download_path(SSocket.api, a?.empresa?.key)} />
                         </SView>
@@ -47,6 +47,20 @@ class index extends DPA.profile {
                             <SText color={STheme.color.gray}>{a?.empresa?.nit}</SText>
                             <SHr />
                             <SText >Tu alias: {a?.alias}</SText>
+                            <SHr />
+                            <SText underLine color={STheme.color.danger} onPress={() => {
+                                Model.empresa_usuario.Action.editar({
+                                    data: {
+                                        ...a,
+                                        estado: 0,
+                                    },
+                                    key_usuario: Model.usuario.Action.getKey(),
+                                    key_empresa: Model.empresa.Action.getKey()
+                                }).then(e => {
+                                    Model._events.CLEAR();
+                                    SNavigation.reset("/")
+                                })
+                            }}>Salir</SText>
                         </SView>
                     </SView>
                 }}
@@ -61,13 +75,15 @@ class index extends DPA.profile {
             <SButtom type={'outline'} onPress={() => {
                 Model.usuario.Action.unlogin();
             }}>Cerrar sesión</SButtom>
-            <SHr h={50} />
-            <SText col={"xs-12"} fontSize={18}>Mis empresa</SText>
-            {this.renderEmpresa(this.$params["pk"])}
-            <SHr h={50} />
-            <EditarUsuarioRol key_usuario={this.$params["pk"]} disabled onlyActives />
-            <SHr h={50} />
+            {/* <SHr h={50} /> */}
+
+            {/* <EditarUsuarioRol key_usuario={this.$params["pk"]} disabled onlyActives /> */}
+            {/* <SHr h={50} /> */}
             <EditarUsuarioRolEmpresa key_usuario={this.$params["pk"]} key_empresa={Model.empresa.Action.getSelect()?.key} disabled onlyActives />
+            <SHr h={50} />
+            <SText col={"xs-12"} fontSize={18}>Empresas en las que participo:</SText>
+            {this.renderEmpresa(this.$params["pk"])}
+
         </SView>
 
     }

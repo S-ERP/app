@@ -112,7 +112,78 @@ export default class Detalle extends Component {
                 }
             })
         }}>
-            <SText bold color={STheme.color.danger} center>AGREGAR PRODUCTO O SERVICIO</SText>
+            <SText bold color={STheme.color.danger} center>AGREGAR PRODUCTO</SText>
+        </SView>
+    }
+    getButtomServicio() {
+        if (this.props.disabled) return null;
+        return <SView card style={{
+            padding: 16
+        }} onPress={() => {
+            // SNavigation.navigate("/venta/detalle/new", { key_compra_venta: this.data.key })
+            SNavigation.navigate("/productos/modelo", {
+                onSelect: (resp) => {
+                   
+                    // if (!resp?.modelo?.tipo_producto) {
+                    //     SPopup.alert("No se encontro tipo producto");
+                    //     return true;
+                    // }
+                    // if (!resp?.modelo?.tipo_producto?.key_cuenta_contable) {
+                    //     SPopup.alert("No se encontro tipo producto key_cuenta_contable");
+                    //     return true;
+                    // }
+                    // if (!resp?.modelo?.tipo_producto.key_cuenta_contable_contado) {
+                    //     SPopup.alert("No se encontro tipo producto key_cuenta_contable_contado");
+                    //     return true;
+                    // }
+                    var precio_unitario = resp.precio_venta;
+                    // if (this.props.data.tipo_pago != "contado") {
+                    // precio_unitario = resp.precio_venta_credito;
+                    // }
+
+                    var exite_producto = Object.values(this.compra_venta_detalle).filter((cvd => {
+                        let producto = cvd.productos.find(p => p.key_producto == resp.key)
+                        if (producto) {
+                            return true;
+                        }
+                        return false;
+                    }))
+                    if (exite_producto) {
+                        if (exite_producto.length > 0) {
+                            console.log("sadasd", resp);
+                            console.log(exite_producto)
+                            SPopup.alert("El producto ya esta en la lista.");
+                            return true;
+                        }
+                    }
+                    Model.compra_venta_detalle.Action.registro({
+                        data: {
+                            key_compra_venta: this.data.key,
+                            tipo: "producto",
+                            descripcion: resp.descripcion,
+                            cantidad: 1,
+                            precio_unitario: precio_unitario,
+                            descuento: 0,
+                            data: {
+                                precio_venta: resp.precio_venta,
+                                key_cuenta_contable: resp?.tipo_producto.key_cuenta_contable,
+                            }
+                        },
+                        key_producto: resp.key,
+                        key_usuario: Model.usuario.Action.getKey()
+                    }).then(resp => {
+                        Model.compra_venta_detalle_producto.Action._dispatch({
+                            ...Model.compra_venta_detalle_producto.info,
+                            type: "registro",
+                            estado: "exito",
+                            data: resp?.productos[0]
+                        })
+                    })
+                    console.log(resp);
+                }
+            })
+        }}>
+            <SText bold color={STheme.color.danger} center>AGREGAR SERVICIO</SText>
         </SView>
     }
     render() {
@@ -145,6 +216,8 @@ export default class Detalle extends Component {
             <SHr />
             <SHr />
             {this.getButtom()}
+            <SHr />
+            {this.getButtomServicio()}
         </SView>
     }
 }

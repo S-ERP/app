@@ -3,6 +3,12 @@ import Model from "../..";
 import SSocket from 'servisofts-socket'
 export default class Action extends SAction {
 
+    getAll(extra?: {}) {
+        return super.getAll({
+            ...extra,
+            key_empresa: Model.empresa.Action.getSelect()?.key,
+        })
+    }
     getAllByKeyCompraVenta({ key_compra_venta }) {
         var reducer = this._getReducer();
         if (reducer.key_compra_venta != key_compra_venta) {
@@ -58,6 +64,7 @@ export default class Action extends SAction {
                 ...this.model.info,
                 type: "getAll",
                 estado: "cargando",
+                key_empresa: Model.empresa.Action.getSelect()?.key,
                 ...extra
             }
             SSocket.sendPromise(petition).then((resp) => {

@@ -9,6 +9,7 @@ class index extends Component {
         this.onSelect = SNavigation.getParam("onSelect");
         this.key_cuenta = SNavigation.getParam("key_cuenta");
         this.codigo = SNavigation.getParam("codigo");
+        this.selectAny = SNavigation.getParam("selectAny");
     }
 
     render() {
@@ -19,6 +20,7 @@ class index extends Component {
                 <PlanDeCuentasTable initialCode={this.codigo} onSelect={this.onSelect}
                     space={4}
                     // close={true}
+                    selectAny={this.selectAny}
                     allowCreate allowEdit allowDelete allowExport allowImport
                     width={500}
                     itemProps={{
