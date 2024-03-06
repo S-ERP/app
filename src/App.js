@@ -32,7 +32,7 @@ const App = (props) => {
             assets={Assets}
             inputs={Config.inputs}
             theme={{ themes: Config.theme, initialTheme: "dark" }}
-            background={<SGradient deg={-50} colors={[STheme.color.card, STheme.color.secondary]}  />}
+            // background={<SGradient deg={-50} colors={[STheme.color.card, STheme.color.secondary]}  />}
             // style={{
             //     zIndex: 9,
             //     position: "relative",
