@@ -47,9 +47,10 @@ class index extends DPA.list {
         })
         // super.onNew({ key_empresa: this.props.key_empresa })
     }
-    // $onSelect(data) {
-    //     return;
-    // }
+    $onSelect(data) {
+        SNavigation.navigate("/usuario/profile", { pk: data.key_usuario })
+        return;
+    }
     $getData() {
         // var empresa = Model.empresa.Action.getByKey(this.props.key_empresa)
         return Parent.model.Action.getAllByKeyEmpresa(this.props.key_empresa);

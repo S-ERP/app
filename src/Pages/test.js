@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Linking } from 'react-native';
-import { SButtom, SHr, SLoad, SPage, SText, SView } from 'servisofts-component';
+import { SButtom, SDate, SDatePicker, SHr, SInput, SLoad, SPage, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket'
 import Model from '../Model';
-import SDatePicker from '../Components/SDatePicker';
+import Container from '../Components/Container';
 // import { CuentaContable } from 'servisofts-rn-contabilidad';
 // import MigradorDeAmortizaciones from '../Components/MigradorDeAmortizaciones';
 class Test extends Component {
@@ -13,12 +13,16 @@ class Test extends Component {
         this.state = {
         };
     }
+    ref = {}
 
     render() {
         return (
-            <SPage title={'Test'}>
-                {/* <MigradorDeAmortizaciones /> */}
-                <SDatePicker />
+            <SPage title={'Test'} disableScroll>
+                <SDatePicker col={"xs-12"}
+                    flex
+                    onSelect={(e: SDate) => {
+                        console.log(e.toString("yyyy-MONTH-dd hh:mm:ss"));
+                    }} />
             </SPage >
         );
     }

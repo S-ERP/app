@@ -9,6 +9,7 @@ export default new SModel<Action, Reducer>({
     },
     Columns: {
         "key": { type: "text", pk: true },
+        "tipo": { type: "text", editable: true, },
         "descripcion": { type: "text", notNull: true, editable: true, label: "Descripcion" },
         "observacion": { type: "text", editable: true, label: "Obs." },
         "color": { type: "text", editable: true, label: "Color" },
@@ -17,7 +18,6 @@ export default new SModel<Action, Reducer>({
         "key_usuario": { type: "text", fk: "usuario" },
         "key_servicio": { type: "text", fk: "servicio" },
         "key_empresa": { type: "text", fk: "empresa" },
-        "tipo": { type: "text", editable: true, },
         "key_cuenta_contable": { type: "text", fk: "cuenta_contable" },
     },
     image: {

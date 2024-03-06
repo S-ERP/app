@@ -31,6 +31,7 @@ export default class index extends Component<indexPropsType> {
     handlePress() {
         SNavigation.navigate("/contabilidad/cuentas", {
             codigo: this.props.codigo,
+            selectAny:this.props.selectAny,
             onSelect: (obj) => {
                 this.setValue(obj)
                 SNavigation.goBack();

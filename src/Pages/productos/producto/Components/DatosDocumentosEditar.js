@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SButtom, SForm, SHr, SLoad, SNavigation, SOrdenador, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SButtom, SForm, SHr, SLoad, SNavigation, SOrdenador, SPage, SText, STheme, SThread, SView } from 'servisofts-component';
 import Model from '../../../../Model';
 import SSocket from 'servisofts-socket'
 class index extends Component {
@@ -92,37 +92,39 @@ class index extends Component {
             // console.log(obj);
             inputs[obj.key] = { label: obj.descripcion, icon: <SText>{obj.observacion}</SText>, type: obj.tipo, required: obj?.tpid?.requerido, defaultValue: defaultValue, filePath: filePath }
         })
-        
-        return <SForm ref={(ref) => this.form = ref} inputs={inputs} onSubmitName={""} 
-        onSubmit={(data, ref) => {
-            // console.log("subir")
-            // console.log(data);
-            // var files = ref.getFiles()
-            this.setState({ loading: true, loadingLabel: "Subiendo archivos..." });
-            if (this.props.onSubmit) {
-                this.props.onSubmit().then(({ key, callback }) => {
-                    ref.uploadFiles2(
-                        SSocket.api.inventario + "upload/producto_inventario_dato/" + key
-                    ).then((resp) => {
-                        this.setState({ loading: true, loadingLabel: "Guardando cambios..." });
-                        this.onSubmit(data, ref, key, callback);
-                    }).catch((e) => {
-                        this.setState({ loading: false, loadingLabel: "Error al subir los archivos..." });
-                    })
-                }).catch(e => {
-                    this.setState({ loading: true, loadingLabel: <SText color={STheme.color.danger}>"Error en los datos, Inserte correctamente los datos."</SText> });
-                    new SPromise((resolve, reject) => {
 
-                    }, 1000).then(e => {
-                        this.setState({ loading: false, loadingLabel: "" });
+        return <SForm ref={(ref) => this.form = ref} inputs={inputs} onSubmitName={""}
+            onSubmit={(data, ref) => {
+                // console.log("subir")
+                // console.log(data);
+                // var files = ref.getFiles()
+                this.setState({ loading: true, loadingLabel: "Subiendo archivos..." });
+                if (this.props.onSubmit) {
+                    this.props.onSubmit().then(({ key, callback }) => {
+                        ref.uploadFiles2(
+                            SSocket.api.inventario + "upload/producto_inventario_dato/" + key
+                        ).then((resp) => {
+                            this.setState({ loading: true, loadingLabel: "Guardando cambios..." });
+                            this.onSubmit(data, ref, key, callback);
+                        }).catch((e) => {
+                            this.setState({ loading: false, loadingLabel: "Error al subir los archivos..." });
+                        })
                     }).catch(e => {
-                        this.setState({ loading: false, loadingLabel: "" });
+                        this.setState({ loading: true, loadingLabel: <SText color={STheme.color.danger}>"Error en los datos, Inserte correctamente los datos."</SText> });
+                        new SThread(1000, "Asdasd").start(e => {
+                            this.setState({ loading: false, loadingLabel: "" });
+                        })
+                        // new SPromise((resolve, reject) => {
+                        // }, 1000).then(e => {
+                        //     this.setState({ loading: false, loadingLabel: "" });
+                        // }).catch(e => {
+                        //     this.setState({ loading: false, loadingLabel: "" });
 
+                        // })
                     })
-                })
-            }
+                }
 
-        }} />
+            }} />
     }
     getLoading() {
         if (!this.state.loading) return null;

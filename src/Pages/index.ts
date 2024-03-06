@@ -30,7 +30,8 @@ import tarea from './tarea';
 import menu from './menu';
 
 export default SPage.combinePages("/", {
-    "": Root,
+    // "": Root,
+    "": menu,
     menu,
     // "login": login,
     ...login,

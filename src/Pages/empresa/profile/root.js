@@ -3,6 +3,7 @@ import { Parent } from ".."
 import { SButtom, SHr, SList, SLoad, SNavigation, SText, SView } from 'servisofts-component';
 import Model from '../../../Model';
 import { MenuPages } from 'servisofts-rn-roles_permisos';
+import Colores from '../colores';
 class index extends DPA.profile {
     constructor(props) {
         super(props, { Parent: Parent, excludes: ["key", "key_usuario", "key_servicio", "estado"] });
@@ -30,6 +31,7 @@ class index extends DPA.profile {
                 pk: this.pk
             }}>
             </MenuPages>
+            <Colores key_empresa={this.pk}/>
         </SView>
     }
 

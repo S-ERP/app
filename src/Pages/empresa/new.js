@@ -15,7 +15,23 @@ class index extends Component {
         this.state = {
         };
     }
-
+    $allowAccess() {
+        return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "new" })
+    }
+    $onSubmit(data) {
+        data.key_servicio = "1427e867-c4f7-4602-a1aa-5deabf2d0372";
+        Parent.model.Action.registro({
+            data: data,
+            key_usuario: Model.usuario.Action.getKey()
+        }).then((resp) => {
+            Model.empresa.Action.setEmpresa(resp.data);
+            SNavigation.replace("/menu")
+            SNavigation.navigate("/empresa/init")
+            // SNavigation.goBack();
+        }).catch(e => {
+            console.error(e);
+        })
+    }
     render() {
         if (!Model.usuario.Action.getUsuarioLog()) {
             console.log("ggggggg")
@@ -45,7 +61,7 @@ class index extends Component {
                     </SView>
                 </Container>
                 <SHr height={55} />
-                <PButtomFooter url={'/empresa/paso1'} label = {'COMENZAR'}  />
+                <PButtomFooter url={'/empresa/paso1'} label={'COMENZAR'} />
             </SPage>
         );
     }

@@ -4,10 +4,18 @@ import SSocket from 'servisofts-socket'
 
 export default class Action extends SAction {
 
+    getAll(extra?: {}) {
+        return super.getAll({
+            key_empresa: Model.empresa.Action.getKey(),
+            ...extra,
+
+        })
+    }
     getActiva() {
         var key_usuario = Model.usuario.Action.getKey();
         var data = this.getAll({
             key_usuario: key_usuario,
+            key_empresa: Model.empresa.Action.getKey(),
         });
         if (!data) return null;
         var obj = Object.values(data).find((o: any) => o.key_usuario == key_usuario && o.estado != 0 && o.fecha_cierre == null);

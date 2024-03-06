@@ -20,11 +20,14 @@ class index extends DPA.new {
         var imp = super.$inputs();
 
         // imp["observacion"].col = "xs-6 md-3.6"
+
+        // "activo_fijo" | "gasto_administrativo" | "inventario" | "venta_servicio"
         imp["tipo"] = {
             ...imp["tipo"],
+            isRequired: true,
             type: "select",
-            defaultValue: "producto",
-            options: ["producto", "servicio"]
+            value: this.state.tipo,
+            options: ["", "activo_fijo", "inventario", "gasto_administrativo"]
         }
         imp["descripcion"].col = "xs-12 md-12"
         imp["descripcion"].type = "textArea"
@@ -68,7 +71,8 @@ class index extends DPA.new {
             <SButtom type='danger' onPress={() => {
                 SNavigation.navigate("/productos/tipo_producto", {
                     onSelect: (a) => {
-                        this.setState({ tipo_producto: a })
+
+                        this.setState({ tipo_producto: a, tipo: a.tipo })
                     }
                 })
             }}>SELECT TIPO DE PRODUCTO</SButtom>

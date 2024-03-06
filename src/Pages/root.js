@@ -39,6 +39,10 @@ const Card = ({ label, value, backgroundColor, onPress, icon }) => {
 class index extends Component {
     getAcciones(usuario) {
         return <SView row>
+            <SText padding={16} card onPress={() => {
+                SNavigation.navigate("/empresa/new")
+            }} center>Crear empresa</SText>
+            <SView width={8} />
             {/* <SText padding={16} card onPress={() => {
                 SNavigation.navigate("/empresa")
             }} center>Crear empresa</SText> */}
@@ -150,15 +154,15 @@ class index extends Component {
                         SPopup.open({ key: "menuLat", content: <BoxMenu datas={this.props?.data} /> });
                     }}
                 >
-                    <SView width={45} height={45} center backgroundColor={STheme.color.secondary} style={{ borderRadius: 30, zIndex:9 }}>
+                    <SView width={45} height={45} center backgroundColor={STheme.color.secondary} style={{ borderRadius: 30, zIndex: 9 }}>
                         <SIcon name="configurar" fill={STheme.color.primary} width={30} height={30} />
                     </SView>
-                    <SView width={45} height={45} style={{position:"absolute", bottom:-8, right:-2.5}}>
+                    <SView width={45} height={45} style={{ position: "absolute", bottom: -8, right: -2.5 }}>
                         <SIcon name="bgBoton" width={45} height={45} />
                     </SView>
                 </SView>
                 <SView width={150} height={150} style={{ padding: 4 }}>
-                    <SView flex height card style={{ borderRadius: 100, overflow:"hidden" }}>
+                    <SView flex height card style={{ borderRadius: 100, overflow: "hidden" }}>
                         <SImage src={SSocket.api.root + "usuario/" + Model.usuario.Action.getKey()} />
                     </SView>
                 </SView>

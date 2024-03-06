@@ -15,7 +15,7 @@ class ComponentOpciones extends Component {
         this.state = {
             tipo_pago: info.key,
             numero_cuotas: 0,
-            fecha_inicio: new SDate().toString("yyyy-MM-dd"),
+            fecha_inicio: new SDate(props.data.fecha_on,"yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd"),
             periodicidad_medida: "month",
             periodicidad_valor: 1,
             porcentaje_interes: 0,
@@ -47,7 +47,7 @@ const calcular_cuotas = ({ data, totales }) => {
         codigo: 0,
         descripcion: "Inicial",
         monto: monto,
-        fecha: new SDate().toString("yyyy-MM-dd")
+        fecha:new SDate(data.fecha_on,"yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd")
     })
     return cuotas;
 }

@@ -21,6 +21,7 @@ import mayores from "./mayores";
 import asientos_automaticos from "./asientos_automaticos";
 import test from "./test";
 import ajustes from "./ajustes";
+import init from "./init"
 export const Parent = {
     title: "Contabilidad",
     name: "contabilidad",
@@ -39,6 +40,7 @@ export default SPage.combinePages(Parent.name,
         "libro_diario": libro_diario,
         "mayores": mayores,
         ajustes,
+        init,
         ...cuenta_centro_costo,
         ...gestion,
         ...cuenta_contable,
