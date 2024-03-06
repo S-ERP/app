@@ -11,7 +11,7 @@ class index extends DPA.new {
             excludes: ["key", "fecha_on", "key_usuario", "estado", "lat", "lng"]
         });
     }
-    $allowAccess() {
+    $allowAccess() { 
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "new" })
     }
     $inputs() {

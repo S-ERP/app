@@ -47,15 +47,14 @@ class index extends Component {
 
                                     descripcion: {
                                         type: "descripcion",
-                                        label: "Descripcion",
-                                        placeholder: "Descripcion",
+                                        label: "Descripción",
+                                        placeholder: "Descripción",
                                         isRequired: true,
                                     },
-                                    observacion: {
-                                        type: "observacion",
-                                        label: "Observacion",
-                                        placeholder: "Observacion",
-                                        icon: <SIcon name={"email"} />,
+                                    direccion: {
+                                        type: "direccion",
+                                        label: "Dirección",
+                                        placeholder: "Dirección",
                                         isRequired: true,
                                     },
                                 }}
@@ -64,15 +63,16 @@ class index extends Component {
 
                                     // this.form.submit();
                                     data.key_servicio = "1427e867-c4f7-4602-a1aa-5deabf2d0372";
-                                    Model.empresa.Action.registro({
+                                    Model.sucursal.Action.registro({
                                         // Parent.model.Action.registro({
                                         data: data,
-                                        key_usuario: Model.usuario.Action.getKey()
+                                        key_usuario: Model.usuario.Action.getKey(),
+                                        key_empresa: Model.empresa.Action.getKey()
                                     }).then((resp) => {
-                                        Model.empresa.Action.setEmpresa(resp.data);
+                                        Model.sucursal.Action.setEmpresa(resp.data);
                                         console.log("resp.data")
                                         console.log(resp.data)
-                                        SNavigation.replace("/empresa/paso2", { key: resp.data.key })
+                                        // SNavigation.replace("/sucursal/paso2", { key: resp.data.key })
                                         // SNavigation.goBack();
                                     }).catch(e => {
                                         console.error(e);
