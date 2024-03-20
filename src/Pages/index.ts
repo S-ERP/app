@@ -30,6 +30,7 @@ import tarea from './tarea';
 import menu from './menu';
 import home from './home';
 import home2 from './home2';
+import home3 from './home3';
 import facturacion from './facturacion';
 import { Example } from 'servisofts-charts'
 export default SPage.combinePages("/", {
@@ -37,6 +38,7 @@ export default SPage.combinePages("/", {
     "": Root,
     home,
     home2,
+    home3,
     // "": menu,
     menu,
     // "login": login,
