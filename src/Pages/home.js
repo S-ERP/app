@@ -59,6 +59,8 @@ export default class home extends Component {
           <SView width={8} />
           <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/usuario")}>Usuarios</SText>
           <SView width={8} />
+          <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/loby")}>Loby</SText>
+          <SView width={8} />
         </SView>
         <SHr />
         <STextPlay

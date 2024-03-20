@@ -31,6 +31,8 @@ import menu from './menu';
 import home from './home';
 import home2 from './home2';
 import facturacion from './facturacion';
+import loby from './loby';
+import nota from './nota';
 import { Example } from 'servisofts-charts'
 export default SPage.combinePages("/", {
     // "":Example,
@@ -41,7 +43,9 @@ export default SPage.combinePages("/", {
     menu,
     // "login": login,
     ...login,
+    ...loby,
     ...registro,
+    ...nota,
     "test": test,
     "start": start,
     "wiki": wiki,

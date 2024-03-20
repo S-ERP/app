@@ -47,58 +47,52 @@ export default class home2 extends Component {
   }
 
   getContent=()=>{
-    return <SView flex row>
-      <SView style={style.days}>
-      <SText>Dom</SText>
-      <SText>Lun</SText>
-      <SText>Mar</SText>
-      <SText>Mie</SText>
-      <SText>Jue</SText>
-      <SText>Vie</SText>
-      <SText>Sav</SText>
-    </SView>
-
-    <SView style={style.days}>
-      <SText>1</SText>
-      <SText>2</SText>
-      <SText>3</SText>
-      <SText>4</SText>
-      <SText>5</SText>
-      <SText>6</SText>
-      <SText>7</SText>
-    </SView>
-    
+    return <SView row col={"xs-12"}>
+    <SView width={40}></SView>
+    <SView>Ene</SView>
+    <SView>Feb</SView>
+    <SView>Mar</SView>
+    <SView>Abr</SView>
+    <SView>May</SView>
+    <SView>Jun</SView>
+    <SView>Jul</SView>
+    <SView>Ago</SView>
+    <SView>Sep</SView>
+    <SView>Oct</SView>
+    <SView>Nov</SView>
+    <SView>Dic</SView>
   </SView>
-
-    
-
   };
 
   render() {
     return <SPage title="Home">
       <Container>
         
-      <SView width={700} style={{
-                    overflow: 'scroll',
-                }}>
-
+      <SView width={500} >
         <SView row col={"xs-12"}>
           <SView width={40}></SView>
-          <SText width={50} padding={5}>Ene</SText>
-          <SText width={50} padding={5}>Feb</SText>
-          <SText width={50} padding={5}>Mar</SText>
-          <SText width={50} padding={5}>Abr</SText>
-          <SText width={50} padding={5}>May</SText>
-          <SText width={50} padding={5}>Jun</SText>
-          <SText width={50} padding={5}>Jul</SText>
-          <SText width={50} padding={5}>Ago</SText>
-          <SText width={50} padding={5}>Sep</SText>
-          <SText width={50} padding={5}>Oct</SText>
-          <SText width={50} padding={5}>Nov</SText>
-          <SText width={50} padding={5}>Dic</SText>
-        </SView> 
-        {this.getContent()}
-       
+          <SText width={100} padding={20}>Ene</SText>
+          <SText width={100} padding={20}>Feb</SText>
+          <SText width={100} padding={20}>Mar</SText>
+          <SText width={100} padding={20}>Abr</SText>
+          <SText width={100} padding={20}>May</SText>
+          <SText width={100} padding={20}>Jun</SText>
+          <SText width={100} padding={20}>Jul</SText>
+          <SText width={100} padding={20}>Sep</SText>
+          <SText width={100} padding={20}>Oct</SText>
+          <SText width={100} padding={20}>Nov</SText>
+          <SText width={100} padding={20}>Dic</SText>
+        </SView>
+
+        <SView style={style.days}>
+          <SText>Dom</SText>
+          <SText>Lun</SText>
+          <SText>Mar</SText>
+          <SText>Mie</SText>
+          <SText>Jue</SText>
+          <SText>Vie</SText>
+          <SText>Sav</SText>
+        </SView>
 
         <SView  style={style.squares}>
         
