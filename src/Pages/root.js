@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import Container from '../Components/Container';
 import SSocket from 'servisofts-socket';
 import BoxMenu from '../Components/Popups/BoxMenu';
+import STextPlay from '../Components/STextPlay';
 
 const Card = ({ label, value, backgroundColor, onPress, icon }) => {
     return <SView col={"xs-12 sm-6 md-6 lg-6 xl-6 xxl-6"} center padding={8}
@@ -14,21 +15,25 @@ const Card = ({ label, value, backgroundColor, onPress, icon }) => {
     >
         <SView col={"xs-12"} height={70} row card center
             style={{
-                borderRadius: 60,
+                borderRadius: 8,
                 borderTopWidth: 1,
-                borderTopColor: "#818286",
+                borderTopColor: STheme.color.text,
+                borderLeftWidth: 1,
+                borderLeftColor: STheme.color.text,
+                borderRightWidth: 1,
+                borderRightColor: STheme.color.text,
                 borderBottomWidth: 5,
-                borderBottomColor: "#818286",
-                backgroundColor: STheme.color.white,
+                borderBottomColor: STheme.color.text,
+                backgroundColor: STheme.color.card,
             }}
             onPress={onPress}>
             <SView col={"xs-3"} center>
-                <SIcon name={icon} width={40} height={40} />
+                <SIcon name={icon} width={40} height={40} fill={STheme.color.text} stroke={STheme.color.text}/>
             </SView>
             <SView col={"xs-9"} center>
-                <SText fontSize={17} bold color={STheme.color.black}>{value}</SText>
+                <SText fontSize={17} bold color={STheme.color.text}>{value}</SText>
 
-                <SText center fontSize={10} color={STheme.color.black}>{label}</SText>
+                <SText center fontSize={10} color={STheme.color.text}>{label}</SText>
                 {/* <SHr height={15} /> */}
             </SView>
         </SView>
@@ -39,10 +44,10 @@ const Card = ({ label, value, backgroundColor, onPress, icon }) => {
 class index extends Component {
     getAcciones(usuario) {
         return <SView row>
-            <SText padding={16} card onPress={() => {
+            {/* <SText padding={16} card onPress={() => {
                 SNavigation.navigate("/empresa/new")
             }} center>Crear empresa</SText>
-            <SView width={8} />
+            <SView width={8} /> */}
             {/* <SText padding={16} card onPress={() => {
                 SNavigation.navigate("/empresa")
             }} center>Crear empresa</SText> */}
@@ -114,14 +119,19 @@ class index extends Component {
         this.arr = Model.empresa_usuario.Action.getAllByKeyUsuario(usuario.key);
         if (!this.arr) return <SLoad />
 
-        return <SView col={"xs-12"} center>
+        return <SView col={"xs-12"} center >
+            <SHr height={10} />
+            <SView col={"xs-12"}>
+                <SText fontSize={17} bold >Selecciona la empresa de tu preferencia.</SText>
+            </SView>
+            <SHr height={15} />
             <SList
                 buscador
                 data={this.arr}
                 render={(a) => {
                     return <SView col={"xs-12"} card padding={8} row onPress={() => {
                         Model.empresa.Action.setEmpresa(a.empresa);
-                        SNavigation.navigate("/menu")
+                        SNavigation.navigate("/home")
                         // SNavigation.navigate("/empresa/profile", { pk: a.key_empresa })
                     }}>
                         <SView width={40} height={40} card>
@@ -137,7 +147,7 @@ class index extends Component {
                     </SView>
                 }}
             />
-        </SView>
+        </SView >
 
     }
     render() {
@@ -147,18 +157,20 @@ class index extends Component {
             return null;
         }
         return <SPage>
-            <Container>
+            <Container >
                 <SHr height={10} />
                 <SView col={"xs-12"} flex height style={{ alignItems: "flex-end" }}
                     onPress={() => {
                         SPopup.open({ key: "menuLat", content: <BoxMenu datas={this.props?.data} /> });
                     }}
                 >
-                    <SView width={45} height={45} center backgroundColor={STheme.color.secondary} style={{ borderRadius: 30, zIndex: 9 }}>
+                    <SView width={45} height={45} center backgroundColor={STheme.color.secondary} style={{ borderRadius: 30, zIndex: 9, }}>
                         <SIcon name="configurar" fill={STheme.color.primary} width={30} height={30} />
                     </SView>
-                    <SView width={45} height={45} style={{ position: "absolute", bottom: -8, right: -2.5 }}>
-                        <SIcon name="bgBoton" width={45} height={45} />
+                    <SView width={45} height={45} style={{
+                        position: "absolute", bottom: -4, borderRadius: 45,
+                        backgroundColor: "#818286",
+                    }}>
                     </SView>
                 </SView>
                 <SView width={150} height={150} style={{ padding: 4 }}>
@@ -166,10 +178,23 @@ class index extends Component {
                         <SImage src={SSocket.api.root + "usuario/" + Model.usuario.Action.getKey()} />
                     </SView>
                 </SView>
-                <SText fontSize={20} bold>Hola, {usuario.Nombres} {usuario.Apellidos}</SText>
-                <SText fontSize={14}>{usuario.Correo}</SText>
+                <SHr />
+                {/* <SText fontSize={20} bold>Hola, {usuario.Nombres} {usuario.Apellidos}</SText> */}
+                <STextPlay time={50} fontSize={18} bold center>{`Hola, ${usuario.Nombres} ${usuario.Apellidos} \n¿Qué deseas hacer? `}</STextPlay>
+                {/* <SText fontSize={14}>{usuario.Correo}</SText> */}
                 <SHr height={15} />
-                <SIcon name="pregunta1" width={240} height={100} />
+                {/* <SView width={240} height={100} >
+                    <SIcon name="pregunta1" width={240} height={100} fill={STheme.color.card}/>
+                    <SView style={{
+                        position: "absolute",
+                        width: "100%",
+                        height: "90%",
+                        top: 0,
+                        right: 0,
+                    }} center>
+                        <STextPlay fontSize={18} bold>{"¿Qué deseas hacer?"}</STextPlay>
+                    </SView>
+                </SView> */}
                 <SHr height={15} />
                 {/* <SText fontSize={14}>C.I.: {usuario.CI}</SText> */}
                 {/* <SHr h={16} /> */}

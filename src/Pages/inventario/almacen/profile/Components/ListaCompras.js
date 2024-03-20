@@ -33,8 +33,7 @@ class index extends DPA.list {
     $getData() {
         if (!this.props.data) return null;
 
-        var data = Model.compra_venta_detalle.Action.comprasSinRecepcionar({ key_sucursal: "" });
-        // console.log(this.props.data, data)
+        var data = Model.compra_venta_detalle.Action.comprasSinRecepcionar({ key_sucursal: this.props?.data?.key_sucursal });
         return data;
 
     }
@@ -78,6 +77,7 @@ class index extends DPA.list {
             <SView>
                 <SText color={STheme.color.lightGray}>Proveedor: {proveedor?.razon_social}</SText>
                 <SText color={STheme.color.lightGray}>Nit: {proveedor?.nit}</SText>
+                <SText color={STheme.color.lightGray}>Tipo: {data?.tipo}</SText>
             </SView>
             <SView row center>
 

@@ -23,7 +23,7 @@ class Test extends Component {
                 <SInput label={"barColor"} defaultValue={STheme.color.barColor} ref={ref => this.ref.barColor = ref} type='color' />
                 <SInput label={"background"} defaultValue={STheme.color.background} ref={ref => this.ref.background = ref} type='color' />
                 <SInput label={"text"} defaultValue={STheme.color.text} ref={ref => this.ref.text = ref} type='color' />
-                <SInput label={"card"} defaultValue={STheme.color.card.substring(0, 7)} ref={ref => this.ref.card = ref} type='color' />
+                <SInput label={"card"} defaultValue={STheme.color.card} ref={ref => this.ref.card = ref} type='color' />
                 <SHr h={20} />
                 <SView row>
                     <SView flex />
@@ -33,7 +33,7 @@ class Test extends Component {
                             background: this.ref.background.getValue(),
                             text: this.ref.text.getValue(),
                             barColor: this.ref.barColor.getValue(),
-                            card: this.ref.card.getValue() + "22",
+                            card: this.ref.card.getValue(),
 
                         }
                         STheme.repaint();
@@ -45,7 +45,7 @@ class Test extends Component {
                             background: this.ref.background.getValue(),
                             text: this.ref.text.getValue(),
                             barColor: this.ref.barColor.getValue(),
-                            card: this.ref.card.getValue() + "22",
+                            card: this.ref.card.getValue(),
                         }
                         let theme = STheme.color;
                         delete theme.mapStyle;

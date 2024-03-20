@@ -163,7 +163,7 @@ export default class Action extends SAction {
                 ...this.model.info,
                 type: "comprasSinRecepcionar",
                 estado: "cargando",
-                key_sucursal: ""
+                key_sucursal: key_sucursal
             }
             SSocket.send(petition);
             return null;
@@ -171,8 +171,8 @@ export default class Action extends SAction {
         if (!key_sucursal) return data;
         let other = {};
         Object.values(data).map((obj: any) => {
-            if (!obj?.proveedor?.key_sucursal) return null;
-            if (obj.proveedor.key_sucursal != key_sucursal) return null;
+            // if (!obj?.proveedor?.key_sucursal) return null;
+            // if (obj.proveedor.key_sucursal != key_sucursal) return null;
             other[obj.key] = obj;
         })
         return other;

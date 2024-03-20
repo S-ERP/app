@@ -2,7 +2,7 @@ import DPA, { connect } from 'servisofts-page';
 import { Parent } from ".."
 import { SButtom, SHr, SList, SLoad, SNavigation, SText, SView } from 'servisofts-component';
 import Model from '../../../Model';
-import { MenuPages } from 'servisofts-rn-roles_permisos';
+import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
 import Colores from '../colores';
 class index extends DPA.profile {
     constructor(props) {
@@ -30,8 +30,14 @@ class index extends DPA.profile {
             <MenuPages path={"/empresa/profile/"} permiso={"ver"} params={{
                 pk: this.pk
             }}>
+                <MenuButtom url='/empresa/paso2' label='Foto perfil' params={{
+                    key: this.pk,
+                }} />
+                <MenuButtom url='/empresa/paso3' params={{
+                    key: this.pk,
+                }} label='Foto background' />
             </MenuPages>
-            <Colores key_empresa={this.pk}/>
+            <Colores key_empresa={this.pk} />
         </SView>
     }
 

@@ -18,8 +18,6 @@ class index extends Component {
 
     render() {
         if (!Model.usuario.Action.getUsuarioLog()) {
-            console.log("ggggggg")
-
             SNavigation.replace("/login");
             return null;
         }
@@ -31,7 +29,7 @@ class index extends Component {
 
                 }}>
                     <Container >
-                        <Adornos.titulo label={"Sube el logo de tu empresa."} fontSize={18} />
+                        <Adornos.titulo label={"Sube el fondo de tu empresa."} fontSize={18} />
 
                         <SView col={"xs-12"} center>
                             <SForm
@@ -50,7 +48,7 @@ class index extends Component {
                                         label: "Foto",
                                         placeholder: "Foto",
                                         isRequired: true,
-                                        defaultValue: SSocket.api.empresa + "empresa/" + this.pk,
+                                        defaultValue: SSocket.api.empresa + "empresa_background/" + this.pk,
                                         style: {
                                             height: 159
                                         }
@@ -65,10 +63,10 @@ class index extends Component {
                                     console.log("this.pk")
                                     console.log(this.pk)
                                     this.form.uploadFiles(
-                                        SSocket.api.empresa + "upload/empresa/" + this.pk,
+                                        SSocket.api.empresa + "upload/empresa_background/" + this.pk,
                                         "foto"
                                     );
-                                    SNavigation.navigate("/empresa/paso3")
+                                    SNavigation.navigate("/sucursal/paso1")
                                     // SNavigation.replace("/empresa/list", { key: this.pk })
 
                                 }}
@@ -80,7 +78,7 @@ class index extends Component {
 
                             <BtnNext onPress={() => { this.form.submit() }}>{"SIGUIENTE"}</BtnNext>
                             <SHr height={25} />
-                            <SView col={"xs-12"} center onPress={() => { SNavigation.navigate("/empresa/paso3") }}>
+                            <SView col={"xs-12"} center onPress={() => { SNavigation.navigate("/sucursal/paso1") }}>
                                 <SText center fontSize={18} bold color={STheme.color.text}>Configurar más tarde</SText>
                             </SView>
 

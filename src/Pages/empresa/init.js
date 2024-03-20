@@ -8,12 +8,24 @@ import Model from '../../Model';
 // create a component
 export default class init extends Component {
 
+    constructor(props) {
+        super(props);
+        // this.path = SNavigation.getParam("path");
+        // this.params = SNavigation.getAllParams()
+
+    }
+
     componentDidMount() {
+        if (this.isrun) return;
+        this.isrun = true;
         this.start();
+    }
+    componentWillUnmount() {
+        this.isrun = true;
     }
 
     async start() {
-
+        console.log("INICIO EL START DEL INIT");
         const participante_resp = await this.volver_participante()
         if (participante_resp.estado != "exito") {
             console.error("Ocurrio un error al volverte un participante de la empresa", participante_resp?.error)
@@ -32,10 +44,24 @@ export default class init extends Component {
         if (set_rol_resp.estado != "exito") {
             console.error("Ocurrio un error al registrar al usuario en el rol", set_rol_resp?.error)
         }
-        new SThread(600, "cargando_emrpesa").start(() => {
-            Model.empresa.Action.setEmpresa(Model.empresa.Action.getSelect());
-            SNavigation.replace("/empresa/profile", { pk: Model.empresa.Action.getKey() })
-        })
+
+        // new SThread(1500, "cargando_emrpesa").start(() => {
+        // SNavigation.replace("/menu")
+        // Model.empresa.Action.setEmpresa(Model.empresa.Action.getSelect());
+        SNavigation.goBack();
+        // new SThread(50, "cargando_emrpesa_2").start(() => {
+        //     if (this.path) {
+        //         console.log("entro al replace en el init")
+        //         // SNavigation.navigate(this.path, this.params)
+        //     } else {
+        //         console.log("entro al replace profile en el init")
+        //         // SNavigation.navigate("/empresa/profile", { pk: Model.empresa.Action.getKey() })
+        //     }
+        // })
+
+
+        // SNavigation.goBack();
+        // })
 
     }
     async init_rol() {

@@ -47,27 +47,29 @@ class PBarraFooter extends Component {
   render() {
     return (
       <>
-        <SView
-          width={300}
-          height={65}
-          style={{
-            position: 'absolute',
-            bottom: 20,
-            borderWidth: 1,
-            borderColor: STheme.color.darkGray,
-            borderRadius: 40,
-            overflow: "hidden",
-            borderBottomWidth: 4,
-            borderBottomColor: STheme.color.black,
-          }}>
+        <SView col={'xs-12'} center flex>
+          <SView center
+            width={300}
+            height={65}
+            style={{
+              position: 'absolute',
+              bottom: 20,
+              borderWidth: 1,
+              borderColor: STheme.color.darkGray,
+              borderRadius: 40,
+              overflow: "hidden",
+              borderBottomWidth: 4,
+              borderBottomColor: STheme.color.black,
+            }}>
 
-          <SView col={'xs-12'} row backgroundColor={STheme.color.darkGray}>
-            {this.getItem({
-              key: 'comenzar',
-              title: this.props.label,
-              url: this.props.url,
-              params: {}
-            })}
+            <SView col={'xs-12'} row backgroundColor={STheme.color.darkGray}>
+              {this.getItem({
+                key: 'comenzar',
+                title: this.props.label,
+                url: this.props.url,
+                params: {}
+              })}
+            </SView>
           </SView>
         </SView>
       </>

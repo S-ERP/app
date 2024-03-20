@@ -71,18 +71,20 @@ class index extends DPA.profile {
     $footer() {
 
         return <SView col={"xs-12"} center>
-            <SHr />
-            <SButtom type={'outline'} onPress={() => {
+            <SHr h={50} />
+            <SButtom type={'danger'} onPress={() => {
                 Model.usuario.Action.unlogin();
             }}>Cerrar sesión</SButtom>
             {/* <SHr h={50} /> */}
 
             {/* <EditarUsuarioRol key_usuario={this.$params["pk"]} disabled onlyActives /> */}
-            {/* <SHr h={50} /> */}
-            <EditarUsuarioRolEmpresa key_usuario={this.$params["pk"]} key_empresa={Model.empresa.Action.getSelect()?.key} disabled onlyActives />
             <SHr h={50} />
-            <SText col={"xs-12"} fontSize={18}>Empresas en las que participo:</SText>
-            {this.renderEmpresa(this.$params["pk"])}
+            <SView col={"xs-12"} card padding={4}>
+                <EditarUsuarioRolEmpresa key_usuario={this.$params["pk"]} key_empresa={Model.empresa.Action.getSelect()?.key} disabled onlyActives />
+            </SView>
+            <SHr h={50} />
+            {/* <SText col={"xs-12"} fontSize={18}>Empresas en las que participo:</SText> */}
+            {/* {this.renderEmpresa(this.$params["pk"])} */}
 
         </SView>
 

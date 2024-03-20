@@ -1,6 +1,6 @@
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from '.';
-import { SDate, SNavigation, SPopup, SThread } from 'servisofts-component';
+import { SDate, SNavigation, SNotification, SPopup, STheme, SThread } from 'servisofts-component';
 import Model from '../../Model';
 
 class index extends DPA.edit {
@@ -38,7 +38,12 @@ class index extends DPA.edit {
             }).then((resp) => {
                 SNavigation.goBack();
             }).catch(e => {
-                console.error(e);
+                SNotification.send({
+                    title: "Error al generar comprobante.",
+                    body: e.error,
+                    color: STheme.color.danger,
+                    time: 10000
+                })
 
             })
         })

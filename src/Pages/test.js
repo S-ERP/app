@@ -1,16 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Linking } from 'react-native';
-import { SButtom, SDate, SDatePicker, SHr, SInput, SLoad, SPage, SText, STheme, SView } from 'servisofts-component';
-import SSocket from 'servisofts-socket'
-import Model from '../Model';
+import { SButtom, SDate, SDatePicker, SHr, SInput, SLoad, SPage, SSPiner, SText, STheme, SView } from 'servisofts-component';
+import STextPlay from '../Components/STextPlay';
 import Container from '../Components/Container';
-// import { CuentaContable } from 'servisofts-rn-contabilidad';
-// import MigradorDeAmortizaciones from '../Components/MigradorDeAmortizaciones';
 class Test extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            text: "Hola como"
         };
     }
     ref = {}
@@ -18,11 +15,17 @@ class Test extends Component {
     render() {
         return (
             <SPage title={'Test'} disableScroll>
-                <SDatePicker col={"xs-12"}
-                    flex
-                    onSelect={(e: SDate) => {
-                        console.log(e.toString("yyyy-MONTH-dd hh:mm:ss"));
+                <Container flex>
+                    <SHr />
+                    <SText fontSize={20}>Mesaje de algo {this.state.val}</SText>
+                    <SHr />
+                    <SSPiner flex itemHeight={60} defaultValue='Perder peso' options={["Ganar Peso", "Perder peso", "Ser fit", "Ganar flexibilidad", "Estar saludable", "sadsa"]} onChange={e => {
+                        this.setState({ val: e })
                     }} />
+                    <SHr />
+                    {/* <SText>Boton de abanzar</SText> */}
+                    {/* <SHr /> */}
+                </Container>
             </SPage >
         );
     }

@@ -42,7 +42,7 @@ class index extends Component {
             }}>
                 <SHr height={32} />
                 <Components.Container>
-                    <Components.empresa.Select />
+                    <Components.empresa.Select disabled />
                 </Components.Container>
                 <SHr height={32} />
 
@@ -53,6 +53,7 @@ class index extends Component {
                     <MenuButtom label={"Mi perfil"} url={"/profile"} icon={this.getIconProfile()} />
                     <MenuButtom label={"Reto"} url={"/tarea/reto"}  />
                     <MenuButtom label={"Test"} url={"/test"} />
+                    <MenuButtom label={"Facturacion"} url={"/facturacion"} icon={<SIcon name={"Box"} />} /> 
                 </MenuPages>
                 <SHr height={100} />
             </SPage>

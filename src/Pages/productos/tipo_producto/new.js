@@ -29,7 +29,7 @@ class index extends DPA.new {
         }
 
 
-        inp["tipo"].options = ["activo_fijo", "gasto_administrativo", "inventario", "venta_servicio"]
+        inp["tipo"].options = ["activo_fijo", "gasto_administrativo", "inventario", "venta_servicio", "bancos" ]
         inp["tipo"].onChangeText = (e) => {
             this.setState({ tipo: e })
         }

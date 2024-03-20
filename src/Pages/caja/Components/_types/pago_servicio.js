@@ -98,54 +98,61 @@ export default class index {
                                 }
                                 const key_caja_detalle = SUuid();
                                 // Intentamos amortizar
-                                Model.cuota_amortizacion.Action.registro({
-                                    data: {
-                                        descripcion: "Amortizacion de cuota desde caja.",
-                                        observacion: "--",
-                                        monto: montoFinal,
-                                        fecha: caja.fecha,
-                                        key_cuotas: Object.keys(cuotas),
-                                        key_caja_detalle: key_caja_detalle
-                                    },
-                                    key_usuario: Model.usuario.Action.getKey()
-                                }).then(e => {
 
-                                    var caja_detalle = {
-                                        key: key_caja_detalle,
-                                        "key_caja": caja.key,
-                                        "descripcion": "Pago de servicio",
-                                        "monto": montoFinal * -1,
-                                        "tipo": this.key,
-                                        "key_tipo_pago": tipo_pago.key,
-                                        "fecha": caja.fecha,
-                                        "data": {
-                                            "type": "pago_servicio",
-                                            "key_cuotas": Object.keys(cuotas),
-                                            key_amortizacion: e?.data?.key
-                                        }
+
+                                var caja_detalle = {
+                                    key: key_caja_detalle,
+                                    "key_caja": caja.key,
+                                    "descripcion": "Pago de servicio",
+                                    "monto": montoFinal * -1,
+                                    "tipo": this.key,
+                                    "key_tipo_pago": tipo_pago.key,
+                                    "fecha": caja.fecha,
+                                    "enviar_cierre_caja": !!tipo_pago?.pvtp?.enviar_cierre_caja,
+                                    key_cuenta_contable_banco: tipo_pago?.pvtp?.key_cuenta_contable,
+                                    "data": {
+                                        "type": "pago_servicio",
+                                        "key_cuotas": Object.keys(cuotas),
+                                        // key_amortizacion: e?.data?.key
                                     }
-                                    Model.caja_detalle.Action.registro({
-                                        data: caja_detalle,
-                                        key_empresa: Model.empresa.Action.getSelect()?.key,
-                                        key_usuario: Model.usuario.Action.getKey()
-                                    }).then((resp) => {
-                                        console.log(resp)
+                                }
+                                Model.caja_detalle.Action.registro({
+                                    data: caja_detalle,
+                                    key_empresa: Model.empresa.Action.getSelect()?.key,
+                                    key_usuario: Model.usuario.Action.getKey()
+                                }).then((resp) => {
+                                    console.log(resp)
 
-                                    })
-                                    // obj.data.key_amortizacion = e.data?.key;
-                                    // Model.caja_detalle.Action.editar({
-                                    //     data: obj,
-                                    //     key_empresa: Model.empresa.Action.getSelect()?.key,
-                                    //     key_usuario: Model.usuario.Action.getKey()
-                                    // }).then((e) => {
-                                    //     resolve("Editado con exito");
-                                    // }).catch(e => {
-                                    //     reject("Error al editar el movimiento de caja");
-                                    // })
                                 }).catch(e => {
-                                    reject("Error al amortizar");
-                                    console.error(e);
+                                    SPopup.alert(e.error)
                                 })
+                                // obj.data.key_amortizacion = e.data?.key;
+                                // Model.caja_detalle.Action.editar({
+                                //     data: obj,
+                                //     key_empresa: Model.empresa.Action.getSelect()?.key,
+                                //     key_usuario: Model.usuario.Action.getKey()
+                                // }).then((e) => {
+                                //     resolve("Editado con exito");
+                                // }).catch(e => {
+                                //     reject("Error al editar el movimiento de caja");
+                                // })
+
+
+                                // Model.cuota_amortizacion.Action.registro({
+                                //     data: {
+                                //         descripcion: "Amortizacion de cuota desde caja.",
+                                //         observacion: "--",
+                                //         monto: montoFinal,
+                                //         fecha: caja.fecha,
+                                //         key_cuotas: Object.keys(cuotas),
+                                //         key_caja_detalle: key_caja_detalle
+                                //     },
+                                //     key_usuario: Model.usuario.Action.getKey()
+                                // }).then(e => {
+                                // }).catch(e => {
+                                //     reject("Error al amortizar");
+                                //     console.error(e);
+                                // })
 
                             }
 

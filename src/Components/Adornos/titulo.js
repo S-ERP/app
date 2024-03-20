@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { SHr, SIcon, SImage, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SImage, SText, STheme, SUuid, SView } from 'servisofts-component';
+import STextPlay from '../STextPlay';
 type PropsType = {
     label: any,
 }
@@ -21,19 +22,18 @@ export default class index extends Component<PropsType> {
 
         return <>
             <SView col={"xs-12"} center>
-                <SImage src={require('../../Assets/png/franja.png')} style={{ width: " 100%", height: 85, borderRadius: 100, resizeMode: "contain" }} />
+                <SImage src={require('../../Assets/png/franja.png')} style={{ width: " 100%", height: 50, borderRadius: 100, resizeMode: "contain" }} />
             </SView>
-            <SView col={"xs-8"} style={{ padding: 10, borderRadius: 25, borderWidth: 3, borderColor: STheme.color.black, backgroundColor: STheme.color.white, }} center>
-                <SText color={STheme.color.black} center fontSize={this.props.fontSize} bold>
-                    {this.props.label}</SText>
+            <SView col={"xs-9"} style={{ padding: 10, borderRadius: 25, borderWidth: 3, borderColor: STheme.color.black, height: 140, backgroundColor: STheme.color.card }}  >
+                <STextPlay key={SUuid()} time={this.props.time ?? 30} col={"xs-12"} color={STheme.color.text} fontSize={this.props.fontSize} bold>{this.props.label}</STextPlay>
             </SView>
 
             <SView col={"xs-8"} style={{ position: "relative", top: -6, left: 10, zIndex: 9 }}>
-                <SIcon name="cola" width={35} height={24} />
+                <SIcon name="cola" width={35} height={24} fill={STheme.color.card} stroke={STheme.color.card} />
             </SView>
 
             <SView col={"xs-12"} center>
-                <SImage src={require('../../Assets/png/franja.png')} style={{ width: " 100%", height: 85, borderRadius: 100, resizeMode: "contain" }} />
+                <SImage src={require('../../Assets/png/franja.png')} style={{ width: " 100%", height: 50, borderRadius: 100, resizeMode: "contain" }} />
             </SView>
         </>
     }

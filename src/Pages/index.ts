@@ -28,10 +28,16 @@ import t2 from './t2';
 import temp from './temp';
 import tarea from './tarea';
 import menu from './menu';
-
+import home from './home';
+import home2 from './home2';
+import facturacion from './facturacion';
+import { Example } from 'servisofts-charts'
 export default SPage.combinePages("/", {
-    // "": Root,
-    "": menu,
+    // "":Example,
+    "": Root,
+    home,
+    home2,
+    // "": menu,
     menu,
     // "login": login,
     ...login,
@@ -59,5 +65,6 @@ export default SPage.combinePages("/", {
     ...reporte,
     ...bots,
     ...temp,
-    ...tarea
+    ...tarea,
+    ...facturacion
 });

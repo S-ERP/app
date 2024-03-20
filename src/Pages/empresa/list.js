@@ -24,6 +24,7 @@ class index extends DPA.list {
         if (!this.$params.onSelect) {
             if (Model.empresa.Action.getKey()) {
                 new SThread(50, "asldas").start(() => {
+                    console.log("AQUI LO MANDO AL PROFILE EN EL LIST EMPRESA")
                     SNavigation.replace("/empresa/profile", { pk: Model.empresa.Action.getKey() })
                 })
             }

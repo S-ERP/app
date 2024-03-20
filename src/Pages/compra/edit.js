@@ -28,7 +28,7 @@ class index extends DPA.edit {
         data.key_empresa = Model.empresa.Action.getSelect()?.key
         new SThread(1000, "esperarFoto", false).start(() => {
             let fecha = new SDate(data["_fecha"] + " " + data["_hora"], "yyyy-MM-dd hh:mm")
-            Parent.model.Action.editarCompraVenta({
+            Parent.model.Action.editar({
                 data: {
                     ...this.data,
                     ...data,

@@ -58,11 +58,11 @@ export default class index extends Component {
                 }}>
                     <SText bold color={STheme.color.success}>COMPRAR</SText>
                 </SView> */}
-                {/* <SView card style={{ padding: 16 }} onPress={() => {
+                <SView card style={{ padding: 16 }} onPress={() => {
                     Model.compra_venta.Action.changeState({ data: this.data, state: "cotizacion" })
                 }}>
                     <SText bold color={STheme.color.danger}>VOLVER A COTIZACION</SText>
-                </SView> */}
+                </SView>
             </SView>
         </SView>
 

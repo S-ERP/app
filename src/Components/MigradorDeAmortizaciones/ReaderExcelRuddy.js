@@ -76,7 +76,7 @@ export default class ReaderExcelRuddy extends Component {
     repaint(){
         if(!this.state.productos){
             return <>
-                <SText center fontSize={12}>A continuacion suba su excel de migracion</SText>
+                <SText center fontSize={12}>A continuación suba su excel de migración</SText>
                 <SHr height={10}/>
                 <SInput type={"file"} onChangeText={this.onChangeValue.bind(this)} />
                 <SHr height={20}/>
@@ -85,7 +85,7 @@ export default class ReaderExcelRuddy extends Component {
         if(this.state.productos){
             return <>
                 <SView backgroundColor={STheme.color.card} center padding={10} >
-                    <SText padding={15} fontSize={20} color='#fff'>Se analizo su archivo excel se encontraron:</SText>
+                    <SText padding={15} fontSize={20} color='#fff'>Se analizó su archivo excel se encontraron:</SText>
                     <SText padding={15} fontSize={20} color='#fff'>{Object.keys(this.state.marcas).length} marcas.</SText>
                     <SView flex row>
                     {

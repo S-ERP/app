@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SButtom, SDate, SHr, SIcon, SImage, SList, SLoad, SMath, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SButtom, SDate, SHr, SIcon, SImage, SList, SLoad, SMath, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../Model';
 import CajaActions from './CajaActions';
 import CajaDetalleItem from './CajaDetalleItem';
@@ -24,17 +24,36 @@ class CajaOpen extends Component {
         var punto_venta_tipo_pago = Model.punto_venta_tipo_pago.Action.getAll({ key_punto_venta: data.key_punto_venta });
 
         if (!caja_detales) return <SText>Cargando caja_detalles...</SText>
-        if (!usuario)  return <SText>Cargando usuario...</SText>
-        if (!punto_venta_tipo_pago)  return <SText>Cargando punto_venta_tipo_pago...</SText>
+        if (!usuario) return <SText>Cargando usuario...</SText>
+        if (!punto_venta_tipo_pago) return <SText>Cargando punto_venta_tipo_pago...</SText>
         // var monto_actual = Model.caja_detalle.Action.getMontoEnCaja({ key_caja: data.key });
         // console.log(data)
         return <SView center col={"xs-12"}>
             <Cajero data={data} />
             <SHr />
+            <SHr />
+            <SText onPress={() => {
+                SPopup.date("Selecciona la fecha", (a) => {
+                    Model.caja.Action.editar({
+                        data: {
+                            ...data,
+                            fecha: a.fecha + "T00:00:00"
+                        },
+                        key_usuario: Model.usuario.Action.getKey(),
+                    }).then(e => {
+                        console.log(e);
+                    }).catch(e => {
+                        console.error(e);
+                    })
+                })
+                // SNavigation.navigate("/caja/caja/edit", { pk: data.key })
+            }}>Cambiar fecha</SText>
+            <SHr />
+            <SHr />
             <SView col={"xs-12"} row>
                 <SView flex>
                     <SText color={STheme.color.text} fontSize={12}>{"Registrada el " + new SDate(data.fecha_on).toString("DAY, dd de MONTH del yyyy a las hh:mm")}</SText>
-                    <SText color={STheme.color.text} fontSize={12}>{"para la fecha " + new SDate(data.fecha,"yyyy-MM-dd").toString("DAY, dd de MONTH del yyyy")}</SText>
+                    <SText color={STheme.color.text} fontSize={12}>{"para la fecha " + new SDate(data.fecha, "yyyy-MM-dd").toString("DAY, dd de MONTH del yyyy")}</SText>
                     <SHr />
                     <SText color={STheme.color.warning} fontSize={12}>{data.fecha_cierre ? new SDate(data.fecha_cierre).toString("DAY, dd de MONTH del yyyy a las hh:mm") : "La caja se encuentra abierta."}</SText>
                 </SView>
@@ -68,6 +87,7 @@ class CajaOpen extends Component {
 
     render() {
         return (<SView col={"xs-11 sm-10 md-8 lg-6 xl-4"}>
+
             {this.render_open(this.props.data)}
             {/* <SelectMonedas key_empresa={this.props.sucursal.key_empresa}/> */}
         </SView>

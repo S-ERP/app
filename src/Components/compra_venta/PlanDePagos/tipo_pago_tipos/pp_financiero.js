@@ -153,12 +153,13 @@ class ComponentOpciones extends Component {
         this.cuotas = calcular_cuotas({
             data: this.props.data,
             totales: this.props.totales,
-            ...this.state
+            ...this.state,
+            fecha: this.state.fecha_aux
         });
         return <SView col={"xs-12"} >
             {this.editor()}
             <SHr />
-            <ListaCuotas data={this.state}cuotas={this.cuotas} totales={this.props.totales} />
+            <ListaCuotas data={this.state} cuotas={this.cuotas} totales={this.props.totales} />
         </SView>
     }
 }
@@ -188,20 +189,20 @@ const PMT = (ir, np, pv, fv, type) => {
 
     return pmt;
 }
-const calcular_cuotas = ({ data, totales, numero_cuotas, fecha_inicio, periodicidad_medida, periodicidad_valor, porcentaje_interes, cuota_inicial }) => {
+const calcular_cuotas = ({ data, totales, numero_cuotas, fecha, fecha_inicio, periodicidad_medida, periodicidad_valor, porcentaje_interes, cuota_inicial }) => {
     var total_pagar = totales.subtotal;
     var cuotas = []
     cuotas.push({
         codigo: 0,
         descripcion: "Inicial",
         monto: cuota_inicial,
-        fecha: new SDate().toString("yyyy-MM-dd")
+        fecha: new SDate(fecha,"yyyy-MM-dd").toString("yyyy-MM-dd")
     })
 
     var total_al_credito = total_pagar - cuota_inicial;
     var pmt = -PMT(porcentaje_interes / 100, numero_cuotas, total_al_credito, 0, 0)
     for (let i = 0; i < numero_cuotas; i++) {
-        let initDate = new SDate(fecha_inicio, "yyyy-MM-dd");
+        let initDate = new SDate(fecha, "yyyy-MM-dd");
         var pdata = PERIODICIDAD_DATA[periodicidad_medida];
         if (pdata.add) {
             var d = (i + 1) * periodicidad_valor

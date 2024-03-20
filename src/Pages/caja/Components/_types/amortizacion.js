@@ -33,13 +33,15 @@ export default class amortizacion {
                     key_caja_detalle: obj.key
                 },
                 key_usuario: Model.usuario.Action.getKey()
-            }).then(e => {
+            }, 1000 * 60).then(e => {
                 var amortizacion = e.data;
-                obj.data.key_amortizacion = e.amortizaciones;
-                obj.cuentas = Object.values(e.cuentas);
+                if (!obj.data) obj.data = {}
+                obj.data.key_amortizacion = amortizacion.key;
+                // obj.cuentas = Object.values(e.cuentas);
                 Model.caja_detalle.Action.editar({
                     data: obj,
-                    key_usuario: Model.usuario.Action.getKey()
+                    key_usuario: Model.usuario.Action.getKey(),
+                    key_empresa: Model.empresa.Action.getKey(),
                 }).then((e) => {
                     resolve("Editado con exito");
                 }).catch(e => {
@@ -83,7 +85,8 @@ export default class amortizacion {
                             key_punto_venta: caja.key_punto_venta,
                             _type: this.key,
                             onSelect: (tipo_pago) => {
-                                console.log("Selecciono el tipo de pago");
+                                console.log("Selecciono el tipo de pago",tipo_pago);
+
                                 var caja_detalle = {
                                     "key_caja": caja.key,
                                     "descripcion": "Amortizacion de cuota",
@@ -91,6 +94,8 @@ export default class amortizacion {
                                     "tipo": this.key,
                                     "key_tipo_pago": tipo_pago.key,
                                     "fecha": caja.fecha,
+                                    "enviar_cierre_caja": !!tipo_pago?.pvtp?.enviar_cierre_caja,
+                                    key_cuenta_contable_banco: tipo_pago?.pvtp?.key_cuenta_contable,
                                     "data": {
                                         "type": "amortizacion",
                                         "key_cuotas": Object.keys(cuotas)
@@ -98,7 +103,8 @@ export default class amortizacion {
                                 }
                                 Model.caja_detalle.Action.registro({
                                     data: caja_detalle,
-                                    key_usuario: Model.usuario.Action.getKey()
+                                    key_usuario: Model.usuario.Action.getKey(),
+                                    key_empresa: Model.empresa.Action.getKey(),
                                 }).then((resp) => {
                                     console.log(resp)
 

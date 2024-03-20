@@ -95,6 +95,7 @@ export default class Detalle extends Component {
                             descuento: 0,
                             data: {
                                 precio_venta: resp.precio_venta,
+                                precio_compra: resp.precio_compra ?? 0,
                                 key_cuenta_contable: resp?.modelo?.tipo_producto.key_cuenta_contable,
                             }
                         },
@@ -123,7 +124,7 @@ export default class Detalle extends Component {
             // SNavigation.navigate("/venta/detalle/new", { key_compra_venta: this.data.key })
             SNavigation.navigate("/productos/modelo", {
                 onSelect: (resp) => {
-                   
+
                     // if (!resp?.modelo?.tipo_producto) {
                     //     SPopup.alert("No se encontro tipo producto");
                     //     return true;
@@ -166,6 +167,7 @@ export default class Detalle extends Component {
                             descuento: 0,
                             data: {
                                 precio_venta: resp.precio_venta,
+
                                 key_cuenta_contable: resp?.tipo_producto.key_cuenta_contable,
                             }
                         },

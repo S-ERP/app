@@ -31,7 +31,9 @@ class index extends DPA.new {
         let sucursal = Model.sucursal.Action.getByKey(this.$params.key_sucursal)
         if (!sucursal) return <SLoad />
         let centro_costo = Model.centro_costo.Action.getByKey(sucursal.key_centro_costo);
-        if (!centro_costo) return <SLoad />
+        if (!centro_costo){
+            centro_costo = {}
+        }
         return <>
             {super.$render()}
             <NuevaCuentaAutomatica ref={ref => this.nueva_cuenta = ref} key_ajuste='caja' key_empresa={Model.empresa.Action.getKey()} descripcion={centro_costo.codigo + "-" + (this.state.descripcion??"")} />

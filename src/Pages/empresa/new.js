@@ -25,7 +25,7 @@ class index extends Component {
             key_usuario: Model.usuario.Action.getKey()
         }).then((resp) => {
             Model.empresa.Action.setEmpresa(resp.data);
-            SNavigation.replace("/menu")
+            SNavigation.replace("/home")
             SNavigation.navigate("/empresa/init")
             // SNavigation.goBack();
         }).catch(e => {
@@ -40,11 +40,12 @@ class index extends Component {
             return null;
         }
         return (
-            <SPage title={''} center onRefresh={(end) => {
+            <SPage title={''} onRefresh={(end) => {
                 Model.usuarioPage.Action.CLEAR();
                 end()
 
             }}>
+                <SHr height={20} />
                 <Container >
                     {/* <SHr height={10} /> */}
                     {/* <SView col={"xs-8"} style={{ padding: 10, borderRadius: 25, borderWidth: 1, borderColor: STheme.color.secondary }} center>
@@ -54,7 +55,7 @@ class index extends Component {
                         <SText center fontSize={18} bold>
                             ¡SIN MIEDO AL ÉXITO !</SText>
                     </SView> */}
-                    <Adornos.titulo label={"Para iniciar esta nueva aventura necesitas crear tu empresa y personalizarla."} fontSize={20} />
+                    <Adornos.titulo time={30} label={"Para iniciar esta nueva aventura necesitas crear tu empresa y personalizarla.\n¡Clic en comenzar!"} fontSize={18} />
                     {/* <SHr height={25} /> */}
                     <SView col={"xs-12"} center>
                         <SIcon name="construEmpresa" width={230} height={196} />

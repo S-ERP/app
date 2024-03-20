@@ -27,7 +27,7 @@ class index extends DPA.new {
             isRequired: true,
             type: "select",
             value: this.state.tipo,
-            options: ["", "activo_fijo", "inventario", "gasto_administrativo"]
+            options: ["", "activo_fijo", "inventario", "gasto_administrativo" , "servicio"]
         }
         imp["descripcion"].col = "xs-12 md-12"
         imp["descripcion"].type = "textArea"
