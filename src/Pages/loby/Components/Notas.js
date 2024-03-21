@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SDate, SHr, SList, SLoad, SNavigation, SText, STheme, SThread, SView } from 'servisofts-component';
+import { SDate, SHr, SIcon, SList, SLoad, SNavigation, SText, STheme, SThread, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
 import { connect } from 'react-redux';
@@ -45,22 +45,31 @@ class Notas extends Component {
     }
     Item = ({ observacion, fecha_on, cantidad_participantes, key, color }) => {
         return <SView padding={4} >
+            <SHr height={5} />
+
             <SView style={{
                 width: 120,
                 height: 110,
                 backgroundColor: color ?? "#EDE485",
                 borderBottomRightRadius: 10
             }} padding={4} onPress={() => { SNavigation.navigate("/nota", { pk: key }) }}>
-                <SHr />
+                <SView flex style={{ alignItems: "flex-end", position: "absolute", top: -8, right: 0, overflow: "hidden" }}>
+                    <SIcon name={"pinchito"} width={14} height={25} />
+                </SView>
+
                 <SView col={"xs-12"} flex style={{
                     overflow: "hidden"
                 }}>
+                    <SHr height={10} />
                     <SText fontSize={12} color={"#000"}>{observacion}</SText>
                 </SView>
                 <SView row>
                     <SText color={"#666"} fontSize={10}>{new SDate(fecha_on, "yyyy-MM-ddThh:mm:ss").toString("MON dd, yyyy")}</SText>
                     <SView flex />
                     <SText color={"#666"} fontSize={10}>+ {cantidad_participantes}</SText>
+                    <SView  style={{  position: "absolute", top: -8, right: 0, overflow: "hidden" }}>
+                        {/* <SIcon name={"notaEsquina"} width={20} height={35} /> */}
+                    </SView>
                 </SView>
             </SView>
         </SView>

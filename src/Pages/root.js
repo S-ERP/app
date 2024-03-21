@@ -10,10 +10,10 @@ import BoxMenu from '../Components/Popups/BoxMenu';
 import STextPlay from '../Components/STextPlay';
 
 const Card = ({ label, value, backgroundColor, onPress, icon }) => {
-    return <SView col={"xs-12 sm-6 md-6 lg-6 xl-6 xxl-6"} center padding={8}
+    return <SView col={"xs-12 sm-6 md-6 lg-6 xl-6 xxl-6"} padding={8}
 
     >
-        <SView col={"xs-12"} height={70} row card center
+        <SView col={"xs-12"} height={75} row card center
             style={{
                 borderRadius: 8,
                 borderTopWidth: 1,
@@ -27,16 +27,17 @@ const Card = ({ label, value, backgroundColor, onPress, icon }) => {
                 backgroundColor: STheme.color.card,
             }}
             onPress={onPress}>
+            <SHr height={10} />
             <SView col={"xs-3"} center>
-                <SIcon name={icon} width={40} height={40} fill={STheme.color.text} stroke={STheme.color.text} />
+                <SIcon name={icon} width={40} height={40} fill={STheme.color.text} />
             </SView>
             <SView col={"xs-9"} center>
                 <SText fontSize={17} bold color={STheme.color.text}>{value}</SText>
-
                 <SText center fontSize={10} color={STheme.color.text}>{label}</SText>
-                {/* <SHr height={15} /> */}
             </SView>
+            <SHr height={15} />
         </SView>
+        <SHr height={15} />
     </SView>
 }
 
@@ -51,10 +52,10 @@ class index extends Component {
             {/* <SText padding={16} card onPress={() => {
                 SNavigation.navigate("/empresa")
             }} center>Crear empresa</SText> */}
-            <Card label={"Puedes construir tu propia empresa y personalizarla."} icon={"empresa"} value={"CREAR EMPRESA"} backgroundColor={STheme.color.success + "AA"} onPress={() => {
+            <Card label={"Puedes construir tu propia empresa y personalizarla."} icon={'empresa'} value={"CREAR EMPRESA"} backgroundColor={STheme.color.success + "AA"} onPress={() => {
                 SNavigation.navigate("/empresa/new")
             }} />
-            <Card label={"Busca la empresa de tu preferencia para solicitar ser parte de ella."} icon={"empresaBuscar"} value={"BUSCAR EMPRESA"} backgroundColor={STheme.color.success + "AA"} onPress={() => {
+            <Card label={"Busca la empresa de tu preferencia para solicitar ser parte de ella."} icon={'empresaBuscar'} value={"BUSCAR EMPRESA"} backgroundColor={STheme.color.success + "AA"} onPress={() => {
                 SNavigation.navigate("/empresa", {
                     onSelect: (empresa) => {
                         SPopup.confirm({

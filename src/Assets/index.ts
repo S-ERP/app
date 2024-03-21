@@ -17,6 +17,9 @@ import bgBoton, { ReactComponent as bgBotonW } from './svg/bgBoton.svg';
 import cola, { ReactComponent as colaW } from './svg/cola.svg';
 import picture, { ReactComponent as pictureW } from './svg/picture.svg';
 import hand, { ReactComponent as handW } from './svg/hand.svg';
+import chip, { ReactComponent as chipW } from './svg/chip.svg';
+import pinchito, { ReactComponent as pinchitoW } from './svg/pinchito.svg';
+import notaEsquina, { ReactComponent as notaEsquinaW } from './svg/notaEsquina.svg';
 
 
 const Assets: SAssets = {
@@ -27,7 +30,7 @@ const Assets: SAssets = {
         "profile2": { Native: profile2, Web: profile2W },
         "IconChecked": { Native: IconChecked, Web: IconCheckedW },
         "IconCheckedOk": { Native: IconCheckedOk, Web: IconCheckedOkW },
-        "empresa": { Native: empresaBuscar, Web: empresaW },
+        "empresa": { Native: empresa, Web: empresaW },
         "empresaBuscar": { Native: empresaBuscar, Web: empresaBuscarW },
         "bg1": { Native: bg1, Web: bg1W },
         "img1": { Native: img1, Web: img1W },
@@ -38,6 +41,12 @@ const Assets: SAssets = {
         "cola": { Native: cola, Web: colaW },
         "picture": { Native: picture, Web: pictureW },
         "hand": { Native: hand, Web: handW },
+        "chip": { Native: chip, Web: chipW },
+        "pinchito": { Native: pinchito, Web: pinchitoW },
+        "notaEsquina": { Native: notaEsquina, Web: notaEsquinaW },
+        
+        
+        
         
         
         
