@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SDate, SHr, SList, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SList, SLoad, SNavigation, SText, STheme, SThread, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
+import { connect } from 'react-redux';
 
-export default class Notas extends Component {
+class Notas extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -12,22 +13,42 @@ export default class Notas extends Component {
 
     }
     componentDidMount() {
+        this.hilo();
+    }
+
+    loadData() {
+
         SSocket.sendPromise({
             component: "nota",
             type: "getAll",
             key_empresa: Model.empresa.Action.getKey(),
             key_usuario: Model.usuario.Action.getKey()
         }).then(e => {
-            this.setState({ data: e.data })
+            Model.nota.Action._dispatch(e);
+            // this.setState({ data: e.data })
+            // this.hilo();
+        })
+    }
+    hilo() {
+
+        // console.log("Entro al hi.lo")
+        new SThread(5000, "hilo_nota_loby", false).start(() => {
+            if (this.isClose) return;
+            this.hilo();
+            this.loadData();
+
         })
     }
 
-    Item = ({ observacion, fecha_on, cantidad_participantes, key }) => {
+    componentWillUnmount() {
+        this.isClose = true;
+    }
+    Item = ({ observacion, fecha_on, cantidad_participantes, key, color }) => {
         return <SView padding={4} >
             <SView style={{
                 width: 120,
                 height: 110,
-                backgroundColor: "#EDE485",
+                backgroundColor: color ?? "#EDE485",
                 borderBottomRightRadius: 10
             }} padding={4} onPress={() => { SNavigation.navigate("/nota", { pk: key }) }}>
                 <SHr />
@@ -45,19 +66,33 @@ export default class Notas extends Component {
         </SView>
     }
     render() {
+        let notas = Model.nota.Action.getAll();
+        if (!notas) return <SLoad />
         return <SView col={"xs-12"} >
             <SView row>
                 <SText> Notas</SText>
                 <SView width={8} />
-                <SText onPress={() => SNavigation.navigate("/nota")}> + </SText>
+                <SText onPress={() => SNavigation.navigate("/nota", {
+                    onChange: (e) => {
+                        this.state.data[e.key] = e;
+                        this.setState({ ...this.state.data })
+                    }
+                })}> + </SText>
             </SView>
             <SHr />
             <SList
                 horizontal
-                data={this.state.data}
+                data={notas}
+                order={[{ key: "fecha_on", order: "desc" }]}
                 render={(a) => this.Item(a)}
 
             />
         </SView>
     }
 }
+
+
+const initStates = (state) => {
+    return { state }
+};
+export default connect(initStates)(Notas);

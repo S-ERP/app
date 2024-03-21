@@ -131,7 +131,7 @@ class index extends Component {
                 render={(a) => {
                     return <SView col={"xs-12"} card padding={8} row onPress={() => {
                         Model.empresa.Action.setEmpresa(a.empresa);
-                        SNavigation.navigate("/home")
+                        SNavigation.navigate("/loby")
                         // SNavigation.navigate("/empresa/profile", { pk: a.key_empresa })
                     }}>
                         <SView width={40} height={40} card>

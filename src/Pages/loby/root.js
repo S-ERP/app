@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SLoad, SPage, SThread, SView } from 'servisofts-component';
+import { SHr, SLoad, SNavigation, SPage, SText, STheme, SThread, SView } from 'servisofts-component';
 import UsuariosActivos from './Components/UsuariosActivos';
 import Container from '../../Components/Container';
 import MyPerfil from './Components/MyPerfil';
@@ -13,20 +13,31 @@ export default class root extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            cargar: true
         };
     }
 
     content() {
-        if (this.state.cargar) {
-            new SThread(1000, "assda").start(() => {
+        if (!!this.state.cargar) {
+            new SThread(500, "adasdasd", true).start(() => {
                 this.setState({ cargar: false })
             })
 
-            return null;
+            return <SLoad />;
         }
         return <SView col={"xs-12"} center>
-            <SView col={"xs-12 sm-10 md-8 lg-6 xl-4 xxl-3"} center >
-
+            <SView col={"xs-12 sm-10 md-9 lg-7 xl-6 xxl-5"} center >
+                <SHr h={16} />
+                <SView row col={"xs-12"}>
+                    <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.reset("/")}>Empresas</SText>
+                    <SView width={8} />
+                    <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/menu")}>Menu</SText>
+                    <SView width={8} />
+                    <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/tarea/reto")}>Retos</SText>
+                    <SView width={8} />
+                    <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/usuario")}>Usuarios</SText>
+                    <SView width={8} />
+                </SView>
                 <SHr h={16} />
                 <UsuariosActivos />
                 <SHr h={16} />
