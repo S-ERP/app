@@ -44,16 +44,16 @@ class Notas extends Component {
         this.isClose = true;
     }
     Item = ({ observacion, fecha_on, cantidad_participantes, key, color }) => {
-        return <SView padding={4} >
+        return <SView padding={4} onPress={() => { SNavigation.navigate("/nota", { pk: key }) }}>
             <SHr height={5} />
 
             <SView style={{
                 width: 120,
                 height: 110,
                 backgroundColor: color ?? "#EDE485",
-                borderBottomRightRadius: 10
-            }} padding={4} onPress={() => { SNavigation.navigate("/nota", { pk: key }) }}>
-                <SView flex style={{ alignItems: "flex-end", position: "absolute", top: -8, right: 0, overflow: "hidden" }}>
+                // borderBottomRightRadius: 10
+            }} padding={4}>
+                <SView style={{ position: "absolute", top: -8, right: 0, overflow: "hidden" }}>
                     <SIcon name={"pinchito"} width={14} height={25} />
                 </SView>
 
@@ -64,14 +64,21 @@ class Notas extends Component {
                     <SText fontSize={12} color={"#000"}>{observacion}</SText>
                 </SView>
                 <SView row>
-                    <SText color={"#666"} fontSize={10}>{new SDate(fecha_on, "yyyy-MM-ddThh:mm:ss").toString("MON dd, yyyy")}</SText>
+
                     <SView flex />
                     <SText color={"#666"} fontSize={10}>+ {cantidad_participantes}</SText>
-                    <SView  style={{  position: "absolute", top: -8, right: 0, overflow: "hidden" }}>
-                        {/* <SIcon name={"notaEsquina"} width={20} height={35} /> */}
-                    </SView>
+
                 </SView>
             </SView>
+            <SView row>
+                <SView height={16} backgroundColor={color ?? "#EDE485"} width={92} style={{padding:2}}>
+                    <SText color={"#666"} fontSize={10}>{new SDate(fecha_on, "yyyy-MM-ddThh:mm:ss").toString("MON dd, yyyy")}</SText>
+                </SView>
+                <SView height={16} width={28} style={{ position: "relative", top: 0, right: 0, overflow: "hidden", alignItems: "flex-end" }}>
+                    <SIcon name={"notaEsquina"} width={28} height={16} fill={color ? color + "80" : "#EDE48580"} />
+                </SView>
+            </SView>
+
         </SView>
     }
     render() {
@@ -79,7 +86,7 @@ class Notas extends Component {
         if (!notas) return <SLoad />
         return <SView col={"xs-12"} >
             <SView row>
-                <SText> Notas</SText>
+                <SText  bold fontSize={15}> Notas</SText>
                 <SView width={8} />
                 <SText onPress={() => SNavigation.navigate("/nota", {
                     onChange: (e) => {

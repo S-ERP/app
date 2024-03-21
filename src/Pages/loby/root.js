@@ -8,7 +8,9 @@ import Notas from './Components/Notas';
 import MyBilletera from './Components/MyBilletera';
 import Actividades from './Components/Actividades';
 import PerfilEmpresa from './Components/PerfilEmpresa';
+import PHr from '../../Components/PHr';
 import Model from '../../Model';
+import Publicaciones from './Components/Publicaciones';
 
 export default class root extends Component {
     constructor(props) {
@@ -43,9 +45,9 @@ export default class root extends Component {
                     {/* <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/usuario")}>Usuarios</SText> */}
                     {/* <SView width={8} /> */}
                 </SView>
-                <SHr h={16} />
+                <PHr />
                 <UsuariosActivos />
-                <SHr h={16} />
+                <PHr />
                 <SView row col={"xs-12"}>
                     <SView col={"xs-6"}>
                         <MyPerfil />
@@ -54,10 +56,12 @@ export default class root extends Component {
                         <MyBilletera />
                     </SView>
                 </SView>
-                <SHr h={16} />
+                <PHr />
                 <Notas />
-                <SHr h={16} />
+                <PHr />
                 <Actividades />
+                <PHr />
+                <Publicaciones />
             </SView>
         </SView>
     }

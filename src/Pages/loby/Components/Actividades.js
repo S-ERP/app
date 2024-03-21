@@ -39,14 +39,18 @@ export default class Actividades extends Component {
                 <SHr />
                 <SText color={STheme.color.text} fontSize={18} bold>{dia.toString("dd")}</SText>
             </SView>
-
+            {!dia.isCurDate() ? null :
+                <SView center width={15} height={15} style={{ position: "absolute", bottom: 0, right: 0, borderRadius: 45 }} backgroundColor={STheme.color.danger}>
+                    <SText fontSize={8} color={STheme.color.white} >5</SText>
+                </SView>
+            }
         </SView>
     }
     render() {
         let semana = new SDate().getFirstDayOfWeek();
         return <SView col={"xs-12"} >
             <SView row>
-                <SText> Actividades</SText>
+                <SText  bold fontSize={15}> Actividades</SText>
                 <SView width={8} />
                 <SText onPress={() => SNavigation.navigate("/tarea")}> + </SText>
             </SView>
