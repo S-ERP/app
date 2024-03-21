@@ -83,7 +83,7 @@ export default class root extends Component {
 
     menu() {
         if (!this.state.data) return;
-        return <SView col={"xs-12"} row>
+        return <SView col={"xs-12"} row >
             <ChangeColor value={this.state?.data?.color} onChange={(color => {
                 this.state.data.color = color;
                 this.setState({ ...this.state })
@@ -141,11 +141,19 @@ export default class root extends Component {
                 type={"textArea"}
                 customStyle={"clean"}
                 width={"100%"}
-                height={"100%"}
+                // height={"100%"}
                 autoFocus
+                // numberOfLines={1000}
+                multiline
                 style={{
                     color: "#000",
-                    padding: 6
+                    height:"100%",
+                    // backgroundColor:"#f0f",
+                    padding: 6,
+                    textAlignVertical: 'top'
+                    // alignContent:"flex-start",
+                    // alignItems:"flex-start",
+                    // textAlign:"left"
                 }}
                 placeholder={"¡Hola! Escribe tu mensaje y no te preocupes por guardarlo. \n¡se guardará automáticamente en unos segundos!"}
                 onChangeText={e => {
