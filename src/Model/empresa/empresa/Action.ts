@@ -20,6 +20,7 @@ export default class Action extends SAction {
     setEmpresa(data) {
         SStorage.setItem("empresa_select", JSON.stringify(data));
         Model._events.CLEAR();
+        this._getReducer().select = data;
         new SThread(100, "asdasd", true).start(() => {
             STheme.color = {
                 ...STheme.color,

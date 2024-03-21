@@ -24,11 +24,11 @@ export default class PerfilEmpresa extends Component {
                 borderColor: STheme.color.card,
                 overflow: "hidden"
             }}>
-                <SImage src={Model.empresa._get_image_download_path(SSocket.api, empresa.key)} />
+                <SImage src={Model.empresa._get_image_download_path(SSocket.api, empresa?.key)} />
             </SView>
             <SHr />
             <SView padding={4}>
-                <SText bold fontSize={20}>{empresa.razon_social}</SText>
+                <SText bold fontSize={20}>{empresa?.razon_social}</SText>
             </SView>
             <SHr />
         </SView>

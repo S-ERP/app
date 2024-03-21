@@ -1,7 +1,7 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { SHr, SIcon, SImage, SList, SLoad, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { View, Text, StyleSheet, Platform } from 'react-native';
+import { SHr, SIcon, SImage, SList, SLoad, SNavigation, SPage, SPopup, SText, STheme, SThread, SView } from 'servisofts-component';
 import Model from '../Model';
 import { connect } from 'react-redux';
 import Container from '../Components/Container';
@@ -28,7 +28,7 @@ const Card = ({ label, value, backgroundColor, onPress, icon }) => {
             }}
             onPress={onPress}>
             <SView col={"xs-3"} center>
-                <SIcon name={icon} width={40} height={40} fill={STheme.color.text} stroke={STheme.color.text}/>
+                <SIcon name={icon} width={40} height={40} fill={STheme.color.text} stroke={STheme.color.text} />
             </SView>
             <SView col={"xs-9"} center>
                 <SText fontSize={17} bold color={STheme.color.text}>{value}</SText>
@@ -131,7 +131,11 @@ class index extends Component {
                 render={(a) => {
                     return <SView col={"xs-12"} card padding={8} row onPress={() => {
                         Model.empresa.Action.setEmpresa(a.empresa);
-                        SNavigation.navigate("/loby")
+                        let time = Platform.select({ web: 200, native: 800 });
+                        new SThread(time, "sadasd").start(() => {
+                            SNavigation.navigate("/loby")
+                        })
+
                         // SNavigation.navigate("/empresa/profile", { pk: a.key_empresa })
                     }}>
                         <SView width={40} height={40} card>
