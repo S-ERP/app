@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SImage, SList, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SImage, SList, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
 
@@ -24,7 +24,9 @@ export default class UsuariosActivos extends Component {
     }
 
     usuarioItem = ({ alias, key_usuario }) => {
-        return <SView width={80} height={80} center>
+        return <SView width={80} height={80} center onPress={() => {
+            SNavigation.navigate("/usuario/profile", { pk: key_usuario })
+        }}>
             <SView style={{ width: 60, height: 60, borderRadius: 100, }}>
                 <SView style={{
                     width: "100%",
@@ -33,7 +35,7 @@ export default class UsuariosActivos extends Component {
                     borderWidth: 2,
                     borderColor: STheme.color.card,
                     backgroundColor: STheme.color.card,
-                    overflow:"hidden"
+                    overflow: "hidden"
                 }}>
 
                     <SImage src={Model.usuario._get_image_download_path(SSocket.api, key_usuario)} />

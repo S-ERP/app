@@ -1,6 +1,7 @@
 import { SPage } from "servisofts-component";
 import Model from "../../Model";
 import list from "./list";
+import list_empresa from "./list_empresa";
 import table from "./table";
 import _new from "./new";
 import profile from "./profile";

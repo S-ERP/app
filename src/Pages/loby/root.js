@@ -29,14 +29,14 @@ export default class root extends Component {
             <SView col={"xs-12 sm-10 md-9 lg-7 xl-6 xxl-5"} center >
                 <SHr h={16} />
                 <SView row col={"xs-12"}>
-                    <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.reset("/")}>Empresas</SText>
+                    <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.reset("/")}>Cambiar de empresa</SText>
                     <SView width={8} />
-                    <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/menu")}>Menu</SText>
+                    <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/menu")}>Administrar la empresa</SText>
                     <SView width={8} />
-                    <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/tarea/reto")}>Retos</SText>
-                    <SView width={8} />
-                    <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/usuario")}>Usuarios</SText>
-                    <SView width={8} />
+                    {/* <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/tarea/reto")}>Retos</SText> */}
+                    {/* <SView width={8} /> */}
+                    {/* <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/usuario")}>Usuarios</SText> */}
+                    {/* <SView width={8} /> */}
                 </SView>
                 <SHr h={16} />
                 <UsuariosActivos />

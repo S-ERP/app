@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SDate, SHr, SList, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SList, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
 
@@ -45,7 +45,11 @@ export default class Actividades extends Component {
     render() {
         let semana = new SDate().getFirstDayOfWeek();
         return <SView col={"xs-12"} >
-            <SText> Actividades</SText>
+            <SView row>
+                <SText> Actividades</SText>
+                <SView width={8} />
+                <SText onPress={() => SNavigation.navigate("/tarea")}> + </SText>
+            </SView>
             <SHr />
             <SView col={"xs-12"} row>
                 {new Array(7).fill(0).map((a, i) => this.Item(a, i, semana))}
