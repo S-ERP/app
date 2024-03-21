@@ -440,7 +440,7 @@ PODS:
   - React-jsinspector (0.71.4)
   - React-logger (0.71.4):
     - glog
-  - react-native-blob-util (0.19.4):
+  - react-native-blob-util (0.19.8):
     - React-Core
   - react-native-cameraroll (5.8.0):
     - React-Core
@@ -580,7 +580,7 @@ PODS:
     - RNFBApp
   - RNFileViewer (2.1.5):
     - React-Core
-  - RNFlashList (1.6.3):
+  - RNFlashList (1.6.4):
     - React-Core
   - RNFS (2.20.0):
     - React-Core
@@ -630,9 +630,7 @@ PODS:
     - React-Core
   - RNSVG (12.5.1):
     - React-Core
-  - servisofts-background-location (2.0.3):
-    - React-Core
-  - servisofts-component (3.0.19):
+  - servisofts-component (3.0.21):
     - React-Core
   - servisofts-socket (4.0.4):
     - CocoaAsyncSocket
@@ -734,7 +732,6 @@ DEPENDENCIES:
   - RNShare (from `../node_modules/react-native-share`)
   - RNSound (from `../node_modules/react-native-sound`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - servisofts-background-location (from `../node_modules/servisofts-background-location`)
   - servisofts-component (from `../node_modules/servisofts-component`)
   - servisofts-socket (from `../node_modules/servisofts-socket`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -904,8 +901,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-sound"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  servisofts-background-location:
-    :path: "../node_modules/servisofts-background-location"
   servisofts-component:
     :path: "../node_modules/servisofts-component"
   servisofts-socket:
@@ -968,7 +963,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: d6b7fa9260aa3cb40afee0507e3bc1d17ecaa6f2
   React-jsinspector: 1f51e775819199d3fe9410e69ee8d4c4161c7b06
   React-logger: 0d58569ec51d30d1792c5e86a8e3b78d24b582c6
-  react-native-blob-util: 30a6c9fd067aadf9177e61a998f2c7efb670598d
+  react-native-blob-util: 26f1fb0c91f2b437380d4f3875769a7c3e06080e
   react-native-cameraroll: 8cc80e0922a6a432938a26f3b50714adcb2adb5f
   react-native-compressor: ebcf8bc36f8e44581a8f831583caee8a27e55a01
   react-native-document-picker: ec07866a30707f23660c0f3ae591d669d3e89096
@@ -1000,7 +995,7 @@ SPEC CHECKSUMS:
   RNFBApp: e4439717c23252458da2b41b81b4b475c86f90c4
   RNFBMessaging: 40dac204b4197a2661dec5be964780c6ec39bf65
   RNFileViewer: ce7ca3ac370e18554d35d6355cffd7c30437c592
-  RNFlashList: 4b4b6b093afc0df60ae08f9cbf6ccd4c836c667a
+  RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNGoogleSignin: d7f8368b82d94f1dec964785d496387ca7f19092
@@ -1010,13 +1005,12 @@ SPEC CHECKSUMS:
   RNShare: a5dc3b9c53ddc73e155b8cd9a94c70c91913c43c
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
-  servisofts-background-location: 848ddaf74f11525258aa4f7444fd684768534632
-  servisofts-component: 6f064c25419905ca3eb41a5f32dbc852e16884f1
+  servisofts-component: 4750154a91b415cdef72957c5a58d7cabffd77ce
   servisofts-socket: 78f4e16a21755981804751f11fd771ed59d5fb29
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 79dd7410de6f8ad73a77c868d3d368843f0c93e0
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: b5c7ae50f7beecbd8908a62b1edab9ba0ce96c47
+PODFILE CHECKSUM: d7de1b9baa52df26b6c7a5b154d5223e2c318a1d
 
 COCOAPODS: 1.15.2

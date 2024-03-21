@@ -8,6 +8,7 @@ import Notas from './Components/Notas';
 import MyBilletera from './Components/MyBilletera';
 import Actividades from './Components/Actividades';
 import PerfilEmpresa from './Components/PerfilEmpresa';
+import Model from '../../Model';
 
 export default class root extends Component {
     constructor(props) {
@@ -20,6 +21,10 @@ export default class root extends Component {
     content() {
         if (!!this.state.cargar) {
             new SThread(500, "adasdasd", true).start(() => {
+                if (!Model.empresa.Action.getKey()) {
+                    SNavigation.replace("/root")
+                    return;
+                }
                 this.setState({ cargar: false })
             })
 
@@ -29,12 +34,12 @@ export default class root extends Component {
             <SView col={"xs-12 sm-10 md-9 lg-7 xl-6 xxl-5"} center >
                 <SHr h={16} />
                 <SView row col={"xs-12"}>
-                    <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.reset("/")}>Cambiar de empresa</SText>
+                    <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/root")}>Cambiar de empresa</SText>
                     <SView width={8} />
-                    <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/menu")}>Administrar la empresa</SText>
+                    <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.replace("/menu")}>Administrar la empresa</SText>
                     <SView width={8} />
-                    {/* <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/tarea/reto")}>Retos</SText> */}
-                    {/* <SView width={8} /> */}
+                    <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/home3")}>Home3</SText>
+                    <SView width={8} />
                     {/* <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/usuario")}>Usuarios</SText> */}
                     {/* <SView width={8} /> */}
                 </SView>
@@ -64,6 +69,7 @@ export default class root extends Component {
             <SHr h={16} />
             <PerfilEmpresa />
             {this.content()}
+            <SHr h={100}/>
         </SPage>
     }
 }

@@ -42,7 +42,7 @@ class index extends DPA.list {
     }
     $item(obj) {
         return <SView backgroundColor={obj?.theme?.barColor + "55"}>
-            <SGradient colors={[obj?.theme?.barColor+"66", obj?.theme?.background+"66"]} deg={90} />
+            {/* <SGradient colors={[obj?.theme?.barColor+"66", obj?.theme?.background+"66"]} deg={90} /> */}
             {super.$item(obj)}
         </SView>
     }

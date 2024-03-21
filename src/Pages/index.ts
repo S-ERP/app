@@ -33,11 +33,13 @@ import home2 from './home2';
 import home3 from './home3';
 import facturacion from './facturacion';
 import loby from './loby';
+import lobyRoot from './loby/root';
 import nota from './nota';
 import { Example } from 'servisofts-charts'
 export default SPage.combinePages("/", {
     // "":Example,
-    "": Root,
+    "": lobyRoot,
+    "root": Root,
     home,
     home2,
     home3,
