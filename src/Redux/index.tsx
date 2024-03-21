@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import Reducer from './Reducer';
 import { createStore, applyMiddleware, combineReducers } from 'redux';

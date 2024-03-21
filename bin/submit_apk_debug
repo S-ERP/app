@@ -1,0 +1,8 @@
+#!/bin/bash
+. ./bin/config.properties
+
+mkdir -p target/android/
+version="1.0.1"
+
+cp ./android/app/build/outputs/apk/debug/app-debug.apk ./target/android/app-debug-$version.apk
+scp ./target/android/app-debug-$version.apk $REPO_SSH:$REPO_RESOURCE$REPO_DIR

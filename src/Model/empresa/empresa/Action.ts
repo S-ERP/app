@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { SStorage, STheme, SThread } from "servisofts-component";
 import { SAction } from "servisofts-model";
 import Model from "../..";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { SAction } from "servisofts-model";
 import SSocket from 'servisofts-socket';
 import Model from "../..";

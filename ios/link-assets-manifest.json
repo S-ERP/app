@@ -1,0 +1,193 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "node_modules/servisofts-component/font/AcherusGrotesque-Bold.ttf",
+      "sha1": "7fc558966536ff53f7bf2a3a60f8cb70a0b0d87f"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/AcherusGrotesque-Medium.ttf",
+      "sha1": "ca16ff33416953cbf2222db220dbeae48dffece3"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/AcherusGrotesque-Regular.ttf",
+      "sha1": "b38d22928705cfc0ad299993b69247bfb67861cf"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Athelas.ttf",
+      "sha1": "cbef70cb0c0e621df3b4354ff7e46defbb0ac3c5"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Calibri.ttf",
+      "sha1": "18bdacade53d1ca0d7f57e4e4be5c965709fc9b0"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Cascadia.ttf",
+      "sha1": "ed79fb8cfb1fcdfea1eab860fc973a0e2f2a7a99"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/LondonBetween.ttf",
+      "sha1": "3675bceeb3d8c7b3f2d8a4c26a651ce265fa8d60"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/LondonMM.ttf",
+      "sha1": "57975885305d4107859b68d6180f78fc9856f766"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/LondonTwo.ttf",
+      "sha1": "f1704e3b4f3ad7300a768a93a6d76568cec70d9c"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Montserrat-ExtraBold.ttf",
+      "sha1": "1914bc1981e6ceceadb2f6d72455b4e89e04965c"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Montserrat-Regular.ttf",
+      "sha1": "9ca420aa453eb243037970c0c1c1adfe289f510f"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Montserrat.ttf",
+      "sha1": "b30f63a27bcdc61c2458d0ddfbbe738a01e39714"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/OpenSans-Bold.ttf",
+      "sha1": "c23ede86996d8239865bcd04c806e3789aaa0b94"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/OpenSans-BoldItalic.ttf",
+      "sha1": "21bb3301498eea8b9c5abb1e8a065276105981a0"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/OpenSans-ExtraBold.ttf",
+      "sha1": "d26cd8614e40a2dda56953b863e255f1c798c245"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/OpenSans-ExtraBoldItalic.ttf",
+      "sha1": "761181538f88bb8cb16fac503b634e92df17f374"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/OpenSans-Italic.ttf",
+      "sha1": "051b6b2acbd0e33252870dc28045ba27ae0acd77"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/OpenSans-Light.ttf",
+      "sha1": "448dbc1e8add1538f788c9e34cdb701ed25ac993"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/OpenSans-LightItalic.ttf",
+      "sha1": "96925397a2560a1de4cf0984591a37f62aa6e8bb"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/OpenSans-Medium.ttf",
+      "sha1": "f886dd439250f2a8a7326f3f6b433adf34c96fe8"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/OpenSans-MediumItalic.ttf",
+      "sha1": "b845bb5a4e11ee484942b4b326d6bec37526933a"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/OpenSans-Regular.ttf",
+      "sha1": "9a19a459ca7bca15d2de8269b80411f2b4a71ccf"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/OpenSans-SemiBold.ttf",
+      "sha1": "30fcdd8f737e6a86abda2d643d2f23c5286c4663"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/OpenSans-SemiBoldItalic.ttf",
+      "sha1": "4c5aa8cc443dc8d478f9126cd2c17720a3eeabfb"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/OpenSans.ttf",
+      "sha1": "b436e315c744dc2143fb69e6f03b3278681f73b9"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Oswald-Bold.ttf",
+      "sha1": "a6d0bf488eefe0dea9d0e433f0bc706514a7f8f6"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Oswald-ExtraLight.ttf",
+      "sha1": "54094aacf931425f323b4e2d809cb74083068277"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Oswald-Light.ttf",
+      "sha1": "1f13f471e7cde44a982053900edc8b1fd937c191"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Oswald-Medium.ttf",
+      "sha1": "b6fc839618be0f67340c1b035d24f8c7feac3d69"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Oswald-Regular.ttf",
+      "sha1": "d16c1dcb19e0e7572d2dea9d7445c0506c20b25d"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Oswald-SemiBold.ttf",
+      "sha1": "51cc130393057ad133b937f45e27e33fc26ee87e"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Roboto-Bold.ttf",
+      "sha1": "013f1bbcbbd80991a5f00fca52a90d0d7ab8b81f"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Roboto-Light.ttf",
+      "sha1": "51dbae4543aaa10096e344e48fcffe468bd314a9"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/Roboto-Regular.ttf",
+      "sha1": "84d102488738b0ebbc7a5087973effbd54c95bd5"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/SF-Mono-Regular.ttf",
+      "sha1": "c3f283782cbf4613888ee9f463009052f0bb9bcd"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/SF-Mono-Semibold.ttf",
+      "sha1": "6867b7491eb21f1a40156adfd1ef16935631fdd2"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/SF-Mono.ttf",
+      "sha1": "018c522be37affd13aeed19a731cf1f1b1a8189e"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/TT-Norms-Pro-Bold.ttf",
+      "sha1": "ffdc3474ef0ce7d94924fbc72bb6c57956fc0a59"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/TT-Norms-Pro-Regular.ttf",
+      "sha1": "7984e54eda14a0e42e6edc3bdd548860881266ed"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/hello_baby.ttf",
+      "sha1": "19f4eefa7aa061a3b4d519e20ea382478bd5ead4"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/index.css",
+      "sha1": "62a1f6385335699abaab0408268b8a1f426a1a87"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/index.d.ts",
+      "sha1": "0d4e91b8a35f0719113d60e54b783f5a8709410e"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/index.js",
+      "sha1": "9d531e276041e4153e328bed3ddce97d790b6e89"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/index.native.d.ts",
+      "sha1": "26b1221cc12035ecae9c4896836d3db101ef91d3"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/index.native.js",
+      "sha1": "40f1e2473ff3ff083bbe5afd1abc614db08e59c6"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/index.native.tsx",
+      "sha1": "c5b018bd776cab41b08d812f56aafe9e888e278b"
+    },
+    {
+      "path": "node_modules/servisofts-component/font/index.tsx",
+      "sha1": "e7f0d49bce6e6e2151342273b849febf2b7c4502"
+    }
+  ]
+}

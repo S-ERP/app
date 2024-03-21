@@ -8,7 +8,7 @@ import Pages from './Pages';
 import BackgroundImage from './Components/BackgroundImage';
 import NavBar from './Components/NavBar';
 
-import { version } from "../package.json"
+import packageInfo from "../package.json"
 
 setProps(Config.socket);
 
@@ -63,7 +63,7 @@ const App = (props) => {
                     };
                 }}
             />
-            <SText style={{ position: "absolute", bottom: 2, right: 2, }} fontSize={10} color={STheme.color.lightGray}>v{version}</SText>
+            <SText style={{ position: "absolute", bottom: 2, right: 2, }} fontSize={10} color={STheme.color.lightGray}>v{packageInfo.version}</SText>
 
         </SComponentContainer>
 

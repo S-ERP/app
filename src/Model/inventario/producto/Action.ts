@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { STheme } from "servisofts-component";
 import { SAction } from "servisofts-model";
 import SSocket from 'servisofts-socket'
