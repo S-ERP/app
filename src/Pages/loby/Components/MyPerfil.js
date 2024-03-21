@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SImage, SNavigation, SText, SView } from 'servisofts-component';
+import { SHr, SImage, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../Model';
 import SSocket from 'servisofts-socket';
 
@@ -24,7 +24,9 @@ export default class MyPerfil extends Component {
                 <SView row>
                     <SView width={60} height={60} style={{
                         borderRadius: 100,
-                        overflow: "hidden"
+                        overflow: "hidden",
+                        borderColor: STheme.color.primary,
+                        borderWidth: 1
                     }}>
                         <SImage src={Model.usuario._get_image_download_path(SSocket.api, usuario.key)} />
                     </SView>

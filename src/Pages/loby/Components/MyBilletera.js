@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SImage, SText, SView } from 'servisofts-component';
+import { SHr, SIcon, SImage, SText, SView } from 'servisofts-component';
 import Model from '../../../Model';
 import SSocket from 'servisofts-socket';
 
@@ -22,7 +22,10 @@ export default class MyBilletera extends Component {
             }} padding={8}>
                 <SText color={"#fff"} fontSize={16} font='Cascadia'>BILLETERA MOVIL</SText>
                 <SView flex />
-                <SText color={"#fff"} fontSize={22} bold col={"xs-12"} style={{
+                <SView row col={"xs-12"} style={{}} >
+                    <SIcon name={"chip"} width={40} height={26} />
+                </SView>
+                <SText color={"#fff"} fontSize={20} bold col={"xs-12"} style={{
                     alignItems: "flex-end"
                 }}>Bs.   0,00</SText>
             </SView>
