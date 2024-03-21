@@ -37,7 +37,7 @@ export default class UsuariosNota extends Component {
     }
 
     usuarioItem = ({ key_usuario, usuario, onPress }) => {
-        return <SView width={80} height={80} center>
+        return <SView width={80} height={80} center row>
             <SView style={{ width: 60, height: 60, borderRadius: 100, }} onPress={onPress}>
                 <SView style={{
                     width: "100%",
