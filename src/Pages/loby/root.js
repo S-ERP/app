@@ -8,8 +8,10 @@ import Notas from './Components/Notas';
 import MyBilletera from './Components/MyBilletera';
 import Actividades from './Components/Actividades';
 import PerfilEmpresa from './Components/PerfilEmpresa';
+import PHr from '../../Components/PHr';
 import Model from '../../Model';
 import Chat from './Components/Chat';
+import Publicaciones from './Components/Publicaciones';
 
 export default class root extends Component {
     constructor(props) {
@@ -48,8 +50,10 @@ export default class root extends Component {
                     </SView>
                 </ScrollView>
                 <SHr h={16} />
-                <UsuariosActivos />
+                <PHr />
                 <SHr h={16} />
+                <UsuariosActivos />
+                <PHr />
                 <SView row col={"xs-12"}>
                     <SView col={"xs-6"}>
                         <MyPerfil />
@@ -58,10 +62,12 @@ export default class root extends Component {
                         <MyBilletera />
                     </SView>
                 </SView>
-                <SHr h={16} />
+                <PHr />
                 <Notas />
-                <SHr h={16} />
+                <PHr />
                 <Actividades />
+                <PHr />
+                <Publicaciones />
             </SView>
         </SView>
     }

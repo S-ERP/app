@@ -7,6 +7,7 @@ import compra_venta from "./compra_venta"
 import caja from "./caja"
 import PButtom from "./PButtom"
 import PButtomFooter from "./PButtomFooter"
+import PHr from "./PHr"
 import Adornos from "./Adornos"
 import Btn from "./Btn"
 export {
@@ -25,4 +26,7 @@ export default {
     PButtom,
     PButtomFooter,
     Adornos,
+    PHr
 };
+
+

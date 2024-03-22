@@ -83,7 +83,7 @@ export default class UsuariosActivos extends Component {
     }
     render() {
         return <SView col={"xs-12"} height={110} >
-            <SText> Usuarios</SText>
+            <SText bold fontSize={15}> Usuarios</SText>
             <SHr />
             <SList
                 horizontal
