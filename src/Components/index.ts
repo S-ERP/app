@@ -8,7 +8,12 @@ import caja from "./caja"
 import PButtom from "./PButtom"
 import PButtomFooter from "./PButtomFooter"
 import Adornos from "./Adornos"
+import Btn from "./Btn"
+export {
+    Btn,
+    Container
 
+}
 export default {
     empresa,
     usuario,
@@ -19,5 +24,5 @@ export default {
     caja,
     PButtom,
     PButtomFooter,
-    Adornos
-}
+    Adornos,
+};

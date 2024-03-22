@@ -16,6 +16,13 @@ class index extends DPA.edit {
     $getData() {
         return Parent.model.Action.getByKey(this.pk);
     }
+
+    $inputs() {
+        let inputs = super.$inputs();
+        // inputs["fecha_inicio"].type = "date"
+        // inputs["fecha_fin"].type = "date"
+        return inputs;
+    }
     $onSubmit(data) {
         Parent.model.Action.editar({
             data: {

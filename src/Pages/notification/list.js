@@ -3,6 +3,7 @@ import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
 import Model from '../../Model';
 import item from './item';
+import SSocket from 'servisofts-socket';
 class index extends DPA.list {
     constructor(props) {
         super(props, {
@@ -10,15 +11,35 @@ class index extends DPA.list {
             itemType: "2",
             item: item,
             excludes: ["key", "fecha_on", "key_usuario", "data", "key_servicio", "estado", "tipo"],
-            onRefresh:(resolve)=>{
+            onRefresh: (resolve) => {
                 Model.notification.Action.CLEAR();
-                resolve();
+                if (resolve) resolve();
+
             }
             // defaultParams: { key_rol: "51ee8a95-094b-41eb-8819-4afa1f349394" },
             // params: ["key_rol"]
         });
+        this.state = {}
     }
 
+    componentDidMount() {
+        const limit = 10;
+        let page = 0;
+        SSocket.sendPromise({
+            "version": "1.0",
+            "service": "notification",
+            "component": "notification",
+            "type": "getAll",
+            "estado": "cargando",
+            "key_usuario": Model.usuario.Action.getKey(),
+            "limit": 100,
+            "offset": limit * page,
+        }).then(e => {
+            this.setState({ data: e.data })
+        }).catch(e => {
+
+        })
+    }
     // $allowNew() {
     //     return true;
     //     return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "new" });
@@ -49,7 +70,10 @@ class index extends DPA.list {
 
     }
     $getData() {
-        return Parent.model.Action.getAll();
+        return this.state.data;
+        // return Parent.model.Action.getAll({
+        //     fecha_inicio:
+        // });
 
     }
 }

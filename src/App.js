@@ -7,11 +7,19 @@ import Assets from './Assets';
 import Pages from './Pages';
 import BackgroundImage from './Components/BackgroundImage';
 import NavBar from './Components/NavBar';
-
+import Firebase from './Firebase';
 import packageInfo from "../package.json"
 import ErrorBoundary from './Components/ErrorBoundary';
+import Socket from './Socket';
 
 setProps(Config.socket);
+
+
+try {
+    Firebase.init();
+} catch (e) {
+    console.log(e);
+}
 
 const App = (props) => {
     return <Redux>
@@ -34,41 +42,19 @@ const App = (props) => {
                 assets={Assets}
                 inputs={Config.inputs}
                 theme={{ themes: Config.theme, initialTheme: "dark" }}
-            // background={<SGradient deg={-50} colors={[STheme.color.card, STheme.color.secondary]}  />}
-            // style={{
-            //     zIndex: 9,
-            //     position: "relative",
-            // }}
             >
-
                 <SNavigation
-
                     linking={{
-                        prefixes: ["https://serp.com/app"]
+                        prefixes: ["https://serp.servisofts.com/app/", "http://serp.servisofts.com/app/", 'serp://app/'],
+                        getInitialURL: () => {
+                            Firebase.getInitialURL();
+                        }
                     }}
-                    props={{
-                        navBar: NavBar,
-                        title: 'Servisofts ERP', pages: Pages
-                    }}
+                    props={{ navBar: NavBar, title: 'SERP', pages: Pages }}
                 />
-                {/* <SView col={"xs-12"} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", overflow: "hidden", }} >
-                <SImage style={{ resizeMode: "cover" }} src={require('./Assets/png/bg1.png')} />
-            </SView> */}
-
-                <SSocket
-                    store={store}
-                    identificarse={(props) => {
-                        var usuario = props.state.usuarioReducer.usuarioLog;
-                        return {
-                            data: usuario ? usuario : {},
-                            deviceKey: 'as-asa-as'
-                        };
-                    }}
-                />
+                <Socket store={store} />
                 <SText style={{ position: "absolute", bottom: 2, right: 2, }} fontSize={10} color={STheme.color.lightGray}>v{packageInfo.version}</SText>
-
             </SComponentContainer>
-
         </ErrorBoundary>
     </Redux>
 }

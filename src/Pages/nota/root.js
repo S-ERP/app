@@ -100,7 +100,8 @@ export default class root extends Component {
             })} />
             <SText style={{
                 padding: 4,
-            }} color={"#666"} fontSize={12}
+            }} underLine
+                color={"#666"} fontSize={12}
                 onPress={() => {
                     SNavigation.navigate("/nota/historial", { pk: this.state?.data?.key })
                 }}
@@ -108,6 +109,7 @@ export default class root extends Component {
             <SText style={{
                 padding: 4,
             }} color={STheme.color.danger} fontSize={12}
+                underLine
                 onPress={() => {
                     SPopup.confirm({
                         title: "Seguro que quieres eliminar la nota?",
@@ -147,7 +149,7 @@ export default class root extends Component {
                 multiline
                 style={{
                     color: "#000",
-                    height:"100%",
+                    height: "100%",
                     // backgroundColor:"#f0f",
                     padding: 6,
                     textAlignVertical: 'top'

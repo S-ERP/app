@@ -35,6 +35,7 @@ import facturacion from './facturacion';
 import loby from './loby';
 import lobyRoot from './loby/root';
 import nota from './nota';
+import chat from './chat';
 import { Example } from 'servisofts-charts'
 export default SPage.combinePages("/", {
     // "":Example,
@@ -58,6 +59,7 @@ export default SPage.combinePages("/", {
     ...usuario,
     ...empresa,
     ...rol,
+    ...chat,
     ...sucursal,
     ...contabilidad,
     ...inventario,
