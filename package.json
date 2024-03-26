@@ -63,7 +63,7 @@
     "servisofts-db": "^1.0.7",
     "servisofts-model": "^1.0.5",
     "servisofts-page": "^1.0.12",
-    "servisofts-rn-chat": "file:../../chat/library/dist",
+    "servisofts-rn-chat": "1.0.8",
     "servisofts-rn-contabilidad": "1.0.8",
     "servisofts-rn-geolocation": "^1.0.4",
     "servisofts-rn-roles_permisos": "^1.0.6-b",

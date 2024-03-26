@@ -20,6 +20,10 @@ import hand, { ReactComponent as handW } from './svg/hand.svg';
 import chip, { ReactComponent as chipW } from './svg/chip.svg';
 import pinchito, { ReactComponent as pinchitoW } from './svg/pinchito.svg';
 import notaEsquina, { ReactComponent as notaEsquinaW } from './svg/notaEsquina.svg';
+import addUser, { ReactComponent as addUserW } from './svg/addUser.svg';
+import history, { ReactComponent as historyW } from './svg/history.svg';
+import removeNotes, { ReactComponent as removeNotesW } from './svg/removeNotes.svg';
+import remove, { ReactComponent as removeW } from './svg/remove.svg';
 
 
 const Assets: SAssets = {
@@ -44,6 +48,12 @@ const Assets: SAssets = {
         "chip": { Native: chip, Web: chipW },
         "pinchito": { Native: pinchito, Web: pinchitoW },
         "notaEsquina": { Native: notaEsquina, Web: notaEsquinaW },
+        "addUser": { Native: addUser, Web: addUserW },
+        "history": { Native: history, Web: historyW },
+        "removeNotes": { Native: removeNotes, Web: removeNotesW },
+        "remove": { Native: remove, Web: removeW },
+        
+        
         
         
         

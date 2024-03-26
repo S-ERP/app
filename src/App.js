@@ -7,7 +7,7 @@ import Assets from './Assets';
 import Pages from './Pages';
 import BackgroundImage from './Components/BackgroundImage';
 import NavBar from './Components/NavBar';
-import Firebase from './Firebase';
+// import Firebase from './Firebase';
 import packageInfo from "../package.json"
 import ErrorBoundary from './Components/ErrorBoundary';
 import Socket from './Socket';
@@ -15,11 +15,11 @@ import Socket from './Socket';
 setProps(Config.socket);
 
 
-try {
-    Firebase.init();
-} catch (e) {
-    console.log(e);
-}
+// try {
+//     Firebase.init();
+// } catch (e) {
+//     console.log(e);
+// }
 
 const App = (props) => {
     return <Redux>
@@ -47,7 +47,7 @@ const App = (props) => {
                     linking={{
                         prefixes: ["https://serp.servisofts.com/app/", "http://serp.servisofts.com/app/", 'serp://app/'],
                         getInitialURL: () => {
-                            Firebase.getInitialURL();
+                            // Firebase.getInitialURL();
                         }
                     }}
                     props={{ navBar: NavBar, title: 'SERP', pages: Pages }}

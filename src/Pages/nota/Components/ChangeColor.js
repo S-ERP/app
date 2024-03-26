@@ -36,12 +36,12 @@ export default class ChangeColor extends Component {
             this.state.value = this.props.value;
         }
         return <SView row >
-            {this.Color({ color: "#E7E28D" })}
-            {this.Color({ color: "#8EC8E8" })}
-            {this.Color({ color: "#CFDF38" })}
-            {this.Color({ color: "#EF83B4" })}
-            {this.Color({ color: "#AE8EBF" })}
-            {this.Color({ color: "#F8A956" })}
+            {this.Color({ color: "#E7E28D" }) /*AMARILLO*/}
+            {this.Color({ color: "#D2E9E1" }) /*CELESTE*/} 
+            {this.Color({ color: "#D5EDB9" }) /*VERDE*/}
+            {this.Color({ color: "#F0C1CA" }) /*ROSADO*/}
+            {this.Color({ color: "#DCCBED" }) /*LILA*/}
+            {this.Color({ color: "#FBEDC9" }) /*NARANJA*/}
         </SView>
     }
 }
