@@ -39,6 +39,7 @@ import chat from './chat';
 import { Example } from 'servisofts-charts'
 export default SPage.combinePages("/", {
     // "":Example,
+    // "": test,
     "": lobyRoot,
     "root": Root,
     home,

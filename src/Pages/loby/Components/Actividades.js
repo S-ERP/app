@@ -58,22 +58,22 @@ export default class Actividades extends Component {
                 {!cantidad ? null :
                     <SView style={{
                         position: "absolute",
-                        width: 22,
-                        height: 22,
+                        width: 20,
+                        height: 20,
                         backgroundColor: STheme.color.danger,
                         borderRadius: 100,
                         bottom: -4,
                         right: -4,
                     }} center>
-                        <SText center color={"#fff"}>{cantidad}</SText>
+                        <SText fontSize={10} center color={"#fff"}>{cantidad}</SText>
                     </SView>
                 }
             </SView>
-            {!dia.isCurDate() ? null :
+            {/* {!dia.isCurDate() ? null :
                 <SView center width={15} height={15} style={{ position: "absolute", bottom: 0, right: 0, borderRadius: 45 }} backgroundColor={STheme.color.danger}>
                     <SText fontSize={8} color={STheme.color.white} >5</SText>
                 </SView>
-            }
+            } */}
         </SView>
     }
     render() {

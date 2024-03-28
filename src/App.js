@@ -11,12 +11,23 @@ import Firebase from './Firebase';
 import packageInfo from "../package.json"
 import ErrorBoundary from './Components/ErrorBoundary';
 import Socket from './Socket';
+import { Platform } from 'react-native';
 
 setProps(Config.socket);
 
 
 try {
-    Firebase.init();
+    if (Platform.OS == "web") {
+        if ((window.location.href + "").startsWith("https")) {
+            Firebase.init();
+        } else if ((window.location.href + "").startsWith("http://localhost")) {
+            Firebase.init();
+        } else {
+            console.log("No se activara el Fireabase Por que no contamos con SSL")
+        }
+    } else {
+        Firebase.init();
+    }
 } catch (e) {
     console.log(e);
 }
@@ -36,7 +47,7 @@ const App = (props) => {
         {/* </SView> */}
         <ErrorBoundary>
             <SComponentContainer
-                debug
+                // debug
                 socket={SSocket}
                 background={<BackgroundImage />}
                 assets={Assets}
@@ -53,7 +64,7 @@ const App = (props) => {
                     props={{ navBar: NavBar, title: 'SERP', pages: Pages }}
                 />
                 <Socket store={store} />
-                <SText style={{ position: "absolute", bottom: 2, right: 2, }} fontSize={10} color={STheme.color.lightGray}>v{packageInfo.version}</SText>
+                {/* <SText style={{ position: "absolute", bottom: 2, right: 2, }} fontSize={10} color={STheme.color.lightGray}>v{packageInfo.version}</SText> */}
             </SComponentContainer>
         </ErrorBoundary>
     </Redux>

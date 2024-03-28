@@ -30,17 +30,11 @@ class PBarraFooter extends Component {
         onPress={() => {
           SNavigation.navigate(url, params);
         }}>
-        <SView
-          style={{
-            width: 80
-          }}
-          center>
-          <SHr height={10}></SHr>
-          <SText fontSize={28} center color={color}>
-            {title}
-          </SText>
-          <SHr height={10}></SHr>
-        </SView>
+        {/* <SHr height={10}></SHr> */}
+        <SText fontSize={28} center color={color}>
+          {title}
+        </SText>
+        {/* <SHr height={10}></SHr> */}
       </SView>
     );
   }

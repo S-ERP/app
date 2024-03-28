@@ -37,7 +37,7 @@ export default class UsuariosNota extends Component {
     }
 
     usuarioItem = ({ key_usuario, usuario, onPress }) => {
-        return <SView width={80} height={80} center row>
+        return <SView width={80} height={80} center >
             <SView style={{ width: 60, height: 60, borderRadius: 100, }} onPress={onPress}>
                 <SView style={{
                     width: "100%",
@@ -52,14 +52,14 @@ export default class UsuariosNota extends Component {
                     <SImage src={Model.usuario._get_image_download_path(SSocket.api, key_usuario)} />
                 </SView>
             </SView>
-            <SText bold color={"#000"} fontSize={10} center row height={13} style={{
+            <SText bold col={"xs-12"} color={"#000"} fontSize={10} center row height={13} style={{
                 overflow: 'hidden',
             }}>{usuario?.Nombres}</SText>
         </SView>
     }
     TypeAdd(o) {
         return <SView width={80} height={80} center>
-            <SView style={{ width: 60, height: 60, borderRadius: 100, }} onPress={() => {
+            <SView style={{ width: 60, height: 60, borderRadius: 100, }} center onPress={() => {
                 SNavigation.navigate("/usuario", {
                     onSelect: (usuario) => {
                         SSocket.sendPromise({
@@ -89,7 +89,7 @@ export default class UsuariosNota extends Component {
                     <SIcon name='Add' />
                 </SView>
             </SView>
-            <SText underLine color={"#000"} fontSize={10} center row height={13} style={{
+            <SText col={"xs-12"} underLine color={STheme.color.danger} fontSize={10} center row height={13} style={{
                 overflow: 'hidden',
             }}>{"Invitar"}</SText>
         </SView>

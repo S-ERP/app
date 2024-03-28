@@ -16,7 +16,7 @@ export default class Chat extends Component {
         Model.chat.Action.registro({
             data: {
                 key: key,
-                descripcion: "Chat de la empresa " + Model.empresa.Action.getSelect().razon_social,
+                descripcion: Model.empresa.Action.getSelect().razon_social,
                 observacion: "--",
                 color: "#000000",
                 tipo: "empresa",
@@ -27,15 +27,15 @@ export default class Chat extends Component {
             ],
             key_usuario: Model.usuario.Action.getKey()
         }).then((resp) => {
-            SNavigation.navigate("/chat/profile", { pk: key })
+            SNavigation.navigate("/chat", { pk: key })
         }).catch(e => {
             // Model.chat.Action.CLEAR();
             // Model.chat_usuario.Action.CLEAR();
-            SNavigation.navigate("/chat/profile", { pk: key })
+            SNavigation.navigate("/chat", { pk: key })
         })
     }
     render() {
-        return <SText padding={8} card border={STheme.color.primary} onPress={() => this.toChat()}>Chat de empresa</SText>
+        return <SText padding={8} card border={STheme.color.primary} onPress={() => this.toChat()}>{this.props.label ?? "Chat"}</SText>
 
     }
 }

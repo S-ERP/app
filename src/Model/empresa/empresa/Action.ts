@@ -18,8 +18,12 @@ export default class Action extends SAction {
         return this._getReducer().select?.key;
     }
     setEmpresa(data) {
-        SStorage.setItem("empresa_select", JSON.stringify(data));
-        Model._events.CLEAR();
+        if (!data) {
+            SStorage.removeItem("empresa_select");
+        } else {
+            SStorage.setItem("empresa_select", JSON.stringify(data));
+        }
+
         this._getReducer().select = data;
         new SThread(100, "asdasd", true).start(() => {
             STheme.color = {
@@ -28,6 +32,12 @@ export default class Action extends SAction {
                 ...(data.theme ?? {})
             }
             STheme.repaint();
+
+            try {
+                Model._events.CLEAR();
+            } catch (error) {
+                console.error(error)
+            }
         })
     }
 }

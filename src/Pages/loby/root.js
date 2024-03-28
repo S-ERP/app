@@ -24,6 +24,10 @@ export default class root extends Component {
     content() {
         if (!!this.state.cargar) {
             new SThread(500, "adasdasd", true).start(() => {
+                if (!Model.usuario.Action.getKey()) {
+                    SNavigation.replace("/login")
+                    return;
+                }
                 if (!Model.empresa.Action.getKey()) {
                     SNavigation.replace("/root")
                     return;
@@ -38,20 +42,20 @@ export default class root extends Component {
                 <SHr h={16} />
                 <ScrollView horizontal>
                     <SView row col={"xs-12"}>
-                        <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/root")}>Cambiar de empresa</SText>
+                        <SText padding={8} card border={STheme.color.danger} onPress={() => SNavigation.navigate("/root")}>Salir</SText>
                         <SView width={8} />
-                        <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.replace("/menu")}>Administrar la empresa</SText>
+                        <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/menu")}>Menu</SText>
                         <SView width={8} />
-                        <Chat />
+                        {/* <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/test")}>Test</SText> */}
+                        {/* <SView width={8} /> */}
+                        <Chat label={"Chat"} />
                         {/* <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/home3")}>Home3</SText>
                     <SView width={8} /> */}
                         {/* <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/usuario")}>Usuarios</SText> */}
                         {/* <SView width={8} /> */}
                     </SView>
                 </ScrollView>
-                <SHr h={16} />
                 <PHr />
-                <SHr h={16} />
                 <UsuariosActivos />
                 <PHr />
                 <SView row col={"xs-12"}>

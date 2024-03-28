@@ -13,6 +13,7 @@ export default new SModel<Action, Reducer>({
         "observacion": { type: "text", editable: true, label: "Observacion" },
         "telefono": { type: "text", editable: true, label: "Telefono" },
         "correo": { type: "text", editable: true, label: "Correo" },
+        "codigo_facturacion": { type: "text", editable: true, label: "Codigo Facturacion" },
         "fecha_on": { type: "timestamp", label: "F. registro" },
         "estado": { type: "integer" },
         "key_empresa": { type: "text", fk: "empresa", notNull: true },

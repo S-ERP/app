@@ -1,5 +1,10 @@
 package com.servisofts_erp_app;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
@@ -7,16 +12,30 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate;
 
 public class MainActivity extends ReactActivity {
 
+
   /**
    * Returns the name of the main component registered from JavaScript. This is
    * used to schedule
    * rendering of the component.
    */
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    // Otros códigos de inicialización...
 
-  //  @Override
-  //  protected void onCreate(Bundle savedInstanceState) {
-  //      super.onCreate(null);
-  //  }
+    Intent intent = getIntent();
+    if (intent != null) {
+      Uri data = intent.getData();
+      if (data != null) {
+        Log.d("DeepLink", "Deep link received: " + data.toString());
+        // Aquí puedes manejar el deep link como necesites
+      }
+    }
+  }
+  // @Override
+  // protected void onCreate(Bundle savedInstanceState) {
+  // super.onCreate(null);
+  // }
 
   @Override
   protected String getMainComponentName() {

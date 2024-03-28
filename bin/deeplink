@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# link="serp://app/nota?key=a"
+link="serp.servisofts.com/app/nota?key=a"
+
+# adb shell am start -W -a android.intent.action.VIEW -d $link
+npx uri-scheme open $link --android
+# npx uri-scheme open $link --ios

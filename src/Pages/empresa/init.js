@@ -11,7 +11,7 @@ export default class init extends Component {
     constructor(props) {
         super(props);
         // this.path = SNavigation.getParam("path");
-        // this.params = SNavigation.getAllParams()
+        this.onEnd = SNavigation.getParam("onEnd")
 
     }
 
@@ -49,6 +49,7 @@ export default class init extends Component {
         // SNavigation.replace("/menu")
         // Model.empresa.Action.setEmpresa(Model.empresa.Action.getSelect());
         SNavigation.goBack();
+        if (this.onEnd) this.onEnd();
         // new SThread(50, "cargando_emrpesa_2").start(() => {
         //     if (this.path) {
         //         console.log("entro al replace en el init")

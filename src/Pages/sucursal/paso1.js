@@ -17,12 +17,12 @@ class index extends Component {
     }
 
     render() {
-        if (!Model.usuario.Action.getUsuarioLog()) {
-            console.log("ggggggg")
+        // if (!Model.usuario.Action.getUsuarioLog()) {
+        //     console.log("ggggggg")
 
-            SNavigation.replace("/login");
-            return null;
-        }
+        //     SNavigation.replace("/login");
+        //     return null;
+        // }
         return (
             <>
                 <SPage title={''} center onRefresh={(end) => {

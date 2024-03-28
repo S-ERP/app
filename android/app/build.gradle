@@ -182,10 +182,12 @@ dependencies {
         exclude group: 'com.google.android.gms'
     }
     implementation 'com.google.android.gms:play-services-location:20.0.0'
-    
+
+    implementation 'com.facebook.fresco:fresco:2.5.0'
+    implementation 'com.facebook.fresco:animated-gif:2.5.0'
     // implementation 'androidx.work:work-runtime:2.7.1'// Agregado cuando subi a api lvl 31 error en react-native-reanimated
     // implementation 'androidx.work:work-runtime:2.7.1'
-    implementation 'androidx.work:work-runtime-ktx:2.7.0'
+    implementation 'androidx.work:work-runtime-ktx:2.8.0'
     
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {

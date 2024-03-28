@@ -9,7 +9,7 @@ import Container from '../../Components/Container';
 import Components from '../../Components';
 import PButtomFooter from '../../Components/PButtomFooter';
 import Adornos from '../../Components/Adornos';
-class index extends Component {
+export default class index extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -33,12 +33,12 @@ class index extends Component {
         })
     }
     render() {
-        if (!Model.usuario.Action.getUsuarioLog()) {
-            console.log("ggggggg")
+        // if (!Model.usuario.Action.getUsuarioLog()) {
+        //     console.log("ggggggg")
 
-            SNavigation.replace("/login");
-            return null;
-        }
+        //     SNavigation.replace("/login");
+        //     return null;
+        // }
         return (
             <SPage title={''} onRefresh={(end) => {
                 Model.usuarioPage.Action.CLEAR();
@@ -67,7 +67,7 @@ class index extends Component {
         );
     }
 }
-const initStates = (state) => {
-    return { state }
-};
-export default connect(initStates)(index);
+// const initStates = (state) => {
+//     return { state }
+// };
+// export default connect(initStates)(index);

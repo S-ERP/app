@@ -10,7 +10,9 @@ export default class send extends Component {
         descripcion: "Notificacion por tags.",
         observacion: "Prueba de notificaciones por tags.",
         url: "",
-        deeplink: "",
+        data: {
+            deepLink: "",
+        }
     }
 
     componentDidMount() {
@@ -18,10 +20,11 @@ export default class send extends Component {
             this.state.ready = true;
             if (e) {
                 let data = JSON.parse(e);
-                this.state.descripcion = data.descripcion;
-                this.state.observacion = data.observacion;
-                this.state.url_image = data?.url_image;
-                this.state.deeplink = data?.deeplink;
+                this.state = data;
+                // this.state.descripcion = data.descripcion;
+                // this.state.observacion = data.observacion;
+                // this.state.url_image = data?.url_image;
+                // this.state.data.deepLink = data?.deeplink;
             }
             this.setState({ ...this.state })
         }))
@@ -32,7 +35,9 @@ export default class send extends Component {
             descripcion: this.inp_descripcion.getValue() ?? this.state.descripcion,
             observacion: this.inp_observacion.getValue() ?? this.state.observacion,
             url_image: this.inp_url.getValue() ?? this.state.url_image,
-            deeplink: this.inp_deeplink.getValue() ?? this.state.deeplink,
+            data: {
+                deepLink: this.inp_deeplink.getValue() ?? this.state.data.deepLink
+            }
         }
         SStorage.setItem("notification_data", JSON.stringify(data));
     }
@@ -44,7 +49,10 @@ export default class send extends Component {
             descripcion: this.inp_descripcion.getValue() ?? this.state.descripcion,
             observacion: this.inp_observacion.getValue() ?? this.state.observacion,
             url_image: this.inp_url.getValue() ?? this.state.url_image,
-            deeplink: this.inp_deeplink.getValue() ?? this.state.deeplink,
+            data: {
+                deepLink: this.inp_deeplink.getValue() ?? this.state.data.deepLink,
+            }
+
         }
         SStorage.setItem("notification_data", JSON.stringify(data));
         SSocket.sendPromise({
@@ -69,7 +77,7 @@ export default class send extends Component {
                 <SInput ref={ref => this.inp_descripcion = ref} label={"Titulo"} defaultValue={this.state.descripcion} />
                 <SInput ref={ref => this.inp_observacion = ref} label={"Body"} type={"textArea"} defaultValue={this.state.observacion} />
                 <SInput ref={ref => this.inp_url = ref} label={"Image url"} defaultValue={this.state.url_image} />
-                <SInput ref={ref => this.inp_deeplink = ref} label={"deeplink"} defaultValue={this.state.deeplink} />
+                <SInput ref={ref => this.inp_deeplink = ref} label={"deeplink"} defaultValue={this.state.data.deepLink} />
                 <SHr />
                 <SHr />
                 <Btn col={"xs-10"} loading={this.state.loading} onPress={() => {

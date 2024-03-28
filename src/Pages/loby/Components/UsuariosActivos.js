@@ -48,9 +48,8 @@ export default class UsuariosActivos extends Component {
         })
     }
     usuarioItem = ({ alias, key_usuario }) => {
-        return <SView width={80} height={80} center onPress={() => {
-            this.toChat(key_usuario)
-            // SNavigation.navigate("/usuario/profile", { pk: key_usuario })
+        return <SView width={75} height={80} center onPress={() => {
+            SNavigation.navigate("/usuario/profile", { pk: key_usuario })
         }}>
             <SView style={{ width: 60, height: 60, borderRadius: 100, }}>
                 <SView style={{
@@ -62,7 +61,6 @@ export default class UsuariosActivos extends Component {
                     backgroundColor: STheme.color.card,
                     overflow: "hidden"
                 }}>
-
                     <SImage src={Model.usuario._get_image_download_path(SSocket.api, key_usuario)} />
                 </SView>
                 <SView style={{
@@ -75,16 +73,15 @@ export default class UsuariosActivos extends Component {
                     right: 0
                 }} />
             </SView>
-            <SText fontSize={10} center row height={13} style={{
+            <SText fontSize={10} col={"xs-12"} bold center row height={13} style={{
                 overflow: 'hidden',
             }}>{alias}</SText>
 
         </SView>
     }
     render() {
-        return <SView col={"xs-12"} height={110} >
-            <SText bold fontSize={15}> Usuarios</SText>
-            <SHr />
+        return <SView col={"xs-12"} height={100} >
+            <SText bold fontSize={12}> Usuarios</SText>
             <SList
                 horizontal
                 data={this.state.data}

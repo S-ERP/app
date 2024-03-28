@@ -63,6 +63,7 @@ class Login extends Component {
                         onSubmit={(data) => {
                             data["password"] = CryptoJS.MD5(data["password"]).toString();
                             console.log(data);
+                            
                             Model.usuario.Action.login(data).then((resp) => {
                                 console.log("exito");
                             }).catch(e => {

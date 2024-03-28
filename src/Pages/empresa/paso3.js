@@ -17,10 +17,7 @@ class index extends Component {
     }
 
     render() {
-        if (!Model.usuario.Action.getUsuarioLog()) {
-            SNavigation.replace("/login");
-            return null;
-        }
+    
         return (
             <>
                 <SPage title={''} center onRefresh={(end) => {
@@ -78,7 +75,9 @@ class index extends Component {
 
                             <BtnNext onPress={() => { this.form.submit() }}>{"SIGUIENTE"}</BtnNext>
                             <SHr height={25} />
-                            <SView col={"xs-12"} center onPress={() => { SNavigation.navigate("/sucursal/paso1") }}>
+                            <SView col={"xs-12"} center onPress={() => {
+                                SNavigation.replace("/")
+                            }}>
                                 <SText center fontSize={18} bold color={STheme.color.text}>Configurar más tarde</SText>
                             </SView>
 

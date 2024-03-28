@@ -27,6 +27,8 @@ class Notas extends Component {
             Model.nota.Action._dispatch(e);
             // this.setState({ data: e.data })
             // this.hilo();
+        }).catch(e=>{
+            console.error(e);
         })
     }
     hilo() {

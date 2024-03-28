@@ -15,6 +15,7 @@ export default new SModel<Action, Reducer>({
         "estado": { type: "integer" },
         "key_sucursal": { type: "text", fk: "sucursal", notNull: true },
         "key_cuenta_contable": { type: "text", fk: "cuenta_contable", editable: true},
+        "codigo_facturacion": { type: "text", editable: true, label: "Codigo Facturacion" },
         "key_usuario": { type: "text", fk: "usuario" },
         "direccion": { type: "text", editable: true, label: "Direccion" },
         "lat": { type: "double", editable: true },
