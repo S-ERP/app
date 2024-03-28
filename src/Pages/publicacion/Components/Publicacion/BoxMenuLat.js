@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { SDate, SHr, SIcon, SImage, SPage, SText, STheme, SView, SNavigation, SPopup } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
-import Model from '../../Model';
-export type BoxMenuPropsType = {
+import Model from '../../../../Model';
+import SharedFunctions from './SharedFunctions';
+export type BoxMenuLatPropsType = {
     datas: any,
     onPress?: (obj) => {},
 }
-class index extends Component<BoxMenuPropsType> {
+class index extends Component<BoxMenuLatPropsType> {
     constructor(props) {
         super(props);
         this.state = {
@@ -61,13 +62,13 @@ class index extends Component<BoxMenuPropsType> {
                                 estado: 0
                             },
                         }).then(e => {
-                            SNavigation.reset("/");
+                            SNavigation.reset("/");    
                             console.log(e)
                         }).catch(e => {
                             console.error(e)
                         })
                         SPopup.close("confirmar")
-                        SPopup.close("menuNotasUsuario")
+                        SPopup.close("menuLat")
                         // Model.publicacion.Action.CLEAR() //Limpiar caché
                         // SNavigation.reset("/");
                     }}
@@ -94,9 +95,6 @@ class index extends Component<BoxMenuPropsType> {
 
     renderBox() {
         var INSTACE = this;
-        if (!this.props.datas) return null;
-        console.log("this.props.datas")
-        console.log(this.props.datas)
         return <SView col={"xs-11 sm-9 md-7 xl-5 xxl-4"} center row withoutFeedback backgroundColor={STheme.color.background}
             style={{
                 borderRadius: 20,
@@ -117,9 +115,15 @@ class index extends Component<BoxMenuPropsType> {
                             borderBottomColor: STheme.color.gray,
                             borderBottomWidth: 1
                         }}
-
+                        onPress={() => {
+                            console.log(this.props.datas)
+                            SharedFunctions.compartir({
+                                text: `${this.props.datas?.descripcion}`,
+                                url: `${"https://TlleBo.servisofts.com/app/publicacion/post?pk=" + this.props.datas?.key}`,
+                            });
+                        }}
                     >
-                        <SText fontSize={14} >Enviar mensaje a {this.props.datas?.usuario?.Nombres}</SText>
+                        <SText fontSize={14} >Compartir</SText>
                     </SView>
                     <SView col={"xs-12"} height={48} center
                         style={{
@@ -127,29 +131,32 @@ class index extends Component<BoxMenuPropsType> {
                             borderBottomWidth: 1
                         }}
                         onPress={() => {
-                            SPopup.confirm({
-                                title: "¿Seguro que quieres eliminar al usuario " + this.props.datas?.usuario?.Nombres + "?",
-                                message: this.props.datas?.usuario?.Nombres+" dejará de ver la nota, si alguien es miembro de la nota puede invitarlo nuevamente.",
-                                onPress: () => {
-                                    Model.nota.Action.quitarUsuario({
-                                        key_nota: this.props.datas?.key_nota,
-                                        key_usuario_nota: this.props.datas?.key_usuario,
-                                        key_usuario: Model.usuario.Action.getKey()
-                                    }).then(e => {
-                                        Model.nota.Action.CLEAR();
-                                        SPopup.close("menuNotasUsuario")
-                                        SNavigation.goBack();
-                                    }).catch(e => {
-
-                                    })
-                                }
-                            })
-
+                            SNavigation.navigate("/publicacion/edit", { pk: this.props.datas.key });
+                            SPopup.close("menuLat")
                         }}
                     >
-                        <SText fontSize={14} >Eliminar a {this.props.datas?.usuario?.Nombres}</SText>
+                        <SText fontSize={14} >Editar</SText>
                     </SView>
+                    <SView col={"xs-12"} height={48} center
 
+                        onPress={() => {
+                            console.log(this.props.datas)
+                            SPopup.open({ key: "confirmar", content: this.popupEliminar() });
+                            // SPopup.confirm({
+                            //     title: "Eliminar", message: "¿Estás seguro de eliminar la publicación?", onPress: () => {
+                            //         Model.publicacion.Action.editar({
+                            //             // data: {
+                            //             //     ...obj,
+                            //             //     estado: 0
+                            //             // },
+                            //         })
+                            //         // Parent.Actions.eliminar(obj, this.props)
+                            //     }
+                            // })
+                        }}
+                    >
+                        <SText fontSize={14} >Eliminar</SText>
+                    </SView>
                     <SHr height={15} />
 
                     {/* <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray }}></SView> */}

@@ -25,7 +25,7 @@ export default class Publicaciones extends Component {
     Item = () => {
 
 
-        return <SView padding={4} flex height={280}>
+        return <SView padding={4} flex height={280} onPress={() => SNavigation.navigate("/publicacion")}>
             <SView flex style={{
                 backgroundColor: STheme.color.card,
                 borderRadius: 16,
@@ -45,6 +45,7 @@ export default class Publicaciones extends Component {
         </SView>
     }
     render() {
+        (this.state.data ?? console.log("no hay data"))
         let semana = new SDate().getFirstDayOfWeek();
         return <SView col={"xs-12"} >
             <SView row>
