@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SIcon, SImage, SList, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SImage, SList, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
+import Popups from '../../../Components/Popups';
 
 export default class UsuariosNota extends Component {
     constructor(props) {
@@ -77,16 +78,16 @@ export default class UsuariosNota extends Component {
                     }
                 })
             }}>
-                <SView style={{
+                <SView center style={{
                     width: "100%",
                     height: "100%",
                     borderRadius: 100,
                     borderWidth: 2,
                     borderColor: STheme.color.card,
-                    backgroundColor: STheme.color.card,
+                    backgroundColor: STheme.color.barColor,
                     overflow: "hidden"
                 }}>
-                    <SIcon name='Add' />
+                    <SIcon name='addUser' fill={STheme.color.secondary} width={35} height={35} />
                 </SView>
             </SView>
             <SText col={"xs-12"} underLine color={STheme.color.danger} fontSize={10} center row height={13} style={{
@@ -102,10 +103,22 @@ export default class UsuariosNota extends Component {
                     return this.TypeAdd(o);
             }
         }
-        return this.usuarioItem(o);
+        console.log("OOOOOOO")
+        console.log(o)
+        return <SView onPress={() => {
+            // SNavigation.navigate("/chat/profile", { pk: data.key })
+            SPopup.open({ key: "menuNotasUsuario", content: <Popups.BoxNotas datas={o} /> });
+        }}>
+            {this.usuarioItem(o)}
+        </SView>
+
     }
     render() {
-        return <SView col={"xs-12"} height={85} >
+        return <SView col={"xs-12"} height={100} >
+            <SView style={{ position: "absolute", top: 5, right: 5, overflow: "hidden" }}>
+                <SIcon name={"pinchito"} width={28} height={50} />
+            </SView>
+            <SHr h={10} />
             <SList
                 horizontal
                 data={{
@@ -113,6 +126,7 @@ export default class UsuariosNota extends Component {
                     ...this.state.data
                 }}
                 space={0}
+
                 render={(a) => this.renderItem(a)}
             />
             <SHr h={1} color='#66666644' />

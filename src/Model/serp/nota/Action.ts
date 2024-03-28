@@ -23,13 +23,14 @@ export default class Action extends SAction {
         })
         return resp;
     }
-    quitarUsuario({ key_nota, key_usuario_nota }) {
+    quitarUsuario({ key_nota, key_usuario_nota, key_usuario }) {
         return new Promise((resolve, reject) => {
             SSocket.sendPromise({
                 component: "nota",
                 type: "quitarUsuario",
                 key_nota: key_nota,
-                key_usuario_nota: key_usuario_nota
+                key_usuario_nota: key_usuario_nota,
+                key_usuario: key_usuario
             }).then((e:any) => {
                 delete this._getReducer().data[e.key_nota];
                 this._dispatch(e);
