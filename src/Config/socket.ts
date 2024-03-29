@@ -26,7 +26,8 @@ export default {
         // contabilidad: "http://192.168.2.1:30011/",
         sqr: "https://qr.servisofts.com/http/",
         // sqr: "http://192.168.3.2:30034/"
-        facturacion: "http://192.168.2.1:30028/"
+        facturacion: "http://192.168.2.1:30028/",
+        repo: "http://192.168.2.1:30048/",
         // compra_venta: 'http://192.168.2.1:30041/',
     },
     timeReconnect: 5000

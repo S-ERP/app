@@ -14,9 +14,9 @@ class index extends DPA.new {
     $inputs() {
         let inputs = super.$inputs();
         // inputs["fecha_inicio"].type = "date"
-        // inputs["fecha_fin"].type = "date"
+        inputs["color"].type = "color"
         inputs["fecha_inicio"].defaultValue = new SDate().toString("yyyy-MM-dd hh:mm:ss")
-        inputs["fecha_fin"].defaultValue = new SDate().addHour(1).toString("yyyy-MM-dd hh:mm:ss")
+        // inputs["fecha_fin"].defaultValue = new SDate().addHour(1).toString("yyyy-MM-dd hh:mm:ss")
         return inputs;
     }
     $allowAccess() {

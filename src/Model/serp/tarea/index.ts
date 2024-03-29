@@ -15,10 +15,11 @@ export default new SModel<Action, Reducer>({
         "fecha_inicio": { type: "timestamp", label: "F. Inicio", editable: true, },
         "fecha_fin": { type: "timestamp", label: "F. Fin", editable: true, },
         "estado": { type: "integer" },
+        "tiempo_iteracion_seg": { type: "integer", editable: true, },
         "key_usuario": { type: "text", fk: "usuario" },
         "service": { type: "text", editable: true },
         "component": { type: "text", editable: true },
-        
+
         "type": { type: "text", editable: true },
         "url": { type: "text", editable: true },
 

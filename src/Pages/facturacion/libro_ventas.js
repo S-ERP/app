@@ -4,6 +4,7 @@ import { SDate, SIcon, SPage, STable, STable2, SText, STheme, SView } from 'serv
 import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
+import PDF from './pdf';
 
 export default class libro_ventas extends Component {
     constructor(props) {
@@ -40,9 +41,16 @@ export default class libro_ventas extends Component {
                     { key: "index", width: 30, label: "#" },
                     // { key: "key_empresa", width: 200, label: "Empresa" },
                     {
-                        key: "-verensiat", width: 50, label: "SIAT",
-                        render: a => `https://pilotosiat.impuestos.gob.bo/consulta/QR?nit=${a.data.nit}&cuf=${a.data.cuf}&numero=${a.data.numeroFactura}&t=1`,
+                        key: "data/urlImpuestos", width: 50, label: "SIAT",
                         component: a => <SText color={STheme.color.link} underLine onPress={() => Linking.openURL(a)}>{"SIAT"}</SText>
+
+                    },
+                    {
+                        key: "-verpdf", width: 50, label: "PDF",
+                        // render: a => `https://serp.servisofts.com/facturacion/pdf?key=${a.key}`,
+                        render: a => `http://localhost:3000/facturacion/pdf?key=${a.key}`,
+                        component: a => <SText color={STheme.color.link} underLine onPress={() => Linking.openURL(a)}>{"PDF"}</SText>
+                        // component: a => <SText color={STheme.color.link} underLine onPress={() => PDF.handlePress(a)}>{"PDF"}</SText>
 
                     },
                     {
@@ -59,7 +67,7 @@ export default class libro_ventas extends Component {
                         }
                     },
                     // { key: "data/estado", width: 70, label: "Estado" },
-                    { key: "data/fechaHora", width: 120, label: "Fecha", order: "asc", type: "date", render:a=>new SDate(a,"yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm:ss") },
+                    { key: "data/fechaHora", width: 120, label: "Fecha", order: "asc", type: "date", render: a => new SDate(a, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm:ss") },
                     { key: "data/numeroFactura", width: 60, label: "Numero" },
                     { key: "data/cliNit", width: 80, label: "NIT/CI CLIENTE" },
                     { key: "data/cliRazonSocial", width: 150, label: "NOMBRE O RAZON SOCIAL" },
