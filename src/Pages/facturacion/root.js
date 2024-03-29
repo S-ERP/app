@@ -17,7 +17,6 @@ export default class root extends Component {
                 <MenuButtom label='Ajustes' url='/facturacion/ajustes' icon={<SIcon name='Ajustes'/>}/>
                 <MenuButtom label='Emitir' url='/facturacion/emitir' icon={<SIcon name='Ingreso'/>}/>
                 <MenuButtom label='Libro de ventas' url='/facturacion/libro_ventas' icon={<SIcon name='Excel'/>}/>
-                <MenuButtom label='PDF' url='/facturacion/pdf' icon={<SIcon name='Excel'/>}/>
             </MenuPages>
         </SPage>
     }
