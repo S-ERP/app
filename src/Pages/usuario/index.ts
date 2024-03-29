@@ -1,6 +1,7 @@
 import { SPage } from "servisofts-component";
 import Model from "../../Model";
 import list from "./list";
+import all from "./all";
 import list_empresa from "./list_empresa";
 import table from "./table";
 import _new from "./new";
@@ -10,7 +11,6 @@ import edit_datos from "./edit_datos";
 import _delete from "./delete";
 import restore from "./restore";
 import eliminados from "./eliminados";
-
 const model = Model.usuario;
 
 export const Parent = {
@@ -21,6 +21,7 @@ export const Parent = {
 export default SPage.combinePages(Parent.name, {
     "": list,
     "list": list,
+    "all": all,
     "eliminados": eliminados,
     "table": table,
     "new": _new,

@@ -62,16 +62,7 @@ class index extends DPA.list {
         return data.estado != "0"
     }
     $getData() {
-        let eu = Model.empresa_usuario.Action.getAllByKeyEmpresa(Model.empresa.Action.getKey());
-        let usuarios = Parent.model.Action.getAll({});
-        console.log(eu);
-        if (!eu || !usuarios) return null
-        let data = Object.values(eu).map(a => {
-            let usr = usuarios[a.key_usuario];
-            usr.empresa_usuario = a;
-            return usr;
-        })
-        return data;
+        return Parent.model.Action.getAll({});
     }
 }
 export default connect(index);
