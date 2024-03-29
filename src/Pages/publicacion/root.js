@@ -50,7 +50,7 @@ class index extends Component {
             type: "getAll",
             pagina: this.state.page,
             limit: this.state.limit,
-            key_usuario: Model.usuario.Action.loginByKey(),
+            key_usuario: Model.usuario.Action.getKey(),
         }).then((e) => {
             // this.state.loading = false;
             this.setState({ loading: false })
@@ -62,11 +62,11 @@ class index extends Component {
                 return;
             }
             e.data = {
-                // ...Model.publicacion.Action._getReducer()?.data ?? {},
+                ...Model.publicacion.Action._getReducer()?.data ?? {},
                 ...e.data
             }
             // e.type = "getAll"
-            // Model.publicacion.Action._dispatch(e);
+            Model.publicacion.Action._dispatch(e);
             this.state.page += 1;
 
             const arr = Object.values(e.data)
@@ -133,11 +133,11 @@ class index extends Component {
         const handleRefresh = async () => {
             this.clearData();
         };
-        // let data = Model.publicacion.Action._getReducer()?.data ?? {};
-        let data = Model.publicacion.Action.data ?? {};
+        let data = Model.publicacion.Action._getReducer()?.data ?? {};
         // if (!this.state.data) return <SLoad />
-
-
+        console.log("data", data)
+        if (Object.values(data).length <= 0) return <><SText>No hay publicaciones</SText><SButtom onPress={() => {
+            SNavigation.navigate("/publicacion/add")}}>Nueva publicación</SButtom></>
         return <>
             <FlatList
                 onRefresh={handleRefresh}
@@ -167,14 +167,15 @@ class index extends Component {
                     ref={ref => this.ref[itm.item.key] = ref}
                     data={itm.item} usuario={this.state?.usuarios[itm?.item?.key_usuario]?.usuario} />}
             />
-            {/* <SHr height={40} /> */}
+            <SHr height={20} />
+          
         </>
     }
 
     render() {
         return (
             <SPage
-                // navBar={<TopBar type={"home"} />}
+                navBar={<TopBar type={"home"} />}
                 // footer={this.footer()}
                 preventBack
                 disableScroll

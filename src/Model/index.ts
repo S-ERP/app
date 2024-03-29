@@ -9,6 +9,7 @@ import compra_venta from "./compra_venta";
 import caja from "./caja";
 import notification from "./notification";
 import serp from "./serp";
+import redes from "./redes";
 import { STheme } from "servisofts-component";
 
 const Model = {
@@ -21,7 +22,8 @@ const Model = {
     ...compra_venta,
     ...caja,
     ...notification,
-    ...serp
+    ...serp,
+    ...redes,
 }
 
 Usuario.init({
