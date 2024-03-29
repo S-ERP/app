@@ -137,7 +137,8 @@ class index extends Component {
         // if (!this.state.data) return <SLoad />
         console.log("data", data)
         if (Object.values(data).length <= 0) return <><SText>No hay publicaciones</SText><SButtom onPress={() => {
-            SNavigation.navigate("/publicacion/add")}}>Nueva publicación</SButtom></>
+            SNavigation.navigate("/publicacion/add")
+        }}>Nueva publicación</SButtom></>
         return <>
             <FlatList
                 onRefresh={handleRefresh}
@@ -168,17 +169,33 @@ class index extends Component {
                     data={itm.item} usuario={this.state?.usuarios[itm?.item?.key_usuario]?.usuario} />}
             />
             <SHr height={20} />
-            <SButtom onPress={() => {
-            SNavigation.navigate("/publicacion/add")}}>Nueva publicación</SButtom>
+            <SView center style={{
+                position: "absolute",
+                bottom: 30,
+                right: 10,
+                borderRadius: 50,
+                backgroundColor: STheme.color.barColor,
+                height: 50,
+                width: 50,
+            }}
+                onPress={() => {
+                    SNavigation.navigate("/publicacion/add")
+                }}
+            >
+                <SIcon name={"addPublicacion"} width={30} fill={STheme.color.white} />
+            </SView>
+            {/* <SButtom onPress={() => {
+                SNavigation.navigate("/publicacion/add")
+            }}>Nueva publicación</SButtom> */}
         </>
     }
 
     render() {
         return (
             <SPage
-                navBar={<TopBar type={"home"} />}
+                // navBar={<TopBar type={"home"} />}
                 // footer={this.footer()}
-                preventBack
+                // preventBack
                 disableScroll
                 center
             >
@@ -189,6 +206,7 @@ class index extends Component {
                     {this.renderPublicidad()}
                 </Container> */}
                 <SView col={"xs-11 sm-11 md-8 lg-6 xl-4"} flex>
+                    <SHr height={10} />
                     {this.renderPublicaciones()}
                     {/* <SHr height={40} /> */}
 

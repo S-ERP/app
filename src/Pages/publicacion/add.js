@@ -14,7 +14,7 @@ class index extends Component {
     }
 
     handlePress = () => {
-        if (this.state.loading) return null; 
+        if (this.state.loading) return null;
         let image = this.r_image.getValue();
         let descripcion = this.r_descripcion.getValue();
         if (!image) {
@@ -62,6 +62,7 @@ class index extends Component {
                     <SHr height={15} />
                 </SView>}>
                 < Container >
+                    <SHr height={15} />
                     <SView col={"xs-12"} colSquare style={{ backgroundColor: STheme.color.card, borderRadius: 8, overflow: "hidden" }} center>
                         <SInput ref={r => this.r_image = r} type={"image"} style={{
                             width: "100%",

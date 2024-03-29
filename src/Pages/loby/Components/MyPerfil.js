@@ -30,7 +30,8 @@ export default class MyPerfil extends Component {
                     }}>
                         <SImage src={Model.usuario._get_image_download_path(SSocket.api, usuario.key)} />
                     </SView>
-                    <SView flex padding={4} center>
+                    <SView width={5} />
+                    <SView flex padding={4} >
                         <SText bold fontSize={14}>{usuario.Nombres} {usuario.Apellidos}</SText>
                         <SText fontSize={10}>{usuario.Correo}</SText>
                     </SView>

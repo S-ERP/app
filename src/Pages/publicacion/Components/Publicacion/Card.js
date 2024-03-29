@@ -166,11 +166,10 @@ class index extends Component<PublicacionPropsType> {
             </SView>
             <SView width={size / 2} />
             {/* <SText>{</SText> */}
-            <SView width={size} height onPress={() => {
+            <SView width={size} style={{top:1}} height onPress={() => {
                 Model.usuario.Action.getKey() ? SNavigation.navigate("/publicacion/comments", { pk: this.props.data.key }) : SNavigation.navigate("/login")
-
             }}>
-                <SIcon name={'Comment'} height={24} fill={STheme.color.text} />
+                <SIcon name={'Comment'} height={21.71} fill={STheme.color.text} />
             </SView>
             <SView flex />
             {/* <SView width={size/2} />

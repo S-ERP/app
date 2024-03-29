@@ -24,6 +24,10 @@ import addUser, { ReactComponent as addUserW } from './svg/addUser.svg';
 import history, { ReactComponent as historyW } from './svg/history.svg';
 import removeNotes, { ReactComponent as removeNotesW } from './svg/removeNotes.svg';
 import remove, { ReactComponent as removeW } from './svg/remove.svg';
+import Heart, { ReactComponent as HeartW } from './svg/social/Heart.svg';
+import Comment, { ReactComponent as CommentW } from './svg/social/Comment.svg';
+import addPublicacion, { ReactComponent as addPublicacionW } from './svg/social/addPublicacion.svg';
+
 
 
 const Assets: SAssets = {
@@ -52,11 +56,9 @@ const Assets: SAssets = {
         "history": { Native: history, Web: historyW },
         "removeNotes": { Native: removeNotes, Web: removeNotesW },
         "remove": { Native: remove, Web: removeW },
-        
-        
-        
-        
-        
+        "Heart": { Native: Heart, Web: HeartW },
+        "Comment": { Native: Comment, Web: CommentW },
+        "addPublicacion": { Native: addPublicacion, Web: addPublicacionW },
         
         
         
