@@ -44,7 +44,7 @@ export default class root extends Component {
                     <SView row col={"xs-12"}>
                         <SText padding={8} card border={STheme.color.danger} onPress={() => SNavigation.navigate("/root")}>Salir</SText>
                         <SView width={8} />
-                        <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/menu")}>Menu</SText>
+                        <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/menu")}>Menú</SText>
                         <SView width={8} />
                         {/* <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/test")}>Test</SText> */}
                         {/* <SView width={8} /> */}
