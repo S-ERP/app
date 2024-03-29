@@ -81,7 +81,7 @@ export default class root extends Component {
             return;
         }} >
             <SHr h={16} />
-            {/* <PerfilEmpresa /> */}
+            <PerfilEmpresa />
             {this.content()}
             <SHr h={100} />
         </SPage>
