@@ -37,6 +37,7 @@ import lobyRoot from './loby/root';
 import nota from './nota';
 import chat from './chat';
 import { Example } from 'servisofts-charts'
+import  publicacion  from './publicacion'
 export default SPage.combinePages("/", {
     // "":Example,
     // "": test,
@@ -77,5 +78,6 @@ export default SPage.combinePages("/", {
     ...bots,
     ...temp,
     ...tarea,
-    ...facturacion
+    ...facturacion,
+    ...publicacion
 });
