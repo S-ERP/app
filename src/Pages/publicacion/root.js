@@ -168,7 +168,8 @@ class index extends Component {
                     data={itm.item} usuario={this.state?.usuarios[itm?.item?.key_usuario]?.usuario} />}
             />
             <SHr height={20} />
-          
+            <SButtom onPress={() => {
+            SNavigation.navigate("/publicacion/add")}}>Nueva publicación</SButtom>
         </>
     }
 
