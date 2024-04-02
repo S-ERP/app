@@ -31,8 +31,8 @@ export default class Actividades extends Component {
 
     addOpcion = (icon, label, navigate) => {
         return <SView flex style={{ alignItems: "flex-end" }} onPress={() => SNavigation.navigate(navigate)} >
-            <SView center row card width={105} height={40}>
-                <SIcon name={icon} width={25} fill={STheme.color.text} />
+            <SView center row card width={105} height={35}>
+                <SIcon name={icon} width={20} fill={STheme.color.text} />
                 <SView width={8} />
                 <SText fontSize={12} center >{label}</SText>
             </SView>
@@ -99,7 +99,7 @@ export default class Actividades extends Component {
                         <SText fontSize={12} center >Adicionar </SText>
                     </SView>
                 </SView> */}
-                {this.addOpcion("addTarea", "Adicionar", "/tarea")}
+                {this.addOpcion("addTarea", "Ver más", "/tarea")}
             </SView>
             <SHr />
             <SView col={"xs-12"} row>
