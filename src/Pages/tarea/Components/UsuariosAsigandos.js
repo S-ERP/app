@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SIcon, SImage, SList, SList2, SLoad, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SImage, SList, SList2, SLoad, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
 
@@ -31,20 +31,27 @@ export default class UsuariosAsigandos extends Component {
             filter={a => a.estado > 0}
             render={(a) => {
                 let usuario = Model.usuario.Action.getByKey(a.key_usuario)
-                return <SView style={{ alignItems: "center" }} row onPress={(e) => {
-                    a.estado = 0;
-                    SSocket.sendPromise({
-                        component: "tarea_usuario",
-                        type: "editar",
-                        data: a,
-                        key_tarea: this.props.key_tarea,
-                        key_empresa: Model.empresa.Action.getKey(),
-                        key_usuario: Model.usuario.Action.getKey()
-                    }).then(e => {
-                        this.setState({ ...this.state })
-                        console.log("Exito");
-                    }).catch(e => {
-                        console.log("error");
+                return <SView style={{ alignItems: "center" }} row onPress={() => {
+                    SPopup.confirm({
+                        title: "¿Seguro que quieres eliminar al usuario " + usuario?.Nombres + "?",
+                        message: usuario?.Nombres+" dejará de ver la tarea, si alguien es miembro de la tarea puede invitarlo nuevamente.",
+                        onPress: () => {
+                            a.estado = 0;
+                            SSocket.sendPromise({
+                                component: "tarea_usuario",
+                                type: "editar",
+                                data: a,
+                                key_tarea: this.props.key_tarea,
+                                key_empresa: Model.empresa.Action.getKey(),
+                                key_usuario: Model.usuario.Action.getKey()
+                            }).then(e => {
+                                
+                                this.setState({ ...this.state })
+                                console.log("Exito");
+                            }).catch(e => {
+                                console.log("error");
+                            })
+                        }
                     })
                 }}>
                     <SView width={20} height={20} style={{

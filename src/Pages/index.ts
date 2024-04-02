@@ -39,6 +39,7 @@ import chat from './chat';
 import { Example } from 'servisofts-charts'
 import  publicacion  from './publicacion'
 import invitation from "./invitation";
+import  invitacion  from './invitacion'
 export default SPage.combinePages("/", {
     // "":Example,
     // "": test,
@@ -81,5 +82,5 @@ export default SPage.combinePages("/", {
     ...tarea,
     ...facturacion,
     ...publicacion,
-    invitation
-});
+    invitation,
+    "invitacion": invitacion

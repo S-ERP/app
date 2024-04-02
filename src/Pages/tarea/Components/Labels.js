@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SIcon, SImage, SList, SList2, SLoad, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SImage, SList, SList2, SLoad, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
 
@@ -33,20 +33,40 @@ export default class Labels extends Component {
             filter={a => a.estado > 0}
             render={(a) => {
                 let label = Model.label.Action.getByKey(a.key_label)
-                return <SView style={{ alignItems: "center", borderRadius: 100, padding: 4, margin: 2, backgroundColor: label?.color + "66" ?? STheme.color.card }} row onPress={(e) => {
-                    a.estado = 0;
-                    SSocket.sendPromise({
-                        component: "tarea_label",
-                        type: "editar",
-                        data: a,
-                        key_tarea: this.props.key_tarea,
-                        key_empresa: Model.empresa.Action.getKey(),
-                        key_usuario: Model.usuario.Action.getKey()
-                    }).then(e => {
-                        this.setState({ ...this.state })
-                        console.log("Exito");
-                    }).catch(e => {
-                        console.log("error");
+                return <SView style={{ alignItems: "center", borderRadius: 100, padding: 6, margin: 2, backgroundColor: label?.color + "66" ?? STheme.color.card }} row onPress={(e) => {
+                    // a.estado = 0;
+                    // SSocket.sendPromise({
+                    //     component: "tarea_label",
+                    //     type: "editar",
+                    //     data: a,
+                    //     key_tarea: this.props.key_tarea,
+                    //     key_empresa: Model.empresa.Action.getKey(),
+                    //     key_usuario: Model.usuario.Action.getKey()
+                    // }).then(e => {
+                    //     this.setState({ ...this.state })
+                    //     console.log("Exito");
+                    // }).catch(e => {
+                    //     console.log("error");
+                    // })
+                    SPopup.confirm({
+                        title: "¿Seguro que quieres eliminar el label " + label?.descripcion + "?",
+                        message: "",
+                        onPress: () => {
+                            a.estado = 0;
+                            SSocket.sendPromise({
+                                    component: "tarea_label",
+                                    type: "editar",
+                                    data: a,
+                                    key_tarea: this.props.key_tarea,
+                                    key_empresa: Model.empresa.Action.getKey(),
+                                    key_usuario: Model.usuario.Action.getKey()
+                                }).then(e => {
+                                    this.setState({ ...this.state })
+                                    console.log("Exito");
+                                }).catch(e => {
+                                    console.log("error");
+                                })
+                        }
                     })
                 }}>
                     <SText fontSize={12} >{label?.descripcion}</SText>
