@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SDate, SHr, SImage, SInput, SLoad, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SIcon, SImage, SInput, SLoad, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../Model';
 import { connect } from 'react-redux';
 import { Container } from '../../Components';
 import SSocket from 'servisofts-socket';
 import SList from 'servisofts-component/Component/SList2';
+import UsuariosAsigandos from './Components/UsuariosAsigandos';
+import Labels from './Components/Labels';
 
 class profile extends Component {
     constructor(props) {
@@ -35,108 +37,181 @@ class profile extends Component {
         return <SView width={70} style={{
             height: 26,
             backgroundColor: color,
-            borderRadius: 80
+            borderRadius: 80,
+            paddingBottom: 2,
         }} center>
-            <SText bold fontSize={14} center>{txt}</SText>
+            <SText bold fontSize={12} center>{txt}</SText>
         </SView>
     }
     comentar() {
         return <SView col={"xs-12"} row>
             <SView
-                col={"xs-0 md-12"}
+                colHidden='xs'
+                width={56}
                 style={{ alignItems: "center", overflow: "hidden", maxWidth: 56 }}>
                 <SView width={40} height={40} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
-                    <SImage src={SSocket.api.root + "usuario/" + Model.usuario.Action.getKey()} />
+                    <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + Model.usuario.Action.getKey()} />
                 </SView>
             </SView>
             <SView flex>
-                <SHr />
-                <SText bold fontSize={16}>{"Add a comment"}</SText>
-                <SHr />
-                <SView col={"xs-12"} border={STheme.color.gray} style={{
-                    borderRadius: 4
-                }} >
-                    <SView col={"xs-12"} height={35} card style={{ alignItems: "center", paddingLeft: 8 }} row>
-                        <SText >Write</SText>
-                        <SView width={32} />
-                        <SText color={STheme.color.gray}>Preview</SText>
-                    </SView>
-                    <SView col={"xs-12"} flex padding={8} style={{
-                        paddingBottom: 0
-                    }}>
-                        <SView style={{
-                            borderWidth: 1,
-                            borderRadius: 4,
-                            borderColor: STheme.color.gray
-                        }}>
-                            <SInput
-                                ref={ref => this.inputcomentar = ref}
-                                customStyle={"clean"}
-                                type='textArea'
-                                placeholder={"Add your comment here..."}
-                                placeholderTextColor={STheme.color.gray}
-                                style={{
-                                    padding: 4,
-                                }}
-                            />
+                <SView flex>
+                    <SHr />
+                    <SText bold fontSize={16}>{"Comentar"}</SText>
+                    <SHr />
+                    <SView col={"xs-12"} border={STheme.color.card} style={{
+                        borderRadius: 4
+                    }} >
+                        <SView col={"xs-12"} height={35} card style={{ alignItems: "center", paddingLeft: 8 }} row>
+                            <SText >Write</SText>
+                            <SView width={32} />
+                            <SText color={STheme.color.gray}>Preview</SText>
                         </SView>
-                    </SView>
-                    <SView col={"xs-12"} height={35} style={{ alignItems: "center", paddingLeft: 8 }} row>
-                        <SText fontSize={10} >Markdown is supported</SText>
-                        <SView width={32} />
-                        <SText fontSize={10} >Paste, drop, or click to add files</SText>
+                        <SView col={"xs-12"} flex padding={8} style={{
+                            paddingBottom: 0
+                        }}>
+                            <SView style={{
+                                borderWidth: 1,
+                                borderRadius: 4,
+                                borderColor: STheme.color.card
+                            }}>
+                                <SInput
+                                    ref={ref => this.inputcomentar = ref}
+                                    customStyle={"clean"}
+                                    type='textArea'
+                                    placeholder={"Add your comment here..."}
+                                    placeholderTextColor={STheme.color.gray}
+                                    style={{
+                                        textAlignVertical: "top",
+                                        padding: 4,
+                                    }}
+                                />
+                            </SView>
+                        </SView>
+                        <SHr />
+                        {/* <SView col={"xs-12"} height={35} style={{ alignItems: "center", paddingLeft: 8 }} row>
+                            <SText fontSize={10} >Markdown is supported</SText>
+                            <SView width={32} />
+                            <SText fontSize={10} >Paste, drop, or click to add files</SText>
+                        </SView> */}
                     </SView>
                 </SView>
-            </SView>
-            <SView col={"xs-12"} height={35} style={{ alignItems: "center", paddingLeft: 8 }} row>
-                <SView flex />
-                <SText fontSize={10} padding={8} width={100} center style={{ borderRadius: 4 }} backgroundColor={STheme.color.card} >Close issue</SText>
-                <SView width={32} />
-                <SText fontSize={10} padding={8} style={{ borderRadius: 4 }} backgroundColor={STheme.color.success} onPress={() => {
-                    let valor = this.inputcomentar.getValue();
-                    SSocket.sendPromise({
-                        component: "tarea_comentario",
-                        type: "registro",
-                        data: {
-                            descripcion: valor,
-                        },
-                        key_tarea: this.pk,
-                        key_empresa: Model.empresa.Action.getKey(),
-                        key_usuario: Model.usuario.Action.getKey(),
-                    }).then(e => {
-                        this.state.data[e.data.key] = e.data;
-                        this.setState({ ...this.state })
-                        console.log(e);
-                    }).catch(e => {
-                        console.error(e);
-                    })
-                }}>Comment</SText>
+                <SHr h={4} />
+                <SView col={"xs-12"} height={35} style={{ alignItems: "center", paddingLeft: 8 }} row>
+                    <SView flex />
+                    <SText fontSize={10} padding={8} width={100} center style={{ borderRadius: 4 }} backgroundColor={STheme.color.card} >Close issue</SText>
+                    <SView width={32} />
+                    <SText fontSize={10} padding={8} style={{ borderRadius: 4 }} backgroundColor={STheme.color.success} onPress={() => {
+                        let valor = this.inputcomentar.getValue();
+                        SSocket.sendPromise({
+                            component: "tarea_comentario",
+                            type: "registro",
+                            data: {
+                                descripcion: valor,
+                                tipo: "comentario"
+                            },
+                            key_tarea: this.pk,
+                            key_empresa: Model.empresa.Action.getKey(),
+                            key_usuario: Model.usuario.Action.getKey(),
+                        }).then(e => {
+                            this.inputcomentar.setValue("")
+                            this.state.data[e.data.key] = e.data;
+                            this.setState({ ...this.state })
+                            console.log(e);
+                        }).catch(e => {
+                            console.error(e);
+                        })
+                    }}>Comment</SText>
+                </SView>
             </SView>
         </SView>
     }
     comentario(obj) {
         let usuario = Model.usuario.Action.getByKey(obj.key_usuario);
-        return <SView col={"xs-12"} row>
-            <SView col={"xs-0 md-12"} width={56} style={{ alignItems: "center", overflow: 'hidden' }}>
-                <SView width={40} height={40} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
-                    <SImage src={SSocket.api.root + "usuario/" + obj.key_usuario} />
+        if (obj.tipo == "comentario") {
+            return <SView col={"xs-12"} row>
+                <SView colHidden='xs' width={56} style={{ alignItems: "center", overflow: 'hidden' }}>
+                    <SView width={40} height={40} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
+                        <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} />
+                    </SView>
+                </SView>
+                <SView flex>
+                    <SView col={"xs-12"} border={STheme.color.card} style={{
+                        borderRadius: 4,
+                        overflow: "hidden",
+                        // backgroundColor:STheme.color.background
+                    }} >
+                        <SView col={"xs-12"} style={{ alignItems: "center", paddingLeft: 8, paddingTop: 8, paddingBottom: 8, backgroundColor: STheme.color.card }} row>
+                            <SText bold clean>{usuario?.Nombres} {usuario?.Apellidos}</SText>
+                            <SView width={4} />
+                            <SText clean color={STheme.color.gray} fontSize={12}>hace {new SDate(obj.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} </SText>
+                        </SView>
+                        <SView col={"xs-12"} flex padding={8} row>
+                            <SHr h={8} />
+                            {(obj.descripcion ?? "").split(" ").map(a => <SText color={STheme.color.text}>{a + " "}</SText>)}
+                            <SHr h={16} />
+                        </SView>
+                    </SView>
                 </SView>
             </SView>
-            <SView flex>
-                <SView col={"xs-12"} border={STheme.color.gray} style={{
-                    borderRadius: 4
-                }} >
-                    <SView col={"xs-12"} height={30} card style={{ alignItems: "center", paddingLeft: 8 }} row>
-                        <SText bold>{usuario?.Nombres} {usuario?.Apellidos}</SText>
-                        <SView width={8} />
-                        <SText color={STheme.color.gray}>commented {new SDate(obj.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd HH")} </SText>
-                    </SView>
-                    <SView col={"xs-12"} flex padding={8}>
-                        <SHr h={8} />
-                        <SText>{obj.descripcion}</SText>
-                        <SHr h={16} />
-                    </SView>
+        }
+        if (obj.tipo == "delete_user" || obj.tipo == "add_user") {
+            let usuarioInvitado = Model.usuario.Action.getByKey(obj.data?.key_usuario_participante);
+            return <SView col={"xs-12"} row >
+                <SView colHidden='xs' width={56} style={{ alignItems: "center", overflow: 'hidden' }}>
+                    {/* <SView width={40} height={40} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
+                    <SImage src={SSocket.api.root + "usuario/" + obj.key_usuario} />
+                </SView> */}
                 </SView>
+                <SView row >
+                    <SView width={28} height={28} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden", padding: 5 }}>
+                        {/* <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} /> */}
+                        <SIcon name='tareaUser' fill={STheme.color.gray} />
+                    </SView>
+                    <SView width={8} />
+                </SView>
+                <SView flex row style={{
+                    paddingTop: 3,
+                    alignItems: "center"
+                }}>
+
+                    <SView width={20} height={20} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
+                        <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} />
+                    </SView>
+                    <SView width={4} />
+                    <SText bold>{usuario?.Nombres}</SText>
+                    <SView width={4} />
+                    <SText bold>{usuario?.Apellidos}</SText>
+                    <SView width={4} />
+                    {(obj.descripcion ?? "").split(" ").map(a => <SText color={STheme.color.gray}>{a + ' '}</SText>)}
+                    <SView width={4} />
+                    <SText bold>{usuarioInvitado?.Nombres}</SText>
+                    <SView width={4} />
+                    <SText bold>{(usuarioInvitado?.Apellidos ?? "").split(" ")[0]}</SText>
+                    <SView width={4} />
+                    <SText color={STheme.color.gray} fontSize={12}>hace {new SDate(obj.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} </SText>
+                </SView>
+            </SView>
+        }
+        return <SView col={"xs-12"} row >
+            <SView colHidden='xs' width={56} style={{ alignItems: "center", overflow: 'hidden' }}>
+                {/* <SView width={40} height={40} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
+            <SImage src={SSocket.api.root + "usuario/" + obj.key_usuario} />
+        </SView> */}
+            </SView>
+            <SView flex row style={{
+                alignItems: "center"
+            }}>
+                <SView width={20} height={20} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
+                    <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} />
+                </SView>
+                <SView width={4} />
+                <SText bold>{usuario?.Nombres}</SText>
+                <SView width={4} />
+                <SText bold>{usuario?.Apellidos}</SText>
+                <SView width={4} />
+                {(obj.descripcion ?? "").split(" ").map(a => <SText color={STheme.color.gray}>{a + " "}</SText>)}
+                <SView width={4} />
+                <SText color={STheme.color.gray} fontSize={12}>hace {new SDate(obj.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} </SText>
             </SView>
         </SView>
     }
@@ -145,44 +220,92 @@ class profile extends Component {
         if (!data) return <SLoad />
         let usuario = Model.usuario.Action.getByKey(data.key_usuario);
         return <SView col={"xs-12"}>
-            <SText fontSize={24} bold>{data?.descripcion}</SText>
+            <SView col={"xs-12"} row>
+                {(data.descripcion ?? "").split(" ").map(a => <SText fontSize={24} color={STheme.color.text} bold>{a + " "}</SText>)}
+                <SView flex />
+                <SView width={20} />
+                <SView flex />
+                <SText card width={45} height={22} center onPress={() => SNavigation.navigate("/tarea/edit", { pk: this.pk })}>Edit</SText>
+                <SView width={4} />
+                <SText card center height={22} width={80} style={{
+                    backgroundColor: STheme.color.success
+
+                }} onPress={() => SNavigation.navigate("/tarea/new")}>New issue</SText>
+                <SView width={4} />
+            </SView>
             <SHr />
             <SView row style={{
                 alignItems: "center"
             }}>
                 {this.getEstado()}
                 <SView width={4} />
-                <SText fontSize={12} color={STheme.color.gray}>{`${usuario?.Nombres} ${usuario?.Apellidos} opened this issue ${new SDate(data.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd HH")}`}</SText>
+                <SText fontSize={12} color={STheme.color.text}>{`${usuario?.Nombres} ${usuario?.Apellidos}`}</SText>
+                <SView width={4} />
+                {`creo esta tarea el ${new SDate(data.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd a las HH")}`.split(" ").map(a => <SText fontSize={12} color={STheme.color.gray}>{a + " "}</SText>)}
+
             </SView>
-            <SHr h={16} />
-            <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.gray }} />
-            <SHr h={16} />
-            {!this.state.data ? <SLoad /> :
-                <SList
-                    order={[{ key: "fecha_on", type: "date", order: "asc" }]}
-                    data={this.state.data}
-                    render={a => this.comentario(a)} />
-            }
-            <SHr h={16} />
-            {this.comentar({})}
+
         </SView>
     }
 
     render() {
-        return <SPage title={"Tarea"}>
-            <Container>
-                <SView col={"xs-12"} row>
-                    <SView flex />
-                    <SText card padding={4} width={45} center onPress={() => SNavigation.navigate("/tarea/edit", { pk: this.pk })}>Edit</SText>
-                    <SView width={4} />
-                    <SText card center padding={4} width={80} style={{
-                        backgroundColor: STheme.color.success
+        return <SPage title={"Tarea"} onRefresh={(e) => {
+            Model.tarea.Action.CLEAR();
+            this.state.data = null;
+            this.componentDidMount();
+            this.setState({ ...this.state })
+        }}>
+            <SView col={"xs-12"} center >
+                <SView col={"xs-11"} center >
+                    <SHr />
+                    <SView col={"xs-12"} >
+                        {this.renderComponent()}
 
-                    }} onPress={() => SNavigation.navigate("/tarea/new")}>New issue</SText>
-                    <SView width={4} />
+                        <SHr h={16} />
+                        <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.card }} />
+                        <SHr h={16} />
+                    </SView>
+                    <SView col={"xs-12"} row>
+                        <SView col={"xs-12 md-7.9 lg-8.9"} >
+                            <SView col={"xs-12"}>
+                                {/* <SView style={{ position: "absolute", left: 10, height: "100%", width: 1, borderLeftWidth: 1, borderColor: STheme.color.card }} /> */}
+                                {!this.state.data ? <SLoad /> :
+                                    <SList
+                                        order={[{ key: "fecha_on", type: "date", order: "asc" }]}
+                                        space={32}
+                                        data={this.state.data}
+                                        render={a => this.comentario(a)} />
+                                }
+                                <SHr h={16} />
+                                <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.card }} />
+
+
+                            </SView>
+                            <SHr h={16} />
+                            {this.comentar({})}
+                            <SHr h={32} />
+                        </SView>
+                        <SView col={"xs-0.2"} />
+                        <SView col={"xs-12 md-3.9 lg-2.9"} >
+                            {/* <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.gray }} /> */}
+                            {/* <SHr h={16} /> */}
+                            <SView colHidden='md lg xl xxl'>
+                                <SHr h={16} />
+                                <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.card }} />
+                                <SHr h={16} />
+                            </SView>
+                            <UsuariosAsigandos key_tarea={this.pk} />
+                            <SHr h={16} />
+                            <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.card }} />
+                            <SHr h={16} />
+                            <Labels key_tarea={this.pk} />
+                            <SHr h={16} />
+                            <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.card }} />
+                            <SHr h={16} />
+                        </SView>
+                    </SView>
                 </SView>
-                {this.renderComponent()}
-            </Container>
+            </SView>
         </SPage >
     }
 }

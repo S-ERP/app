@@ -1,4 +1,4 @@
-import { SNavigation, SView } from 'servisofts-component';
+import { SDate, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
 import Model from '../../Model';
@@ -11,10 +11,11 @@ class index extends DPA.list {
             Parent: Parent,
             excludes: ["key", "fecha_on", "key_usuario", "key_servicio", "estado"],
             // item: Item,
-            params:["cuenta?"],
+            params: ["cuenta?"],
             onRefresh: (resolve) => {
                 Parent.model.Action.CLEAR();
-                resolve();
+                if (resolve) resolve();
+
             }
         });
     }
@@ -46,6 +47,21 @@ class index extends DPA.list {
     }
     $getData() {
         return Parent.model.Action.getAll();
+    }
+    $item(a) {
+        const usuario = Model.usuario.Action.getByKey(a.key_usuario)
+        return <SView col={"xs-12"} border={STheme.color.card} padding={8} row style={{
+            borderRadius: 4,
+        }} onPress={this.$onSelect.bind(this, a)}>
+            <SView width={20} height={20} style={{ borderRadius: 100, borderColor: STheme.color.success, borderWidth: 2, marginTop: 2, }}>
+
+            </SView>
+            <SView width={6} />
+            <SView flex>
+                <SText bold fontSize={16}>{a.descripcion}</SText>
+                <SText fontSize={12} color={STheme.color.gray}>{`#${a.numero ?? 1} creado hace ${new SDate(a.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} por ${usuario?.Nombres ?? ""} ${usuario?.Apellidos ?? ""}`}</SText>
+            </SView>
+        </SView>
     }
 }
 export default connect(index);

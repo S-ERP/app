@@ -22,17 +22,20 @@ export default class MyPerfil extends Component {
             }}>
                 <SHr />
                 <SView row>
-                    <SView width={60} height={60} style={{
+                    <SView width={50} height={50} style={{
                         borderRadius: 100,
                         overflow: "hidden",
                         borderColor: STheme.color.primary,
                         borderWidth: 1
                     }}>
-                        <SImage src={Model.usuario._get_image_download_path(SSocket.api, usuario.key)} />
+                        <SImage style={{
+                            resizeMode:"cover"
+                        }} src={Model.usuario._get_image_download_path(SSocket.api, usuario.key)} />
                     </SView>
                     <SView width={5} />
                     <SView flex padding={4} >
                         <SText bold fontSize={14}>{usuario.Nombres} {usuario.Apellidos}</SText>
+                        <SText fontSize={10}>{usuario.Telefono}</SText>
                         <SText fontSize={10}>{usuario.Correo}</SText>
                     </SView>
                 </SView>

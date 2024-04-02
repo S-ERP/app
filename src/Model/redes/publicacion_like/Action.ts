@@ -3,7 +3,7 @@ import SSocket from "servisofts-socket"
 import Model from "../..";
 export default class Action extends SAction {
 
-    dislike(extra?: { key_publicacion, key_usuario }, dislike?: any) {
+    dislike(extra: { key_publicacion:any, key_usuario:any }, dislike?: any) {
         return new Promise((resolve, reject) => {
             SSocket.sendPromise({
                 ...this.model.info,
@@ -23,7 +23,7 @@ export default class Action extends SAction {
         })
     }
 
-    getAllPromise(key) {
+    getAllPromise(key:any) {
         return SSocket.sendPromise({
             ...this.model.info,
             estado: "cargando",

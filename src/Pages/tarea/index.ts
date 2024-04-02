@@ -4,6 +4,7 @@ import list from "./list";
 import table from "./table";
 import _new from "./new";
 import profile from "./profile";
+import profile2 from "./profile2";
 import edit from "./edit";
 import _delete from "./delete";
 import reto from "./reto";
@@ -23,6 +24,7 @@ export default SPage.combinePages(Parent.name, {
     "table": table,
     "new": _new,
     "profile": profile,
+    "profile2": profile2,
     "edit": edit,
     "delete": _delete,
 })

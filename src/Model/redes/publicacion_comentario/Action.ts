@@ -3,7 +3,7 @@ import SSocket from "servisofts-socket"
 import Model from "../..";
 export default class Action extends SAction {
 
-    getAllPromise(key) {
+    getAllPromise(key:any) {
         return SSocket.sendPromise({
             ...this.model.info,
             estado: "cargando",

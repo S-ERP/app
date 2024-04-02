@@ -35,6 +35,7 @@ export default class Chat extends Component {
         })
     }
     render() {
+        if (this.props.children) return <SView onPress={() => this.toChat()}>{this.props.children}</ SView>
         return <SText padding={8} card border={STheme.color.primary} onPress={() => this.toChat()}>{this.props.label ?? "Chat"}</SText>
 
     }

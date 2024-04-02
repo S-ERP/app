@@ -79,8 +79,11 @@ class index extends DPA.profile {
                             component: "tarea_usuario",
                             type: "registro",
                             key_tarea: this.pk,
+                            data: {
+                                key_usuario: e.key
+                            },
                             key_empresa: Model.empresa.Action.getKey(),
-                            key_usuario: Model.usuario.Action.getKey()
+                            key_usuario: Model.usuario.Action.getKey(),
                         }).then(e => {
                             console.log("Exito");
                         }).catch(e => {

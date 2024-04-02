@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { KeyboardAvoidingView, Platform, Keyboard, ScrollView, View, TextInput } from 'react-native'
-import { SNavigation, SNativeModules, SView, STheme, SIcon, SHr, SImage, SText, SList } from 'servisofts-component';
+import { SNavigation, SNativeModules, SView, STheme, SIcon, SHr, SImage, SText, SList, SPage } from 'servisofts-component';
 import Model from '../../Model';
 import SSocket from 'servisofts-socket'
 class comments extends Component {
@@ -46,7 +46,7 @@ class comments extends Component {
     }
 
     render() {
-        return (<View style={{ flex: 1 }} >
+        return (<SPage disableScroll hidden>
             <SView style={{ width: "100%", height: 50, }} row >
                 <SView width={50} height padding={12} onPress={() => {
                     SNavigation.goBack();
@@ -121,7 +121,7 @@ class comments extends Component {
                         this.scrollView.scrollToEnd({ animated: false })
                     }} />
             </KeyboardAvoidingView>
-        </View>);
+        </SPage>);
     }
 
 }

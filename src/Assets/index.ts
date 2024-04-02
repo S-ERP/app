@@ -28,6 +28,8 @@ import Heart, { ReactComponent as HeartW } from './svg/social/Heart.svg';
 import Comment, { ReactComponent as CommentW } from './svg/social/Comment.svg';
 import addPublicacion, { ReactComponent as addPublicacionW } from './svg/social/addPublicacion.svg';
 
+import tareaUser, { ReactComponent as tareaUserW } from './svg/tarea/user.svg';
+import tarea_engranaje, { ReactComponent as tarea_engranajeW } from './svg/tarea/engranaje.svg';
 
 
 const Assets: SAssets = {
@@ -59,6 +61,8 @@ const Assets: SAssets = {
         "Heart": { Native: Heart, Web: HeartW },
         "Comment": { Native: Comment, Web: CommentW },
         "addPublicacion": { Native: addPublicacion, Web: addPublicacionW },
+        "tareaUser": { Native: tareaUser, Web: tareaUserW },
+        "tareaengranaje": { Native: tarea_engranaje, Web: tarea_engranajeW },
         
         
         
