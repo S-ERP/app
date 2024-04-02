@@ -87,15 +87,27 @@ class Notas extends Component {
         let notas = Model.nota.Action.getAll();
         if (!notas) return <SLoad />
         return <SView col={"xs-12"} >
-            <SView row>
+            <SView col={"xs-12"} row>
                 <SText  bold fontSize={15}> Notas</SText>
-                <SView width={8} />
+                <SView flex style={{ alignItems: "flex-end" }} onPress={() => SNavigation.navigate("/nota", {
+                    onChange: (e) => {
+                        this.state.data[e.key] = e;
+                        this.setState({ ...this.state.data })
+                    }
+                })} >
+                    <SView center row card width={105} height={40}>
+                        <SIcon name={"addNotas"} width={25} fill={STheme.color.text} />
+                        <SView width={8} />
+                        <SText fontSize={12} center >Adicionar </SText>
+                    </SView>
+                </SView>
+                {/* <SView width={8} />
                 <SText onPress={() => SNavigation.navigate("/nota", {
                     onChange: (e) => {
                         this.state.data[e.key] = e;
                         this.setState({ ...this.state.data })
                     }
-                })}> + </SText>
+                })}> + </SText> */}
             </SView>
             <SHr />
             <SList
