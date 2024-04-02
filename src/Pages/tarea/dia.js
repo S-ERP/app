@@ -54,6 +54,7 @@ export default class dia extends Component {
                 estado: 1,
                 color: "#E7E28D"
             }
+            if (!this.state.data) this.state.data = {}
             this.state.data[data.key] = data;
             this.setState({ ...this.state })
         }}>

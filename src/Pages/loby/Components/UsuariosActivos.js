@@ -61,7 +61,9 @@ export default class UsuariosActivos extends Component {
                     backgroundColor: STheme.color.card,
                     overflow: "hidden"
                 }}>
-                    <SImage src={Model.usuario._get_image_download_path(SSocket.api, key_usuario)} />
+                    <SImage style={{
+                        resizeMode:"cover"
+                    }} src={Model.usuario._get_image_download_path(SSocket.api, key_usuario)} />
                 </SView>
                 <SView style={{
                     width: 14,

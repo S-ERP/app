@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { SHr, SLoad, SNavigation, SPage, SText, STheme, SThread, SView } from 'servisofts-component';
+import { SHr, SIcon, SLoad, SNavigation, SPage, SText, STheme, SThread, SView } from 'servisofts-component';
 import UsuariosActivos from './Components/UsuariosActivos';
 import Container from '../../Components/Container';
 import MyPerfil from './Components/MyPerfil';
@@ -12,6 +12,7 @@ import PHr from '../../Components/PHr';
 import Model from '../../Model';
 import Chat from './Components/Chat';
 import Publicaciones from './Components/Publicaciones';
+import InvitarUsuario from '../../Components/empresa/InvitarUsuario';
 
 export default class root extends Component {
     constructor(props) {
@@ -21,6 +22,15 @@ export default class root extends Component {
         };
     }
 
+    renderMunuItem({ onPress, label, icon, color }) {
+        return <SView width={(label.length * 12) + 36} card padding={8} onPress={onPress} center row>
+            <SView width={20} height={20}>
+                <SIcon name={icon} fill={color ?? STheme.color.text} />
+            </SView>
+            <SView width={8} />
+            <SText >{label}</SText>
+        </SView>
+    }
     content() {
         if (!!this.state.cargar) {
             new SThread(500, "adasdasd", true).start(() => {
@@ -40,20 +50,26 @@ export default class root extends Component {
         return <SView col={"xs-12"} center>
             <SView col={"xs-12 sm-10 md-9 lg-7 xl-6 xxl-5"} center >
                 <SHr h={16} />
-                <ScrollView horizontal>
-                    <SView row col={"xs-12"}>
-                        <SText padding={8} card border={STheme.color.danger} onPress={() => SNavigation.navigate("/root")}>Salir</SText>
+                <ScrollView horizontal style={{
+                    width: "100%"
+                }}>
+                    <>
+                        {this.renderMunuItem({ label: "Menú", icon: "Menu", onPress: () => SNavigation.navigate("/menu") })}
                         <SView width={8} />
-                        <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/menu")}>Menú</SText>
+
+                        <Chat label={"Chat"}  >
+                            {this.renderMunuItem({ label: "Chat", color: STheme.color.success, icon: "Comment", })}
+                        </Chat>
                         <SView width={8} />
-                        {/* <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/test")}>Test</SText> */}
-                        {/* <SView width={8} /> */}
-                        <Chat label={"Chat"} />
-                        {/* <SText padding={8} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/home3")}>Home3</SText>
-                    <SView width={8} /> */}
-                        {/* <SText padding={16} card border={STheme.color.primary} onPress={() => SNavigation.navigate("/usuario")}>Usuarios</SText> */}
-                        {/* <SView width={8} /> */}
-                    </SView>
+
+                        {this.renderMunuItem({ label: "Ajustes", icon: "Ajustes", onPress: () => SNavigation.navigate("/ajustes") })}
+                        <SView width={8} />
+                        <InvitarUsuario />
+                        {/* {this.renderMunuItem({ label: "Invitar", icon: "Usuarios", color: STheme.color.danger, onPress: () => SNavigation.navigate("/root") })} */}
+                        <SView width={8} />
+                        {this.renderMunuItem({ label: "Salir", icon: "Arrow", color: STheme.color.danger, onPress: () => SNavigation.navigate("/root") })}
+                        <SView width={8} />
+                    </>
                 </ScrollView>
                 <PHr />
                 <UsuariosActivos />
@@ -72,8 +88,8 @@ export default class root extends Component {
                 <Actividades />
                 <PHr />
                 <Publicaciones />
-            </SView>
-        </SView>
+            </SView >
+        </SView >
     }
     render() {
         return <SPage title="Loby" hidden onRefresh={(e) => {

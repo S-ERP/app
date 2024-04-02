@@ -12,6 +12,7 @@ class index extends DPA.list {
             excludes: ["key", "fecha_on", "key_usuario", "key_servicio", "estado"],
             // item: Item,
             params: ["cuenta?"],
+            menuType: "flex",
             onRefresh: (resolve) => {
                 Parent.model.Action.CLEAR();
                 if (resolve) resolve();
@@ -64,11 +65,12 @@ class index extends DPA.list {
 
     optionItem({ key, label, backgroundColor }) {
         var select = !!this.state.select[key]
-        return <SView height center style={{
+        return <SView style={{
             paddingLeft: 8,
             paddingRight: 8,
             opacity: select ? 1 : 0.5,
-            backgroundColor: backgroundColor
+            width: 100,
+            backgroundColor: backgroundColor,
         }} onPress={() => {
 
             if (!select) {
@@ -77,9 +79,9 @@ class index extends DPA.list {
                 delete this.state.select[key];
             }
             this.setState({ ...this.state })
-        }} row>
-            {!select ? null : <> <SIcon name={"Close"} width={12} height={12} fill={STheme.color.text} /> <SView width={8} /></>}
-            <SText>{label}</SText>
+        }} row center>
+            {!select ? null : <><SIcon name={"Close"} width={12} height={12} fill={STheme.color.text} /><SView width={8} /></>}
+            <SText >{label}</SText>
         </SView>
     }
 
@@ -100,7 +102,6 @@ class index extends DPA.list {
             borderRadius: 4,
         }} onPress={this.$onSelect.bind(this, a)}>
             <SView width={26} height={26} style={{ borderRadius: 100, backgroundColor: a?.estado == 2 ? "#7C57E0" : STheme.color.success, overflow: "hidden", padding: 5 }}>
-                {/* <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} /> */}
                 <SIcon name='tareaclose' fill={STheme.color.text} />
             </SView>
             <SView width={6} />
