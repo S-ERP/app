@@ -32,6 +32,8 @@ import tareaUser, { ReactComponent as tareaUserW } from './svg/tarea/user.svg';
 import tarea_engranaje, { ReactComponent as tarea_engranajeW } from './svg/tarea/engranaje.svg';
 import tarea_close, { ReactComponent as tarea_closeW } from './svg/tarea/close.svg';
 import tarea_label, { ReactComponent as tarea_labelW } from './svg/tarea/label.svg';
+import addNotas, { ReactComponent as addNotasW } from './svg/tarea/addNotas.svg';
+import addTarea, { ReactComponent as addTareaW } from './svg/tarea/addTarea.svg';
 
 
 const Assets: SAssets = {
@@ -67,6 +69,8 @@ const Assets: SAssets = {
         "tareaengranaje": { Native: tarea_engranaje, Web: tarea_engranajeW },
         "tareaclose": { Native: tarea_close, Web: tarea_closeW },
         "tarealabel": { Native: tarea_label, Web: tarea_labelW },
+        "addNotas": { Native: addNotas, Web: addNotasW },
+        "addTarea": { Native: addTarea, Web: addTareaW },
         
         
         
