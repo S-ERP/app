@@ -6,6 +6,7 @@ import banco_cuenta from "./banco_cuenta";
 import cuenta_movimiento from "./cuenta_movimiento";
 import tarea from "./tarea";
 import nota from "./nota"
+import label from "./label";
 export default {
     dato,
     rol_dato,
@@ -14,5 +15,6 @@ export default {
     banco_cuenta,
     cuenta_movimiento,
     tarea,
-    nota
+    nota,
+    label
 }

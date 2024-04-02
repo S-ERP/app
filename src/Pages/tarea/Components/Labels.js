@@ -13,10 +13,10 @@ export default class Labels extends Component {
     }
     componentDidMount() {
         SSocket.sendPromise({
-            component: "tarea_usuario",
+            component: "tarea_label",
             type: "getAll",
             key_tarea: this.props.key_tarea,
-            key_empresa: Model.empresa.Action.getKey()
+            // key_empresa: Model.empresa.Action.getKey()
         }).then(e => {
             this.setState({ data: e.data })
             console.log("Exito");
@@ -25,18 +25,31 @@ export default class Labels extends Component {
         })
     }
     getLista() {
-        if (!this.state.data) return <SLoad />
+        // if (!this.state.data) return <SLoad />
         return <SList2
             horizontal
             scrollEnabled={false}
             data={this.state.data}
             filter={a => a.estado > 0}
             render={(a) => {
-                let usuario = Model.usuario.Action.getByKey(a.key_usuario)
-                return <SView style={{ alignItems: "center", borderRadius: 100, padding: 4, margin:2, backgroundColor: STheme.color.danger }} row onPress={(e) => {
-
+                let label = Model.label.Action.getByKey(a.key_label)
+                return <SView style={{ alignItems: "center", borderRadius: 100, padding: 4, margin: 2, backgroundColor: label?.color + "66" ?? STheme.color.card }} row onPress={(e) => {
+                    a.estado = 0;
+                    SSocket.sendPromise({
+                        component: "tarea_label",
+                        type: "editar",
+                        data: a,
+                        key_tarea: this.props.key_tarea,
+                        key_empresa: Model.empresa.Action.getKey(),
+                        key_usuario: Model.usuario.Action.getKey()
+                    }).then(e => {
+                        this.setState({ ...this.state })
+                        console.log("Exito");
+                    }).catch(e => {
+                        console.log("error");
+                    })
                 }}>
-                    <SText fontSize={12}>{usuario?.Nombres} {usuario?.Apellidos}</SText>
+                    <SText fontSize={12} >{label?.descripcion}</SText>
                 </SView>
             }}
         />
@@ -47,24 +60,25 @@ export default class Labels extends Component {
                 <SText fontSize={12} bold color={STheme.color.gray}>Labels</SText>
                 <SView flex />
                 <SView padding={6} width={28} height={28} onPress={() => {
-                    SNavigation.navigate("/usuario", {
+                    SNavigation.navigate("/ajustes/label", {
                         onSelect: (e) => {
-                            // SSocket.sendPromise({
-                            //     component: "tarea_usuario",
-                            //     type: "registro",
-                            //     key_tarea: this.props.key_tarea,
-                            //     data: {
-                            //         key_usuario: e.key
-                            //     },
-                            //     key_empresa: Model.empresa.Action.getKey(),
-                            //     key_usuario: Model.usuario.Action.getKey(),
-                            // }).then(e => {
-                            //     this.state.data[e.data.key] = e.data;
-                            //     this.setState({ ...this.state })
-                            //     console.log("Exito");
-                            // }).catch(e => {
-                            //     console.log("error");
-                            // })
+                            SSocket.sendPromise({
+                                component: "tarea_label",
+                                type: "registro",
+                                key_tarea: this.props.key_tarea,
+                                key_label: e.key,
+                                // data: {
+                                //     key_label: e.key
+                                // },
+                                key_empresa: Model.empresa.Action.getKey(),
+                                key_usuario: Model.usuario.Action.getKey(),
+                            }).then(e => {
+                                this.state.data[e.data.key] = e.data;
+                                this.setState({ ...this.state })
+                                console.log("Exito");
+                            }).catch(e => {
+                                console.log("error");
+                            })
                         }
                     })
                 }}>

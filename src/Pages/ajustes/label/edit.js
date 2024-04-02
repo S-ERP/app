@@ -1,31 +1,33 @@
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from '.';
 import { SNavigation } from 'servisofts-component';
-import Model from '../../Model';
+import Model from '../../../Model';
 
 class index extends DPA.edit {
     constructor(props) {
         super(props, {
             Parent: Parent,
-            excludes: ["key_empresa", "url", "component", "type", "service"]
+            excludes: []
         });
     }
+
+    // $inputs() {
+    //     var inp = super.$inputs();
+    //     inp["required"].type = "checkBox"
+    //     inp["required"].col = "xs-5"
+    //     inp["caducable"].type = "checkBox"
+    //     inp["caducable"].col = "xs-5"
+    //     inp["tipo"] = { label: "Tipo de dato", required: true, type: "select", defaultValue: this.data["tipo"], options: Model.dato.Action.getTiposDato() }
+    //     return inp;
+    // }
     $allowAccess() {
+        return true;
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "edit" })
     }
     $getData() {
         return Parent.model.Action.getByKey(this.pk);
     }
-
-    $inputs() {
-        let inputs = super.$inputs();
-        // inputs["fecha_inicio"].type = "date"
-        // inputs["fecha_fin"].type = "date"
-        return inputs;
-    }
     $onSubmit(data) {
-        if (!data?.tiempo_iteracion_seg) data.tiempo_iteracion_seg = 0;
-        if (!data?.fecha_fin) delete data.fecha_fin;
         Parent.model.Action.editar({
             data: {
                 ...this.data,

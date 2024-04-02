@@ -30,6 +30,8 @@ import addPublicacion, { ReactComponent as addPublicacionW } from './svg/social/
 
 import tareaUser, { ReactComponent as tareaUserW } from './svg/tarea/user.svg';
 import tarea_engranaje, { ReactComponent as tarea_engranajeW } from './svg/tarea/engranaje.svg';
+import tarea_close, { ReactComponent as tarea_closeW } from './svg/tarea/close.svg';
+import tarea_label, { ReactComponent as tarea_labelW } from './svg/tarea/label.svg';
 
 
 const Assets: SAssets = {
@@ -63,6 +65,8 @@ const Assets: SAssets = {
         "addPublicacion": { Native: addPublicacion, Web: addPublicacionW },
         "tareaUser": { Native: tareaUser, Web: tareaUserW },
         "tareaengranaje": { Native: tarea_engranaje, Web: tarea_engranajeW },
+        "tareaclose": { Native: tarea_close, Web: tarea_closeW },
+        "tarealabel": { Native: tarea_label, Web: tarea_labelW },
         
         
         

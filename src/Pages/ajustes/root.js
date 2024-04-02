@@ -15,6 +15,7 @@ class index extends Component {
             <SPage title={'Ajustes'}>
                 <SHr height={32} />
                 <MenuPages path={"/ajustes/"} >
+                    <MenuButtom label={"Label"} url={"/ajustes/label"} icon={<SIcon name={"Box"} />} />
                     <MenuButtom label={STheme.getTheme() == "default" ? "Oscuro" : "Claro"} icon={STheme.getTheme() == "default" ? <SIcon name='Moon' /> : <SIcon name='Sun' fill={"#fff"} />} onPress={() => {
                         STheme.change()
                     }} />

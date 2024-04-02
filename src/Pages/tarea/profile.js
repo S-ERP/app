@@ -25,25 +25,31 @@ class profile extends Component {
             key_empresa: Model.empresa.Action.getKey(),
             key_usuario: Model.usuario.Action.getKey(),
         }).then(e => {
+
             this.setState({ data: e.data })
         }).catch(e => {
             console.error(e);
         })
     }
 
-    getEstado() {
-        let color = STheme.color.success
-        let txt = "Open"
+    getEstado(data) {
+        let color = data?.estado == 2 ? "#7C57E0" : STheme.color.success
+        let txt = data?.estado == 2 ? "Close" : "Open"
         return <SView width={70} style={{
             height: 26,
             backgroundColor: color,
             borderRadius: 80,
             paddingBottom: 2,
-        }} center>
+        }} center row>
+            <SView width={26} height={26} style={{ borderRadius: 100, overflow: "hidden", padding: 5 }}>
+                {/* <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} /> */}
+                <SIcon name='tareaclose' fill={STheme.color.text} />
+            </SView>
             <SText bold fontSize={12} center>{txt}</SText>
         </SView>
     }
     comentar() {
+        let data = Model.tarea.Action.getByKey(this.pk);
         return <SView col={"xs-12"} row>
             <SView
                 colHidden='xs'
@@ -98,7 +104,27 @@ class profile extends Component {
                 <SHr h={4} />
                 <SView col={"xs-12"} height={35} style={{ alignItems: "center", paddingLeft: 8 }} row>
                     <SView flex />
-                    <SText fontSize={10} padding={8} width={100} center style={{ borderRadius: 4 }} backgroundColor={STheme.color.card} >Close issue</SText>
+                    <SText fontSize={10} padding={8} width={100} center style={{ borderRadius: 4 }
+                    } backgroundColor={STheme.color.card}
+                        color={data?.estado != 2 ? "#7C57E0" : STheme.color.success}
+                        onPress={() => {
+                            let valor = this.inputcomentar.getValue();
+                            SSocket.sendPromise({
+                                component: "tarea",
+                                type: data?.estado == 2 ? "abrir" : "cerrar",
+                                key_tarea: this.pk,
+                                key_empresa: Model.empresa.Action.getKey(),
+                                key_usuario: Model.usuario.Action.getKey(),
+                            }).then(e => {
+                                console.log(e);
+                                Model.tarea.Action.CLEAR();
+                                // this.inputcomentar.setValue("")
+                                // this.state.data[e.data.key] = e.data;
+                                // this.setState({...this.state})
+                            }).catch(e => {
+                                console.error(e);
+                            })
+                        }}>{data?.estado == 2 ? "Open Issue" : "Close issue"}</SText>
                     <SView width={32} />
                     <SText fontSize={10} padding={8} style={{ borderRadius: 4 }} backgroundColor={STheme.color.success} onPress={() => {
                         let valor = this.inputcomentar.getValue();
@@ -113,6 +139,7 @@ class profile extends Component {
                             key_empresa: Model.empresa.Action.getKey(),
                             key_usuario: Model.usuario.Action.getKey(),
                         }).then(e => {
+
                             this.inputcomentar.setValue("")
                             this.state.data[e.data.key] = e.data;
                             this.setState({ ...this.state })
@@ -123,7 +150,7 @@ class profile extends Component {
                     }}>Comment</SText>
                 </SView>
             </SView>
-        </SView>
+        </SView >
     }
     comentario(obj) {
         let usuario = Model.usuario.Action.getByKey(obj.key_usuario);
@@ -147,7 +174,8 @@ class profile extends Component {
                         </SView>
                         <SView col={"xs-12"} flex padding={8} row>
                             <SHr h={8} />
-                            {(obj.descripcion ?? "").split(" ").map(a => <SText color={STheme.color.text}>{a + " "}</SText>)}
+                            <SText color={STheme.color.text}>{obj.descripcion}</SText>
+                            {/* {(obj.descripcion ?? "").split(" ").map(a => <SText color={STheme.color.text}>{a + " "}</SText>)} */}
                             <SHr h={16} />
                         </SView>
                     </SView>
@@ -165,7 +193,7 @@ class profile extends Component {
                 <SView row >
                     <SView width={28} height={28} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden", padding: 5 }}>
                         {/* <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} /> */}
-                        <SIcon name='tareaUser' fill={STheme.color.gray} />
+                        <SIcon name='tareaUser' fill={obj.tipo == "delete_user" ? STheme.color.danger : STheme.color.success} />
                     </SView>
                     <SView width={8} />
                 </SView>
@@ -188,6 +216,87 @@ class profile extends Component {
                     <SView width={4} />
                     <SText bold>{(usuarioInvitado?.Apellidos ?? "").split(" ")[0]}</SText>
                     <SView width={4} />
+                    <SText color={STheme.color.gray} fontSize={12}>hace {new SDate(obj.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} </SText>
+                </SView>
+            </SView>
+        }
+        if (obj.tipo == "delete_label" || obj.tipo == "add_label") {
+            let label = Model.label.Action.getByKey(obj.data?.key_label);
+            return <SView col={"xs-12"} row >
+                <SView colHidden='xs' width={56} style={{ alignItems: "center", overflow: 'hidden' }}>
+                    {/* <SView width={40} height={40} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
+                    <SImage src={SSocket.api.root + "usuario/" + obj.key_usuario} />
+                </SView> */}
+                </SView>
+                <SView row >
+                    <SView width={28} height={28} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden", padding: 5 }}>
+                        {/* <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} /> */}
+                        <SIcon name='tarealabel' fill={obj.tipo == "delete_label" ? STheme.color.danger : STheme.color.success} />
+                    </SView>
+                    <SView width={8} />
+                </SView>
+                <SView flex row style={{
+                    paddingTop: 3,
+                    alignItems: "center"
+                }}>
+
+                    <SView width={20} height={20} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
+                        <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} />
+                    </SView>
+                    <SView width={4} />
+                    <SText bold>{usuario?.Nombres}</SText>
+                    <SView width={4} />
+                    <SText bold>{usuario?.Apellidos}</SText>
+                    <SView width={4} />
+                    {(obj.descripcion ?? "").split(" ").map(a => <SText color={STheme.color.gray}>{a + ' '}</SText>)}
+                    <SView width={4} />
+                    <SView row style={{
+                        backgroundColor: label?.color + "66", borderRadius: 16, padding: 2,
+                        paddingLeft: 4,
+                        paddingRight: 4,
+                        borderWidth: 1,
+                        borderColor: label?.color
+                    }}>
+                        <SText bold fontSize={12}  >{label?.descripcion}</SText>
+                    </SView>
+                    <SView width={4} />
+                    <SText color={STheme.color.gray} fontSize={12}>hace {new SDate(obj.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} </SText>
+                </SView>
+            </SView >
+        }
+        if (obj.tipo == "abrir" || obj.tipo == "cerrar") {
+            return <SView col={"xs-12"} row >
+                <SView colHidden='xs' width={56} style={{ alignItems: "center", overflow: 'hidden' }}>
+                    {/* <SView width={40} height={40} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
+                    <SImage src={SSocket.api.root + "usuario/" + obj.key_usuario} />
+                </SView> */}
+                </SView>
+                <SView row >
+                    <SView width={28} height={28} style={{ borderRadius: 100, backgroundColor: obj?.tipo != "abrir" ? "#7C57E0" : STheme.color.success, overflow: "hidden", padding: 5 }}>
+                        {/* <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} /> */}
+                        <SIcon name='tareaclose' fill={STheme.color.text} />
+                    </SView>
+                    <SView width={8} />
+                </SView>
+                <SView flex row style={{
+                    paddingTop: 3,
+                    alignItems: "center"
+                }}>
+
+                    <SView width={20} height={20} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
+                        <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} />
+                    </SView>
+                    <SView width={4} />
+                    <SText bold>{usuario?.Nombres}</SText>
+                    <SView width={4} />
+                    <SText bold>{usuario?.Apellidos}</SText>
+                    <SView width={4} />
+                    {(obj.descripcion ?? "").split(" ").map(a => <SText color={STheme.color.gray}>{a + ' '}</SText>)}
+                    <SView width={4} />
+                    {/* <SText bold>{usuarioInvitado?.Nombres}</SText> */}
+                    {/* <SView width={4} /> */}
+                    {/* <SText bold>{(usuarioInvitado?.Apellidos ?? "").split(" ")[0]}</SText> */}
+                    {/* <SView width={4} /> */}
                     <SText color={STheme.color.gray} fontSize={12}>hace {new SDate(obj.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} </SText>
                 </SView>
             </SView>
@@ -237,7 +346,7 @@ class profile extends Component {
             <SView row style={{
                 alignItems: "center"
             }}>
-                {this.getEstado()}
+                {this.getEstado(data)}
                 <SView width={4} />
                 <SText fontSize={12} color={STheme.color.text}>{`${usuario?.Nombres} ${usuario?.Apellidos}`}</SText>
                 <SView width={4} />

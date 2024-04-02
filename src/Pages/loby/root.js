@@ -94,6 +94,7 @@ export default class root extends Component {
     render() {
         return <SPage title="Loby" hidden onRefresh={(e) => {
             this.setState({ cargar: true })
+            Model.publicacion.Action.CLEAR();
             return;
         }} >
             <SHr h={16} />

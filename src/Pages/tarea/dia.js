@@ -110,8 +110,8 @@ export default class dia extends Component {
                     }
                     space += e.space + 30;
 
-                    console.log("Choco con una tarea antes de mi", dist, m, a.descripcion)
-                    console.log(a.fi.toString(), e.fi.toString())
+                    // console.log("Choco con una tarea antes de mi", dist, m, a.descripcion)
+                    // console.log(a.fi.toString(), e.fi.toString())
 
                 }
             }
@@ -132,7 +132,7 @@ export default class dia extends Component {
                 minHeight: 20,
                 // borderWidth: 1,
                 borderBottomWidth: 2,
-                borderColor: color
+                borderColor: color,
                 // transform: [{ translateX: 50 + space }]
             }} onPress={() => {
                 if (a.key == "new") {
@@ -141,8 +141,7 @@ export default class dia extends Component {
                 SNavigation.navigate("/tarea/profile", { pk: a.key })
             }}>
                 <SHr h={spaceY} />
-                <SText bold fontSize={12}>{(a.descripcion ?? "").length > 0 ? a.descripcion : "Sin nombre"}</SText>
-
+                <SText bold fontSize={12}>{(a.descripcion ?? "").length > 0 ? (a.descripcion.substring(0, 30) + ((a.descripcion ?? "").length > 30 ? "..." : "")) : "Sin nombre"}</SText>
             </SView>
         })
 
