@@ -49,18 +49,20 @@ class Publicaciones extends Component {
         //     // ref={ref => this.ref[itm.item.key] = ref}
         //     data={obj} usuario={{}} />
         const image_src = SSocket.api.repo + "publicacion/" + obj.key ?? "";
-        return <SView col={"xs-12"} padding={4} style={{
-            // backgroundColor: STheme.color.card,
-            borderRadius: 8,
-            borderWidth: 1,
-            borderColor: STheme.color.card
+        return <>
+            <SView col={"xs-12"} padding={4} style={{
+                // backgroundColor: STheme.color.card,
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: STheme.color.card
 
-        }} >
-            <SView flex>
-                <Publicacion.CardPost data={obj} />
+            }} >
+                <SView flex>
+                    <Publicacion.CardPost data={obj} />
+                </SView>
             </SView>
-
-        </SView>
+            <SHr height={10} />
+        </>
     }
     render() {
         let data = Model.publicacion.Action._getReducer()?.data ?? {};
@@ -73,7 +75,7 @@ class Publicaciones extends Component {
             <SHr />
             <SView col={"xs-12"} row>
                 <SList2
-                    // space={0}
+                    // space={10}
                     horizontal
                     order={[{ key: "fecha_on", type: "date", order: "desc" }]}
                     data={Object.values(data ?? {}).slice(0, 2)}
@@ -81,8 +83,9 @@ class Publicaciones extends Component {
                 />
                 {/* {Object.values(this.state.data ?? {}).map((a, i) => this.Item())} */}
             </SView>
+            <SHr height={15} />
             <SView col={"xs-12"} center card height={50} onPress={() => SNavigation.navigate("/publicacion")}>
-                <SText >VER MAS PUBLICACIONES</SText>
+                <SText >VER MÁS PUBLICACIONES</SText>
             </SView>
         </SView>
     }

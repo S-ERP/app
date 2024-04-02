@@ -95,8 +95,8 @@ class Notas extends Component {
                         this.setState({ ...this.state.data })
                     }
                 })} >
-                    <SView center row card width={105} height={40}>
-                        <SIcon name={"addNotas"} width={25} fill={STheme.color.text} />
+                    <SView center row card width={105} height={35}>
+                        <SIcon name={"addNotas"} width={20} fill={STheme.color.text} />
                         <SView width={8} />
                         <SText fontSize={12} center >Adicionar </SText>
                     </SView>
