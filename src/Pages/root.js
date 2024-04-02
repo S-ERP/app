@@ -59,8 +59,8 @@ class index extends Component {
                 SNavigation.navigate("/empresa", {
                     onSelect: (empresa) => {
                         SPopup.confirm({
-                            title: "¿Seguro que quiéres suscribirte a la empresa?",
-                            message: "Se agregará un acceso directo de la empresa en la ventana de incio.",
+                            title: "¿Seguro que quieres suscribirte a la empresa?",
+                            message: "Se agregará un acceso directo de la empresa en la ventana de inicio.",
                             onPress: () => {
                                 if (!this.arr) return null;
                                 console.log(this.arr)
@@ -89,8 +89,8 @@ class index extends Component {
                 SNavigation.navigate("/empresa", {
                     onSelect: (empresa) => {
                         SPopup.confirm({
-                            title: "¿Seguro que quiéres suscribirte a la empresa?",
-                            message: "Se agregará un acceso directo de la empresa en la ventana de incio.",
+                            title: "¿Seguro que quieres suscribirte a la empresa?",
+                            message: "Se agregará un acceso directo de la empresa en la ventana de inicio.",
                             onPress: () => {
                                 if (!this.arr) return null;
                                 console.log(this.arr)
