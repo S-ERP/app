@@ -31,38 +31,53 @@ export default class UsuariosAsigandos extends Component {
             filter={a => a.estado > 0}
             render={(a) => {
                 let usuario = Model.usuario.Action.getByKey(a.key_usuario)
-                return <SView style={{ alignItems: "center" }} row onPress={() => {
-                    SPopup.confirm({
-                        title: "¿Seguro que quieres eliminar al usuario " + usuario?.Nombres + "?",
-                        message: usuario?.Nombres+" dejará de ver la tarea, si alguien es miembro de la tarea puede invitarlo nuevamente.",
-                        onPress: () => {
-                            a.estado = 0;
-                            SSocket.sendPromise({
-                                component: "tarea_usuario",
-                                type: "editar",
-                                data: a,
-                                key_tarea: this.props.key_tarea,
-                                key_empresa: Model.empresa.Action.getKey(),
-                                key_usuario: Model.usuario.Action.getKey()
-                            }).then(e => {
-                                
-                                this.setState({ ...this.state })
-                                console.log("Exito");
-                            }).catch(e => {
-                                console.log("error");
-                            })
-                        }
-                    })
-                }}>
+                return <SView style={{ alignItems: "center" }} row
+
+                >
                     <SView width={20} height={20} style={{
                         borderRadius: 100,
                         overflow: "hidden",
                         backgroundColor: STheme.color.card
-                    }}>
+                    }}
+                        onPress={() => {
+                            SNavigation.navigate("/usuario/profile", { pk: a.key_usuario })
+                        }}
+                    >
                         <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + a.key_usuario} />
                     </SView>
                     <SView width={4} />
-                    <SText fontSize={12}>{usuario?.Nombres} {usuario?.Apellidos}</SText>
+                    <SText fontSize={12}
+                        onPress={() => {
+                            SNavigation.navigate("/usuario/profile", { pk: a.key_usuario })
+                        }}
+                    >{usuario?.Nombres} {usuario?.Apellidos}</SText>
+                    <SView width={8} />
+                    <SView width={20} height={20} center
+                        onPress={() => {
+                            SPopup.confirm({
+                                title: "¿Seguro que quieres eliminar al usuario " + usuario?.Nombres + "?",
+                                message: usuario?.Nombres + " dejará de ver la tarea, si alguien es miembro de la tarea puede invitarlo nuevamente.",
+                                onPress: () => {
+                                    a.estado = 0;
+                                    SSocket.sendPromise({
+                                        component: "tarea_usuario",
+                                        type: "editar",
+                                        data: a,
+                                        key_tarea: this.props.key_tarea,
+                                        key_empresa: Model.empresa.Action.getKey(),
+                                        key_usuario: Model.usuario.Action.getKey()
+                                    }).then(e => {
+                                        this.setState({ ...this.state })
+                                        console.log("Exito");
+                                    }).catch(e => {
+                                        console.log("error");
+                                    })
+                                }
+                            })
+                        }}
+                    >
+                        <SIcon name='remove' width={18} height={18} fill={STheme.color.danger} />
+                    </SView>
                 </SView>
             }}
         />

@@ -54,21 +54,25 @@ export default class Labels extends Component {
                         onPress: () => {
                             a.estado = 0;
                             SSocket.sendPromise({
-                                    component: "tarea_label",
-                                    type: "editar",
-                                    data: a,
-                                    key_tarea: this.props.key_tarea,
-                                    key_empresa: Model.empresa.Action.getKey(),
-                                    key_usuario: Model.usuario.Action.getKey()
-                                }).then(e => {
-                                    this.setState({ ...this.state })
-                                    console.log("Exito");
-                                }).catch(e => {
-                                    console.log("error");
-                                })
+                                component: "tarea_label",
+                                type: "editar",
+                                data: a,
+                                key_tarea: this.props.key_tarea,
+                                key_empresa: Model.empresa.Action.getKey(),
+                                key_usuario: Model.usuario.Action.getKey()
+                            }).then(e => {
+                                this.setState({ ...this.state })
+                                console.log("Exito");
+                            }).catch(e => {
+                                console.log("error");
+                            })
                         }
                     })
                 }}>
+                    <SView center width={18} height={18} style={{ position: "absolute", right: -7, top: -9, backgroundColor:STheme.color.danger, borderRadius:40 }}>
+                        <SIcon name='eliminar2' width={8} height={8} fill={STheme.color.white} />
+
+                    </SView>
                     <SText fontSize={12} >{label?.descripcion}</SText>
                 </SView>
             }}

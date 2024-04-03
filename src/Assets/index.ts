@@ -34,6 +34,8 @@ import tarea_close, { ReactComponent as tarea_closeW } from './svg/tarea/close.s
 import tarea_label, { ReactComponent as tarea_labelW } from './svg/tarea/label.svg';
 import addNotas, { ReactComponent as addNotasW } from './svg/tarea/addNotas.svg';
 import addTarea, { ReactComponent as addTareaW } from './svg/tarea/addTarea.svg';
+import eliminar, { ReactComponent as eliminarW } from './svg/tarea/eliminar.svg';
+import eliminar2, { ReactComponent as eliminar2W } from './svg/tarea/eliminar2.svg';
 
 
 const Assets: SAssets = {
@@ -71,6 +73,8 @@ const Assets: SAssets = {
         "tarealabel": { Native: tarea_label, Web: tarea_labelW },
         "addNotas": { Native: addNotas, Web: addNotasW },
         "addTarea": { Native: addTarea, Web: addTareaW },
+        "eliminar": { Native: eliminar, Web: eliminarW },
+        "eliminar2": { Native: eliminar2, Web: eliminar2W },
         
         
         
