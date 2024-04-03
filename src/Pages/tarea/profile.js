@@ -202,19 +202,31 @@ class profile extends Component {
                     alignItems: "center"
                 }}>
 
-                    <SView width={20} height={20} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
+                    <SView width={20} height={20} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}
+                        onPress={() => {
+                            SNavigation.navigate("/usuario/profile", { pk: usuario.key })
+                        }}
+                    >
                         <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} />
                     </SView>
                     <SView width={4} />
-                    <SText bold>{usuario?.Nombres}</SText>
-                    <SView width={4} />
-                    <SText bold>{usuario?.Apellidos}</SText>
+                    <SView row onPress={() => {
+                        SNavigation.navigate("/usuario/profile", { pk: usuario.key })
+                    }}>
+                        <SText bold>{usuario?.Nombres}</SText>
+                        <SView width={4} />
+                        <SText bold>{usuario?.Apellidos}</SText>
+                    </SView>
                     <SView width={4} />
                     {(obj.descripcion ?? "").split(" ").map(a => <SText color={STheme.color.gray}>{a + ' '}</SText>)}
                     <SView width={4} />
-                    <SText bold>{usuarioInvitado?.Nombres}</SText>
-                    <SView width={4} />
-                    <SText bold>{(usuarioInvitado?.Apellidos ?? "").split(" ")[0]}</SText>
+                    <SView row onPress={() => {
+                        SNavigation.navigate("/usuario/profile", { pk: usuarioInvitado.key })
+                    }}>
+                        <SText bold>{usuarioInvitado?.Nombres}</SText>
+                        <SView width={4} />
+                        <SText bold>{(usuarioInvitado?.Apellidos ?? "").split(" ")[0]}</SText>
+                    </SView>
                     <SView width={4} />
                     <SText color={STheme.color.gray} fontSize={12}>hace {new SDate(obj.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} </SText>
                 </SView>
@@ -239,14 +251,21 @@ class profile extends Component {
                     paddingTop: 3,
                     alignItems: "center"
                 }}>
-
-                    <SView width={20} height={20} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
-                        <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} />
+                    <SView row onPress={() => {
+                        SNavigation.navigate("/usuario/profile", { pk: usuario.key })
+                    }}>
+                        <SView width={20} height={20} style={{ borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
+                            <SImage style={{ resizeMode: "cover" }} src={SSocket.api.root + "usuario/" + obj.key_usuario} />
+                        </SView>
                     </SView>
                     <SView width={4} />
-                    <SText bold>{usuario?.Nombres}</SText>
-                    <SView width={4} />
-                    <SText bold>{usuario?.Apellidos}</SText>
+                    <SView row onPress={() => {
+                        SNavigation.navigate("/usuario/profile", { pk: usuario.key })
+                    }}>
+                        <SText bold>{usuario?.Nombres}</SText>
+                        <SView width={4} />
+                        <SText bold>{usuario?.Apellidos}</SText>
+                    </SView>
                     <SView width={4} />
                     {(obj.descripcion ?? "").split(" ").map(a => <SText color={STheme.color.gray}>{a + ' '}</SText>)}
                     <SView width={4} />
