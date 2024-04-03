@@ -16,11 +16,10 @@ class index extends DPA.item {
 
     $renderContent() {
         return <SView col={"xs-12"}>
-            <SText fontSize={16} bold>{this.data?.descripcion}</SText>
-            <SText fontSize={12} >{this.data?.observacion}</SText>
+            <SText fontSize={12} bold>{this.data?.descripcion}</SText>
             <SView col={"xs-12"} row>
-                <SView flex />
-                <SText fontSize={12} color={STheme.color.lightGray}>{new SDate(this.data?.fecha_on).toString("dd de MONTH del yyyy, hh:mm")}</SText>
+                <SText fontSize={12} flex color={STheme.color.lightGray}>{this.data?.observacion}</SText>
+                <SText fontSize={12} color={STheme.color.lightGray}>{new SDate(this.data?.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
             </SView>
         </SView>
     }

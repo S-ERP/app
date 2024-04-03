@@ -84,3 +84,4 @@ export default SPage.combinePages("/", {
     ...publicacion,
     invitation,
     "invitacion": invitacion
+})

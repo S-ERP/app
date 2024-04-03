@@ -21,7 +21,6 @@ class Firebase {
         // messaging().getInitialNotification()
         notifee.getInitialNotification().then(async remoteMessage => {
             console.log("entro aca en el initiallll", remoteMessage);
-
             if (remoteMessage?.data?.deepLink) {
                 Linking.openURL(remoteMessage.data.deepLink)
                 // SNavigation.goBack();
@@ -57,24 +56,25 @@ class Firebase {
 
             const unsubscribe = messaging().onMessage(async remoteMessage => {
                 console.log('Message received. ', remoteMessage);
-                const channelId = await notifee.createChannel({
-                    id: 'default',
-                    name: 'Default Channel',
-                });
+                // const channelId = await notifee.createChannel({
+                //     id: 'default',
+                //     name: 'Default Channel',
+                // });
 
                 // Display a notification
-                await notifee.displayNotification({
-                    title: 'Notification Title',
-                    body: 'Main body content of the notification',
-                    android: {
-                        channelId,
-                        smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
-                        // pressAction is needed if you want the notification to open the app when pressed
-                        pressAction: {
-                            id: 'default',
-                        },
-                    },
-                });
+                // await notifee.displayNotification({
+                //     title: 'Notification Title',
+                //     body: 'Main body content of the notification',
+                //     android: {
+                //         channelId,
+                //         smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
+                //         // pressAction is needed if you want the notification to open the app when pressed
+                //         pressAction: {
+                //             id: 'default',
+                //         },
+                //     },
+                // });
+
                 SNotification.send({
                     title: remoteMessage?.notification?.title,
                     body: remoteMessage?.notification?.body,
@@ -82,7 +82,9 @@ class Firebase {
                         "android": remoteMessage?.notification?.android?.imageUrl,
                         "ios": remoteMessage?.data?.fcm_options?.image,
                         "default": remoteMessage?.data?.fcm_options?.image,
-                    })
+                        
+                    }),
+                    deeplink: remoteMessage.data.deepLink
                 })
 
             });

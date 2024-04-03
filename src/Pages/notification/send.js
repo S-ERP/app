@@ -4,6 +4,7 @@ import { SInput, SPage, STable2, SLoad, SText, SView, SHr, SPopup, SNavigation, 
 import { Btn, Container } from '../../Components'
 
 import SSocket from 'servisofts-socket'
+import Model from '../../Model'
 
 export default class send extends Component {
     state = {
@@ -51,6 +52,7 @@ export default class send extends Component {
             url_image: this.inp_url.getValue() ?? this.state.url_image,
             data: {
                 deepLink: this.inp_deeplink.getValue() ?? this.state.data.deepLink,
+                key_empresa: Model.empresa.Action.getKey(),
             }
 
         }
@@ -58,7 +60,9 @@ export default class send extends Component {
         SSocket.sendPromise({
             service: "notification",
             component: "notification",
-            type: "send",
+            type: "sendV2",
+            key_usuario_emisor: Model.usuario.Action.getKey(),
+            // type: "send",
             data: data,
             tags: tags
         }).then(e => {
@@ -135,6 +139,7 @@ export default class send extends Component {
                         }
                     })
                 }}>Notificar a un usuario.</Btn>
+                <SHr h={100} />
             </Container>
         </SPage>
     }

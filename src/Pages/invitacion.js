@@ -13,33 +13,21 @@ export default class home extends Component {
     };
   }
 
-  componentDidMount() {
-    SSocket.sendPromise({
-      component: "tarea_usuario",
-      type: "getTareasAgendadas",
-      key_usuario: Model.usuario.Action.getUsuarioLog()?.key,
-      key_empresa: Model.empresa.Action.getSelect()?.key,
-    }).then(a => {
-      this.setState({ data: a.data })
-    })
+  // componentDidMount() {
+  //   SSocket.sendPromise({
+  //     component: "tarea_usuario",
+  //     type: "getTareasAgendadas",
+  //     key_usuario: Model.usuario.Action.getUsuarioLog()?.key,
+  //     key_empresa: Model.empresa.Action.getSelect()?.key,
+  //   }).then(a => {
+  //     this.setState({ data: a.data })
+  //   })
 
-    this.setState({ dataUser: Model.usuario.Action.getUsuarioLog() })
-    this.setState({ dataUserInvitacion: Model.usuario.Action.getByKey("b2aa9d81-5f63-40ce-ae35-31fbb1417745") })
-  }
+  //   this.setState({ dataUser: Model.usuario.Action.getUsuarioLog() })
+  //   this.setState({ dataUserInvitacion: Model.usuario.Action.getByKey("b2aa9d81-5f63-40ce-ae35-31fbb1417745") })
+  // }
 
   getInvitacion = () => {
-    var lbl_mensaje = "";
-    if (!this.state.data) {
-      lbl_mensaje = "Estamos intentando cargar las tareas del servidor, pero parece que tenemos problemas de conexión, intenta cargar nuevamente la ventana.";
-    } else {
-      Object.values(this.state.data).map((a, i) => {
-        lbl_mensaje += `${i + 1}.- ${a.descripcion}` + "\n"
-      })
-    }
-
-    if (!lbl_mensaje) return null;
-
-    console.log('dataUserInvitacionnnnnn', this.state.dataUserInvitacion)
     return <SView row col={"xs-12"} card padding={15} border={STheme.color.primary} center>
       <SHr height={20} />
       <SText fontSize={25} onPress={() => SNavigation.reset("/")}>INVITACIÓN</SText>
@@ -85,21 +73,15 @@ export default class home extends Component {
       </SView>
       <SHr height={20} />
     </SView>
-
-
-
   }
   render() {
     console.log('dataUser', this.state.dataUser)
     console.log('dataUserInvitacion', this.state.dataUserInvitacion)
     return <SPage title="Invitación" >
       <Container >
-
         <SHr />
-
         {this.getInvitacion()}
         <SHr h={200} />
-
       </Container>
     </SPage>
   }

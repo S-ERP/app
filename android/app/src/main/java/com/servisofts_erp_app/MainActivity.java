@@ -32,6 +32,20 @@ public class MainActivity extends ReactActivity {
       }
     }
   }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    setIntent(intent);
+    // Maneja el nuevo intent aquí, similar a cómo lo harías en onCreate
+    Uri data = intent.getData();
+    if (data != null) {
+      // Extrae y usa los datos del enlace profundo
+      String pk = data.getQueryParameter("pk");
+      // Navega a la sección correspondiente de tu aplicación
+    }
+  }
+
   // @Override
   // protected void onCreate(Bundle savedInstanceState) {
   // super.onCreate(null);

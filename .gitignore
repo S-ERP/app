@@ -106,6 +106,7 @@ yarn-error.log*
 /android/app/src/main/res/values/strings.xml
 
 /public/firebase-messaging-sw.js
+/public/.well-known/assetlinks.json
 
 /src/LoginApi/config.ts
 /src/Firebase/index.js

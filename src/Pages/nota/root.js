@@ -31,7 +31,7 @@ export default class root extends Component {
         }).then(e => {
             this.setState({ data: e.data[this.pk] })
             this.inp.setValue(e?.data[this.pk]?.observacion)
-        }).catch(e=>{
+        }).catch(e => {
             console.error(e);
         })
     }

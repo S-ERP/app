@@ -7,7 +7,7 @@ import Assets from './Assets';
 import Pages from './Pages';
 import BackgroundImage from './Components/BackgroundImage';
 import NavBar from './Components/NavBar';
-// import Firebase from './Firebase';
+import Firebase from './Firebase';
 import packageInfo from "../package.json"
 import ErrorBoundary from './Components/ErrorBoundary';
 import Socket from './Socket';
@@ -56,9 +56,9 @@ const App = (props) => {
             >
                 <SNavigation
                     linking={{
-                        prefixes: ["https://serp.servisofts.com/app/", "http://serp.servisofts.com/app/", 'serp://app/'],
+                        prefixes: ["https://serp.servisofts.com/", "http://serp.servisofts.com/", 'serp://app/'],
                         getInitialURL: () => {
-                            // Firebase.getInitialURL();
+                            Firebase.getInitialURL();
                         }
                     }}
                     props={{ navBar: NavBar, title: 'SERP', pages: Pages }}
