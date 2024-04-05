@@ -135,7 +135,7 @@ const BuildNotification = async (notification) => {
         data: notification?.data,
         ios: {
             attachments: [
-                { url: notification?.data?.image }
+
             ]
         },
         android: {
@@ -151,6 +151,7 @@ const BuildNotification = async (notification) => {
     }
     if (notification?.data?.image) {
         notify.android.largeIcon = notification?.data?.image;
+        notify.ios.attachments.push({ url: notification?.data?.image });
     }
     await notifee.displayNotification(notify);
 }
