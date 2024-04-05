@@ -128,7 +128,7 @@ const BuildNotification = async (notification) => {
     //         deeplink: remoteMessage.data.deepLink
     //     })
     // }
-    await notifee.displayNotification({
+    let notify = {
 
         title: notification?.data?.title,
         body: notification?.data?.body,
@@ -143,11 +143,15 @@ const BuildNotification = async (notification) => {
             channelId: "default_channel_id",
             // smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
             // largeIcon: notification?.data?.image,
-            largeIcon: notification?.data?.image,
+
             pressAction: {
                 id: 'default'
             }
         },
-    });
+    }
+    if (notification?.data?.image) {
+        notify.android.largeIcon = notification?.data?.image;
+    }
+    await notifee.displayNotification(notify);
 }
 export default Firebase;

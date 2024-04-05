@@ -32,7 +32,8 @@ export default class InvitarUsuario extends Component {
                     url: "",
                 },
             }).then(e => {
-                let page_link = 'http://192.168.3.3:3000';
+                // let page_link = 'http://192.168.3.3:3000';
+                let page_link = 'https://serp.servisofts.com';
                 let invitation_link = `${page_link}/invitation?pk=${e.data.key}`
                 console.log(invitation_link)
                 console.log(e);
