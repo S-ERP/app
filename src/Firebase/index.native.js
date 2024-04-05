@@ -52,7 +52,7 @@ class Firebase {
             });
 
             const unsubscribe = messaging().onMessage(async remoteMessage => {
-                console.log('Message received. ', remoteMessage);
+                console.log('Message receivedddd. ', remoteMessage);
                 BuildNotification(remoteMessage);
             });
 
