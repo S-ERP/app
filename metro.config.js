@@ -24,14 +24,14 @@ module.exports = (async () => {
       })
     },
     watchFolders: [
-      path.resolve(__dirname, '../../servisofts-component/dist'),
+      // path.resolve(__dirname, '../../servisofts-component/dist'),
       // path.resolve(__dirname, '../../servisofts-model/dist'),
       // path.resolve(__dirname, '../../servisofts-page/dist'),
       // path.resolve(__dirname, '../../roles_permisos/library/dist'),
       // path.resolve(__dirname, '../../usuario/library/dist'),
       // path.resolve(__dirname, '../../contabilidad/library/dist'),
-      path.resolve(__dirname, '../../chat/library/dist'),
-      path.resolve(__dirname, '../../spdf/library/dist'),
+      // path.resolve(__dirname, '../../chat/library/dist'),
+      // path.resolve(__dirname, '../../spdf/library/dist'),
       // path.resolve(__dirname, '../../geolocation/library/dist'),
       // path.resolve(__dirname, '../../servisofts-charts/dist'),
       //  path.resolve(__dirname, 'C:\\servisofts\\dist')
