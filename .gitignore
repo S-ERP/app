@@ -95,7 +95,7 @@ yarn-error.log*
 /ios/servisofts_erp_app/Info.plist
 /ios/ExportOptions.plist
 /ios/Certificates.p12
-/ios/dhm_app.mobileprovision
+/ios/SERP_appstore.mobileprovision
 /ios/AuthKey_5KCFQBMUQK.p8
 /ios/AuthKey_N7G47KBF2S.p8
 

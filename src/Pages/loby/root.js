@@ -56,6 +56,8 @@ export default class root extends Component {
                     <>
                         {this.renderMunuItem({ label: "Menú", icon: "Menu", onPress: () => SNavigation.navigate("/menu") })}
                         <SView width={8} />
+                        {this.renderMunuItem({ label: "Init", icon: "Menu", onPress: () => SNavigation.navigate("/empresa/init") })}
+                        <SView width={8} />
 
                         <Chat label={"Chat"}  >
                             {this.renderMunuItem({ label: "Chat", color: STheme.color.success, icon: "Comment", })}

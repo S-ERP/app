@@ -74,7 +74,7 @@ target 'servisofts_erp_app' do
   pod 'GoogleMaps', '~> 7.4.0'
   pod 'GooglePlaces'
   pod 'Google-Maps-iOS-Utils', '~> 4.1.0'
-  
+  pod 'Braintree', '~> 5'
   # pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
 
   # pod 'react-native-image-resizer', :path => '../node_modules/react-native-image-resizer'
@@ -93,5 +93,8 @@ target 'servisofts_erp_app' do
 end
 
 
+# target 'ImageNotification' do
+#   pod 'Firebase/Messaging', '~> 8.15.0' # eg 6.31.0
+# end
 
 

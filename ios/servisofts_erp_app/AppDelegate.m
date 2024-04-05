@@ -4,7 +4,10 @@
 
 #import <GoogleMaps/GoogleMaps.h>
 #import <Firebase.h>
-#import <SSBackgroundLocation.h>
+
+#import <React/RCTLinkingManager.h>
+#import <React/RCTBridge.h>
+#import <React/RCTBundleURLProvider.h>
 
 #ifdef FB_SONARKIT_ENABLED
 #import <FlipperKit/FlipperClient.h>
@@ -46,6 +49,32 @@ static void InitializeFlipper(UIApplication *application) {
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
+
+
+
+- (BOOL)application:(UIApplication *)application
+  openURL:(NSURL *)url
+  options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+ return [RCTLinkingManager application:application openURL:url options:options];
+}
+
+
+- (BOOL)application:(UIApplication *)application
+continueUserActivity:(NSUserActivity *)userActivity
+ restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
+{
+  if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    NSURL *url = userActivity.webpageURL;
+    // Puedes manejar el URL como necesites aquí, por ejemplo:
+    return [RCTLinkingManager application:application
+                     continueUserActivity:userActivity
+                       restorationHandler:restorationHandler];
+  }
+  return NO;
+}
+
+
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {

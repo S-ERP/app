@@ -40,9 +40,11 @@ class index extends DPA.list {
                 <SList
                     data={this.state.data}
                     limit={30}
+                    // filter={}
                     order={[{ "key": "fecha_on", order: "desc", type: "date" }]}
                     render={(e) => {
                         let deepLink = e?.data?.deepLink;
+                        let key_empresa = e?.data?.key_empresa;
                         return <SView col={"xs-12"} row center
                             style={{
                                 paddingTop: 16,
@@ -64,7 +66,6 @@ class index extends DPA.list {
                             <SView flex>
                                 <SText clean bold fontSize={16}>{e.descripcion}</SText>
                                 <SText clean fontSize={14} color={STheme.color.lightGray}>{e.observacion}</SText>
-
                             </SView>
                             <SView style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: STheme.color.card, overflow: "hidden" }}>
                                 <SImage src={e?.url_image} />
@@ -78,7 +79,7 @@ class index extends DPA.list {
                         </SView>
                     }}
                 />
-                <SView height={100}/>
+                <SView height={100} />
             </Container>
         </SPage>
     }

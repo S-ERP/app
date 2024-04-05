@@ -34,17 +34,6 @@ try {
 
 const App = (props) => {
     return <Redux>
-        {/* <SView
-            style={{
-                zIndex: 8,
-                position: "relative",
-            }}
-        > */}
-        {/* <SGradient deg={-50} colors={["#3A3A3A", STheme.color.black]}   style={{
-                zIndex: 8,
-                position: "relative",
-            }}/> */}
-        {/* </SView> */}
         <ErrorBoundary>
             <SComponentContainer
                 // debug
@@ -56,7 +45,7 @@ const App = (props) => {
             >
                 <SNavigation
                     linking={{
-                        prefixes: ["https://serp.servisofts.com/", "http://serp.servisofts.com/", 'serp://app/'],
+                        prefixes: ["https://serp.servisofts.com/", "http://serp.servisofts.com/"],
                         getInitialURL: () => {
                             Firebase.getInitialURL();
                         }

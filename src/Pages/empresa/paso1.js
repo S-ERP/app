@@ -72,7 +72,7 @@ export default class index extends Component {
                                         data: data,
                                         key_usuario: Model.usuario.Action.getKey()
                                     }).then((resp) => {
-                                        
+
                                         Model.empresa.Action.setEmpresa(resp.data);
                                         new SThread(500, "navigate_init").start(() => {
                                             //     path: "/empresa/paso2",
@@ -81,9 +81,10 @@ export default class index extends Component {
 
                                             SNavigation.navigate("/empresa/init", {
                                                 onEnd: () => {
-                                                    SNavigation.navigate("/empresa/paso2", {
-                                                        key: resp.data.key
-                                                    })
+                                                    SNavigation.replace("/tarea")
+                                                    // SNavigation.navigate("/empresa/paso2", {
+                                                    //     key: resp.data.key
+                                                    // })
                                                 }
                                             })
                                         })

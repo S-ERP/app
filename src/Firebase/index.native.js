@@ -8,7 +8,8 @@ import messaging from '@react-native-firebase/messaging';
 import { PERMISSIONS, request, requestNotifications } from 'react-native-permissions'
 import DeviceKey from './DeviceKey';
 import { SNavigation, SNotification, SThread } from 'servisofts-component';
-import notifee from '@notifee/react-native';
+import notifee, { EventType, AndroidStyle } from '@notifee/react-native';
+
 const sleep = ms => {
     return new Promise(resolve => setTimeout(resolve, ms));
 };
@@ -17,34 +18,30 @@ const sleep = ms => {
 class Firebase {
 
     static async getInitialURL() {
-        // await messaging().getToken();
-        // messaging().getInitialNotification()
-        notifee.getInitialNotification().then(async remoteMessage => {
-            console.log("entro aca en el initiallll", remoteMessage);
+
+        notifee.getInitialNotification().then(async evt => {
+            let remoteMessage = evt.notification;
+            console.log("entro aca en el initiall notiffie", remoteMessage);
             if (remoteMessage?.data?.deepLink) {
+
                 Linking.openURL(remoteMessage.data.deepLink)
-                // SNavigation.goBack();
             }
         })
+        // messaging().getInitialNotification().then(async remoteMessage => {
+        //     console.log("entro aca en el initiallll", remoteMessage);
+        //     if (remoteMessage?.data?.deepLink) {
+        //         Linking.openURL(remoteMessage.data.deepLink)
+        //     }
+        // })
 
     }
     static async init() {
         try {
-            // messaging().setBackgroundMessageHandler(async remoteMessage => {
-            notifee.onBackgroundEvent(async remoteMessage => {
-                console.log('Message handled in the background!', remoteMessage);
-                // Notifications.postLocalNotification(remoteMessage.notification)
 
-                // showLocalNotification(remoteMessage);
-            });
-
-
-            await sleep(500);
-
-
+            // await sleep(500);
             var authorizationStatus = await requestNotifications(["sound", "provisional", "alert"])
-
-
+            const authorizationStatusNotify = await messaging().requestPermission();
+            // await messaging().registerDeviceForRemoteMessages()
             messaging().getToken().then(fcmToken => {
                 if (fcmToken) {
                     console.log(fcmToken)
@@ -56,40 +53,50 @@ class Firebase {
 
             const unsubscribe = messaging().onMessage(async remoteMessage => {
                 console.log('Message received. ', remoteMessage);
-                // const channelId = await notifee.createChannel({
-                //     id: 'default',
-                //     name: 'Default Channel',
-                // });
-
-                // Display a notification
-                // await notifee.displayNotification({
-                //     title: 'Notification Title',
-                //     body: 'Main body content of the notification',
-                //     android: {
-                //         channelId,
-                //         smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
-                //         // pressAction is needed if you want the notification to open the app when pressed
-                //         pressAction: {
-                //             id: 'default',
-                //         },
-                //     },
-                // });
-
-                SNotification.send({
-                    title: remoteMessage?.notification?.title,
-                    body: remoteMessage?.notification?.body,
-                    image: Platform.select({
-                        "android": remoteMessage?.notification?.android?.imageUrl,
-                        "ios": remoteMessage?.data?.fcm_options?.image,
-                        "default": remoteMessage?.data?.fcm_options?.image,
-                        
-                    }),
-                    deeplink: remoteMessage.data.deepLink
-                })
-
+                BuildNotification(remoteMessage);
             });
 
-            // Notification tap
+            messaging().setBackgroundMessageHandler(async remoteMessage => {
+                console.log('Message handled in the background!', remoteMessage);
+                BuildNotification(remoteMessage)
+            });
+
+            notifee.registerForegroundService(async ({ type, detail }) => {
+                console.log("registerForegroundService", type, detail)
+            });
+            notifee.onBackgroundEvent(async ({ type, detail }) => {
+                const { notification, pressAction } = detail;
+                console.log('Notification caused app to open onBackgroundEvent:', type, notification);
+                if (type === EventType.PRESS) {
+                    if (notification?.data?.deepLink) {
+                        if (SNavigation.INSTANCE) {
+                            new SThread(1000, "hilo_para_navegar").start(() => {
+                                SNavigation.INSTANCE.openDeepLink(notification.data.deepLink)
+                            })
+
+                        } else {
+                            Linking.openURL(notification.data.deepLink)
+                        }
+                    }
+                }
+            });
+            notifee.onForegroundEvent(evt => {
+                const remoteMessage = evt?.detail?.notification
+                console.log('Notification caused app to open onForegroundEvent:', remoteMessage);
+                if (evt.type == EventType.PRESS) {
+                    if (remoteMessage.data.deepLink) {
+                        if (SNavigation.INSTANCE) {
+                            new SThread(1000, "hilo_para_navegar").start(() => {
+                                SNavigation.INSTANCE.openDeepLink(remoteMessage.data.deepLink)
+                            })
+
+                        } else {
+                            Linking.openURL(remoteMessage.data.deepLink)
+                        }
+                    }
+                }
+
+            });
             messaging().onNotificationOpenedApp(remoteMessage => {
                 console.log('Notification caused app to open from background state:', remoteMessage);
                 if (remoteMessage.data.deepLink) Linking.openURL(remoteMessage.data.deepLink)
@@ -97,10 +104,50 @@ class Firebase {
             });
 
 
+
+
+
+
         } catch (e) {
             console.error(e)
         }
 
     }
+}
+const BuildNotification = async (notification) => {
+    // if(Platform.OS){
+    //     SNotification.send({
+    //         title: remoteMessage?.data?.title,
+    //         body: remoteMessage?.data?.body,
+    //         image: Platform.select({
+    //             "android": remoteMessage?.data?.image,
+    //             "ios": remoteMessage?.data?.fcm_options?.image,
+    //             "default": remoteMessage?.data?.fcm_options?.image,
+
+    //         }),
+    //         deeplink: remoteMessage.data.deepLink
+    //     })
+    // }
+    await notifee.displayNotification({
+
+        title: notification?.data?.title,
+        body: notification?.data?.body,
+        data: notification?.data,
+        ios: {
+            attachments: [
+                { url: notification?.data?.image }
+            ]
+        },
+        android: {
+
+            channelId: "default_channel_id",
+            // smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
+            // largeIcon: notification?.data?.image,
+            largeIcon: notification?.data?.image,
+            pressAction: {
+                id: 'default'
+            }
+        },
+    });
 }
 export default Firebase;

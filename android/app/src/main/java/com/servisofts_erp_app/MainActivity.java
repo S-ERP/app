@@ -1,7 +1,10 @@
 package com.servisofts_erp_app;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -22,12 +25,23 @@ public class MainActivity extends ReactActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     // Otros códigos de inicialización...
+    Log.d("DeepLink", "Entro al onCreate");
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      NotificationChannel channel = new NotificationChannel("default_channel_id", "My Channel", NotificationManager.IMPORTANCE_HIGH);
+      NotificationManager notificationManager = getSystemService(NotificationManager.class);
+      notificationManager.createNotificationChannel(channel);
+    }
 
     Intent intent = getIntent();
+    if (intent != null && intent.getExtras() != null) {
+      for (String key : intent.getExtras().keySet()) {
+        Log.d("DeepLink", "data onCreate: "+key+":"+intent.getExtras().getString(key));
+      }
+    }
     if (intent != null) {
       Uri data = intent.getData();
       if (data != null) {
-        Log.d("DeepLink", "Deep link received: " + data.toString());
+        Log.d("DeepLink", "Deep link received onCreate: " + data.toString());
         // Aquí puedes manejar el deep link como necesites
       }
     }
@@ -36,12 +50,14 @@ public class MainActivity extends ReactActivity {
   @Override
   public void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
+    Log.d("DeepLink", "Entro al onNewIntent");
     setIntent(intent);
     // Maneja el nuevo intent aquí, similar a cómo lo harías en onCreate
     Uri data = intent.getData();
     if (data != null) {
       // Extrae y usa los datos del enlace profundo
-      String pk = data.getQueryParameter("pk");
+      Log.d("DeepLink", "Deep link received onNewIntent: " + data.toString());
+      // String pk = data.getQueryParameter("pk");
       // Navega a la sección correspondiente de tu aplicación
     }
   }
@@ -62,6 +78,14 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onResume() {
     super.onResume();
+    Log.d("DeepLink", "Entro al onResume");
+    Intent intent = getIntent();
+    if (intent != null && intent.getExtras() != null) {
+      for (String key : intent.getExtras().keySet()) {
+        Log.d("DeepLink", "Deep link received onResume: "+key+":"+intent.getExtras().getString(key));
+      }
+    }
+
     if (cant > 1) {
       cant = 0;
     } else {

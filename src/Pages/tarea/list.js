@@ -59,6 +59,9 @@ class index extends DPA.list {
         }
         return data.estado != 0
     }
+    $order() {
+        return [{ key: "numero", order: "desc",  }]
+    }
     $getData() {
         return Parent.model.Action.getAll();
     }
