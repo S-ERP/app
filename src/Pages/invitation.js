@@ -133,6 +133,7 @@ export default class invitation extends Component {
         return <SPage title={"Inivitarion"}>
             <SHr />
             <Container>
+                <SHr height={30} />
                 {this.getInvitacion()}
             </Container>
         </SPage>
