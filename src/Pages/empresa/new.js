@@ -46,8 +46,8 @@ export default class index extends Component {
 
             }} >
                 <SHr height={20} />
-                <SView style={{ position: "absolute", left:-50, top: 0 }}>
-                    <SIcon name="emp1" height={350} width={310} fill={STheme.color.gray} />
+                <SView style={{ position: "absolute", left: -50, top: 0 }}>
+                    <SIcon name="emp1" height={350} width={310} fill={STheme.color.gray + "20"} />
                 </SView>
                 <Container style={{}} >
 
@@ -70,7 +70,7 @@ export default class index extends Component {
 
                 </Container>
                 <SView style={{ position: "absolute", right: -50, bottom: 50 }}>
-                    <SIcon name="emp2" width={248} height={300} fill={STheme.color.gray}  />
+                    <SIcon name="emp2" width={248} height={300} fill={STheme.color.gray + "20"} />
                 </SView>
                 <SHr height={55} />
                 <PButtomFooter url={'/empresa/paso1'} label={'COMENZAR'} />

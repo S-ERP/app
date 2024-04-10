@@ -39,6 +39,7 @@ import eliminar2, { ReactComponent as eliminar2W } from './svg/tarea/eliminar2.s
 import emp1, { ReactComponent as emp1W } from './svg/empresa/emp1.svg';
 import emp2, { ReactComponent as emp2W } from './svg/empresa/emp2.svg';
 import emp3, { ReactComponent as emp3W } from './svg/empresa/emp3.svg';
+import emp4, { ReactComponent as emp4W } from './svg/empresa/emp4.svg';
 
 
 const Assets: SAssets = {
@@ -81,6 +82,7 @@ const Assets: SAssets = {
         "emp1": { Native: emp1, Web: emp1W },
         "emp2": { Native: emp2, Web: emp2W },
         "emp3": { Native: emp3, Web: emp3W },
+        "emp4": { Native: emp4, Web: emp4W },
         
         
         

@@ -28,6 +28,10 @@ export default class index extends Component {
                     end()
 
                 }}>
+                    <SHr height={20} />
+                    <SView style={{ position: "absolute", left: -120, top: '10%' }}>
+                        <SIcon name="emp4" height={675} width={439} fill={STheme.color.gray + "20"} />
+                    </SView>
                     <Container >
                         <Adornos.titulo time={30} label={"Debes ingresar los datos de tu empresa."} fontSize={18} />
 
