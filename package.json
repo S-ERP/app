@@ -1,6 +1,6 @@
 {
   "name": "servisofts_erp_app",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "darmotos",
   "scripts": {
     "start": "react-native start",
@@ -61,7 +61,7 @@
     "redux": "^4.1.1",
     "redux-thunk": "^2.3.0",
     "servisofts-charts": "^1.0.1",
-    "servisofts-component": "^3.0.25",
+    "servisofts-component": "^3.0.26",
     "servisofts-db": "^1.0.7",
     "servisofts-model": "^1.0.7",
     "servisofts-page": "^1.0.12",
