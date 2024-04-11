@@ -110,6 +110,8 @@ class list extends Component {
     />
   }
   render() {
+    this.key_usuario = Model.usuario.Action.getKey();
+    if(!this.key_usuario) return null;
     console.log(SComponentContainer.getCurrentCol());
     if (["xs"].indexOf(SComponentContainer.getCurrentCol()) > -1) {
       if (this.state.select && this.state.click) {
