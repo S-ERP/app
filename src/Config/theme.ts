@@ -48,7 +48,7 @@ const theme: SThemeThemes = {
         secondary: '#ffffff',
         info: '#6E6F74',
         background: '#000000',
-        card: '#ffffff15',
+        card: '#ffffff22',
         font: "Roboto",
         // card: '#ffffff10'
         accent: "#3A3A3A"

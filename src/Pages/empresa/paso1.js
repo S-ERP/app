@@ -9,7 +9,7 @@ import Container from '../../Components/Container';
 import Adornos from '../../Components/Adornos';
 import BtnNext from './Components/BtnNext';
 import { Parent } from '.';
-class index extends Component {
+export default class index extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -17,9 +17,7 @@ class index extends Component {
     }
 
     render() {
-        if (!Model.usuario.Action.getUsuarioLog()) {
-            console.log("ggggggg")
-
+        if (!this.register && !Model.usuario.Action.getUsuarioLog()) {
             SNavigation.replace("/login");
             return null;
         }
@@ -30,6 +28,10 @@ class index extends Component {
                     end()
 
                 }}>
+                    <SHr height={20} />
+                    <SView style={{ position: "absolute", left: -120, top: '10%' }}>
+                        <SIcon name="emp4" height={675} width={439} fill={STheme.color.gray + "20"} />
+                    </SView>
                     <Container >
                         <Adornos.titulo time={30} label={"Debes ingresar los datos de tu empresa."} fontSize={18} />
 
@@ -66,6 +68,7 @@ class index extends Component {
                                 onSubmit={(data) => {
 
                                     // this.form.submit();
+                                    this.register = true;
                                     this.setState({ loading: true })
                                     data.key_servicio = "1427e867-c4f7-4602-a1aa-5deabf2d0372";
                                     Model.empresa.Action.registro({
@@ -73,16 +76,21 @@ class index extends Component {
                                         data: data,
                                         key_usuario: Model.usuario.Action.getKey()
                                     }).then((resp) => {
-                                        this.setState({ loading: false })
+
                                         Model.empresa.Action.setEmpresa(resp.data);
                                         new SThread(500, "navigate_init").start(() => {
                                             //     path: "/empresa/paso2",
                                             //     key: resp.data.key
                                             // }
-                                            SNavigation.navigate("/empresa/paso2", {
-                                                key: resp.data.key
+
+                                            SNavigation.navigate("/empresa/init", {
+                                                onEnd: () => {
+                                                    SNavigation.replace("/tarea")
+                                                    // SNavigation.navigate("/empresa/paso2", {
+                                                    //     key: resp.data.key
+                                                    // })
+                                                }
                                             })
-                                            SNavigation.navigate("/empresa/init")
                                         })
 
                                         // SNavigation.goBack();
@@ -125,7 +133,7 @@ class index extends Component {
         );
     }
 }
-const initStates = (state) => {
-    return { state }
-};
-export default connect(initStates)(index);
+// const initStates = (state) => {
+//     return { state }
+// };
+// export default connect(initStates)(index);

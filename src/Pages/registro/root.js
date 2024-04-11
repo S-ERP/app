@@ -13,7 +13,7 @@ class root extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            envio: 0
+            envio: 1
         };
         this.params = SNavigation.getAllParams();
     }
@@ -44,11 +44,11 @@ class root extends Component {
                         inputs={{
                             Nombres: { placeholder: "Nombre", isRequired: true, defaultValue: defaultData.Nombres },
                             Apellidos: { placeholder: "Apellidos", isRequired: true, defaultValue: defaultData.Apellidos },
+                            CI: { placeholder: "Carnet de Identidad", isRequired: false, },
                             Correo: { placeholder: "Correo", type: "email", isRequired: true, defaultValue: defaultData.Correo },
-                            FechaNacimiento: { placeholder: "Fecha de Nacimiento", isRequired: false, type: "date", },
+                            // FechaNacimiento: { placeholder: "Fecha de Nacimiento", isRequired: false, type: "date", },
                             //telefono: { placeholder: "Celular", isRequired: true, type: "telefono", isRequired:true},
                             Telefono: { placeholder: "Celular", isRequired: false,  type:"phone"},
-                            CI: { placeholder: "Carnet de Identidad", isRequired: false, },
                             Password: { placeholder: "Password", isRequired: true, type: "password" },
                             RepPassword: { placeholder: "Repetir password", type: "password", isRequired: true },
                         }}

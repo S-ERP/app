@@ -26,7 +26,7 @@ class index extends DPA.edit {
         return inputs;
     }
     $onSubmit(data) {
-        // data["Password"] = CryptoJS.MD5(data["Password"]).toString();
+        data["Password"] = CryptoJS.MD5(data["Password"]).toString();
         Parent.model.Action.editar({
             data: {
                 ...this.data,

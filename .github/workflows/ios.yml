@@ -1,0 +1,49 @@
+name: "CI/CD SERVISOFTS - IOS"
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  compile_ios:
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Load secrets
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        run: .github/actions/decode_secrets.sh $SECRET_KEY
+     
+      - run: .github/actions/ios_create_keychain.sh
+
+      - name: Instalando el Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.18.0
+
+      - run: npm ci
+      - run: ./bin/version
+      - run: sudo xcode-select -s /Applications/Xcode.app
+      - run: sudo gem install cocoapods -v 1.15.2
+      # - run: grep -rl "s.dependency 'React/Core'" node_modules/ | xargs sed -i '' 's=React/Core=React-Core=g'
+      - run: cd ios && pod install --repo-update
+        shell: bash
+      - run: .github/actions/ios_build.sh
+      - run: .github/actions/ios_export_ipa.sh
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@master
+        with:
+          path: ${{ runner.temp }}/export/
+
+      - run: .github/actions/ios_upload_testflight.sh
+
+      - name: Clean files
+        if: ${{ always() }}
+        run: |
+          ./bin/secrets clean
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm -fr ~/Library/MobileDevice/Provisioning\ Profiles/
+          rm -fr ~/private_keys/

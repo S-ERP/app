@@ -3,6 +3,7 @@ import { Parent } from '.';
 import { SInput, SLoad, SNavigation, SPopup, SText, SView } from 'servisofts-component';
 import Model from '../../../Model';
 import DatosDocumentosEditar from './Components/DatosDocumentosEditar';
+import label from '../../ajustes/label';
 
 class index extends DPA.new {
     constructor(props) {
@@ -40,6 +41,27 @@ class index extends DPA.new {
                 })
             }
         }
+        inp["key_almacen"] = {
+            label: "Almacen",
+            editable: false,
+            value: this.state?.almacen?.key,
+            render: (ref) => {
+                var value = ref.getValue();
+                if (!value) {
+                    return null;
+                }
+                return <SView col={"xs-12"} height center style={{ padding: 8 }}>
+                    <SText col={"xs-12"}>{this.state.almacen.descripcion}</SText>
+                </SView>
+            },
+            onPress: () => {
+                SNavigation.navigate("/inventario", {
+                    onSelect: (item) => {
+                        this.setState({ almacen: item })
+                    }
+                })
+            }
+        }
         return inp;
     }
     $allowAccess() {
@@ -51,7 +73,7 @@ class index extends DPA.new {
     $onSubmit(data) {
         Parent.model.Action.registro({
             data: data,
-            key_almacen: this._params.key_almacen,
+            key_almacen: this._params.key_almacen ?? this.state?.almacen?.key,
             key_usuario: Model.usuario.Action.getKey()
         }).then((resp) => {
             this.$submitFile(resp.data.key);

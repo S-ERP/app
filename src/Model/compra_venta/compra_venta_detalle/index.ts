@@ -23,6 +23,7 @@ export default new SModel<Action, Reducer>({
         "unidad_medida": { type: "text", editable: true, label: "Unidad de medida" },
         "precio_unitario": { type: "double", editable: true, label: "Precio unitario", notNull: true },
         "descuento": { type: "double", editable: true, label: "Descuento" },
+        "precio_facturado": { type: "double", editable: true, label: "Precio facturado" },
 
     },
     Action,

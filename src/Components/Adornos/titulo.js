@@ -21,10 +21,10 @@ export default class index extends Component<PropsType> {
         // }} color={STheme.color.lightGray} fontSize={10}>{this.props.label}</SText>
 
         return <>
-            <SView col={"xs-12"} center>
+            {/* <SView col={"xs-12"} center>
                 <SImage src={require('../../Assets/png/franja.png')} style={{ width: " 100%", height: 50, borderRadius: 100, resizeMode: "contain" }} />
-            </SView>
-            <SView col={"xs-9"} style={{ padding: 10, borderRadius: 25, borderWidth: 3, borderColor: STheme.color.black, height: 140, backgroundColor: STheme.color.card }}  >
+            </SView> */}   
+            <SView col={"xs-9"} style={{ padding: 15, borderRadius: 25, borderWidth: 3, borderColor: STheme.color.black, height: 140, backgroundColor: STheme.color.card }}  >
                 <STextPlay key={SUuid()} time={this.props.time ?? 30} col={"xs-12"} color={STheme.color.text} fontSize={this.props.fontSize} bold>{this.props.label}</STextPlay>
             </SView>
 
@@ -32,9 +32,9 @@ export default class index extends Component<PropsType> {
                 <SIcon name="cola" width={35} height={24} fill={STheme.color.card} stroke={STheme.color.card} />
             </SView>
 
-            <SView col={"xs-12"} center>
+            {/* <SView col={"xs-12"} center>
                 <SImage src={require('../../Assets/png/franja.png')} style={{ width: " 100%", height: 50, borderRadius: 100, resizeMode: "contain" }} />
-            </SView>
+            </SView> */}
         </>
     }
 }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import { SImage, STheme } from 'servisofts-component';
+import { SDate, SImage, STheme } from 'servisofts-component';
 import Model from '../../Model';
 import SSocket from 'servisofts-socket';
 type type = {
@@ -27,7 +27,7 @@ export default class BackgroundImage extends Component<type> {
         }}>
             <SImage style={{
                 resizeMode:"cover"
-            }} src={SSocket.api.empresa + "empresa_background/" + Model.empresa.Action.getKey()} />
+            }} src={SSocket.api.empresa + "empresa_background/" + Model.empresa.Action.getKey()+"?time="+new SDate().toString("yyyy-MM-ddThh:mm")} />
             {/* <SGradient colors={["#000000", "#44000044"]} /> */}
         </View>
     }

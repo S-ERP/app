@@ -28,16 +28,21 @@ class index extends Component {
     }
 
     render() {
-        if (!Model.usuario.Action.getUsuarioLog()) {
-            console.log("ggggggg")
+        // if (!Model.usuario.Action.getUsuarioLog()) {
+        //     console.log("ggggggg")
 
-            SNavigation.replace("/login");
-            return null;
-        }
+        //     SNavigation.replace("/login");
+        //     return null;
+        // }
         return (
             <SPage title={''} onRefresh={(end) => {
-                Model.usuarioPage.Action.CLEAR();
-                end()
+                if (Model?.usuarioPage) {
+                    Model.usuarioPage.Action.CLEAR();
+                }
+                if (end) {
+                    end()
+                }
+
 
             }}>
                 <SHr height={32} />
@@ -51,9 +56,9 @@ class index extends Component {
                     path={"/"} permiso={"page"}>
                     {/* <MenuButtom label={"Migrador2"} url={"/bots/amortizaciones"} icon={<SIcon name={"Box"} fill='#f098a7' />} /> */}
                     <MenuButtom label={"Mi perfil"} url={"/profile"} icon={this.getIconProfile()} />
-                    <MenuButtom label={"Reto"} url={"/tarea/reto"}  />
-                    <MenuButtom label={"Test"} url={"/test"} />
-                    <MenuButtom label={"Facturacion"} url={"/facturacion"} icon={<SIcon name={"Box"} />} /> 
+                    {/* <MenuButtom label={"Reto"} url={"/tarea/reto"}  /> */}
+                    {/* <MenuButtom label={"Test"} url={"/test"} /> */}
+                    <MenuButtom label={"Facturacion"} url={"/facturacion"} icon={<SIcon name={"Box"} />} />
                 </MenuPages>
                 <SHr height={100} />
             </SPage>

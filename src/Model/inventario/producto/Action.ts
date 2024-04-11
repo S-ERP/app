@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { STheme } from "servisofts-component";
 import { SAction } from "servisofts-model";
 import SSocket from 'servisofts-socket'
@@ -14,19 +15,24 @@ export default class Action extends SAction {
 
     getAllByKeyAlmacen(key_almacen) {
         let data = this.getAll();
+        if(!data) return null;
         return Object.values(data).filter((obj: any) => obj.key_almacen == key_almacen);
     }
     getAllRecursive() {
         let modelos = Model.modelo.Action.getAllRecursive();
+        let almacenes = Model.almacen.Action.getAll();
         let data = this.getAll();
         let ventas_sin_entregar = Model.compra_venta_detalle.Action.ventasSinEntregar({});
         let producto_inventario_dato = Model.producto_inventario_dato.Action.getAll();
-        if (!modelos || !data || !ventas_sin_entregar || !producto_inventario_dato) return null;
+        if (!modelos || !data || !ventas_sin_entregar || !producto_inventario_dato || !almacenes) return null;
         const arr_vse = Object.values(ventas_sin_entregar);
         const arr_pid = Object.values(producto_inventario_dato);
         Object.values(data).map((obj: any) => {
             obj.modelo = modelos[obj.key_modelo];
-            obj.venta_sin_entregar = arr_vse.filter((o: any) => o.key_producto == obj.key && o.estado > 0)
+            obj.almacen = almacenes[obj.key_almacen];
+            if (!!obj?.almacen?.is_stock) {
+                obj.venta_sin_entregar = arr_vse.filter((o: any) => o.key_producto == obj.key && o.estado > 0)
+            } 
             obj.datos = arr_pid.filter((o: any) => o.key_producto == obj.key)
             obj.state = this.getState(obj);
         })

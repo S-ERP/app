@@ -1,56 +1,90 @@
-import { SNavigation } from 'servisofts-component';
+import { SDate, SHr, SImage, SList, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
 import Model from '../../Model';
 import item from './item';
+import SSocket from 'servisofts-socket';
+import { Container } from '../../Components';
 class index extends DPA.list {
     constructor(props) {
-        super(props, {
-            Parent: Parent,
-            itemType: "2",
-            item: item,
-            excludes: ["key", "fecha_on", "key_usuario", "data", "key_servicio", "estado", "tipo"],
-            onRefresh:(resolve)=>{
-                Model.notification.Action.CLEAR();
-                resolve();
-            }
-            // defaultParams: { key_rol: "51ee8a95-094b-41eb-8819-4afa1f349394" },
-            // params: ["key_rol"]
-        });
+        super(props);
+        this.state = {}
     }
 
-    // $allowNew() {
-    //     return true;
-    //     return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "new" });
-    // }
-    // $allowTable() {
-    //     return true;
-    //     return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "table" });
-    // }
-    $allowAccess() {
-        return true;
-        return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "ver" });
-    }
-    $filter(data) {
-        return data.estado != "0"
-    }
-    $order() {
-        return [{ key: "fecha_on", order: "desc" }]
-    }
-    $onSelect(obj) {
-        if (!obj.data) return;
-        var data = obj.data;
-        if (!data.url) return;
-        var parms = data.url.split("?");
-        var url = parms[0]
-        var search = parms[1]
-        var json = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
-        SNavigation.navigate(url, json)
+    componentDidMount() {
+        const limit = 10;
+        let page = 0;
+        SSocket.sendPromise({
+            "version": "1.0",
+            "service": "notification",
+            "component": "notification",
+            "type": "getAllV2",
+            "estado": "cargando",
+            "key_usuario": Model.usuario.Action.getKey(),
+            "limit": 100,
+            "offset": limit * page,
+        }).then(e => {
+            this.setState({ data: e.data })
+        }).catch(e => {
 
+        })
     }
-    $getData() {
-        return Parent.model.Action.getAll();
 
+    render() {
+        return <SPage title={"Notificaciones"} onRefresh={(res) => {
+            this.componentDidMount();
+            if (res) res()
+        }}>
+            <Container >
+                <SHr h={30} />
+                <SList
+                    data={this.state.data}
+                    limit={30}
+                    // filter={}
+                    order={[{ "key": "fecha_on", order: "desc", type: "date" }]}
+                    render={(e) => {
+                        let deepLink = e?.data?.deepLink;
+                        let key_empresa = e?.data?.key_empresa;
+                        return <SView col={"xs-12"} row center
+                            style={{
+                                paddingTop: 16,
+                                paddingBottom: 16,
+                                borderBottomWidth: 1,
+                                borderColor: STheme.color.card
+                            }}
+                            onPress={!deepLink ? null : () => {
+                                SNavigation.INSTANCE.openDeepLink(deepLink)
+                            }}
+                        >
+                            <SView col={"xs-2"} height style={{
+                                alignItems: "center"
+                            }}>
+                                <SView style={{ width: 40, height: 40, borderRadius: 100, backgroundColor: STheme.color.card, overflow: "hidden" }}>
+                                    <SImage src={SSocket.api.root + "usuario/" + e.key_usuario} />
+                                </SView>
+                            </SView>
+                            <SView flex>
+                                <SText clean bold fontSize={16}>{e.descripcion}</SText>
+                                <SText clean fontSize={14} color={STheme.color.lightGray}>{e.observacion}</SText>
+                                {/* {!deepLink ? null : <SText onPress={() => {
+                                    SNavigation.INSTANCE.openDeepLink(deepLink)
+                                }} underLine color={STheme.color.link}>Ver</SText>} */}
+                            </SView>
+                            <SView style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: STheme.color.card, overflow: "hidden" }}>
+                                <SImage src={e?.url_image} />
+                            </SView>
+                            <SText style={{
+                                position: "absolute",
+                                bottom: 0,
+                                right: 0,
+                            }} clean color={STheme.color.lightGray} fontSize={10} center>Hace {new SDate(e.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
+
+                        </SView>
+                    }}
+                />
+                <SView height={100} />
+            </Container>
+        </SPage>
     }
 }
 export default connect(index);

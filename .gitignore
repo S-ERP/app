@@ -29,7 +29,7 @@ build/
 local.properties
 *.iml
 *.hprof
-
+*.apk
 # node.js
 #
 node_modules/
@@ -39,8 +39,6 @@ yarn-error.log
 # BUCK
 buck-out/
 \.buckd/
-# *.keystore
-!debug.keystore
 
 # fastlane
 #
@@ -69,27 +67,55 @@ buck-out/
 */node_modules
 /.pnp
 .pnp.js
-
 # testing
 /coverage
-
 # production
 /build
 
 # misc
 .DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
 
 
-# SECRETS
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+.metro-health-check*
 
-/src/Config/socket.ts
+.eslintcache
+.secrets.base64
+# SECRETS
 /.env
+
+/ios/GoogleService-Info.plist
+/ios/servisofts_erp_app/Info.plist
+/ios/ExportOptions.plist
+/ios/Certificates.p12
+/ios/SERP_appstore.mobileprovision
+/ios/AuthKey_5KCFQBMUQK.p8
+/ios/AuthKey_N7G47KBF2S.p8
+
+/android/app/google-services.json
+/android/app/service-account.json
+/android/app/debug.keystore
+/android/app/app.jks
+/android/app/src/main/res/values/strings.xml
+
+/public/firebase-messaging-sw.js
+/public/.well-known/assetlinks.json
+
+/src/LoginApi/config.ts
+/src/Firebase/index.js
+/src/Config/socket.ts
+
+/.ssh/id_rsa
+/.ssh/config
+
+
+# END
+.eslintcache
+android/.settings/org.eclipse.buildship.core.prefs

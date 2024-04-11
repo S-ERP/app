@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { SStorage, STheme, SThread } from "servisofts-component";
 import { SReducer } from "servisofts-model";
 

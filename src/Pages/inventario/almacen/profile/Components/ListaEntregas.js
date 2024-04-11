@@ -2,6 +2,7 @@ import { SDate, SHr, SIcon, SList, SLoad, SMath, SNavigation, SPopup, SText, STh
 import DPA, { connect } from 'servisofts-page';
 import Model from '../../../../../Model';
 import item from "../../../../productos/producto/item";
+import SSocket from 'servisofts-socket'
 const Parent = {
     name: "Ventas sin entregar.",
     path: `/inventario/almacen/profile/recepcion_compra`,
@@ -33,13 +34,24 @@ class index extends DPA.list {
             title: "Entregar al cliente",
             message: "Seguro que decea entregar",
             onPress: () => {
-                Model.producto.Action.editar({
-                    key_usuario: Model.usuario.Action.getKey(),
+
+                SSocket.sendPromise({
+                    component: "producto_entrega",
+                    type: "registro",
                     data: {
-                        key: obj.key_producto,
+                        key_producto: obj.key_producto,
                         key_cliente: obj.cliente.key_usuario,
-                    }
+                        key_almacen: obj.key_almacen
+                    },
+                    key_usuario: Model.usuario.Action.getKey(),
                 }).then(r => {
+                    // Model.producto.Action.editar({
+                    //     key_usuario: Model.usuario.Action.getKey(),
+                    //     data: {
+                    //         key: obj.key_producto,
+                    //         key_cliente: obj.cliente.key_usuario,
+                    //     }
+                    // }).then(r => {
                     Model.compra_venta_detalle.Action.entregar({
                         key_compra_venta_detalle_producto: obj.key_compra_venta_detalle_producto,
                     }).then((resp) => {
@@ -68,7 +80,7 @@ class index extends DPA.list {
             let producto = this.productos.find(pro => pro.key == obj.key_producto);
             if (!producto) return null;
             obj.producto = producto;
-            obj_final[producto.key] = obj;
+            obj_final[obj.key] = obj;
         })
         return obj_final;
     }

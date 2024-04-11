@@ -18,6 +18,7 @@ export default new SModel<Action, Reducer>({
         "fecha_on": { type: "timestamp" },
         "estado": { type: "integer" },
         "key_usuario": { type: "text", fk: "usuario" },
+        "key_cliente": { type: "text", fk: "usuario", editable:true },
     },
     image: {
         api: "inventario",

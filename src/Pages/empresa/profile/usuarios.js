@@ -3,6 +3,8 @@ import { Parent } from ".."
 import { SButtom, SHr, SList, SLoad, SNavigation, SText, SView } from 'servisofts-component';
 import Model from '../../../Model';
 import ListaUsuarios from './Components/listaUsuarios';
+import InvitarUsuario from '../../../Components/empresa/InvitarUsuario';
+
 class index extends DPA.profile {
     constructor(props) {
         super(props, { Parent: Parent, excludes: ["key", "key_usuario", "key_servicio", "estado"] });
@@ -16,11 +18,13 @@ class index extends DPA.profile {
     $allowAccess() {
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "ver" })
     }
-    $allowBack(){
+    $allowBack() {
         return true;
     }
     $footer() {
         return <SView col={"xs-12"}>
+            <SHr />
+            <InvitarUsuario />
             <ListaUsuarios key_empresa={this.pk} />
         </SView>
     }

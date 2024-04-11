@@ -32,7 +32,7 @@ class index extends DPA.list {
         return data.estado != 0
     }
     onNew() {
-        SNavigation.navigate("/usuario", {
+        SNavigation.navigate("/usuario/all", {
             onSelect: (a) => {
                 console.log(a);
                 // if(this.data.)

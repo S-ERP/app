@@ -33,11 +33,19 @@ import home2 from './home2';
 import home3 from './home3';
 import facturacion from './facturacion';
 import loby from './loby';
+import lobyRoot from './loby/root';
 import nota from './nota';
+import chat from './chat';
 import { Example } from 'servisofts-charts'
+import  publicacion  from './publicacion'
+import invitation from "./invitation";
+import  invitacion  from './invitacion'
+import  terminos  from './terminos'
 export default SPage.combinePages("/", {
     // "":Example,
-    "": Root,
+    // "": test,
+    "": lobyRoot,
+    "root": Root,
     home,
     home2,
     home3,
@@ -56,6 +64,7 @@ export default SPage.combinePages("/", {
     ...usuario,
     ...empresa,
     ...rol,
+    ...chat,
     ...sucursal,
     ...contabilidad,
     ...inventario,
@@ -72,5 +81,9 @@ export default SPage.combinePages("/", {
     ...bots,
     ...temp,
     ...tarea,
-    ...facturacion
-});
+    ...facturacion,
+    ...publicacion,
+    invitation,
+    "invitacion": invitacion,
+    terminos
+})

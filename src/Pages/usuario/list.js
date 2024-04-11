@@ -15,7 +15,9 @@ class index extends DPA.list {
         });
     }
 
+
     $allowNew() {
+
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "new" });
     }
     $allowTable() {
@@ -60,7 +62,16 @@ class index extends DPA.list {
         return data.estado != "0"
     }
     $getData() {
-        return Parent.model.Action.getAll({});
+        let eu = Model.empresa_usuario.Action.getAllByKeyEmpresa(Model.empresa.Action.getKey());
+        let usuarios = Parent.model.Action.getAll({});
+        console.log(eu);
+        if (!eu || !usuarios) return null
+        let data = Object.values(eu).map(a => {
+            let usr = usuarios[a.key_usuario];
+            usr.empresa_usuario = a;
+            return usr;
+        })
+        return data;
     }
 }
 export default connect(index);

@@ -9,7 +9,10 @@ class index extends DPA.list {
         super(props, {
             Parent: Parent,
             params: ["onSelect?", "pk?"],
-            excludes: ["key", "fecha_on", "key_usuario", "key_servicio", "estado"],
+            excludes: ["key", "fecha_on", "key_usuario", "key_servicio", "estado", "repleg_ci",
+                "repleg_nombre",
+                "repleg_email",
+                "repleg_telefono"],
             onRefresh: (resolve) => {
                 Parent.model.Action.CLEAR();
                 resolve()
@@ -42,7 +45,7 @@ class index extends DPA.list {
     }
     $item(obj) {
         return <SView backgroundColor={obj?.theme?.barColor + "55"}>
-            <SGradient colors={[obj?.theme?.barColor+"66", obj?.theme?.background+"66"]} deg={90} />
+            {/* <SGradient colors={[obj?.theme?.barColor+"66", obj?.theme?.background+"66"]} deg={90} /> */}
             {super.$item(obj)}
         </SView>
     }

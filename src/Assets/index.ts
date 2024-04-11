@@ -17,6 +17,29 @@ import bgBoton, { ReactComponent as bgBotonW } from './svg/bgBoton.svg';
 import cola, { ReactComponent as colaW } from './svg/cola.svg';
 import picture, { ReactComponent as pictureW } from './svg/picture.svg';
 import hand, { ReactComponent as handW } from './svg/hand.svg';
+import chip, { ReactComponent as chipW } from './svg/chip.svg';
+import pinchito, { ReactComponent as pinchitoW } from './svg/pinchito.svg';
+import notaEsquina, { ReactComponent as notaEsquinaW } from './svg/notaEsquina.svg';
+import addUser, { ReactComponent as addUserW } from './svg/addUser.svg';
+import history, { ReactComponent as historyW } from './svg/history.svg';
+import removeNotes, { ReactComponent as removeNotesW } from './svg/removeNotes.svg';
+import remove, { ReactComponent as removeW } from './svg/remove.svg';
+import Heart, { ReactComponent as HeartW } from './svg/social/Heart.svg';
+import Comment, { ReactComponent as CommentW } from './svg/social/Comment.svg';
+import addPublicacion, { ReactComponent as addPublicacionW } from './svg/social/addPublicacion.svg';
+
+import tareaUser, { ReactComponent as tareaUserW } from './svg/tarea/user.svg';
+import tarea_engranaje, { ReactComponent as tarea_engranajeW } from './svg/tarea/engranaje.svg';
+import tarea_close, { ReactComponent as tarea_closeW } from './svg/tarea/close.svg';
+import tarea_label, { ReactComponent as tarea_labelW } from './svg/tarea/label.svg';
+import addNotas, { ReactComponent as addNotasW } from './svg/tarea/addNotas.svg';
+import addTarea, { ReactComponent as addTareaW } from './svg/tarea/addTarea.svg';
+import eliminar, { ReactComponent as eliminarW } from './svg/tarea/eliminar.svg';
+import eliminar2, { ReactComponent as eliminar2W } from './svg/tarea/eliminar2.svg';
+import emp1, { ReactComponent as emp1W } from './svg/empresa/emp1.svg';
+import emp2, { ReactComponent as emp2W } from './svg/empresa/emp2.svg';
+import emp3, { ReactComponent as emp3W } from './svg/empresa/emp3.svg';
+import emp4, { ReactComponent as emp4W } from './svg/empresa/emp4.svg';
 
 
 const Assets: SAssets = {
@@ -27,7 +50,7 @@ const Assets: SAssets = {
         "profile2": { Native: profile2, Web: profile2W },
         "IconChecked": { Native: IconChecked, Web: IconCheckedW },
         "IconCheckedOk": { Native: IconCheckedOk, Web: IconCheckedOkW },
-        "empresa": { Native: empresaBuscar, Web: empresaW },
+        "empresa": { Native: empresa, Web: empresaW },
         "empresaBuscar": { Native: empresaBuscar, Web: empresaBuscarW },
         "bg1": { Native: bg1, Web: bg1W },
         "img1": { Native: img1, Web: img1W },
@@ -38,6 +61,28 @@ const Assets: SAssets = {
         "cola": { Native: cola, Web: colaW },
         "picture": { Native: picture, Web: pictureW },
         "hand": { Native: hand, Web: handW },
+        "chip": { Native: chip, Web: chipW },
+        "pinchito": { Native: pinchito, Web: pinchitoW },
+        "notaEsquina": { Native: notaEsquina, Web: notaEsquinaW },
+        "addUser": { Native: addUser, Web: addUserW },
+        "history": { Native: history, Web: historyW },
+        "removeNotes": { Native: removeNotes, Web: removeNotesW },
+        "remove": { Native: remove, Web: removeW },
+        "Heart": { Native: Heart, Web: HeartW },
+        "Comment": { Native: Comment, Web: CommentW },
+        "addPublicacion": { Native: addPublicacion, Web: addPublicacionW },
+        "tareaUser": { Native: tareaUser, Web: tareaUserW },
+        "tareaengranaje": { Native: tarea_engranaje, Web: tarea_engranajeW },
+        "tareaclose": { Native: tarea_close, Web: tarea_closeW },
+        "tarealabel": { Native: tarea_label, Web: tarea_labelW },
+        "addNotas": { Native: addNotas, Web: addNotasW },
+        "addTarea": { Native: addTarea, Web: addTareaW },
+        "eliminar": { Native: eliminar, Web: eliminarW },
+        "eliminar2": { Native: eliminar2, Web: eliminar2W },
+        "emp1": { Native: emp1, Web: emp1W },
+        "emp2": { Native: emp2, Web: emp2W },
+        "emp3": { Native: emp3, Web: emp3W },
+        "emp4": { Native: emp4, Web: emp4W },
         
         
         

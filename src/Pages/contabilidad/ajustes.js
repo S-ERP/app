@@ -19,20 +19,21 @@ class index extends Component {
 
         })
     }
+
     item(obj) {
         let existe = Object.values(this.mis_ajustes).find(a => a.key_ajuste == obj.key && a.key_empresa == this.state.key_empresa);
         return <SView col={"xs-12"} onPress={() => {
 
         }} >
             <SView col={"xs-12"} >
-                <SText bold fontSize={16}>{obj.descripcion}</SText>
+                <SText bold fontSize={18}>{obj.descripcion}</SText>
                 {/* <SView width={8} /> */}
-                <SText fontSize={10} color={STheme.color.lightGray}>{obj.observacion}</SText>
+                <SText fontSize={12} color={STheme.color.lightGray}>{obj.observacion}</SText>
             </SView>
 
             <Components.contabilidad.cuenta_contable.Select codigo={""}
                 key_cuenta_contable={existe?.key_cuenta_contable}
-                selectAny
+                // selectAny
                 onChange={e => {
                     Model.ajuste_empresa.Action.registro({
                         key_empresa: this.state.key_empresa,
@@ -51,12 +52,13 @@ class index extends Component {
     render() {
         this.mis_ajustes = Model.ajuste_empresa.Action.getAll();
         if (!this.mis_ajustes) return <SLoad />
-
+        
         return <SPage title={"Configura tus ajustes"} >
             <Container>
                 <SList
+                    order={[{ key: "index", order: "asc", type: "number" }]}
                     scrollEnabled={false}
-                    space={8}
+                    // space={50}
                     data={this.state?.data}
                     render={this.item.bind(this)}
                 />

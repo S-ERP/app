@@ -1,0 +1,17 @@
+#!/bin/bash
+
+
+# Ruta al archivo GPX
+GPX_FILE=$1
+
+# Comando para extraer las coordenadas de latitud y longitud y enviarlas al dispositivo
+cat $GPX_FILE | grep '<wpt' | while read -r line ; do
+    LAT=$(echo $line | sed -n 's/.*lat="\([^"]*\).*/\1/p')
+    LON=$(echo $line | sed -n 's/.*lon="\([^"]*\).*/\1/p')
+
+    echo "Enviando ubicación: Latitud $LAT, Longitud $LON"
+    adb emu geo fix $LON $LAT
+
+    # Esperar un poco antes de enviar la próxima ubicación
+    sleep 0.5
+done

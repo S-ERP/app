@@ -31,11 +31,14 @@ class index extends DPA.profile {
         return Parent.model.Action.getByKey(this.$params["pk"]);
     }
     renderEmpresa = (key_usuario) => {
+        let empresa = Model.empresa.Action.getSelect();
+        if (!empresa) return null;
         let arr = Model.empresa_usuario.Action.getAllByKeyUsuario(key_usuario);
         if (!arr) return <SLoad />
         return <SView col={"xs-12"} center>
             <SList
                 data={arr}
+                filter={a => a.key_empresa == empresa.key}
                 render={(a) => {
                     return <SView col={"xs-12"} card padding={8} row >
                         <SView width={40} height={40} card>
@@ -57,8 +60,10 @@ class index extends DPA.profile {
                                     key_usuario: Model.usuario.Action.getKey(),
                                     key_empresa: Model.empresa.Action.getKey()
                                 }).then(e => {
-                                    Model._events.CLEAR();
-                                    SNavigation.reset("/")
+                                    // Model._events.CLEAR();
+                                    Model.empresa.Action.setEmpresa(null)
+                                    SNavigation.navigate("/root")
+                                    SNavigation.reset("/root")
                                 })
                             }}>Salir</SText>
                         </SView>
@@ -83,8 +88,11 @@ class index extends DPA.profile {
                 <EditarUsuarioRolEmpresa key_usuario={this.$params["pk"]} key_empresa={Model.empresa.Action.getSelect()?.key} disabled onlyActives />
             </SView>
             <SHr h={50} />
+            {/* <SText color={STheme.color.error} underLine onPress={() => {
+
+            }}>ABANDONAR EMPRESA</SText> */}
             {/* <SText col={"xs-12"} fontSize={18}>Empresas en las que participo:</SText> */}
-            {/* {this.renderEmpresa(this.$params["pk"])} */}
+            {this.renderEmpresa(this.$params["pk"])}
 
         </SView>
 

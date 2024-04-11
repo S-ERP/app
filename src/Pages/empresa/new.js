@@ -9,7 +9,7 @@ import Container from '../../Components/Container';
 import Components from '../../Components';
 import PButtomFooter from '../../Components/PButtomFooter';
 import Adornos from '../../Components/Adornos';
-class index extends Component {
+export default class index extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -33,20 +33,24 @@ class index extends Component {
         })
     }
     render() {
-        if (!Model.usuario.Action.getUsuarioLog()) {
-            console.log("ggggggg")
+        // if (!Model.usuario.Action.getUsuarioLog()) {
+        //     console.log("ggggggg")
 
-            SNavigation.replace("/login");
-            return null;
-        }
+        //     SNavigation.replace("/login");
+        //     return null;
+        // }
         return (
             <SPage title={''} onRefresh={(end) => {
                 Model.usuarioPage.Action.CLEAR();
                 end()
 
-            }}>
+            }} >
                 <SHr height={20} />
-                <Container >
+                <SView style={{ position: "absolute", left: -50, top: 0 }}>
+                    <SIcon name="emp1" height={350} width={310} fill={STheme.color.gray + "20"} />
+                </SView>
+                <Container style={{}} >
+
                     {/* <SHr height={10} /> */}
                     {/* <SView col={"xs-8"} style={{ padding: 10, borderRadius: 25, borderWidth: 1, borderColor: STheme.color.secondary }} center>
                         <SText center fontSize={18} bold>Para iniciar esta nueva aventura necesitas crear tu empresa y personalizarla.
@@ -55,19 +59,26 @@ class index extends Component {
                         <SText center fontSize={18} bold>
                             ¡SIN MIEDO AL ÉXITO !</SText>
                     </SView> */}
+                    <SHr height={150} />
                     <Adornos.titulo time={30} label={"Para iniciar esta nueva aventura necesitas crear tu empresa y personalizarla.\n¡Clic en comenzar!"} fontSize={18} />
                     {/* <SHr height={25} /> */}
-                    <SView col={"xs-12"} center>
+                    {/* <SView col={"xs-12"} center>
                         <SIcon name="construEmpresa" width={230} height={196} />
-                    </SView>
+                    </SView> */}
+                    <SHr height={20} />
+
+
                 </Container>
+                <SView style={{ position: "absolute", right: -50, bottom: 50 }}>
+                    <SIcon name="emp2" width={248} height={300} fill={STheme.color.gray + "20"} />
+                </SView>
                 <SHr height={55} />
                 <PButtomFooter url={'/empresa/paso1'} label={'COMENZAR'} />
             </SPage>
         );
     }
 }
-const initStates = (state) => {
-    return { state }
-};
-export default connect(initStates)(index);
+// const initStates = (state) => {
+//     return { state }
+// };
+// export default connect(initStates)(index);
