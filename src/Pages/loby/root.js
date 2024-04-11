@@ -24,9 +24,12 @@ export default class root extends Component {
 
     renderMunuItem({ onPress, label, icon, color }) {
         return <SView width={(label.length * 8) + 45} card padding={8} onPress={onPress} center row>
-            <SView width={20} height={20} center>
+            
+            <SView width={18} height={18} center>
                 <SIcon name={icon} fill={color ?? STheme.color.text} />
             </SView>
+            {(label.length > 0) ? <SView width={5} /> : null}
+            {/* <SView width={5} /> */}
             {/* <SView width={8} /> */}
             <SText >{label}</SText>
         </SView>
@@ -62,16 +65,16 @@ export default class root extends Component {
                         <SView width={8} />
 
                         <Chat label={"Chat"}  >
-                            {this.renderMunuItem({ label: "", color: STheme.color.success, icon: "Comment", })}
+                            {this.renderMunuItem({ label: "",  icon: "Comment2", })}
                         </Chat>
                         <SView width={8} />
 
-                        {this.renderMunuItem({ label: "", icon: "Ajustes", onPress: () => SNavigation.navigate("/ajustes") })}
+                        {this.renderMunuItem({ label: "", icon: "configurar", onPress: () => SNavigation.navigate("/ajustes") })}
                         <SView width={8} />
                         <InvitarUsuario />
                         {/* {this.renderMunuItem({ label: "Invitar", icon: "Usuarios", color: STheme.color.danger, onPress: () => SNavigation.navigate("/root") })} */}
                         <SView width={8} />
-                        {this.renderMunuItem({ label: "Salir", icon: "Arrow", color: STheme.color.danger, onPress: () => SNavigation.navigate("/root") })}
+                        {this.renderMunuItem({ label: "Salir", icon: "out",  onPress: () => SNavigation.navigate("/root") })}
                         <SView width={8} />
                     </>
                 </ScrollView>

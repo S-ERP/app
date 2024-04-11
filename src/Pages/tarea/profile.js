@@ -364,13 +364,14 @@ class profile extends Component {
                 <SView flex />
                 <SText card width={45} height={22} center onPress={() => SNavigation.navigate("/tarea/edit", { pk: this.pk })}>Edit</SText>
                 <SView width={4} />
+                <SHr height={10} />
                 <SText card center height={22} width={80} style={{
                     backgroundColor: STheme.color.success
 
                 }} onPress={() => SNavigation.navigate("/tarea/new")}>New issue</SText>
                 <SView width={4} />
             </SView>
-            <SHr />
+            <SHr height={10} />
             <SView row style={{
                 alignItems: "center"
             }}>
@@ -378,7 +379,7 @@ class profile extends Component {
                 <SView width={4} />
                 <SText fontSize={12} color={STheme.color.text}>{`${usuario?.Nombres} ${usuario?.Apellidos}`}</SText>
                 <SView width={4} />
-                {`creo esta tarea el ${new SDate(data.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd a las HH")}`.split(" ").map(a => <SText fontSize={12} color={STheme.color.gray}>{a + " "}</SText>)}
+                {`creó esta tarea el ${new SDate(data.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd a las HH")}`.split(" ").map(a => <SText fontSize={12} color={STheme.color.gray}>{a + " "}</SText>)}
 
             </SView>
 
