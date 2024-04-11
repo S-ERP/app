@@ -115,6 +115,10 @@ class profile extends Component {
                                 key_tarea: this.pk,
                                 key_empresa: Model.empresa.Action.getKey(),
                                 key_usuario: Model.usuario.Action.getKey(),
+                                notification_data:{
+                                    usuario: Model.usuario.Action.getUsuarioLog(),
+                                    empresa: Model.empresa.Action.getSelect()
+                                }
                             }).then(e => {
                                 console.log(e);
                                 Model.tarea.Action.CLEAR();
@@ -128,6 +132,7 @@ class profile extends Component {
                     <SView width={32} />
                     <SText fontSize={10} padding={8} style={{ borderRadius: 4 }} backgroundColor={STheme.color.success} onPress={() => {
                         let valor = this.inputcomentar.getValue();
+                        let usuario = Model.usuario.Action.getUsuarioLog();
                         SSocket.sendPromise({
                             component: "tarea_comentario",
                             type: "registro",
@@ -138,6 +143,10 @@ class profile extends Component {
                             key_tarea: this.pk,
                             key_empresa: Model.empresa.Action.getKey(),
                             key_usuario: Model.usuario.Action.getKey(),
+                            notification_data: {
+                                usuario: usuario,
+                                empresa: Model.empresa.Action.getSelect()
+                            }
                         }).then(e => {
 
                             this.inputcomentar.setValue("")

@@ -23,11 +23,11 @@ export default class root extends Component {
     }
 
     renderMunuItem({ onPress, label, icon, color }) {
-        return <SView width={(label.length * 12) + 36} card padding={8} onPress={onPress} center row>
-            <SView width={20} height={20}>
+        return <SView width={(label.length * 8) + 45} card padding={8} onPress={onPress} center row>
+            <SView width={20} height={20} center>
                 <SIcon name={icon} fill={color ?? STheme.color.text} />
             </SView>
-            <SView width={8} />
+            {/* <SView width={8} /> */}
             <SText >{label}</SText>
         </SView>
     }
@@ -56,15 +56,17 @@ export default class root extends Component {
                     <>
                         {this.renderMunuItem({ label: "Menú", icon: "Menu", onPress: () => SNavigation.navigate("/menu") })}
                         <SView width={8} />
-                        {this.renderMunuItem({ label: "Init", icon: "Menu", onPress: () => SNavigation.navigate("/empresa/init") })}
+                        {/* {this.renderMunuItem({ label: "Init", icon: "Menu", onPress: () => SNavigation.navigate("/empresa/init") })}
+                        <SView width={8} /> */}
+                        {this.renderMunuItem({ label: "", icon: "Notify", onPress: () => SNavigation.navigate("/notification") })}
                         <SView width={8} />
 
                         <Chat label={"Chat"}  >
-                            {this.renderMunuItem({ label: "Chat", color: STheme.color.success, icon: "Comment", })}
+                            {this.renderMunuItem({ label: "", color: STheme.color.success, icon: "Comment", })}
                         </Chat>
                         <SView width={8} />
 
-                        {this.renderMunuItem({ label: "Ajustes", icon: "Ajustes", onPress: () => SNavigation.navigate("/ajustes") })}
+                        {this.renderMunuItem({ label: "", icon: "Ajustes", onPress: () => SNavigation.navigate("/ajustes") })}
                         <SView width={8} />
                         <InvitarUsuario />
                         {/* {this.renderMunuItem({ label: "Invitar", icon: "Usuarios", color: STheme.color.danger, onPress: () => SNavigation.navigate("/root") })} */}

@@ -66,6 +66,9 @@ class index extends DPA.list {
                             <SView flex>
                                 <SText clean bold fontSize={16}>{e.descripcion}</SText>
                                 <SText clean fontSize={14} color={STheme.color.lightGray}>{e.observacion}</SText>
+                                {/* {!deepLink ? null : <SText onPress={() => {
+                                    SNavigation.INSTANCE.openDeepLink(deepLink)
+                                }} underLine color={STheme.color.link}>Ver</SText>} */}
                             </SView>
                             <SView style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: STheme.color.card, overflow: "hidden" }}>
                                 <SImage src={e?.url_image} />

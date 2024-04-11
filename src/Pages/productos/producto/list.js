@@ -107,8 +107,8 @@ class index extends DPA.list {
     $render() {
         return <>
             <SView col={"xs-12"}>
-                <SInput placeholder={"Filtrars por # de chasis"} onChangeText={val => this.setState({ chasis: val })} />
-                <SHr h={4} />
+                {/* <SInput placeholder={"Filtrars por # de chasis"} onChangeText={val => this.setState({ chasis: val })} /> */}
+                {/* <SHr h={4} /> */}
             </SView>
             {super.$render()}
         </>

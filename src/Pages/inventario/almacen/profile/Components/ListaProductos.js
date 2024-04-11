@@ -52,7 +52,7 @@ class index extends DPA.list {
             }
             this.setState({ ...this.state })
         }} row>
-            {!select ? null : <> <SIcon name={"Close"} width={12} height={12} fill={STheme.color.text} /> <SView width={8} /></>}
+            {!select ? null : <><SIcon name={"Close"} width={12} height={12} fill={STheme.color.text} /><SView width={8} /></>}
             <SText>{label}</SText>
         </SView>
     }

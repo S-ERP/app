@@ -22,6 +22,7 @@ import asientos_automaticos from "./asientos_automaticos";
 import test from "./test";
 import ajustes from "./ajustes";
 import init from "./init"
+import enviroment from "./enviroment";
 export const Parent = {
     title: "Contabilidad",
     name: "contabilidad",
@@ -33,6 +34,7 @@ export default SPage.combinePages(Parent.name,
         test,
         "asiento": asiento,
         "asientos": asientos,
+        "enviroment": enviroment,
         "cuentas": cuentas,
         "balance_general": balance_general,
         "estado_resultado": estado_resultado,

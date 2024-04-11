@@ -64,7 +64,7 @@ class comments extends Component {
             <KeyboardAvoidingView
                 keyboardVerticalOffset={20}
                 enabled
-                behavior={Platform.OS === "ios" ? "padding" : null}
+                // behavior={Platform.OS === "ios" ? "padding" : null}
                 style={{ flex: 1 }}
             >
                 <SView col={'xs-12'} flex activeOpacity={1}>

@@ -31,9 +31,17 @@ class index extends DPA.edit {
         imp["cantidad"].type = "number"
         imp["precio_unitario"].col = "xs-8"
         imp["precio_unitario"].type = "money"
+        imp["precio_unitario"].defaultValue = parseFloat(this.data["precio_unitario"] ?? 0).toFixed(2)
+
         // imp["unidad_medida"].col = "xs-5.8"
-        imp["descuento"].col = "xs-12"
+        imp["descuento"].col = "xs-5.5"
         imp["descuento"].type = "money"
+        imp["descuento"].defaultValue = parseFloat(this.data["descuento"] ?? 0).toFixed(2)
+
+        imp["precio_facturado"].col = "xs-5.5"
+        imp["precio_facturado"].type = "money"
+        let precio_facturado_default = parseFloat(this.data["precio_unitario"] ?? 0) - parseFloat(this.data["descuento"] ?? 0)
+        imp["precio_facturado"].defaultValue = parseFloat(this.data["precio_facturado"] ?? (precio_facturado_default)).toFixed(2)
         return imp;
     }
     $onSubmit(data) {

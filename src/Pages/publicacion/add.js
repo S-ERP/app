@@ -32,7 +32,12 @@ class index extends Component {
         this.setState({ loading: true })
         Model.publicacion.Action.registro({
             data: data,
-            key_usuario: Model.usuario.Action.getKey()
+            key_empresa: Model.empresa.Action.getKey(),
+            key_usuario: Model.usuario.Action.getKey(),
+            notification_data: {
+                usuario: Model.usuario.Action.getUsuarioLog(),
+                empresa: Model.empresa.Action.getSelect()
+            }
         }).then(resp => {
             Upload.sendPromise(image[0], SSocket.api.root + "upload/publicacion/" + resp.data.key).then(resp2 => {
                 this.setState({ loading: false })

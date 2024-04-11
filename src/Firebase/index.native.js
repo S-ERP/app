@@ -52,12 +52,10 @@ class Firebase {
             });
 
             const unsubscribe = messaging().onMessage(async remoteMessage => {
-                console.log('Message received. ', remoteMessage);
                 BuildNotification(remoteMessage);
             });
 
             messaging().setBackgroundMessageHandler(async remoteMessage => {
-                console.log('Message handled in the background!', remoteMessage);
                 BuildNotification(remoteMessage)
             });
 
@@ -66,47 +64,21 @@ class Firebase {
             });
             notifee.onBackgroundEvent(async ({ type, detail }) => {
                 const { notification, pressAction } = detail;
-                console.log('Notification caused app to open onBackgroundEvent:', type, notification);
                 if (type === EventType.PRESS) {
-                    if (notification?.data?.deepLink) {
-                        if (SNavigation.INSTANCE) {
-                            new SThread(1000, "hilo_para_navegar").start(() => {
-                                SNavigation.INSTANCE.openDeepLink(notification.data.deepLink)
-                            })
-
-                        } else {
-                            Linking.openURL(notification.data.deepLink)
-                        }
-                    }
+                    handleNavigateDeepLink(Notification)
                 }
             });
             notifee.onForegroundEvent(evt => {
                 const remoteMessage = evt?.detail?.notification
-                console.log('Notification caused app to open onForegroundEvent:', remoteMessage);
                 if (evt.type == EventType.PRESS) {
-                    if (remoteMessage.data.deepLink) {
-                        if (SNavigation.INSTANCE) {
-                            new SThread(1000, "hilo_para_navegar").start(() => {
-                                SNavigation.INSTANCE.openDeepLink(remoteMessage.data.deepLink)
-                            })
-
-                        } else {
-                            Linking.openURL(remoteMessage.data.deepLink)
-                        }
-                    }
+                    handleNavigateDeepLink(remoteMessage)
                 }
 
             });
             messaging().onNotificationOpenedApp(remoteMessage => {
-                console.log('Notification caused app to open from background state:', remoteMessage);
-                if (remoteMessage.data.deepLink) Linking.openURL(remoteMessage.data.deepLink)
-                // SNavigation.goBack();
+                handleNavigateDeepLink(remoteMessage)
+
             });
-
-
-
-
-
 
         } catch (e) {
             console.error(e)
@@ -114,20 +86,20 @@ class Firebase {
 
     }
 }
-const BuildNotification = async (notification) => {
-    // if(Platform.OS){
-    //     SNotification.send({
-    //         title: remoteMessage?.data?.title,
-    //         body: remoteMessage?.data?.body,
-    //         image: Platform.select({
-    //             "android": remoteMessage?.data?.image,
-    //             "ios": remoteMessage?.data?.fcm_options?.image,
-    //             "default": remoteMessage?.data?.fcm_options?.image,
 
-    //         }),
-    //         deeplink: remoteMessage.data.deepLink
-    //     })
-    // }
+const handleNavigateDeepLink = (notification) => {
+    if (notification.data.deepLink) {
+        if (SNavigation.INSTANCE) {
+            new SThread(500, "hilo_para_navegar").start(() => {
+                SNavigation.INSTANCE.openDeepLink(notification.data.deepLink)
+            })
+
+        } else {
+            Linking.openURL(notification.data.deepLink)
+        }
+    }
+}
+const BuildNotification = async (notification) => {
     let notify = {
 
         title: notification?.data?.title,

@@ -21,7 +21,7 @@ export default class MyBilletera extends Component {
                 backgroundColor: STheme.color.success,
                 // backgroundColor: "#002"
             }} padding={8}>
-                <SText color={"#fff"} fontSize={16} font='Cascadia'>BILLETERA MOVIL</SText>
+                <SText color={"#fff"} fontSize={16}>BILLETERA MOVIL</SText>
                 <SView flex />
                 <SView row col={"xs-12"} style={{}} >
                     <SIcon name={"chip"} width={40} height={26} />

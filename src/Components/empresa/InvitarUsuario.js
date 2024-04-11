@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Linking } from 'react-native';
 import { SDate, SText, STheme } from 'servisofts-component';
 // import Share from 'react-native-share';
 import SSocket from 'servisofts-socket';
@@ -35,6 +35,15 @@ export default class InvitarUsuario extends Component {
                 // let page_link = 'http://192.168.3.3:3000';
                 let page_link = 'https://serp.servisofts.com';
                 let invitation_link = `${page_link}/invitation?pk=${e.data.key}`
+                let message = `
+Hola te invitamos a formar parte de nuesta empresa, Presiona el link para unirte.
+
+${invitation_link}                
+
+Bienvenido a *${empresa.razon_social}*
+                `
+                let text =
+                    Linking.openURL("https://wa.me/?text=" + encodeURIComponent(message))
                 console.log(invitation_link)
                 console.log(e);
             }).catch(e => {

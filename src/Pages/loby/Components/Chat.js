@@ -13,6 +13,9 @@ export default class Chat extends Component {
 
     toChat() {
         const key = Model.empresa.Action.getKey();
+        SNavigation.navigate("/chat", { pk: key })
+
+        return;
         Model.chat.Action.registro({
             data: {
                 key: key,
@@ -27,7 +30,6 @@ export default class Chat extends Component {
             ],
             key_usuario: Model.usuario.Action.getKey()
         }).then((resp) => {
-            SNavigation.navigate("/chat", { pk: key })
         }).catch(e => {
             // Model.chat.Action.CLEAR();
             // Model.chat_usuario.Action.CLEAR();

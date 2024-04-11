@@ -64,12 +64,13 @@ export default class Action extends SAction {
         }
         Object.values(compra_venta_detalle).map(((obj: any) => {
             if (!obj.estado) return;
-            const { precio_unitario, cantidad, descuento } = obj;
+            const { precio_unitario, precio_facturado, cantidad, descuento } = obj;
             t.subtotal += ((precio_unitario * cantidad) - (descuento ?? 0))
+            t.credito_fiscal += precio_facturado ?? t.subtotal
         }))
         t.total = t.subtotal - t.descuento
         t.total_a_pagar = t.total - t.gifcard
-        t.credito_fiscal = t.total_a_pagar
+        // t.credito_fiscal = t.total_a_pagar
         return t;
     }
 
@@ -192,7 +193,7 @@ export default class Action extends SAction {
                 ...this.model.info,
                 type: "ventasSinEntregar",
                 estado: "cargando",
-                // key_sucursal: props?.key_sucursal
+                key_empresa: Model.empresa.Action.getKey()
             }
             SSocket.send(petition);
             return null;

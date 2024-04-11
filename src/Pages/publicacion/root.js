@@ -51,6 +51,7 @@ class index extends Component {
             pagina: this.state.page,
             limit: this.state.limit,
             key_usuario: Model.usuario.Action.getKey(),
+            key_empresa: Model.empresa.Action.getKey(),
         }).then((e) => {
             // this.state.loading = false;
             this.setState({ loading: false })
@@ -95,10 +96,11 @@ class index extends Component {
         this.ref = {}
         this.state.page = 0;
         this.state.end = false;
+        
+        this.componentDidMount();
         Model.publicacion.Action.CLEAR();
         // Model.usuario.Action.getAll({ force: true, fecha_edit: "1989-01-01T00:00:01" });
         Model.usuario.Action.CLEAR();
-        this.componentDidMount();
 
     }
 
@@ -122,6 +124,23 @@ class index extends Component {
     //     </>
     // }
 
+    butomSubir() {
+        return <SView center style={{
+            position: "absolute",
+            bottom: 30,
+            right: 10,
+            borderRadius: 50,
+            backgroundColor: STheme.color.barColor,
+            height: 50,
+            width: 50,
+        }}
+            onPress={() => {
+                SNavigation.navigate("/publicacion/add")
+            }}
+        >
+            <SIcon name={"addPublicacion"} width={30} fill={STheme.color.white} />
+        </SView>
+    }
     renderPublicaciones() {
         // let publicaciones = Model.publicacion.Action.getAll({
         //     key_usuario: Model.usuario.Action.getKey()
@@ -135,10 +154,13 @@ class index extends Component {
         };
         let data = Model.publicacion.Action._getReducer()?.data ?? {};
         // if (!this.state.data) return <SLoad />
-        console.log("data", data)
-        if (Object.values(data).length <= 0) return <><SText>No hay publicaciones</SText><SButtom onPress={() => {
-            SNavigation.navigate("/publicacion/add")
-        }}>Nueva publicación</SButtom></>
+        if (Object.values(data).length <= 0) return <SPage hidden onRefresh={(e) => {
+            this.clearData();
+            if (e) e();
+        }}>
+            <SText>No hay publicaciones</SText>
+            {this.butomSubir()}
+        </SPage>
         return <>
             <FlatList
                 onRefresh={handleRefresh}
@@ -169,21 +191,8 @@ class index extends Component {
                     data={itm.item} usuario={this.state?.usuarios[itm?.item?.key_usuario]?.usuario} />}
             />
             <SHr height={20} />
-            <SView center style={{
-                position: "absolute",
-                bottom: 30,
-                right: 10,
-                borderRadius: 50,
-                backgroundColor: STheme.color.barColor,
-                height: 50,
-                width: 50,
-            }}
-                onPress={() => {
-                    SNavigation.navigate("/publicacion/add")
-                }}
-            >
-                <SIcon name={"addPublicacion"} width={30} fill={STheme.color.white} />
-            </SView>
+
+            {this.butomSubir()}
             {/* <SButtom onPress={() => {
                 SNavigation.navigate("/publicacion/add")
             }}>Nueva publicación</SButtom> */}

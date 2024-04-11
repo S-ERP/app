@@ -22,6 +22,7 @@ class Publicaciones extends Component {
             pagina: this.state.page,
             limit: this.state.limit,
             key_usuario: Model.usuario.Action.getKey(),
+            key_empresa: Model.empresa.Action.getKey(),
         }).then((e) => {
             // this.setState({ data: e.data })
             // this.setState({ loading: false })

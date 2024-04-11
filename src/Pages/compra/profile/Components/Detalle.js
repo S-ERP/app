@@ -10,13 +10,13 @@ export default class Detalle extends Component {
         };
     }
     data = {}
-    detalle_item({ key, key_usuario, nombre, precio, cantidad, descuento, tipo }) {
+    detalle_item({ key, key_usuario, nombre, precio_unitario, cantidad, descuento, tipo, precio_facturado }) {
         var onPress = null;
         if (!this.props.disabled) {
             onPress = () => {
                 SPopup.open({
                     key: "popup-detalle-item",
-                    content: <PopupDetalleItem data={{ key, key_usuario, nombre, precio, cantidad, descuento }} key_compra_venta={this.data.key} />,
+                    content: <PopupDetalleItem data={{ key, key_usuario, nombre, precio: precio_unitario, cantidad, descuento }} key_compra_venta={this.data.key} />,
                 })
             }
         }
@@ -30,13 +30,14 @@ export default class Detalle extends Component {
             </SView>
             <SView flex>
                 <SText bold >{nombre}</SText>
-                <SText>{SMath.formatMoney(precio)} X {SMath.formatMoney(cantidad)} </SText>
+                <SText>{SMath.formatMoney(precio_unitario)} X {SMath.formatMoney(cantidad)} </SText>
                 <SText fontSize={10} bold color={STheme.color.lightGray}>{tipo}</SText>
             </SView>
             <SView width={8} />
             <SView col={"xs-3"} style={{ alignItems: 'end', textAlign: "end" }}>
-                <SText style={{ alignItems: 'end', textAlign: "end" }}>{SMath.formatMoney((precio * cantidad))}</SText>
+                <SText style={{ alignItems: 'end', textAlign: "end" }}>{SMath.formatMoney((precio_unitario * cantidad))}</SText>
                 {descuento ? <SText color={STheme.color.danger}>- {SMath.formatMoney(descuento)}</SText> : null}
+                {precio_facturado && precio_facturado != (precio_unitario * cantidad) ? <SText >Fac: {SMath.formatMoney(precio_facturado)}</SText> : null}
             </SView>
         </SView>
     }
@@ -66,15 +67,7 @@ export default class Detalle extends Component {
                 filter={obj => obj.estado != 0 && obj.key_compra_venta == this.data.key}
                 order={[{ "key": "fecha_on", order: "asc" }]}
                 render={(obj) => {
-                    return this.detalle_item({
-                        key: obj.key,
-                        nombre: obj.descripcion,
-                        cantidad: obj.cantidad,
-                        precio: obj.precio_unitario,
-                        key_usuario: obj.key_usuario,
-                        descuento: obj.descuento,
-                        tipo: obj.tipo
-                    })
+                    return this.detalle_item(obj)
                 }}
             />
             <SHr />
