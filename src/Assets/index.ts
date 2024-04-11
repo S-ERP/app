@@ -26,6 +26,7 @@ import removeNotes, { ReactComponent as removeNotesW } from './svg/removeNotes.s
 import remove, { ReactComponent as removeW } from './svg/remove.svg';
 import Heart, { ReactComponent as HeartW } from './svg/social/Heart.svg';
 import Comment, { ReactComponent as CommentW } from './svg/social/Comment.svg';
+import Comment2, { ReactComponent as Comment2W } from './svg/social/Comment2.svg';
 import addPublicacion, { ReactComponent as addPublicacionW } from './svg/social/addPublicacion.svg';
 
 import tareaUser, { ReactComponent as tareaUserW } from './svg/tarea/user.svg';
@@ -40,6 +41,9 @@ import emp1, { ReactComponent as emp1W } from './svg/empresa/emp1.svg';
 import emp2, { ReactComponent as emp2W } from './svg/empresa/emp2.svg';
 import emp3, { ReactComponent as emp3W } from './svg/empresa/emp3.svg';
 import emp4, { ReactComponent as emp4W } from './svg/empresa/emp4.svg';
+import out, { ReactComponent as outW } from './svg/empresa/out.svg';
+import share, { ReactComponent as shareW } from './svg/empresa/share.svg';
+
 
 
 const Assets: SAssets = {
@@ -70,6 +74,7 @@ const Assets: SAssets = {
         "remove": { Native: remove, Web: removeW },
         "Heart": { Native: Heart, Web: HeartW },
         "Comment": { Native: Comment, Web: CommentW },
+        "Comment2": { Native: Comment2, Web: Comment2W },
         "addPublicacion": { Native: addPublicacion, Web: addPublicacionW },
         "tareaUser": { Native: tareaUser, Web: tareaUserW },
         "tareaengranaje": { Native: tarea_engranaje, Web: tarea_engranajeW },
@@ -83,8 +88,8 @@ const Assets: SAssets = {
         "emp2": { Native: emp2, Web: emp2W },
         "emp3": { Native: emp3, Web: emp3W },
         "emp4": { Native: emp4, Web: emp4W },
-        
-        
+        "out": { Native: out, Web: outW },
+        "share": { Native: share, Web: shareW },
         
     }
 }
