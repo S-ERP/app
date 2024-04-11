@@ -1,7 +1,7 @@
 //import liraries
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { SDate, SNavigation, SPage, SText, SThread } from 'servisofts-component';
+import { SDate, SNavigation, SPage, SText, SThread, SLoad,SHr } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
 
@@ -67,7 +67,7 @@ export default class init extends Component {
         }
 
         // ***** TAREAS *******
-        const label_configuracion = (await this.crear_label({ descripcion: "Configuracion", color: "#666666" })).data;
+        const label_configuracion = (await this.crear_label({ descripcion: "Configuración", color: "#666666" })).data;
         const label_error = (await this.crear_label({ descripcion: "Error", color: "#FF0000" })).data;
         const tarea = (await this.crear_actividad_de_bienvenida()).data;
         const tarea_label = await this.crear_tarea_label({ key_label: label_configuracion.key, key_tarea: tarea.key })
@@ -236,7 +236,7 @@ export default class init extends Component {
                 "key": "new",
                 "fecha_inicio": new SDate().toString(),
                 "fecha_fin": new SDate().addHour(1).toString(),
-                "descripcion": "Configuracion de la empresa.",
+                "descripcion": "Configuración de la empresa.",
                 "estado": 1,
                 "color": "#E7E28D",
                 "key_usuario": Model.usuario.Action.getKey(),
@@ -292,6 +292,8 @@ Se realizaron las siguientes tareas automáticamente:
 
     render() {
         return <SPage title={"init"} center>
+            <SLoad/> 
+            <SHr height={10} />
             <SText>Configurando la empresa...</SText>
         </SPage>
     }
