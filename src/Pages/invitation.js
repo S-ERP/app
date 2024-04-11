@@ -102,7 +102,7 @@ export default class invitation extends Component {
             <SView col={"xs-12"} center row>
                 <SButtom type={"outline"} onPress={this.handleAccept.bind(this)}>Aceptar</SButtom>
                 <SView width={16} />
-                <SButtom type={"danger"}>Cancelar</SButtom>
+                <SButtom type={"danger"} onPress={()=> {SNavigation.goBack()}}>Cancelar</SButtom>
             </SView>
             <SHr height={20} />
         </SView>
@@ -130,9 +130,10 @@ export default class invitation extends Component {
     }
     render() {
 
-        return <SPage title={"Inivitarion"}>
+        return <SPage title={""}>
             <SHr />
             <Container>
+                <SHr height={30} />
                 {this.getInvitacion()}
             </Container>
         </SPage>

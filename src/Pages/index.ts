@@ -40,6 +40,7 @@ import { Example } from 'servisofts-charts'
 import  publicacion  from './publicacion'
 import invitation from "./invitation";
 import  invitacion  from './invitacion'
+import  terminos  from './terminos'
 export default SPage.combinePages("/", {
     // "":Example,
     // "": test,
@@ -83,5 +84,6 @@ export default SPage.combinePages("/", {
     ...facturacion,
     ...publicacion,
     invitation,
-    "invitacion": invitacion
+    "invitacion": invitacion,
+    terminos
 })

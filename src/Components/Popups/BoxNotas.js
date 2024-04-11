@@ -129,18 +129,20 @@ class index extends Component<BoxMenuPropsType> {
                         onPress={() => {
                             SPopup.confirm({
                                 title: "¿Seguro que quieres eliminar al usuario " + this.props.datas?.usuario?.Nombres + "?",
-                                message: this.props.datas?.usuario?.Nombres+" dejará de ver la nota, si alguien es miembro de la nota puede invitarlo nuevamente.",
+                                message: this.props.datas?.usuario?.Nombres + " dejará de ver la nota, si alguien es miembro de la nota puede invitarlo nuevamente.",
                                 onPress: () => {
                                     Model.nota.Action.quitarUsuario({
                                         key_nota: this.props.datas?.key_nota,
                                         key_usuario_nota: this.props.datas?.key_usuario,
-                                        key_usuario: Model.usuario.Action.getKey()
+                                        key_usuario: Model.usuario.Action.getKey(),
+                                        key_empresa: this.props.datas?.key_empresa,
                                     }).then(e => {
                                         Model.nota.Action.CLEAR();
+                                        SPopup.close("confirmar")
                                         SPopup.close("menuNotasUsuario")
-                                        SNavigation.goBack();
+                                        SNavigation.replace("/nota",{pk:this.props.datas?.key_nota, key_:this.props.datas?.key_empresa});
                                     }).catch(e => {
-
+                                        console.log(e)
                                     })
                                 }
                             })

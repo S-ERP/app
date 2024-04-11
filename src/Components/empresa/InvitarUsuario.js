@@ -23,7 +23,7 @@ export default class InvitarUsuario extends Component {
                 key_empresa: Model.empresa.Action.getKey(),
                 data: {
                     descripcion: `${empresa.razon_social} te invita a formar parte de la empresa.`,
-                    observacion: "Te invitamos a formar parte de la empresa. Acpeta esta invitacion.",
+                    observacion: "Te invitamos a formar parte de la empresa. Acepta esta invitación.",
                     fecha_inicio: new SDate().toString(),
                     fecha_fin: new SDate().addDay(1).toString(),
                     color: STheme.color.success,

@@ -256,16 +256,16 @@ export default class init extends Component {
                 "descripcion": `
 Bienvenido a la empresa ${empresa.razon_social}
 
-Se realizaron las siguientes tareas automaticamente:
-- ✅ Se configuro los roles y permisos.
-- ✅ Se agrego al usuario creador a la empresa.
-- ✅ Se concedio el rol Administrador al usuario creador.
-- ✅ Se registro un centro de costo Caza Matriz.
-- ✅ Se registro la sucursal Caza Matriz.
-- ✅ Se registro el Punto de venta 0.
-- ✅ Se registro el Almacen 1.
+Se realizaron las siguientes tareas automáticamente:
+- ✅ Se configuró los roles y permisos.
+- ✅ Se agregó al usuario creador a la empresa.
+- ✅ Se concedió el rol Administrador al usuario creador.
+- ✅ Se registró un centro de costo Caza Matriz.
+- ✅ Se registró la sucursal Caza Matriz.
+- ✅ Se registró el Punto de venta 0.
+- ✅ Se registró el Almacén 1.
 
-- ✅ Se registro label para las tareas por defecto.
+- ✅ Se registró label para las tareas por defecto.
 
 - ⚠️ Falta crear una nota por defecto.
 - ⚠️ Falta configurar los tipos de pago que acepta el punto venta.

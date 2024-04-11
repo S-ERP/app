@@ -121,12 +121,13 @@ export default class UsuariosNota extends Component {
             <SHr h={10} />
             <SList
                 horizontal
+                
                 data={{
-                    "add": { type: "add" },
+                    "add": { type: "add", estado:1 },
                     ...this.state.data
                 }}
                 space={0}
-
+                // filter={a => a.estado > 0}
                 render={(a) => this.renderItem(a)}
             />
             <SHr h={1} color='#66666644' />

@@ -44,13 +44,9 @@ export default class index extends Component {
                 Model.usuarioPage.Action.CLEAR();
                 end()
 
-            }} >
+            }}>
                 <SHr height={20} />
-                <SView style={{ position: "absolute", left: -50, top: 0 }}>
-                    <SIcon name="emp1" height={350} width={310} fill={STheme.color.gray + "20"} />
-                </SView>
-                <Container style={{}} >
-
+                <Container >
                     {/* <SHr height={10} /> */}
                     {/* <SView col={"xs-8"} style={{ padding: 10, borderRadius: 25, borderWidth: 1, borderColor: STheme.color.secondary }} center>
                         <SText center fontSize={18} bold>Para iniciar esta nueva aventura necesitas crear tu empresa y personalizarla.
@@ -59,19 +55,12 @@ export default class index extends Component {
                         <SText center fontSize={18} bold>
                             ¡SIN MIEDO AL ÉXITO !</SText>
                     </SView> */}
-                    <SHr height={150} />
                     <Adornos.titulo time={30} label={"Para iniciar esta nueva aventura necesitas crear tu empresa y personalizarla.\n¡Clic en comenzar!"} fontSize={18} />
                     {/* <SHr height={25} /> */}
-                    {/* <SView col={"xs-12"} center>
+                    <SView col={"xs-12"} center>
                         <SIcon name="construEmpresa" width={230} height={196} />
-                    </SView> */}
-                    <SHr height={20} />
-
-
+                    </SView>
                 </Container>
-                <SView style={{ position: "absolute", right: -50, bottom: 50 }}>
-                    <SIcon name="emp2" width={248} height={300} fill={STheme.color.gray + "20"} />
-                </SView>
                 <SHr height={55} />
                 <PButtomFooter url={'/empresa/paso1'} label={'COMENZAR'} />
             </SPage>
