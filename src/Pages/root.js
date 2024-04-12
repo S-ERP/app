@@ -185,7 +185,7 @@ class index extends Component {
                 </SView>
                 <SHr />
                 {/* <SText fontSize={20} bold>Hola, {usuario.Nombres} {usuario.Apellidos}</SText> */}
-                <STextPlay time={50} fontSize={18} bold center>{`Hola, ${usuario.Nombres} ${usuario.Apellidos} \n¿Qué deseas hacer? `}</STextPlay>
+                <STextPlay  time={50} fontSize={18} bold center>{`Hola, ${usuario.Nombres} ${usuario.Apellidos} \n¿Qué deseas hacer? `}</STextPlay>
                 {/* <SText fontSize={14}>{usuario.Correo}</SText> */}
                 <SHr height={15} />
                 {/* <SView width={240} height={100} >
