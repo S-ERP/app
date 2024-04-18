@@ -23,5 +23,5 @@ export default SPage.combinePages(Parent.name, {
     "profile": profile,
     "edit": edit,
     "delete": _delete,
-    "options": _options
+    "options": _options,
 })

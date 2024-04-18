@@ -43,10 +43,12 @@ import emp3, { ReactComponent as emp3W } from './svg/empresa/emp3.svg';
 import emp4, { ReactComponent as emp4W } from './svg/empresa/emp4.svg';
 import out, { ReactComponent as outW } from './svg/empresa/out.svg';
 import share, { ReactComponent as shareW } from './svg/empresa/share.svg';
-import tp_af, { ReactComponent as tp_afW } from './svg/producto/tp_af.svg';
-import tp_ga, { ReactComponent as tp_gaW } from './svg/producto/tp_ga.svg';
-import tp_i, { ReactComponent as tp_iW } from './svg/producto/tp_i.svg';
-import tp_vs, { ReactComponent as tp_vsW } from './svg/producto/tp_vs.svg';
+import tpAf, { ReactComponent as tpAfW } from './svg/producto/tpAf.svg';
+import tpGa, { ReactComponent as tpGaW } from './svg/producto/tpGa.svg';
+import tpIn, { ReactComponent as tpInW } from './svg/producto/tpIn.svg';
+import tpVs, { ReactComponent as tpVsW } from './svg/producto/tpVs.svg';
+import productos, { ReactComponent as productosW } from './svg/producto/productos.svg';
+
 
 
 
@@ -94,10 +96,11 @@ const Assets: SAssets = {
         "emp4": { Native: emp4, Web: emp4W },
         "out": { Native: out, Web: outW },
         "share": { Native: share, Web: shareW },
-        "tp_af": { Native: tp_af, Web: tp_afW },
-        "tp_ga": { Native: tp_ga, Web: tp_gaW },
-        "tp_i": { Native: tp_i, Web: tp_iW },
-        "tp_vs": { Native: tp_vs, Web: tp_vsW },
+        "tpAf": { Native: tpAf, Web: tpAfW },
+        "tpGa": { Native: tpGa, Web: tpGaW },
+        "tpIn": { Native: tpIn, Web: tpInW },
+        "tpVs": { Native: tpVs, Web: tpVsW },
+        "productos": { Native: productos, Web: productosW },
         
     }
 }

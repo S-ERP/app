@@ -24,8 +24,8 @@ export default class index extends Component<PropsType> {
             {/* <SView col={"xs-12"} center>
                 <SImage src={require('../../Assets/png/franja.png')} style={{ width: " 100%", height: 50, borderRadius: 100, resizeMode: "contain" }} />
             </SView> */}   
-            <SView col={"xs-9"} style={{ padding: 15, borderRadius: 25, borderWidth: 3, borderColor: STheme.color.black, height: 140, backgroundColor: STheme.color.card }}  >
-                <STextPlay key={SUuid()} time={this.props.time ?? 30} col={"xs-12"} color={STheme.color.text} fontSize={this.props.fontSize} bold>{this.props.label}</STextPlay>
+            <SView col={"xs-9"} center style={{ padding: 15, borderRadius: 25, borderWidth: 3, borderColor: STheme.color.card, height: 140, backgroundColor: STheme.color.card }}  >
+                <STextPlay center key={SUuid()} time={this.props.time ?? 30} col={"xs-12"} color={STheme.color.text} fontSize={this.props.fontSize} bold>{this.props.label}</STextPlay>
             </SView>
 
             <SView col={"xs-8"} style={{ position: "relative", top: -6, left: 10, zIndex: 9 }}>
