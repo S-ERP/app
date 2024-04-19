@@ -10,17 +10,26 @@ class index extends DPA.list {
     constructor(props) {
         super(props);
         this.state = {
-            cargar: true
+            cargar: true,
+            data: {
+                [0]: { key: 0, descripcion: "Nombre 0", color: "#A56EF4" },
+                [1]: { key: 1, descripcion: "Nombre producto 1", color: "#D4FF33" },
+                [2]: { key: 2, descripcion: "Nombre 2", color: "#33FFD4" },
+                [3]: { key: 3, descripcion: "Nombre prueba 3", color: "#8A33FF" },
+                [4]: { key: 4, descripcion: "Nombre4", color: "#E233FF" },
+                [5]: { key: 5, descripcion: "Nombre ok 5", color: "#FFD433" },
+                [6]: { key: 6, descripcion: "Nombre 6", color: "#33FF93" },
+            }
         };
-        this.data = {
-            [0]: { key: 0, descripcion: "Nombre 0", color: "#A56EF4" },
-            [1]: { key: 1, descripcion: "Nombre 1", color: "#D4FF33" },
-            [2]: { key: 2, descripcion: "Nombre 2", color: "#33FFD4" },
-            [3]: { key: 3, descripcion: "Nombre 3", color: "#8A33FF" },
-            [4]: { key: 4, descripcion: "Nombre 4", color: "#E233FF" },
-            [5]: { key: 5, descripcion: "Nombre 5", color: "#FFD433" },
-            [6]: { key: 6, descripcion: "Nombre 6", color: "#33FF93" },
-        }
+        // this.data = {
+        //     [0]: { key: 0, descripcion: "Nombre 0", color: "#A56EF4" },
+        //     [1]: { key: 1, descripcion: "Nombre producto 1", color: "#D4FF33" },
+        //     [2]: { key: 2, descripcion: "Nombre 2", color: "#33FFD4" },
+        //     [3]: { key: 3, descripcion: "Nombre prueba 3", color: "#8A33FF" },
+        //     [4]: { key: 4, descripcion: "Nombre4", color: "#E233FF" },
+        //     [5]: { key: 5, descripcion: "Nombre ok 5", color: "#FFD433" },
+        //     [6]: { key: 6, descripcion: "Nombre 6", color: "#33FF93" },
+        // }
     }
 
     renderItem({ onPress, label, key, color }) {
@@ -53,7 +62,16 @@ class index extends DPA.list {
                 }}>
                 <SHr h={16} />
 
-                <Labels data={this.data}
+                <Labels data={this.state.data}
+                    onChange={(value) => {
+                        console.log("value")
+                        console.log(value)
+                        // this.state.cantidad = parseInt(cantidad);
+                        // this.handleEnd();
+                        // SPopup.close("popup_cantidad");
+                        // this.state.data = value;
+                        this.setState({ data: value })
+                    }}
                 // onPress={() => {
                 //     this.seleccionarCliente()
                 // }}
@@ -82,20 +100,21 @@ class index extends DPA.list {
                 <SView center width={18} height={18} style={{ position: "absolute", right: 0, top: -3, backgroundColor: STheme.color.danger, borderRadius: 40, zIndex: 999 }}>
                     <SIcon name='eliminar2' width={8} height={8} fill={STheme.color.white} />
                 </SView>
-                <SView row padding={5}
+                <SView row padding={2}
                     style={{
                         borderWidth: 1,
                         borderColor: color,
                         backgroundColor: color + "50",
                         borderRadius: 16
                     }} >
-                    <SView width={27} height={27} center backgroundColor={STheme.color.primary} borderRadius={45}>
+                    <SView width={22} height={22} center backgroundColor={STheme.color.primary} borderRadius={45}>
                         {/* <SImage source={require("")} width={30} height={30} /> */}
                     </SView>
-                    <SView width={10} />
+                    <SView width={5} />
                     <SView center>
                         <SText fontSize={12}>{label}</SText>
                     </SView>
+                    <SView width={5} />
                 </SView>
             </SView>
             {/* </SView> */}

@@ -10,6 +10,10 @@ export default class Labels extends Component {
         };
     }
 
+    // componentDidMount() {
+    //     this.state.data = this.props.data;
+    // }
+
     Color({ color }) {
         let isselec = this.state.value == color;
         return <SView padding={3} onPress={() => {
@@ -32,31 +36,35 @@ export default class Labels extends Component {
         </SView>
     }
     getContent() {
-        console.log("this.props.data")
-        console.log(this.props.data)
-        return Object.values(this.props.data).map((obj, index) => {
-            console.log(obj)
+        console.log("this.state.data")
+        console.log(this.state.data)
+        let dataF5 = this.state.data;
+        return Object.values(this.state.data).map((obj, index) => {
+            // console.log(obj)
             return <SView row padding={5}
                 onPress={() => {
                     console.log("delete", obj)
-                    delete this.props.data[index]
-                    console.log("f5", this.props.data)
+                    console.log("index", index)
+                    delete dataF5[obj.key]
+                    console.log("f5", dataF5)
+                    this.props.onChange(dataF5)
                 }}
             >
-                <SView row padding={5}
+                <SView row padding={2}
                     style={{
                         borderWidth: 1,
                         borderColor: obj.color,
                         backgroundColor: obj.color + "50",
                         borderRadius: 16
                     }} >
-                    <SView width={27} height={27} center backgroundColor={STheme.color.primary} borderRadius={45}>
+                    <SView width={22} height={22} center backgroundColor={STheme.color.primary} borderRadius={45}>
                         {/* <SImage source={require("")} width={30} height={30} /> */}
                     </SView>
-                    <SView width={10} />
+                    <SView width={5} />
                     <SView center>
                         <SText fontSize={12}>{obj.descripcion}</SText>
                     </SView>
+                    <SView width={5} />
                 </SView>
             </SView>
         })
