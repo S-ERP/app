@@ -2,6 +2,8 @@ import { SPage, SPageListProps } from 'servisofts-component';
 
 import profile from './profile';
 import edit from './edit';
+import changepass from './changepass';
+
 import Model from '../../Model';
 
 export const Parent = {
@@ -11,5 +13,6 @@ export const Parent = {
 }
 export default SPage.combinePages(Parent.name, {
     "": profile,
-    "edit": edit
+    "edit": edit,
+    "changepass": changepass,
 });
