@@ -97,7 +97,6 @@ class index extends DPA.list {
                 />
             </SView >
             <SView col={"xs-2"} style={{ alignItems: "flex-end", alignContent: "flex-end", }} row center>
-
                 {(Object.keys(this.state.dataAssigned).length > 1) ?
                     <>
                         <SView center width={40} height={40} backgroundColor={STheme.color.barColor} borderRadius={45}
@@ -111,16 +110,13 @@ class index extends DPA.list {
                         <SView width={5} />
                     </> : <SView width={45} />}
                 <SView center width={40} height={40} backgroundColor={STheme.color.barColor} borderRadius={45}
-
                     onPress={() => {
                         SNavigation.navigate("/productos/inventario_dato")
                     }}
-
                 >
                     <SIcon name={"add1"} width={20} height={20} fill={STheme.color.text} />
                 </SView >
-
-
+                <SView width={5} />
                 {/* <SText fontSize={10}>Agregar</SText> */}
             </SView >
         </SView >

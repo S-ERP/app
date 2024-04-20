@@ -6,6 +6,7 @@ import Container from '../../Components/Container';
 import CryptoJS from 'crypto-js';
 import BtnSend from '../registro/components/BtnSend';
 import Model from '../../Model';
+import PButtom from '../../Components/PButtom';
 
 class password extends Component {
     constructor(props) {
@@ -33,7 +34,7 @@ class password extends Component {
         return <SView col={"xs-11 md-8 xl-6"} row center style={{ height: 250, borderRadius: 8, }} backgroundColor={STheme.color.background} >
             <SView col={"xs-11"} height={40} />
             <SView col={"xs-11"}  >
-                <SIcon name={"InputPassword"} height={100} fill={STheme.color.primary}  />
+                <SIcon name={"InputPassword"} height={100} fill={STheme.color.primary} />
             </SView>
             <SView col={"xs-11"} height={15} />
             <SView col={"xs-12"} center  >
@@ -77,7 +78,15 @@ class password extends Component {
                 {/* <Header title={"Cambia la contraseña de acceso."} /> */}
                 <SView col={"xs-12"} center>
                     <SHr height={30} />
-                    {/* <SIcon name={"Logo"} width={100} height={100} fill={STheme.color.primary} /> */}
+                    <SView center width={100} height={100} style={{
+                        borderRadius: 100,
+                        backgroundColor: STheme.color.card,
+                        padding: 10,
+                        borderWidth: 2,
+                        borderColor: STheme.color.primary,
+                    }}>
+                        <SIcon name={"pass"} width={50} height={50} fill={STheme.color.text} />
+                    </SView>
                     <SHr height={16} />
                     <SText center fontSize={18} color={STheme.color.text}>{"Cambia la contraseña de acceso"}</SText>
                     <SHr height={20} />
@@ -94,7 +103,7 @@ class password extends Component {
                         onSubmit={this.onSubmit.bind(this)}
                     />
                     <SHr height={20} />
-                    <BtnSend onPress={() => this.form.submit()}>{"CONFIRMAR"}</BtnSend>
+                    <PButtom onPress={() => this.form.submit()}>{"CONFIRMAR"}</PButtom>
                 </Container>
             </SPage>
         );
