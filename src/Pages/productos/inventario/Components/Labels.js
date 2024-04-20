@@ -21,9 +21,12 @@ export default class Labels extends Component {
       
         let dataF5 = this.state.data;
         let dataAssigned = this.state.dataAssigned;
-        // if(Object.keys(this.props.dataF5).length === 0 ){
-        //      dataAssigned = this.props.dataF5;
-        // }
+        if(Object.keys(this.props.dataF5).length === 0 ){
+            //  dataAssigned = this.props.dataF5;
+           
+            // console.log("ENTROOOO")
+            // dataAssigned={}
+        }
        
 
         console.log("dataf555", dataAssigned)
