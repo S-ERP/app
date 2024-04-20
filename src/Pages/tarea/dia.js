@@ -262,7 +262,7 @@ export default class dia extends Component {
     }
     render() {
 
-        return <SPage title={"Tareas del dia"}
+        return <SPage title={"Tareas del día"}
             footer={!this.state?.data?.new ? null : this.renderPopupNewTask()}
             disableScroll
             onRefresh={(e) => {

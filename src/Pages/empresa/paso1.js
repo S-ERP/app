@@ -27,14 +27,15 @@ export default class index extends Component {
                     Model.usuarioPage.Action.CLEAR();
                     end()
 
-                }}>
+                }} >
                     <SHr height={20} />
-                    <SView style={{ position: "absolute", left: -120, top: '10%' }}>
-                        <SIcon name="emp4" height={675} width={439} fill={STheme.color.gray + "20"} />
+                    <SView style={{ position: "absolute", left: -20, top: '10%', overflow: "hidden" }}>
+                        <SIcon name="emp4" height={400} width fill={STheme.color.gray + "20"} />
                     </SView>
                     <Container >
+                        <SHr height={40} />
                         <Adornos.titulo time={30} label={"Debes ingresar los datos de tu empresa."} fontSize={18} />
-
+                        <SHr height={10} />
                         <SView col={"xs-12"} center>
                             <SForm
                                 ref={(form) => { this.form = form; }}
@@ -46,6 +47,16 @@ export default class index extends Component {
                                     col: "xs-12",
                                 }}
                                 inputs={{
+                                    foto: {
+                                        type: "image",
+                                        label: "FOTO",
+                                        placeholder: "Foto",
+                                        isRequired: true,
+                                        defaultValue: this.pk ? SSocket.api.empresa + "empresa/" + this.pk : "",
+                                        style: {
+                                            height: 159
+                                        }
+                                    },
 
                                     nit: {
                                         type: "nit",
@@ -68,6 +79,10 @@ export default class index extends Component {
                                 onSubmit={(data) => {
 
                                     // this.form.submit();
+                                    this.form.uploadFiles(
+                                        SSocket.api.empresa + "upload/empresa/" + this.pk,
+                                        "foto"
+                                    );
                                     this.register = true;
                                     this.setState({ loading: true })
                                     data.key_servicio = "1427e867-c4f7-4602-a1aa-5deabf2d0372";
@@ -76,6 +91,11 @@ export default class index extends Component {
                                         data: data,
                                         key_usuario: Model.usuario.Action.getKey()
                                     }).then((resp) => {
+
+                                        this.form.uploadFiles(
+                                            SSocket.api.empresa + "upload/empresa/" + resp.data.key,
+                                            "foto"
+                                        );
 
                                         Model.empresa.Action.setEmpresa(resp.data);
                                         new SThread(500, "navigate_init").start(() => {
@@ -124,7 +144,7 @@ export default class index extends Component {
                         </SView>
                     </Container>
 
-                    <SHr height={40} />
+                    {/* <SHr height={40} /> */}
                 </SPage >
                 {/* <Container center >
                     <PButtomFooter url={'paso1'} label="Siguiente" />

@@ -143,7 +143,7 @@ class index extends Component<CardPostPropsType> {
                 }}
             // onPress={this.handlePressHeart.bind(this)}
             >
-                {this.props.data.mylike ? <SIcon name={'Heart'} height={24} fill={STheme.color.danger} /> : <SIcon name={'Heart'} height={24} stroke={STheme.color.text} />}
+                {this.props.data.mylike ? <SIcon name={'Heart'} height={24} fill={STheme.color.danger} /> : <SIcon fill='#ffffff00' name={'Heart'} height={24} stroke={STheme.color.text } />}
             </SView>
             <SView width={size / 2} />
             <SView width={size} height onPress={() => {

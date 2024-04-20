@@ -53,7 +53,7 @@ class PBarraFooter extends Component {
               borderRadius: 40,
               overflow: "hidden",
               borderBottomWidth: 4,
-              borderBottomColor: STheme.color.black,
+              borderBottomColor: STheme.color.text,
             }}>
 
             <SView col={'xs-12'} row backgroundColor={STheme.color.darkGray}>

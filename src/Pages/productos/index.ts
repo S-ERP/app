@@ -7,6 +7,7 @@ import modelo from "./modelo";
 import inventario_dato from "./inventario_dato";
 import tipo_producto from "./tipo_producto";
 import catalogo from "./catalogo";
+import inventario from "./inventario";
 
 export default SPage.combinePages("productos",
     {
@@ -16,6 +17,7 @@ export default SPage.combinePages("productos",
         ...marca,
         ...modelo,
         ...inventario_dato,
+        ...inventario,
         ...tipo_producto
 
 

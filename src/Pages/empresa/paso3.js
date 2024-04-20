@@ -26,7 +26,7 @@ class index extends Component {
 
                 }}>
                     <Container >
-                        <Adornos.titulo label={"Sube el fondo de tu empresa."} fontSize={18} />
+                        <Adornos.titulo label={"Por favor, sube una foto de fondo para personalizar tu experiencia."} fontSize={18} />
 
                         <SView col={"xs-12"} center>
                             <SForm
@@ -40,7 +40,7 @@ class index extends Component {
                                 }}
                                 inputs={{
 
-                                    foto: {
+                                    foto: { 
                                         type: "image",
                                         label: "Foto",
                                         placeholder: "Foto",

@@ -43,6 +43,15 @@ import emp3, { ReactComponent as emp3W } from './svg/empresa/emp3.svg';
 import emp4, { ReactComponent as emp4W } from './svg/empresa/emp4.svg';
 import out, { ReactComponent as outW } from './svg/empresa/out.svg';
 import share, { ReactComponent as shareW } from './svg/empresa/share.svg';
+import tpAf, { ReactComponent as tpAfW } from './svg/producto/tpAf.svg';
+import tpGa, { ReactComponent as tpGaW } from './svg/producto/tpGa.svg';
+import tpIn, { ReactComponent as tpInW } from './svg/producto/tpIn.svg';
+import tpVs, { ReactComponent as tpVsW } from './svg/producto/tpVs.svg';
+import productos, { ReactComponent as productosW } from './svg/producto/productos.svg';
+import add1, { ReactComponent as add1W } from './svg/producto/add1.svg';
+import deleteAll, { ReactComponent as deleteAllW } from './svg/producto/deleteAll.svg';
+
+
 
 
 
@@ -90,6 +99,13 @@ const Assets: SAssets = {
         "emp4": { Native: emp4, Web: emp4W },
         "out": { Native: out, Web: outW },
         "share": { Native: share, Web: shareW },
+        "tpAf": { Native: tpAf, Web: tpAfW },
+        "tpGa": { Native: tpGa, Web: tpGaW },
+        "tpIn": { Native: tpIn, Web: tpInW },
+        "tpVs": { Native: tpVs, Web: tpVsW },
+        "productos": { Native: productos, Web: productosW },
+        "add1": { Native: add1, Web: add1W },
+        "deleteAll": { Native: deleteAll, Web: deleteAllW },
         
     }
 }
