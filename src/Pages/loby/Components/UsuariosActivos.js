@@ -62,7 +62,7 @@ export default class UsuariosActivos extends Component {
                     overflow: "hidden"
                 }}>
                     <SImage style={{
-                        resizeMode:"cover"
+                        resizeMode: "cover"
                     }} src={Model.usuario._get_image_download_path(SSocket.api, key_usuario)} />
                 </SView>
                 <SView style={{
@@ -82,7 +82,7 @@ export default class UsuariosActivos extends Component {
         </SView>
     }
     render() {
-        return <SView col={"xs-12"} height={100} >
+        return <SView col={"xs-12"} height={100}  >
             <SText bold fontSize={12}> Usuarios</SText>
             <SList
                 horizontal

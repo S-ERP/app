@@ -1,10 +1,10 @@
 export default {
     debug: true, //para que se vea los returns del server
     name: 'serp',
-    ssl: true,
-    host: 'serp.servisofts.com',
-    // ssl: false,
-    // host: '192.168.2.1',
+    // ssl: true,
+    // host: 'serp.servisofts.com',
+    ssl: false,
+    host: '192.168.2.1',
 
     port: {
         native: 10048,
@@ -16,8 +16,8 @@ export default {
         roles_permisos: 'https://rolespermisos.servisofts.com/http/',
         empresa: 'https://empresa.servisofts.com/http/',
         // empresa: 'http://192.168.2.1:30029/',
-        inventario: 'https://inventario.servisofts.com/http/',
-        // inventario: 'http://192.168.2.1:30039/',
+        // inventario: 'https://inventario.servisofts.com/http/',
+        inventario: 'http://192.168.2.1:30039/',
         compra_venta: 'https://compraventa.servisofts.com/http/',
         
         // spdf: "https://spdf.servisofts.com/http/",
@@ -28,7 +28,11 @@ export default {
         // sqr: "http://192.168.3.2:30034/"
         facturacion: "http://192.168.2.1:30028/",
         repo: "http://192.168.2.1:30048/",
+        // repo: "http://serp.servisofts.com/images/",
         // compra_venta: 'http://192.168.2.1:30041/',
+
+        crm: "https://crm.servisofts.com/http/",
+        // crm: "http://192.168.2.1:30051/",
     },
     timeReconnect: 5000
 }

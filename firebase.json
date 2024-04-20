@@ -1,0 +1,8 @@
+{
+    "react-native": {
+        "messaging_auto_init_enabled": true,
+        "messaging_android_headless_task_timeout": 30000,
+        "messaging_android_notification_channel_id": "default_channel_id",
+        "messaging_android_notification_color": "@color/white"
+    }
+}

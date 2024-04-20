@@ -99,10 +99,12 @@ export default class invitation extends Component {
 
             </SView>
             <SHr height={30} />
-            <SView col={"xs-12"} center row>
+            <SView col={"xs-12"} center row style={{
+                justifyContent:"space-around"
+            }}>
+                <SButtom type={"danger"} onPress={() => { SNavigation.goBack() }}>Cancelar</SButtom>
+                
                 <SButtom type={"outline"} onPress={this.handleAccept.bind(this)}>Aceptar</SButtom>
-                <SView width={16} />
-                <SButtom type={"danger"} onPress={()=> {SNavigation.goBack()}}>Cancelar</SButtom>
             </SView>
             <SHr height={20} />
         </SView>

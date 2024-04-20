@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { ScrollView } from 'react-native'
 
 import { SButtom, SDate, SHr, SIcon, SImage, SList, SLoad, SNavigation, SPage, SScrollView2, SText, STheme, SView } from 'servisofts-component';
 import { BottomNavigator, TopBar, Publicacion } from './Components';
 import Model from '../../Model';
 import SSocket from 'servisofts-socket'
 
-import { FlatList } from 'react-native';
+import { FlatList, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import ScrollViewHandle from '../../Components/ScrollViewHandle';
 
 
 class index extends Component {
@@ -96,7 +97,7 @@ class index extends Component {
         this.ref = {}
         this.state.page = 0;
         this.state.end = false;
-        
+
         this.componentDidMount();
         Model.publicacion.Action.CLEAR();
         // Model.usuario.Action.getAll({ force: true, fecha_edit: "1989-01-01T00:00:01" });
@@ -154,18 +155,21 @@ class index extends Component {
         };
         let data = Model.publicacion.Action._getReducer()?.data ?? {};
         // if (!this.state.data) return <SLoad />
-        if (Object.values(data).length <= 0) return <SPage hidden onRefresh={(e) => {
-            this.clearData();
-            if (e) e();
-        }}>
+        // if (Object.values(data).length <= 0) return <SPage  onRefresh={(e) => {
+        //     this.clearData();
+        //     if (e) e();
+        // }}>
+        //     <SText>No hay publicaciones</SText>
+        //     {this.butomSubir()}
+        // </SPage>
+        if (Object.values(data).length <= 0) return <View style={{}}>
             <SText>No hay publicaciones</SText>
-            {this.butomSubir()}
-        </SPage>
+        </View>
         return <>
             <FlatList
                 onRefresh={handleRefresh}
                 refreshing={this.state.refreshing}
-                // scrollEnabled={false}
+                scrollEnabled={false}
                 ref={ref => this.list = ref}
                 pinchGestureEnabled={false}
                 data={[...Object.values(data).sort((a, b) => new SDate(a.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime() >= new SDate(b.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime() ? -1 : 1)]}
@@ -192,7 +196,6 @@ class index extends Component {
             />
             <SHr height={20} />
 
-            {this.butomSubir()}
             {/* <SButtom onPress={() => {
                 SNavigation.navigate("/publicacion/add")
             }}>Nueva publicación</SButtom> */}
@@ -216,9 +219,11 @@ class index extends Component {
                 </Container> */}
                 <SView col={"xs-11 sm-11 md-8 lg-6 xl-4"} flex>
                     <SHr height={10} />
-                    {this.renderPublicaciones()}
+                    <ScrollViewHandle>
+                        {this.renderPublicaciones()}
+                    </ScrollViewHandle>
                     {/* <SHr height={40} /> */}
-
+                    {this.butomSubir()}
                 </SView>
             </SPage>
         );

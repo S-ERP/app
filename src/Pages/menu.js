@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Linking } from 'react-native'
 import { SButtom, SHr, SIcon, SImage, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
-import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
+import { MenuButtom, MenuPages, MenuPages2 } from 'servisofts-rn-roles_permisos';
 import SSocket from "servisofts-socket"
 import Model from '../Model';
 import Components from '../Components';

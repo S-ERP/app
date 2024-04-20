@@ -2,13 +2,12 @@ import DPA, { connect } from 'servisofts-page';
 import { Parent } from '.';
 import { SNavigation, SView } from 'servisofts-component';
 import Model from '../../Model';
-import DatosDocumentosEditar from '../usuario/Components/DatosDocumentosEditar';
 
 class index extends DPA.edit {
     constructor(props) {
         super(props, {
             Parent: Parent,
-            excludes: ["Password"],
+            excludes: [],
         });
     }
     $allowAccess() {
@@ -19,45 +18,30 @@ class index extends DPA.edit {
     }
     $inputs() {
         var inputs = super.$inputs();
-        inputs["Correo"].type = "email"
+        inputs["correo"].type = "email"
         // inputs["Telefono"].type = "phone"
         return inputs;
     }
 
 
     $onSubmit(data) {
+        if (!data.lat) data.lat = 0;
+        if (!data.lng) data.lng = 0;
+        if(!data.fecha_nacimiento) delete data.fecha_nacimiento
         Parent.model.Action.editar({
             data: {
                 ...this.data,
                 ...data
             },
-            key_usuario: ""
+            key_usuario: Model.usuario.Action.getKey()
         }).then((resp) => {
-            this.presolve({
-                key_usuario: this.pk, callback: () => {
-                    SNavigation.replace("/cliente/profile", { pk: resp.data.key })
-                }
-            })
-            // this.presolve(this.pk)
-            // SNavigation.goBack();
+            SNavigation.replace("/cliente/profile", { pk: resp.data.key })
         }).catch(e => {
             console.error(e);
-            this.reject("Error desconocido al editar el usuario.");
         })
     }
-    $submitName() {
-        return ""
-    }
-    $footer() {
-        return <DatosDocumentosEditar key_usuario={this.pk} key_rol={"51ee8a95-094b-41eb-8819-4afa1f349394"} onSubmit={() => {
-            return new Promise((resolve, reject) => {
-                this.presolve = resolve;
-                this.reject= reject;
-                this.form.submit();
-                // resolve("KEY_USUARIO");
-            })
-        }} />
-    }
+
+
 }
 
 export default connect(index);

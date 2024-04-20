@@ -24,7 +24,7 @@ class root extends Component {
         };
         return (
             <SPage  >
-                <Header  title="Regístrate para acceder a todos los beneficios de ser un usuario activo en la app"/>
+                <Header title="Regístrate para acceder a todos los beneficios de ser un usuario activo en la app" />
                 <SHr height={20} />
                 <Container>
                     <SView col={"xs-12"} center>
@@ -48,7 +48,7 @@ class root extends Component {
                             Correo: { placeholder: "Correo", type: "email", isRequired: true, defaultValue: defaultData.Correo },
                             // FechaNacimiento: { placeholder: "Fecha de Nacimiento", isRequired: false, type: "date", },
                             //telefono: { placeholder: "Celular", isRequired: true, type: "telefono", isRequired:true},
-                            Telefono: { placeholder: "Celular", isRequired: false,  type:"phone"},
+                            Telefono: { placeholder: "Celular", isRequired: false, type: "phone" },
                             Password: { placeholder: "Password", isRequired: true, type: "password" },
                             RepPassword: { placeholder: "Repetir password", type: "password", isRequired: true },
                         }}
@@ -118,6 +118,7 @@ class root extends Component {
                                         password: password
 
                                     }).then(resp => {
+                                        Model.empresa.Action.setEmpresa(null)
                                         SNavigation.reset("/");
                                     }).catch(e => {
                                         SPopup.alert("Error al iniciar con el nuevo usuario");
@@ -160,7 +161,7 @@ class root extends Component {
                         </SView>
                     </SView>
                     <SHr height={20} />
-                    <BtnSend  onPress={() => this.form.submit()}>{"Registrar"}</BtnSend>
+                    <BtnSend onPress={() => this.form.submit()}>{"Registrar"}</BtnSend>
                     <SHr height={30} />
                     {/* <SectionApis /> */}
                     <SHr height={35} />

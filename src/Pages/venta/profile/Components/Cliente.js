@@ -12,19 +12,10 @@ export default class Cliente extends Component {
     data = {}
 
     seleccionarCliente() {
-        SNavigation.navigate("/usuario", {
+        SNavigation.navigate("/cliente", {
             onSelect: (obj) => {
-                var cliente = {
-                    nit: obj.CI,
-                    razon_social: obj.Nombres + " " + obj.Apellidos,
-                    key_usuario: obj.key,
-                    telefono: obj.Telefono,
-                    correo: obj.Correo,
-                    direccion: "",
-                    key_usuario: obj.key,
-                    // sucursal: "SUCURSAL TODO",
-                }
-                this.data.cliente = cliente;
+
+                this.data.cliente = obj;
                 Model.compra_venta.Action.editar({
                     data: this.data,
                     key_usuario: Model.usuario.Action.getKey()
@@ -33,26 +24,6 @@ export default class Cliente extends Component {
                 })
             }
         })
-        // SNavigation.navigate("/cliente", {
-        //     onSelect: (obj) => {
-        //         var cliente = {
-        //             nit: obj.CI,
-        //             razon_social: obj.Nombres + " " + obj.Apellidos,
-        //             key_usuario: obj.key,
-        //             telefono: obj.Telefono,
-        //             correo: obj.Correo,
-        //             direccion: "",
-        //             key_usuario: obj.key,
-        //         }
-        //         this.data.cliente = cliente;
-        //         Model.compra_venta.Action.editar({
-        //             data: this.data,
-        //             key_usuario: Model.usuario.Action.getKey()
-        //         }).then((resp) => {
-        //             console.log("Se agrego el cliente con exito")
-        //         })
-        //     }
-        // })
     }
     seleccionarSucursal() {
 
@@ -109,7 +80,7 @@ export default class Cliente extends Component {
             </SView>
         }
 
-        var { nit, razon_social, telefono, correo, direccion, key_usuario, key_sucursal } = this.data.cliente
+        var { nit, razon_social, nombres, telefono, correo, direccion, key_usuario, key_sucursal, key, apellidos } = this.data.cliente
         var onPress;
         if (!this.props.disabled) {
             // if (this.data.tipo == "compra") {
@@ -121,6 +92,8 @@ export default class Cliente extends Component {
         var urlFoto = "";
         if (key_sucursal) {
             urlFoto = SSocket.api.empresa + "sucursal/" + key_sucursal;
+        } else if (key) {
+            urlFoto = SSocket.api.crm + "cliente/" + key;
         } else if (key_usuario) {
             urlFoto = SSocket.api.root + "usuario/" + key_usuario;
         }
@@ -133,7 +106,7 @@ export default class Cliente extends Component {
                     </SView>
                 </SView>
                 <SHr />
-                <SText center col={"xs-10"}>{razon_social}</SText>
+                <SText center col={"xs-10"}>{nombres} {apellidos}</SText>
                 <SHr />
                 <SText center col={"xs-10"}>{`Nit. ${nit}`}</SText>
                 <SText center col={"xs-10"}>{telefono ? `Tel. ${telefono}` : ""}</SText>

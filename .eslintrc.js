@@ -1,3 +1,6 @@
 module.exports = {
-    "parser": "@typescript-eslint/parser"
+    "parser": "@typescript-eslint/parser",
+    "globals": {
+        "__DEV__": true
+    }
 }

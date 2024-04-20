@@ -11,6 +11,7 @@ class index extends DPA.list {
             excludes: ["key", "fecha_on", "key_usuario", "estado", "key_servicio", "key_marca", "key_tipo_producto", "observacion"],
             item: item
         });
+        this.filterInNavigation = SNavigation.getParam("filter");
     }
 
     $allowNew() {
@@ -24,6 +25,7 @@ class index extends DPA.list {
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "ver" })
     }
     $filter(data) {
+        if(this.filterInNavigation) return this.filterInNavigation(data);
         return data.estado != 0
     }
 

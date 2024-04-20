@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SDate, SHr, SImage, SList, SLoad, SMath, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SImage, SList, SLoad, SMath, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket'
 import Model from '../../../../Model';
 // props = {disabled}
@@ -12,8 +12,14 @@ export default class Proveedor extends Component {
     data = {}
 
     seleccionarProveedor() {
+        console.log(this.roles)
+        let rol_proveedor = Object.values(this.roles).find(a => a.tipo == "proveedor")
+        if(!rol_proveedor?.key){
+            SPopup.alert("No se encontro el rol proveedor")
+            return null;
+        }
         SNavigation.navigate("/rol/profile/usuarios", {
-            pk: "861f095d-6251-4d48-8d0e-e38a2aee7157", onSelect: (obj) => {
+            pk: rol_proveedor?.key, onSelect: (obj) => {
                 var proveedor = {
                     nit: obj.CI,
                     razon_social: obj.Nombres + " " + obj.Apellidos,
@@ -36,7 +42,10 @@ export default class Proveedor extends Component {
     }
     render() {
         this.data = this.props.data;
+        this.roles = Model.rol.Action.getAll({ key_empresa: Model.empresa.Action.getKey() });
+
         if (!this.data?.proveedor) {
+            if (!this.roles) return <SLoad />
             if (this.props.disabled) {
                 return <SView>
                     <SHr height={16} />

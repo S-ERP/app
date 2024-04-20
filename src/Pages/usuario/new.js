@@ -43,7 +43,8 @@ class index extends DPA.new {
                         key_rol: this.$params.key_rol,
                         key_usuario: resp.data.key,
                     },
-                    key_usuario: Model.usuario.Action.getKey()
+                    key_usuario: Model.usuario.Action.getKey(),
+                    key_empresa: Model.usuario.Action.getKey(),
                 }).then((tesp) => {
                     if (this.presolve) {
                         this.presolve({

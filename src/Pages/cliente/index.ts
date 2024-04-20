@@ -7,7 +7,7 @@ import profile from "./profile";
 import edit from "./edit";
 import _delete from "./delete";
 
-const model = Model.usuario;
+const model = Model.cliente;
 
 export const Parent = {
     name: "cliente",

@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import { SLoad, SMath, STable, STable2, HeaderProps } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."

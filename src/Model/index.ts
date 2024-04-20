@@ -10,6 +10,7 @@ import caja from "./caja";
 import notification from "./notification";
 import serp from "./serp";
 import redes from "./redes";
+import crm from "./crm";
 import { STheme } from "servisofts-component";
 
 const Model = {
@@ -24,6 +25,7 @@ const Model = {
     ...notification,
     ...serp,
     ...redes,
+    ...crm,
 }
 
 Usuario.init({

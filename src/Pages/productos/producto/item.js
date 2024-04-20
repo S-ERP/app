@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
 import { SDate, SHr, SIcon, SImage, SList, SLoad, SMath, SText, STheme, SView } from 'servisofts-component';
@@ -21,11 +22,11 @@ class index extends DPA.item {
         return data;
     }
 
-    getEstado() {
+    getEstado(cantidad = 0) {
         var text = "";
         var color = "#ff0"
         if (this.data.key_almacen) {
-            text = "Disponible"
+            text = (cantidad ?? 0) + " Disponible"
             color = STheme.color.accent
         }
         if (this.data.key_cliente) {
@@ -68,7 +69,7 @@ class index extends DPA.item {
     $render() {
         this.data = this.$getData()
         if (!this.data) return <SLoad />
-        const { descripcion, observacion, precio_compra, precio_venta, precio_venta_credito } = this.data;
+        const { descripcion, observacion, precio_compra, precio_venta, precio_venta_credito, cantidad, fecha_on } = this.data;
 
         return <SView col={"xs-12"} row flex card style={{
             padding: 4
@@ -77,7 +78,7 @@ class index extends DPA.item {
                 <SView card flex height style={{
                     overflow: 'hidden',
                 }}>
-                    <SImage src={Model.producto._get_image_download_path(SSocket.api, this.data.key)+"?time"+new Date().getTime()} style={{
+                    <SImage src={Model.producto._get_image_download_path(SSocket.api, this.data.key) + "?time" + new Date().getTime()} style={{
                         resizeMode: "cover"
                     }} />
                 </SView>
@@ -93,15 +94,17 @@ class index extends DPA.item {
                     <SText fontSize={12} color={STheme.color.lightGray}>{this.modelo?.descripcion}</SText>
                     <SView width={8} />
                     <SText fontSize={12} color={STheme.color.lightGray}>{observacion}</SText>
+                    {/* <SView width={8} /> */}
+                    {/* <SText fontSize={12} color={STheme.color.lightGray}>{cantidad}</SText> */}
                 </SView>
                 <SHr />
                 {this.getImages()}
                 <SHr />
-                <SText fontSize={18} >Bs. {SMath.formatMoney(precio_venta)}</SText>
+                <SText fontSize={18} >Bs. {SMath.formatMoney(precio_venta ?? 0)}</SText>
                 {/* <SText fontSize={10} color={STheme.color.lightGray}>Bs. {SMath.formatMoney(precio_venta_credito)} Al credito</SText> */}
             </SView>
-
-            {this.getEstado()}
+            <SText>{new SDate(fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm:ss")}</SText>
+            {this.getEstado(cantidad)}
         </SView>
     }
 }

@@ -49,17 +49,18 @@ class Publicaciones extends Component {
         // return <Publicacion.Card
         //     // ref={ref => this.ref[itm.item.key] = ref}
         //     data={obj} usuario={{}} />
-        const image_src = SSocket.api.repo + "publicacion/" + obj.key ?? "";
+        // const image_src = SSocket.api.repo + "publicacion/" + obj.key ?? "";
+        return <Publicacion.Card data={obj} />
         return <>
             <SView col={"xs-12"} padding={4} style={{
                 // backgroundColor: STheme.color.card,
-                borderRadius: 8,
-                borderWidth: 1,
-                borderColor: STheme.color.card
+                // borderRadius: 8,
+                // borderWidth: 1,
+                // borderColor: STheme.color.card
 
             }} >
                 <SView flex>
-                    <Publicacion.CardPost data={obj} />
+                    <Publicacion.Card data={obj} />
                 </SView>
             </SView>
             <SHr height={10} />

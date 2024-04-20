@@ -8,6 +8,7 @@ import SSocket from 'servisofts-socket';
 import SList from 'servisofts-component/Component/SList2';
 import UsuariosAsigandos from './Components/UsuariosAsigandos';
 import Labels from './Components/Labels';
+import SMD from '../../SMD';
 
 class profile extends Component {
     constructor(props) {
@@ -183,7 +184,8 @@ class profile extends Component {
                         </SView>
                         <SView col={"xs-12"} flex padding={8} row>
                             <SHr h={8} />
-                            <SText color={STheme.color.text}>{obj.descripcion}</SText>
+                            <SMD textColor={STheme.color.text}>{obj.descripcion}</SMD>
+                            {/* <SText color={STheme.color.text}>{obj.descripcion}</SText> */}
                             {/* {(obj.descripcion ?? "").split(" ").map(a => <SText color={STheme.color.text}>{a + " "}</SText>)} */}
                             <SHr h={16} />
                         </SView>

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SComponentContainer, SGradient, SIcon, SImage, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import SSocket, { setProps } from 'servisofts-socket';
 import Redux, { store } from './Redux';
 import Config from "./Config";
-import Assets from './Assets';
-import Pages from './Pages';
+import Assets from './Assets/index';
+import Pages from './Pages/index';
 import BackgroundImage from './Components/BackgroundImage';
 import NavBar from './Components/NavBar';
 import Firebase from './Firebase';
@@ -33,6 +33,11 @@ try {
 }
 
 const App = (props) => {
+    useEffect(() => {
+        Firebase.setBadgeCount(0);
+        // App launched, remove the badge count
+    }, []);
+
     return <Redux>
         <ErrorBoundary>
             <SComponentContainer

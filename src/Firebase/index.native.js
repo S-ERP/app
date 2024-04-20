@@ -3,7 +3,7 @@
 //
 
 import { Notifications } from 'react-native-notifications';
-import { Alert, Linking, Platform } from 'react-native';
+import { Alert, AppState, Linking, Platform } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import { PERMISSIONS, request, requestNotifications } from 'react-native-permissions'
 import DeviceKey from './DeviceKey';
@@ -15,8 +15,29 @@ const sleep = ms => {
 };
 
 
+// AppState.addEventListener('change', next => {
+//     if (next === 'background' || next === 'inactive') {
+//         // Programa la notificación aquí
+//         BuildNotification({
+//             data: {
+//                 title: "Prueba",
+//                 body: "Asdasd sadsa d",
+//                 // image:""
+//             }
+//         })
+//         // PushNotification.localNotificationSchedule({
+//         //     channelId: "default-channel-id",
+//         //     message: "Abre el canal de Notifee", // mensaje de la notificación
+//         //     date: new Date(Date.now() + 5 * 1000), // notificación después de 5 segundos
+//         //     allowWhileIdle: true, // permite que la notificación se envíe mientras el dispositivo está inactivo
+//         // });
+//     }
+// })
 class Firebase {
 
+    static async setBadgeCount(n) {
+        return await notifee.setBadgeCount(n)
+    }
     static async getInitialURL() {
 
         notifee.getInitialNotification().then(async evt => {
@@ -53,11 +74,15 @@ class Firebase {
 
             const unsubscribe = messaging().onMessage(async remoteMessage => {
                 console.log('Message receivedddd. ', remoteMessage);
+                // PushNotification.setApplicationIconBadgeNumber(1);
                 BuildNotification(remoteMessage);
             });
 
             messaging().setBackgroundMessageHandler(async remoteMessage => {
+                // PushNotification.setApplicationIconBadgeNumber(1);
+
                 BuildNotification(remoteMessage)
+
             });
 
             notifee.registerForegroundService(async ({ type, detail }) => {
@@ -116,7 +141,7 @@ const BuildNotification = async (notification) => {
             channelId: "default_channel_id",
             // smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
             // largeIcon: notification?.data?.image,
-
+            // time: Date.now() - 480000,
             pressAction: {
                 id: 'default'
             }
@@ -126,6 +151,15 @@ const BuildNotification = async (notification) => {
         notify.android.largeIcon = notification?.data?.image;
         notify.ios.attachments.push({ url: notification?.data?.image });
     }
+    // await notifee.displayNotification({
+    //     ...notify, android: {
+
+    //     }
+    // });
     await notifee.displayNotification(notify);
+    notifee
+        .incrementBadgeCount()
+        .then(() => notifee.getBadgeCount())
+        .then(count => console.log('Badge count incremented by 1 to: ', count));
 }
 export default Firebase;

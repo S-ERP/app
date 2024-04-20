@@ -4,6 +4,7 @@ import { SDate, SHr, SIcon, SList, SLoad, SNavigation, SText, STheme, SThread, S
 import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
 import { connect } from 'react-redux';
+import { ScrollView } from 'react-native-gesture-handler';
 
 class Notas extends Component {
     constructor(props) {
@@ -27,7 +28,7 @@ class Notas extends Component {
             Model.nota.Action._dispatch(e);
             // this.setState({ data: e.data })
             // this.hilo();
-        }).catch(e=>{
+        }).catch(e => {
             console.error(e);
         })
     }
@@ -65,16 +66,20 @@ class Notas extends Component {
                     <SHr height={10} />
                     <SText fontSize={12} color={"#000"}>{observacion}</SText>
                 </SView>
-                <SView row>
+                {/* <SView row> */}
 
-                    <SView flex />
-                    <SText color={"#666"} fontSize={10}>+ {cantidad_participantes}</SText>
+                {/* <SView flex /> */}
+                <SText style={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: 4,
+                }} color={"#666"} fontSize={10}>+ {cantidad_participantes}</SText>
 
-                </SView>
+                {/* </SView> */}
             </SView>
             <SView row>
-                <SView height={16} backgroundColor={color ?? "#EDE485"} width={92} style={{padding:2}}>
-                    <SText color={"#666"} fontSize={10}>{new SDate(fecha_on, "yyyy-MM-ddThh:mm:ss").toString("MON dd, yyyy")}</SText>
+                <SView height={16} backgroundColor={color ?? "#EDE485"} width={92} style={{ padding: 2 }}>
+                    <SText color={"#666"} fontSize={10}>{new SDate(fecha_on, "yyyy-MM-ddThh:mm:ss").toString("MON dd")}</SText>
                 </SView>
                 <SView height={16} width={28} style={{ position: "relative", top: 0, right: 0, overflow: "hidden", alignItems: "flex-end" }}>
                     <SIcon name={"notaEsquina"} width={28} height={16} fill={color ? color + "80" : "#EDE48580"} />
@@ -88,7 +93,7 @@ class Notas extends Component {
         if (!notas) return <SLoad />
         return <SView col={"xs-12"} >
             <SView col={"xs-12"} row>
-                <SText  bold fontSize={15}> Notas</SText>
+                <SText bold fontSize={15}> Notas</SText>
                 <SView flex style={{ alignItems: "flex-end" }} onPress={() => SNavigation.navigate("/nota", {
                     onChange: (e) => {
                         this.state.data[e.key] = e;
@@ -110,13 +115,16 @@ class Notas extends Component {
                 })}> + </SText> */}
             </SView>
             <SHr />
-            <SList
-                horizontal
-                data={notas}
-                order={[{ key: "fecha_on", order: "desc" }]}
-                render={(a) => this.Item(a)}
+            <ScrollView horizontal>
+                <SList
+                    scrollEnabled={false}
+                    horizontal
+                    data={notas}
+                    order={[{ key: "fecha_on", order: "desc" }]}
+                    render={(a) => this.Item(a)}
 
-            />
+                />
+            </ScrollView>
         </SView>
     }
 }

@@ -1,6 +1,6 @@
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from ".."
-import { SExcel, SExcelReader, SHr, SList, SLoad, SMath, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SExcel, SExcelReader, SForm, SHr, SList, SLoad, SMath, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../../Model';
 import Item from "../item"
 class index extends DPA.profile {
@@ -48,12 +48,15 @@ class index extends DPA.profile {
         var inventario_dato = Model.inventario_dato.Action.getAllByKeyTipoProducto(this.state.modelo?.key_tipo_producto)
         if (!inventario_dato) return <SLoad />
         let producto = {
+            codigo: "",
             modelo: this.state.modelo.descripcion,
             descripcion: this.params.descripcion,
             observacion: "",
             precio_compra: this.params.precio_compra,
             precio_venta: 0,
-            precio_venta_credito: 0,
+            // precio_venta_credito: 0,
+            unidad_medida: "unidad",
+            cantidad: 1,
             key_almacen: this.params.key_almacen,
             key_modelo: this.state.modelo.key,
             key_compra_venta_detalle: this.params.key_compra_venta_detalle
@@ -70,11 +73,13 @@ class index extends DPA.profile {
             <SExcel data={new Array(this.params.cantidad).fill(producto)}
                 header={[
                     { key: "modelo", label: "modelo", style: { width: 200 } },
+                    { key: "codigo", label: "codigo", style: { width: 200 } },
                     { key: "descripcion", label: "descripcion", style: { width: 200 } },
                     { key: "observacion", label: "observacion", style: { width: 200 } },
                     { key: "precio_compra", label: "precio_compra", style: { width: 200 } },
                     { key: "precio_venta", label: "precio_venta", style: { width: 200 } },
-                    { key: "precio_venta_credito", label: "precio_venta_credito", style: { width: 200 } },
+                    { key: "unidad_medida", label: "unidad_medida", style: { width: 200 } },
+                    { key: "cantidad", label: "cantidad", style: { width: 200 } },
                     ...headers,
                     { key: "key_almacen", label: "key_almacen", style: { width: 200 } },
                     { key: "key_modelo", label: "key_modelo", style: { width: 200 } },
@@ -132,6 +137,21 @@ class index extends DPA.profile {
                 <SText>Modelo: </SText><SView flex /><SText fontSize={18}>{this.state?.modelo?.descripcion ?? "--"}</SText>
             </SView>
             <SHr h={1} color={STheme.color.card} />
+            <SForm
+                row
+                style={{
+                    justifyContent: "space-between"
+                }}
+                inputs={{
+                    // "modelo": { col: "xs-12", type: "select", label: "Unidad de medida", defaultValue: "unidad", options: ["unidad", "litro", "metro"], },
+                    "unidad_medida": { col: "xs-5.5", type: "select", label: "Unidad de medida", defaultValue: "unidad", options: ["unidad", "litro", "metro"], },
+                    "cantidad": { col: "xs-5.5", type: "number", label: "Cantidad", defaultValue: 1 },
+                }}
+                onSubmitName={"Exportar"}
+                onSubmit={(val) => {
+
+                }}
+            />
             <SHr />
             {this.getExportar()}
             <SHr />

@@ -48,11 +48,11 @@ class index extends DPA.profile {
     //             })
     //         }} />
     // }
-    getCuentaContable() {
+    getCuentaContable(key_value) {
         if (!this.data) return <SLoad />
         var cuenta_contable = null;
-        if (this.data.key_cuenta_contable) {
-            cuenta_contable = Model.cuenta_contable.Action.getByKey(this.data.key_cuenta_contable);
+        if (this.data[key_value]) {
+            cuenta_contable = Model.cuenta_contable.Action.getByKey(this.data[key_value]);
             if (!cuenta_contable) return <SLoad />
         }
         return <Components.contabilidad.cuenta_contable.Select
@@ -62,7 +62,7 @@ class index extends DPA.profile {
                 Model.tipo_producto.Action.editar({
                     data: {
                         ...this.data,
-                        key_cuenta_contable: cuenta.key
+                        [key_value]: cuenta.key
                     },
                     key_usuario: Model.usuario.Action.getKey()
                 })
@@ -72,7 +72,13 @@ class index extends DPA.profile {
         return <SView col={"xs-12"}>
             <SHr />
             <SText color={STheme.color.lightGray}>Cuenta contable</SText>
-            {this.getCuentaContable()}
+            {this.getCuentaContable("key_cuenta_contable")}
+            <SHr />
+            <SText color={STheme.color.lightGray}>Cuenta contable ganancias</SText>
+            {this.getCuentaContable("key_cuenta_contable_ganancia")}
+            <SHr />
+            <SText color={STheme.color.lightGray}>Cuenta contable costos</SText>
+            {this.getCuentaContable("key_cuenta_contable_costo")}
             <SHr />
             {/* <SText color={STheme.color.lightGray}>Cuenta contable al credito</SText> */}
             {/* {this.getCuentaContableCredito()} */}

@@ -20,7 +20,7 @@ import com.facebook.soloader.SoLoader;
 import android.content.Context;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.JSIModulePackage; // <- add this
-import com.swmansion.reanimated.ReanimatedJSIModulePackage; // <- add this
+//import com.swmansion.reanimated.ReanimatedJSIModulePackage; // <- add this
 import java.lang.reflect.InvocationTargetException;
 
 // import java.lang.reflect.InvocationTargetException;
@@ -48,10 +48,10 @@ public class MainApplication extends Application implements ReactApplication {
       return "index";
     }
 
-    @Override
-    protected JSIModulePackage getJSIModulePackage() {
-      return new ReanimatedJSIModulePackage(); // <- add
-    }
+//    @Override
+//    protected JSIModulePackage getJSIModulePackage() {
+//      return new ReanimatedJSIModulePackage(); // <- add
+//    }
 
     @Override
     protected boolean isNewArchEnabled() {

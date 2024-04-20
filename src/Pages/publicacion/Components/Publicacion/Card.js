@@ -111,7 +111,7 @@ class index extends Component<PublicacionPropsType> {
     }
     renderImage() {
         // const image_src = Model.publicacion._get_image_download_path(SSocket.api, this.props.data.key ?? "");
-        const image_src = SSocket.api.repo + "publicacion/" + this.props.data.key ?? "";
+        const image_src = SSocket.api.repo + "publicacion/" + (this.props.data.key ?? "")+"?time="+new Date().getTime();
         return <SView col={"xs-12"} colSquare activeOpacity={1}
             style={{
                 backgroundColor: "#66666622",

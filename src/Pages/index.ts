@@ -37,15 +37,17 @@ import lobyRoot from './loby/root';
 import nota from './nota';
 import chat from './chat';
 import { Example } from 'servisofts-charts'
-import  publicacion  from './publicacion'
+import publicacion from './publicacion'
 import invitation from "./invitation";
-import  invitacion  from './invitacion'
-import  terminos  from './terminos'
+import invitacion from './invitacion'
+import terminos from './terminos'
+import anim1 from "./anim1"
 export default SPage.combinePages("/", {
     // "":Example,
-    // "": test,
-    "": lobyRoot,
+    "": test,
+    // "": lobyRoot,
     "root": Root,
+    anim1,
     home,
     home2,
     home3,

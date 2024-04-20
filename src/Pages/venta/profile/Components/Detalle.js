@@ -57,10 +57,10 @@ export default class Detalle extends Component {
                         SPopup.alert("No se encontro tipo producto");
                         return true;
                     }
-                    if (!resp?.modelo?.tipo_producto?.key_cuenta_contable) {
-                        SPopup.alert("No se encontro tipo producto key_cuenta_contable");
-                        return true;
-                    }
+                    // if (!resp?.modelo?.tipo_producto?.key_cuenta_contable) {
+                    //     SPopup.alert("No se encontro tipo producto key_cuenta_contable");
+                    //     return true;
+                    // }
                     // if (!resp?.modelo?.tipo_producto.key_cuenta_contable_contado) {
                     //     SPopup.alert("No se encontro tipo producto key_cuenta_contable_contado");
                     //     return true;
@@ -96,7 +96,9 @@ export default class Detalle extends Component {
                             data: {
                                 precio_venta: resp.precio_venta,
                                 precio_compra: resp.precio_compra ?? 0,
-                                key_cuenta_contable: resp?.modelo?.tipo_producto.key_cuenta_contable,
+                                key_cuenta_contable: resp?.modelo?.tipo_producto?.key_cuenta_contable,
+                                key_cuenta_contable_ganancia: resp?.modelo?.tipo_producto?.key_cuenta_contable_ganancia,
+                                key_cuenta_contable_costo: resp?.modelo?.tipo_producto?.key_cuenta_contable_costo,
                             }
                         },
                         key_producto: resp.key,
@@ -219,7 +221,7 @@ export default class Detalle extends Component {
             <SHr />
             {this.getButtom()}
             <SHr />
-            {this.getButtomServicio()}
+            {/* {this.getButtomServicio()} */}
         </SView>
     }
 }

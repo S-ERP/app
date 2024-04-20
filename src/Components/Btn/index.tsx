@@ -28,7 +28,7 @@ export default class Btn extends Component<BotoncitoPropsType> {
     render() {
         const { children, onPress, type, style } = this.props
         const typeSelect: ButtomType = types[type ?? "default"]();
-        let CONTENIDO = null
+        let CONTENIDO:any = null
         if (typeof children == "string" || typeof children == "number") {
             CONTENIDO = <SText {...typeSelect.textProps}>{children}</SText>
         } else if (Array.isArray(children)) {

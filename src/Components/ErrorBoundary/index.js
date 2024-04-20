@@ -34,7 +34,7 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.errorInfo) {
       return <View style={{
-        flex: 1,
+        width: "100%",
         height: "100%"
 
       }}>

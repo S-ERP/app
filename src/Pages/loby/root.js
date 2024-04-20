@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Platform } from 'react-native';
 import { SHr, SIcon, SLoad, SNavigation, SPage, SText, STheme, SThread, SView } from 'servisofts-component';
 import UsuariosActivos from './Components/UsuariosActivos';
 import Container from '../../Components/Container';
@@ -13,6 +13,7 @@ import Model from '../../Model';
 import Chat from './Components/Chat';
 import Publicaciones from './Components/Publicaciones';
 import InvitarUsuario from '../../Components/empresa/InvitarUsuario';
+import { ScrollView as ScrollViewGesture } from 'react-native-gesture-handler';
 
 export default class root extends Component {
     constructor(props) {
@@ -24,9 +25,9 @@ export default class root extends Component {
 
     renderMunuItem({ onPress, label, icon, color }) {
         return <SView width={(label.length * 8) + 45} card padding={8} onPress={onPress} center row>
-            
+
             <SView width={18} height={18} center>
-                <SIcon name={icon} fill={color ?? STheme.color.text} />
+                <SIcon name={icon} width={18} height={18} fill={color ?? STheme.color.text} />
             </SView>
             {(label.length > 0) ? <SView width={5} /> : null}
             {/* <SView width={5} /> */}
@@ -57,7 +58,7 @@ export default class root extends Component {
                     width: "100%"
                 }}>
                     <>
-                        {this.renderMunuItem({ label: "Menú", icon: "Menu", onPress: () => SNavigation.navigate("/menu") })}
+                        {this.renderMunuItem({ label: "", icon: "Menu", onPress: () => SNavigation.navigate("/menu") })}
                         <SView width={8} />
                         {/* {this.renderMunuItem({ label: "Init", icon: "Menu", onPress: () => SNavigation.navigate("/empresa/init") })}
                         <SView width={8} /> */}
@@ -65,16 +66,17 @@ export default class root extends Component {
                         <SView width={8} />
 
                         <Chat label={"Chat"}  >
-                            {this.renderMunuItem({ label: "",  icon: "Comment2", })}
+                            {this.renderMunuItem({ label: "", icon: "Comment2", })}
                         </Chat>
                         <SView width={8} />
 
                         {this.renderMunuItem({ label: "", icon: "configurar", onPress: () => SNavigation.navigate("/ajustes") })}
                         <SView width={8} />
-                        <InvitarUsuario />
+                        {/* <InvitarUsuario /> */}
+                        {this.renderMunuItem({ label: "", icon: "share", onPress: () => SNavigation.navigate("/empresa/invite") })}
                         {/* {this.renderMunuItem({ label: "Invitar", icon: "Usuarios", color: STheme.color.danger, onPress: () => SNavigation.navigate("/root") })} */}
                         <SView width={8} />
-                        {this.renderMunuItem({ label: "Salir", icon: "out",  onPress: () => SNavigation.navigate("/root") })}
+                        {this.renderMunuItem({ label: "Salir", icon: "out", onPress: () => SNavigation.navigate("/root") })}
                         <SView width={8} />
                     </>
                 </ScrollView>
@@ -94,20 +96,26 @@ export default class root extends Component {
                 <PHr />
                 <Actividades />
                 <PHr />
-                <Publicaciones />
+                {/* <Publicaciones /> */}
             </SView >
         </SView >
     }
     render() {
-        return <SPage title="Loby" hidden onRefresh={(e) => {
+        const Scroll = Platform.select({
+            web: ScrollView,
+            native: ScrollViewGesture
+        })
+        return <SPage title="Loby" hidden disableScroll onRefresh={(e) => {
             this.setState({ cargar: true })
             Model.publicacion.Action.CLEAR();
             return;
         }} >
-            <SHr h={16} />
-            <PerfilEmpresa />
-            {this.content()}
-            <SHr h={100} />
+            <Scroll >
+                <SHr h={16} />
+                <PerfilEmpresa />
+                {this.content()}
+                <SHr h={100} />
+            </Scroll>
         </SPage>
     }
 }

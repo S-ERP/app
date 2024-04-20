@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import { SHr, SIcon, SInput, SText, STheme, SView } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
@@ -22,7 +23,8 @@ class index extends DPA.list {
 
         this.state = {
             select: {
-                "disponible": true,
+                "no_elavorado": true,
+                // "disponible": true,
                 // "aprobado": true,
             },
             ...this.state,
@@ -41,32 +43,30 @@ class index extends DPA.list {
         if (!data.estado) return false;
 
 
-        if (!this.state.select["pendiente_entrega"]) {
-            if (data?.venta_sin_entregar?.length > 0) {
-                return false;
-            }
-        }
-        if (!this.state.select["vendido"]) {
-            if (data.key_cliente) {
-                return false;
-            }
-        }
-        if (!this.state.select["disponible"]) {
-            if (data.key_almacen && !data.key_cliente && data?.venta_sin_entregar?.length <= 0) {
-                return false;
+        if (this.state.select["no_elavorado"]) {
+            if (!data.precio_compra || data.precio_compra <= 0) {
+                return true;
             }
         }
 
-        if (this.state.chasis) {
-            if (!data.datos) return false;
-            let dato = data.datos.find(a => a.key_inventario_dato == "9d50048e-79f2-47ed-ae8a-5d73c36aad25");
-            if (!dato) return false;
-            let str = dato.descripcion;
-            if (str.indexOf(this.state.chasis) < 0) {
-                return false;
+        if (this.state.select["pendiente_entrega"]) {
+            if (data?.venta_sin_entregar?.length > 0) {
+                return true;
             }
         }
-        return true;
+        if (this.state.select["vendido"]) {
+            if (data.key_cliente) {
+                return true;
+            }
+        }
+        if (this.state.select["disponible"]) {
+            if (data.key_almacen && !data.key_cliente && data?.venta_sin_entregar?.length <= 0) {
+                return true;
+            }
+        }
+
+
+        return false;
     }
 
     optionItem({ key, label, color }) {
@@ -93,6 +93,9 @@ class index extends DPA.list {
     $menu() {
         var items = super.$menu();
         items.push({
+            children: this.optionItem({ key: "no_elavorado", label: "Sin precio de compra", color: STheme.color.accent })
+        })
+        items.push({
             children: this.optionItem({ key: "disponible", label: "Disponible", color: STheme.color.accent })
         })
         items.push({
@@ -112,6 +115,9 @@ class index extends DPA.list {
             </SView>
             {super.$render()}
         </>
+    }
+    $order() {
+        return [{ key: "fecha_on", type: "date", order: "desc" }]
     }
     $getData() {
         var data = Parent.model.Action.getAllRecursive();

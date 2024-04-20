@@ -14,6 +14,7 @@ import start from "./start"
 import paso1 from "./paso1"
 import paso2 from "./paso2"
 import paso3 from "./paso3"
+import invite from "./invite";
 const model = Model.empresa;
 
 export const Parent = {
@@ -26,6 +27,7 @@ export default SPage.combinePages(Parent.name, {
     "": list,
     "list": list,
     init,
+    invite,
     "table": table,
     "new": _new,
     "new_": new_,

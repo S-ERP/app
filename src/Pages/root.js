@@ -132,7 +132,7 @@ class index extends Component {
                 render={(a) => {
                     return <SView col={"xs-12"} card padding={8} row onPress={() => {
                         Model.empresa.Action.setEmpresa(a.empresa);
-                        let time = Platform.select({ web: 200, native: 800 });
+                        let time = Platform.select({ web: 400, native: 800 });
                         new SThread(time, "sadasd").start(() => {
                             SNavigation.navigate("/loby")
                         })

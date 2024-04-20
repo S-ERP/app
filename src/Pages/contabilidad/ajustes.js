@@ -33,7 +33,7 @@ class index extends Component {
 
             <Components.contabilidad.cuenta_contable.Select codigo={""}
                 key_cuenta_contable={existe?.key_cuenta_contable}
-                // selectAny
+                selectAny
                 onChange={e => {
                     Model.ajuste_empresa.Action.registro({
                         key_empresa: this.state.key_empresa,
