@@ -61,7 +61,7 @@ class index extends Component<BoxMenuPropsType> {
                                 estado: 0
                             },
                         }).then(e => {
-                            SNavigation.reset("/");    
+                            SNavigation.reset("/");
                             console.log(e)
                         }).catch(e => {
                             console.error(e)
@@ -114,7 +114,11 @@ class index extends Component<BoxMenuPropsType> {
                             borderBottomColor: STheme.color.gray,
                             borderBottomWidth: 1
                         }}
-                     
+                        onPress={() => {
+                           
+                            SNavigation.navigate("/profile/edit", { pk: Model.usuario.Action.getUsuarioLog() });
+                            SPopup.close("menuLat")
+                        }}
                     >
                         <SText fontSize={14} >Editar Perfil</SText>
                     </SView>
@@ -125,13 +129,13 @@ class index extends Component<BoxMenuPropsType> {
                         }}
                         onPress={() => {
                             Model.usuario.Action.unlogin();
-							SNavigation.reset("/");
+                            SNavigation.reset("/");
                             SPopup.close("menuLat")
                         }}
                     >
                         <SText fontSize={14} >Cerrar Sesión</SText>
                     </SView>
-                   
+
                     <SHr height={15} />
 
                     {/* <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray }}></SView> */}
