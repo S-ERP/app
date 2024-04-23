@@ -61,7 +61,7 @@ class Test extends Component {
 
                         })
                         STheme.repaint();
-                    }} padding={20} border={STheme.color.success}>GUARDAR</SText>
+                    }} padding={20} border={STheme.color.success}>Guardar</SText>
                     <SView flex />
                 </SView>
                 {/* <SDatePicker col={"xs-12"}

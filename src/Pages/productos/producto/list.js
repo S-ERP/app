@@ -84,9 +84,11 @@ class index extends DPA.list {
                 delete this.state.select[key];
             }
             this.setState({ ...this.state })
-        }} row>
-            {!select ? null : <> <SIcon name={"Close"} width={12} height={12} fill={STheme.color.text} /> <SView width={8} /></>}
-            <SText>{label}</SText>
+        }} flex>
+            <SView row center>
+                {!select ? null : <SView ><SIcon name={"Close"} width={12} height={12} fill={STheme.color.text} /><SView width={15} /></SView>}
+                <SText>{label}</SText>
+            </SView>
         </SView>
     }
 
@@ -109,9 +111,10 @@ class index extends DPA.list {
 
     $render() {
         return <>
-            <SView col={"xs-12"}>
+            <SView col={"xs-12"} >
                 {/* <SInput placeholder={"Filtrars por # de chasis"} onChangeText={val => this.setState({ chasis: val })} /> */}
                 {/* <SHr h={4} /> */}
+
             </SView>
             {super.$render()}
         </>

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Component } from 'react';
 import { Linking } from "react-native";
 import { SText } from "servisofts-component"
 export default (props) => {

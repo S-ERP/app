@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';;
 import { SHr, SList, SLoad, SPage, SText, SView } from 'servisofts-component';
 import Model from '../../../Model';
 import { connect } from 'react-redux';

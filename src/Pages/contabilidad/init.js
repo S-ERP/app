@@ -17,10 +17,10 @@ export default class index extends React.Component {
         return <SPage title={"Iniciar la contabilidad"}>
             <Container>
                 <SHr h={50} />
-                <SText center color={STheme.color.warning}>Para iniciar con la contabiliad nesecitamos seleccionar un Plan de cuentas contable. Si no tienes conocimiento contables utiliza un plan de cuentas ya configurado. </SText>
+                <SText center color={STheme.color.warning}>Para iniciar con la contabiliad necesitamos seleccionar un Plan de cuentas contable. Si no tienes conocimiento contables utiliza un plan de cuentas ya configurado. </SText>
                 <SHr h={50} />
                 {this.item({
-                    label: "Utilizar un plan de cuentas basico.", color: STheme.color.success, dificultad: "Facil", onPress: () => {
+                    label: "Utilizar un plan de cuentas básico", color: STheme.color.success, dificultad: "Fácil", onPress: () => {
                         SSocket.sendPromise({
                             service: "contabilidad",
                             component: "cuenta_contable",
@@ -38,7 +38,7 @@ export default class index extends React.Component {
                 })}
                 <SHr h={50} />
                 {this.item({
-                    label: "Utilizar un plan de cuentas de otra empresa.", color: STheme.color.success, dificultad: "Facil", onPress: () => {
+                    label: "Utilizar un plan de cuentas de otra empresa", color: STheme.color.success, dificultad: "Fácil", onPress: () => {
                         SNavigation.navigate("/empresa/list", {
                             onSelect: (empreas) => {
                                 SSocket.sendPromise({
@@ -60,10 +60,10 @@ export default class index extends React.Component {
                     }
                 })}
                 <SHr h={50} />
-                {this.item({ label: "Importar desde excel.", color: STheme.color.warning, dificultad: "Media", onPress: () => { } })}
+                {this.item({ label: "Importar desde excel", color: STheme.color.warning, dificultad: "Media", onPress: () => { } })}
                 <SHr h={50} />
                 {this.item({
-                    label: "Crear desde cero.", color: STheme.color.danger, dificultad: "Dificil", onPress: () => {
+                    label: "Crear desde cero.", color: STheme.color.danger, dificultad: "Difícil", onPress: () => {
                         SNavigation.navigate("/contabilidad/cuentas", { key_empresa: Model.empresa.Action.getKey() })
                     }
                 })}

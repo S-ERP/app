@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';;
 
 import { SHr, SPage, SText, STheme } from 'servisofts-component';
 import { connect } from 'servisofts-page';

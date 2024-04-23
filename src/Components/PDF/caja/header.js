@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import { SDate, STheme } from "servisofts-component"
 
 export default ({ qr_src, caja, cajero, sucursal, pv }) => {

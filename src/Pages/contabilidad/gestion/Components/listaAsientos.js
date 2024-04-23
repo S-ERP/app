@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import { SHr, SIcon, SText, STheme, SView, SNavigation } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "../../asiento_contable"

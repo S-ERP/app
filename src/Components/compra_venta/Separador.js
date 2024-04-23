@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import { SHr, STheme } from "servisofts-component"
 import Model from "../../Model";
 

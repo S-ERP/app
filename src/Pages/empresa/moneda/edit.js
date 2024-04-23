@@ -12,9 +12,6 @@ class index extends DPA.edit {
         });
     }
 
-
-
-
     $allowAccess() {
         return true;
         return Parent.model.Action.getByKey(this.pk, { key_empresa: this._params.key_empresa });
