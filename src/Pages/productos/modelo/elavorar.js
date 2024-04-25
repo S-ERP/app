@@ -62,6 +62,7 @@ export default class elavorar extends Component {
             <Container>
                 <SHr />
                 <Sucursal.Select defaultValue={this.key_sucursal} onChange={e => {
+                    this.key_sucursal = e.key
                     this.loadData(e.key)
                     this.setState({ sucursal: e })
                 }} />
@@ -78,7 +79,7 @@ export default class elavorar extends Component {
                                     SNavigation.navigate("/inventario/almacen", {
                                         onSelect: (e) => {
                                             this.key_almacen = e.key;
-                                            this.almacen.setValuze(e.key)
+                                            this.almacen.setValue(e.key)
                                         }
                                     })
                                 }} />
