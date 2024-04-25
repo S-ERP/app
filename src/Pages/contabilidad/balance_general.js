@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';;
 import { SHr, SNavigation, SPage, STheme, SView, SText, SLoad, SInput, SDate } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { PlanDeCuentasTable } from 'servisofts-rn-contabilidad';

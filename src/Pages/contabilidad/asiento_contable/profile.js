@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import { SNavigation, SText, SView } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { Linking } from 'react-native'

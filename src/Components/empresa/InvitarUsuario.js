@@ -13,8 +13,8 @@ export default class InvitarUsuario extends Component {
 
     render() {
         return (<>
-            <SView row card center padding={8} >
-                <SIcon name="share" width={18} height={18} fill={ STheme.color.text} />
+            <SView row card center padding={8} width={80}>
+                <SIcon name="invite" width={18} height={18} fill={ STheme.color.text} />
                 <SView width={5} />
                 <SText center   onPress={() => {
                     // console.log(SNavigation.INSTANCE.props.linking)

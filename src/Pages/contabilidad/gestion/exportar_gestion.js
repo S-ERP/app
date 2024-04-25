@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';;
 import { SDate, SIcon, SLoad, SNavigation, SPage, SPopup, STable2, SText, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket'
 

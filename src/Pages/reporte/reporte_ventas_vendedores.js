@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';;
 import { connect } from 'react-redux';
 import { SDate, SIcon, SLoad, SMath, SNavigation, SPage, SPopup, STable2, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket'

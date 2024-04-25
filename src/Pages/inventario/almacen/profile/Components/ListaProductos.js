@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import { SDate, SHr, SIcon, SImage, SList, SMath, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import Model from '../../../../../Model';

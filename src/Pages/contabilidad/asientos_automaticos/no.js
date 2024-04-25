@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';;
 import { Text } from 'react-native';
 import { connect } from 'react-redux';
 import { SDate, SHr, SLoad, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';

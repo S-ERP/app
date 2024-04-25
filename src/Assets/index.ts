@@ -24,6 +24,9 @@ import addUser, { ReactComponent as addUserW } from './svg/addUser.svg';
 import history, { ReactComponent as historyW } from './svg/history.svg';
 import removeNotes, { ReactComponent as removeNotesW } from './svg/removeNotes.svg';
 import remove, { ReactComponent as removeW } from './svg/remove.svg';
+import pass, { ReactComponent as passW } from './svg/pass.svg';
+
+
 import Heart, { ReactComponent as HeartW } from './svg/social/Heart.svg';
 import Comment, { ReactComponent as CommentW } from './svg/social/Comment.svg';
 import Comment2, { ReactComponent as Comment2W } from './svg/social/Comment2.svg';
@@ -43,6 +46,8 @@ import emp3, { ReactComponent as emp3W } from './svg/empresa/emp3.svg';
 import emp4, { ReactComponent as emp4W } from './svg/empresa/emp4.svg';
 import out, { ReactComponent as outW } from './svg/empresa/out.svg';
 import share, { ReactComponent as shareW } from './svg/empresa/share.svg';
+import invite, { ReactComponent as inviteW } from './svg/empresa/invite.svg';
+
 import tpAf, { ReactComponent as tpAfW } from './svg/producto/tpAf.svg';
 import tpGa, { ReactComponent as tpGaW } from './svg/producto/tpGa.svg';
 import tpIn, { ReactComponent as tpInW } from './svg/producto/tpIn.svg';
@@ -81,6 +86,9 @@ const Assets: SAssets = {
         "history": { Native: history, Web: historyW },
         "removeNotes": { Native: removeNotes, Web: removeNotesW },
         "remove": { Native: remove, Web: removeW },
+        "pass": { Native: pass, Web: passW },
+
+
         "Heart": { Native: Heart, Web: HeartW },
         "Comment": { Native: Comment, Web: CommentW },
         "Comment2": { Native: Comment2, Web: Comment2W },
@@ -99,6 +107,8 @@ const Assets: SAssets = {
         "emp4": { Native: emp4, Web: emp4W },
         "out": { Native: out, Web: outW },
         "share": { Native: share, Web: shareW },
+        "invite": { Native: invite, Web: inviteW },
+
         "tpAf": { Native: tpAf, Web: tpAfW },
         "tpGa": { Native: tpGa, Web: tpGaW },
         "tpIn": { Native: tpIn, Web: tpInW },
@@ -106,7 +116,7 @@ const Assets: SAssets = {
         "productos": { Native: productos, Web: productosW },
         "add1": { Native: add1, Web: add1W },
         "deleteAll": { Native: deleteAll, Web: deleteAllW },
-        
+
     }
 }
 

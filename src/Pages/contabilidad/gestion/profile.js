@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import { SHr, SIcon, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';

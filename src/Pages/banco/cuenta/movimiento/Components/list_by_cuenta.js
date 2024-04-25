@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import { SHr, SMath, SNavigation, SOrdenador, SText, STheme, SView } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from ".."

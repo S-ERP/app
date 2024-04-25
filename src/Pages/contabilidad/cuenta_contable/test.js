@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';;
 import { SPage } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { PlanDeCuentas } from 'servisofts-rn-contabilidad'

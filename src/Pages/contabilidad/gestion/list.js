@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import { SDate, SHr, SIcon, SInput, SLoad, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
@@ -51,7 +52,7 @@ class index extends DPA.list {
                 <SHr h={16} />
                 <SIcon name='Alert' fill='transparent' width={50} />
                 <SHr h={8} />
-                <SText fontSize={20} bold>{"Primera vez que abrirás una gestión?"}</SText>
+                <SText fontSize={20} bold>{"¿Primera vez que abrirás una gestión?"}</SText>
                 <SHr h={8} />
                 <SText fontSize={16} color={STheme.color.lightGray} justify>{`Es necesario abrir una gestión en el sistema contable para que puedas registrar correctamente tus actividades económicas y mantener un seguimiento adecuado de las mismas. Si no abres una gestión, es posible que la información financiera de tu empresa no esté completa o no sea precisa, lo que podría dificultar la toma de decisiones en el futuro.
 
@@ -59,7 +60,7 @@ Por lo tanto, te recomendamos abrir una gestión en el sistema contable tan pron
                 <SHr h={16} />
                 <SHr h={1} color={STheme.color.card} />
                 <SHr h={16} />
-                <SText fontSize={16} color={STheme.color.lightGray}>{"Ingresa el mes y el año de la gestion: "}</SText>
+                <SText fontSize={16} color={STheme.color.lightGray}>{"Ingresa el mes y el año de la gestión: "}</SText>
                 <SHr h={4} />
                 <SView width={100}>
                     <SInput ref={ref => this.input_fecha = ref} type='date_my' iconR={<SView width={10} />} style={{
@@ -68,7 +69,7 @@ Por lo tanto, te recomendamos abrir una gestión en el sistema contable tan pron
                 </SView>
                 <SHr h={16} />
                 <SText color={STheme.color.danger}>{this.state.error}</SText>
-                {!this.state.loading ? <SText underLine padding={8} onPress={this.abrir_gestion.bind(this)}>{"Precione aqui para iniciar una gestion"}</SText> : <SLoad />}
+                {!this.state.loading ? <SText underLine padding={8} onPress={this.abrir_gestion.bind(this)}>{"Presione aquí para iniciar una gestión"}</SText> : <SLoad />}
                 <SHr h={16} />
             </SView>
         }

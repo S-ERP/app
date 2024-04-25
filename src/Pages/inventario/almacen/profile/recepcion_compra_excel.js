@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from ".."
 import { SExcel, SExcelReader, SForm, SHr, SList, SLoad, SMath, SNavigation, SText, STheme, SView } from 'servisofts-component';
