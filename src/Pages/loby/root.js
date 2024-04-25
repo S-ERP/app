@@ -74,6 +74,9 @@ export default class root extends Component {
                         <SView width={8} />
                         {/* <InvitarUsuario /> */}
                         {this.renderMunuItem({ label: "", icon: "share", onPress: () => SNavigation.navigate("/empresa/invite") })}
+                        {/* {this.renderMunuItem({ label: "Productos", icon: "productos", onPress: () => SNavigation.navigate("/productos/tipo_producto/options") })} */}
+                        {/* <SView width={8} /> */}
+                        {/* <InvitarUsuario /> */}
                         <SView width={8} />
                         {this.renderMunuItem({ label: "Productos", icon: "productos", onPress: () => SNavigation.navigate("/productos/tipo_producto/options") })}
                         <SView width={8} />

@@ -15,7 +15,8 @@ class index extends Component {
             <SPage title={'Productos'}>
                 <SHr height={32} />
                 <MenuPages path={"/productos/"} >
-                    <MenuButtom label='Catálogo' url='/productos/catalogo' />
+                    <MenuButtom label='Catalogo' url='/productos/catalogo' />
+                    <MenuButtom label='Carrito' url='/productos/carrito' />
                 </MenuPages>
 
             </SPage>

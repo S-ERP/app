@@ -29,6 +29,8 @@ module.exports = (async () => {
       // path.resolve(__dirname, '../../servisofts-page/dist'),
       // path.resolve(__dirname, '../../roles_permisos/library/dist'),
       // path.resolve(__dirname, '../../usuario/library/dist'),
+      path.resolve(__dirname, '../../contabilidad/library/dist'),
+      path.resolve(__dirname, '../../chat/library/dist'),
       // path.resolve(__dirname, '../../contabilidad/library/dist'),
       // path.resolve(__dirname, '../../chat/library/dist'),
       // path.resolve(__dirname, '../../spdf/library/dist'),

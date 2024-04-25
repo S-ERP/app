@@ -41,7 +41,7 @@ class index extends DPA.list {
                 <SList
                     data={this.state.data}
                     limit={30}
-                    // filter={}
+                    filter={a => a?.data?.key_empresa == Model.empresa.Action.getKey()}
                     order={[{ "key": "fecha_on", order: "desc", type: "date" }]}
                     render={(e) => {
                         let deepLink = e?.data?.deepLink;
@@ -65,8 +65,8 @@ class index extends DPA.list {
                                 </SView>
                             </SView>
                             <SView flex>
-                                <SText clean bold fontSize={16}>{e.descripcion}</SText>
-                                <SText clean fontSize={14} color={STheme.color.lightGray}>{e.observacion}</SText>
+                                <SText clean bold fontSize={16}>{(e.descripcion ?? "").substring(0, 100)}</SText>
+                                <SText clean fontSize={14} color={STheme.color.lightGray}>{(e.observacion ?? "").substring(0, 100)}</SText>
                                 {/* {!deepLink ? null : <SText onPress={() => {
                                     SNavigation.INSTANCE.openDeepLink(deepLink)
                                 }} underLine color={STheme.color.link}>Ver</SText>} */}

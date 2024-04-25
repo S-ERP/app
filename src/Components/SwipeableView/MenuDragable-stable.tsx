@@ -120,9 +120,7 @@ const MenuItem = ({ layout, obj, positions }) => {
                     return true;
                 })
             }
-
-
-            // calculate();
+            calculate();
         })
         .onEnd(() => {
 

@@ -45,6 +45,7 @@ export default class send extends Component {
     handleSend(tags) {
         if (this.state.loading) return;
         this.state.loading = true;
+        const empresa = Model.empresa.Action.getSelect();
         this.setState({ loading: true })
         let data = {
             descripcion: this.inp_descripcion.getValue() ?? this.state.descripcion,
@@ -53,6 +54,7 @@ export default class send extends Component {
             data: {
                 deepLink: this.inp_deeplink.getValue() ?? this.state.data.deepLink,
                 key_empresa: Model.empresa.Action.getKey(),
+                razon_social: empresa?.razon_social ?? "S/N",
             }
 
         }
