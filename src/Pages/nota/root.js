@@ -160,7 +160,7 @@ export default class root extends Component {
             <SView flex col={"xs-12"} backgroundColor={this.state?.data?.color ?? "#E9E389"}>
                 {!this.state?.data ? null : <UsuariosNota key_nota={this.pk} />}
                 {this.menu()}
-
+        
                 <SInput ref={ref => this.inp = ref}
                     type={"textArea"}
                     customStyle={"clean"}
@@ -191,25 +191,7 @@ export default class root extends Component {
                 />
 
             </SView>
-            <SView row>
-                <SView height={33.91} backgroundColor={this.state?.data?.color ?? "#EDE485"} flex style={{ padding: 2 }}>
-                </SView>
-                <SView height={33.91} width={60} style={{ position: "relative", top: 0, right: 0, overflow: "hidden", alignItems: "flex-end" }} backgroundColor={STheme.color.barColor}>
-                    {/* <SView   style={{
-                        width: 28,
-                        height: Math.sqrt(Math.pow(28, 2) + Math.pow(16, 2)),
-                        borderBottomWidth: 16,
-                        borderBottomColor: "this.state?.data?.color" ?? "#EDE485",
-                        borderLeftWidth: 28 / 2,
-                        borderLeftColor: 'transparent',
-                        borderRightWidth: 28 / 2,
-                        borderRightColor: 'transparent',
-                    }}/> */}
-
-
-                    <SIcon name={"notaEsquina"} width={60} height={33.91} fill={this.state?.data?.color ? this.state?.data?.color + "95" : "#EDE48595"} />
-                </SView>
-            </SView>
+      
             {/* <SView height={50} backgroundColor={STheme.color.danger} style={{position:"relative", bottom:0, right:0}}>
                 <SText center color={STheme.color.white} fontSize={12} >{"Nota guardada automaticamente"}</SText>
             </SView> */}

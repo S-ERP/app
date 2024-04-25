@@ -65,7 +65,7 @@ class index extends DPA.profile {
 
     $footer() {
         return <SView col={"xs-12"} center>
-            {/* <DatosDocumentos key_producto={this.pk} />
+            <DatosDocumentos key_producto={this.pk} />
             <SHr />
             <SView col={"xs-12"} row>
                 <SView flex ></SView>
@@ -76,7 +76,7 @@ class index extends DPA.profile {
             <SHr />
             <AlmacenProductoHistory key_producto={this.pk} />
             <SHr />
-            <SHr h={50} /> */}
+            <SHr h={50} />
             <SText>{"INGREDIENTES"}</SText>
             <SHr />
             <SList

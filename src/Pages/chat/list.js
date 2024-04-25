@@ -36,34 +36,66 @@ class list extends Component {
           onSelect: (e) => {
             let myKey = Model.usuario.Action.getKey();
             let keyUsuario2 = e.key;
-            Model.chat.Action.registro({
+            Model.chat.Action.registrov2({
               data: {
                 // key: key,
                 descripcion: e.Nombres + " " + e.Apellidos,
                 observacion: "--",
                 color: "#000000",
                 tipo: "usuario",
+                key_empresa: Model.empresa.Action.getKey(),
               },
               users: [
                 { key_usuario: myKey, tipo: "admin", },
                 { key_usuario: keyUsuario2, tipo: "admin", },
               ],
-              key_usuario: Model.usuario.Action.getKey()
+              key_usuario: Model.usuario.Action.getKey(),
+
             }).then((resp) => {
-              this.setState({ select: resp.data })
               console.log(resp);
+              if (!resp.data.key) return;
+              this.setState({ select: resp.data })
+
             }).catch(e => {
               console.error(e);
             })
           }
         })
       }}>Nuevo</SText>
-    </SView>
+      <SText padding={8} card onPress={() => {
+        let myKey = Model.usuario.Action.getKey();
+        Model.chat.Action.registro({
+          data: {
+            key: Model.empresa.Action.getKey(),
+            descripcion: Model.empresa.Action.getSelect().razon_social,
+            observacion: "--",
+            color: "#000000",
+            tipo: "empresa",
+          },
+          users: [
+            { key_usuario: Model.usuario.Action.getKey(), tipo: "admin", },
+            // { key_usuario: key_usuario, tipo: "admin", },
+          ],
+          key_usuario: Model.usuario.Action.getKey()
+        }).then((resp) => {
+          if (!resp.data.key) return;
+          this.setState({ select: resp.data })
+        }).catch(e => {
+          this.setState({ click: true })
+          this.setState({ select: e?.data })
+          // Model.chat.Action.CLEAR();
+          // Model.chat_usuario.Action.CLEAR();
+          // SNavigation.navigate("/chat", { pk: key })
+        })
+      }}>Empresa</SText>
+    </SView >
   }
 
 
   renderComponent(obj) {
     let isSelect = (obj.key == this.state?.select?.key)
+
+    // let usuario = this.usuarios[obj.key_usuario];
     return <SView col={"xs-12"} onPress={() => {
       // SNavigation.navigate("/chat/chat", { pk: obj.key })
       this.state.click = true;
@@ -78,16 +110,17 @@ class list extends Component {
         </SView>
         <SView flex >
           <SView row col={"xs-12"}>
+            {/* <SText flex bold fontSize={16}>{obj.tipo == "usuario" ? "User???" : obj.descripcion}</SText> */}
             <SText flex bold fontSize={16}>{obj.descripcion}</SText>
-            <SText color={STheme.color.lightGray}>{new SDate(obj?.ultimo_mensaje?.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
+            {!obj?.ultimo_mensaje?.fecha_on ? null : <SText color={STheme.color.lightGray}>{new SDate(obj?.ultimo_mensaje?.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>}
           </SView>
-          <SText color={STheme.color.lightGray} >{((obj?.ultimo_mensaje?.descripcion + "").split("\n")[0]).substring(0, 40)}</SText>
+          {!obj?.ultimo_mensaje?.descripcion ? null : <SText color={STheme.color.lightGray} >{((obj?.ultimo_mensaje?.descripcion + "").split("\n")[0]).substring(0, 40)}</SText>}
+          {/* <SText color={STheme.color.lightGray} >{obj.key_empresa}</SText> */}
         </SView>
       </SView>
       <SHr h={8} />
     </SView>
   }
-
 
   renderChat() {
     if (!this.state.select) return null;
@@ -111,7 +144,7 @@ class list extends Component {
   }
   render() {
     this.key_usuario = Model.usuario.Action.getKey();
-    if(!this.key_usuario) return null;
+    if (!this.key_usuario) return null;
     console.log(SComponentContainer.getCurrentCol());
     if (["xs"].indexOf(SComponentContainer.getCurrentCol()) > -1) {
       if (this.state.select && this.state.click) {
@@ -121,6 +154,7 @@ class list extends Component {
     let chats = Model.chat.Action.getAll({
       key_usuario: this.key_usuario
     })
+    // this.usuarios = Model.usuario.Action.getAll();
     // if(SComponentContainer)
     return <SPage disableScroll>
       <SView col={"xs-12"} row flex>
@@ -132,6 +166,7 @@ class list extends Component {
           <SHr />
           <SList
             data={chats}
+            order={[{ key: "ultimo_mensaje/fecha_on", order: "desc", type: "date" }]}
             render={this.renderComponent.bind(this)}
           />
         </SView>

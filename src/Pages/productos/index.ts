@@ -8,11 +8,13 @@ import inventario_dato from "./inventario_dato";
 import tipo_producto from "./tipo_producto";
 import catalogo from "./catalogo";
 import inventario from "./inventario";
+import carrito from "./carrito";
 
 export default SPage.combinePages("productos",
     {
         "": root,
         catalogo,
+        "carrito":carrito,
         ...producto,
         ...marca,
         ...modelo,

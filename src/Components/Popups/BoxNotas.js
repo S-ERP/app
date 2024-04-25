@@ -140,7 +140,7 @@ class index extends Component<BoxMenuPropsType> {
                                         Model.nota.Action.CLEAR();
                                         SPopup.close("confirmar")
                                         SPopup.close("menuNotasUsuario")
-                                        SNavigation.replace("/nota",{pk:this.props.datas?.key_nota, key_:this.props.datas?.key_empresa});
+                                        SNavigation.replace("/nota", { pk: this.props.datas?.key_nota, key_: this.props.datas?.key_empresa });
                                     }).catch(e => {
                                         console.log(e)
                                     })

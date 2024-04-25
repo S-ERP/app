@@ -72,18 +72,18 @@ class Firebase {
                 console.log(err.message);
             });
 
-            const unsubscribe = messaging().onMessage(async remoteMessage => {
-                console.log('Message receivedddd. ', remoteMessage);
-                // PushNotification.setApplicationIconBadgeNumber(1);
-                BuildNotification(remoteMessage);
-            });
+            // const unsubscribe = messaging().onMessage(async remoteMessage => {
+            //     console.log('Message receivedddd. ', remoteMessage);
+            //     // PushNotification.setApplicationIconBadgeNumber(1);
+            //     BuildNotification(remoteMessage);
+            // });
 
-            messaging().setBackgroundMessageHandler(async remoteMessage => {
-                // PushNotification.setApplicationIconBadgeNumber(1);
+            // messaging().setBackgroundMessageHandler(async remoteMessage => {
+            //     // PushNotification.setApplicationIconBadgeNumber(1);
 
-                BuildNotification(remoteMessage)
+            //     BuildNotification(remoteMessage)
 
-            });
+            // });
 
             notifee.registerForegroundService(async ({ type, detail }) => {
                 console.log("registerForegroundService", type, detail)

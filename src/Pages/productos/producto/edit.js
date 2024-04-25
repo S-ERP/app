@@ -27,32 +27,32 @@ class index extends DPA.edit {
             },
             key_usuario: ""
         }).then((resp) => {
-            this.presolve({
-                key: this.pk,
-                callback: () => {
-                    Model.inventario_dato.Action.CLEAR();
-                    Model.producto_inventario_dato.Action.CLEAR();
-                    // SNavigation.navigate("/productos/producto/profile", { pk: this.pk })
-                }
-            })
-            // SNavigation.goBack();
+            // this.presolve({
+            // key: this.pk,
+            // callback: () => {
+            Model.inventario_dato.Action.CLEAR();
+            Model.producto_inventario_dato.Action.CLEAR();
+            // SNavigation.navigate("/productos/producto/profile", { pk: this.pk })
+            // }
+            // })
+            SNavigation.goBack();
         }).catch(e => {
             console.error(e);
 
         })
     }
-    $submitName() {
-        return ""
-    }
-    $footer() {
-        return <DatosDocumentosEditar key_producto={this.pk} onSubmit={() => {
-            return new Promise((resolve, reject) => {
-                this.presolve = resolve;
-                this.form.submit();
-                // resolve("KEY_USUARIO");
-            })
-        }} />
-    }
+    // $submitName() {
+    //     return ""
+    // }
+    // $footer() {
+    //     return <DatosDocumentosEditar key_producto={this.pk} onSubmit={() => {
+    //         return new Promise((resolve, reject) => {
+    //             this.presolve = resolve;
+    //             this.form.submit();
+    //             // resolve("KEY_USUARIO");
+    //         })
+    //     }} />
+    // }
 }
 
 export default connect(index);

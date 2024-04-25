@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SButtom, SDate, SDatePicker, SHr, SInput, SLoad, SPage, SSPiner, SText, STheme, SView } from 'servisofts-component';
+import { SButtom, SDate, SDatePicker, SHr, SInput, SLoad, SNavigation, SPage, SSPiner, SText, STheme, SView } from 'servisofts-component';
 import STextPlay from '../Components/STextPlay';
 import Container from '../Components/Container';
 import SMD from '../SMD';
@@ -11,6 +11,7 @@ import Loby from "./loby/root"
 import Publicaciones from "./publicacion/root"
 import Menu from './menu';
 import MenuDragable from '../Components/SwipeableView/MenuDragable';
+import Model from '../Model';
 export default class Test extends Component {
     constructor(props) {
         super(props);
@@ -22,11 +23,16 @@ export default class Test extends Component {
     ref = {}
 
     render() {
+        const key_usuario = Model.usuario.Action.getKey();
+        if(!key_usuario){
+            SNavigation.replace("/login")
+            return <SText>No user</SText>
+        }
         // return < MenuDragable />;
         return <SwipeableView
             initialIndex={1}
             data={[
-                <Publicaciones />,
+                // <Publicaciones />,
                 <Loby />,
                 // <Loby />,
                 <MenuDragable />,
