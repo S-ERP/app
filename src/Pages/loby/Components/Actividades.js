@@ -75,23 +75,26 @@ export default class Actividades extends Component {
             console.log(i)
             if (i > 4) return null;
             return <>
-                <SView col={"xs-12 "} style={{ padding: 5 }} onPress={() => SNavigation.navigate("/tarea/profile", { pk: dato.key })} row>
-                    <SView col={"xs-2 "}  row center>
-                        <SView width={20} height={20} style={{ borderRadius: 100, backgroundColor: a?.estado == 2 ? "#7C57E0" : STheme.color.success, overflow: "hidden", padding: 5 }}>
-                            <SIcon name='tareaclose' fill={STheme.color.text} />
+                <SView col={"xs-12 "} style={{ padding: 5,}}  row>
+                    <SView col={"xs-12 "} style={{ padding: 5, borderWidth: 1, borderColor: STheme.color.card, borderRadius: 8 }} onPress={() => SNavigation.navigate("/tarea/profile", { pk: dato.key })} row>
+
+                        <SView col={"xs-2 "} row center>
+                            <SView width={20} height={20} style={{ borderRadius: 100, backgroundColor: a?.estado == 2 ? "#7C57E0" : STheme.color.success, overflow: "hidden", padding: 5 }}>
+                                <SIcon name='tareaclose' fill={STheme.color.text} />
+                            </SView>
                         </SView>
-                    </SView>
-                    <SView col={"xs-10"} style={{ padding: 3 }} row center>
-                        <SText bold fontSize={10} color={STheme.color.text}>{dato.descripcion}</SText>
-                        {/* <SText fontSize={12} color={STheme.color.gray}>{`#${dato.numero ?? 1} creado hace ${new SDate(dato.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} por ${user?.Nombres ?? ""} ${user?.Apellidos ?? ""}`}</SText> */}
-                        {/* <SText fontSize={9} color={STheme.color.gray}>{`#${dato.numero ?? 1} creado hace ${new SDate(dato.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} `}</SText> */}
-                        <SView width={110} flex  style={{ alignItems: "flex-end" }} >
-                            <SText fontSize={9} color={STheme.color.gray}>{`#${dato.numero ?? 1} creado hace ${new SDate(dato.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} `}</SText>
-                            {/* <SView flex /> */}
+                        <SView col={"xs-10"} style={{ padding: 3 }} row center>
+                            <SText bold fontSize={10} color={STheme.color.text}>{dato.descripcion}</SText>
+                            {/* <SText fontSize={12} color={STheme.color.gray}>{`#${dato.numero ?? 1} creado hace ${new SDate(dato.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} por ${user?.Nombres ?? ""} ${user?.Apellidos ?? ""}`}</SText> */}
+                            {/* <SText fontSize={9} color={STheme.color.gray}>{`#${dato.numero ?? 1} creado hace ${new SDate(dato.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} `}</SText> */}
+                            <SView width={110} flex style={{ alignItems: "flex-end" }} >
+                                <SText fontSize={9} color={STheme.color.gray}>{`#${dato.numero ?? 1} creado hace ${new SDate(dato.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} `}</SText>
+                                {/* <SView flex /> */}
+                            </SView>
                         </SView>
-                    </SView>
+                    </SView >
                 </SView >
-                {(i < 4) ? <SHr h={2} color={STheme.color.card} /> : null}
+                {/* {(i < 4) ? <SHr h={2} color={STheme.color.card} /> : null} */}
             </>
         }
         )
@@ -168,7 +171,7 @@ export default class Actividades extends Component {
             </SView>
             <SHr height={10} />
             <SView col={"xs-12"} row card padding={8}>
-                <SView col={"xs-12 sm-3 md-3 lg-3 xl-3 xxl-3"} padding={8}  center>
+                <SView col={"xs-12 sm-3 md-3 lg-3 xl-3 xxl-3"} padding={8} center>
                     <SText bold fontSize={13} center> Últimas Actividades</SText>
                     <SHr height={10} />
                     {/* <PHr /> */}
