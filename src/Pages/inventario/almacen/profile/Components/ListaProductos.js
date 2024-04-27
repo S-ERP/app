@@ -37,6 +37,10 @@ class index extends DPA.list {
     //     return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "ver" });
     // }
 
+    $order() {
+        return [{ key: "fecha_on", order: "desc", type: "date" }]
+    }
+
     optionItem({ key, label, color }) {
         var select = !!this.state.select[key]
         return <SView height={28} center style={{

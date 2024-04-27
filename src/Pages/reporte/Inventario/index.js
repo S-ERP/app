@@ -55,10 +55,12 @@ class index extends Component {
 
 
     renderTipoProducto(tp) {
-        var disponibles = tp.productos.filter(o => !o.key_cliente)
-        var vendidas = tp.productos.filter(o => !!o.key_cliente)
+
+        var disponibles = 0;
+        tp.productos.filter(o => !o.key_cliente).map(prod=>  disponibles+=prod.cantidad);
+        
         return <SView col={"xs-12"}>
-            <SText>( {disponibles.length} )  {tp.descripcion}</SText>
+            <SText>( {disponibles} )  {tp.descripcion}</SText>
         </SView>
     }
     renderAlmacen(almacen) {
