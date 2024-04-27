@@ -1,7 +1,8 @@
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
 import Model from '../../../Model';
-import { SHr, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SText, STheme, SView, SImage } from 'servisofts-component';
+import SSocket from 'servisofts-socket';
 
 class index extends DPA.list {
     constructor(props) {
@@ -24,14 +25,30 @@ class index extends DPA.list {
     $filter(data) {
         return data.estado != 0
     }
+    $order() {
+        return [{ key: "descripcion", order: "asc" }]
+    }
 
     $item(obj) {
         return <>
-            <SView col={"xs-12"} card padding={4} onPress={this.$onSelect.bind(this, obj)}>
-                <SText bold col={"xs-12"} fontSize={16} >{obj?.descripcion}</SText>
-                <SText col={"xs-12"} fontSize={12} color={STheme.color.lightGray}>{obj?.cuenta_contable?.codigo} {obj?.cuenta_contable?.descripcion}</SText>
-                <SHr />
-                <SText col={"xs-12"} fontSize={12} color={STheme.color.lightGray}>{obj?.tipo}</SText>
+            <SView col={"xs-12"} card  row padding={4} onPress={this.$onSelect.bind(this, obj)}>
+                <SView padding={4}>
+                    <SView style={{
+                        width: 50,
+                        height: 50,
+                        borderRadius: 4,
+                        overflow: 'hidden',
+                    }} card>
+                        <SImage src={Model.tipo_producto._get_image_download_path(SSocket.api, obj.key)} />
+                    </SView>
+
+                </SView>
+                <SView flex>
+                    <SText bold col={"xs-12"} fontSize={16} >{obj?.descripcion}</SText>
+                    <SText col={"xs-12"} fontSize={12} color={STheme.color.lightGray}>{obj?.cuenta_contable?.codigo} {obj?.cuenta_contable?.descripcion}</SText>
+                    <SHr />
+                    <SText col={"xs-12"} fontSize={12} color={STheme.color.lightGray}>{obj?.tipo}</SText>
+                </SView>
             </SView>
         </>
     }

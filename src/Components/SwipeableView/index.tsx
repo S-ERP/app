@@ -3,7 +3,7 @@ import { FlatList, Platform, StyleSheet, Text, View } from "react-native";
 import item from "../../Pages/compra/item";
 import { SHr, SText, SThread, SView } from "servisofts-component";
 import { Gesture, GestureDetector, GestureHandlerRootView, PanGestureHandler, ScrollView } from "react-native-gesture-handler";
-import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring, useAnimatedReaction, ReduceMotion, cancelAnimation } from "react-native-reanimated";
+import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring, useAnimatedReaction, ReduceMotion, cancelAnimation, runOnJS } from "react-native-reanimated";
 
 const ItemView = ({ item, index, layout }) => {
     return <View style={{ width: layout.width, height: layout.height, }}>
@@ -116,12 +116,18 @@ const SwipeableView = (props: SwipeableViewPropsType) => {
             state.index = -Math.round((((translateX.value) + displace) / layout.width))
 
             if (state.index < 0) {
-
                 state.index = 0
+            }
+            if (state.index > data.length - 1) {
+                state.index = data.length - 1
             }
 
             // if (index != state.index) {
-            //     setIndex(state.index)
+            // runOnJS(() => {
+            //     if(pageControlRef.current){
+            //         pageControlRef.current?.setIndex(state.index);
+            //     }
+            // })();
             // }
 
             cliptoView(state.index, true);
@@ -153,7 +159,7 @@ const SwipeableView = (props: SwipeableViewPropsType) => {
     }}>
         {!layout.width ? null : <GestureDetector touchAction="pan-x" gesture={gestureHandler}>{RenderList()}</GestureDetector>}
         <PageControl
-            // ref={pageControlRef}
+            ref={pageControlRef}
             index={index} data={data} translateX={translateX} />
     </View >
 }

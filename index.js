@@ -6,6 +6,7 @@ import { name as appName } from "./package.json";
 
 import messaging from '@react-native-firebase/messaging';
 import notifee, { EventType, AndroidStyle, AndroidGroupAlertBehavior } from '@notifee/react-native';
+import Firebase from "./src/Firebase";
 
 
 const BuildNotification = async (notification) => {
