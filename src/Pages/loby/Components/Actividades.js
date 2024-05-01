@@ -75,8 +75,8 @@ export default class Actividades extends Component {
             console.log(i)
             if (i > 4) return null;
             return <>
-                <SView col={"xs-12 "} style={{ padding: 5,}}  row>
-                    <SView col={"xs-12 "} style={{ padding: 5, borderWidth: 1, borderColor: STheme.color.card, borderRadius: 8 }} onPress={() => SNavigation.navigate("/tarea/profile", { pk: dato.key })} row>
+                <SView col={"xs-12 "} style={{ padding: 5, }} row>
+                    <SView col={"xs-12 "} style={{ padding: 5, backgroundColor: STheme.color.card }} onPress={() => SNavigation.navigate("/tarea/profile", { pk: dato.key })} row>
 
                         <SView col={"xs-2 "} row center>
                             <SView width={20} height={20} style={{ borderRadius: 100, backgroundColor: a?.estado == 2 ? "#7C57E0" : STheme.color.success, overflow: "hidden", padding: 5 }}>
@@ -84,10 +84,12 @@ export default class Actividades extends Component {
                             </SView>
                         </SView>
                         <SView col={"xs-10"} style={{ padding: 3 }} row center>
-                            <SText bold fontSize={10} color={STheme.color.text}>{dato.descripcion}</SText>
+                            <SView col={"xs-12 sm-9 md-9 lg-9 xl-9 xxl-9"} >
+                                <SText bold fontSize={10} color={STheme.color.text}>{dato.descripcion}</SText>
+                            </SView>
                             {/* <SText fontSize={12} color={STheme.color.gray}>{`#${dato.numero ?? 1} creado hace ${new SDate(dato.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} por ${user?.Nombres ?? ""} ${user?.Apellidos ?? ""}`}</SText> */}
                             {/* <SText fontSize={9} color={STheme.color.gray}>{`#${dato.numero ?? 1} creado hace ${new SDate(dato.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} `}</SText> */}
-                            <SView width={110} flex style={{ alignItems: "flex-end" }} >
+                            <SView col={"xs-12 sm-3 md-3 lg-3 xl-3 xxl-3"} style={{ alignItems: "flex-end" }} >
                                 <SText fontSize={9} color={STheme.color.gray}>{`#${dato.numero ?? 1} creado hace ${new SDate(dato.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} `}</SText>
                                 {/* <SView flex /> */}
                             </SView>
@@ -152,39 +154,40 @@ export default class Actividades extends Component {
     render() {
         let semana = new SDate().getFirstDayOfWeek();
         let now = new SDate();
+        let ultimasActis = 0;
+        if (this.state.dataTareasMiasHoy && Object.keys(this.state.dataTareasMiasHoy).length !== 0) {
+            // El objeto no está vacío
+            ultimasActis = 1;
+        }
+
         return <SView col={"xs-12"} >
             <SView col={"xs-12"} row >
                 <SText bold fontSize={15}> Actividades</SText>
-                {/* <SView flex style={{ alignItems: "flex-end" }} onPress={() => SNavigation.navigate("/tarea")} >
-                    <SView center row card width={120} height={40}>
-                        <SIcon name={"addTarea"} width={25} fill={STheme.color.text} />
-                        <SView width={8} />
-                        <SText fontSize={12} center >Adicionar </SText>
-                    </SView>
-                </SView> */}
                 {this.addOpcion("addTarea", "Ver más", "/tarea")}
-
             </SView>
             <SHr />
             <SView col={"xs-12"} row>
                 {new Array(7).fill(0).map((a, i) => this.Item(a, i, semana))}
             </SView>
             <SHr height={10} />
-            <SView col={"xs-12"} row card padding={8}>
-                <SView col={"xs-12 sm-3 md-3 lg-3 xl-3 xxl-3"} padding={8} center>
-                    <SText bold fontSize={13} center> Últimas Actividades</SText>
-                    <SHr height={10} />
-                    {/* <PHr /> */}
-                    <SView width={60} backgroundColor={STheme.color.primary} center style={{ padding: 8, borderRadius: 5 }} row>
-                        <SText bold fontSize={12}> {now.getDayOfWeekJson().text}</SText>
-                        <SText bold fontSize={25}> {now.getDay()}</SText>
-                        <SText bold fontSize={13}> {now.getMonthJson().text}</SText>
+            {(ultimasActis == 0) ? <SText fontSize={15} center>No se han registrado actividades el día de hoy</SText> :
+                <SView col={"xs-12"} row card padding={8}>
+                    <SView col={"xs-12 sm-3 md-3 lg-3 xl-3 xxl-3"} padding={8} center>
+                        <SText bold fontSize={13} center> Últimas Actividades</SText>
+                        <SHr height={10} />
+                        <SView backgroundColor={STheme.color.card} center style={{ padding: 8, }} row>
+                            <SText style={{textTransform:"uppercase"}}  fontSize={18}> {now.getMonthJson().text}</SText>
+                            <PHr />
+                            <SText bold fontSize={28}> {now.toString("dd")}</SText>
+                            <SHr />
+                            <SText  fontSize={12}> {now.getDayOfWeekJson().text}</SText>
+                        </SView>
+                    </SView>
+                    <SView col={"xs-12 sm-9 md-9 lg-9 xl-9 xxl-9"} row>
+                        {this.addFirtsActis()}
                     </SView>
                 </SView>
-                <SView col={"xs-12 sm-9 md-9 lg-9 xl-9 xxl-9"} row>
-                    {this.addFirtsActis()}
-                </SView>
-            </SView>
+            }
         </SView>
     }
 }
