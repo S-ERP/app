@@ -5,7 +5,10 @@ import Default from "./Default";
 import Notas from "./Notas";
 import page from "./page"
 import salir from "./salir"
+
 import NotasList from "../../../Pages/loby/Components/Notas";
+import UsuariosActivos from "../../../Pages/loby/Components/UsuariosActivos";
+import Actividades from "../../../Pages/loby/Components/Actividades";
 export type WidgetProps = {
     x: number, y: number, w: number, h: number,
 }
@@ -20,5 +23,7 @@ export default {
     Notas,
     page,
     salir,
-    NotasList
+    NotasList,
+    UsuariosActivos,
+    Actividades
 }
