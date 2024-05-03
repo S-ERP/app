@@ -43,6 +43,7 @@ import invitacion from './invitacion'
 import terminos from './terminos'
 import anim1 from "./anim1"
 import widget from './widget';
+import cafe from './cafe';
 export default SPage.combinePages("/", {
     // "":Example,
     "": test,
@@ -86,6 +87,7 @@ export default SPage.combinePages("/", {
     ...tarea,
     ...facturacion,
     ...widget,
+    ...cafe,
     ...publicacion,
     invitation,
     "invitacion": invitacion,

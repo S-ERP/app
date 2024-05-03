@@ -1,5 +1,6 @@
 export default {
     debug: true, //para que se vea los returns del server
+    // debug: false, //para que se vea los returns del server
     name: 'serp',
     // ssl: true,
     // host: 'serp.servisofts.com',
@@ -19,7 +20,7 @@ export default {
         // inventario: 'https://inventario.servisofts.com/http/',
         inventario: 'http://192.168.2.1:30039/',
         compra_venta: 'https://compraventa.servisofts.com/http/',
-        
+
         // spdf: "https://spdf.servisofts.com/http/",
         spdf: "http://192.168.3.3:30046/",
         contabilidad: "https://contabilidad.servisofts.com/http/",

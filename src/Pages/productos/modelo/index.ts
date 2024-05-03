@@ -24,4 +24,5 @@ export default SPage.combinePages(Parent.name, {
     "edit": edit,
     "delete": _delete,
     elavorar
+    
 })

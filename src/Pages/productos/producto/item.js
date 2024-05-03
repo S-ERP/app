@@ -22,7 +22,7 @@ class index extends DPA.item {
         return data;
     }
 
-    getEstado(cantidad = 0) {
+    getEstado(cantidad = 0, venta_sin_entregar) {
         var text = "";
         var color = "#ff0"
         if (this.data.key_almacen) {
@@ -34,7 +34,7 @@ class index extends DPA.item {
             color = STheme.color.danger
         }
         if (this.data?.venta_sin_entregar?.length > 0) {
-            text = "Pendiente de entrega"
+            text = "Pendiente de entrega ( " + (venta_sin_entregar ?? []).length + " )"
             color = STheme.color.warning
         }
         return <SView center row style={{
@@ -69,7 +69,7 @@ class index extends DPA.item {
     $render() {
         this.data = this.$getData()
         if (!this.data) return <SLoad />
-        const { descripcion, observacion, precio_compra, precio_venta, precio_venta_credito, cantidad, fecha_on } = this.data;
+        const { descripcion, observacion, precio_compra, precio_venta, precio_venta_credito, cantidad, fecha_on, venta_sin_entregar } = this.data;
 
         return <SView col={"xs-12"} row flex card style={{
             padding: 4
@@ -101,10 +101,11 @@ class index extends DPA.item {
                 {this.getImages()}
                 <SHr />
                 <SText fontSize={18} >Bs. {SMath.formatMoney(precio_venta ?? 0)}</SText>
+                <SText fontSize={12} >Disponibles x {cantidad}</SText>
                 {/* <SText fontSize={10} color={STheme.color.lightGray}>Bs. {SMath.formatMoney(precio_venta_credito)} Al credito</SText> */}
             </SView>
             <SText>{new SDate(fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm:ss")}</SText>
-            {this.getEstado(cantidad)}
+            {this.getEstado(cantidad, venta_sin_entregar)}
         </SView>
     }
 }

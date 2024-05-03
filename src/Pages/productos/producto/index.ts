@@ -6,6 +6,7 @@ import _new from "./new";
 import profile from "./profile";
 import edit from "./edit";
 import _delete from "./delete";
+import descuartizar from "./descuartizar";
 const model = Model.producto;
 
 export const Parent = {
@@ -20,6 +21,8 @@ export default SPage.combinePages(Parent.name, {
     "table": table,
     "new": _new,
     "profile": profile,
+    "profile2": profile,
     "edit": edit,
-    "delete": _delete
+    "delete": _delete,
+    descuartizar
 })

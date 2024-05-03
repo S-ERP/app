@@ -1,13 +1,18 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { View } from "react-native";
-import { SText, STheme } from "servisofts-component";
+import { SText, STheme, SView } from "servisofts-component";
+import SSocket from "servisofts-socket";
 
 
 
 
 const ControlMenu = (props) => {
-    const h = 40;
-    return <View style={{
+    const { data } = props;
+    const h = 30;
+
+
+
+    return <SView style={{
         position: "absolute",
         top: -h - 4,
         width: 100,
@@ -16,9 +21,23 @@ const ControlMenu = (props) => {
         borderRadius: 8,
         justifyContent: "center",
         alignItems: "center"
+    }} onPress={() => {
+        SSocket.sendPromise({
+            service: "roles_permisos",
+            component: "widget",
+            type: "editar",
+            data: {
+                ...data,
+                estado: 0,
+            }
+
+        }).then(e => {
+
+        })
     }}>
         <SText>Eliminar</SText>
-    </View>
+        {/* <SText>Foto</SText> */}
+    </SView>
 }
 
 export default ControlMenu;

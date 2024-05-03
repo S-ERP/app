@@ -16,7 +16,9 @@ export type ControlProps = {
     rotateZ: SharedValue<any>,
     data: Widget,
     positions: { value: { [key: string]: Widget } },
-    onChangePosition: (data: any) => any
+    onChangePosition: (data: any) => any,
+    subscribeEvents: (data: any) => any,
+
 }
 
 const animationStyle1 = {
@@ -33,6 +35,7 @@ const animationStyle1 = {
 const Control = (props: ControlProps) => {
     // const width = 80;
     const [menuVisible, setMenuVisible] = useState(false);
+    const menuVisibleRef = useRef(menuVisible);
     const extra = useSharedValue({ run: 0, color: 0 });
     const ElementRef = useRef<any>();
     const layoutCopy = useSharedValue({ width: 0, height: 0 });
@@ -42,6 +45,30 @@ const Control = (props: ControlProps) => {
     const size = useSharedValue({ w: 1, h: 1 })
     const zIndex = useSharedValue(1);
 
+
+    // useEffect(() => {
+    //     menuVisibleRef.current = menuVisible;
+    // }, [menuVisible]);
+
+    // useEffect(() => {
+    //     // Start
+    //     const unsubscribe = props.subscribeEvents(onEvent.bind(this));
+    //     return () => {
+    //         // End
+    //         unsubscribe();
+    //     };
+    // }, [])
+
+    // const onEvent = (evt) => {
+    //     '!worklet'
+    //     if (evt?.type == "onBegin") {
+    //         if (menuVisibleRef.current) {
+    //             console.log(evt);
+    //             setMenuVisible(false);
+    //         }
+
+    //     }
+    // }
     useEffect(() => {
         // console.log("entro aca")
         if (layoutCopy.value.width != props.layout.value.width || layoutCopy.value.height != props.layout.value.height) {
@@ -71,6 +98,8 @@ const Control = (props: ControlProps) => {
             // console.log(position)
         }
     })
+
+
 
     useAnimatedReaction(() => position.value, (p) => {
         // console.log("useAnimatedReaction: ", props.data.key, p)
@@ -263,6 +292,8 @@ const Control = (props: ControlProps) => {
     if (Options[key_type]) {
         ELMENT = Options[key_type];
     }
+
+
     return <GestureDetector gesture={composed} key={props.data.key}>
         <Animated.View
             key={props.data.key}
@@ -273,7 +304,7 @@ const Control = (props: ControlProps) => {
                 zIndex: zIndex,
                 // borderRadius: 8,
                 // backgroundColor: "#fff",
-                // borderWidth: 2,
+                // borderWidth: 1,
                 // borderColor: "#060",
                 justifyContent: "center",
                 alignItems: "center",
@@ -284,7 +315,7 @@ const Control = (props: ControlProps) => {
                     { scale },
                 ]
             }]}>
-            {!menuVisible ? null : <ControlMenu />}
+            {/* {!menuVisible ? null : <ControlMenu data={props.data} subscribeEvents={props.subscribeEvents} />} */}
             <ELMENT ref={ElementRef} data={props.data} />
         </Animated.View>
     </GestureDetector >

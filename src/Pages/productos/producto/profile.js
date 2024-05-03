@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SButtom, SHr, SList, SNavigation, SPopup, SText, SView } from 'servisofts-component';
+import { SButtom, SHr, SList, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { MenuPages } from 'servisofts-rn-roles_permisos';
 import { Parent } from "."
@@ -10,6 +10,8 @@ import DatosDocumentos from './Components/DatosDocumentos';
 import item from './item';
 import QRProducto from '../../../Components/QRProducto';
 import Ingrediente from './Components/Ingrediente';
+import IngredienteModelo from "../modelo/Components/Ingrediente"
+
 import SSocket from 'servisofts-socket';
 class index extends DPA.profile {
     constructor(props) {
@@ -77,16 +79,20 @@ class index extends DPA.profile {
             <AlmacenProductoHistory key_producto={this.pk} />
             <SHr />
             <SHr h={50} />
+            {/* <SText>{"INGREDIENTES DEL MODELO"}</SText>
+            <SText color={STheme.color.gray}>{"Estos ingredientes deberia tener el modelo."}</SText>
+            {!this.data?.key_modelo ? null : <IngredienteModelo key_modelo={this.data.key_modelo} />} */}
+
             <SText>{"INGREDIENTES"}</SText>
-            <SHr />
+            <SText color={STheme.color.gray}>{"Estos ingredientes son con los que cuenta el producto."}</SText>
+            {/*
+            <SHr h={50} />
+            
             <SList
                 data={this.state.producto_ingrediente ?? []}
                 render={(obj) => {
                     return <SView col={"xs-12"} padding={8} card row>
                         <SView flex>
-                            <SText>{obj?.modelo?.descripcion}</SText>
-                            <SText>{obj?.marca?.descripcion}</SText>
-                            <SText>{obj?.tipo_producto?.descripcion}</SText>
                             <SText>{obj?.producto?.descripcion}</SText>
                         </SView>
                         <SView>
@@ -94,8 +100,8 @@ class index extends DPA.profile {
                         </SView>
                     </SView>
                 }}
-            />
-            {/* <Ingrediente key_producto={this.pk} /> */}
+            /> */}
+            <Ingrediente key_producto={this.pk} />
 
         </SView>
 

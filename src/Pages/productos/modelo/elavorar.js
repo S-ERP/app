@@ -90,8 +90,9 @@ export default class elavorar extends Component {
                                     <SInput ref={ref => this.cantidad = ref} label={"Cantidad"} defaultValue={1} />
                                 </SView>
                                 <SView flex padding={8}>
-                                    <SInput type='money' ref={ref => this.precio_compra = ref} label={"Precio"} defaultValue={1.0} />
+                                    <SInput type='money' ref={ref => this.precio_venta = ref} label={"Precio"} defaultValue={1.0} />
                                 </SView>
+
                             </SView>
                         </SView>
 
@@ -107,8 +108,8 @@ export default class elavorar extends Component {
                                 key_empresa: Model.empresa.Action.getKey(),
                                 key_usuario: Model.usuario.Action.getKey(),
                                 cantidad: this.cantidad.getValue(),
-                                precio_compra: this.precio_compra.getValue(),
-                                precio_venta: this.precio_compra.getValue(),
+                                // precio_compra: this.precio_compra.getValue(),
+                                precio_venta: this.precio_venta.getValue(),
 
                             }).then(e => {
                                 SNotification.send({

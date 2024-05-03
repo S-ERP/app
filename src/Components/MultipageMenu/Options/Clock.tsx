@@ -7,7 +7,7 @@ const Clock = (props) => {
         run: false,
     })
     const hilo = () => {
-        new SThread(5000, "actualizando_el_reloj", false).start(() => {
+        new SThread(1000, "actualizando_el_reloj", false).start(() => {
             if (!state.run) return;
             state.date = new SDate();
             setState({ ...state })

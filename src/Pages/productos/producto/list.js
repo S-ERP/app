@@ -48,6 +48,11 @@ class index extends DPA.list {
                 return true;
             }
         }
+        if (this.state.select["con_precio_compra"]) {
+            if (!!data.precio_compra || data.precio_compra > 0) {
+                return true;
+            }
+        }
 
         if (this.state.select["pendiente_entrega"]) {
             if (data?.venta_sin_entregar?.length > 0) {
@@ -96,6 +101,9 @@ class index extends DPA.list {
         var items = super.$menu();
         items.push({
             children: this.optionItem({ key: "no_elavorado", label: "Sin precio de compra", color: STheme.color.accent })
+        })
+        items.push({
+            children: this.optionItem({ key: "con_precio_compra", label: "Con precio de compra", color: STheme.color.accent })
         })
         items.push({
             children: this.optionItem({ key: "disponible", label: "Disponible", color: STheme.color.accent })

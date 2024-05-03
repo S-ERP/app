@@ -20,12 +20,12 @@ const Notas = (props) => {
                 <SText color={"#000"} bold>Notas</SText>
             </SView>
             <SView flex>
-                <TextInput placeholder="Notas Pendiente de completar" multiline={true} style={{
+                {/* <TextInput placeholder="Notas Pendiente de completar" multiline={true} style={{
                     flex:1,
                     height:"100%",
                 }}>
 
-                </TextInput>
+                </TextInput> */}
             </SView>
         </View>
     </View>

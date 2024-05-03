@@ -10,7 +10,7 @@ import SwipeableView from '../Components/SwipeableView';
 import Loby from "./loby/root"
 import Publicaciones from "./publicacion/root"
 import Menu from './menu';
-import MenuDragable from '../Components/SwipeableView/MenuDragable';
+import MenuDragable from '../Components/MenuDragable';
 import Model from '../Model';
 import MultipageMenu from '../Components/MultipageMenu';
 import SSocket from 'servisofts-socket';
@@ -24,6 +24,22 @@ export default class Test extends Component {
     }
     ref = {}
     componentDidMount() {
+        this.loadData();
+        this.isRun = true;
+        this.hilo();
+    }
+    componentWillUnmount() {
+        this.isRun = false;
+    }
+    hilo() {
+        new SThread(1000 * 20, "hilo_de_recatga", true).start(() => {
+            if (!this.isRun) return;
+            this.hilo();
+            this.loadData();
+        })
+    }
+
+    loadData() {
         SSocket.sendPromise({
             service: "roles_permisos",
             component: "widget",
@@ -32,17 +48,98 @@ export default class Test extends Component {
             key_usuario: Model.usuario.Action.getByKey(),
         }).then(e => {
             this.setState({ data: e.data })
-            // Object.values(e.data).map(a => {
-            //     if (this.multipageMenu) {
-            //         this.multipageMenu.setItem({ ...a });
-            //     }
-            // })
+        }).catch(e => {
+            console.error(e);
+        })
+    }
+    handleChangePosition = (obj) => {
+        console.log("handleChangePosition", obj)
+        this.setState({
+            data: {
+                ...this.state.data,
+                [obj.key]: obj,
+            }
+        })
+        SSocket.sendPromise({
+            service: "roles_permisos",
+            component: "widget",
+            type: "registro",
+            data: {
+                ...obj,
+                key_empresa: Model.empresa.Action.getKey(),
+            },
+            key_usuario: Model.usuario.Action.getByKey(),
+        }).then(e => {
             console.log(e);
         }).catch(e => {
             console.error(e);
         })
     }
 
+
+    agregar() {
+        SNavigation.navigate("/widget", {
+            onSelect: (page) => {
+                SNavigation.goBack();
+                SNavigation.goBack();
+                const buscarLibre = ({ x, y, w, h }) => {
+                    const arr = Object.values(this.state.data);
+                    for (let i = 0; i < arr.length; i++) {
+                        const a = arr[i];
+                        const r1 = {
+                            x1: x,
+                            y1: y,
+                            x2: x + w,
+                            y2: y + h
+                        }
+                        const r2 = {
+                            x1: a.x,
+                            y1: a.y,
+                            x2: a.x + a.w,
+                            y2: a.y + a.h
+                        }
+                        if (Math.max(r1.x1, r2.x1) < Math.min(r1.x2, r2.x2) &&
+                            Math.max(r1.y1, r2.y1) < Math.min(r1.y2, r2.y2)) {
+
+                            if ((x + w) + 1 > 4) {
+                                x = 0;
+                                y = y + 1;
+                            } else {
+                                x = x + 1;
+                            }
+                            return buscarLibre({ x: x, y: y, w: w, h: h });
+                        }
+                    }
+                    return { x, y, w, h }
+                }
+
+                let libre = buscarLibre({ x: 0, y: 0, w: page.w ?? 1, h: page.h ?? 1 })
+
+                let obj = {
+                    key: SUuid(),
+                    x: libre.x,
+                    y: libre.y,
+                    w: page.w ?? 1,
+                    h: page.h ?? 1,
+                    active: false, // requerido por la animacion no se guarda en base
+                    type: page.type ?? "page",
+                    descripcion: page?.descripcion,
+                    url: page?.url,
+                    key_page: page?.key,
+                    data: {}
+                }
+                this.handleChangePosition(obj);
+                // this.setState({
+                //     data: {
+                //         ...this.state.data,
+                //         [obj.key]: obj,
+                //     }
+                // })
+
+            }
+        })
+
+    }
     render() {
         const key_usuario = Model.usuario.Action.getKey();
         if (!key_usuario) {
@@ -56,107 +153,28 @@ export default class Test extends Component {
         }
         if (!this.state.data) return <SLoad />
         return <SPage disableScroll hidden>
-            <MultipageMenu
-                ref={ref => this.multipageMenu = ref}
+            <MenuDragable
                 data={this.state.data}
-                onChangePosition={(e) => {
-                    console.log(e);
-                    SSocket.sendPromise({
-                        service: "roles_permisos",
-                        component: "widget",
-                        type: "registro",
-                        data: {
-                            ...e,
-                            key_empresa: Model.empresa.Action.getKey(),
-                        },
-                        key_usuario: Model.usuario.Action.getByKey(),
-                    }).then(e => {
-                        console.log(e);
-                    }).catch(e => {
-                        console.error(e);
-                    })
-                }} />
-
-            <SView style={{ position: "absolute", width: 80, height: 40, bottom: 0, }} card center onPress={() => {
-
-                let wid = {
-                    key: SUuid(),
-                    x: 3,
-                    y: 5,
-                    w: 1,
-                    h: 1,
-                    active: false,
-                    type: "algo"
-                }
-                // if (this.multipageMenu) {
-                //     // this.multipageMenu.removeAllItems();
-                //     this.multipageMenu.setItem(wid)
-                // }
-                // this.state.data[wid.key] = wid;
-                this.state.data_temp = {
-                    ...this.state.data,
-                    [wid.key]: wid
-                }
-                this.state.data = null;
-                this.setState({ ...this.state })
-                new SThread(20, "asasdas", true).start(() => {
-                    this.state.data = { ...this.state.data_temp };
-                    this.state.data_temp = null;
-                    this.setState({ ...this.state })
-                })
-                // this.setState({ ...this.state })
-            }}>
-                <SText>AGREGAR</SText>
+                onChangePosition={this.handleChangePosition.bind(this)}
+            />
+            <SView style={{ width: 60, height: 20, position: "absolute", top: 4, left: 4, borderRadius: 8 }} card center onPress={this.agregar.bind(this)}>
+                <SText>+</SText>
             </SView>
-            <SView style={{ position: "absolute", width: 80, height: 40, bottom: 0, left: 100, }} card center onPress={() => {
-                this.multipageMenu.removeAllItems();
-                this.setState({ data: null })
-                this.componentDidMount();
+            {/* <SView row>
+                
+                <SView style={{ width: 80, height: 40, }} card center onPress={() => {
+                    this.loadData();
 
-            }}>
-                <SText>RELOAD</SText>
-            </SView>
+                }}>
+                    <SText>RELOAD</SText>
+                </SView>
+                <SView style={{ width: 80, height: 40, }} card center onPress={() => {
+                    SNavigation.navigate("/loby")
+
+                }}>
+                    <SText>Salir</SText>
+                </SView>
+            </SView> */}
         </SPage>
-        // return < MenuDragable />;
-        return <SwipeableView
-            initialIndex={1}
-            data={[
-                // <Publicaciones />,
-                // <Loby />,
-                // <Loby />,
-                <MenuDragable />,
-                <MenuDragable />,
-                // <MenuDragable />,
-
-
-                // <Menu />,
-            ]}
-        />
-        return (
-            <SPage disableScroll hidden>
-                {/* <SMD space={8}>{this.state.text}</SMD> */}
-                <SwipeableView
-                    initialIndex={1}
-                    data={[
-                        <Publicaciones />,
-                        <Loby />,
-                    ]}
-                />
-                {/* <Container flex>
-                    <SHr />
-                    <SText fontSize={20}>Mesaje de algo {this.state.val}</SText>
-                    <SHr />
-                    <SSPiner flex itemHeight={60} defaultValue='Perder peso' options={["Ganar Peso", "Perder peso", "Ser fit", "Ganar flexibilidad", "Estar saludable", "sadsa"]} onChange={e => {
-                        this.setState({ val: e })
-                    }} />
-                    <SHr />
-                </Container>
-                <SText>Boton de abanzar</SText> */}
-            </SPage >
-        );
     }
 }
-// const initStates = (state) => {
-//     return { state }
-// };
-// export default connect(initStates)(Test);

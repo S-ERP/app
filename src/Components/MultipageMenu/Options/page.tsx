@@ -2,11 +2,14 @@ import React from "react";
 import { Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SImage, SNavigation, SText, STheme, SView } from "servisofts-component";
-export default class AppIcon extends React.Component<any> {
+import SSocket from "servisofts-socket";
+export default class page extends React.Component<any> {
     // onPress() {
     //     SNavigation.navigate("/loby");
     // }
+
     render() {
+        const api: any = SSocket.api
         return <TouchableOpacity style={{
             // width: "100%",
             width: 80,
@@ -14,7 +17,9 @@ export default class AppIcon extends React.Component<any> {
             justifyContent: "center",
             alignItems: "center",
         }} onPress={() => {
-            SNavigation.navigate("/loby")
+            if (this.props?.data?.url) {
+                SNavigation.navigate(this.props?.data?.url, this.props?.data?.data)
+            }
         }}>
             <View style={{
                 borderRadius: 8,
@@ -23,7 +28,7 @@ export default class AppIcon extends React.Component<any> {
                 overflow: "hidden",
                 backgroundColor: STheme.color.card
             }}>
-                <SImage src={"https://empresa.servisofts.com/http/empresa/c9caa964-88f3-43db-88df-684ecf5c0a1b"} />
+                <SImage src={api.roles_permisos + "page/" + this.props?.data?.key_page} />
             </View>
             {this.props.nolabel ? null :
                 <>
@@ -34,7 +39,7 @@ export default class AppIcon extends React.Component<any> {
                         textAlign: "center",
                         flexWrap: "nowrap",
                         fontSize: 12,
-                    }} numberOfLines={1}>{(this.props.data.descripcion ?? "").length < 12 ? (this.props.data.descripcion ?? "S/N") : (this.props.data.descripcion ?? "").substring(0, 12) + "..."}</Text>
+                    }} numberOfLines={1}>{(this.props.data.descripcion ?? "").length < 16 ? (this.props.data.descripcion ?? "S/N") : (this.props.data.descripcion ?? "").substring(0, 12) + "..."}</Text>
                 </>
             }
         </TouchableOpacity>

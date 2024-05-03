@@ -36,16 +36,23 @@ class index extends DPA.list {
             message: "Seguro que decea entregar",
             onPress: () => {
 
+                // console.log(obj);
+                // return;
                 SSocket.sendPromise({
+                    service: "inventario",
                     component: "producto_entrega",
                     type: "registro",
                     data: {
                         key_producto: obj.key_producto,
                         key_cliente: obj.cliente.key_usuario,
-                        key_almacen: obj.key_almacen
+                        key_almacen: obj.key_almacen,
+                        cantidad: parseFloat(obj.cantidad),
+                        precio_unitario_compra: parseFloat(obj?.data?.precio_compra ?? 0),
+                        precio_unitario_venta: parseFloat(obj?.precio_unitario ?? 0),
+                        key_compra_venta_detalle_producto: obj.key_compra_venta_detalle_producto,
                     },
                     key_usuario: Model.usuario.Action.getKey(),
-                }).then(r => {
+                }, (1000 * 60 * 10)).then(r => {
                     // Model.producto.Action.editar({
                     //     key_usuario: Model.usuario.Action.getKey(),
                     //     data: {
@@ -53,13 +60,13 @@ class index extends DPA.list {
                     //         key_cliente: obj.cliente.key_usuario,
                     //     }
                     // }).then(r => {
-                    Model.compra_venta_detalle.Action.entregar({
-                        key_compra_venta_detalle_producto: obj.key_compra_venta_detalle_producto,
-                    }).then((resp) => {
-                        console.log(resp);
-                    }).catch(e => {
-                        console.log(e)
-                    })
+                    // Model.compra_venta_detalle.Action.entregar({
+                    //     key_compra_venta_detalle_producto: obj.key_compra_venta_detalle_producto,
+                    // }).then((resp) => {
+                    //     console.log(resp);
+                    // }).catch(e => {
+                    //     console.log(e)
+                    // })
                 }).catch(e => {
 
                 })
@@ -83,15 +90,18 @@ class index extends DPA.list {
             obj.producto = producto;
             obj_final[obj.key] = obj;
         })
+        console.log(obj_final)
         return obj_final;
     }
     $item(data, opt) {
-        return <SList
-            data={new Array(data.cantidad).fill(0)}
-            render={(obj) => {
-                return this.my_item(data, opt)
-            }}
-        />
+        return this.my_item(data, opt)
+
+        // return <SList
+        //     data={new Array(data.cantidad).fill(0)}
+        //     render={(obj) => {
+        //         return this.my_item(data, opt)
+        //     }}
+        // />
     }
     my_item(data, opt) {
         const { codigo, descripcion, cantidad, precio_unitario, proveedor, cliente, descuento, fecha_on, key, key_producto, key_compra_venta_detalle_producto } = data;
@@ -105,7 +115,7 @@ class index extends DPA.list {
             }}>
                 <SText fontSize={18} bold>{data?.producto?.descripcion}</SText>
                 <SView flex />
-                <SText bold fontSize={18}>x  {1} </SText>
+                <SText bold fontSize={18}>x  {cantidad} </SText>
                 <SView width={8} />
                 <SView width={10} height={10} style={{ borderRadius: 100 }} backgroundColor={STheme.color.danger} />
             </SView>
@@ -118,7 +128,7 @@ class index extends DPA.list {
             <SHr />
 
             <SView>
-                <SText color={STheme.color.lightGray}>Cliente: {cliente?.razon_social}</SText>
+                <SText color={STheme.color.lightGray}>Cliente: {cliente?.razon_social ?? cliente.nombres}</SText>
                 <SText color={STheme.color.lightGray}>Nit: {cliente?.nit}</SText>
                 <SText color={STheme.color.lightGray}>Telefono: {cliente?.telefono}</SText>
                 <SText color={STheme.color.lightGray}>Correo: {cliente?.correo}</SText>

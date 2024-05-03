@@ -31,17 +31,25 @@ class index extends DPA.profile {
         return Parent.model.Action.getByKey(this.pk);
     }
 
-
     buscar_ingredientes() {
         SNavigation.navigate("/productos/modelo/elavorar", {
             pk: this.pk
         })
     }
+
+    descuartizar() {
+        SNavigation.navigate("/productos/modelo/descuartizar", {
+            pk: this.pk
+        })
+    }
+
+    
     $footer() {
         return <SView col={"xs-12"}>
             <SHr h={50} />
             <SView col={"xs-12"} center>
                 <SText underLine onPress={this.buscar_ingredientes.bind(this)}>{"BUSCAR INGREDIENTES PARA ELAVORAR"}</SText>
+                <SText underLine onPress={this.descuartizar.bind(this)}>{"DESCUARTIZAR"}</SText>
             </SView>
             <SHr h={50} />
             <Ingrediente key_modelo={this.pk} />

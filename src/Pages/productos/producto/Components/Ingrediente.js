@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SIcon, SInput, SNavigation, SPopup, SText, SThread, SUuid, SView } from 'servisofts-component';
+import { SButtom, SHr, SIcon, SInput, SNavigation, SPopup, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../../../Model';
 
@@ -16,27 +16,13 @@ export default class Ingrediente extends Component {
     componentDidMount() {
         SSocket.sendPromise({
             service: "inventario",
-            component: "modelo",
+            component: "producto_ingrediente",
             type: "getAll",
-            key_empresa: Model.empresa.Action.getKey(),
+            key_producto: this.props.key_producto,
             key_usuario: Model.usuario.Action.getKey(),
-        }).then(resp => {
-            this.state.modelos = resp.data;
-            SSocket.sendPromise({
-                service: "inventario",
-                component: "producto_ingrediente",
-                type: "getAll",
-                key_producto: this.props.key_producto,
-                key_usuario: Model.usuario.Action.getKey(),
-            }).then(e => {
-                if (!e.data) return;
-                Object.values(e.data).map(a => {
-                    a.modelo = this.state.modelos[a.key_modelo]
-                })
-                this.setState({ data: e.data })
-            }).catch(e => {
-
-            })
+        }).then(e => {
+            if (!e.data) return;
+            this.setState({ data: e.data })
         }).catch(e => {
 
         })
@@ -45,30 +31,42 @@ export default class Ingrediente extends Component {
 
     item(obj) {
         return <SView col={"xs-12"} row>
-            <SView col={"xs-7"} padding={4}>
+            <SView col={"xs-5"} padding={4}>
                 <SInput type='text'
                     placeholder={"Seleccionar ingrediente"}
-                    value={this.state?.data[obj.key]?.modelo?.descripcion}
+                    value={this.state?.data[obj.key]?.producto?.descripcion}
+                    onPress={() => {
+                        SNavigation.navigate("/productos/producto/profile2", { pk: this.state?.data[obj.key]?.producto?.key })
+                    }}
                     editable={false}
                 />
             </SView>
-            <SView col={"xs-5"} padding={4}>
-                <SInput type='money' icon={<SText>x</SText>} defaultValue={this.state?.data[obj.key]?.cantidad} placeholder={"0.00"} onChangeText={(e) => {
+            <SView col={"xs-3"} padding={4}>
+                <SInput type='money' icon={<SText>Can.</SText>} defaultValue={parseFloat(this.state?.data[obj.key]?.cantidad ?? 0).toFixed(2)} placeholder={"0.00"} />
+            </SView>
+            <SView col={"xs-3"} padding={4}>
+                <SInput type='money' icon={<SText>Total</SText>} defaultValue={parseFloat(this.state?.data[obj.key]?.precio_compra ?? 0).toFixed(2)} placeholder={"0.00"} />
+            </SView>
+            <SView col={"xs-1"} padding={4} onPress={() => {
+                SSocket.sendPromise({
+                    service: "inventario",
+                    component: "producto_ingrediente",
+                    type: "generar_asiento",
+                    key_producto_ingrediente: obj.key,
+                    key_empresa: Model.empresa.Action.getKey(),
+                }).then(e => {
+                    // if (!e.data) return;
+                    // this.setState({ data: e.data })
+                }).catch(e => {
 
-                    new SThread(2000, "hilo_send", true).start(() => {
-                        if (e == obj.cantidad) return;
-                        this.save({
-                            key_producto: obj.key_producto,
-                            key_modelo: obj.key_modelo,
-                            cantidad: e
-                        })
-                    })
-                }} />
+                })
+            }} card>
+                <SText>ASIENTO</SText>
             </SView>
         </SView>
     }
 
-    save(data) {
+    save(data, modelo) {
         SSocket.sendPromise({
             service: "inventario",
             component: "producto_ingrediente",
@@ -88,21 +86,40 @@ export default class Ingrediente extends Component {
             <SHr />
             <SText bold>Ingredientes</SText>
             <SView width={20} onPress={() => {
+
                 SNavigation.navigate("/productos/modelo", {
                     onSelect: (modelo) => {
                         if (this.state.data[modelo.key]) {
                             SPopup.alert("El ingrediente ya existe");
                             return;
                         }
+
+                        SPopup.open({
+                            key: "popup_cantidad",
+                            content: <SView padding={16} backgroundColor={STheme.color.background} withoutFeedback center>
+                                <SHr />
+                                <SText bold fontSize={18}>{modelo.descripcion}</SText>
+                                <SHr />
+                                <SInput ref={ref => this.inpref = ref} label={"cantidad"} defaultValue={1} />
+                                <SHr />
+                                <SInput type='money' ref={ref => this.inpref_preciocompra = ref} label={"precio_compra"} defaultValue={1} />
+                                <SHr />
+                                <SButtom type='danger' onPress={() => {
+                                    SPopup.close("popup_cantidad");
+                                    this.save({
+                                        key_producto: this.props.key_producto,
+                                        key_modelo: modelo.key,
+                                        cantidad: this.inpref.getValue() ?? 1,
+                                        precio_compra: this.inpref_preciocompra.getValue() ?? 0,
+                                    }, modelo)
+                                }}>ACEPTAR</SButtom>
+                            </SView>
+                        })
                         // this.state.data[e.key] = {
                         //     ...e,
                         //     cantidad: "1.00"
                         // };
-                        this.save({
-                            key_producto: this.props.key_producto,
-                            key_modelo: modelo.key,
-                            cantidad: "1.00"
-                        })
+
 
 
 
