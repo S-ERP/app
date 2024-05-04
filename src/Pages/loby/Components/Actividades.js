@@ -51,9 +51,9 @@ export default class Actividades extends Component {
 
     addOpcion = (icon, label, navigate) => {
         return <SView flex style={{ alignItems: "flex-end" }} onPress={() => SNavigation.navigate(navigate)} >
-            <SView center row card width={105} height={35}>
-                <SIcon name={icon} width={20} fill={STheme.color.text} />
-                <SView width={8} />
+            <SView center row card width={105} height={25}>
+                <SIcon name={icon} width={13} fill={STheme.color.text} />
+                <SView width={4} />
                 <SText fontSize={12} center >{label}</SText>
             </SView>
         </SView>
@@ -116,7 +116,7 @@ export default class Actividades extends Component {
             }
         }
 
-        return <SView key={"Actividad" + i} padding={4} flex height={100} onPress={() => {
+        return <SView key={"Actividad" + i} padding={4} flex height={85} onPress={() => {
             SNavigation.navigate("/tarea/dia", { fecha: dia.toString("yyyy-MM-dd") })
         }}>
             <SView flex style={{
@@ -161,6 +161,7 @@ export default class Actividades extends Component {
         }
 
         return <SView col={"xs-12"} >
+            <SHr height={20} />
             <SView col={"xs-12"} row >
                 <SText bold fontSize={15}> Actividades</SText>
                 {this.addOpcion("addTarea", "Ver más", "/tarea")}
@@ -186,8 +187,10 @@ export default class Actividades extends Component {
                     <SView col={"xs-12 sm-9 md-9 lg-9 xl-9 xxl-9"} row>
                         {this.addFirtsActis()}
                     </SView>
+                    
                 </SView>
             }
+            <SHr height={15} />
         </SView>
     }
 }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SImage, SList, SLoad, SNavigation, SPage, SText, STheme, SUtil, SView } from 'servisofts-component';
+import { SHr, SImage, SList, SLoad, SNavigation, SPage, SText, STheme, SUtil, SView } from 'servisofts-component';
 import Model from '../../Model';
 import SSocket from 'servisofts-socket';
 import { Container } from '../../Components';
@@ -23,22 +23,48 @@ export default class Widget extends Component {
                 this.onSelect(obj);
                 return;
             }
-        }}>
-            <ITEM data={obj} />
+        }}
+            style={{
+               
+                // borderRadius: 10,
+                // margin: 5,
+                padding: 5,
+              
+            }} 
+        >
+            <SView col={"xs-12"} height={(80 * obj.h)-10}  style={{
+                borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: STheme.color.secondary + "80",
+                  borderStyle: "dashed",
+                  backgroundColor: STheme.color.card,
+            }} center>
+            <ITEM data={obj}  />
+
+            </SView>
         </SView>
     }
     render() {
 
         return <SPage title={"Widgets"} >
             <SView col={"xs-12"} row>
-                {this.renderItem({ type: "ClockCircle", w: 1, h: 1 })}
+
+                {/* {this.renderItem({ type: "ClockCircle", w: 1, h: 1 })} */}
                 {this.renderItem({ type: "Clock", w: 2, h: 1 })}
-                {this.renderItem({ type: "Notas", w: 2, h: 2 })}
-                {this.renderItem({ type: "salir", w: 1, h: 1 })}
-                {this.renderItem({ type: "NotasList", w: 4, h: 2 })}
-                {this.renderItem({ type: "UsuariosActivos", w: 4, h: 2 })}
-                {/* {this.renderItem({ type: "Actividades", w: 4, h: 2 })} */}
+                {/* {this.renderItem({ type: "Notas", w: 2, h: 2 })} */}
+                {this.renderItem({ type: "salir", w: 2, h: 1 })}
+
+                {this.renderItem({ type: "PerfilEmpresa", w: 2, h: 2 })}
+                {this.renderItem({ type: "MyPerfil", w: 2, h: 2 })}
+                {this.renderItem({ type: "MyBilletera", w: 2, h: 3 })}
+                {this.renderItem({ type: "NotasList", w: 2, h: 3 })}
+                {this.renderItem({ type: "MenuOpciones", w: 3, h: 2 })}
+                {this.renderItem({ type: "UsuariosActivos", w: 1, h: 2 })}
+                {this.renderItem({ type: "Actividades", w: 3, h: 3 })}
+
+
             </SView>
+            <SHr height={30} />
         </SPage>
     }
 }

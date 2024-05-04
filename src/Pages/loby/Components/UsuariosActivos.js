@@ -7,7 +7,7 @@ import Model from '../../../Model';
 export default class UsuariosActivos extends Component {
     constructor(props) {
         super(props);
-        this.state = {
+        this.state = { 
         };
 
     }
