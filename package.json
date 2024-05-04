@@ -7,7 +7,7 @@
     "build-old": "react-scripts build",
     "web-old": "react-scripts start",
     "build": "webpack --mode production",
-    "web": "webpack serve --open --history-api-fallback",
+    "web": "webpack serve --open --history-api-fallback --hot",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "SERVISOFTS S.R.L.",
@@ -64,7 +64,7 @@
     "redux": "^4.1.1",
     "redux-thunk": "^2.3.0",
     "servisofts-charts": "^1.0.1",
-    "servisofts-component": "3.0.27",
+    "servisofts-component": "file:../../servisofts-component/dist",
     "servisofts-db": "^1.0.7",
     "servisofts-model": "^1.0.7",
     "servisofts-page": "^1.0.12",

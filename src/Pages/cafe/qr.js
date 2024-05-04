@@ -16,11 +16,17 @@ export default class qr extends Component {
     this.state = {};
     this.monto = SNavigation.getParam("monto");
     this.nombre = SNavigation.getParam("nombre");
+    this.qrid = SNavigation.getParam("qrid");
 
   }
   componentDidMount() {
-    if (!this.monto) return;
-    this.getQrServer(this.monto)
+    if (!this.qrid) {
+      if (!this.monto) return;
+      this.getQrServer(this.monto)
+    } else {
+      this.verificarPago(this.qrid);
+    }
+
   }
   getQrServer(monto) {
     SSocket.sendPromise({
@@ -37,7 +43,7 @@ export default class qr extends Component {
       correos: [""],
       tipo: "cafe"
     }, 2 * 60 * 1000).then(e => {
-      this.setState({ loading: false, dataqr: e.data })
+      this.setState({ loading: false, dataqr: e.data})
       // this.isRun = true;
       // this.hilo()
       // console.log(e);
@@ -50,26 +56,17 @@ export default class qr extends Component {
     })
   }
 
-  verificarPago = () => {
-
+  verificarPago = (qrid) => {
     this.setState({ loading: true })
     SSocket.sendPromise({
       component: "solicitud_qr",
       type: "getByQr",
       estado: "cargando",
-      qrid: this.state?.dataqr?.qrid,
+      qrid: qrid,
     }).then(e => {
-      this.setState({ loading: false })
-      if (e.data.fecha_pago) {
-        SNotification.send({
-          title: "QR",
-          body: "El qr ya fue pagado.",
-          color: STheme.color.success,
-          time: 5000,
-        })
-        return;
-      }
-      throw "Error"
+      this.setState({ loading: false, dataqr: e.data })
+      console.log(e)
+      
     }).catch(e => {
       this.setState({ loading: false })
       SNotification.send({
