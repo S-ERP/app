@@ -39,6 +39,7 @@ class index extends Component {
                     }}
                 >
                     <MenuButtom label={"Init"} url={"/contabilidad/init"} icon={<SIcon name={"Salir"} />} />
+                    <MenuButtom label={"Impuestos"} url={"/contabilidad/enviroment"} icon={<SIcon name={"Ajustes"} />} />
                     {/* <MenuButtom label={"Asientos"} url={gestion?.key ? "/contabilidad/gestion/profile" : "/contabilidad/gestion"} params={{ pk: gestion?.key }} icon={<SIcon name={"Box"} fill={"#6ff"} />} /> */}
                 </MenuPages>
             </SPage>

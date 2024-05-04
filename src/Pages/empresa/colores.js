@@ -24,6 +24,7 @@ class Test extends Component {
                 <SInput label={"background"} defaultValue={STheme.color.background} ref={ref => this.ref.background = ref} type='color' />
                 <SInput label={"text"} defaultValue={STheme.color.text} ref={ref => this.ref.text = ref} type='color' />
                 <SInput label={"card"} defaultValue={STheme.color.card} ref={ref => this.ref.card = ref} type='color' />
+                <SInput label={"primary"} defaultValue={STheme.color.primary} ref={ref => this.ref.primary = ref} type='color' />
                 <SHr h={20} />
                 <SView row>
                     <SView flex />
@@ -34,6 +35,7 @@ class Test extends Component {
                             text: this.ref.text.getValue(),
                             barColor: this.ref.barColor.getValue(),
                             card: this.ref.card.getValue(),
+                            primary: this.ref.primary.getValue(),
 
                         }
                         STheme.repaint();
@@ -46,6 +48,7 @@ class Test extends Component {
                             text: this.ref.text.getValue(),
                             barColor: this.ref.barColor.getValue(),
                             card: this.ref.card.getValue(),
+                            primary: this.ref.primary.getValue(),
                         }
                         let theme = STheme.color;
                         delete theme.mapStyle;

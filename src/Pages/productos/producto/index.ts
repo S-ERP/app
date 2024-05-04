@@ -3,6 +3,7 @@ import Model from "../../../Model";
 import list from "./list";
 import table from "./table";
 import _new from "./new";
+import _new2 from "./new2";
 import profile from "./profile";
 import edit from "./edit";
 import _delete from "./delete";
@@ -20,6 +21,7 @@ export default SPage.combinePages(Parent.name, {
     "select": list,
     "table": table,
     "new": _new,
+    "new2": _new2,
     "profile": profile,
     "profile2": profile,
     "edit": edit,

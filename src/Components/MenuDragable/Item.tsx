@@ -70,8 +70,18 @@ const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, 
             if (data.y >= page.value.row - 1) {
                 x = data.x + (page.value.select * 4)
             }
+            if (data.y >= page.value.row - 1 && positionIndex.value.y != data.y) {
+                const sumpos = (translateX.value * -1) + (((page.value.col / 4) - 1) * (page.value.gridWidth * 2))
+                x = x + Math.round((sumpos / page.value.gridWidth))
+
+            }
             if (positionIndex.value.y >= page.value.row - 1) {
                 absPos.x = absPos.x + (translateX.value * -1)
+            }
+            if (positionIndex.value.y >= page.value.row - 1 && positionIndex.value.y != data.y) {
+                console.log("ENTRO ACA ABAJo")
+                const sumpos = (translateX.value * -1) + (((page.value.col / 4) - 1) * (page.value.gridWidth * 2))
+                absPos.x = absPos.x + sumpos
             }
             const to = {
                 x: ((page.value.gridWidth * x)),
@@ -236,6 +246,7 @@ const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, 
                 zIndex.value = 1;
             });
 
+
             const absPos = {
                 x: ((page.value.gridWidth * x) + position.value.x),
                 y: ((page.value.gridHeight * y) + position.value.y)
@@ -257,17 +268,32 @@ const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, 
 
             if (calculatePos.y >= page.value.row - 1) {
                 calculatePos.y = page.value.row - 1;
-            }
-            if (calculatePos.y >= page.value.row - 1) {
-                calculatePos.x = calculatePos.x % 4
-                console.log("Esto es para la parte de abajo", calculatePos, data)
+
+                // calculatePos.x = calculatePos.x % 4
             }
             if (data.y != calculatePos.y && data.y >= page.value.row - 1) {
-                calculatePos.x = calculatePos.x + (page.value.select * 4)
+                // calculatePos.x = calculatePos.x + (page.value.select * page.value.col)
+                const sumpos = (translateX.value * -1) + (((page.value.col / 4) - 1) * (page.value.gridWidth * 2))
+                absPos.x = absPos.x + sumpos;
+                calculatePos.x = Math.round(absPos.x / page.value.gridWidth);
                 console.log("Cuando sale", calculatePos, data)
-                // console.log("Esto es para la parte de abajo", calculatePos)
+            }
+            if (data.y != calculatePos.y && calculatePos.y >= page.value.row - 1) {
+                // calculatePos.x = calculatePos.x + (page.value.select * page.value.col)
+                const sumpos = (translateX.value * -1) + (((page.value.col / 4) - 1) * (page.value.gridWidth * 2))
+                absPos.x = absPos.x - sumpos;
+                calculatePos.x = Math.round(absPos.x / page.value.gridWidth);
+                console.log("Cuando entra", calculatePos, data)
             }
 
+            if (calculatePos.y >= page.value.row - 1) {
+                if (calculatePos.x >= 4) {
+                    calculatePos.x = 3;
+                }
+                if (calculatePos.x <= 0) {
+                    calculatePos.x = 0;
+                }
+            }
 
             const calculateResto = {
                 x: (calculatePos.x * page.value.gridWidth) - (page.value.gridWidth * x),
@@ -321,7 +347,7 @@ const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, 
         }
     }
 
-    const sum = useDerivedValue(() => (positionIndex.value.y >= page.value.row - 1 ? translateX.value * -1 : 0))
+    const sum = useDerivedValue(() => (positionIndex.value.y >= page.value.row - 1 ? (translateX.value * -1) + (((page.value.col / 4) - 1) * (page.value.gridWidth * 2)) : 0))
     return <GestureDetector gesture={composed}>
         <Animated.View key={data.key} style={{
             position: "absolute",

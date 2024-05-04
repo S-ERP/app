@@ -13,12 +13,14 @@ class index extends DPA.new {
             excludes: ["key", "fecha_on", "key_usuario", "key_servicio", "estado"]
         });
         this.onSelect = SNavigation.getParam("onSelect")
+        this.key_compra_venta_detalle = SNavigation.getParam("key_compra_venta_detalle")
     }
     $inputs() {
         var inp = super.$inputs();
 
         inp["descripcion"].editable = true
         inp["precio_compra"].type = "money"
+        inp["precio_compra"].editable = true
         inp["precio_venta"].type = "money"
         // inp["precio_venta_credito"].type = "money"
         inp["key_modelo"] = {
@@ -75,7 +77,8 @@ class index extends DPA.new {
         Parent.model.Action.registro({
             data: data,
             key_almacen: this._params.key_almacen ?? this.state?.almacen?.key,
-            key_usuario: Model.usuario.Action.getKey()
+            key_usuario: Model.usuario.Action.getKey(),
+            key_compra_venta_detalle: this.key_compra_venta_detalle
         }).then((resp) => {
             this.$submitFile(resp.data.key);
 
