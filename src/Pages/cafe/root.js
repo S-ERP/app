@@ -77,6 +77,7 @@ class index extends Component {
 
               </SView>
             }} />
+            <SView height={100}></SView>
         </Container>
       </SPage>
     );
