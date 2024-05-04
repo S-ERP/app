@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SButtom, SHr, SList, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SButtom, SHr, SList, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import DPA, { connect } from 'servisofts-page';
 import { MenuPages } from 'servisofts-rn-roles_permisos';
 import { Parent } from "."
@@ -13,10 +13,12 @@ import Ingrediente from './Components/Ingrediente';
 import IngredienteModelo from "../modelo/Components/Ingrediente"
 
 import SSocket from 'servisofts-socket';
+import { Container } from '../../publicacion/Components';
 class index extends DPA.profile {
     constructor(props) {
         super(props, {
             Parent: Parent,
+            // type: "component",
             itemType: "1",
             excludes: ["key", "key_usuario", "key_servicio",],
             onRefresh: (resolve) => {
@@ -63,7 +65,13 @@ class index extends DPA.profile {
         return Parent.model.Action.getByKey(this.pk);
     }
 
-
+    // $render() {
+    //     return <SPage>
+    //         <Container>
+    //             {super.$render()}
+    //         </Container>
+    //     </SPage>
+    // }
 
     $footer() {
         return <SView col={"xs-12"} center>

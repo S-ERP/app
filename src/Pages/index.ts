@@ -44,6 +44,7 @@ import terminos from './terminos'
 import anim1 from "./anim1"
 import widget from './widget';
 import cafe from './cafe';
+import solicitud_qr from './solicitud_qr';
 export default SPage.combinePages("/", {
     // "":Example,
     "": test,
@@ -89,6 +90,7 @@ export default SPage.combinePages("/", {
     ...widget,
     ...cafe,
     ...publicacion,
+    ...solicitud_qr,
     invitation,
     "invitacion": invitacion,
     terminos
