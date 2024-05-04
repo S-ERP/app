@@ -64,7 +64,9 @@ class index extends Component {
           <SList
             data={this?.state?.data}
             render={(data) => {
-              return <SView col={"xs-12"} padding={8} row center>
+              return <SView col={"xs-12"} padding={8} row center onPress={()=>{
+                SNavigation.navigate("/cafe/qr", { nombre: this.nombre.getValue(), qrid: data.qrid })
+              }}>
                 <SView width={40} height={40}>
                   <SImage src={Model.usuario._get_image_download_path(SSocket.api, data.key_usuario)} />
                 </SView>
@@ -75,6 +77,7 @@ class index extends Component {
 
               </SView>
             }} />
+            <SView height={100}></SView>
         </Container>
       </SPage>
     );

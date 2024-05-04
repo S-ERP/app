@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import SSocket from 'servisofts-socket';
-import { SButtom, SHr, SImage, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SButtom, SDate, SHr, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import BarraCargando from 'servisofts-component/Component/SLoad/type/bar';
 import Model from '../../Model';
 import SMD from '../../SMD';
@@ -16,11 +16,17 @@ export default class qr extends Component {
     this.state = {};
     this.monto = SNavigation.getParam("monto");
     this.nombre = SNavigation.getParam("nombre");
+    this.qrid = SNavigation.getParam("qrid");
 
   }
   componentDidMount() {
-    if (!this.monto) return;
-    this.getQrServer(this.monto)
+    if (!this.qrid) {
+      if (!this.monto) return;
+      this.getQrServer(this.monto)
+    } else {
+      this.verificarPago(this.qrid);
+    }
+
   }
   getQrServer(monto) {
     SSocket.sendPromise({
@@ -37,7 +43,7 @@ export default class qr extends Component {
       correos: [""],
       tipo: "cafe"
     }, 2 * 60 * 1000).then(e => {
-      this.setState({ loading: false, dataqr: e.data })
+      this.setState({ loading: false, dataqr: e.data})
       // this.isRun = true;
       // this.hilo()
       // console.log(e);
@@ -50,26 +56,17 @@ export default class qr extends Component {
     })
   }
 
-  verificarPago = () => {
-
+  verificarPago = (qrid) => {
     this.setState({ loading: true })
     SSocket.sendPromise({
       component: "solicitud_qr",
       type: "getByQr",
       estado: "cargando",
-      qrid: this.state?.dataqr?.qrid,
+      qrid: qrid,
     }).then(e => {
-      this.setState({ loading: false })
-      if (e.data.fecha_pago) {
-        SNotification.send({
-          title: "QR",
-          body: "El qr ya fue pagado.",
-          color: STheme.color.success,
-          time: 5000,
-        })
-        return;
-      }
-      throw "Error"
+      this.setState({ loading: false, dataqr: e.data })
+      console.log(e)
+      
     }).catch(e => {
       this.setState({ loading: false })
       SNotification.send({
@@ -96,13 +93,25 @@ export default class qr extends Component {
         <BarraCargando col={"xs-11"} />
       </SView>
     }
-    return <SView col={"xs-12"} height={300} center >
-      <SImage src={this.getQr()} height={"100%"}
-        enablePreview
-        style={{
-          // resizeMode: "contain"
-          // resizeMode: "cover"
-        }} />
+    return <SView col={"xs-12"} center >
+      <SText center fontSize={25} margin={10}>{this.state.dataqr.razon_social}</SText>
+      <SView height={300} width={300}>
+        <SImage src={this.getQr()} height={"100%"}
+          enablePreview
+          style={{
+            // resizeMode: "contain"
+            // resizeMode: "cover"
+          }} />
+      </SView>
+      <SHr />
+      <SText>{this.state.dataqr.qrid}</SText>
+      <SHr />
+      <SText fontSize={18} bold>{SMath.formatMoney(this.state.dataqr.monto)}</SText>
+      <SHr />
+      {this.state.dataqr?.fecha_pago?<SText color={STheme.color.success}>Pagado</SText>:<SText></SText>}
+      <SHr />
+      <SText fontSize={15} bold>{new SDate(this.state.dataqr.fecha_pago, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm") }</SText>
+      <SHr />
     </SView>
   }
 
@@ -117,7 +126,7 @@ export default class qr extends Component {
           <SHr h={8} />
           <SButtom
             type={"outline"}
-            onPress={this.verificarPago.bind(this)}
+            onPress={this.verificarPago.bind(this, this.state?.dataqr?.qrid)}
             loading={this?.state?.loading}
           >VERIFICAR</SButtom>
         </Container>
