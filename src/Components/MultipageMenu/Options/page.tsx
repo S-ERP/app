@@ -28,7 +28,9 @@ export default class page extends React.Component<any> {
                 overflow: "hidden",
                 backgroundColor: STheme.color.card
             }}>
-                <SImage src={api.roles_permisos + "page/" + this.props?.data?.key_page} />
+                <SImage style={{
+                    resizeMode: "cover"
+                }} src={api.roles_permisos + "page/" + this.props?.data?.key_page} />
             </View>
             {this.props.nolabel ? null :
                 <>
