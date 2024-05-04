@@ -100,9 +100,9 @@ class Notas extends Component {
                         this.setState({ ...this.state.data })
                     }
                 })} >
-                    <SView center row card width={105} height={35}>
-                        <SIcon name={"addNotas"} width={20} fill={STheme.color.text} />
-                        <SView width={8} />
+                    <SView center row card width={105} height={25}>
+                        <SIcon name={"addNotas"} width={13} fill={STheme.color.text} />
+                        <SView width={4} />
                         <SText fontSize={12} center >Adicionar </SText>
                     </SView>
                 </SView>
@@ -114,7 +114,7 @@ class Notas extends Component {
                     }
                 })}> + </SText> */}
             </SView>
-            <SHr />
+            <SHr height={4} />
             <ScrollView horizontal>
                 <SList
                     scrollEnabled={false}

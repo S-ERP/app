@@ -14,6 +14,8 @@ import Chat from './Components/Chat';
 import Publicaciones from './Components/Publicaciones';
 import InvitarUsuario from '../../Components/empresa/InvitarUsuario';
 import { ScrollView as ScrollViewGesture } from 'react-native-gesture-handler';
+import SSocket from 'servisofts-socket';
+import MenuOpciones from './Components/MenuOpciones';
 
 export default class root extends Component {
     constructor(props) {
@@ -22,6 +24,27 @@ export default class root extends Component {
             cargar: true
         };
         // console.log("loadDataUser", SNavigation.lastRoute)
+    }
+
+    componentDidMount() {
+        this.loadDataUser();
+    }
+
+    loadDataUser() {
+        SSocket.sendPromise({
+            service: "empresa",
+            component: "empresa_usuario_log",
+            type: "registro",
+            key_empresa: Model.empresa.Action.getKey(),
+            key_usuario: Model.usuario.Action.getUsuarioLog()?.key,
+            url: SNavigation.lastRoute.route.name
+        }).then(e => {
+            this.setState({ dataLog: e.data })
+        }).catch(e => {
+            console.error(e);
+        })
+        console.log("USUSARIOOO",Model.usuario.Action.getUsuarioLog())
+        console.log("loadDataUser", SNavigation.lastRoute.route.name)
     }
 
     renderMunuItem({ onPress, label, icon, color }) {
@@ -55,39 +78,7 @@ export default class root extends Component {
         return <SView col={"xs-12"} center>
             <SView col={"xs-12 sm-10 md-9 lg-7 xl-6 xxl-5"} center >
                 <SHr h={16} />
-                <ScrollView horizontal style={{
-                    width: "100%"
-                }}>
-                    <>
-                        {this.renderMunuItem({ label: "", icon: "Menu", onPress: () => SNavigation.navigate("/menu") })}
-                        <SView width={8} />
-                        {/* {this.renderMunuItem({ label: "Init", icon: "Menu", onPress: () => SNavigation.navigate("/empresa/init") })}
-                        <SView width={8} /> */}
-                        {this.renderMunuItem({ label: "", icon: "Notify", onPress: () => SNavigation.navigate("/notification") })}
-                        <SView width={8} />
-
-                        <Chat label={"Chat"}  >
-                            {this.renderMunuItem({ label: "", icon: "Comment2", })}
-                        </Chat>
-                        <SView width={8} />
-
-                        {this.renderMunuItem({ label: "", icon: "configurar", onPress: () => SNavigation.navigate("/ajustes") })}
-                        <SView width={8} />
-                        {/* <InvitarUsuario /> */}
-                        {this.renderMunuItem({ label: "", icon: "share", onPress: () => SNavigation.navigate("/empresa/invite") })}
-                        {/* {this.renderMunuItem({ label: "Productos", icon: "productos", onPress: () => SNavigation.navigate("/productos/tipo_producto/options") })} */}
-                        {/* <SView width={8} /> */}
-                        {/* <InvitarUsuario /> */}
-                        <SView width={8} />
-                        {this.renderMunuItem({ label: "Productos", icon: "productos", onPress: () => SNavigation.navigate("/productos/tipo_producto/options") })}
-                        <SView width={8} />
-                        <InvitarUsuario />
-                        {/* {this.renderMunuItem({ label: "Invitar", icon: "Usuarios", color: STheme.color.danger, onPress: () => SNavigation.navigate("/root") })} */}
-                        <SView width={8} />
-                        {this.renderMunuItem({ label: "Salir", icon: "out", onPress: () => SNavigation.navigate("/root") })}
-                        <SView width={8} />
-                    </>
-                </ScrollView>
+                <MenuOpciones />
                 <PHr />
                 <UsuariosActivos />
                 <PHr />

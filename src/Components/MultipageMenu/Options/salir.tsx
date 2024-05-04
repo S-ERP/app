@@ -11,8 +11,8 @@ export default class page extends React.Component<any> {
     render() {
         return <TouchableOpacity style={{
             // width: "100%",
-            width: 80,
-            height: 80,
+            width: 60,
+            height: 60,
             justifyContent: "center",
             alignItems: "center",
         }} onPress={() => {
@@ -23,8 +23,8 @@ export default class page extends React.Component<any> {
         }}>
             <View style={{
                 borderRadius: 8,
-                width: 50,
-                height: 50,
+                width: 40,
+                height: 40,
                 overflow: "hidden",
                 backgroundColor: STheme.color.card
             }}>
@@ -32,7 +32,7 @@ export default class page extends React.Component<any> {
             </View>
             {this.props.nolabel ? null :
                 <>
-                    <View style={{ height: 8 }} />
+                    <View style={{ height: 4 }} />
                     <Text style={{
                         flex: 1,
                         color: STheme.color.text,

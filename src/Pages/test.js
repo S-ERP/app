@@ -23,7 +23,7 @@ export default class Test extends Component {
         };
     }
     ref = {}
-    componentDidMount() {
+    componentDidMount() { 
         this.loadData();
         this.isRun = true;
         this.hilo();
