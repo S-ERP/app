@@ -91,7 +91,7 @@ class Notas extends Component {
     render() {
         let notas = Model.nota.Action.getAll();
         if (!notas) return <SLoad />
-        return <SView col={"xs-12"} flex >
+        return <SView col={"xs-12"}  >
             <SView col={"xs-12"} row>
                 <SText bold fontSize={15}> Notas</SText>
                 <SView flex style={{ alignItems: "flex-end" }} onPress={() => SNavigation.navigate("/nota", {

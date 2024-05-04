@@ -56,9 +56,9 @@ export default class Widget extends Component {
 
                 {this.renderItem({ type: "PerfilEmpresa", w: 2, h: 2 })}
                 {this.renderItem({ type: "MyPerfil", w: 2, h: 2 })}
-                {this.renderItem({ type: "MyBilletera", w: 2, h: 2 })}
+                {this.renderItem({ type: "MyBilletera", w: 2, h: 3 })}
                 {this.renderItem({ type: "NotasList", w: 2, h: 3 })}
-                {this.renderItem({ type: "MenuOpciones", w: 4, h: 1 })}
+                {this.renderItem({ type: "MenuOpciones", w: 3, h: 2 })}
                 {this.renderItem({ type: "UsuariosActivos", w: 1, h: 2 })}
                 {this.renderItem({ type: "Actividades", w: 3, h: 3 })}
 
