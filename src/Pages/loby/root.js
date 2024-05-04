@@ -21,6 +21,7 @@ export default class root extends Component {
         this.state = {
             cargar: true
         };
+        // console.log("loadDataUser", SNavigation.lastRoute)
     }
 
     renderMunuItem({ onPress, label, icon, color }) {

@@ -29,13 +29,15 @@ export default class Widget extends Component {
     }
     render() {
 
-        return <SPage title={"Widgets"} disableScroll>
+        return <SPage title={"Widgets"} >
             <SView col={"xs-12"} row>
                 {this.renderItem({ type: "ClockCircle", w: 1, h: 1 })}
                 {this.renderItem({ type: "Clock", w: 2, h: 1 })}
                 {this.renderItem({ type: "Notas", w: 2, h: 2 })}
                 {this.renderItem({ type: "salir", w: 1, h: 1 })}
                 {this.renderItem({ type: "NotasList", w: 4, h: 2 })}
+                {this.renderItem({ type: "UsuariosActivos", w: 4, h: 2 })}
+                {/* {this.renderItem({ type: "Actividades", w: 4, h: 2 })} */}
             </SView>
         </SPage>
     }
