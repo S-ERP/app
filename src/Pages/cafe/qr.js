@@ -94,7 +94,7 @@ export default class qr extends Component {
       </SView>
     }
     return <SView col={"xs-12"} center >
-      <SText center fontSize={25} margin={10}>{this.state.dataqr.razon_social}</SText>
+      {/* <SText center fontSize={25} margin={10}>{this.state?.dataqr?.razon_social}</SText> */}
       <SView height={300} width={300}>
         <SImage src={this.getQr()} height={"100%"}
           enablePreview
@@ -103,15 +103,15 @@ export default class qr extends Component {
             // resizeMode: "cover"
           }} />
       </SView>
+      {/* <SHr />
+      <SText>{this.state?.dataqr?.qrid}</SText>
       <SHr />
-      <SText>{this.state.dataqr.qrid}</SText>
+      <SText fontSize={18} bold>{SMath.formatMoney(this.state?.dataqr?.monto)}</SText>
       <SHr />
-      <SText fontSize={18} bold>{SMath.formatMoney(this.state.dataqr.monto)}</SText>
+      {this.state?.dataqr?.fecha_pago?<SText color={STheme.color.success}>Pagado</SText>:<SText></SText>}
       <SHr />
-      {this.state.dataqr?.fecha_pago?<SText color={STheme.color.success}>Pagado</SText>:<SText></SText>}
-      <SHr />
-      <SText fontSize={15} bold>{new SDate(this.state.dataqr.fecha_pago, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm") }</SText>
-      <SHr />
+      <SText fontSize={15} bold>{new SDate(this.state?.dataqr?.fecha_pago, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")}</SText>
+      <SHr /> */}
     </SView>
   }
 

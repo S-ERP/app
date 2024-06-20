@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SButtom, SDate, SHr, SIcon, SList, SLoad, SMath, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SButtom, SDate, SHr, SIcon, SList, SLoad, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import _types from './_types';
 import Model from '../../../Model';
 import PopupAjustes from './PopupAjustes';
@@ -24,7 +24,15 @@ export default class CajaDetalleItem extends Component {
             this.setState({ loading: true })
             tipo.action(obj).then(e => {
                 this.setState({ loading: false })
+
+
             }).catch(e => {
+                SNotification.send({
+                    title: "caja",
+                    body: e,
+                    color: STheme.color.danger,
+                    time: 5000
+                })
                 this.setState({ loading: false })
             })
         }}>{tipo.getEstado(obj)}</SView>

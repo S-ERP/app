@@ -3,6 +3,7 @@ import { SStorage, STheme, SThread } from "servisofts-component";
 import { SAction } from "servisofts-model";
 import Model from "../..";
 import Config from "../../../Config";
+import DataBase from "../../../DataBase";
 export default class Action extends SAction {
 
     getSelect() {
@@ -23,6 +24,7 @@ export default class Action extends SAction {
         } else {
             SStorage.setItem("empresa_select", JSON.stringify(data));
         }
+        DataBase.clear();
 
         this._getReducer().select = data;
         new SThread(100, "asdasd", true).start(() => {

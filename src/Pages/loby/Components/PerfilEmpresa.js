@@ -26,7 +26,9 @@ export default class PerfilEmpresa extends Component {
             }} onPress={() => {
                 SNavigation.navigate("/empresa")
             }}>
-                <SImage src={Model.empresa._get_image_download_path(SSocket.api, empresa?.key)} />
+                <SImage src={Model.empresa._get_image_download_path(SSocket.api, empresa?.key)} style={{
+                    resizeMode:"cover"
+                }}/>
             </SView>
             <SHr />
             <SView padding={4} onPress={() => {

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { SDate, SNavigation, SPopup, SText, STheme } from 'servisofts-component';
 import Model from '../../../../Model';
 import Popups from '../../../../Components/Popups';
+import SSocket from 'servisofts-socket';
 
 export default class amortizacion {
     static key = "amortizacion";
@@ -13,11 +14,58 @@ export default class amortizacion {
         return 1
     }
     static getEstado(obj) {
+        if (obj.key_tipo_pago == "qr") {
+            if (!obj.qrid) return <SText color={STheme.color.danger}>{"Sin QR"}</SText>
+            if (!obj.transactionid) return <SText color={STheme.color.warning}>{"Pendiente de pago. Ver QR"}</SText>
+        }
+        if (!obj.key_comprobante) return <SText color={STheme.color.danger}>{"Sin Comprobante"}</SText>
         if (!obj.data.key_amortizacion) return <SText color={STheme.color.warning}>{"Pendiente"}</SText>
         return <SText color={STheme.color.success}>{"confirmada"}</SText>
     }
+
+    static async solicitarQRalBanco(obj) {
+        const qrresp = await SSocket.sendPromise({
+            component: "solicitud_qr",
+            type: "getQr",
+            estado: "cargando",
+            version: "V1",
+            key_usuario: Model.usuario.Action.getKey(),
+            key_empresa: Model.empresa.Action.getKey(),
+            monto: obj.monto,
+            descripcion: obj.descripcion,
+            nit: "nit",
+            razon_social: "USUARIO QUE PAGA",
+            correos: [""],
+            tipo: "caja_movimiento-amortizacion"
+        }, 2 * 60 * 1000)
+
+        obj.qrid = qrresp.data.qrid
+        const editresp = await Model.caja_detalle.Action.editar({
+            data: obj,
+            key_usuario: Model.usuario.Action.getKey(),
+            key_empresa: Model.empresa.Action.getKey(),
+        })
+    }
     static action(obj) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
+
+            if (obj.key_tipo_pago == "qr") {
+                if (!obj.qrid) {
+                    await this.solicitarQRalBanco(obj);
+                    resolve("")
+                    return
+                }
+                if (!obj.transactionid) {
+                    SNavigation.navigate("/cafe/qr", {
+                        qrid: obj.qrid, verificar: (qr) => {
+                            console.log("Se verifico el qr")
+                        }
+                    })
+                    resolve("")
+                    return
+
+                }
+            }
             if (obj.data.key_amortizacion) {
                 reject("El movimiento ya esta confirmado.")
                 return;
@@ -85,7 +133,7 @@ export default class amortizacion {
                             key_punto_venta: caja.key_punto_venta,
                             _type: this.key,
                             onSelect: (tipo_pago) => {
-                                console.log("Selecciono el tipo de pago",tipo_pago);
+                                console.log("Selecciono el tipo de pago", tipo_pago);
 
                                 var caja_detalle = {
                                     "key_caja": caja.key,

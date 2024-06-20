@@ -11,7 +11,7 @@ class index extends DPA.new {
         super(props, {
             Parent: Parent,
             title: "Compra",
-            excludes: ["key", "key_compra_venta", "observacion", "unidad_medida", "fecha_on", "key_usuario", "key_servicio", "estado", "cliente", "proveedor", "state", "key_sucursal"]
+            excludes: ["key", "tipo", "key_compra_venta", "observacion", "unidad_medida", "fecha_on", "key_usuario", "key_servicio", "estado", "cliente", "proveedor", "state", "key_sucursal"]
         });
     }
     // $allowAccess() {
@@ -23,13 +23,13 @@ class index extends DPA.new {
         // imp["observacion"].col = "xs-6 md-3.6"
 
         // "activo_fijo" | "gasto_administrativo" | "inventario" | "venta_servicio"
-        imp["tipo"] = {
-            ...imp["tipo"],
-            isRequired: true,
-            type: "select",
-            value: this.state.tipo,
-            options: ["", "activo_fijo", "inventario", "gasto_administrativo", "servicio"]
-        }
+        // imp["tipo"] = {
+        //     ...imp["tipo"],
+        //     isRequired: true,
+        //     type: "select",
+        //     value: this.state.tipo,
+        //     options: ["", "activo_fijo", "inventario", "gasto_administrativo", "servicio"]
+        // }
         imp["descripcion"].col = "xs-12 md-12"
         imp["descripcion"].type = "textArea"
         imp["cantidad"].defaultValue = "1"

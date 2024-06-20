@@ -8,10 +8,8 @@ import { Container } from '../../Components';
 
 const CATEGORI = [
     { key: "pages", label: "Paginas", imageurl: "https://rolespermisos.servisofts.com/http//page/c4666514-202f-4d8d-8656-64c82065ba67" },
-    // { key: "system", label: "Ajustes del sistema", imageurl: "https://rolespermisos.servisofts.com/http//page/b240629a-07ff-4b2a-8fea-f9ed0596453d" },
-    // { key: "nota", label: "Notas", imageurl: "https://rolespermisos.servisofts.com/http//page/b240629a-07ff-4b2a-8fea-f9ed0596453d" },
-    // { key: "user", label: "Usuario", imageurl: "https://rolespermisos.servisofts.com/http//page/419dfc13-34db-4935-a13c-b05cfd9d599a" },
     { key: "widget", label: "Widgets", imageurl: "https://rolespermisos.servisofts.com/http//page/419dfc13-34db-4935-a13c-b05cfd9d599a" },
+    { key: "custom", label: "Custom page", imageurl: "https://rolespermisos.servisofts.com/http//page/c4666514-202f-4d8d-8656-64c82065ba67" },
 ]
 
 export default class root extends Component {

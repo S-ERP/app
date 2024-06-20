@@ -56,10 +56,10 @@ export default class UsuariosActivos extends Component {
         var diferenciasegundos = Math.floor(diferenciaMiliSegundos / 1000)
         var diferenciaminutos = Math.floor(diferenciaMiliSegundos / (1000 * 60))
 
-        console.log("user", alias)
-        console.log("ultima_actividad", ultima_actividad)
-        console.log("diferenciasegundos", diferenciasegundos)
-        console.log("diferenciaminutos", diferenciaminutos)
+        // console.log("user", alias)
+        // console.log("ultima_actividad", ultima_actividad)
+        // console.log("diferenciasegundos", diferenciasegundos)
+        // console.log("diferenciaminutos", diferenciaminutos)
        
         return <SView width={75} height={80} center onPress={() => {
             SNavigation.navigate("/usuario/profile", { pk: key_usuario })
@@ -105,8 +105,8 @@ export default class UsuariosActivos extends Component {
         </SView>
     }
     render() {
-        console.log("UsuariosActivos")
-        console.log(this.state.data)
+        // console.log("UsuariosActivos")
+        // console.log(this.state.data)
         var dataUser = this.state.data
         //sort my list of objects by date in descending order
         
@@ -119,7 +119,7 @@ export default class UsuariosActivos extends Component {
         // });
         // var dataOrder = Object.values(this.state.data).filter(o => o.key_tipo_pago == tipo_pago.key && o.estado != 0)
 
-        console.log("dataUser", dataUser)
+        // console.log("dataUser", dataUser)
 
         return <SView col={"xs-12"} height={100}  >
             <SText bold fontSize={12}> Usuarios</SText>

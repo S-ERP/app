@@ -1,5 +1,5 @@
 import { SInputsCofig, STheme } from 'servisofts-component';
-const inputs = () => {
+const inputs = (): SInputsCofig => {
     return {
         default: {
             LabelStyle: {
@@ -29,6 +29,7 @@ const inputs = () => {
 
                 paddingStart: 8,
                 color: STheme.color.text,
+                placeholderTextColor: STheme.color.gray
                 // backgroundColor: "#E0E0E0" + "55",
                 // height: 55,
                 // borderRadius: 16,
@@ -38,7 +39,9 @@ const inputs = () => {
                 // borderRadius: 16,
                 borderWidth: 1,
                 borderColor: "#FA8081"
-            }
+            },
+
+
         }
     }
 }

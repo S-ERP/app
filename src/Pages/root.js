@@ -10,8 +10,7 @@ import BoxMenu from '../Components/Popups/BoxMenu';
 import STextPlay from '../Components/STextPlay';
 
 const Card = ({ label, value, backgroundColor, onPress, icon }) => {
-    return <SView col={"xs-12 sm-6 md-6 lg-6 xl-6 xxl-6"} padding={8}
-
+    return <SView col={"xs-12 sm-6 md-6 lg-6 xl-6 xxl-6"} padding={2}
     >
         <SView col={"xs-12"} height={75} row card center
             style={{
@@ -37,7 +36,7 @@ const Card = ({ label, value, backgroundColor, onPress, icon }) => {
             </SView>
             <SHr height={15} />
         </SView>
-        <SHr height={15} />
+        <SHr height={4} />
     </SView>
 }
 
@@ -134,13 +133,15 @@ class index extends Component {
                         Model.empresa.Action.setEmpresa(a.empresa);
                         let time = Platform.select({ web: 400, native: 800 });
                         new SThread(time, "sadasd").start(() => {
-                            SNavigation.navigate("/loby")
+                            SNavigation.goBack();
                         })
 
                         // SNavigation.navigate("/empresa/profile", { pk: a.key_empresa })
                     }}>
                         <SView width={40} height={40} card>
-                            <SImage src={Model.empresa._get_image_download_path(SSocket.api, a?.empresa?.key)} />
+                            <SImage src={Model.empresa._get_image_download_path(SSocket.api, a?.empresa?.key)} style={{
+                                resizeMode: "cover"
+                            }} />
                         </SView>
                         <SView width={8} />
                         <SView flex>
@@ -164,28 +165,25 @@ class index extends Component {
         return <SPage>
             <Container >
                 <SHr height={10} />
-                <SView col={"xs-12"} flex height style={{ alignItems: "flex-end" }}
+                <SView style={{ alignItems: "flex-end", position: "absolute", top: 2, right: 2, }}
                     onPress={() => {
                         SPopup.open({ key: "menuLat", content: <BoxMenu datas={this.props?.data} /> });
                     }}
                 >
-                    <SView width={45} height={45} center backgroundColor={STheme.color.secondary} style={{ borderRadius: 30, zIndex: 9, }}>
-                        <SIcon name="configurar" fill={STheme.color.primary} width={30} height={30} />
-                    </SView>
-                    <SView width={45} height={45} style={{
-                        position: "absolute", bottom: -4, borderRadius: 45,
-                        backgroundColor: "#818286",
-                    }}>
+                    <SView width={45} height={45} center backgroundColor={STheme.color.card} style={{ borderRadius: 30, zIndex: 9, }}>
+                        <SIcon name="configurar" fill={STheme.color.text} width={25} height={25} />
                     </SView>
                 </SView>
                 <SView width={150} height={150} style={{ padding: 4 }}>
                     <SView flex height card style={{ borderRadius: 100, overflow: "hidden" }}>
-                        <SImage src={SSocket.api.root + "usuario/" + Model.usuario.Action.getKey()} />
+                        <SImage src={SSocket.api.root + "usuario/" + Model.usuario.Action.getKey()} style={{
+                            resizeMode: "cover"
+                        }} />
                     </SView>
                 </SView>
                 <SHr />
                 {/* <SText fontSize={20} bold>Hola, {usuario.Nombres} {usuario.Apellidos}</SText> */}
-                <STextPlay  time={50} fontSize={18} bold center>{`Hola, ${usuario.Nombres} ${usuario.Apellidos} \n¿Qué deseas hacer? `}</STextPlay>
+                <STextPlay time={50} fontSize={18} bold center>{`Hola, ${usuario.Nombres} ${usuario.Apellidos} \n¿Qué deseas hacer? `}</STextPlay>
                 {/* <SText fontSize={14}>{usuario.Correo}</SText> */}
                 <SHr height={15} />
                 {/* <SView width={240} height={100} >
@@ -200,7 +198,7 @@ class index extends Component {
                         <STextPlay fontSize={18} bold>{"¿Qué deseas hacer?"}</STextPlay>
                     </SView>
                 </SView> */}
-                <SHr height={15} />
+                {/* <SHr height={15} /> */}
                 {/* <SText fontSize={14}>C.I.: {usuario.CI}</SText> */}
                 {/* <SHr h={16} /> */}
                 {this.getAcciones(usuario)}

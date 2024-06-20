@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import android.widget.RelativeLayout;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
@@ -23,7 +24,9 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+//    setTheme(R.style.AppTheme);
     super.onCreate(savedInstanceState);
+  //   SplashScreen.show(this);  //
     // Otros códigos de inicialización...
     Log.d("DeepLink", "Entro al onCreate");
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

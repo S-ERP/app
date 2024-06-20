@@ -98,21 +98,23 @@ export default class PopupTipoRecepcion extends Component<PropsType> {
                 console.log("ENTRO AL ONSELECT ", data)
                 // if (this.state.loading) return;
                 // this.setState({ loading: "Cargando..." })
-                Model.compra_venta_detalle.Action.recepcionar({
-                    key_compra_venta_detalle: this.props.key_compra_venta_detalle,
-                    key_producto: data.key
-                }).then((resp) => {
-                    // this.setState({ loading: false })
-                    Model.producto.Action.CLEAR();
-                    Model.compra_venta_detalle.Action.CLEAR();
-                    
-                    SNavigation.replace("/productos/producto/profile", { pk: data.key })
-                }).catch(e => {
-                    // this.setState({ loading: false })
-                    console.log(e)
-                    SPopup.alert("Error al recepcionar el producto.")
-                    SNavigation.goBack();
-                })
+                SNavigation.replace("/productos/producto/profile", { pk: data.key })
+
+                // Model.compra_venta_detalle.Action.recepcionar({
+                //     key_compra_venta_detalle: this.props.key_compra_venta_detalle,
+                //     key_producto: data.key
+                // }).then((resp) => {
+                //     // this.setState({ loading: false })
+                //     Model.producto.Action.CLEAR();
+                //     Model.compra_venta_detalle.Action.CLEAR();
+
+                //     SNavigation.replace("/productos/producto/profile", { pk: data.key })
+                // }).catch(e => {
+                //     // this.setState({ loading: false })
+                //     console.log(e)
+                //     SPopup.alert("Error al recepcionar el producto.")
+                //     SNavigation.goBack();
+                // })
 
             }
         });

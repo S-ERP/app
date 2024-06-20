@@ -1,5 +1,7 @@
 import { SPage } from "servisofts-component";
 import root from "./root";
+import reporte from "./reporte";
+import mispagos from "./mispagos";
 
 
 export const Parent = {
@@ -8,5 +10,6 @@ export const Parent = {
 }
 export default SPage.combinePages(Parent.name, {
     "": root,
-
+    reporte,
+    mispagos
 })

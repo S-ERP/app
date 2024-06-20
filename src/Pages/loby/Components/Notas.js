@@ -91,10 +91,11 @@ class Notas extends Component {
     render() {
         let notas = Model.nota.Action.getAll();
         if (!notas) return <SLoad />
-        return <SView col={"xs-12"}  >
+        return <SView col={"xs-12"} flex >
             <SView col={"xs-12"} row>
                 <SText bold fontSize={15}> Notas</SText>
-                <SView flex style={{ alignItems: "flex-end" }} onPress={() => SNavigation.navigate("/nota", {
+                <SView flex />
+                <SView style={{ alignItems: "flex-end" }} onPress={() => SNavigation.navigate("/nota", {
                     onChange: (e) => {
                         this.state.data[e.key] = e;
                         this.setState({ ...this.state.data })
@@ -103,7 +104,7 @@ class Notas extends Component {
                     <SView center row card width={105} height={25}>
                         <SIcon name={"addNotas"} width={13} fill={STheme.color.text} />
                         <SView width={4} />
-                        <SText fontSize={12} center >Adicionar </SText>
+                        <SText fontSize={12} center >Crear nota</SText>
                     </SView>
                 </SView>
                 {/* <SView width={8} />
@@ -122,7 +123,6 @@ class Notas extends Component {
                     data={notas}
                     order={[{ key: "fecha_on", order: "desc" }]}
                     render={(a) => this.Item(a)}
-
                 />
             </ScrollView>
         </SView>

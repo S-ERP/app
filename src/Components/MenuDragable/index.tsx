@@ -1,13 +1,20 @@
 import React, { useState } from "react";
 import { SGradient, SText, STheme, SView } from "servisofts-component";
 import { Layout, Page, Widget, XY } from "./types";
-import { View } from "react-native";
+import { Vibration, View } from "react-native";
 import Animated, { ReduceMotion, SharedValue, cancelAnimation, runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Item from "./Item";
+import PageInfo from "./PageInfo";
+import MenuBottom from "./MenuBottom";
+import MenuItem from "./MenuItem";
+import PageSeparator from "./PageSeparator";
 type MenuDragableProps = {
     data: { [key: string]: Widget },
-    onChangePosition: (evt: Widget) => any
+    onChangePosition: (evt: Widget) => any,
+    onLongPressStart: (evt: XY & { page: number, col: number }) => any,
+    onDelete: (evt: Widget) => any,
+    menuBottom: any,
 }
 
 export const animationStyle1 = {
@@ -23,13 +30,17 @@ export const animationStyle1 = {
 
 
 
-const MenuDragable = ({ data, onChangePosition }: MenuDragableProps) => {
+const MenuDragable = ({ data, onChangePosition, menuBottom, onDelete, onLongPressStart }: MenuDragableProps) => {
+    const [menu, setMenu] = useState<Widget>();
     const layout = useSharedValue<Layout>({ x: 0, y: 0, width: 0, height: 0 });
     const page = useSharedValue<Page>({ cant: 4, select: 0, col: 4, row: 7, gridWidth: 0, gridHeight: 0 });
+    // const menuOpen = useSharedValue({ key: "", x: 0, y: 0 });
     const scale = useSharedValue(1);
+    const onLongPressStatus = useSharedValue(0);
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
     const context = useSharedValue({ x: 0, y: 0 });
+    const startLongPress = useSharedValue({ x: 0, y: 0 });
 
     const handleOnLayout = (e: any) => {
         const _layout = e.nativeEvent.layout;
@@ -109,15 +120,42 @@ const MenuDragable = ({ data, onChangePosition }: MenuDragableProps) => {
 
     const longPressGesture = Gesture.LongPress().runOnJS(true)
         .minDuration(600)
-        .onStart(() => {
+        .onBegin(() => {
+            setMenu(undefined);
+            onLongPressStatus.value = withSpring(0, animationStyle1);
+        })
+        .onStart((evt) => {
             // scale.value = 0.8;
-            console.log("Mostrar los iconos de agregar")
+            onLongPressStatus.value = withSpring(1, animationStyle1);
+            // startLongPress.value = 
+            if (onLongPressStart) onLongPressStart({
+                x: Math.round((evt.x / page.value.gridWidth)),
+                y: Math.round((evt.y / page.value.gridHeight)),
+                page: page.value.select,
+                col: page.value.col
+            });
+            // console.log(evt)
+            Vibration.vibrate(100);
+            // console.log("Mostrar los iconos de agregar")
         }).onFinalize((e, succes) => {
             scale.value = 1;
         })
 
 
     const composed = Gesture.Simultaneous(gestureHandler, longPressGesture);
+
+
+    const closeMenuItem = (val: Widget) => {
+        setMenu(undefined)
+    }
+    const openMenuItem = (itm: Widget) => {
+        setMenu(itm)
+        // menuOpen.value = {
+        //     key: itm.key,
+        //     x: itm.x,
+        //     y: itm.y
+        // }
+    }
 
     return <View style={{ flex: 1, width: "100%", }} onLayout={handleOnLayout}>
         <GestureDetector gesture={composed}>
@@ -134,6 +172,7 @@ const MenuDragable = ({ data, onChangePosition }: MenuDragableProps) => {
 
                 ]
             }}>
+                <PageSeparator page={page}/>
                 {Object.values(data).map(obj => <Item
                     key={obj.key}
                     data={obj}
@@ -142,43 +181,19 @@ const MenuDragable = ({ data, onChangePosition }: MenuDragableProps) => {
                     translateX={translateX}
                     onChangePosition={onChangePosition}
                     animateToPage={animateToPage}
+                    onLongPressStatus={onLongPressStatus}
+                    openMenuItem={openMenuItem}
+                    closeMenuItem={closeMenuItem}
                 />)}
-
             </Animated.View>
         </GestureDetector >
         <PageInfo page={page} />
+        {!menu ? null : <MenuItem page={page} onLongPressStatus={onLongPressStatus} menuBottom={menuBottom} menu={menu} onDelete={onDelete} closeMenuItem={closeMenuItem} />}
+        <MenuBottom page={page} onLongPressStatus={onLongPressStatus} menuBottom={menuBottom} />
     </View>
 
 }
 
 
-const PageInfo = ({ page }: { page: SharedValue<Page> }) => {
-    const [select, setSelect] = useState(1);
-    useAnimatedReaction(() => page.value, (p) => {
-        // page.value.select = p;
-        runOnJS(setSelect)(p.select + 1)
-    })
-    const size = 6;
-    return <Animated.View style={{
-        position: "absolute",
-        // right: 0,
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        flexDirection: "row",
-        transform: [{ translateY: useDerivedValue(() => page.value.gridHeight * (page.value.row - 1)) }]
-        // bottom: page.value.gridHeight,
-    }} >
-        {new Array(page.value.cant).fill(0).map((a, i) => {
-            return <View style={{
-                width: size,
-                height: size,
-                backgroundColor: select == (i + 1) ? STheme.color.text : STheme.color.card,
-                borderRadius: 1000,
-                margin: 2,
-            }}></View>
-        })}
-        {/* <SText>{select}/{page.value.cant}</SText> */}
-    </Animated.View>
-}
+
 export default MenuDragable;
