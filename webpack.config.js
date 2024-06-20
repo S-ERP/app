@@ -3,6 +3,8 @@ const webpack = require('webpack');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
 const svgToMiniDataURI = require('mini-svg-data-uri');
 
 const outputDirectory = 'dist';
@@ -15,6 +17,7 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(),
+
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: './public/index.html',
@@ -29,6 +32,9 @@ module.exports = {
         new webpack.EnvironmentPlugin({ JEST_WORKER_ID: null }),
         // new webpack.DefinePlugin({ process: { env: {} } }),
         new webpack.DefinePlugin({ __DEV__: true, }),
+        new webpack.HotModuleReplacementPlugin(),
+        new ReactRefreshWebpackPlugin()
+
     ],
     module: {
         rules: [
@@ -49,7 +55,7 @@ module.exports = {
                             ],
                             '@babel/preset-env'
                         ],
-                        plugins: ['@babel/plugin-proposal-class-properties'],
+                        plugins: ['@babel/plugin-proposal-class-properties',require.resolve('react-refresh/babel')],
                     },
                 },
             },

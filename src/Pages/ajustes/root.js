@@ -19,6 +19,7 @@ class index extends Component {
                     <MenuButtom label={STheme.getTheme() == "default" ? "Oscuro" : "Claro"} icon={STheme.getTheme() == "default" ? <SIcon name='Moon' /> : <SIcon name='Sun' fill={"#fff"} />} onPress={() => {
                         STheme.change()
                     }} />
+                    <MenuButtom label={"Charts"} url={"/charts"} icon={<SIcon name={"Box"} />} />
                 </MenuPages>
             </SPage>
         );

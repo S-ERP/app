@@ -43,13 +43,13 @@ export default class reporte extends Component {
                             }
                         }
                     },
-                    { key: "fecha_on", width: 120, order: "desc", render: e => new SDate(e, 'yyyy-MM-ddThh:mm:ss').toString("yyyy-MM-dd hh:mm") },
+                    { key: "fecha_on", width: 120, order: "desc", render: e => !e ? "" : new SDate(e, 'yyyy-MM-ddThh:mm:ss').toString("yyyy-MM-dd hh:mm") },
                     { key: "qrid", width: 150 },
                     { key: "monto", width: 80, cellStyle: { textAlign: "center" }, render: a => SMath.formatMoney(a) },
                     { key: "nit", width: 100 },
                     { key: "razon_social", width: 100 },
-                    { key: "fecha_vencimiento", width: 120, cellStyle: { textAlign: "center" }, render: e => new SDate(e, 'yyyy-MM-ddThh:mm:ss').toString("yyyy-MM-dd hh:mm") },
-                    { key: "fecha_pago", width: 120, render: e => new SDate(e, 'yyyy-MM-ddThh:mm:ss').toString("yyyy-MM-dd hh:mm") },
+                    { key: "fecha_vencimiento", width: 120, cellStyle: { textAlign: "center" }, render: e => !e ? "" : new SDate(e, 'yyyy-MM-ddThh:mm:ss').toString("yyyy-MM-dd hh:mm") },
+                    { key: "fecha_pago", width: 120, render: e => !e ? "" : new SDate(e, 'yyyy-MM-ddThh:mm:ss').toString("yyyy-MM-dd hh:mm") },
                     { key: "key", width: 30 },
                     { key: "key_empresa", width: 30 },
                     { key: "key_usuario", width: 30 },

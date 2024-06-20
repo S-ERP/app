@@ -37,8 +37,11 @@ class index extends DPA.profile {
                 <MenuButtom url='/empresa/paso3' params={{
                     key: this.pk,
                 }} label='Foto background' />
+                <MenuButtom url='/empresa/colores' params={{
+                    key: this.pk,
+                }} label='Tema' />
             </MenuPages>
-            <Colores key_empresa={this.pk} />
+            {/* <Colores key_empresa={this.pk} /> */}
         </SView>
     }
 

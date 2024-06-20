@@ -3,6 +3,7 @@ package com.servisofts_erp_app;
 import android.app.Application;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import android.widget.RelativeLayout;
 import com.rnfs.RNFSPackage;
 import com.zmxv.RNSound.RNSoundPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
@@ -38,6 +39,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       @SuppressWarnings("UnnecessaryLocalVariable")
       List<ReactPackage> packages = new PackageList(this).getPackages();
+//      packages.add( new SplashScreenReactPackage());
       // Packages that cannot be autolinked yet can be added manually here, for
       // example:
       return packages;

@@ -13,14 +13,17 @@ type ItemPropsType = {
     layout: SharedValue<Layout>,
     onChangePosition: (evt: Widget) => any,
     animateToPage: (page: number) => any,
+    openMenuItem: (item: Widget) => any,
+    closeMenuItem: (item: Widget) => any,
     translateX: SharedValue<number>,
+    onLongPressStatus: SharedValue<number>
 }
 
 
 
 
 
-const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, translateX }: ItemPropsType) => {
+const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, translateX, onLongPressStatus, openMenuItem, closeMenuItem }: ItemPropsType) => {
     const positionIndex = useSharedValue({ x: data.x, y: data.y })
     const position = useSharedValue({ x: 0, y: 0 })
     const context = useSharedValue({ x: 0, y: 0 })
@@ -67,27 +70,30 @@ const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, 
 
 
             let x = data.x;
-            if (data.y >= page.value.row - 1) {
-                x = data.x + (page.value.select * 4)
-            }
+            // if (data.y >= page.value.row - 1) {
+            //     x = data.x + (page.value.select * 4)
+            // }
             if (data.y >= page.value.row - 1 && positionIndex.value.y != data.y) {
                 const sumpos = (translateX.value * -1) + (((page.value.col / 4) - 1) * (page.value.gridWidth * 2))
+                console.log("ENTRO ACA aRRIBA", sumpos)
                 x = x + Math.round((sumpos / page.value.gridWidth))
 
             }
-            if (positionIndex.value.y >= page.value.row - 1) {
-                absPos.x = absPos.x + (translateX.value * -1)
-            }
-            if (positionIndex.value.y >= page.value.row - 1 && positionIndex.value.y != data.y) {
-                console.log("ENTRO ACA ABAJo")
-                const sumpos = (translateX.value * -1) + (((page.value.col / 4) - 1) * (page.value.gridWidth * 2))
-                absPos.x = absPos.x + sumpos
-            }
+            // if (positionIndex.value.y >= page.value.row - 1) {
+            //     absPos.x = absPos.x + (translateX.value * -1)
+            // }
+
             const to = {
                 x: ((page.value.gridWidth * x)),
                 y: ((page.value.gridHeight * data.y))
             }
-
+            if (positionIndex.value.y >= page.value.row - 1 && positionIndex.value.y != data.y) {
+                console.log((page.value.select), absPos.x, translateX.value)
+                const sumpos = (translateX.value * -1) + (((page.value.col / 4) - 1) * (page.value.gridWidth * 2))
+                absPos.x = absPos.x + sumpos
+                console.log("ENTRO ACA ABAJo", to.x, absPos.x)
+                // to.x =
+            }
             const navigateto = {
                 x: to.x - absPos.x,
                 y: to.y - absPos.y
@@ -121,7 +127,7 @@ const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, 
     }, [data])
 
 
-    const variation = 0;
+    const variation = (data.w - 1) * 30 ;
     let isRun = false;
     const stopChangePage = () => {
         '!worklet'
@@ -205,7 +211,10 @@ const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, 
             zIndex.value = 2;
             scale.value = withSpring(1.1);
             Vibration.vibrate(100);
+            if (openMenuItem) {
+                openMenuItem(data)
 
+            }
         }).onFinalize((e, succes) => {
 
         })
@@ -216,7 +225,9 @@ const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, 
             context.value = { ...position.value };
         }).onUpdate((evt) => {
 
-
+            if (Math.abs(evt.translationX) > 20 || Math.abs(evt.translationY) > 20) {
+                runOnJS(closeMenuItem)(data);
+            }
             if (onAnimation.value == 1) return;
             position.value.x = context.value.x + evt.translationX;
             position.value.y = context.value.y + evt.translationY;
@@ -348,6 +359,12 @@ const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, 
     }
 
     const sum = useDerivedValue(() => (positionIndex.value.y >= page.value.row - 1 ? (translateX.value * -1) + (((page.value.col / 4) - 1) * (page.value.gridWidth * 2)) : 0))
+
+    // Animacion para esconder el menu 
+    const AnimacionEsconderMenu = useDerivedValue(() => (positionIndex.value.y >= page.value.row - 1 ? (onLongPressStatus.value * page.value.gridHeight) : 0))
+
+    const AnimacionEditandoIconos = useDerivedValue(() => ((onLongPressStatus.value) / 8))
+
     return <GestureDetector gesture={composed}>
         <Animated.View key={data.key} style={{
             position: "absolute",
@@ -358,11 +375,9 @@ const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, 
             justifyContent: "center",
             alignItems: "center",
             transform: [
-                {
-                    translateX: useDerivedValue(() => ((page.value.gridWidth * positionIndex.value.x) + position.value.x + sum.value))
-                },
-                { translateY: useDerivedValue(() => (page.value.gridHeight * positionIndex.value.y) + position.value.y) },
-                { scale },
+                { translateX: useDerivedValue(() => ((page.value.gridWidth * positionIndex.value.x) + position.value.x + sum.value)) },
+                { translateY: useDerivedValue(() => (page.value.gridHeight * positionIndex.value.y) + position.value.y + AnimacionEsconderMenu.value) },
+                { scale: useDerivedValue(() => scale.value - AnimacionEditandoIconos.value) },
             ]
         }}>
             <ELMENT data={data}  {...extraProps} />
