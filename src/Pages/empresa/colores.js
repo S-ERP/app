@@ -24,11 +24,11 @@ class Test extends Component {
     }
     renderTheme(colores, label) {
         const colorFormat = {
-            barColor: colores.barColor,
-            background: colores.background,
-            text: colores.text,
-            primary: colores.primary,
-            card: colores.card,
+            barColor: colores?.barColor,
+            background: colores?.background,
+            text: colores?.text,
+            primary: colores?.primary,
+            card: colores?.card,
         }
         return <SView height={50} row onPress={() => {
             STheme.color = {
@@ -68,7 +68,9 @@ class Test extends Component {
         let empresa = Model.empresa.Action.getSelect();
         console.log(empresa)
         return <SPage title={"Temas de la empresa"}>
-            {this.renderTheme(empresa.theme, "Empresa")}
+            
+            {(empresa.theme) ? this.renderTheme(empresa.theme, "Empresa") : null}
+           
             {this.renderTheme({
                 barColor: "#000000",
                 background: "#000000",
