@@ -47,6 +47,7 @@ import cafe from './cafe';
 import upload from "./upload"
 import solicitud_qr from './solicitud_qr';
 import charts from './charts';
+import mapa from './mapa';
 export default SPage.combinePages("/", {
     // "":Example,
     "": test,
@@ -98,4 +99,5 @@ export default SPage.combinePages("/", {
     "invitacion": invitacion,
     terminos,
     ...charts,
+    ...mapa
 })

@@ -115,12 +115,38 @@ class index extends Component<BoxMenuPropsType> {
                             borderBottomWidth: 1
                         }}
                         onPress={() => {
-                           
+
                             SNavigation.navigate("/profile/edit", { pk: Model.usuario.Action.getUsuarioLog() });
                             SPopup.close("menuLat")
                         }}
                     >
                         <SText fontSize={14} >Editar Perfil</SText>
+                    </SView>
+                    <SView col={"xs-12"} height={48} center
+                        style={{
+                            borderBottomColor: STheme.color.gray,
+                            borderBottomWidth: 1
+                        }}
+                        onPress={() => {
+
+                            SNavigation.navigate("/mapa/aviso");
+                            SPopup.close("menuLat")
+                        }}
+                    >
+                        <SText fontSize={14} >Mi ubicación</SText>
+                    </SView>
+                    <SView col={"xs-12"} height={48} center
+                        style={{
+                            borderBottomColor: STheme.color.gray,
+                            borderBottomWidth: 1
+                        }}
+                        onPress={() => {
+
+                            SNavigation.navigate("/terminos");
+                            SPopup.close("menuLat")
+                        }}
+                    >
+                        <SText fontSize={14} >Política de privacidad</SText>
                     </SView>
                     <SView col={"xs-12"} height={48} center
                         style={{
