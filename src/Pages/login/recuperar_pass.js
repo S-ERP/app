@@ -72,7 +72,7 @@ class recuperar_pass extends Component {
                 <SView center>
                     <SView col={"xs-11 md-6 xl-4"} center>
                         <SView height={40} />
-                        <SText fontSize={24} color={STheme.color.primary}  bold  center>¡Restablece tu contraseña!</SText>
+                        <SText fontSize={24} color={STheme.color.text}  bold  center>¡Restablece tu contraseña!</SText>
                         <SView height={30} />
 
                         {this.getForm()}
