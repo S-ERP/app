@@ -133,7 +133,7 @@ class index extends Component<BoxMenuPropsType> {
                             SPopup.close("menuLat")
                         }}
                     >
-                        <SText fontSize={14} >Términos y condiciones</SText>
+                        <SText fontSize={14} >Política de privacidad</SText>
                     </SView>
                     <SView col={"xs-12"} height={48} center
                         style={{
