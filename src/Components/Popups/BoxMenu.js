@@ -129,6 +129,19 @@ class index extends Component<BoxMenuPropsType> {
                         }}
                         onPress={() => {
 
+                            SNavigation.navigate("/mapa/aviso");
+                            SPopup.close("menuLat")
+                        }}
+                    >
+                        <SText fontSize={14} >Mi ubicación</SText>
+                    </SView>
+                    <SView col={"xs-12"} height={48} center
+                        style={{
+                            borderBottomColor: STheme.color.gray,
+                            borderBottomWidth: 1
+                        }}
+                        onPress={() => {
+
                             SNavigation.navigate("/terminos");
                             SPopup.close("menuLat")
                         }}
