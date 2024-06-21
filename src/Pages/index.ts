@@ -44,6 +44,7 @@ import terminos from './terminos'
 import anim1 from "./anim1"
 import widget from './widget';
 import cafe from './cafe';
+import upload from "./upload"
 import solicitud_qr from './solicitud_qr';
 import charts from './charts';
 export default SPage.combinePages("/", {
@@ -65,6 +66,7 @@ export default SPage.combinePages("/", {
     "test": test,
     "start": start,
     "wiki": wiki,
+    upload,
     t2,
     ...profile,
     ...usuario,
