@@ -49,9 +49,9 @@ class terminos extends Component {
                     <SText >
                         SERP   </SText>
                     <SText style={{}}>
-                        Av. Los Bosques, calle 11 (100 mts antes del 4to anillo) 1 cuadra antes de la Radial 17</SText>
+                        Av. Principal, calle 9 entre av. Bánzer y Beni </SText>
                     <SText style={{}}>
-                        Correo electrónico de contacto: contacto@dhmbolivia.com
+                        Correo electrónico de contacto: servisofts.srl@gmail.com
                     </SText>
                 </SView>
                 <SHr height={20} />
@@ -93,7 +93,7 @@ class terminos extends Component {
                     }} />
                     <SView col={"xs-11"}>
                         <SText style={{}}>
-                            Datos sensibles que pueden incluir la ubicación geográfica para usuarios repartidores.
+                            Datos sensibles que pueden incluir la ubicación geográfica para usuarios.
                         </SText>
                     </SView>
                 </SView>
@@ -194,7 +194,7 @@ class terminos extends Component {
                     }} />
                     <SView col={"xs-11"}>
                         <SText style={{}}>
-                            Proveedores de servicios que nos ayudan con nuestras operaciones comerciales.
+                            Proveedores de servicios que nos ayudan con nuestras operaciones administrativas y comerciales.
                         </SText>
                     </SView>
                 </SView>
@@ -244,7 +244,7 @@ class terminos extends Component {
                 </SView>
                 <SView col={"xs-12"}  >
                     <SText style={{ textAlign: 'justify' }}>
-                        Para cualquier pregunta o inquietud respecto a nuestra política de privacidad, por favor contacte a nuestro oficial de privacidad en contacto@dhmbolivia.com.
+                        Para cualquier pregunta o inquietud respecto a nuestra política de privacidad, por favor contacte a nuestro oficial de privacidad en servisofts.srl@gmail.com.
                     </SText>
                 </SView>
                 <SHr height={20} />
