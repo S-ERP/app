@@ -27,6 +27,7 @@ import remove, { ReactComponent as removeW } from './svg/remove.svg';
 import pass, { ReactComponent as passW } from './svg/pass.svg';
 import ubiPermiso, { ReactComponent as ubiPermisoW } from './svg/ubiPermiso.svg';
 import mapIcon, { ReactComponent as mapIconW } from './svg/mapIcon.svg';
+import widget, { ReactComponent as widgetW } from './svg/widget.svg';
 
 
 import Heart, { ReactComponent as HeartW } from './svg/social/Heart.svg';
@@ -91,6 +92,7 @@ const Assets: SAssets = {
         "pass": { Native: pass, Web: passW },
         "ubiPermiso": { Native: ubiPermiso, Web: ubiPermisoW },
         "mapIcon": { Native: mapIcon, Web: mapIconW },
+        "widget": { Native: widget, Web: widgetW },
 
 
         "Heart": { Native: Heart, Web: HeartW },

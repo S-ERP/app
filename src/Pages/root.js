@@ -134,6 +134,7 @@ class index extends Component {
                         let time = Platform.select({ web: 400, native: 800 });
                         new SThread(time, "sadasd").start(() => {
                             SNavigation.goBack();
+                            // SNavigation.
                         })
 
                         // SNavigation.navigate("/empresa/profile", { pk: a.key_empresa })

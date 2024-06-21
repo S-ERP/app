@@ -50,7 +50,7 @@ import charts from './charts';
 import mapa from './mapa';
 export default SPage.combinePages("/", {
     // "":Example,
-    "": test,
+    "": lobyRoot,
     // "": lobyRoot,
     "root": Root,
     anim1,
@@ -64,6 +64,7 @@ export default SPage.combinePages("/", {
     ...loby,
     ...registro,
     ...nota,
+    "widgets": test,
     "test": test,
     "start": start,
     "wiki": wiki,
