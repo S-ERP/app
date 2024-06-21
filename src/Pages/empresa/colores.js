@@ -57,9 +57,9 @@ class Test extends Component {
                     <SView width={16} />
                     <SText fontSize={16}>{"Barra de navegacion"}</SText>
                 </SView>
-                <SText bold fontSize={18}>{"Prubea de color"}</SText>
+                <SText bold fontSize={18}>{"Prueba de color"}</SText>
 
-                <SInput type='text' placeholder={"Prubea de color"} />
+                <SInput type='text' placeholder={"Prueba de color"} />
 
             </SView>
         </SView>

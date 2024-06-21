@@ -28,6 +28,9 @@ import pass, { ReactComponent as passW } from './svg/pass.svg';
 import ubiPermiso, { ReactComponent as ubiPermisoW } from './svg/ubiPermiso.svg';
 import mapIcon, { ReactComponent as mapIconW } from './svg/mapIcon.svg';
 import widget, { ReactComponent as widgetW } from './svg/widget.svg';
+import ifoto, { ReactComponent as ifotoW } from './svg/ifoto.svg';
+import iback, { ReactComponent as ibackW } from './svg/iback.svg';
+import itema, { ReactComponent as itemaW } from './svg/itema.svg';
 
 
 import Heart, { ReactComponent as HeartW } from './svg/social/Heart.svg';
@@ -93,6 +96,9 @@ const Assets: SAssets = {
         "ubiPermiso": { Native: ubiPermiso, Web: ubiPermisoW },
         "mapIcon": { Native: mapIcon, Web: mapIconW },
         "widget": { Native: widget, Web: widgetW },
+        "ifoto": { Native: ifoto, Web: ifotoW },
+        "iback": { Native: iback, Web: ibackW },
+        "itema": { Native: itema, Web: itemaW },
 
 
         "Heart": { Native: Heart, Web: HeartW },
