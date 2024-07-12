@@ -78,8 +78,12 @@ class Notas extends Component {
                 {/* </SView> */}
             </SView>
             <SView row>
-                <SView height={16} backgroundColor={color ?? "#EDE485"} width={92} style={{ padding: 2 }}>
+                <SView height={16} backgroundColor={color ?? "#EDE485"} width={92} style={{ padding: 2 }} row>
                     <SText color={"#666"} fontSize={10}>{new SDate(fecha_on, "yyyy-MM-ddThh:mm:ss").toString("MON dd")}</SText>
+                    {/* <SView flex  style={{ alignItems:"flex-end" }} row>
+                        <SText color={"#666"} fontSize={10}>{cantidad_participantes}</SText>
+                        <SIcon name={"invitados"} width={10} height={10} fill={"#666"} />
+                    </SView> */}
                 </SView>
                 <SView height={16} width={28} style={{ position: "relative", top: 0, right: 0, overflow: "hidden", alignItems: "flex-end" }}>
                     <SIcon name={"notaEsquina"} width={28} height={16} fill={color ? color + "80" : "#EDE48580"} />
@@ -91,7 +95,7 @@ class Notas extends Component {
     render() {
         let notas = Model.nota.Action.getAll();
         if (!notas) return <SLoad />
-        return <SView col={"xs-12"} flex >
+        return <SView col={"xs-12"}  >
             <SView col={"xs-12"} row>
                 <SText bold fontSize={15}> Notas</SText>
                 <SView flex />

@@ -50,6 +50,7 @@ import charts from './charts';
 import mapa from './mapa';
 import uploadv2 from "./uploadv2"
 import drive from './drive';
+import billetera from './billetera';
 import three from './three';
 
 export default SPage.combinePages("/", {
@@ -109,5 +110,6 @@ export default SPage.combinePages("/", {
     terminos,
     ...charts,
     ...mapa,
-    ...drive
+    ...drive,
+    ...billetera,
 })

@@ -53,6 +53,7 @@ import emp4, { ReactComponent as emp4W } from './svg/empresa/emp4.svg';
 import out, { ReactComponent as outW } from './svg/empresa/out.svg';
 import share, { ReactComponent as shareW } from './svg/empresa/share.svg';
 import invite, { ReactComponent as inviteW } from './svg/empresa/invite.svg';
+import invitados, { ReactComponent as invitadosW } from './svg/empresa/invitados.svg';
 
 import tpAf, { ReactComponent as tpAfW } from './svg/producto/tpAf.svg';
 import tpGa, { ReactComponent as tpGaW } from './svg/producto/tpGa.svg';
@@ -120,6 +121,7 @@ const Assets: SAssets = {
         "out": { Native: out, Web: outW },
         "share": { Native: share, Web: shareW },
         "invite": { Native: invite, Web: inviteW },
+        "invitados": { Native: invitados, Web: invitadosW },
 
         "tpAf": { Native: tpAf, Web: tpAfW },
         "tpGa": { Native: tpGa, Web: tpGaW },
