@@ -24,11 +24,11 @@ class Test extends Component {
     }
     renderTheme(colores, label) {
         const colorFormat = {
-            barColor: colores.barColor,
-            background: colores.background,
-            text: colores.text,
-            primary: colores.primary,
-            card: colores.card,
+            barColor: colores?.barColor,
+            background: colores?.background,
+            text: colores?.text,
+            primary: colores?.primary,
+            card: colores?.card,
         }
         return <SView height={50} row onPress={() => {
             STheme.color = {
@@ -57,9 +57,9 @@ class Test extends Component {
                     <SView width={16} />
                     <SText fontSize={16}>{"Barra de navegacion"}</SText>
                 </SView>
-                <SText bold fontSize={18}>{"Prubea de color"}</SText>
+                <SText bold fontSize={18}>{"Prueba de color"}</SText>
 
-                <SInput type='text' placeholder={"Prubea de color"} />
+                <SInput type='text' placeholder={"Prueba de color"} />
 
             </SView>
         </SView>
@@ -68,7 +68,9 @@ class Test extends Component {
         let empresa = Model.empresa.Action.getSelect();
         console.log(empresa)
         return <SPage title={"Temas de la empresa"}>
-            {this.renderTheme(empresa.theme, "Empresa")}
+            
+            {(empresa.theme) ? this.renderTheme(empresa.theme, "Empresa") : null}
+           
             {this.renderTheme({
                 barColor: "#000000",
                 background: "#000000",

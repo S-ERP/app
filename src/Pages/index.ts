@@ -54,9 +54,10 @@ import three from './three';
 
 export default SPage.combinePages("/", {
     // "":Example,
-    "":three,
+    // "":three,
     // "": test,
     // "": test,
+    "": lobyRoot,
     // "": lobyRoot,
     "root": Root,
     anim1,
@@ -70,6 +71,7 @@ export default SPage.combinePages("/", {
     ...loby,
     ...registro,
     ...nota,
+    "widgets": test,
     "test": test,
     "start": start,
     "wiki": wiki,

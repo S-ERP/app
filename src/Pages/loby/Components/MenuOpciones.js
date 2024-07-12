@@ -36,6 +36,8 @@ export default class MenuOpciones extends Component {
             <>
                 {this.renderMunuItem({ label: "", icon: "Menu", onPress: () => SNavigation.navigate("/menu") })}
                 <SView width={8} />
+                {this.renderMunuItem({ label: "", icon: "widget", onPress: () => SNavigation.navigate("/widgets") })}
+                <SView width={8} />
                 {/* {this.renderMunuItem({ label: "Init", icon: "Menu", onPress: () => SNavigation.navigate("/empresa/init") })}
                 <SView width={8} /> */}
                 {this.renderMunuItem({ label: "", icon: "Notify", onPress: () => SNavigation.navigate("/notification") })}

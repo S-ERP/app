@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from ".."
-import { SButtom, SHr, SList, SLoad, SNavigation, SText, SView } from 'servisofts-component';
+import { SButtom, SHr, SIcon, SList, SLoad, SNavigation, SText, SView } from 'servisofts-component';
 import Model from '../../../Model';
 import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
 import Colores from '../colores';
@@ -26,20 +26,20 @@ class index extends DPA.profile {
     $footer() {
         return <SView col={"xs-12"} >
             <SHr />
-            <SText fontSize={16} bold>Menu</SText>
+            <SText fontSize={16} bold>Menú</SText>
             <SHr />
             <MenuPages path={"/empresa/profile/"} permiso={"ver"} params={{
                 pk: this.pk
             }}>
                 <MenuButtom url='/empresa/paso2' label='Foto perfil' params={{
                     key: this.pk,
-                }} />
+                }} icon={<SIcon name={"ifoto"} />} />
                 <MenuButtom url='/empresa/paso3' params={{
                     key: this.pk,
-                }} label='Foto background' />
+                }} label='Foto background' icon={<SIcon name={"iback"} />} />
                 <MenuButtom url='/empresa/colores' params={{
                     key: this.pk,
-                }} label='Tema' />
+                }} label='Tema' icon={<SIcon name={"itema"} />}   />
             </MenuPages>
             {/* <Colores key_empresa={this.pk} /> */}
         </SView>
