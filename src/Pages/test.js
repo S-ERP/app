@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { SButtom, SDate, SDatePicker, SHr, SInput, SLoad, SNavigation, SNotification, SPage, SSPiner, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
-import STextPlay from '../Components/STextPlay';
-import Container from '../Components/Container';
-import SMD from '../SMD';
+// import STextPlay from '../Components/STextPlay';
+// import Container from '../Components/Container';
+// import SMD from '../SMD';
 import MDtest1 from '../SMD/MDtest1';
-import MDtest2 from '../SMD/MDtest2';
-import SwipeableView from '../Components/SwipeableView';
-import Loby from "./loby/root"
-import Publicaciones from "./publicacion/root"
-import Menu from './menu';
+// import MDtest2 from '../SMD/MDtest2';
+// import SwipeableView from '../Components/SwipeableView';
+// import Loby from "./loby/root"
+// import Publicaciones from "./publicacion/root"
+// import Menu from './menu';
 import MenuDragable from '../Components/MenuDragable';
 import Model from '../Model';
-import MultipageMenu from '../Components/MultipageMenu';
+// import MultipageMenu from '../Components/MultipageMenu';
 import SSocket from 'servisofts-socket';
 import DataBase from '../DataBase';
-import { Trigger } from 'servisofts-db';
-import { Image } from 'react-native';
+// import { Trigger } from 'servisofts-db';
+// import { Image } from 'react-native';
 export default class Test extends Component {
     constructor(props) {
         super(props);

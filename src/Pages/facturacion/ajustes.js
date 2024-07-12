@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SForm, SHr, SLoad, SNotification, SPage, SText, STheme } from 'servisofts-component';
+import { SForm, SHr, SLoad, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
 import { Container } from '../../Components';
@@ -9,7 +9,6 @@ export default class ajustes extends Component {
     constructor(props) {
         super(props);
         this.state = {
-
         };
     }
     componentDidMount() {
@@ -86,6 +85,7 @@ export default class ajustes extends Component {
     }
 
     verificarComunicacion({ ambiente, label }) {
+        const empresa = Model.empresa.Action.getSelect();
         return <SText col={"xs-12"} color={STheme.color.warning} underLine fontSize={18}
             onPress={() => {
                 SSocket.sendPromise({
@@ -95,6 +95,7 @@ export default class ajustes extends Component {
                     estado: "cargando",
                     ambiente: ambiente, // 1=produccion 2=prueba
                     key_empresa: Model.empresa.Action.getKey(),
+                    nit: empresa?.nit,
                     key_usuario: Model.usuario.Action.getKey(),
                 }, 1000 * 60).then(e => {
                     SNotification.send({
@@ -161,6 +162,110 @@ export default class ajustes extends Component {
                     ambiente: ambiente, // 1=produccion 2=prueba
                     key_empresa: Model.empresa.Action.getKey(),
                     key_usuario: Model.usuario.Action.getKey(),
+                    codigo_punto_venta:"0"
+                }, 1000 * 60).then(e => {
+                    SNotification.send({
+                        title: label,
+                        body: "Exito",
+                        color: STheme.color.success,
+                        time: 5000
+                    })
+                    this.setState({ loading: false })
+                    console.log(e);
+                }).catch(e => {
+                    SNotification.send({
+                        title: label,
+                        body: "Error",
+                        color: STheme.color.error,
+                        time: 5000
+                    })
+                    console.error(e);
+                })
+            }}
+        >{label}</SText>
+    }
+    sincronizarFechaHora({ ambiente, label }) {
+        return <SText col={"xs-12"} color={STheme.color.warning} underLine fontSize={18}
+            onPress={() => {
+                SSocket.sendPromise({
+                    service: "facturacion",
+                    component: "siat",
+                    type: "sincronizarFechaHora",
+                    estado: "cargando",
+                    nit: Model.empresa.Action.getSelect()?.nit,
+                    ambiente: ambiente, // 1=produccion 2=prueba
+                    key_empresa: Model.empresa.Action.getKey(),
+                    key_usuario: Model.usuario.Action.getKey(),
+                    codigo_punto_venta:"1"
+                }, 1000 * 60).then(e => {
+                    SNotification.send({
+                        title: label,
+                        body: "Exito",
+                        color: STheme.color.success,
+                        time: 5000
+                    })
+                    this.setState({ loading: false })
+                    console.log(e);
+                }).catch(e => {
+                    SNotification.send({
+                        title: label,
+                        body: "Error",
+                        color: STheme.color.error,
+                        time: 5000
+                    })
+                    console.error(e);
+                })
+            }}
+        >{label}</SText>
+    }
+    getCufd({ ambiente, label }) {
+        return <SText col={"xs-12"} color={STheme.color.warning} underLine fontSize={18}
+            onPress={() => {
+                SSocket.sendPromise({
+                    service: "facturacion",
+                    component: "siat",
+                    type: "getCufd",
+                    estado: "cargando",
+                    nit: Model.empresa.Action.getSelect()?.nit,
+                    ambiente: ambiente, // 1=produccion 2=prueba
+                    key_empresa: Model.empresa.Action.getKey(),
+                    key_usuario: Model.usuario.Action.getKey(),
+                    codigo_punto_venta:"0"
+                }, 1000 * 60).then(e => {
+                    SNotification.send({
+                        title: label,
+                        body: "Exito",
+                        color: STheme.color.success,
+                        time: 5000
+                    })
+                    this.setState({ loading: false })
+                    console.log(e.data);
+                }).catch(e => {
+                    SNotification.send({
+                        title: label,
+                        body: "Error",
+                        color: STheme.color.error,
+                        time: 5000
+                    })
+                    
+                    this.state.resp = e.data;
+                    this.setState({...this.state})
+                })
+            }}
+        >{label}</SText>
+    }
+    getPuntosDeVentas({ ambiente, label }) {
+        return <SText col={"xs-12"} color={STheme.color.warning} underLine fontSize={18}
+            onPress={() => {
+                SSocket.sendPromise({
+                    service: "facturacion",
+                    component: "siat",
+                    type: "getPuntosDeVentas",
+                    estado: "cargando",
+                    nit: Model.empresa.Action.getSelect()?.nit,
+                    ambiente: ambiente, // 1=produccion 2=prueba
+                    key_empresa: Model.empresa.Action.getKey(),
+                    key_usuario: Model.usuario.Action.getKey(),
                 }, 1000 * 60).then(e => {
                     SNotification.send({
                         title: label,
@@ -198,6 +303,16 @@ export default class ajustes extends Component {
                     label: "Sincronizar Parametricas"
                 })}
                 <SHr h={20} />
+                {this.sincronizarFechaHora({
+                    ambiente: 1,
+                    label: "Sincronizar Fecha hora"
+                })}
+                <SHr h={20} />
+                {this.getPuntosDeVentas({
+                    ambiente: 1,
+                    label: "Get puntos de ventas"
+                })}
+                <SHr h={20} />
 
                 {this.getCertificado({
                     ambiente: 1,
@@ -214,7 +329,25 @@ export default class ajustes extends Component {
                     label: "Sincronizar Parametricas de PRUEBAS"
                 })}
                 <SHr h={20} />
-
+                {this.sincronizarFechaHora({
+                    ambiente: 2,
+                    label: "Sincronizar Fecha hora PRUEBAS"
+                })}
+                <SHr h={20} />
+                {this.getCufd({
+                    ambiente: 2,
+                    label: "Obtener Cufd"
+                })}
+                <SHr h={20} />
+                {this.getPuntosDeVentas({
+                    ambiente: 2,
+                    label: "Get puntos de ventas de PRUEBAS"
+                })}
+                <SHr h={20} />
+            
+                <SText col={"xs-12"} color={STheme.color.warning} underLine fontSize={18}>{this.state.resp}</SText>
+                
+                
                 {/* {this.getCertificado({
                     ambiente: 2,
                     label: "GetCertificado PRUEBA"

@@ -83,7 +83,7 @@ export default class emitir extends Component {
                 color: STheme.color.error,
                 time: 5000
             })
-            console.error(e);
+            //console.error(e);
         })
     }
     render() {

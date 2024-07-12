@@ -15,6 +15,7 @@ export default class root extends Component {
         return <SPage title={"Facturacion"}>
             <MenuPages path='/facturacion/'>
                 <MenuButtom label='Ajustes' url='/facturacion/ajustes' icon={<SIcon name='Ajustes'/>}/>
+                <MenuButtom label='Puntos de ventas' url='/facturacion/puntos_de_ventas' icon={<SIcon name='Ajustes'/>}/>
                 <MenuButtom label='Emitir' url='/facturacion/emitir' icon={<SIcon name='Ingreso'/>}/>
                 <MenuButtom label='Libro de ventas' url='/facturacion/libro_ventas' icon={<SIcon name='Excel'/>}/>
             </MenuPages>

@@ -7,6 +7,7 @@ export default class SVideo extends Component {
         super(props);
         this.state = {
             muted: true,
+            paused: this.props.paused,
         };
 
     }
@@ -18,8 +19,9 @@ export default class SVideo extends Component {
     }
     componentDidMount() {
         new SThread(100, "before", true).start(() => {
-            this.video.play()
-            this.video.pause()
+            // this.video.c
+            // this.video.play()
+            // this.video.pause()
         })
     }
 
@@ -39,13 +41,21 @@ export default class SVideo extends Component {
                 if (ref) {
                     this.video = ref
                 }
-            }} src={this.props.src} style={{
-                objectFit: "cover",
+            }} style={{
+                objectFit: "scale-down",
                 width: "100%",
-                flex: 1,
+                height: "100%"
+                // flex: 1,
                 // ...this.props.style
-            }} autoPlay={!this.props.paused}  >
+            }}
+                // controls
+                // autoPlay={!this.props.paused}
+                // {...this.props}
+                controls
 
+
+            >
+                <source src={this.props.src} type="video/mp4"></source>
             </video>
         </SView>
     }

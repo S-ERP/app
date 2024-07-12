@@ -80,10 +80,10 @@ module.exports = {
                         icon: true,
                         svgoConfig: {
                             plugins: [
-                                {
-                                    name: 'removeViewBox',
-                                    active: false
-                                }
+                                // {
+                                //     name: 'removeviewbox',
+                                //     active: false
+                                // }
                             ]
                         }
                     }
@@ -114,4 +114,3 @@ module.exports = {
         // }
     }
 };
-

@@ -44,13 +44,19 @@ import terminos from './terminos'
 import anim1 from "./anim1"
 import widget from './widget';
 import cafe from './cafe';
-import upload from "./upload"
+// import upload from "./upload"
 import solicitud_qr from './solicitud_qr';
 import charts from './charts';
 import mapa from './mapa';
+import uploadv2 from "./uploadv2"
+import drive from './drive';
+import three from './three';
+
 export default SPage.combinePages("/", {
     // "":Example,
-    "": test,
+    "":three,
+    // "": test,
+    // "": test,
     // "": lobyRoot,
     "root": Root,
     anim1,
@@ -67,7 +73,8 @@ export default SPage.combinePages("/", {
     "test": test,
     "start": start,
     "wiki": wiki,
-    upload,
+    // upload,
+    uploadv2,
     t2,
     ...profile,
     ...usuario,
@@ -99,5 +106,6 @@ export default SPage.combinePages("/", {
     "invitacion": invitacion,
     terminos,
     ...charts,
-    ...mapa
+    ...mapa,
+    ...drive
 })

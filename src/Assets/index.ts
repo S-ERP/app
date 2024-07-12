@@ -60,7 +60,7 @@ import deleteAll, { ReactComponent as deleteAllW } from './svg/producto/deleteAl
 
 
 
-
+import drive from './svg/drive';
 
 const Assets: SAssets = {
     svg: {
@@ -120,7 +120,7 @@ const Assets: SAssets = {
         "productos": { Native: productos, Web: productosW },
         "add1": { Native: add1, Web: add1W },
         "deleteAll": { Native: deleteAll, Web: deleteAllW },
-
+        ...drive
     }
 }
 

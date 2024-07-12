@@ -5,6 +5,8 @@ import emitir from "./emitir";
 import pdf from "./pdf"
 import pdfLarge from "./pdfLarge"
 import libro_ventas from "./libro_ventas";
+import puntos_de_ventas from "./puntos_de_ventas";
+import puntos_de_ventas_registro from "./puntos_de_ventas_registro";
 export const Parent = {
     name: "facturacion",
     path: `/facturacion`,
@@ -16,6 +18,8 @@ export default SPage.combinePages(Parent.name, {
     emitir,
     libro_ventas,
     pdf,
-    pdfLarge
+    pdfLarge,
+    puntos_de_ventas,
+    "puntos_de_ventas/registro": puntos_de_ventas_registro
 
 })

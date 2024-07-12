@@ -62,6 +62,7 @@ const App = (props) => {
                         props={{ navBar: NavBar, title: 'SERP', pages: Pages }}
                     />
                 </DataBaseContainer>
+                {/* <SUploadContainer /> */}
                 <Socket store={store} />
                 {/* <SText style={{ position: "absolute", bottom: 2, right: 2, }} fontSize={10} color={STheme.color.lightGray}>v{packageInfo.version}</SText> */}
             </SComponentContainer>

@@ -33,6 +33,7 @@ export default {
         // compra_venta: 'http://192.168.2.1:30041/',
 
         crm: "https://crm.servisofts.com/http/",
+        drive: "http://192.168.2.1:30017/",
         // crm: "http://192.168.2.1:30051/",
     },
     timeReconnect: 5000
