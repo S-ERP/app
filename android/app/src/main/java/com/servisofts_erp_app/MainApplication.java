@@ -17,6 +17,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
+// import com.expo.modules.gl.GLPackage;
 
 import android.content.Context;
 import com.facebook.react.ReactInstanceManager;
@@ -27,6 +28,8 @@ import java.lang.reflect.InvocationTargetException;
 // import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import expo.modules.ApplicationLifecycleDispatcher;
+import expo.modules.ReactNativeHostWrapper;
 public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost = new DefaultReactNativeHost(this) {
@@ -39,6 +42,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       @SuppressWarnings("UnnecessaryLocalVariable")
       List<ReactPackage> packages = new PackageList(this).getPackages();
+      // packages.add(new GLPackage());
 //      packages.add( new SplashScreenReactPackage());
       // Packages that cannot be autolinked yet can be added manually here, for
       // example:
@@ -82,11 +86,14 @@ public class MainApplication extends Application implements ReactApplication {
     }
 
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    ApplicationLifecycleDispatcher.onApplicationCreate(this);
     // if (BuildConfig.DEBUG) {
     // ReactNativeFlipper.initializeFlipper(this,
     // getReactNativeHost().getReactInstanceManager());
     // }
   }
+
+
 
   private static void initializeFlipper(
       Context context, ReactInstanceManager reactInstanceManager) {

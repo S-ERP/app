@@ -12,7 +12,12 @@ module.exports = (async () => {
     resolver: { sourceExts, assetExts }
   } = await getDefaultConfig();
 
+  process.env.NODE_OPTIONS = '--max_old_space_size=16384';
+  
   assetExts.push('pem');
+  assetExts.push('gltf');
+  assetExts.push('obj');
+  assetExts.push('mtl');
   return {
     transformer: {
       babelTransformerPath: require.resolve('react-native-svg-transformer'),
@@ -43,7 +48,10 @@ module.exports = (async () => {
       assetExts: assetExts.filter((ext) => ext !== 'svg'),
       sourceExts: [...sourceExts, 'svg'],
       extraNodeModules: new Proxy(
-        {},
+        {
+          fs: path.resolve(__dirname, 'node_modules/react-native-fs'),
+          path: path.resolve(__dirname, 'node_modules/react-native-path')
+        },
         {
           get: (target, name) => {
             if (target.hasOwnProperty(name)) {

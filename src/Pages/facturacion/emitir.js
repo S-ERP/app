@@ -73,7 +73,7 @@ export default class emitir extends Component {
                 color: STheme.color.success,
                 time: 5000
             })
-            PDF.handlePress(e)
+            //PDF.handlePress(e)
             this.setState({ loading: false })
             console.log(e);
         }).catch(e => {
@@ -253,6 +253,7 @@ class Detalle extends Component<{ parametricas: any }> {
                         if (pro) {
                             this.state.detalle[key]["codigoProductoSin"] = pro.codigoProducto;
                             this.state.detalle[key]["descripcion"] = pro.descripcionProducto
+                            this.state.detalle[key]["codigoActividad"] = pro.codigoActividad
                         }
 
                     }}

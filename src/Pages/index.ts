@@ -51,6 +51,7 @@ import mapa from './mapa';
 import uploadv2 from "./uploadv2"
 import drive from './drive';
 import three from './three';
+import mesh from './mesh';
 
 export default SPage.combinePages("/", {
     // "":Example,
@@ -75,6 +76,7 @@ export default SPage.combinePages("/", {
     "test": test,
     "start": start,
     "wiki": wiki,
+    ...three,
     // upload,
     uploadv2,
     t2,
@@ -107,6 +109,7 @@ export default SPage.combinePages("/", {
     invitation,
     "invitacion": invitacion,
     terminos,
+    ...mesh,
     ...charts,
     ...mapa,
     ...drive

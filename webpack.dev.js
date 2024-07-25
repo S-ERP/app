@@ -5,9 +5,10 @@ const webpack = require('webpack');
 
 module.exports = merge(common, {
     mode: 'development',
-    devtool: 'source-map',
+    // devtool: 'source-map',
+    devtool: 'cheap-module-source-map',
     devServer: {
-        port: 3001,
+        port: 3010,
         hot: true,
         historyApiFallback: true,
     },
@@ -20,13 +21,23 @@ module.exports = merge(common, {
             {
                 test: /\.(js|jsx|tsx|ts)$/,
                 exclude: /node_modules/,
-                use: {
+                use: ['thread-loader', {
                     loader: 'babel-loader',
                     options: {
                         plugins: [require.resolve('react-refresh/babel')],
                     },
-                },
+                }],
             },
         ],
+    },
+    watchOptions: {
+        aggregateTimeout: 200,
+        poll: 500,
+        ignored: /node_modules/,
+    },
+    optimization: {
+        splitChunks: {
+            chunks: 'all',
+        },
     },
 });

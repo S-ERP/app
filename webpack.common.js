@@ -51,7 +51,7 @@ module.exports = {
                 },
             },
             {
-                test: /\.(png|jpe?g|gif)$/i,
+                test: /\.(png|jpe?g|gif|obj|gltf|mtl)$/i,
                 use: [
                     {
                         loader: 'file-loader',
@@ -61,6 +61,11 @@ module.exports = {
                     },
                 ],
             },
+            // {
+            //     test: /\.(ts|tsx)$/,
+            //     exclude: /node_modules|\.js$/,
+            //     use: 'ts-loader'
+            // },
             {
                 test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
                 issuer: /\.[jt]sx?$/,
@@ -92,5 +97,10 @@ module.exports = {
         extensions: ['.web.js', '.js', '.jsx', '.json', '.ts', '.tsx'],
 
         modules: [path.resolve(__dirname, 'node_modules'), 'node_modules'],
+        fallback: {
+            fs: false,
+            path: require.resolve('path-browserify'),
+            os: false,
+        },
     },
 };

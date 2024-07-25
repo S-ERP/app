@@ -8,8 +8,7 @@ import { Container } from '../../Components';
 export default class ajustes extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-        };
+        this.state = {};
     }
     componentDidMount() {
         SSocket.sendPromise({

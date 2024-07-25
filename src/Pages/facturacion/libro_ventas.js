@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, Linking } from 'react-native';
-import { SDate, SIcon, SPage, STable, STable2, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SIcon, SNotification, SPage, STable, STable2, SText, STheme, SView } from 'servisofts-component';
 import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
 import PDF from './pdf';
+import { ConstNode } from 'three/examples/jsm/nodes/Nodes';
+import { SPopup } from 'servisofts-component';
 
 export default class libro_ventas extends Component {
     constructor(props) {
@@ -72,7 +74,40 @@ export default class libro_ventas extends Component {
                     { key: "data/cliNit", width: 80, label: "NIT/CI CLIENTE" },
                     { key: "data/cliRazonSocial", width: 150, label: "NOMBRE O RAZON SOCIAL" },
                     { key: "data/codigoControl", width: 120, label: "Codigo de control" },
+                    {
+                        key: "data/cuf-anular", width: 70, label: "ANULAR",
+                        component: (e) => <SView height padding={2}><SIcon name='Delete' /></SView>,
+                        onPress: (cuf) => {
+                            SPopup.confirm({
+                                title: "Esta seguro de anular la factura",
+                                message: "Se va a anular de impuestos",
+                                onPress: () => {
+                                    SSocket.sendPromise({
+                                        service: "facturacion",
+                                        component: "factura",
+                                        type: "anular",
+                                        cuf: cuf
+                                    }).then(e => {
+                                        SNotification.send({
+                                            title: "Factura anulado con exito",
+                                            body: cuf,
+                                            color: STheme.color.success,
+                                            time: 5000,
+                                        })
+                                    }).catch(e => {
+                                        SNotification.send({
+                                            title: "No se pudo anular la factura.",
+                                            body: cuf,
+                                            color: STheme.color.error,
+                                            time: 5000,
+                                        })
+                                    })
+                                }
+                            })
+                        }
+                    },
                     { key: "data/cuf", width: 270, label: "CUF" },
+
 
                 ]}
             />

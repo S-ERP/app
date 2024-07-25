@@ -1,3 +1,6 @@
+    "ammo.js": "github:kripken/ammo.js",
+
+
 
 nvm install 14.18.0
 nvm use 14.18.0

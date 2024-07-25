@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { SLoad, SPopup, SButtom, SHr, SImage, SNavigation, SPage, SText, STheme, SView, SDate } from 'servisofts-component';

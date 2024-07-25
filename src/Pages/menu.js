@@ -58,6 +58,7 @@ class index extends Component {
                     <MenuButtom label={"Mi perfil"} url={"/profile"} icon={this.getIconProfile()} />
                     {/* <MenuButtom label={"Reto"} url={"/tarea/reto"}  /> */}
                     <MenuButtom label={"Drive"} url={"/drive"} />
+                    <MenuButtom label={"Three"} url={"/three"} />
                     <MenuButtom label={"Facturacion"} url={"/facturacion"} icon={<SIcon name={"Box"} />} />
                 </MenuPages>
                 <SHr height={100} />

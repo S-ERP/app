@@ -43,7 +43,7 @@ export default class root extends Component {
         }).catch(e => {
             console.error(e);
         })
-        console.log("USUSARIOOO",Model.usuario.Action.getUsuarioLog())
+        console.log("USUSARIOOO", Model.usuario.Action.getUsuarioLog())
         console.log("loadDataUser", SNavigation.lastRoute.route.name)
     }
 
@@ -109,6 +109,7 @@ export default class root extends Component {
             Model.publicacion.Action.CLEAR();
             return;
         }} >
+            <SText padding={20} card onPress={() => { SNavigation.navigate("/three") }}>{"IR A THREE"}</SText>
             <Scroll >
                 <SHr h={16} />
                 <PerfilEmpresa />
