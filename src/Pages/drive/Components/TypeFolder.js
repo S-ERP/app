@@ -12,6 +12,7 @@ export default class TypeFolder extends Component {
         super(props);
         this.state = {
             showHidden: false,
+            time: new Date().getTime(),
             data: []
         };
     }
@@ -50,7 +51,8 @@ export default class TypeFolder extends Component {
         }
         if (evt == "submit_file") {
             this.setState(prevState => ({
-                data: [...prevState.data, data]
+                time: new Date().getTime(),
+                data: [...prevState.data.filter(dataItem => dataItem.name !== data.name), data]
             }));
         }
         if (evt == "change_name") {
@@ -124,6 +126,7 @@ export default class TypeFolder extends Component {
                         keyExtractor={e => e.name}
                         renderItem={({ item, index }) => {
                             return <ListItem width={this.state?.layout?.width} obj={item} path={this.props.path}
+                                time={this.state.time}
                                 onPress={() => {
                                     console.log("Entro")
                                     if (this.active) return null;

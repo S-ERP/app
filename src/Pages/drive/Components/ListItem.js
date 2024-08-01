@@ -23,6 +23,8 @@ export default class ListItem extends Component {
         let name = encodeURI(this.props?.obj?.name);
         // let pathfinal = !this.props.path ? name : this.props.path + "/" + name
         let pathfinal = this.props.path + "/" + name;
+        console.log("entro aca", pathfinal, DBUploadTask)
+
         const task = Object.values(DBUploadTask).find(a => {
             const pa = a.props.path;
             const pb = pathfinal
@@ -32,6 +34,7 @@ export default class ListItem extends Component {
 
             return true;
         })
+        console.log(task)
 
         return task;
     }
@@ -47,6 +50,8 @@ export default class ListItem extends Component {
     }
     onComplete = (evt) => {
         this.setState({ ...this.state })
+        this.componentWillUnmount();
+        this.task = null;
     }
 
     componentDidMount() {
@@ -79,7 +84,7 @@ export default class ListItem extends Component {
         return new SDate(date).toString("dd MON yyyy")
     }
     buildIcon() {
-        return <ItemIcon obj={this.props.obj} path={this.props.path} />
+        return <ItemIcon obj={this.props.obj} path={this.props.path} time={this.props.time} />
     }
 
     renderProgresBar = () => {
@@ -145,6 +150,12 @@ export default class ListItem extends Component {
         </>
     }
     render() {
+        if (!this.task) {
+            this.task = this.findTask();
+            if (this.task) {
+                this.componentDidMount();
+            }
+        }
         return <SView
             col={"xs-12"}
             row

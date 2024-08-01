@@ -34,9 +34,9 @@ export default class Pelota extends THREE.Group {
         const rbInfo = new Ammo.btRigidBodyConstructionInfo(mass, motionState, colShape, localInertia);
 
         this.body = new Ammo.btRigidBody(rbInfo);
-        this.body.setFriction(0.9);
+        // this.body.setFriction(0.1);
         this.body.setDamping(0.2, 0.2); // Configurar damping lineal y angular
-        this.body.setRestitution(0.9); // Configurar restitución para que la pelota rebote
+        this.body.setRestitution(0.99); // Configurar restitución para que la pelota rebote
 
         // this.body.setAngularFactor(new Ammo.btVector3(0, 1, 0))
         this.mesh.userData.physicsBody = this.body;

@@ -59,7 +59,7 @@ class index extends Component {
                     {/* <MenuButtom label={"Reto"} url={"/tarea/reto"}  /> */}
                     <MenuButtom label={"Drive"} url={"/drive"} />
                     <MenuButtom label={"Three"} url={"/three"} />
-                    <MenuButtom label={"Facturacion"} url={"/facturacion"} icon={<SIcon name={"Box"} />} />
+                    {/* <MenuButtom label={"Facturacion"} url={"/facturacion"} icon={<SIcon name={"Box"} />} /> */}
                 </MenuPages>
                 <SHr height={100} />
             </SPage>

@@ -1,5 +1,5 @@
 import { SUuid } from "servisofts-component";
-import { SUploadProps } from ".";
+import { DBUploadTask, SUploadProps } from ".";
 import { EventEmitter } from "events";
 
 import Functions from "./Functions";
@@ -57,8 +57,10 @@ export default class UploadTask extends EventEmitter {
         const totalChunks = Math.ceil(this.file.size / this.chunkSize);
         this.request.open('POST', this.url + `?chunkNumber=${chunkNumber}&totalChunks=${totalChunks}`, true);
         this.request.setRequestHeader('Content-Type', 'application/octet-stream');
+        // this.request.setRequestHeader('Access-Control-Allow-Origin', '*');
 
         this.request.upload.addEventListener('progress', (e) => {
+            // console.log("progress", e);
             if (e.lengthComputable) {
                 const percentComplete = ((start + e.loaded) / this.file.size) * 100;
                 // console.log(`Chunk progress: ${percentComplete}%   ${start} + ${e.loaded} / ${this.file.size}`);
@@ -79,6 +81,7 @@ export default class UploadTask extends EventEmitter {
                     } else {
                         this.isCompleted = true;
                         this.emit('complete', { type: 'complete', key: this.key });
+                        delete DBUploadTask[this.key]
                         console.log('Upload complete');
                     }
                 } else {

@@ -58,13 +58,23 @@ export const Actions = {
             return e.data;
         })
     },
+    papelera: ({ path }) => {
+        return SSocket.sendPromise({
+            service: "drive",
+            component: "file",
+            type: "papelera",
+            path: path
+        }).then((e: any) => {
+            return e.data;
+        })
+    },
     mv: ({ path, path_to }) => {
         return SSocket.sendPromise({
             service: "drive",
             component: "file",
             type: "mv",
             path: path,
-            path_to:path_to
+            path_to: path_to
         }).then((e: any) => {
             return e.data;
         })

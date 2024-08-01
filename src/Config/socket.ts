@@ -1,7 +1,8 @@
 export default {
-    debug: false, //para que se vea los returns del server
     // debug: false, //para que se vea los returns del server
+    debug: true, //para que se vea los returns del server
     name: 'serp',
+    
     // ssl: true,
     // host: 'serp.servisofts.com',
     ssl: false,
@@ -33,7 +34,8 @@ export default {
         // compra_venta: 'http://192.168.2.1:30041/',
 
         crm: "https://crm.servisofts.com/http/",
-        drive: "http://192.168.2.1:30017/",
+        // drive: "http://192.168.2.1:30017/",
+        drive: "https://drive.servisofts.com/http/",
         // crm: "http://192.168.2.1:30051/",
     },
     timeReconnect: 5000

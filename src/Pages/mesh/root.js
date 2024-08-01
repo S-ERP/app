@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SList, SNavigation, SPage, SText, SView } from 'servisofts-component';
+import { SHr, SImage, SList, SNavigation, SPage, SText, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
 import { Container } from '../../Components';
@@ -10,6 +10,7 @@ export default class root extends Component {
         super(props);
         this.state = {
         };
+        this.onSelect = SNavigation.getParam("onSelect")
     }
     componentDidMount() {
         SSocket.sendPromise({
@@ -25,10 +26,22 @@ export default class root extends Component {
     }
 
     renderItem(obj) {
-        return <SView col={"xs-12"} card padding={8} onPress={() => {
+        return <SView col={"xs-12"} card padding={4} onPress={() => {
+            if (this.onSelect) {
+                this.onSelect(obj);
+                return;
+            }
             SNavigation.navigate("/mesh/edit", { key: obj.key })
-        }}>
-            <SText fontSize={18} bold>{obj.descripcion}</SText>
+        }} row>
+            <SView width={34} height={34} card>
+                <SImage src={SSocket.api.root + "mesh/" + obj.key} />
+            </SView>
+            <SView width={8}/>
+            <SView flex style={{
+                justifyContent: "center"
+            }}>
+                <SText fontSize={18} bold>{obj.descripcion}</SText>
+            </SView>
         </SView>
     }
     render() {
@@ -37,7 +50,10 @@ export default class root extends Component {
                 <SHr />
                 <SText card padding={8} onPress={() => { SNavigation.navigate("/mesh/new") }}>NUEVO MESH</SText>
                 <SHr />
-                <SList data={this.state.data}
+                <SList
+                    buscador
+                    data={this.state.data}
+                    order={[{ key: "descripcion", order: "asc", }]}
                     render={this.renderItem.bind(this)}
                 />
             </Container>

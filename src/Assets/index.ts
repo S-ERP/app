@@ -62,6 +62,14 @@ import productos, { ReactComponent as productosW } from './svg/producto/producto
 import add1, { ReactComponent as add1W } from './svg/producto/add1.svg';
 import deleteAll, { ReactComponent as deleteAllW } from './svg/producto/deleteAll.svg';
 
+import iCamera, { ReactComponent as iCameraW } from './svg/scene/iCamera.svg';
+import iEchado, { ReactComponent as iEchadoW } from './svg/scene/iEchado.svg';
+import iExit, { ReactComponent as iExitW } from './svg/scene/iExit.svg';
+import iJump, { ReactComponent as iJumpW } from './svg/scene/iJump.svg';
+
+
+
+
 
 
 import drive from './svg/drive';
@@ -128,7 +136,12 @@ const Assets: SAssets = {
         "productos": { Native: productos, Web: productosW },
         "add1": { Native: add1, Web: add1W },
         "deleteAll": { Native: deleteAll, Web: deleteAllW },
-        ...drive
+        ...drive,
+
+        "iCamera": { Native: iCamera, Web: iCameraW },
+        "iEchado": { Native: iEchado, Web: iEchadoW },
+        "iExit": { Native: iExit, Web: iExitW },
+        "iJump": { Native: iJump, Web: iJumpW },
     }
 }
 

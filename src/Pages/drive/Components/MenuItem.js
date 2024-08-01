@@ -4,6 +4,7 @@ import { SHr, SIcon, SNotification, SPopup, SText, STheme, SUtil, SView } from '
 import ItemIcon from './ItemIcon';
 import { Actions } from '..';
 import ChangeName from './ChangeName';
+import SSocket from 'servisofts-socket';
 
 export default class MenuItem extends Component {
     static KEYPOPUP = "MenuItemPopup"
@@ -45,6 +46,27 @@ export default class MenuItem extends Component {
         }
         MenuItem.close()
     }
+    handleEnviarAPapelera() {
+        if (this.props.onEvent) {
+            let name = this.props.obj.name;
+            let pathfinal = !this.props.path ? name : this.props.path + "/" + name
+            Actions.papelera({
+                path: pathfinal
+            }).then(e => {
+                this.props.onEvent("delete")
+            }).catch(e => {
+                SNotification.send({
+                    title: "Error",
+                    body: e.error,
+                    color: STheme.color.danger,
+                    time: 5000,
+                })
+                console.error(e);
+            })
+
+        }
+        MenuItem.close()
+    }
 
     handleCambiarNombre() {
         ChangeName.open({ path: this.props.path, obj: this.props.obj, onEvent: this.props.onEvent })
@@ -52,7 +74,7 @@ export default class MenuItem extends Component {
     }
 
     handleMover() {
-        
+
         MenuItem.close()
     }
 
@@ -69,6 +91,33 @@ export default class MenuItem extends Component {
             </SView>
             <SHr h={16} />
         </>
+    }
+
+    handleCopiarVinculo() {
+        // const type = this.props?.file?.type ?? "";
+        let finalPath = this.props.path;
+        if (this.props.path.startsWith("/")) finalPath = finalPath.slice(1, finalPath.length)
+        let DiverPath = SSocket.api.drive + finalPath;
+
+        let compress = "compress=zip";
+
+        let fullpath = ""
+        if (this.props.obj.type == "directory") {
+            fullpath = DiverPath + "/" + this.props?.obj?.name + "?" + compress;
+        } else {
+            fullpath = DiverPath + "/" + this.props?.obj?.name
+        }
+        navigator.clipboard.writeText(fullpath).then(() => {
+            SNotification.send({
+                title: "Texto copiado.",
+                body: fullpath,
+                time: 5000
+            })
+        }).catch(e => {
+
+        })
+
+        console.log(fullpath)
     }
 
     renderHeader() {
@@ -98,7 +147,7 @@ export default class MenuItem extends Component {
                 {this.renderButom({ label: "Agregar a destacados", icon: <SIcon name='Ajustes' /> })}
                 <SHr h={1} color={STheme.color.card} />
                 <SHr h={16} />
-                {this.renderButom({ label: "Copiar el vinculo", icon: <SIcon name='Ajustes' /> })}
+                {this.renderButom({ label: "Copiar el vinculo", icon: <SIcon name='Ajustes' />, onPress: this.handleCopiarVinculo.bind(this) })}
                 <SHr h={1} color={STheme.color.card} />
                 <SHr h={16} />
                 {this.renderButom({ label: "Cambiar nombre", icon: <SIcon name='Edit' />, onPress: this.handleCambiarNombre.bind(this) })}
@@ -107,6 +156,7 @@ export default class MenuItem extends Component {
                 {this.renderButom({ label: "Detalles y actividad", icon: <SIcon name='Ajustes' /> })}
                 {this.renderButom({ label: "Agregar a pantalla principal", icon: <SIcon name='Ajustes' /> })}
                 {this.renderButom({ label: "Eliminar", icon: <SIcon name='Delete' />, onPress: this.handleEliminar.bind(this) })}
+                {this.renderButom({ label: "Enviar a la papaelera", icon: <SIcon name='Delete' />, onPress: this.handleEnviarAPapelera.bind(this) })}
             </ScrollView>
         </SView>
     }

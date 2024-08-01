@@ -13,6 +13,11 @@ export default class SAmmoView extends Component<SAmmoViewProps> {
         ready: false
     }
 
+    // shouldComponentUpdate(nextProps: any, nextState: any, nextContext: any): boolean {
+    //     if (!!this.state.ready && nextState.ready) return true;
+    //     return false;
+    // }
+
     componentDidMount(): void {
         this.initammo();
     }

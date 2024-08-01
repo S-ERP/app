@@ -3,11 +3,15 @@ import { SPage } from "servisofts-component";
 import root from "./root";
 import _new from "./new"
 import edit from "./edit";
+import personajes from "./personajes";
+import personajes2 from "./personajes2";
 
 export default SPage.combinePages("mesh",
     {
         "": root,
         "new": _new,
-        edit
+        edit,
+        personajes,
+        personajes2
     }
 )

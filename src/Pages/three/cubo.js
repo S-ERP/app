@@ -4,28 +4,40 @@ import { GLView } from 'expo-gl';
 import * as THREE from 'three';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { Renderer, CustomOrbitControls } from '../../Components/SThree';
-import { SPage } from 'servisofts-component';
+import { SPage, SText, SView } from 'servisofts-component';
+function degreesToRadians(degrees) {
+    return degrees * (Math.PI / 180);
+}
+const createCube = (x = 2, y = 2, z = 2) => {
+    const geometry = new THREE.BoxGeometry(x, y, z);
+    const materials = [
+        new THREE.MeshBasicMaterial({ color: 0xff0000 }), // Frente - Rojo
+        new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // Atrás - Verde
+        new THREE.MeshBasicMaterial({ color: 0x0000ff }), // Arriba - Azul
+        new THREE.MeshBasicMaterial({ color: 0xffff00 }), // Abajo - Amarillo
+        new THREE.MeshBasicMaterial({ color: 0x00ffff }), // Izquierda - Cian
+        new THREE.MeshBasicMaterial({ color: 0xff00ff }), // Derecha - Magenta
+    ];
 
+    const cube = new THREE.Mesh(geometry, materials);
+    return cube;
+}
 export default function App() {
     let controls;
+    const cube = createCube(2, 2, 2);
+
+
     const onContextCreate = async (gl) => {
         const renderer = Renderer(gl, gl.drawingBufferWidth, gl.drawingBufferHeight);
-
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, gl.drawingBufferWidth / gl.drawingBufferHeight, 0.1, 1000);
-        camera.position.z = 1;
+        camera.position.set(0, 3.7, 10)
+        camera.rotation.set(degreesToRadians(-17), degreesToRadians(-0.7), 0)
 
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const materials = [
-            new THREE.MeshBasicMaterial({ color: 0xff0000 }), // Frente - Rojo
-            new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // Atrás - Verde
-            new THREE.MeshBasicMaterial({ color: 0x0000ff }), // Arriba - Azul
-            new THREE.MeshBasicMaterial({ color: 0xffff00 }), // Abajo - Amarillo
-            new THREE.MeshBasicMaterial({ color: 0x00ffff }), // Izquierda - Cian
-            new THREE.MeshBasicMaterial({ color: 0xff00ff }), // Derecha - Magenta
-        ];
+        // Para las rayitas
+        scene.add(new THREE.AxesHelper(5))
 
-        const cube = new THREE.Mesh(geometry, materials);
+        // Para el cubo
 
         scene.add(cube);
 
@@ -33,8 +45,10 @@ export default function App() {
 
         const animate = () => {
             requestAnimationFrame(animate);
-
             controls.update(); // Llamar al método update para actualizar la cámara
+            cube.rotation.x += 0.01
+            cube.rotation.y += 0.01
+            cube.rotation.z += 0.01
             renderer.render(scene, camera);
             gl.endFrameEXP();
         };
@@ -57,6 +71,16 @@ export default function App() {
                     onContextCreate={onContextCreate}
                 />
             </PanGestureHandler>
+            <SView style={{
+                position: "absolute",
+                width: 200,
+                height: 200,
+                backgroundColor: "#66666666"
+            }}>
+                <SText onPress={e => {
+                    cube.position.x += 0.1
+                }}>AVANZAR</SText>
+            </SView>
         </SPage>
     );
 }

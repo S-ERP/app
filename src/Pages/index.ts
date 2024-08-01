@@ -52,7 +52,7 @@ import uploadv2 from "./uploadv2"
 import drive from './drive';
 import three from './three';
 import mesh from './mesh';
-
+import scene from './scene';
 export default SPage.combinePages("/", {
     // "":Example,
     // "":three,
@@ -112,5 +112,6 @@ export default SPage.combinePages("/", {
     ...mesh,
     ...charts,
     ...mapa,
-    ...drive
+    ...drive,
+    ...scene
 })

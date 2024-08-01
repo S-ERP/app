@@ -7,7 +7,7 @@ export {
 }
 
 export const Renderer = (gl, width, height) => {
-    return RendererCofigurate(new THREE.WebGLRenderer({ canvas: gl.canvas, antialias: false }), width, height, gl)
+    return RendererCofigurate(new THREE.WebGLRenderer({ canvas: gl.canvas, antialias: false, powerPreference: "low-power" }), width, height, gl)
 }
 export const RendererCofigurate = (renderer, width, height, gl) => {
     renderer.setClearAlpha(0);

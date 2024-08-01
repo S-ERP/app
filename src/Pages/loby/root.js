@@ -95,7 +95,7 @@ export default class root extends Component {
                 <PHr />
                 <Actividades />
                 <PHr />
-                {/* <Publicaciones /> */}
+                <Publicaciones />
             </SView >
         </SView >
     }

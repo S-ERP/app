@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, Platform, StyleSheet, View } from 'react-native';
-import { GestureEvent, PanGestureHandler } from 'react-native-gesture-handler';
+import { GestureEvent, PanGestureHandler, State, TapGestureHandler } from 'react-native-gesture-handler';
 import { ExpoWebGLRenderingContext, GLView } from 'expo-gl';
 import * as THREE from 'three';
 import { Renderer } from '..';
@@ -28,12 +28,15 @@ const SThreeGLView = (props: SThreeGLViewProps) => {
 
 
     const _handleTouch = (event: any) => {
-        const { locationX, locationY } = Platform.select({
-            native: event.nativeEvent, web: {
-                locationX: event.nativeEvent.clientX,
-                locationY: event.nativeEvent.clientY,
-            }
-        });
+        console.log(event);
+        const locationX = event.nativeEvent.x
+        const locationY = event.nativeEvent.y
+        // const { locationX, locationY } = Platform.select({
+        //     native: event.nativeEvent, web: {
+        //         locationX: event.nativeEvent.clientX,
+        //         locationY: event.nativeEvent.clientY,
+        //     }
+        // });
         const width = screenWidth;
         const height = screenHeight;
 
@@ -52,16 +55,16 @@ const SThreeGLView = (props: SThreeGLViewProps) => {
     }
     useEffect(() => {
 
-        if (Platform.OS === "web") {
-            // @ts-ignore
-            document.addEventListener('pointerdown', _handleTouch);
-        }
+        // if (Platform.OS === "web") {
+        //     // @ts-ignore
+        //     document.addEventListener('pointerdown', _handleTouch);
+        // }
 
         return () => {
-            if (Platform.OS === "web") {
-                // @ts-ignore
-                document.removeEventListener('pointerdown', _handleTouch);
-            }
+            // if (Platform.OS === "web") {
+            //     // @ts-ignore
+            //     document.removeEventListener('pointerdown', _handleTouch);
+            // }
             cancelAnimationFrame(animationFrameId);
         };
     });
@@ -127,13 +130,19 @@ const SThreeGLView = (props: SThreeGLViewProps) => {
     }
     return <View style={styles.container}>
         <PanGestureHandler onGestureEvent={_onGestureEvent}>
-            <GLView
-                onTouchStart={_handleTouch}
-                msaaSamples={0}
-                enableExperimentalWorkletSupport={true}
-                style={styles.glView}
-                onContextCreate={handleContextCreate}
-            />
+            <TapGestureHandler onHandlerStateChange={evt => {
+                if (evt.nativeEvent.state === State.END) {
+                    if (_handleTouch) _handleTouch(evt)
+                }
+            }}>
+                <GLView
+                    // onTouchStart={_handleTouch}
+                    msaaSamples={0}
+                    enableExperimentalWorkletSupport={true}
+                    style={styles.glView}
+                    onContextCreate={handleContextCreate}
+                />
+            </TapGestureHandler>
         </PanGestureHandler>
         <Stats ref={statsRef} />
     </View>

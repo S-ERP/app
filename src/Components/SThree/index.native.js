@@ -26,10 +26,13 @@ export const RendererCofigurate = (renderer: THREE.WebGLRenderer, width, height)
     // renderer.setPixelRatio(0.5);
     // renderer.setSize(width * 0.5, height * 0.5);
     renderer.antialias = false;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1;
+
+    // renderer.shadowMap.enabled = true;
+    // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    // renderer.toneMappingExposure = 1;
+
+
     // @ts-ignore
     // renderer.outputEncoding = THREE.sRGBEncoding;
     // @ts-ignore

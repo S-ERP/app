@@ -44,7 +44,7 @@ export default class Terreno extends THREE.Group {
         const planeMotionState = new Ammo.btDefaultMotionState(planeTransform);
 
         const planeColShape = new Ammo.btBoxShape(new Ammo.btVector3(this.size / 2, 0, this.size / 2));
-        // planeColShape.setMargin(1);
+        planeColShape.setMargin(0.01);
 
         const planeRbInfo = new Ammo.btRigidBodyConstructionInfo(0, planeMotionState, planeColShape, new Ammo.btVector3(0, 0, 0));
         const planeBody = new Ammo.btRigidBody(planeRbInfo);

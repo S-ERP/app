@@ -42,6 +42,7 @@ module.exports = (async () => {
       // path.resolve(__dirname, '../../geolocation/library/dist'),
       // path.resolve(__dirname, '../../servisofts-charts/dist'),
       //  path.resolve(__dirname, 'C:\\servisofts\\dist')
+       path.resolve(__dirname, '../../servisofts-socket/dist'),
        path.resolve(__dirname, '../../servisofts-component/dist'),
     ],
     resolver: {

@@ -49,7 +49,7 @@ export default class index extends Component<any> {
                 const overlappingPairCache = new Ammo.btDbvtBroadphase();
                 const solver = new Ammo.btSequentialImpulseConstraintSolver();
                 this.dynamicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
-                this.dynamicsWorld.setGravity(new Ammo.btVector3(0, -9.8, 0));
+                this.dynamicsWorld.setGravity(new Ammo.btVector3(0, -9.8 * 2, 0));
                 // this.dynamicsWorld.setGravity(new Ammo.btVector3(0, -30, 0));
 
             }}>
@@ -63,11 +63,38 @@ export default class index extends Component<any> {
                         }
                     }}
                     onGestureEvent={(evt: any) => {
-                        const { velocityX, velocityY } = evt.nativeEvent;
-                        //@ts-ignore
-                        if (this.personaje) this.personaje.rotateObject(velocityX * -0.0001)
-                        if (this.personaje) this.personaje.rotateCamera(velocityY * -0.0001)
-                        // this.personaje.cameraAngle -= velocityX * 0.0001
+                        var { velocityX, velocityY } = evt.nativeEvent;
+
+                        if (this.personaje) this.personaje.rotateObject(velocityX * -0.005);
+
+                        // console.log("velociut" + velocityY);
+
+
+                        // const cameraDirection = new THREE.Vector3();
+                        // var dot = 0;
+                        // if (this.camera) {
+                        //     this.camera.getWorldDirection(cameraDirection);
+                        // }
+
+
+                        // // Invertir la dirección vertical si la cámara está boca abajo o mirando hacia atrás
+                        // console.log("cameraDirection.x " + cameraDirection.x)
+                        // console.log("cameraDirection.y " + cameraDirection.y)
+                        // console.log("cameraDirection.z " + cameraDirection.z)
+
+                        // if (cameraDirection.z > 0 && cameraDirection.x > 0) {
+                        //     velocityY = -velocityY;
+                        // }
+                        // if (cameraDirection.z < 0 && cameraDirection.x > 0) {
+                        //     velocityY = -velocityY;
+                        // }
+                        // if (cameraDirection.x > 0 && cameraDirection.y > 0) {
+                        //     velocityY = -velocityY;
+                        // }
+
+
+
+                        // if (this.personaje) this.personaje.rotateCamera(velocityY * -0.0001);
                     }}
                     onCreate={({ gl, renderer, scene, camera }) => {
                         console.log("Entro al onCreate")
@@ -108,20 +135,6 @@ export default class index extends Component<any> {
                             this.personaje.update({ delta: delta, Ammo: this.Ammo })
                             this.pelota.update({ delta: delta, Ammo: this.Ammo })
                         }
-
-                        if(this.camera && this.fisrtPersonControl){
-                            const up = new THREE.Vector3(0, 1, 0);
-                            const cameraUp = this.camera.up.clone().applyQuaternion(this.camera.quaternion);
-                            const dot = up.dot(cameraUp);
-                            if (dot < 0) {
-                                this.fisrtPersonControl.lookSpeed = Math.abs(this.fisrtPersonControl.lookSpeed) * -1;
-                            } else {
-                                controls.lookSpeed = Math.abs(controls.lookSpeed);
-                            }
-                        }
-                        
-
-
                         // if (this.fisrtPersonControl) this.fisrtPersonControl.update(delta)
                     }}
                 />

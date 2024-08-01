@@ -23,7 +23,8 @@ export default class CustomOrbitControls {
   handleWheel(event) {
     const zoomSpeed = 0.05;
     this.zoom += event.deltaY * zoomSpeed;
-    this.zoom = Math.max(1, Math.min(100, this.zoom)); // Limitar el zoom a un rango razonable
+    this.zoom = Math.max(1, Math.min(100, this.zoom));
+    this.update() // Limitar el zoom a un rango razonable
   }
 
   handleMouseDown(event) {
@@ -43,18 +44,22 @@ export default class CustomOrbitControls {
       const panSpeed = 0.005;
       this.pan.x -= event.movementX * panSpeed;
       this.pan.y += event.movementY * panSpeed;
+      this.update();
     }
+    
   }
 
 
   handleGesture(deltaX, deltaY) {
-    const rotationSpeed = Platform.select({ web: 0.0005, native: 0.003 })
+    const rotationSpeed = Platform.select({ web: 0.005, native: 0.003 })
     this.targetRotation.y -= deltaX * rotationSpeed;
     this.targetRotation.x -= deltaY * rotationSpeed;
+    this.update();
   }
 
   setZoom(n) {
     this.zoom = n;
+    this.update();
   }
   update() {
     // Interpolación suave entre la rotación actual y la rotación objetivo

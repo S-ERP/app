@@ -17,16 +17,16 @@ export default class ItemIcon extends Component {
 
     let finalPath = path;
     if (this.props.path.startsWith("/")) finalPath = finalPath.slice(1, finalPath.length)
-    console.log(SSocket.api.drive + finalPath + "/" + encodeURI(obj.name) + ".tb.png")
-    console.log(obj.type)
+    // console.log(SSocket.api.drive + finalPath + "/" + encodeURI(obj.name) + ".tb.png")
+    // console.log(obj.type)
 
     if (/image.*/gi.test(obj.type)) {
-      return <SImage src={SSocket.api.drive + finalPath + "/" + encodeURI(obj.name)} />
+      return <SImage src={SSocket.api.drive + finalPath + "/" + encodeURI(obj.name) + "?time=" + this.props.time ?? 0} />
 
     }
     if (/video.*/gi.test(obj.type)) {
       // if (!image) {
-      return <SImage src={SSocket.api.drive + finalPath + "/" + encodeURI("."+obj.name) + ".png"} />
+      return <SImage src={SSocket.api.drive + finalPath + "/" + encodeURI("." + obj.name) + ".png" + "?time=" + this.props.time ?? 0} />
       //   return <SText>Loading preview...</SText>;
       // }
       // return <SVideoPreview src={SSocket.api.drive + path + "/" + obj.name} />

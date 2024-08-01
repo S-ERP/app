@@ -12,10 +12,10 @@ const bubbleRadius = bubbleSize / 2;
 
 const Joystick = ({ onMove, onJump }) => {
     const panHandlerRef = useRef();
-    const [state, setState] = useState({ x: 0, y: 0, run: false });
+    const [state, setState] = useState({ x: 0, y: 0, run: false, lastSentTime: 0 });
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
-    let baseMoveSpeed = 30;
+    let baseMoveSpeed = size / 4;
     let moveSpeed = baseMoveSpeed;
     let speedMultiplier = 1.5;
 
@@ -40,18 +40,23 @@ const Joystick = ({ onMove, onJump }) => {
         };
     });
 
-
+    const throttledMove = (evt) => {
+        const now = Date.now();
+        if (now - state.lastSentTime >= 1000 / 45) {
+            onMove(evt)
+            state.lastSentTime = now;
+        }
+    }
 
     const hilo = () => {
         if (!state.run) return;
         new SThread(1000 / 60, "hilo_joystick", true).start(() => {
             _onMove({ x: state.x, y: state.y })
-            // console.log("Llamo al onMove")
             hilo();
         })
     }
     const _onMove = (evt) => {
-        if (onMove) onMove(evt);
+
         if (evt.x == 0 && evt.y == 0) {
             state.x = evt.x;
             state.y = evt.y;
@@ -64,6 +69,7 @@ const Joystick = ({ onMove, onJump }) => {
                 hilo();
             }
         }
+        if (onMove) throttledMove(evt);
 
 
     }
@@ -101,26 +107,26 @@ const Joystick = ({ onMove, onJump }) => {
         switch (event.code) {
             case 'ArrowUp':
             case 'KeyW':
-                translateY.value = withSpring(-moveSpeed, null, () => {
+                translateY.value = withSpring(-moveSpeed + Math.random(), { damping: 100 }, () => {
                     withSpring(0)
                 })
                 // this.velocity.z = moveSpeed;
                 break;
             case 'ArrowDown':
             case 'KeyS':
-                translateY.value = withSpring(moveSpeed)
+                translateY.value = withSpring(moveSpeed + Math.random(), { damping: 100 })
                 // this.velocity.z = -moveSpeed;
                 break;
             case 'ArrowLeft':
             case 'KeyA':
-                translateX.value = withSpring(-moveSpeed, null, () => {
+                translateX.value = withSpring(-moveSpeed + Math.random(), { damping: 100 }, () => {
                     withSpring(0)
                 })
                 // this.velocity.x = -moveSpeed;
                 break;
             case 'ArrowRight':
             case 'KeyD':
-                translateX.value = withSpring(moveSpeed)
+                translateX.value = withSpring(moveSpeed + Math.random(), { damping: 100 })
                 // this.velocity.x = moveSpeed;
                 break;
             case 'ShiftLeft':
@@ -140,13 +146,13 @@ const Joystick = ({ onMove, onJump }) => {
             case 'KeyW':
             case 'ArrowDown':
             case 'KeyS':
-                translateY.value = withSpring(0)
+                translateY.value = withSpring(0, { damping: 100 })
                 break;
             case 'ArrowLeft':
             case 'KeyA':
             case 'ArrowRight':
             case 'KeyD':
-                translateX.value = withSpring(0)
+                translateX.value = withSpring(0, { damping: 100 })
                 break;
             case 'ShiftLeft':
             case 'ShiftRight':
