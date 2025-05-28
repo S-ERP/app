@@ -1,3 +1,11 @@
 {
   "extends": "@tsconfig/react-native/tsconfig.json",
+  "compilerOptions": {
+   "jsx": "react-jsx",
+   "module": "esnext",
+   "target": "esnext"
+  },
+  "exclude": [
+   "node_modules"
+  ]
 }
