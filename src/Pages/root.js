@@ -27,11 +27,11 @@ const Card = ({ label, value, backgroundColor, onPress, icon }) => {
             }}
             onPress={onPress}>
             <SHr height={10} />
-            <SView col={"xs-3"} center>
-                <SIcon name={icon} width={40} height={40} fill={STheme.color.text} />
+            <SView col={"xs-3"} center padding={4}>
+                <SIcon name={icon}  fill={STheme.color.text} />
             </SView>
             <SView col={"xs-9"} center>
-                <SText fontSize={17} bold color={STheme.color.text}>{value}</SText>
+                <SText fontSize={15} bold color={STheme.color.text}>{value}</SText>
                 <SText center fontSize={10} color={STheme.color.text}>{label}</SText>
             </SView>
             <SHr height={15} />

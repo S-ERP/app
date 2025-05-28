@@ -1,0 +1,331 @@
+#!/bin/bash
+VERSION_SCRIPT=0.0.5
+
+# DRIVE_API="https://drive.servisofts.com/http"
+# PATH_LOCAL="/Users/rickypazd/Documents/GitHub/S-ERP/app/ssh_drive_sync"
+# FILE_TO_SYNC="/test1"
+# SYNC_TIME=2
+
+script_dir=$(dirname "$script_path")
+# Carga las variables desde el archivo .env en el directorio del script
+. "$script_dir/.env"
+
+# Verificar el sistema operativo
+os_type=$(uname)
+if [ "$os_type" == "Darwin" ]; then
+    # Es macOS
+    stat_size_cmd="stat -f \"%z\""
+    stat_mtime_cmd="stat -f \"%m\""
+    touch_cmd="touch -t \$(date -r \$last_modified +\"%Y%m%d%H%M.%S\")"
+else
+    # Asumir que es Linux (Ubuntu)
+    stat_size_cmd="stat -c \"%s\""
+    stat_mtime_cmd="stat -c \"%Y\""
+    touch_cmd="formatted_date=\$(date -d \"@\$last_modified\" +\"%Y%m%d%H%M.%S\") && touch -t \"\$formatted_date\""
+fi
+
+PATH_TRASH="$PATH_LOCAL/trash"
+PATH_LAST_FILES_SERVER="$script_dir/.last_files_server.txt"
+
+declare -a deleted_files=()
+
+action-ls() {
+    local url="$1"
+    local response=$(curl --silent --location "$DRIVE_API/api" \
+        --header 'Content-Type: application/json' \
+        --data '{
+            "component": "file",
+            "type": "ls",
+            "path":"'$url'",
+            "estado": "cargando"
+        }')
+        echo "$response" | awk -F'"data":' '{print $2}' | awk -F']' '{print $1"]"}'
+}
+
+action-lsr() {
+    local url="$1"
+    local response=$(curl --silent --location "$DRIVE_API/api" \
+        --header 'Content-Type: application/json' \
+        --data '{
+            "component": "file",
+            "type": "lsr",
+            "path":"'$url'",
+            "estado": "cargando"
+        }')
+    
+    local estado=$(echo "$response" | awk -F'"estado":' '{print $2}' | awk -F'"' '{print $2}')
+    
+    if [ "$estado" == "exito" ]; then
+        echo "$response" | awk -F'"data":' '{print $2}' | awk -F']' '{print $1"]"}'
+    fi
+}
+
+action-mkdir() {
+    local url="$1"
+    local response=$(curl --silent --location "$DRIVE_API/api" \
+        --header 'Content-Type: application/json' \
+        --data '{
+            "component": "file",
+            "type": "mkdir",
+            "path":"'$url'",
+            "estado": "cargando"
+        }')
+    echo "$response"
+}
+
+action-rm() {
+    local url="$1"
+    
+    local json='{
+        "component": "file",
+        "type": "rm",
+        "path":"'$url'",
+        "estado": "cargando"
+    }'
+    echo $json
+    local response=$(curl --silent --location "$DRIVE_API/api" \
+        --header 'Content-Type: application/json' \
+        --data "$json")
+    echo "$response"
+}
+
+log(){
+    echo $*
+}
+
+url_encode() {
+    local url="$1"
+    local encoded_url=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$url'''))")
+    echo "$encoded_url"
+}
+
+upload_file_in_chunks() {
+    local file_path="$1"
+    local remote_path="$2"
+    local chunk_size=1048576  # Tamaño del chunk en bytes (1 MB)
+    local file_size=$(eval "$stat_size_cmd \"$file_path\"")
+    if [ "$file_size" -eq 0 ]; then
+        file_size=1
+    fi
+    local total_chunks=$(( (file_size + chunk_size - 1) / chunk_size ))  # Calcula el número total de chunks
+    local last_modified=$(eval "$stat_mtime_cmd \"$file_path\"")
+    last_modified=$((last_modified * 1000))
+
+    for ((chunk_number=1; chunk_number<=total_chunks; chunk_number++)); do
+        offset=$(( (chunk_number - 1) * chunk_size ))
+        urlserver="$DRIVE_API/uploadv2"
+        cnum=$((chunk_number - 1))
+        finalurl="$urlserver$remote_path?chunkNumber=${cnum}&totalChunks=${total_chunks}&lastModified=${last_modified}"
+        response=$(curl --silent --location --request POST "$finalurl" \
+            --header 'Content-Type: application/octet-stream' \
+            --data-binary "@$file_path" --range $offset-$((offset + chunk_size - 1)))
+        echo "$response / $total_chunks"
+    done
+}
+
+descargar_archivos_del_servidor(){
+    lista_de_archivos_server=$(action-lsr "$FILE_TO_SYNC")
+    while read -r line; do
+        name=$(echo "$line" | awk -F'"name":"' '{print $2}' | awk -F'"' '{print $1}')
+        type=$(echo "$line" | awk -F'"type":"' '{print $2}' | awk -F'"' '{print $1}')
+        path=$(echo "$line" | awk -F'"path":"' '{print $2}' | awk -F'"' '{print $1}')
+        last_modified=$(echo "$line" | awk -F'"lastModified":' '{print $2}' | awk -F'[^0-9]*' '{print $1}')
+        last_modified=$((last_modified / 1000))
+        local_path_file="$PATH_LOCAL$path"
+
+        if [ -f "$local_path_file" ]; then
+            local_modified=$(eval "$stat_mtime_cmd \"$local_path_file\"")
+            
+            if (( last_modified > local_modified )); then
+                echo "[MODIFICADO SERVER][f] $path"
+            elif (( last_modified < local_modified )); then
+                continue;
+            else
+                continue;
+            fi
+        elif [ -d "$local_path_file" ]; then
+            continue;
+        else
+            if [[ "$type" == "directory" ]]; then
+                echo "[OK][MKDIR][d] $path"
+                mkdir -p "$local_path_file"
+            else 
+                curl --silent --location "$DRIVE_API$path" --output "$local_path_file"
+                eval "$touch_cmd \"$local_path_file\""
+                echo "[OK][DESCARGAR][f] $path "
+            fi
+        fi
+    done < <(echo "$lista_de_archivos_server" | grep -o '{[^}]*}')
+
+    echo "$lista_de_archivos_server" > $PATH_LAST_FILES_SERVER
+}
+
+while true; do
+    echo "Ejecutando el script... V.$VERSION_SCRIPT  $FILE_TO_SYNC"
+
+    # declare -a local_files=$(find "$PATH_LOCAL$FILE_TO_SYNC" -print0 | xargs -0 -I {} sh -c 'if [ -d "{}" ]; then echo "{}:directory"; else echo "{}:file"; fi')
+    declare -a local_files=()
+    while IFS= read -r -d '' file; do
+        if [ -d "$file" ]; then
+            file_type="folder"
+        else
+            file_type="file"
+        fi
+        local_modified=$(eval "$stat_mtime_cmd \"$file\"")
+        # last_modified=$("$stat_size_cmd" "$file")
+        local_files+=("$file:$file_type:$local_modified")
+    done < <( find "$PATH_LOCAL$FILE_TO_SYNC" -print0 )
+    declare -a deleted_files=()
+    changes="false"
+
+    # echo "$local_files[*]"
+
+    if [ -e "$PATH_LAST_FILES_SERVER" ]; then
+        if [ ! -d "$PATH_LOCAL$FILE_TO_SYNC" ]; then
+            echo "La carpeta raiz no existe"
+            rm "$PATH_LAST_FILES_SERVER"
+            exit 0;
+        fi
+        LAST_FILES_SERVER=$(cat "$PATH_LAST_FILES_SERVER")
+        lista_de_archivos_server_actualizada=$(action-lsr "$FILE_TO_SYNC")
+
+        while read -r line; do
+            name=$(echo "$line" | awk -F'"name":"' '{print $2}' | awk -F'"' '{print $1}')
+            type=$(echo "$line" | awk -F'"type":"' '{print $2}' | awk -F'"' '{print $1}')
+            path=$(echo "$line" | awk -F'"path":"' '{print $2}' | awk -F'"' '{print $1}')
+            last_modified=$(echo "$line" | awk -F'"lastModified":' '{print $2}' | awk -F'[^0-9]*' '{print $1}')
+            local_path_file="$PATH_LOCAL$path"
+
+            if [ -f "$local_path_file" ]; then
+                if ! echo "$lista_de_archivos_server_actualizada" | grep -q "$path"; then
+                    echo "[DELETE IN SERVER][X] $path "
+                    name_file=$(echo "$path" | awk -F'/' '{print $NF}')
+                    dir_path=$(dirname "$path")
+                    mkdir -p "$PATH_TRASH$dir_path"
+                    mv "$local_path_file" "$PATH_TRASH$path"
+                    rm -r $local_path_file
+                    changes="true"
+                fi
+            elif [ -d "$local_path_file" ]; then
+                if ! echo "$lista_de_archivos_server_actualizada" | grep -q "$path"; then
+                    echo "[DELETE IN SERVER][X] $path "
+                    mkdir -p "$PATH_TRASH$path"
+                    mv "$local_path_file" "$PATH_TRASH$path"
+                    rm -r $local_path_file
+                    changes="true"
+                fi
+            else
+                deleted_files+=("$path")
+                changes="true"
+                echo "[DELETE][X] $path "
+                resp=$(action-rm "$path")
+                continue;
+            fi
+        done < <(echo "$LAST_FILES_SERVER" | grep -o '{[^}]*}')
+
+        echo "local_files $local_files"
+        while IFS= read -r __local_file; do
+            IFS=':' read -r local_file file_type last_modified <<< "$__local_file"
+            relative_path="${local_file#$PATH_LOCAL}"
+            if [[ "$relative_path" == "$FILE_TO_SYNC" ]]; then
+                continue;
+            fi
+            echo "verify $relative_path"
+            if ! echo "$LAST_FILES_SERVER" | grep -q "$relative_path"; then
+                if [[ "$file_type" == "directory" ]]; then
+                    encoded_full_path=$(url_encode "$relative_path")
+                    upload_file_in_chunks "$local_file" "$encoded_full_path"
+                    echo "[OK][ NUEVO][f] $relative_path"
+                    changes="true"
+                else
+                    echo "[OK][ NUEVO][d] $relative_path"
+                    resp=$(action-mkdir "$relative_path")
+                    changes="true"
+                fi
+            else
+                 if [[  "$file_type" == "directory" ]]; then
+                    echo "Verificando modificacion de file $local_file"
+                 fi
+                # if [ -f "$local_file" ]; then
+                #     local_modified=$(eval "$stat_mtime_cmd \"$local_file\"")
+                #     file_info=$(echo "$LAST_FILES_SERVER" | grep -o "{[^}]*\"path\":\"$relative_path\"[^}]*}")
+                #     remote_last_modified=$(echo "$file_info" | awk -F'"lastModified":' '{print $2}' | awk -F'[^0-9]*' '{print $1}')
+                #     remote_last_modified=$((remote_last_modified / 1000))
+                #     if (( local_modified > remote_last_modified )); then
+                #         encoded_full_path=$(url_encode "$relative_path")
+                #         upload_file_in_chunks "$local_file" "$encoded_full_path"
+                #         echo "[MODIFICADO -][f] $relative_path          $local_modified   $remote_last_modified    "
+                #         changes="true"
+                #     elif (( local_modified < remote_last_modified )); then
+                #         continue;
+                #     else
+                #         continue;
+                #     fi
+                # elif [ -d "$local_file" ]; then
+                #     continue;
+                # else
+                #     echo "[ERROR 257] No es ni un archivo ni un directorio."
+                # fi
+            fi
+        done < <(echo "$local_files")
+
+        if [[ "$changes" == "true" ]]; then
+            lista_de_archivos_server_actualizada=$(action-lsr "$FILE_TO_SYNC")
+        fi
+
+        echo "Iniciando sincronizacion de bajada"
+        echo "$local_files"
+        while read -r line; do
+            name=$(echo "$line" | awk -F'"name":"' '{print $2}' | awk -F'"' '{print $1}')
+            type=$(echo "$line" | awk -F'"type":"' '{print $2}' | awk -F'"' '{print $1}')
+            path=$(echo "$line" | awk -F'"path":"' '{print $2}' | awk -F'"' '{print $1}')
+            last_modified=$(echo "$line" | awk -F'"lastModified":' '{print $2}' | awk -F'[^0-9]*' '{print $1}')
+            last_modified=$((last_modified / 1000))
+            local_path_file="$PATH_LOCAL$path"
+
+            if [ -f "$local_path_file" ]; then
+                local_modified=$(eval "$stat_mtime_cmd \"$local_path_file\"")
+                if (( last_modified > local_modified )); then
+                    echo "[MODIFICADO][f] $path $last_modified  $local_modified"
+                    encoded_full_path=$(url_encode "$path")
+                    curl --silent --location "$DRIVE_API$encoded_full_path" --output "$local_path_file"
+                    eval "$touch_cmd \"$local_path_file\""
+                    echo "[DESCARGAR][X] $path "
+                else
+                    continue;
+                fi
+            elif [ -d "$local_path_file" ]; then
+                continue;
+            else
+                if printf "%s\n" "${deleted_files[@]}" | grep -q -x "$path"; then
+                    continue;
+                else
+                    if [[ "$type" == "directory" ]]; then
+                        echo "[OK][MKDIR][d] $path"
+                        mkdir -p "$local_path_file"
+                    else 
+                        encoded_full_path=$(url_encode "$path")
+                        curl --silent --location "$DRIVE_API$encoded_full_path" --output "$local_path_file"
+                        eval "$touch_cmd \"$local_path_file\""
+                        echo "[DESCARGAR][X] $path "
+                    fi
+                fi
+            fi
+        done < <(echo "$lista_de_archivos_server_actualizada" | grep -o '{[^}]*}')
+
+        echo "$lista_de_archivos_server_actualizada" > $PATH_LAST_FILES_SERVER
+        
+    else
+        echo "SERVISOFTS DRIVE."
+        echo "Esta es la primer sincronizacion de servisofts drive"
+        echo "Iniciando la descarga de archivos que no existen"
+        mkdir -p "$PATH_LOCAL$FILE_TO_SYNC"
+        descargar_archivos_del_servidor
+        echo "end download"
+        "$0"
+        exit 0;
+    fi
+
+    echo "End script"
+    sleep $SYNC_TIME
+done

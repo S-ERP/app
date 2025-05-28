@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { SComponentContainer, SGradient, SIcon, SImage, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SComponentContainer, SGradient, SIcon, SImage, SMapView, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import SSocket, { setProps } from 'servisofts-socket';
 import Redux, { store } from './Redux';
 import Config from "./Config";
@@ -13,12 +13,13 @@ import ErrorBoundary from './Components/ErrorBoundary';
 import Socket from './Socket';
 import { Platform } from 'react-native';
 import DataBaseContainer from './DataBase/DataBaseContainer';
+import MDL from './MDL';
 // import SplashScreen from 'react-native-splash-screen'
 setProps(Config.socket);
 
 
 
-
+SMapView.bootstrapURLKeys.key = "AIzaSyC4rcy6GRVM5_i9ZF0vGFmb1HRc0mXsAdk"
 const App = (props) => {
     useEffect(() => {
         // SplashScreen.hide();
@@ -37,7 +38,13 @@ const App = (props) => {
         } catch (e) {
             console.log(e);
         }
+        MDL.empresa.init();
         Firebase.setBadgeCount(0);
+        SNavigation.addOnChangeListener(e => {
+            console.log("onChange", e);
+
+            MDL.empresa.setUsuarioLog({ url: e.name, params: e.params })
+        })
         // App launched, remove the badge count
     }, []);
 

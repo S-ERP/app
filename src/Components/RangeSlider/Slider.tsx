@@ -5,10 +5,10 @@ import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 
 import { colors } from "./styles/colors";
 import type { SliderProps } from "./types";
 
-const DEFAULT_THUMB_SIZE = 27;
-const DEFAULT_THUMB_BORDER_WIDTH = 2.25;
-const DEFAULT_MAX_TRACK_HEIGHT = 9;
-const DEFAULT_MIN_TRACK_HEIGHT = 9;
+const DEFAULT_THUMB_SIZE = 19;
+const DEFAULT_THUMB_BORDER_WIDTH = 1;
+const DEFAULT_MAX_TRACK_HEIGHT = 6;
+const DEFAULT_MIN_TRACK_HEIGHT = 6;
 
 const windowWidth = Dimensions.get("window").width;
 const DEFAULT_SLIDER_HORIZONTAL_MARGIN = 20;
@@ -38,7 +38,6 @@ export function Slider({
   springConfig,
   activeOffsetX = [-5, 5],
 }: SliderProps) {
-  // console.debug("Slider rendered ✅");
   const radius = thumbSize / 2;
 
   const isPressed = useSharedValue(false);
@@ -66,36 +65,25 @@ export function Slider({
     .hitSlop(touchSlop)
     .maxPointers(1)
     .minPointers(1)
-    // @ts-ignore
     .activeOffsetX(activeOffsetX)
     .onBegin(() => {
       isPressed.value = true;
     })
     .onUpdate((e) => {
-      translateX.value = e.translationX + start.value;
-      translateX.value = e.translationX + start.value;
+      translateX.value = clamp(e.translationX + start.value, 0, width);
       const newValue = minValue + (translateX.value / width) * (maxValue - minValue);
       if (onIndexChange) {
         runOnJS(onIndexChange)(newValue);
       }
     })
     .onEnd((e) => {
-      // select snap point
       if (step !== undefined) {
         const numSteps = (maxValue - minValue) / step;
         const interval = width / numSteps;
 
-        /**
-         * velocityX * 0.03 makes feel more natural?
-         */
         const estimate = translateX.value + e.velocityX * 0.03;
         const toIndex = clamp(Math.round(estimate / interval), 0, numSteps);
-        const toValue = toIndex * interval;
-        // if (onIndexChange) {
-        //   runOnJS(onIndexChange)(minValue + toIndex * step);
-        //   onIndexChange(minValue + toIndex * step);
-        //   runOnJS(onIndexChange)(minValue + toIndex * step);
-        // }
+        const toValue = clamp(toIndex * interval, 0, width);
 
         translateX.value = withSpring(
           toValue,
@@ -109,14 +97,6 @@ export function Slider({
         );
       } else {
         start.value = translateX.value;
-        // if (onIndexChange) {
-        //   runOnJS(onIndexChange)(minValue + translateX.value / (maxValue - minValue));
-        //   onIndexChange(minValue + translateX.value / (maxValue - minValue));
-        //   runOnJS(onIndexChange)(minValue + translateX.value / (maxValue - minValue));
-        // }
-        // translateX.value = withDecay({ deceleration: 0.97, velocity: e.velocityX, clamp: [0, width] }, () => {
-        //   start.value = translateX.value;
-        // });
       }
     })
     .onFinalize(() => {

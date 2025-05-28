@@ -40,6 +40,7 @@ class index extends DPA.list {
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "ver" })
     }
     $filter(data) {
+        // return true;
         if (!data.estado) return false;
 
 

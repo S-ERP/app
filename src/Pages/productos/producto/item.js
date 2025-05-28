@@ -14,9 +14,11 @@ class index extends DPA.item {
     $getData() {
         var data = super.$getData();
         this.modelo = Model.modelo.Action.getByKey(data.key_modelo)
-        if (!this.modelo) return null;
-        this.marca = Model.marca.Action.getByKey(this.modelo.key_marca)
-        this.tipo_producto = Model.tipo_producto.Action.getByKey(this.modelo.key_tipo_producto)
+        if (this.modelo) {
+            this.marca = Model.marca.Action.getByKey(this.modelo.key_marca)
+            this.tipo_producto = Model.tipo_producto.Action.getByKey(this.modelo.key_tipo_producto)
+
+        }
         // if (!this.marca) return null;
         // if (!this.tipo_producto) return null;
         return data;
@@ -24,7 +26,7 @@ class index extends DPA.item {
 
     getEstado(cantidad = 0, venta_sin_entregar) {
         var text = "";
-        var color = "#ff0"
+        var color = "#00F"
         if (this.data.key_almacen) {
             text = (cantidad ?? 0) + " Disponible"
             color = STheme.color.accent
@@ -69,7 +71,7 @@ class index extends DPA.item {
     $render() {
         this.data = this.$getData()
         if (!this.data) return <SLoad />
-        const { descripcion, observacion, precio_compra, precio_venta, precio_venta_credito, cantidad, fecha_on, venta_sin_entregar } = this.data;
+        const { descripcion, observacion, precio_compra, precio, precio_venta_credito, cantidad, fecha_on, venta_sin_entregar } = this.data;
 
         return <SView col={"xs-12"} row flex card style={{
             padding: 4
@@ -84,7 +86,9 @@ class index extends DPA.item {
                 </SView>
             </SView>
             <SView flex style={{ padding: 4 }}>
-                <SText fontSize={16} bold>{descripcion}</SText>
+                <SText fontSize={16} bold>{this.data?.nombre}</SText>
+                <SText fontSize={14} bold>{descripcion}</SText>
+
 
                 <SView row>
                     <SText fontSize={12} color={STheme.color.lightGray}>{this.tipo_producto?.descripcion}</SText>
@@ -100,8 +104,8 @@ class index extends DPA.item {
                 <SHr />
                 {this.getImages()}
                 <SHr />
-                <SText fontSize={18} >Bs. {SMath.formatMoney(precio_venta ?? 0)}</SText>
-                <SText fontSize={12} >Disponibles x {cantidad}</SText>
+                <SText fontSize={18} >Bs. {SMath.formatMoney(precio ?? 0)}</SText>
+                {cantidad ? <SText fontSize={12} >Disponibles x {cantidad}</SText> : null}
                 {/* <SText fontSize={10} color={STheme.color.lightGray}>Bs. {SMath.formatMoney(precio_venta_credito)} Al credito</SText> */}
             </SView>
             <SText>{new SDate(fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm:ss")}</SText>

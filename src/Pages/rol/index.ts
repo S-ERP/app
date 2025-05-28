@@ -8,6 +8,26 @@ import edit from "./edit";
 import _delete from "./delete";
 
 const model = Model.rol;
+
+// model.Columns['index'] = {
+//     type: "integer",
+//     editable: true
+// }
+
+model.Columns['tipo'] = {
+    type: "text",
+    editable: true
+}
+
+model.Columns['observacion'] = {
+    type: "text",
+    editable: true
+}
+model.Columns['color'] = {
+    type: "text",
+    editable: true
+}
+
 export const Parent = {
     name: "rol",
     path: `/rol`,

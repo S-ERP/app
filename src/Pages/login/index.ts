@@ -4,7 +4,8 @@ import root from "./root";
 import recuperar from "./recuperar";
 import recuperar_codigo from "./recuperar_codigo";
 import recuperar_pass from "./recuperar_pass";
-
+import comorecuperar from  "./comorecuperar";
+import recuperarwsp from  "./recuperarwsp";
 const model = Model.rol;
 export const Parent = {
     name: "login",
@@ -17,4 +18,6 @@ export default SPage.combinePages(Parent.name, {
     "recuperar": recuperar,
     "recuperar_codigo": recuperar_codigo,
     "recuperar_pass": recuperar_pass,
+    "comorecuperar": comorecuperar,
+    "recuperarwsp": recuperarwsp, 
 })

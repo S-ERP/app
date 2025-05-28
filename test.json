@@ -1,0 +1,4773 @@
+{
+    "unidadMedida": [
+        {
+            "descripcion": "MILLARES",
+            "codigoClasificador": 38
+        },
+        {
+            "descripcion": "MILLON DE UNIDADES",
+            "codigoClasificador": 39
+        },
+        {
+            "descripcion": "ONZAS",
+            "codigoClasificador": 40
+        },
+        {
+            "descripcion": "PALETAS",
+            "codigoClasificador": 41
+        },
+        {
+            "descripcion": "PAQUETE",
+            "codigoClasificador": 42
+        },
+        {
+            "descripcion": "PAR",
+            "codigoClasificador": 43
+        },
+        {
+            "descripcion": "PIES",
+            "codigoClasificador": 44
+        },
+        {
+            "descripcion": "PIES CUADRADOS",
+            "codigoClasificador": 45
+        },
+        {
+            "descripcion": "AMORTIZACION",
+            "codigoClasificador": 108
+        },
+        {
+            "descripcion": "PIES CUBICOS",
+            "codigoClasificador": 46
+        },
+        {
+            "descripcion": "PIEZAS",
+            "codigoClasificador": 47
+        },
+        {
+            "descripcion": "PLACAS",
+            "codigoClasificador": 48
+        },
+        {
+            "descripcion": "PLIEGO",
+            "codigoClasificador": 49
+        },
+        {
+            "descripcion": "ROLLO",
+            "codigoClasificador": 70
+        },
+        {
+            "descripcion": "PULGADAS",
+            "codigoClasificador": 50
+        },
+        {
+            "descripcion": "HORAS",
+            "codigoClasificador": 71
+        },
+        {
+            "descripcion": "RESMA",
+            "codigoClasificador": 51
+        },
+        {
+            "descripcion": "TAMBOR",
+            "codigoClasificador": 52
+        },
+        {
+            "descripcion": "TONELADA CORTA",
+            "codigoClasificador": 53
+        },
+        {
+            "descripcion": "TONELADA LARGA",
+            "codigoClasificador": 54
+        },
+        {
+            "descripcion": "ONZA TROY",
+            "codigoClasificador": 63
+        },
+        {
+            "descripcion": "TONELADAS",
+            "codigoClasificador": 55
+        },
+        {
+            "descripcion": "AGUJA",
+            "codigoClasificador": 72
+        },
+        {
+            "descripcion": "LIBRA FINA",
+            "codigoClasificador": 64
+        },
+        {
+            "descripcion": "TUBOS",
+            "codigoClasificador": 56
+        },
+        {
+            "descripcion": "AMPOLLA",
+            "codigoClasificador": 73
+        },
+        {
+            "descripcion": "UNIDAD (BIENES)",
+            "codigoClasificador": 57
+        },
+        {
+            "descripcion": "BIDÓN",
+            "codigoClasificador": 74
+        },
+        {
+            "descripcion": "UNIDAD (SERVICIOS)",
+            "codigoClasificador": 58
+        },
+        {
+            "descripcion": "BOLSA",
+            "codigoClasificador": 75
+        },
+        {
+            "descripcion": "US GALON (3,7843 L)",
+            "codigoClasificador": 59
+        },
+        {
+            "descripcion": "CAPSULA",
+            "codigoClasificador": 76
+        },
+        {
+            "descripcion": "YARDA",
+            "codigoClasificador": 60
+        },
+        {
+            "descripcion": "CARTUCHO",
+            "codigoClasificador": 77
+        },
+        {
+            "descripcion": "YARDA CUADRADA",
+            "codigoClasificador": 61
+        },
+        {
+            "descripcion": "COMPRIMIDO",
+            "codigoClasificador": 78
+        },
+        {
+            "descripcion": "OTRO",
+            "codigoClasificador": 62
+        },
+        {
+            "descripcion": "ESTUCHE",
+            "codigoClasificador": 79
+        },
+        {
+            "descripcion": "FRASCO",
+            "codigoClasificador": 80
+        },
+        {
+            "descripcion": "JERINGA",
+            "codigoClasificador": 81
+        },
+        {
+            "descripcion": "MINI BOTELLA",
+            "codigoClasificador": 82
+        },
+        {
+            "descripcion": "SACHET",
+            "codigoClasificador": 83
+        },
+        {
+            "descripcion": "TABLETA",
+            "codigoClasificador": 84
+        },
+        {
+            "descripcion": "TERMO",
+            "codigoClasificador": 85
+        },
+        {
+            "descripcion": "TUBO",
+            "codigoClasificador": 86
+        },
+        {
+            "descripcion": "DISPLAY",
+            "codigoClasificador": 65
+        },
+        {
+            "descripcion": "BULTO",
+            "codigoClasificador": 66
+        },
+        {
+            "descripcion": "OVULOS",
+            "codigoClasificador": 109
+        },
+        {
+            "descripcion": "SUPOSITORIOS",
+            "codigoClasificador": 110
+        },
+        {
+            "descripcion": "SOBRES",
+            "codigoClasificador": 111
+        },
+        {
+            "descripcion": "VIAL",
+            "codigoClasificador": 112
+        },
+        {
+            "descripcion": "HECTAREAS",
+            "codigoClasificador": 113
+        },
+        {
+            "descripcion": "ARROBA",
+            "codigoClasificador": 114
+        },
+        {
+            "descripcion": "AEROSOL",
+            "codigoClasificador": 115
+        },
+        {
+            "descripcion": "BARRA",
+            "codigoClasificador": 116
+        },
+        {
+            "descripcion": "CONJUNTO",
+            "codigoClasificador": 117
+        },
+        {
+            "descripcion": "FANEGA",
+            "codigoClasificador": 118
+        },
+        {
+            "descripcion": "PACK",
+            "codigoClasificador": 119
+        },
+        {
+            "descripcion": "PASTILLA",
+            "codigoClasificador": 122
+        },
+        {
+            "descripcion": "PIPETA",
+            "codigoClasificador": 120
+        },
+        {
+            "descripcion": "POTE",
+            "codigoClasificador": 121
+        },
+        {
+            "descripcion": "TONELADA METRICA",
+            "codigoClasificador": 123
+        },
+        {
+            "descripcion": "EQUIPOS",
+            "codigoClasificador": 124
+        },
+        {
+            "descripcion": "TIRA",
+            "codigoClasificador": 105
+        },
+        {
+            "descripcion": "BLISTER",
+            "codigoClasificador": 104
+        },
+        {
+            "descripcion": "TURRIL",
+            "codigoClasificador": 103
+        },
+        {
+            "descripcion": "BANDEJA",
+            "codigoClasificador": 102
+        },
+        {
+            "descripcion": "YARDA",
+            "codigoClasificador": 101
+        },
+        {
+            "descripcion": "JABA",
+            "codigoClasificador": 100
+        },
+        {
+            "descripcion": "DIAS",
+            "codigoClasificador": 67
+        },
+        {
+            "descripcion": "CARTOLA",
+            "codigoClasificador": 99
+        },
+        {
+            "descripcion": "MESES",
+            "codigoClasificador": 68
+        },
+        {
+            "descripcion": "TETRAPACK",
+            "codigoClasificador": 98
+        },
+        {
+            "descripcion": "VASO",
+            "codigoClasificador": 97
+        },
+        {
+            "descripcion": "POMO",
+            "codigoClasificador": 96
+        },
+        {
+            "descripcion": "UNIDAD TERMICA BRITANICA (TI)",
+            "codigoClasificador": 95
+        },
+        {
+            "descripcion": "MILLONES DE BTU (1000000 BTU)",
+            "codigoClasificador": 94
+        },
+        {
+            "descripcion": "MILLONES DE PIES CUBICOS (1000000 PC)",
+            "codigoClasificador": 93
+        },
+        {
+            "descripcion": "QUINTAL",
+            "codigoClasificador": 69
+        },
+        {
+            "descripcion": "MILLAR DE PIES CUBICOS (1000 PC)",
+            "codigoClasificador": 92
+        },
+        {
+            "descripcion": "MIL PIES CUBICOS 14696 PSI 68FAH",
+            "codigoClasificador": 91
+        },
+        {
+            "descripcion": "MIL PIES CUBICOS 14696 PSI",
+            "codigoClasificador": 90
+        },
+        {
+            "descripcion": "METRO CUBICO 68F VOL",
+            "codigoClasificador": 89
+        },
+        {
+            "descripcion": "BARRIL [42 GALONES(EEUU)]",
+            "codigoClasificador": 88
+        },
+        {
+            "descripcion": "BARRIL (EEUU) 60 F",
+            "codigoClasificador": 87
+        },
+        {
+            "descripcion": "MEGAWATT",
+            "codigoClasificador": 106
+        },
+        {
+            "descripcion": "KILOWATT",
+            "codigoClasificador": 107
+        },
+        {
+            "descripcion": "PIE TABLAR",
+            "codigoClasificador": 125
+        },
+        {
+            "descripcion": "KILATES",
+            "codigoClasificador": 126
+        },
+        {
+            "descripcion": "BOBINAS",
+            "codigoClasificador": 1
+        },
+        {
+            "descripcion": "BALDE",
+            "codigoClasificador": 2
+        },
+        {
+            "descripcion": "BARRILES",
+            "codigoClasificador": 3
+        },
+        {
+            "descripcion": "BOLSA",
+            "codigoClasificador": 4
+        },
+        {
+            "descripcion": "BOTELLAS",
+            "codigoClasificador": 5
+        },
+        {
+            "descripcion": "CAJA",
+            "codigoClasificador": 6
+        },
+        {
+            "descripcion": "CARTONES",
+            "codigoClasificador": 7
+        },
+        {
+            "descripcion": "CENTIMETRO CUADRADO",
+            "codigoClasificador": 8
+        },
+        {
+            "descripcion": "CENTIMETRO CUBICO",
+            "codigoClasificador": 9
+        },
+        {
+            "descripcion": "CENTIMETRO LINEAL",
+            "codigoClasificador": 10
+        },
+        {
+            "descripcion": "CIENTO DE UNIDADES",
+            "codigoClasificador": 11
+        },
+        {
+            "descripcion": "CILINDRO",
+            "codigoClasificador": 12
+        },
+        {
+            "descripcion": "CONOS",
+            "codigoClasificador": 13
+        },
+        {
+            "descripcion": "DOCENA",
+            "codigoClasificador": 14
+        },
+        {
+            "descripcion": "FARDO",
+            "codigoClasificador": 15
+        },
+        {
+            "descripcion": "GALON INGLES",
+            "codigoClasificador": 16
+        },
+        {
+            "descripcion": "GRAMO",
+            "codigoClasificador": 17
+        },
+        {
+            "descripcion": "GRUESA",
+            "codigoClasificador": 18
+        },
+        {
+            "descripcion": "HECTOLITRO",
+            "codigoClasificador": 19
+        },
+        {
+            "descripcion": "HOJA",
+            "codigoClasificador": 20
+        },
+        {
+            "descripcion": "JUEGO",
+            "codigoClasificador": 21
+        },
+        {
+            "descripcion": "KILOGRAMO",
+            "codigoClasificador": 22
+        },
+        {
+            "descripcion": "KILOMETRO",
+            "codigoClasificador": 23
+        },
+        {
+            "descripcion": "KILOVATIO HORA",
+            "codigoClasificador": 24
+        },
+        {
+            "descripcion": "KIT",
+            "codigoClasificador": 25
+        },
+        {
+            "descripcion": "LATAS",
+            "codigoClasificador": 26
+        },
+        {
+            "descripcion": "LIBRAS",
+            "codigoClasificador": 27
+        },
+        {
+            "descripcion": "LITRO",
+            "codigoClasificador": 28
+        },
+        {
+            "descripcion": "MEGAWATT HORA",
+            "codigoClasificador": 29
+        },
+        {
+            "descripcion": "METRO",
+            "codigoClasificador": 30
+        },
+        {
+            "descripcion": "METRO CUADRADO",
+            "codigoClasificador": 31
+        },
+        {
+            "descripcion": "METRO CUBICO",
+            "codigoClasificador": 32
+        },
+        {
+            "descripcion": "MILIGRAMOS",
+            "codigoClasificador": 33
+        },
+        {
+            "descripcion": "MILILITRO",
+            "codigoClasificador": 34
+        },
+        {
+            "descripcion": "MILIMETRO",
+            "codigoClasificador": 35
+        },
+        {
+            "descripcion": "MILIMETRO CUADRADO",
+            "codigoClasificador": 36
+        },
+        {
+            "descripcion": "MILIMETRO CUBICO",
+            "codigoClasificador": 37
+        }
+    ],
+    "leyendasFactura": [
+        {
+            "codigoActividad": 492321,
+            "descripcionLeyenda": "Ley N° 453: Tienes derecho a un trato equitativo sin discriminación en la oferta de servicios."
+        },
+        {
+            "codigoActividad": 522910,
+            "descripcionLeyenda": "Ley N° 453: Tienes derecho a un trato equitativo sin discriminación en la oferta de servicios."
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionLeyenda": "Ley N° 453: Tienes derecho a un trato equitativo sin discriminación en la oferta de servicios."
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionLeyenda": "Ley N° 453: En caso de incumplimiento a lo ofertado o convenido, el proveedor debe reparar o sustituir el servicio."
+        },
+        {
+            "codigoActividad": 522910,
+            "descripcionLeyenda": "Ley N° 453: En caso de incumplimiento a lo ofertado o convenido, el proveedor debe reparar o sustituir el servicio."
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionLeyenda": "Ley N° 453: En caso de incumplimiento a lo ofertado o convenido, el proveedor debe reparar o sustituir el servicio."
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionLeyenda": "Ley N° 453: El proveedor debe exhibir certificaciones de habilitación o documentos que acrediten las capacidades u ofertas de servicios especializados."
+        },
+        {
+            "codigoActividad": 522910,
+            "descripcionLeyenda": "Ley N° 453: El proveedor debe exhibir certificaciones de habilitación o documentos que acrediten las capacidades u ofertas de servicios especializados."
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionLeyenda": "Ley N° 453: El proveedor debe exhibir certificaciones de habilitación o documentos que acrediten las capacidades u ofertas de servicios especializados."
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionLeyenda": "Ley N° 453: Tienes derecho a recibir información sobre las características y contenidos de los servicios que utilices."
+        },
+        {
+            "codigoActividad": 522910,
+            "descripcionLeyenda": "Ley N° 453: Tienes derecho a recibir información sobre las características y contenidos de los servicios que utilices."
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionLeyenda": "Ley N° 453: Tienes derecho a recibir información sobre las características y contenidos de los servicios que utilices."
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionLeyenda": "Ley N° 453: El proveedor de servicios debe habilitar medios e instrumentos para efectuar consultas y reclamaciones."
+        },
+        {
+            "codigoActividad": 522910,
+            "descripcionLeyenda": "Ley N° 453: El proveedor de servicios debe habilitar medios e instrumentos para efectuar consultas y reclamaciones."
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionLeyenda": "Ley N° 453: El proveedor de servicios debe habilitar medios e instrumentos para efectuar consultas y reclamaciones."
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionLeyenda": "Ley N° 453: El proveedor deberá suministrar el servicio en las modalidades y términos ofertados o convenidos."
+        },
+        {
+            "codigoActividad": 522910,
+            "descripcionLeyenda": "Ley N° 453: El proveedor deberá suministrar el servicio en las modalidades y términos ofertados o convenidos."
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionLeyenda": "Ley N° 453: El proveedor deberá suministrar el servicio en las modalidades y términos ofertados o convenidos."
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionLeyenda": "Ley N° 453: La interrupción del servicio debe comunicarse con anterioridad a las Autoridades que correspondan y a los usuarios afectados."
+        },
+        {
+            "codigoActividad": 522910,
+            "descripcionLeyenda": "Ley N° 453: La interrupción del servicio debe comunicarse con anterioridad a las Autoridades que correspondan y a los usuarios afectados."
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionLeyenda": "Ley N° 453: La interrupción del servicio debe comunicarse con anterioridad a las Autoridades que correspondan y a los usuarios afectados."
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionLeyenda": "Ley N° 453: Los servicios deben suministrarse en condiciones de inocuidad, calidad y seguridad."
+        },
+        {
+            "codigoActividad": 522910,
+            "descripcionLeyenda": "Ley N° 453: Los servicios deben suministrarse en condiciones de inocuidad, calidad y seguridad."
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionLeyenda": "Ley N° 453: Los servicios deben suministrarse en condiciones de inocuidad, calidad y seguridad."
+        }
+    ],
+    "tiposDocSector": [
+        {
+            "descripcion": "FACTURA COMERCIAL DE EXPORTACIÓN HIDROCARBUROS",
+            "codigoClasificador": 43
+        },
+        {
+            "descripcion": "FACTURA IMPORTACION COMERCIALIZACION LUBRICANTES IEHD",
+            "codigoClasificador": 53
+        },
+        {
+            "descripcion": "FACTURA IMPORTACION COMERCIALIZACION LUBRICANTES",
+            "codigoClasificador": 44
+        },
+        {
+            "descripcion": "FACTURA ENGARRAFADORAS",
+            "codigoClasificador": 51
+        },
+        {
+            "descripcion": "FACTURA DE SERVICIOS BÁSICOS ZF",
+            "codigoClasificador": 40
+        },
+        {
+            "descripcion": "FACTURA COMPRA VENTA BONIFICACIONES",
+            "codigoClasificador": 35
+        },
+        {
+            "descripcion": "FACTURA COMPRA VENTA TASAS",
+            "codigoClasificador": 41
+        },
+        {
+            "descripcion": "FACTURA PREVALORADA SDCF",
+            "codigoClasificador": 36
+        },
+        {
+            "descripcion": "FACTURA DE SERVICIO TURÍSTICO Y HOSPEDAJE",
+            "codigoClasificador": 6
+        },
+        {
+            "descripcion": "FACTURA DE TASA CERO POR VENTA DE LIBROS Y TRANSPORTE INTERNACIONAL DE CARGA",
+            "codigoClasificador": 8
+        },
+        {
+            "descripcion": "FACTURA HIDROCARBUROS ALCANZADA IEHD",
+            "codigoClasificador": 19
+        },
+        {
+            "descripcion": "FACTURA ALQUILER ZF",
+            "codigoClasificador": 42
+        },
+        {
+            "descripcion": "FACTURA COMERCIAL DE EXPORTACIÓN DE SERVICIOS",
+            "codigoClasificador": 28
+        },
+        {
+            "descripcion": "FACTURA COMERCIAL DE EXPORTACION PRECIO VENTA",
+            "codigoClasificador": 45
+        },
+        {
+            "descripcion": "FACTURA SECTORES EDUCATIVO ZONA FRANCA",
+            "codigoClasificador": 46
+        },
+        {
+            "descripcion": "FACTURA TASA CERO BIENES CAPITAL",
+            "codigoClasificador": 33
+        },
+        {
+            "descripcion": "FACTURA VENTA DE MATERIA PRIMA PARA BIODIESEL",
+            "codigoClasificador": 54
+        },
+        {
+            "descripcion": "NOTA CREDITO DEBITO DESCUENTO",
+            "codigoClasificador": 47
+        },
+        {
+            "descripcion": "NOTA CREDITO DEBITO ICE",
+            "codigoClasificador": 48
+        },
+        {
+            "descripcion": "FACTURA DE VENTA DE GASOLINA SIN SUBVENCION",
+            "codigoClasificador": 55
+        },
+        {
+            "descripcion": "FACTURA TELECOMUNICACIONES ZONA FRANCA",
+            "codigoClasificador": 49
+        },
+        {
+            "descripcion": "FACTURA DE HOSPITALES/CLÍNICAS ZONA FRANCA",
+            "codigoClasificador": 50
+        },
+        {
+            "descripcion": "FACTURA VENTA MINERAL BANCO CENTRAL",
+            "codigoClasificador": 52
+        },
+        {
+            "descripcion": "FACTURA DUTTY FREE",
+            "codigoClasificador": 10
+        },
+        {
+            "descripcion": "NOTA DE CONCILIACION",
+            "codigoClasificador": 29
+        },
+        {
+            "descripcion": "FACTURA COMERCIAL DE EXPORTACIÓN DE MINERALES",
+            "codigoClasificador": 20
+        },
+        {
+            "descripcion": "BOLETO AEREO",
+            "codigoClasificador": 30
+        },
+        {
+            "descripcion": "FACTURA DE COMERCIALIZACIÓN DE GNV",
+            "codigoClasificador": 37
+        },
+        {
+            "descripcion": "FACTURA DE SUMINISTRO",
+            "codigoClasificador": 31
+        },
+        {
+            "descripcion": "FACTURA VENTA INTERNA MINERALES",
+            "codigoClasificador": 21
+        },
+        {
+            "descripcion": "FACTURA HIDROCARBUROS NO ALCANZADA IEHD",
+            "codigoClasificador": 38
+        },
+        {
+            "descripcion": "FACTURA DE SEGUROS",
+            "codigoClasificador": 34
+        },
+        {
+            "descripcion": "FACTURA COMERCIALIZACION GN y GLP",
+            "codigoClasificador": 39
+        },
+        {
+            "descripcion": "FACTURA PREVALORADA",
+            "codigoClasificador": 23
+        },
+        {
+            "descripcion": "FACTURA COMPRA-VENTA",
+            "codigoClasificador": 1
+        },
+        {
+            "descripcion": "FACTURA SECTORES EDUCATIVOS",
+            "codigoClasificador": 11
+        },
+        {
+            "descripcion": "FACTURA DE ALQUILER DE BIENES INMUEBLES",
+            "codigoClasificador": 2
+        },
+        {
+            "descripcion": "FACTURA DE COMERCIALIZACIÓN DE HIDROCARBUROS",
+            "codigoClasificador": 12
+        },
+        {
+            "descripcion": "FACTURA DE SERVICIOS BÁSICOS",
+            "codigoClasificador": 13
+        },
+        {
+            "descripcion": "FACTURA PRODUCTOS ALCANZADOS POR EL ICE",
+            "codigoClasificador": 14
+        },
+        {
+            "descripcion": "FACTURA DE ENTIDADES FINANCIERAS",
+            "codigoClasificador": 15
+        },
+        {
+            "descripcion": "FACTURA DE HOTELES",
+            "codigoClasificador": 16
+        },
+        {
+            "descripcion": "FACTURA DE HOSPITALES/CLÍNICAS",
+            "codigoClasificador": 17
+        },
+        {
+            "descripcion": "FACTURA DE JUEGOS DE AZAR",
+            "codigoClasificador": 18
+        },
+        {
+            "descripcion": "FACTURA COMERCIAL DE EXPORTACIÓN",
+            "codigoClasificador": 3
+        },
+        {
+            "descripcion": "FACTURA COMERCIAL DE EXPORTACIÓN EN LIBRE CONSIGNACIÓN",
+            "codigoClasificador": 4
+        },
+        {
+            "descripcion": "FACTURA DE ZONA FRANCA",
+            "codigoClasificador": 5
+        },
+        {
+            "descripcion": "FACTURA DE COMERCIALIZACIÓN DE ALIMENTOS \\u2013 SEGURIDAD",
+            "codigoClasificador": 7
+        },
+        {
+            "descripcion": "FACTURA TELECOMUNICACIONES",
+            "codigoClasificador": 22
+        },
+        {
+            "descripcion": "FACTURA DE COMPRA Y VENTA DE MONEDA EXTRANJERA",
+            "codigoClasificador": 9
+        },
+        {
+            "descripcion": "NOTA DE CRÉDITO-DÉBITO",
+            "codigoClasificador": 24
+        }
+    ],
+    "actividadEconomica": [
+        {
+            "descripcion": "TRANSPORTE DE CARGA INTERDEPARTAMENTAL Y LARGA DISTANCIA",
+            "codigoCaeb": 492321,
+            "tipoActividad": "P"
+        },
+        {
+            "descripcion": "ALQUILER DE EQUIPO DE TRANSPORTE",
+            "codigoCaeb": 770000,
+            "tipoActividad": "S"
+        },
+        {
+            "descripcion": "OPERADOR DE TRANSPORTE MULTIMODAL",
+            "codigoCaeb": 522910,
+            "tipoActividad": "S"
+        }
+    ],
+    "tipoMoneda": [
+        {
+            "descripcion": "CHELÍN SOMALÍ",
+            "codigoClasificador": 125
+        },
+        {
+            "descripcion": "RAND",
+            "codigoClasificador": 126
+        },
+        {
+            "descripcion": "LIBRA SURSUDANESA",
+            "codigoClasificador": 127
+        },
+        {
+            "descripcion": "RUPIA CEILANDESA",
+            "codigoClasificador": 128
+        },
+        {
+            "descripcion": "LIBRA SUDANESA",
+            "codigoClasificador": 129
+        },
+        {
+            "descripcion": "DÓLAR SURINAMÉS",
+            "codigoClasificador": 130
+        },
+        {
+            "descripcion": "LILANGENI",
+            "codigoClasificador": 131
+        },
+        {
+            "descripcion": "CORONA SUECA",
+            "codigoClasificador": 132
+        },
+        {
+            "descripcion": "FRANCO SUIZO",
+            "codigoClasificador": 133
+        },
+        {
+            "descripcion": "LIBRA SIRIA",
+            "codigoClasificador": 134
+        },
+        {
+            "descripcion": "NUEVO DÓLAR DE TAIWÁN",
+            "codigoClasificador": 135
+        },
+        {
+            "descripcion": "SOMONI",
+            "codigoClasificador": 136
+        },
+        {
+            "descripcion": "CHELÍN TANZANIANO",
+            "codigoClasificador": 137
+        },
+        {
+            "descripcion": "BAT",
+            "codigoClasificador": 138
+        },
+        {
+            "descripcion": "PAANGA",
+            "codigoClasificador": 139
+        },
+        {
+            "descripcion": "DÓLAR TRINITENSE",
+            "codigoClasificador": 140
+        },
+        {
+            "descripcion": "DINAR TUNECINO",
+            "codigoClasificador": 141
+        },
+        {
+            "descripcion": "LIRA TURCA",
+            "codigoClasificador": 142
+        },
+        {
+            "descripcion": "MANAT TURCOMANO",
+            "codigoClasificador": 143
+        },
+        {
+            "descripcion": "CHELÍN UGANDÉS",
+            "codigoClasificador": 144
+        },
+        {
+            "descripcion": "GRIVNA",
+            "codigoClasificador": 145
+        },
+        {
+            "descripcion": "PESO URUGUAYO",
+            "codigoClasificador": 146
+        },
+        {
+            "descripcion": "SUM",
+            "codigoClasificador": 147
+        },
+        {
+            "descripcion": "VATU DO VANUATU",
+            "codigoClasificador": 148
+        },
+        {
+            "descripcion": "BOLÍVAR FUERTE",
+            "codigoClasificador": 149
+        },
+        {
+            "descripcion": "DONG",
+            "codigoClasificador": 150
+        },
+        {
+            "descripcion": "RIAL YEMENÍ",
+            "codigoClasificador": 151
+        },
+        {
+            "descripcion": "KUACHA ZAMBIANO",
+            "codigoClasificador": 152
+        },
+        {
+            "descripcion": "DÓLAR ZIMBABUENSE",
+            "codigoClasificador": 153
+        },
+        {
+            "descripcion": "AFGANI",
+            "codigoClasificador": 3
+        },
+        {
+            "descripcion": "LEK",
+            "codigoClasificador": 4
+        },
+        {
+            "descripcion": "LIBRA ESTERLINA",
+            "codigoClasificador": 5
+        },
+        {
+            "descripcion": "DINAR",
+            "codigoClasificador": 6
+        },
+        {
+            "descripcion": "EURO",
+            "codigoClasificador": 7
+        },
+        {
+            "descripcion": "KUANZA DE ANGOLA",
+            "codigoClasificador": 8
+        },
+        {
+            "descripcion": "PESO ARGENTINO",
+            "codigoClasificador": 9
+        },
+        {
+            "descripcion": "DRAM ARMENIO",
+            "codigoClasificador": 10
+        },
+        {
+            "descripcion": "FLORÍN ARUBANO",
+            "codigoClasificador": 11
+        },
+        {
+            "descripcion": "DÓLAR AUSTRALIANO",
+            "codigoClasificador": 12
+        },
+        {
+            "descripcion": "MANAT AZERBAYANO",
+            "codigoClasificador": 13
+        },
+        {
+            "descripcion": "DÓLAR DE LAS BAHAMAS",
+            "codigoClasificador": 14
+        },
+        {
+            "descripcion": "DINAR DE BARÉIN",
+            "codigoClasificador": 15
+        },
+        {
+            "descripcion": "TAKA DE BANGLADÉS",
+            "codigoClasificador": 16
+        },
+        {
+            "descripcion": "DÓLAR DE LAS BARBADOS",
+            "codigoClasificador": 17
+        },
+        {
+            "descripcion": "RUBLO BIELORRUSO",
+            "codigoClasificador": 18
+        },
+        {
+            "descripcion": "DÓLAR BELICEÑO",
+            "codigoClasificador": 19
+        },
+        {
+            "descripcion": "GULTRUM BUTANÉS",
+            "codigoClasificador": 20
+        },
+        {
+            "descripcion": "MARCO CONVERTIBLE DE BOSNIA Y HERZEGOVINA",
+            "codigoClasificador": 21
+        },
+        {
+            "descripcion": "PULA DE BOTSUANA",
+            "codigoClasificador": 22
+        },
+        {
+            "descripcion": "REAL BRASILEÑO",
+            "codigoClasificador": 23
+        },
+        {
+            "descripcion": "DÓLAR DE BRUNEI",
+            "codigoClasificador": 24
+        },
+        {
+            "descripcion": "LEVA BÚLGARO",
+            "codigoClasificador": 25
+        },
+        {
+            "descripcion": "FRANCO CFA",
+            "codigoClasificador": 26
+        },
+        {
+            "descripcion": "KIAT DE BIRMANIA",
+            "codigoClasificador": 27
+        },
+        {
+            "descripcion": "FRANCO BURUNDÉS",
+            "codigoClasificador": 28
+        },
+        {
+            "descripcion": "RIEL CAMBOYANO",
+            "codigoClasificador": 29
+        },
+        {
+            "descripcion": "DÓLAR CANADIENSE",
+            "codigoClasificador": 30
+        },
+        {
+            "descripcion": "ESCUDO DE CABO VERDE",
+            "codigoClasificador": 31
+        },
+        {
+            "descripcion": "DÓLAR DE LAS ISLAS CAIMÁN",
+            "codigoClasificador": 32
+        },
+        {
+            "descripcion": "PESO CHILENO",
+            "codigoClasificador": 33
+        },
+        {
+            "descripcion": "YUAN, RENMINBI",
+            "codigoClasificador": 34
+        },
+        {
+            "descripcion": "PESO COLOMBIANO",
+            "codigoClasificador": 35
+        },
+        {
+            "descripcion": "FRANCO COMORANO",
+            "codigoClasificador": 36
+        },
+        {
+            "descripcion": "FRANCO CONGOLEÑO",
+            "codigoClasificador": 37
+        },
+        {
+            "descripcion": "COLÓN COSTARRICENSE",
+            "codigoClasificador": 38
+        },
+        {
+            "descripcion": "DÓLAR HONG KONG",
+            "codigoClasificador": 154
+        },
+        {
+            "descripcion": "KUNA CROATA",
+            "codigoClasificador": 39
+        },
+        {
+            "descripcion": "PESO CUBANO",
+            "codigoClasificador": 40
+        },
+        {
+            "descripcion": "FLORÍN DE LAS ANTILLAS NEERLANDESAS",
+            "codigoClasificador": 41
+        },
+        {
+            "descripcion": "CORONA CHECA",
+            "codigoClasificador": 42
+        },
+        {
+            "descripcion": "CORONA DANESA",
+            "codigoClasificador": 43
+        },
+        {
+            "descripcion": "FRANCO YIBUTIANO",
+            "codigoClasificador": 44
+        },
+        {
+            "descripcion": "PESO DOMINICANO",
+            "codigoClasificador": 45
+        },
+        {
+            "descripcion": "DÓLAR ESTADOUNIDENSE",
+            "codigoClasificador": 46
+        },
+        {
+            "descripcion": "LIBRA EGIPCIA",
+            "codigoClasificador": 47
+        },
+        {
+            "descripcion": "COLÓN SALVADOREÑO",
+            "codigoClasificador": 48
+        },
+        {
+            "descripcion": "NAKFA DE ERITREA",
+            "codigoClasificador": 49
+        },
+        {
+            "descripcion": "BIR",
+            "codigoClasificador": 50
+        },
+        {
+            "descripcion": "FRANCO CFP",
+            "codigoClasificador": 51
+        },
+        {
+            "descripcion": "DALASI GAMBIANO",
+            "codigoClasificador": 52
+        },
+        {
+            "descripcion": "LARI GEORGIANO",
+            "codigoClasificador": 53
+        },
+        {
+            "descripcion": "CEDI DE GANA",
+            "codigoClasificador": 54
+        },
+        {
+            "descripcion": "LIBRA DE GIBRALTAR",
+            "codigoClasificador": 55
+        },
+        {
+            "descripcion": "QUETZAL",
+            "codigoClasificador": 56
+        },
+        {
+            "descripcion": "FRANCO GUINEANO",
+            "codigoClasificador": 57
+        },
+        {
+            "descripcion": "GURDE",
+            "codigoClasificador": 58
+        },
+        {
+            "descripcion": "LEMPIRA",
+            "codigoClasificador": 59
+        },
+        {
+            "descripcion": "FORINTO",
+            "codigoClasificador": 60
+        },
+        {
+            "descripcion": "CORONA ISLANDESA",
+            "codigoClasificador": 61
+        },
+        {
+            "descripcion": "RUPIA INDIA",
+            "codigoClasificador": 62
+        },
+        {
+            "descripcion": "BOLIVIANO",
+            "codigoClasificador": 1
+        },
+        {
+            "descripcion": "RUPIA INDONESIA",
+            "codigoClasificador": 63
+        },
+        {
+            "descripcion": "DOLAR",
+            "codigoClasificador": 2
+        },
+        {
+            "descripcion": "RIAL IRANÍ",
+            "codigoClasificador": 64
+        },
+        {
+            "descripcion": "DINAR IRAKÍ",
+            "codigoClasificador": 65
+        },
+        {
+            "descripcion": "NUEVO SÉQUEL",
+            "codigoClasificador": 66
+        },
+        {
+            "descripcion": "DÓLAR JAMAICANO",
+            "codigoClasificador": 67
+        },
+        {
+            "descripcion": "YEN",
+            "codigoClasificador": 68
+        },
+        {
+            "descripcion": "DINAR JORDANO",
+            "codigoClasificador": 69
+        },
+        {
+            "descripcion": "TENGUE KAZAJO",
+            "codigoClasificador": 70
+        },
+        {
+            "descripcion": "CHELÍN KENIANO",
+            "codigoClasificador": 71
+        },
+        {
+            "descripcion": "WON NORCOREANO",
+            "codigoClasificador": 72
+        },
+        {
+            "descripcion": "WON SURCOREANO",
+            "codigoClasificador": 73
+        },
+        {
+            "descripcion": "DINAR KUWAITÍ",
+            "codigoClasificador": 74
+        },
+        {
+            "descripcion": "SOM KIRGUÍS",
+            "codigoClasificador": 75
+        },
+        {
+            "descripcion": "KIP",
+            "codigoClasificador": 76
+        },
+        {
+            "descripcion": "LATS",
+            "codigoClasificador": 77
+        },
+        {
+            "descripcion": "LIBRA LIBANESA",
+            "codigoClasificador": 78
+        },
+        {
+            "descripcion": "LOTI DE LESOTO",
+            "codigoClasificador": 79
+        },
+        {
+            "descripcion": "DÓLAR LIBERIANO",
+            "codigoClasificador": 80
+        },
+        {
+            "descripcion": "DINAR LIBIO",
+            "codigoClasificador": 81
+        },
+        {
+            "descripcion": "LITAS",
+            "codigoClasificador": 82
+        },
+        {
+            "descripcion": "PATACA DE MACAO",
+            "codigoClasificador": 83
+        },
+        {
+            "descripcion": "DENAR",
+            "codigoClasificador": 84
+        },
+        {
+            "descripcion": "ARIARI",
+            "codigoClasificador": 85
+        },
+        {
+            "descripcion": "KUACHA DE MALAUI",
+            "codigoClasificador": 86
+        },
+        {
+            "descripcion": "RINGIT",
+            "codigoClasificador": 87
+        },
+        {
+            "descripcion": "RUFIYA",
+            "codigoClasificador": 88
+        },
+        {
+            "descripcion": "UGUIYA",
+            "codigoClasificador": 89
+        },
+        {
+            "descripcion": "RUPIA DE MAURICIO",
+            "codigoClasificador": 90
+        },
+        {
+            "descripcion": "PESO MEXICANO",
+            "codigoClasificador": 91
+        },
+        {
+            "descripcion": "DÓLAR MICRONESIO",
+            "codigoClasificador": 92
+        },
+        {
+            "descripcion": "LEU MOLDAVO",
+            "codigoClasificador": 93
+        },
+        {
+            "descripcion": "TUGRIK MONGOL",
+            "codigoClasificador": 94
+        },
+        {
+            "descripcion": "DÍRHAM",
+            "codigoClasificador": 95
+        },
+        {
+            "descripcion": "METICAL",
+            "codigoClasificador": 96
+        },
+        {
+            "descripcion": "DÓLAR DE NAMIBIA",
+            "codigoClasificador": 97
+        },
+        {
+            "descripcion": "DÓLAR NAURUANO",
+            "codigoClasificador": 98
+        },
+        {
+            "descripcion": "RUPIA NEPALÍ",
+            "codigoClasificador": 99
+        },
+        {
+            "descripcion": "DÓLAR DE NUEVA ZELANDA",
+            "codigoClasificador": 100
+        },
+        {
+            "descripcion": "CÓRDOBA NICARAGÜENSE",
+            "codigoClasificador": 101
+        },
+        {
+            "descripcion": "NAIRA NIGERIANO",
+            "codigoClasificador": 102
+        },
+        {
+            "descripcion": "CORONA NORUEGA",
+            "codigoClasificador": 103
+        },
+        {
+            "descripcion": "RIAL DE OMÁN",
+            "codigoClasificador": 104
+        },
+        {
+            "descripcion": "RUPIA PAKISTANÍ",
+            "codigoClasificador": 105
+        },
+        {
+            "descripcion": "BALBOA PANAMEÑO",
+            "codigoClasificador": 106
+        },
+        {
+            "descripcion": "KINA",
+            "codigoClasificador": 107
+        },
+        {
+            "descripcion": "GUARANÍ PARAGUAYO",
+            "codigoClasificador": 108
+        },
+        {
+            "descripcion": "NUEVO SOL PERUANO",
+            "codigoClasificador": 109
+        },
+        {
+            "descripcion": "PESO FILIPINO",
+            "codigoClasificador": 110
+        },
+        {
+            "descripcion": "ZLOTI",
+            "codigoClasificador": 111
+        },
+        {
+            "descripcion": "RIAL CATARÍ",
+            "codigoClasificador": 112
+        },
+        {
+            "descripcion": "LEU RUMANO",
+            "codigoClasificador": 113
+        },
+        {
+            "descripcion": "RUBLO",
+            "codigoClasificador": 114
+        },
+        {
+            "descripcion": "FRANCO RUANDÉS",
+            "codigoClasificador": 115
+        },
+        {
+            "descripcion": "DÓLAR DEL CARIBE ORIENTAL",
+            "codigoClasificador": 116
+        },
+        {
+            "descripcion": "TALA",
+            "codigoClasificador": 117
+        },
+        {
+            "descripcion": "DOBRA",
+            "codigoClasificador": 118
+        },
+        {
+            "descripcion": "RIAL SAUDÍ",
+            "codigoClasificador": 119
+        },
+        {
+            "descripcion": "DINAR SERBIO",
+            "codigoClasificador": 120
+        },
+        {
+            "descripcion": "RUPIA SEYCHELLENSE",
+            "codigoClasificador": 121
+        },
+        {
+            "descripcion": "LEONA",
+            "codigoClasificador": 122
+        },
+        {
+            "descripcion": "DÓLAR SINGAPURENSE",
+            "codigoClasificador": 123
+        },
+        {
+            "descripcion": "DÓLAR SALOMONENSE",
+            "codigoClasificador": 124
+        }
+    ],
+    "tipoDocumentoIdentidad": [
+        {
+            "descripcion": "CI - CÉDULA DE IDENTIDAD",
+            "codigoClasificador": 1
+        },
+        {
+            "descripcion": "CEX - CÉDULA DE IDENTIDAD DE EXTRANJERO",
+            "codigoClasificador": 2
+        },
+        {
+            "descripcion": "NIT - NÚMERO DE IDENTIFICACIÓN TRIBUTARIA",
+            "codigoClasificador": 5
+        },
+        {
+            "descripcion": "PAS - PASAPORTE",
+            "codigoClasificador": 3
+        },
+        {
+            "descripcion": "OD - OTRO DOCUMENTO DE IDENTIDAD",
+            "codigoClasificador": 4
+        }
+    ],
+    "productosServicios": [
+        {
+            "codigoActividad": 492321,
+            "descripcionProducto": "OTROS PRODUCTOS O SERVICIOS ALCANZADOS POR EL IVA IMPORTADO",
+            "codigoProducto": 991009
+        },
+        {
+            "codigoActividad": 522910,
+            "descripcionProducto": "OTROS PRODUCTOS O SERVICIOS ALCANZADOS POR EL IVA IMPORTADO",
+            "codigoProducto": 991009
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "OTROS PRODUCTOS O SERVICIOS ALCANZADOS POR EL IVA IMPORTADO",
+            "codigoProducto": 991009
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionProducto": "SERVICIOS DE TRANSPORTE POR CARRETERA DE CARGA SECA",
+            "codigoProducto": 65117
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionProducto": "SERVICIOS DE TRANSPORTE POR CARRETERA DE CORRESPONDENCIA Y PAQUETES",
+            "codigoProducto": 65116
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionProducto": "SERVICIOS DE TRANSPORTE POR CARRETERA DE ANIMALES VIVOS",
+            "codigoProducto": 65118
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionProducto": "OTROS SERVICIOS DE TRANSPORTE DE CARGA POR CARRETERA",
+            "codigoProducto": 65119
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE AUTOBUSES CON OPERARIO",
+            "codigoProducto": 66011
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE CAMIONES CON OPERARIO",
+            "codigoProducto": 66012
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE CAMIONES CON OPERARIO",
+            "codigoProducto": 66012
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE EMBARCACIONES PARA TRANSPORTE MARÍTIMO TRANSOCEÁNICO Y DE CABOTAJE DE PASAJEROS CON OPERARIO",
+            "codigoProducto": 66021
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE EMBARCACIONES PARA TRANSPORTE MARÍTIMO TRANSOCEÁNICO Y DE CABOTAJE DE CARGA CON OPERARIO",
+            "codigoProducto": 66022
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE EMBARCACIONES PARA TRANSPORTE DE PASAJEROS POR VÍAS DE NAVEGACIÓN INTERIOR CON OPERARIO",
+            "codigoProducto": 66023
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE EMBARCACIONES PARA TRANSPORTE DE CARGA POR VÍAS DE NAVEGACIÓN INTERIOR CON OPERARIO",
+            "codigoProducto": 66024
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE AERONAVES PARA PASAJEROS CON OPERADOR",
+            "codigoProducto": 66031
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE AERONAVES PARA CARGA CON OPERADOR",
+            "codigoProducto": 66032
+        },
+        {
+            "codigoActividad": 522910,
+            "descripcionProducto": "SERVICIOS DE AGENCIAS DE TRANSPORTE DE CARGA Y OTROS SERVICIOS DEL TRANSPORTE DE CARGA",
+            "codigoProducto": 67910
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "OTROS SERVICIOS DE APOYO PARA EL TRANSPORTE N.C.P.",
+            "codigoProducto": 67990
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionProducto": "SERVICIOS DE TRANSPORTE POR CARRETERA DE CORRESPONDENCIA Y PAQUETES IMPORTADO",
+            "codigoProducto": 651169
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionProducto": "SERVICIOS DE TRANSPORTE POR CARRETERA DE CARGA SECA IMPORTADO",
+            "codigoProducto": 651179
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionProducto": "SERVICIOS DE TRANSPORTE POR CARRETERA DE ANIMALES VIVOS IMPORTADO",
+            "codigoProducto": 651189
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionProducto": "OTROS SERVICIOS DE TRANSPORTE DE CARGA POR CARRETERA IMPORTADO",
+            "codigoProducto": 651199
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE AUTOBUSES CON OPERARIO IMPORTADO",
+            "codigoProducto": 660119
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE CAMIONES CON OPERARIO IMPORTADO",
+            "codigoProducto": 660129
+        },
+        {
+            "codigoActividad": 492321,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE CAMIONES CON OPERARIO IMPORTADO",
+            "codigoProducto": 660129
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE EMBARCACIONES PARA TRANSPORTE MARÍTIMO TRANSOCEÁNICO Y DE CABOTAJE DE PASAJEROS CON OPERARIO IMPORTADO",
+            "codigoProducto": 660219
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE EMBARCACIONES PARA TRANSPORTE MARÍTIMO TRANSOCEÁNICO Y DE CABOTAJE DE CARGA CON OPERARIO IMPORTADO",
+            "codigoProducto": 660229
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE EMBARCACIONES PARA TRANSPORTE DE PASAJEROS POR VÍAS DE NAVEGACIÓN INTERIOR CON OPERARIO IMPORTADO",
+            "codigoProducto": 660239
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE EMBARCACIONES PARA TRANSPORTE DE CARGA POR VÍAS DE NAVEGACIÓN INTERIOR CON OPERARIO IMPORTADO",
+            "codigoProducto": 660249
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE AERONAVES PARA PASAJEROS CON OPERADOR IMPORTADO",
+            "codigoProducto": 660319
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "SERVICIOS DE ALQUILER DE AERONAVES PARA CARGA CON OPERADOR IMPORTADO",
+            "codigoProducto": 660329
+        },
+        {
+            "codigoActividad": 522910,
+            "descripcionProducto": "SERVICIOS DE AGENCIAS DE TRANSPORTE DE CARGA Y OTROS SERVICIOS DEL TRANSPORTE DE CARGA IMPORTADO",
+            "codigoProducto": 679109
+        },
+        {
+            "codigoActividad": 770000,
+            "descripcionProducto": "OTROS SERVICIOS DE APOYO PARA EL TRANSPORTE N.C.P. IMPORTADO",
+            "codigoProducto": 679909
+        },
+        {
+            "nandina": [
+                "7010.90.20.10",
+                "7010.90.30.10",
+                "7010.90.10.10"
+            ],
+            "codigoActividad": 492321,
+            "descripcionProducto": "OTROS PRODUCTOS O SERVICIOS ALCANZADOS POR EL IVA",
+            "codigoProducto": 99100
+        },
+        {
+            "nandina": [
+                "7010.90.20.10",
+                "7010.90.30.10",
+                "7010.90.10.10"
+            ],
+            "codigoActividad": 522910,
+            "descripcionProducto": "OTROS PRODUCTOS O SERVICIOS ALCANZADOS POR EL IVA",
+            "codigoProducto": 99100
+        },
+        {
+            "nandina": [
+                "7010.90.20.10",
+                "7010.90.30.10",
+                "7010.90.10.10"
+            ],
+            "codigoActividad": 770000,
+            "descripcionProducto": "OTROS PRODUCTOS O SERVICIOS ALCANZADOS POR EL IVA",
+            "codigoProducto": 99100
+        }
+    ],
+    "actividadesEconomicas": [
+        {
+            "tipoDocumentoSector": "FAC_SEG",
+            "codigoActividad": 492321,
+            "codigoDocumentoSector": 34
+        },
+        {
+            "tipoDocumentoSector": "FAC_CVB",
+            "codigoActividad": 492321,
+            "codigoDocumentoSector": 35
+        },
+        {
+            "tipoDocumentoSector": "FCV",
+            "codigoActividad": 492321,
+            "codigoDocumentoSector": 1
+        },
+        {
+            "tipoDocumentoSector": "NCD",
+            "codigoActividad": 492321,
+            "codigoDocumentoSector": 24
+        },
+        {
+            "tipoDocumentoSector": "NCDDE",
+            "codigoActividad": 492321,
+            "codigoDocumentoSector": 47
+        },
+        {
+            "tipoDocumentoSector": "FAC_CVB",
+            "codigoActividad": 522910,
+            "codigoDocumentoSector": 35
+        },
+        {
+            "tipoDocumentoSector": "FCV",
+            "codigoActividad": 522910,
+            "codigoDocumentoSector": 1
+        },
+        {
+            "tipoDocumentoSector": "NCD",
+            "codigoActividad": 522910,
+            "codigoDocumentoSector": 24
+        },
+        {
+            "tipoDocumentoSector": "FAC_SEG",
+            "codigoActividad": 522910,
+            "codigoDocumentoSector": 34
+        },
+        {
+            "tipoDocumentoSector": "NCDDE",
+            "codigoActividad": 522910,
+            "codigoDocumentoSector": 47
+        },
+        {
+            "tipoDocumentoSector": "NCDDE",
+            "codigoActividad": 770000,
+            "codigoDocumentoSector": 47
+        },
+        {
+            "tipoDocumentoSector": "FAC_SEG",
+            "codigoActividad": 770000,
+            "codigoDocumentoSector": 34
+        },
+        {
+            "tipoDocumentoSector": "FCV",
+            "codigoActividad": 770000,
+            "codigoDocumentoSector": 1
+        },
+        {
+            "tipoDocumentoSector": "FAC_CVB",
+            "codigoActividad": 770000,
+            "codigoDocumentoSector": 35
+        },
+        {
+            "tipoDocumentoSector": "NCD",
+            "codigoActividad": 770000,
+            "codigoDocumentoSector": 24
+        }
+    ],
+    "motivoAnulacion": [
+        {
+            "descripcion": "FACTURA MAL EMITIDA",
+            "codigoClasificador": 1
+        },
+        {
+            "descripcion": "NOTA DE CREDITO-DEBITO MAL EMITIDA",
+            "codigoClasificador": 2
+        },
+        {
+            "descripcion": "DATOS DE EMISION INCORRECTOS",
+            "codigoClasificador": 3
+        },
+        {
+            "descripcion": "FACTURA O NOTA DE CREDITO-DEBITO DEVUELTA",
+            "codigoClasificador": 4
+        }
+    ],
+    "tipoFactura": [
+        {
+            "descripcion": "DOCUMENTO EQUIVALENTE",
+            "codigoClasificador": 4
+        },
+        {
+            "descripcion": "FACTURA CON DERECHO A CREDITO FISCAL",
+            "codigoClasificador": 1
+        },
+        {
+            "descripcion": "DOCUMENTO DE AJUSTE",
+            "codigoClasificador": 3
+        },
+        {
+            "descripcion": "FACTURA SIN DERECHO A CREDITO FISCAL",
+            "codigoClasificador": 2
+        }
+    ],
+    "eventoSignificativo": [
+        {
+            "descripcion": "CORTE DE SUMINISTRO DE ENERGIA ELECTRICA",
+            "codigoClasificador": 7
+        },
+        {
+            "descripcion": "VIRUS INFORMÁTICO O FALLA DE SOFTWARE",
+            "codigoClasificador": 5
+        },
+        {
+            "descripcion": "CAMBIO DE INFRAESTRUCTURA DEL SISTEMA INFORMÁTICO DE FACTURACIÓN O FALLA DE HARDWARE",
+            "codigoClasificador": 6
+        },
+        {
+            "descripcion": "CORTE DEL SERVICIO DE INTERNET",
+            "codigoClasificador": 1
+        },
+        {
+            "descripcion": "INACCESIBILIDAD AL SERVICIO WEB DE LA ADMINISTRACIÓN TRIBUTARIA",
+            "codigoClasificador": 2
+        },
+        {
+            "descripcion": "INGRESO A ZONAS SIN INTERNET POR DESPLIEGUE DE PUNTO DE VENTA EN VEHICULOS AUTOMOTORES",
+            "codigoClasificador": 3
+        },
+        {
+            "descripcion": "VENTA EN LUGARES SIN INTERNET",
+            "codigoClasificador": 4
+        }
+    ],
+    "tiposHabitacion": [
+        {
+            "descripcion": "HABITACION DOBLE DE USO INDIVIDUAL",
+            "codigoClasificador": 3
+        },
+        {
+            "descripcion": "HABITACIÓN DOBLE CON CAMA SUPLETORIA",
+            "codigoClasificador": 4
+        },
+        {
+            "descripcion": "HABITACIÓN MATRIMONIAL",
+            "codigoClasificador": 5
+        },
+        {
+            "descripcion": "HABITACIÓN TRIPLE",
+            "codigoClasificador": 6
+        },
+        {
+            "descripcion": "HABITACIÓN CUÁDRUPLE",
+            "codigoClasificador": 7
+        },
+        {
+            "descripcion": "HABITACIÓN FAMILIAR",
+            "codigoClasificador": 8
+        },
+        {
+            "descripcion": "JUNIOR SUITE",
+            "codigoClasificador": 9
+        },
+        {
+            "descripcion": "SUITE",
+            "codigoClasificador": 10
+        },
+        {
+            "descripcion": "SUITE DOBLE",
+            "codigoClasificador": 11
+        },
+        {
+            "descripcion": "SUITE NUPCIAL",
+            "codigoClasificador": 12
+        },
+        {
+            "descripcion": "SUITE PRESIDENCIAL",
+            "codigoClasificador": 13
+        },
+        {
+            "descripcion": "CABAÑA",
+            "codigoClasificador": 14
+        },
+        {
+            "descripcion": "DEPARTAMENTO",
+            "codigoClasificador": 15
+        },
+        {
+            "descripcion": "DORMITORIOS",
+            "codigoClasificador": 16
+        },
+        {
+            "descripcion": "HABITACIÓN SENCILLA",
+            "codigoClasificador": 1
+        },
+        {
+            "descripcion": "HABITACIÓN DOBLE",
+            "codigoClasificador": 2
+        }
+    ],
+    "tiposPuntoVenta": [
+        {
+            "descripcion": "PUNTO VENTA COMISIONISTA",
+            "codigoClasificador": 1
+        },
+        {
+            "descripcion": "PUNTO VENTA VENTANILLA DE COBRANZA",
+            "codigoClasificador": 2
+        },
+        {
+            "descripcion": "PUNTO DE VENTA CONJUNTA",
+            "codigoClasificador": 6
+        },
+        {
+            "descripcion": "PUNTO DE VENTA MOVILES",
+            "codigoClasificador": 3
+        },
+        {
+            "descripcion": "PUNTO DE VENTA YPFB",
+            "codigoClasificador": 4
+        },
+        {
+            "descripcion": "PUNTO DE VENTA CAJEROS",
+            "codigoClasificador": 5
+        }
+    ],
+    "paisOrigen": [
+        {
+            "descripcion": "SAN CRISTÓBAL Y NIEVES",
+            "codigoClasificador": 155
+        },
+        {
+            "descripcion": "SAMOA",
+            "codigoClasificador": 156
+        },
+        {
+            "descripcion": "SAN MARINO",
+            "codigoClasificador": 157
+        },
+        {
+            "descripcion": "SAN VICENTE Y LAS GRANADINAS",
+            "codigoClasificador": 158
+        },
+        {
+            "descripcion": "SANTA LUCÍA",
+            "codigoClasificador": 159
+        },
+        {
+            "descripcion": "SANTO TOMÉ Y PRÍNCIPE",
+            "codigoClasificador": 160
+        },
+        {
+            "descripcion": "SENEGAL",
+            "codigoClasificador": 161
+        },
+        {
+            "descripcion": "SERBIA",
+            "codigoClasificador": 162
+        },
+        {
+            "descripcion": "SEYCHELLES",
+            "codigoClasificador": 163
+        },
+        {
+            "descripcion": "SIERRA LEONA",
+            "codigoClasificador": 164
+        },
+        {
+            "descripcion": "SINGAPUR",
+            "codigoClasificador": 165
+        },
+        {
+            "descripcion": "SOMALIA",
+            "codigoClasificador": 166
+        },
+        {
+            "descripcion": "SRI LANKA",
+            "codigoClasificador": 167
+        },
+        {
+            "descripcion": "SUDÁFRICA",
+            "codigoClasificador": 168
+        },
+        {
+            "descripcion": "SUDÁN",
+            "codigoClasificador": 169
+        },
+        {
+            "descripcion": "SUDÁN DEL SUR",
+            "codigoClasificador": 170
+        },
+        {
+            "descripcion": "SUECIA",
+            "codigoClasificador": 171
+        },
+        {
+            "descripcion": "SUIZA",
+            "codigoClasificador": 172
+        },
+        {
+            "descripcion": "SURINAM",
+            "codigoClasificador": 173
+        },
+        {
+            "descripcion": "SUAZILANDIA",
+            "codigoClasificador": 174
+        },
+        {
+            "descripcion": "TAILANDIA",
+            "codigoClasificador": 175
+        },
+        {
+            "descripcion": "TAYIKISTÁN",
+            "codigoClasificador": 176
+        },
+        {
+            "descripcion": "TIMOR ORIENTAL",
+            "codigoClasificador": 177
+        },
+        {
+            "descripcion": "TOGO",
+            "codigoClasificador": 178
+        },
+        {
+            "descripcion": "TOKELAU",
+            "codigoClasificador": 179
+        },
+        {
+            "descripcion": "TONGA",
+            "codigoClasificador": 180
+        },
+        {
+            "descripcion": "TRINIDAD Y TOBAGO",
+            "codigoClasificador": 181
+        },
+        {
+            "descripcion": "TURKMENISTÁN",
+            "codigoClasificador": 182
+        },
+        {
+            "descripcion": "TURQUÍA",
+            "codigoClasificador": 183
+        },
+        {
+            "descripcion": "TUVALU",
+            "codigoClasificador": 184
+        },
+        {
+            "descripcion": "TÚNEZ",
+            "codigoClasificador": 185
+        },
+        {
+            "descripcion": "UCRANIA",
+            "codigoClasificador": 186
+        },
+        {
+            "descripcion": "UGANDA",
+            "codigoClasificador": 187
+        },
+        {
+            "descripcion": "URUGUAY",
+            "codigoClasificador": 188
+        },
+        {
+            "descripcion": "UZBEKISTÁN",
+            "codigoClasificador": 189
+        },
+        {
+            "descripcion": "VANUATU",
+            "codigoClasificador": 190
+        },
+        {
+            "descripcion": "VENEZUELA (REPÚBLICA BOLIVARIANA DE)",
+            "codigoClasificador": 191
+        },
+        {
+            "descripcion": "VIETNAM",
+            "codigoClasificador": 192
+        },
+        {
+            "descripcion": "YEMEN",
+            "codigoClasificador": 193
+        },
+        {
+            "descripcion": "ZAMBIA",
+            "codigoClasificador": 194
+        },
+        {
+            "descripcion": "ZIMBABUE",
+            "codigoClasificador": 195
+        },
+        {
+            "descripcion": "REPÚBLICA DE MACEDONIA",
+            "codigoClasificador": 196
+        },
+        {
+            "descripcion": "PUERTO RICO",
+            "codigoClasificador": 205
+        },
+        {
+            "descripcion": "HONG KONG",
+            "codigoClasificador": 206
+        },
+        {
+            "descripcion": "FORMOSA",
+            "codigoClasificador": 207
+        },
+        {
+            "descripcion": "NO ESPECIFICOS",
+            "codigoClasificador": 208
+        },
+        {
+            "descripcion": "TAIWAN",
+            "codigoClasificador": 210
+        },
+        {
+            "descripcion": "LIECHTENSTEIN",
+            "codigoClasificador": 211
+        },
+        {
+            "descripcion": "ANTILLAS NEERLANDESAS",
+            "codigoClasificador": 198
+        },
+        {
+            "descripcion": "ARUBA",
+            "codigoClasificador": 199
+        },
+        {
+            "descripcion": "BERMUDAS",
+            "codigoClasificador": 200
+        },
+        {
+            "descripcion": "ISLAS CAIMÁN",
+            "codigoClasificador": 201
+        },
+        {
+            "descripcion": "GROENLANDIA",
+            "codigoClasificador": 202
+        },
+        {
+            "descripcion": "ISLAS MALVINAS",
+            "codigoClasificador": 203
+        },
+        {
+            "descripcion": "YUGOSLAVIA",
+            "codigoClasificador": 204
+        },
+        {
+            "descripcion": "AFGANISTÁN",
+            "codigoClasificador": 1
+        },
+        {
+            "descripcion": "ALBANIA",
+            "codigoClasificador": 2
+        },
+        {
+            "descripcion": "ALEMANIA",
+            "codigoClasificador": 3
+        },
+        {
+            "descripcion": "ANDORRA",
+            "codigoClasificador": 4
+        },
+        {
+            "descripcion": "ANGOLA",
+            "codigoClasificador": 5
+        },
+        {
+            "descripcion": "ANTIGUA Y BARBUDA",
+            "codigoClasificador": 6
+        },
+        {
+            "descripcion": "ARABIA SAUDITA",
+            "codigoClasificador": 7
+        },
+        {
+            "descripcion": "ISLAS VIRGENES BRITANICAS",
+            "codigoClasificador": 209
+        },
+        {
+            "descripcion": "ARGELIA",
+            "codigoClasificador": 8
+        },
+        {
+            "descripcion": "ARGENTINA",
+            "codigoClasificador": 9
+        },
+        {
+            "descripcion": "ARMENIA",
+            "codigoClasificador": 10
+        },
+        {
+            "descripcion": "AUSTRALIA",
+            "codigoClasificador": 11
+        },
+        {
+            "descripcion": "AUSTRIA",
+            "codigoClasificador": 12
+        },
+        {
+            "descripcion": "AZERBAIYÁN",
+            "codigoClasificador": 13
+        },
+        {
+            "descripcion": "BAHAMAS",
+            "codigoClasificador": 14
+        },
+        {
+            "descripcion": "BAHREIN",
+            "codigoClasificador": 15
+        },
+        {
+            "descripcion": "BANGLADESH",
+            "codigoClasificador": 16
+        },
+        {
+            "descripcion": "BARBADOS",
+            "codigoClasificador": 17
+        },
+        {
+            "descripcion": "BIELORRUSIA",
+            "codigoClasificador": 18
+        },
+        {
+            "descripcion": "BELICE",
+            "codigoClasificador": 19
+        },
+        {
+            "descripcion": "BENIN",
+            "codigoClasificador": 20
+        },
+        {
+            "descripcion": "BUTÁN",
+            "codigoClasificador": 21
+        },
+        {
+            "descripcion": "BOLIVIA (ESTADO PLURINACIONAL DE)",
+            "codigoClasificador": 22
+        },
+        {
+            "descripcion": "BOSNIA Y HERZEGOVINA",
+            "codigoClasificador": 23
+        },
+        {
+            "descripcion": "BOTSUANA",
+            "codigoClasificador": 24
+        },
+        {
+            "descripcion": "BRASIL",
+            "codigoClasificador": 25
+        },
+        {
+            "descripcion": "BRUNEI DARUSSALAM",
+            "codigoClasificador": 26
+        },
+        {
+            "descripcion": "BULGARIA",
+            "codigoClasificador": 27
+        },
+        {
+            "descripcion": "BURKINA FASO",
+            "codigoClasificador": 28
+        },
+        {
+            "descripcion": "BURUNDI",
+            "codigoClasificador": 29
+        },
+        {
+            "descripcion": "BÉLGICA",
+            "codigoClasificador": 30
+        },
+        {
+            "descripcion": "CABO VERDE",
+            "codigoClasificador": 31
+        },
+        {
+            "descripcion": "CAMBOYA",
+            "codigoClasificador": 32
+        },
+        {
+            "descripcion": "CAMERÚN",
+            "codigoClasificador": 33
+        },
+        {
+            "descripcion": "CANADÁ",
+            "codigoClasificador": 34
+        },
+        {
+            "descripcion": "CHAD",
+            "codigoClasificador": 35
+        },
+        {
+            "descripcion": "CHEQUIA",
+            "codigoClasificador": 36
+        },
+        {
+            "descripcion": "CHILE",
+            "codigoClasificador": 37
+        },
+        {
+            "descripcion": "CHINA",
+            "codigoClasificador": 38
+        },
+        {
+            "descripcion": "CHIPRE",
+            "codigoClasificador": 39
+        },
+        {
+            "descripcion": "COLOMBIA",
+            "codigoClasificador": 40
+        },
+        {
+            "descripcion": "COMORAS",
+            "codigoClasificador": 41
+        },
+        {
+            "descripcion": "CONGO",
+            "codigoClasificador": 42
+        },
+        {
+            "descripcion": "COSTA RICA",
+            "codigoClasificador": 43
+        },
+        {
+            "descripcion": "CROACIA",
+            "codigoClasificador": 44
+        },
+        {
+            "descripcion": "CUBA",
+            "codigoClasificador": 45
+        },
+        {
+            "descripcion": "COSTA DE MARFIL",
+            "codigoClasificador": 46
+        },
+        {
+            "descripcion": "DINAMARCA",
+            "codigoClasificador": 47
+        },
+        {
+            "descripcion": "DJIBOUTI",
+            "codigoClasificador": 48
+        },
+        {
+            "descripcion": "DOMINICA",
+            "codigoClasificador": 49
+        },
+        {
+            "descripcion": "NO REGISTRADO",
+            "codigoClasificador": 197
+        },
+        {
+            "descripcion": "ECUADOR",
+            "codigoClasificador": 50
+        },
+        {
+            "descripcion": "EGIPTO",
+            "codigoClasificador": 51
+        },
+        {
+            "descripcion": "EL SALVADOR",
+            "codigoClasificador": 52
+        },
+        {
+            "descripcion": "EMIRATOS ÁRABES UNIDOS",
+            "codigoClasificador": 53
+        },
+        {
+            "descripcion": "ERITREA",
+            "codigoClasificador": 54
+        },
+        {
+            "descripcion": "ESLOVAQUIA",
+            "codigoClasificador": 55
+        },
+        {
+            "descripcion": "ESLOVENIA",
+            "codigoClasificador": 56
+        },
+        {
+            "descripcion": "ESPAÑA",
+            "codigoClasificador": 57
+        },
+        {
+            "descripcion": "ESTADOS UNIDOS DE AMÉRICA",
+            "codigoClasificador": 58
+        },
+        {
+            "descripcion": "ESTONIA",
+            "codigoClasificador": 59
+        },
+        {
+            "descripcion": "ETIOPÍA",
+            "codigoClasificador": 60
+        },
+        {
+            "descripcion": "FEDERACIÓN DE RUSIA",
+            "codigoClasificador": 61
+        },
+        {
+            "descripcion": "FIYI",
+            "codigoClasificador": 62
+        },
+        {
+            "descripcion": "FILIPINAS",
+            "codigoClasificador": 63
+        },
+        {
+            "descripcion": "FINLANDIA",
+            "codigoClasificador": 64
+        },
+        {
+            "descripcion": "FRANCIA",
+            "codigoClasificador": 65
+        },
+        {
+            "descripcion": "GABÓN",
+            "codigoClasificador": 66
+        },
+        {
+            "descripcion": "GAMBIA",
+            "codigoClasificador": 67
+        },
+        {
+            "descripcion": "GEORGIA",
+            "codigoClasificador": 68
+        },
+        {
+            "descripcion": "GHANA",
+            "codigoClasificador": 69
+        },
+        {
+            "descripcion": "GRANADA",
+            "codigoClasificador": 70
+        },
+        {
+            "descripcion": "GRECIA",
+            "codigoClasificador": 71
+        },
+        {
+            "descripcion": "GUATEMALA",
+            "codigoClasificador": 72
+        },
+        {
+            "descripcion": "GUINEA",
+            "codigoClasificador": 73
+        },
+        {
+            "descripcion": "GUINEA ECUATORIAL",
+            "codigoClasificador": 74
+        },
+        {
+            "descripcion": "GUINEA-BISSAU",
+            "codigoClasificador": 75
+        },
+        {
+            "descripcion": "GUYANA",
+            "codigoClasificador": 76
+        },
+        {
+            "descripcion": "HAITÍ",
+            "codigoClasificador": 77
+        },
+        {
+            "descripcion": "HONDURAS",
+            "codigoClasificador": 78
+        },
+        {
+            "descripcion": "HUNGRÍA",
+            "codigoClasificador": 79
+        },
+        {
+            "descripcion": "INDIA",
+            "codigoClasificador": 80
+        },
+        {
+            "descripcion": "INDONESIA",
+            "codigoClasificador": 81
+        },
+        {
+            "descripcion": "IRAQ",
+            "codigoClasificador": 82
+        },
+        {
+            "descripcion": "IRLANDA",
+            "codigoClasificador": 83
+        },
+        {
+            "descripcion": "IRÁN (REPÚBLICA ISLÁMICA DE)",
+            "codigoClasificador": 84
+        },
+        {
+            "descripcion": "ISLANDIA",
+            "codigoClasificador": 85
+        },
+        {
+            "descripcion": "ISLAS COOK",
+            "codigoClasificador": 86
+        },
+        {
+            "descripcion": "ISLAS FEROE (MIEMBRO ASOCIADO)",
+            "codigoClasificador": 87
+        },
+        {
+            "descripcion": "ISLAS MARSHALL",
+            "codigoClasificador": 88
+        },
+        {
+            "descripcion": "ISLAS SALOMÓN",
+            "codigoClasificador": 89
+        },
+        {
+            "descripcion": "ISRAEL",
+            "codigoClasificador": 90
+        },
+        {
+            "descripcion": "ITALIA",
+            "codigoClasificador": 91
+        },
+        {
+            "descripcion": "JAMAICA",
+            "codigoClasificador": 92
+        },
+        {
+            "descripcion": "JAPÓN",
+            "codigoClasificador": 93
+        },
+        {
+            "descripcion": "JORDANIA",
+            "codigoClasificador": 94
+        },
+        {
+            "descripcion": "KAZAJISTÁN",
+            "codigoClasificador": 95
+        },
+        {
+            "descripcion": "KENIA",
+            "codigoClasificador": 96
+        },
+        {
+            "descripcion": "KIRGUISTÁN",
+            "codigoClasificador": 97
+        },
+        {
+            "descripcion": "KIRIBATI",
+            "codigoClasificador": 98
+        },
+        {
+            "descripcion": "KUWAIT",
+            "codigoClasificador": 99
+        },
+        {
+            "descripcion": "LESOTO",
+            "codigoClasificador": 100
+        },
+        {
+            "descripcion": "LETONIA",
+            "codigoClasificador": 101
+        },
+        {
+            "descripcion": "LIBERIA",
+            "codigoClasificador": 102
+        },
+        {
+            "descripcion": "LIBIA",
+            "codigoClasificador": 103
+        },
+        {
+            "descripcion": "LITUANIA",
+            "codigoClasificador": 104
+        },
+        {
+            "descripcion": "LUXEMBURGO",
+            "codigoClasificador": 105
+        },
+        {
+            "descripcion": "LÍBANO",
+            "codigoClasificador": 106
+        },
+        {
+            "descripcion": "MADAGASCAR",
+            "codigoClasificador": 107
+        },
+        {
+            "descripcion": "MALASIA",
+            "codigoClasificador": 108
+        },
+        {
+            "descripcion": "MALAWI",
+            "codigoClasificador": 109
+        },
+        {
+            "descripcion": "MALDIVAS",
+            "codigoClasificador": 110
+        },
+        {
+            "descripcion": "MALTA",
+            "codigoClasificador": 111
+        },
+        {
+            "descripcion": "MALÍ",
+            "codigoClasificador": 112
+        },
+        {
+            "descripcion": "MARRUECOS",
+            "codigoClasificador": 113
+        },
+        {
+            "descripcion": "MAURICIO",
+            "codigoClasificador": 114
+        },
+        {
+            "descripcion": "MAURITANIA",
+            "codigoClasificador": 115
+        },
+        {
+            "descripcion": "MICRONESIA (ESTADOS FEDERADOS DE)",
+            "codigoClasificador": 116
+        },
+        {
+            "descripcion": "MONGOLIA",
+            "codigoClasificador": 117
+        },
+        {
+            "descripcion": "MONTENEGRO",
+            "codigoClasificador": 118
+        },
+        {
+            "descripcion": "MOZAMBIQUE",
+            "codigoClasificador": 119
+        },
+        {
+            "descripcion": "MYANMAR",
+            "codigoClasificador": 120
+        },
+        {
+            "descripcion": "MÉXICO",
+            "codigoClasificador": 121
+        },
+        {
+            "descripcion": "MÓNACO",
+            "codigoClasificador": 122
+        },
+        {
+            "descripcion": "NAMIBIA",
+            "codigoClasificador": 123
+        },
+        {
+            "descripcion": "NAURU",
+            "codigoClasificador": 124
+        },
+        {
+            "descripcion": "NEPAL",
+            "codigoClasificador": 125
+        },
+        {
+            "descripcion": "NICARAGUA",
+            "codigoClasificador": 126
+        },
+        {
+            "descripcion": "NIGERIA",
+            "codigoClasificador": 127
+        },
+        {
+            "descripcion": "NIUE",
+            "codigoClasificador": 128
+        },
+        {
+            "descripcion": "NORUEGA",
+            "codigoClasificador": 129
+        },
+        {
+            "descripcion": "NUEVA ZELANDA",
+            "codigoClasificador": 130
+        },
+        {
+            "descripcion": "NÍGER",
+            "codigoClasificador": 131
+        },
+        {
+            "descripcion": "OMÁN",
+            "codigoClasificador": 132
+        },
+        {
+            "descripcion": "PAKISTÁN",
+            "codigoClasificador": 133
+        },
+        {
+            "descripcion": "PALAOS",
+            "codigoClasificador": 134
+        },
+        {
+            "descripcion": "PANAMÁ",
+            "codigoClasificador": 135
+        },
+        {
+            "descripcion": "PAPUA NUEVA GUINEA",
+            "codigoClasificador": 136
+        },
+        {
+            "descripcion": "PARAGUAY",
+            "codigoClasificador": 137
+        },
+        {
+            "descripcion": "PAÍSES BAJOS",
+            "codigoClasificador": 138
+        },
+        {
+            "descripcion": "PERÚ",
+            "codigoClasificador": 139
+        },
+        {
+            "descripcion": "POLONIA",
+            "codigoClasificador": 140
+        },
+        {
+            "descripcion": "PORTUGAL",
+            "codigoClasificador": 141
+        },
+        {
+            "descripcion": "QATAR",
+            "codigoClasificador": 142
+        },
+        {
+            "descripcion": "REINO UNIDO",
+            "codigoClasificador": 143
+        },
+        {
+            "descripcion": "REPÚBLICA CENTROAFRICANA",
+            "codigoClasificador": 144
+        },
+        {
+            "descripcion": "REPÚBLICA DEMOCRÁTICA POPULAR LAO",
+            "codigoClasificador": 145
+        },
+        {
+            "descripcion": "REPÚBLICA DEMOCRÁTICA DEL CONGO",
+            "codigoClasificador": 146
+        },
+        {
+            "descripcion": "REPÚBLICA DOMINICANA",
+            "codigoClasificador": 147
+        },
+        {
+            "descripcion": "REPÚBLICA POPULAR DEMOCRÁTICA DE COREA",
+            "codigoClasificador": 148
+        },
+        {
+            "descripcion": "REPÚBLICA UNIDA DE TANZANÍA",
+            "codigoClasificador": 149
+        },
+        {
+            "descripcion": "REPÚBLICA DE COREA",
+            "codigoClasificador": 150
+        },
+        {
+            "descripcion": "REPÚBLICA DE MOLDAVIA",
+            "codigoClasificador": 151
+        },
+        {
+            "descripcion": "REPÚBLICA ÁRABE SIRIA",
+            "codigoClasificador": 152
+        },
+        {
+            "descripcion": "RUMANIA",
+            "codigoClasificador": 153
+        },
+        {
+            "descripcion": "REPÚBLICA DE RUANDA",
+            "codigoClasificador": 154
+        }
+    ],
+    "tipoEmision": [
+        {
+            "descripcion": "MASIVO",
+            "codigoClasificador": 3
+        },
+        {
+            "descripcion": "CONTINGENCIA",
+            "codigoClasificador": 4
+        },
+        {
+            "descripcion": "EN LINEA",
+            "codigoClasificador": 1
+        },
+        {
+            "descripcion": "FUERA DE LINEA",
+            "codigoClasificador": 2
+        }
+    ],
+    "mensajesServicios": [
+        {
+            "descripcion": "CODIGO UNICO DE FACTURACION DIARIA (CUFD) FUERA DE TOLERANCIA",
+            "codigoClasificador": 123
+        },
+        {
+            "descripcion": "RECEPCION PENDIENTE",
+            "codigoClasificador": 901
+        },
+        {
+            "descripcion": "RECEPCION RECHAZADA",
+            "codigoClasificador": 902
+        },
+        {
+            "descripcion": "RECEPCION PROCESADA",
+            "codigoClasificador": 903
+        },
+        {
+            "descripcion": "RECEPCION OBSERVADA",
+            "codigoClasificador": 904
+        },
+        {
+            "descripcion": "ANULACION CONFIRMADA",
+            "codigoClasificador": 905
+        },
+        {
+            "descripcion": "ANULACION RECHAZADA",
+            "codigoClasificador": 906
+        },
+        {
+            "descripcion": "REVERSION DE ANULACION CONFIRMADA",
+            "codigoClasificador": 907
+        },
+        {
+            "descripcion": "RECEPCION VALIDADA",
+            "codigoClasificador": 908
+        },
+        {
+            "descripcion": "REVERSION DE ANULACION RECHAZADA",
+            "codigoClasificador": 909
+        },
+        {
+            "descripcion": "EL PARAMETRO AMBIENTE ES INVALIDO",
+            "codigoClasificador": 910
+        },
+        {
+            "descripcion": "EL PARAMETRO CODIGO DE SISTEMA ES INVALIDO",
+            "codigoClasificador": 911
+        },
+        {
+            "descripcion": "EL SISTEMA NO ESTA ASOCIADO AL CONTRIBUYENTE",
+            "codigoClasificador": 912
+        },
+        {
+            "descripcion": "CODIGO UNICO DE INICIO DE SISTEMA (CUIS) INVALIDO",
+            "codigoClasificador": 913
+        },
+        {
+            "descripcion": "CODIGO UNICO DE FACTURACION DIARIA (CUFD) INVALIDO",
+            "codigoClasificador": 914
+        },
+        {
+            "descripcion": "EL PARAMETRO TIPO FACTURA DOCUMENTO ES INVALIDO",
+            "codigoClasificador": 915
+        },
+        {
+            "descripcion": "EL PARAMETRO TIPO DE EMISION ES INVALIDO",
+            "codigoClasificador": 916
+        },
+        {
+            "descripcion": "EL PARAMETRO MODALIDAD ES INVALIDO",
+            "codigoClasificador": 917
+        },
+        {
+            "descripcion": "EL PARAMETRO SUCURSAL ES INVALIDO",
+            "codigoClasificador": 918
+        },
+        {
+            "descripcion": "EL PARAMETRO NIT ES INVALIDO",
+            "codigoClasificador": 919
+        },
+        {
+            "descripcion": "EL PARAMETRO ARCHIVO ES INVALIDO",
+            "codigoClasificador": 920
+        },
+        {
+            "descripcion": "EL FIRMADO DEL XML ES INCORRECTO",
+            "codigoClasificador": 921
+        },
+        {
+            "descripcion": "LA FIRMA DEL XML NO CORRESPONDE AL CONTRIBUYENTE",
+            "codigoClasificador": 922
+        },
+        {
+            "descripcion": "EL PARAMETRO CODIGO DE RECEPCION ES INVALIDO",
+            "codigoClasificador": 923
+        },
+        {
+            "descripcion": "LA FACTURA O NOTA, NO EXISTE EN LA BASE DE DATOS DEL SIN",
+            "codigoClasificador": 924
+        },
+        {
+            "descripcion": "EL PARAMETRO MOTIVO DE ANULACION ES INVALIDO",
+            "codigoClasificador": 925
+        },
+        {
+            "descripcion": "COMUNICACION EXITOSA",
+            "codigoClasificador": 926
+        },
+        {
+            "descripcion": "EL CERTIFICADO DE LA FIRMA ES INVALIDO",
+            "codigoClasificador": 927
+        },
+        {
+            "descripcion": "EL CERTIFICADO SE ENCUENTRA REVOCADO",
+            "codigoClasificador": 928
+        },
+        {
+            "descripcion": "EL CODIGO UNICO DE INICIO DE SISTEMA (CUIS) NO ESTA VIGENTE",
+            "codigoClasificador": 929
+        },
+        {
+            "descripcion": "EL CODIGO UNICO DE INICIO DE SISTEMA (CUIS) NO CORRESPONDE A LA SUCURSAL/PUNTO VENTA",
+            "codigoClasificador": 930
+        },
+        {
+            "descripcion": "EL PARAMETRO CODIGO DOCUMENTO SECTOR ES INVALIDO",
+            "codigoClasificador": 931
+        },
+        {
+            "descripcion": "EL PARAMETRO CODIGO DOCUMENTO SECTOR NO CORRESPONDE AL SERVICIO",
+            "codigoClasificador": 932
+        },
+        {
+            "descripcion": "EL PUNTO DE VENTA ES INEXISTENTE O INVALIDO",
+            "codigoClasificador": 933
+        },
+        {
+            "descripcion": "LA SOLICITUD DE ANULACION DE LA FACTURA O NOTA DE CREDITO-DEBITO SE ENCUENTRA FUERA DE PLAZO",
+            "codigoClasificador": 934
+        },
+        {
+            "descripcion": "EL PARAMETRO FECHA DE ENVIO ES INVALIDO",
+            "codigoClasificador": 935
+        },
+        {
+            "descripcion": "LA FACTURA O NOTA DE CREDITO-DEBITO YA SE ENCUENTRA ANULADA",
+            "codigoClasificador": 936
+        },
+        {
+            "descripcion": "EL NIT NO TIENE ASOCIADO LA MODALIDAD DE FACTURACION",
+            "codigoClasificador": 937
+        },
+        {
+            "descripcion": "EL NIT PRESENTA MARCAS DE CONTROL",
+            "codigoClasificador": 938
+        },
+        {
+            "descripcion": "LA FACTURA O NOTA DE CREDITO - DEBITO NO CUMPLE CON EL FORMATO DEL XSD ESPECIFICADO",
+            "codigoClasificador": 939
+        },
+        {
+            "descripcion": "EL NIT NO TIENE HABILITADO EL DOCUMENTO SECTOR",
+            "codigoClasificador": 940
+        },
+        {
+            "descripcion": "LA FACTURA O NOTA DE CREDITO - DEBITO NO SE ENCUENTRA DISPONIBLE PARA SER ANULADA",
+            "codigoClasificador": 941
+        },
+        {
+            "descripcion": "EL CODIGO DE RECEPCION DE EVENTO SIGNIFICATIVO NO SE ENCUENTRA EN LA BASE DE DATOS DEL SIN",
+            "codigoClasificador": 942
+        },
+        {
+            "descripcion": "EL FORMATO DE LA FECHA DE ENVIO ES INCORRECTO",
+            "codigoClasificador": 943
+        },
+        {
+            "descripcion": "EL CODIGO DE RECEPCION NO SE ENCUENTRA EN LA BASE DE DATOS DEL SIN",
+            "codigoClasificador": 944
+        },
+        {
+            "descripcion": "EL ESTADO DE RECEPCION DE LA ANULACION ES INCORRECTA",
+            "codigoClasificador": 945
+        },
+        {
+            "descripcion": "EL CODIGO UNICO DE FACTURA (CUF) NO EXISTE EN BASE DE DATOS DEL SIN",
+            "codigoClasificador": 946
+        },
+        {
+            "descripcion": "EL PARAMETRO TIPO DE PUNTO DE VENTA ES INVALIDO",
+            "codigoClasificador": 947
+        },
+        {
+            "descripcion": "EL PARAMETRO NOMBRE DE PUNTO DE VENTA NO PUEDE SER VACIO",
+            "codigoClasificador": 948
+        },
+        {
+            "descripcion": "EL PARAMETRO DESCRIPCION DE PUNTO DE VENTA NO PUEDE SER VACIO",
+            "codigoClasificador": 949
+        },
+        {
+            "descripcion": "EL PARAMETRO CODIGO DE EVENTO SIGNIFICATIVO NO PUEDE SER VACIO",
+            "codigoClasificador": 950
+        },
+        {
+            "descripcion": "EL PARAMETRO DESCRIPCION DE EVENTO SIGNIFICATIVO NO PUEDE SER VACIO",
+            "codigoClasificador": 951
+        },
+        {
+            "descripcion": "EL CODIGO UNICO DE FACTURA (CUF) YA SE ENCUENTRA REGISTRADO EN LA BASE DE DATOS DEL SIN",
+            "codigoClasificador": 952
+        },
+        {
+            "descripcion": "EL CODIGO UNICO DE FACTURACION DIARIA (CUFD) NO SE ENCUENTRA VIGENTE",
+            "codigoClasificador": 953
+        },
+        {
+            "descripcion": "LA CANTIDAD DE FACTURAS EN EL PAQUETE EMITIDO POR CONTINGENCIA HA EXCEDIDO EL MAXIMO PERMITIDO",
+            "codigoClasificador": 954
+        },
+        {
+            "descripcion": "NO EXISTE REGISTRO PARA AUTORIZAR EL PROCESO MASIVO",
+            "codigoClasificador": 955
+        },
+        {
+            "descripcion": "LA CANTIDAD DE FACTURAS EN EL PAQUETE EMITIDO MASIVAMENTE HA EXCEDIDO EL MAXIMO PERMITIDO",
+            "codigoClasificador": 956
+        },
+        {
+            "descripcion": "NO EXISTE REGISTRO DE EVENTO SIGNIFICATIVO EN LA BASE DE DATOS DEL SIN",
+            "codigoClasificador": 957
+        },
+        {
+            "descripcion": "EL USUARIO NO SE ENCUENTRA AUTORIZADO PARA CONSUMIR ESTE SERVICIO",
+            "codigoClasificador": 958
+        },
+        {
+            "descripcion": "EL CODIGO UNICO DE INICIO DE SISTEMA (CUIS) NO SE ENCUENTRA ASOCIADO AL SISTEMA",
+            "codigoClasificador": 959
+        },
+        {
+            "descripcion": "EL PARAMETRO FIN DE EVENTO ES REQUERIDO",
+            "codigoClasificador": 960
+        },
+        {
+            "descripcion": "EL NIT TIENE MARCA DE DOMICILIO INEXISTENTE",
+            "codigoClasificador": 961
+        },
+        {
+            "descripcion": "EL NIT TIENE BLOQUEO DE DOSIFICACION ORIGINADO EN FISCALIZACION",
+            "codigoClasificador": 962
+        },
+        {
+            "descripcion": "EL NIT TIENE BLOQUEO DE DOSIFICACION ORIGINADO EN JURIDICA",
+            "codigoClasificador": 963
+        },
+        {
+            "descripcion": "EL NIT NO CUMPLE CON OBLIGATORIEDAD DE PRESENTACION DE DDJJ",
+            "codigoClasificador": 964
+        },
+        {
+            "descripcion": "EL CONTRIBUYENTE NO CUENTA CON FIRMA VIGENTE REGISTRADA",
+            "codigoClasificador": 965
+        },
+        {
+            "descripcion": "NO SE PUEDE RECUPERAR LOS DATOS DEL CONTRIBUYENTE",
+            "codigoClasificador": 966
+        },
+        {
+            "descripcion": "TIEMPO DE ESPERA AGOTADO PARA CONEXION A BASE DE DATOS",
+            "codigoClasificador": 967
+        },
+        {
+            "descripcion": "LA ANULACION DE LA FACTURA O NOTA DE CREDITO - DEBITO YA SE ENCUENTRA REVERTIDA",
+            "codigoClasificador": 968
+        },
+        {
+            "descripcion": "EL PARAMETRO HASH ES INVALIDO",
+            "codigoClasificador": 969
+        },
+        {
+            "descripcion": "EL CUIS EN LA BASE DE DATOS SE ENCUENTRA VIGENTE, NO PUEDE SOLICITAR OTRO",
+            "codigoClasificador": 970
+        },
+        {
+            "descripcion": "EL TAMAÃ\\u2018O DEL ARCHIVO EXCEDE EL TAMAÃ\\u2018O PERMITIDO DE 100 MB",
+            "codigoClasificador": 971
+        },
+        {
+            "descripcion": "LA CANTIDAD DE FACTURAS ENVIADA EN EL PAQUETE ES MAYOR A LA DEFINIDA EN LA NORMATIVA",
+            "codigoClasificador": 972
+        },
+        {
+            "descripcion": "EL CODIGO UNICO DE INICIO DE SISTEMA (CUIS) NO SE ENCUENTRA VIGENTE",
+            "codigoClasificador": 973
+        },
+        {
+            "descripcion": "EL RANGO DE FECHAS DEL EVENTO SIGNIFICATIVO PARA REGISTRAR ES INVÃ\\u0081LIDO",
+            "codigoClasificador": 974
+        },
+        {
+            "descripcion": "EL SISTEMA NO SE ENCUENTRA AUTORIZADO O SE ENCUENTRA OBSERVADO",
+            "codigoClasificador": 975
+        },
+        {
+            "descripcion": "EL CODIGO DEL EVENTO ES INCORRECTO",
+            "codigoClasificador": 976
+        },
+        {
+            "descripcion": "NO EXISTEN ACTIVIDADES ASOCIADAS AL NIT",
+            "codigoClasificador": 977
+        },
+        {
+            "descripcion": "REVERSION DE LA FACTURA O NOTA DE CREDITO/DEBITO CONFIRMADA",
+            "codigoClasificador": 978
+        },
+        {
+            "descripcion": "EL CUIS NO SE ENCUENTRA ASOCIADO AL SISTEMA O A LA SUCURSAL",
+            "codigoClasificador": 979
+        },
+        {
+            "descripcion": "EXISTE UN CUIS VIGENTE PARA LA SUCURSAL O PUNTO DE VENTA",
+            "codigoClasificador": 980
+        },
+        {
+            "descripcion": "RANGO DE FECHAS DE EVENTO SIGNIFICATIVO INVALIDO",
+            "codigoClasificador": 981
+        },
+        {
+            "descripcion": "NO EXISTE PUNTOS DE VENTA ASOCIADOS",
+            "codigoClasificador": 982
+        },
+        {
+            "descripcion": "LA FECHA DE ENVIO DEL PAQUETE ESTA FUERA DE PLAZO",
+            "codigoClasificador": 983
+        },
+        {
+            "descripcion": "EL EVENTO SIGNIFICATIVO NO CORRESPONDE AL CUFD DEL EVENTO REGISTRADO",
+            "codigoClasificador": 984
+        },
+        {
+            "descripcion": "LA CANTIDAD DE FACTURAS ES DIFERENTE A LA DECLARADA",
+            "codigoClasificador": 985
+        },
+        {
+            "descripcion": "NIT ACTIVO",
+            "codigoClasificador": 986
+        },
+        {
+            "descripcion": "NIT INACTIVO",
+            "codigoClasificador": 987
+        },
+        {
+            "descripcion": "CODIGO UNICO DE INICIO DE SISTEMA (CUIS) FUERA DE TOLERANCIA",
+            "codigoClasificador": 988
+        },
+        {
+            "descripcion": "TOKEN INVALIDO",
+            "codigoClasificador": 989
+        },
+        {
+            "descripcion": "EL CLIENTE NO TIENE ACTIVIDADES RELACIONADAS AL SECTOR QUE INTENTA ASOCIAR",
+            "codigoClasificador": 990
+        },
+        {
+            "descripcion": "ERROR EN BASE DE DATOS",
+            "codigoClasificador": 991
+        },
+        {
+            "descripcion": "ERROR SERVICIO PADRON",
+            "codigoClasificador": 992
+        },
+        {
+            "descripcion": "LA FECHA DE ENVIO ESTA FUERA DE PLAZO",
+            "codigoClasificador": 993
+        },
+        {
+            "descripcion": "NIT INEXISTENTE",
+            "codigoClasificador": 994
+        },
+        {
+            "descripcion": "SERVICIO NO DISPONIBLE",
+            "codigoClasificador": 995
+        },
+        {
+            "descripcion": "RANGO DE FECHAS INVALIDO",
+            "codigoClasificador": 996
+        },
+        {
+            "descripcion": "EL NOMBRE EXCEDE EL LIMITE DE CARACTERES PERMITIDOS",
+            "codigoClasificador": 997
+        },
+        {
+            "descripcion": "LA DESCRIPCION EXCEDE EL LIMITE DE CARACTERES PERMITIDOS",
+            "codigoClasificador": 998
+        },
+        {
+            "descripcion": "ERROR EN LA EJECUCION DEL SERVICIO",
+            "codigoClasificador": 999
+        },
+        {
+            "descripcion": "EL CUF ENVIADO YA EXISTE EN LA BASE DE DATOS DEL SIN",
+            "codigoClasificador": 1000
+        },
+        {
+            "descripcion": "EL NIT ENVIADO EN EL XML ES INEXISTENTE O NO CORRESPONDE AL CUFD",
+            "codigoClasificador": 1001
+        },
+        {
+            "descripcion": "EL CODIGO UNICO DE FACTURA (CUF) ENVIADO EN EL XML ES INVALIDO",
+            "codigoClasificador": 1002
+        },
+        {
+            "descripcion": "EL CODIGO UNICO DE FACTURACION DIARIA (CUFD) ENVIADO EN EL XML ES INVALIDO",
+            "codigoClasificador": 1003
+        },
+        {
+            "descripcion": "LA SUCURSAL ENVIADA EN EL XML NO CORRESPONDE A LOS DATOS DEL CUFD",
+            "codigoClasificador": 1004
+        },
+        {
+            "descripcion": "LA FACTURA O NOTA DE CREDITO-DEBITO NO PUEDE SER EMITIDA AL MISMO EMISOR",
+            "codigoClasificador": 1005
+        },
+        {
+            "descripcion": "EL CUFD ENVIADO NO CORRESPONDE AL EVENTO ASOCIADO AL PAQUETE ENVIADO",
+            "codigoClasificador": 1006
+        },
+        {
+            "descripcion": "LA DIRECCION ENVIADA EN EL XML NO CORRESPONDE A LA REGISTRADA EN PADRON",
+            "codigoClasificador": 1007
+        },
+        {
+            "descripcion": "EL PUNTO DE VENTA ENVIADO EN EL XML ES INEXISTENTE O INVALIDO",
+            "codigoClasificador": 1008
+        },
+        {
+            "descripcion": "LA FECHA DE EMISION ENVIADA EN EL XML NO ES VALIDA PARA EMISION EN LINEA",
+            "codigoClasificador": 1009
+        },
+        {
+            "descripcion": "LA FACTURA NO PUEDE SER ENVIADA CON NUMERO DE CI/NIT/CEX 0 PARA MONTOS MAYORES A 3000",
+            "codigoClasificador": 1010
+        },
+        {
+            "descripcion": "EL COMPLEMENTO SOLO PUEDE SER ENVIADO CUANDO EL TIPO DE DOCUMENTO ES CARNET DE IDENTIDAD",
+            "codigoClasificador": 1011
+        },
+        {
+            "descripcion": "EL NUMERO DE TARJETA SOLO PUEDE SER ENVIADO CUANDO EL METODO DE PAGO SEA CON TARJETA",
+            "codigoClasificador": 1012
+        },
+        {
+            "descripcion": "EL CALCULO DEL MONTO TOTAL ES ERRONEO",
+            "codigoClasificador": 1013
+        },
+        {
+            "descripcion": "EL CALCULO DEL  MONTO TOTAL MONEDA ES ERRONEO",
+            "codigoClasificador": 1014
+        },
+        {
+            "descripcion": "EL CALCULO DEL IMPORTE BASE PARA CREDITO FISCAL ES ERRONEO",
+            "codigoClasificador": 1015
+        },
+        {
+            "descripcion": "EL CODIGO DE ACTIVIDAD ECONOMICA NO ESTA HABILITADA PARA EL CONTRIBUYENTE",
+            "codigoClasificador": 1016
+        },
+        {
+            "descripcion": "EL CODIGO DE PRODUCTO NO ESTA RELACIONADO A NINGUN ACTIVIDAD ECONOMICA DEL CONTRIBUYENTE",
+            "codigoClasificador": 1017
+        },
+        {
+            "descripcion": "EL CALCULO DEL SUBTOTAL ES ERRONEO",
+            "codigoClasificador": 1018
+        },
+        {
+            "descripcion": "EL CALCULO DE ICE ESPECIFICO ES ERRONEO",
+            "codigoClasificador": 1019
+        },
+        {
+            "descripcion": "EL CALCULO DE ICE PORCENTUAL ES ERRONEO",
+            "codigoClasificador": 1020
+        },
+        {
+            "descripcion": "EL MONTO ICE ESPECIFICO ES ERRONEO",
+            "codigoClasificador": 1021
+        },
+        {
+            "descripcion": "EL MONTO ICE PORCENTUAL ES ERRONEO",
+            "codigoClasificador": 1022
+        },
+        {
+            "descripcion": "EL CODIGO NANDINA ENVIADO EN LA FACTURA ES ERRONEO",
+            "codigoClasificador": 1023
+        },
+        {
+            "descripcion": "LA SUMATORIA DE LO DETALLES ES ERRONEA",
+            "codigoClasificador": 1024
+        },
+        {
+            "descripcion": "EL MONTO SUJETO A CREDITO FISCAL LEY 317 ES ERRONEO",
+            "codigoClasificador": 1025
+        },
+        {
+            "descripcion": "EL MONTO TOTAL SUJETO AL IMPUESTO DEL JUEGO (IJ) ES ERRONEO",
+            "codigoClasificador": 1026
+        },
+        {
+            "descripcion": "EL MONTO DE DIFERENCIA DE CAMBIOS ES ERRONEO",
+            "codigoClasificador": 1027
+        },
+        {
+            "descripcion": "EL MONTO DE IVA ENVIADO ES ERRONEO",
+            "codigoClasificador": 1028
+        },
+        {
+            "descripcion": "EL MONTO TOTAL DEVUELTO ENVIADO ES ERRONEO",
+            "codigoClasificador": 1029
+        },
+        {
+            "descripcion": "EL MONTO TOTAL ORIGINAL ENVIADO ES ERRONEO",
+            "codigoClasificador": 1030
+        },
+        {
+            "descripcion": "EL MONTO EFECTIVO DE CREDITO O DEBITO DEVUELTO ENVIADO ES ERRONEO",
+            "codigoClasificador": 1031
+        },
+        {
+            "descripcion": "EL MONTO TOTAL DE IMPUESTO A LA PARTICIPACION EN JUEGO (IPJ) ES ERRONEO",
+            "codigoClasificador": 1032
+        },
+        {
+            "descripcion": "EL MONTO DEVUELTO ES MAYOR AL MONTO ORIGINAL",
+            "codigoClasificador": 1033
+        },
+        {
+            "descripcion": "LA FECHA DE EMISION ES MENOR AL PERIODO ANTERIOR",
+            "codigoClasificador": 1034
+        },
+        {
+            "descripcion": "FORMATO DE FECHA INCORRECTA",
+            "codigoClasificador": 1035
+        },
+        {
+            "descripcion": "NOMINATIVIDAD INCORRECTA PARA NOMBRE/RAZON SOCIAL",
+            "codigoClasificador": 1036
+        },
+        {
+            "descripcion": "EL NUMERO DOCUMENTO DE TIPO NIT NO ES VALIDO",
+            "codigoClasificador": 1037
+        },
+        {
+            "descripcion": "NIT CONJUNTO NO VALIDO",
+            "codigoClasificador": 1038
+        },
+        {
+            "descripcion": "FECHA EMISION PARA ENVIO MASIVO INCORRECTO",
+            "codigoClasificador": 1039
+        },
+        {
+            "descripcion": "FECHA DE EMISION NO SE ENCUENTRA EN EL RANGO DE CONTINGENCIA",
+            "codigoClasificador": 1040
+        },
+        {
+            "descripcion": "LA FECHA DE EMISION NO SE ENCUENTRA DENTRO DEL PLAZO ESTABLECIDO EN NORMA",
+            "codigoClasificador": 1041
+        },
+        {
+            "descripcion": "EL NIT DEL MEDICO ENVIADO NO ES VALIDO",
+            "codigoClasificador": 1042
+        },
+        {
+            "descripcion": "EL MONTO CONCILIADO ENVIADO ES ERRONEO",
+            "codigoClasificador": 1043
+        },
+        {
+            "descripcion": "EL MONTO TOTAL CONCILIADO ENVIADO ES ERRONEO",
+            "codigoClasificador": 1044
+        },
+        {
+            "descripcion": "VALOR DE CAFC NO VALIDO PARA LA FACTURA",
+            "codigoClasificador": 1045
+        },
+        {
+            "descripcion": "FECHA EMISION PARA EL CAFC ENVIADO INCORRECTO",
+            "codigoClasificador": 1046
+        },
+        {
+            "descripcion": "NUMERO FACTURA PARA EL CAFC ENVIADO INCORRECTO",
+            "codigoClasificador": 1047
+        },
+        {
+            "descripcion": "FACTURA DE LA NOTA CREDITO DEBITO NO ENCONTRADA",
+            "codigoClasificador": 1048
+        },
+        {
+            "descripcion": "DETALLE DE LA NOTA DIFERENTE AL DETALLE DE LA FACTURA ORIGINAL",
+            "codigoClasificador": 1049
+        },
+        {
+            "descripcion": "MONTO GIFT CARD NO CORRESPONDE AL METODO DE PAGO",
+            "codigoClasificador": 1050
+        },
+        {
+            "descripcion": "FECHA DE FACTURA INCORRECTA",
+            "codigoClasificador": 1051
+        },
+        {
+            "descripcion": "EL CALCULO DEL MONTO IEHD ES ERRONEO",
+            "codigoClasificador": 1052
+        },
+        {
+            "descripcion": "LA ACTIVIDAD DE LA NOTA DE CREDITO DEBITO NO SE ENCUENTRA AUTORIZADA PARA ESTE PLAZO",
+            "codigoClasificador": 1053
+        },
+        {
+            "descripcion": "EL MONTO DESCUENTO CREDITO DEBITO ES ERRONEO",
+            "codigoClasificador": 1054
+        },
+        {
+            "descripcion": "EL MONTO TARIFA ES ERRONEO",
+            "codigoClasificador": 1055
+        },
+        {
+            "descripcion": "EL TIPO DE CAMBIO ES ERRONEO",
+            "codigoClasificador": 1056
+        },
+        {
+            "descripcion": "EL MONTO TOTAL MONEDA ES ERRONEO",
+            "codigoClasificador": 1057
+        },
+        {
+            "descripcion": "EL MONTO TOTAL SUJETO IVA ES ERRONEO",
+            "codigoClasificador": 1058
+        },
+        {
+            "descripcion": "LA RAZON SOCIAL ES ERRONEA",
+            "codigoClasificador": 1059
+        },
+        {
+            "descripcion": "EL MONTO DETALLE ES ERRONEO",
+            "codigoClasificador": 1060
+        },
+        {
+            "descripcion": "FACTURA DE LA NOTA CREDITO DEBITO NO ES VALIDA PARA REALIZAR LA DEVOLUCION",
+            "codigoClasificador": 1061
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL NUMERO FACTURA ENVIADO TIENE ERROR DE CORRELATIVIDAD",
+            "codigoClasificador": 2000
+        },
+        {
+            "descripcion": "ADVERTENCIA: LA FECHA DE EMISION ENVIADA NO SE ENCUENTRA DENTRO DEL RANGO DEL EVENTO DE CONTINGENCIA ASOCIADO",
+            "codigoClasificador": 2001
+        },
+        {
+            "descripcion": "ADVERTENCIA: LA FECHA DE EMISION ENVIADA NO ES VALIDA PARA LA EMISION MASIVA",
+            "codigoClasificador": 2002
+        },
+        {
+            "descripcion": "ADVERTENCIA: LA FACTURA NO PUEDE SER ENVIADA CON NUMERO DE CI/NIT/CEX 0 PARA MONTOS MAYORES A 3000",
+            "codigoClasificador": 2003
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL COMPLEMENTO SOLO PUEDE SER ENVIADO CUANDO EL TIPO DE DOCUMENTO ES CARNET DE IDENTIDAD",
+            "codigoClasificador": 2004
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL NIT DEL CLIENTE ENVIADO EN EL CAMPO NUMERO DE DOCUMENTO NO ES VALIDO",
+            "codigoClasificador": 2005
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL NUMERO DE TARJETA SOLO PUEDE SER ENVIADO CUANDO EL METODO DE PAGO SEA CON TARJETA",
+            "codigoClasificador": 2006
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL CALCULO DEL MONTO TOTAL ES ERRONEO",
+            "codigoClasificador": 2007
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL CALCULO DEL  MONTO TOTAL MONEDA ES ERRONEO",
+            "codigoClasificador": 2008
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL CALCULO DEL IMPORTE BASE PARA CREDITO FISCAL ES ERRONEO",
+            "codigoClasificador": 2009
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL CODIGO DE ACTIVIDAD ECONOMICA NO ESTA HABILITADA PARA EL CONTRIBUYENTE",
+            "codigoClasificador": 2010
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL CODIGO DE PRODUCTO NO ESTA RELACIONADO A NINGUN ACTIVIDAD ECONOMICA DEL CONTRIBUYENTE",
+            "codigoClasificador": 2011
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL CALCULO DEL SUBTOTAL ES ERRONEO",
+            "codigoClasificador": 2012
+        },
+        {
+            "descripcion": "ADVERTENCIA: LA FACTURA O NOTA DE CREDITO-DEBITO NO PUEDE SER EMITIDA AL MISMO EMISOR",
+            "codigoClasificador": 2013
+        },
+        {
+            "descripcion": "ADVERTENCIA: LA DIRECCION ENVIADA EN EL XML NO CORRESPONDE A LA REGISTRADA EN PADRON",
+            "codigoClasificador": 2014
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL CALCULO DE ICE ESPECIFICO ES ERRONEO",
+            "codigoClasificador": 2015
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL CALCULO DE ICE PORCENTUAL ES ERRONEO",
+            "codigoClasificador": 2016
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL MONTO ICE ESPECIFICO ES ERRONEO",
+            "codigoClasificador": 2017
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL MONTO ICE PORCENTUAL ES ERRONEO",
+            "codigoClasificador": 2018
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL CODIGO NANDINA ENVIADO EN LA FACTURA ES ERRONEO",
+            "codigoClasificador": 2019
+        },
+        {
+            "descripcion": "EL NIT NO TIENE CONTRATO VIGENTE",
+            "codigoClasificador": 3000
+        },
+        {
+            "descripcion": "LA CATEGORIA DE CONTRATO NO CORRESPONDE AL SECTOR",
+            "codigoClasificador": 3001
+        },
+        {
+            "descripcion": "LA SOLICITUD EXCEDE EL LIMITE DE CUFD MASIVO PERMITIDO",
+            "codigoClasificador": 3002
+        },
+        {
+            "descripcion": "MARCA: NO TIENE FORMULARIOS 200 Y 210 VIGENTES",
+            "codigoClasificador": 3003
+        },
+        {
+            "descripcion": "MARCA: DOMICILIO INEXISTENTE",
+            "codigoClasificador": 3004
+        },
+        {
+            "descripcion": "MARCA: BLOQUEO DE DOSIFICACION ORIGINADOS EN FISCALIZACION",
+            "codigoClasificador": 3005
+        },
+        {
+            "descripcion": "MARCA: BLOQUEO DE DOSIFICACION ORIGINADOS EN JURIDICA",
+            "codigoClasificador": 3006
+        },
+        {
+            "descripcion": "MARCA: NO CUMPLE CON OBLIGATORIEDAD DE PRESENTACION DE DDJJ",
+            "codigoClasificador": 3007
+        },
+        {
+            "descripcion": "ADVERTENCIA: EL CUIS ESTA A PUNTO DE CADUCAR, GENERE UN NUEVO CUIS POR FAVOR",
+            "codigoClasificador": 3008
+        },
+        {
+            "descripcion": "EL TAMAÑO DEL ARCHIVO ES MAYOR A LA DEFINIDA EN NORMA",
+            "codigoClasificador": 3009
+        },
+        {
+            "descripcion": "LA FACTURA YA SE ENCUENTRA UTILIZADA O CONSOLIDADA",
+            "codigoClasificador": 3010
+        },
+        {
+            "descripcion": "MARCA: ACTIVIDAD ECONOMICA INEXISTENTE O NO DECLARADA",
+            "codigoClasificador": 3011
+        },
+        {
+            "descripcion": "MARCA: CAMBIO DE DOMICILIO FISCAL NO COMUNICADO",
+            "codigoClasificador": 3012
+        }
+    ],
+    "metodosPago": [
+        {
+            "descripcion": "DEBITO AUTOMATICO -  VALE",
+            "codigoClasificador": 299
+        },
+        {
+            "descripcion": "DEBITO AUTOMATICO -  PAGO POSTERIOR",
+            "codigoClasificador": 300
+        },
+        {
+            "descripcion": "DEBITO AUTOMATICO -  TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 301
+        },
+        {
+            "descripcion": "DEBITO AUTOMATICO -  DEPOSITO EN CUENTA",
+            "codigoClasificador": 302
+        },
+        {
+            "descripcion": "DEBITO AUTOMATICO -  TRANSFERENCIA SWIFT",
+            "codigoClasificador": 303
+        },
+        {
+            "descripcion": "DEBITO AUTOMATICO - GIFT-CARD",
+            "codigoClasificador": 304
+        },
+        {
+            "descripcion": "DEBITO AUTOMATICO -  CANAL DE PAGO",
+            "codigoClasificador": 305
+        },
+        {
+            "descripcion": "DEBITO AUTOMATICO -  BILLETERA MOVIL",
+            "codigoClasificador": 306
+        },
+        {
+            "descripcion": "DEBITO AUTOMATICO -  PAGO ONLINE",
+            "codigoClasificador": 307
+        },
+        {
+            "descripcion": "DEBITO AUTOMATICO \\u2013 OTRO",
+            "codigoClasificador": 308
+        },
+        {
+            "descripcion": "EFECTIVO-TARJETA",
+            "codigoClasificador": 10
+        },
+        {
+            "descripcion": "EFECTIVO-CHEQUE",
+            "codigoClasificador": 11
+        },
+        {
+            "descripcion": "EFECTIVO-VALES",
+            "codigoClasificador": 12
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 13
+        },
+        {
+            "descripcion": "EFECTIVO-DEPOSITO EN CUENTA",
+            "codigoClasificador": 14
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 TRANSFERENCIA BANCARIA SWIFT",
+            "codigoClasificador": 15
+        },
+        {
+            "descripcion": "TARJETA-CHEQUE",
+            "codigoClasificador": 16
+        },
+        {
+            "descripcion": "TARJETA-VALES",
+            "codigoClasificador": 17
+        },
+        {
+            "descripcion": "TARJETA-TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 18
+        },
+        {
+            "descripcion": "TARJETA-DEPOSITO EN CUENTA",
+            "codigoClasificador": 19
+        },
+        {
+            "descripcion": "TARJETA-TRANSFERENCIA SWIFT",
+            "codigoClasificador": 20
+        },
+        {
+            "descripcion": "VALES-TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 21
+        },
+        {
+            "descripcion": "VALES \\u2013 DEPOSITO EN CUENTA",
+            "codigoClasificador": 22
+        },
+        {
+            "descripcion": "VALES \\u2013 SWIFT",
+            "codigoClasificador": 23
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA-DEPOSITO EN CUENTA",
+            "codigoClasificador": 24
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA-TRANSFERENCIA SWIFT",
+            "codigoClasificador": 25
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA \\u2013 TRANSFERENCIA SWIFT",
+            "codigoClasificador": 26
+        },
+        {
+            "descripcion": "PAGO POSTERIOR",
+            "codigoClasificador": 6
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 7
+        },
+        {
+            "descripcion": "GIFT-CARD",
+            "codigoClasificador": 27
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA",
+            "codigoClasificador": 8
+        },
+        {
+            "descripcion": "TRANSFERENCIA SWIFT",
+            "codigoClasificador": 9
+        },
+        {
+            "descripcion": "OTROS \\u2013 GIFT CARD",
+            "codigoClasificador": 30
+        },
+        {
+            "descripcion": "CANAL DE PAGO",
+            "codigoClasificador": 31
+        },
+        {
+            "descripcion": "BILLETERA MOVIL",
+            "codigoClasificador": 32
+        },
+        {
+            "descripcion": "PAGO ONLINE",
+            "codigoClasificador": 33
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 PAGO POSTERIOR",
+            "codigoClasificador": 34
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 GIFT-CARD",
+            "codigoClasificador": 35
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 CANAL PAGO",
+            "codigoClasificador": 36
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 37
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 PAGO ONLINE",
+            "codigoClasificador": 38
+        },
+        {
+            "descripcion": "TARJETA \\u2013 PAGO POSTERIOR",
+            "codigoClasificador": 39
+        },
+        {
+            "descripcion": "TARJETA \\u2013 GIFT-CARD",
+            "codigoClasificador": 40
+        },
+        {
+            "descripcion": "TARJETA \\u2013 CANAL PAGO",
+            "codigoClasificador": 41
+        },
+        {
+            "descripcion": "TARJETA \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 42
+        },
+        {
+            "descripcion": "TARJETA \\u2013 PAGO ONLINE",
+            "codigoClasificador": 43
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 VALES",
+            "codigoClasificador": 44
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 PAGO POSTERIOR",
+            "codigoClasificador": 45
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 46
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 DEPOSITO EN CUENTA",
+            "codigoClasificador": 47
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 SWIFT",
+            "codigoClasificador": 48
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 GIFT-CARD",
+            "codigoClasificador": 49
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 CANAL PAGO",
+            "codigoClasificador": 50
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 BILLETERA",
+            "codigoClasificador": 51
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 PAGO ONLINE",
+            "codigoClasificador": 52
+        },
+        {
+            "descripcion": "VALES \\u2013 GIFT-CARD",
+            "codigoClasificador": 53
+        },
+        {
+            "descripcion": "VALES \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 54
+        },
+        {
+            "descripcion": "VALES \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 55
+        },
+        {
+            "descripcion": "VALES \\u2013 PAGO ONLINE",
+            "codigoClasificador": 56
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 57
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 DEPOSITO EN CUENTA",
+            "codigoClasificador": 58
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 SWIFT",
+            "codigoClasificador": 59
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 GIFT-CARD",
+            "codigoClasificador": 60
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 CANAL",
+            "codigoClasificador": 61
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 BILLETERA",
+            "codigoClasificador": 62
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 PAGO ONLINE",
+            "codigoClasificador": 63
+        },
+        {
+            "descripcion": "EFECTIVO",
+            "codigoClasificador": 1
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 GIFT-CARD",
+            "codigoClasificador": 64
+        },
+        {
+            "descripcion": "TARJETA",
+            "codigoClasificador": 2
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 65
+        },
+        {
+            "descripcion": "CHEQUE",
+            "codigoClasificador": 3
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 66
+        },
+        {
+            "descripcion": "VALES",
+            "codigoClasificador": 4
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 PAGO ONLINE",
+            "codigoClasificador": 67
+        },
+        {
+            "descripcion": "OTROS",
+            "codigoClasificador": 5
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA \\u2013 GIFT-CARD",
+            "codigoClasificador": 68
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 69
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 70
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 71
+        },
+        {
+            "descripcion": "SWIFT \\u2013 GIFT-CARD",
+            "codigoClasificador": 72
+        },
+        {
+            "descripcion": "SWIFT \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 73
+        },
+        {
+            "descripcion": "SWIFT \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 74
+        },
+        {
+            "descripcion": "SWIFT \\u2013 PAGO ONLINE",
+            "codigoClasificador": 75
+        },
+        {
+            "descripcion": "GIFT-CARD \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 76
+        },
+        {
+            "descripcion": "GIFT CARD \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 77
+        },
+        {
+            "descripcion": "GIFT-CARD \\u2013 PAGO ONLINE",
+            "codigoClasificador": 78
+        },
+        {
+            "descripcion": "CANAL DE PAGO \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 79
+        },
+        {
+            "descripcion": "CANAL DE PAGO \\u2013 PAGO ONLINE",
+            "codigoClasificador": 80
+        },
+        {
+            "descripcion": "BILLETERA MOVIL \\u2013 PAGO ONLINE",
+            "codigoClasificador": 81
+        },
+        {
+            "descripcion": "EFECTIVO - TARJETA - PAGO POSTERIOR",
+            "codigoClasificador": 82
+        },
+        {
+            "descripcion": "EFECTIVO - TARJETA - TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 83
+        },
+        {
+            "descripcion": "EFECTIVO - TARJETA - DEPOSITO EN CUENTA",
+            "codigoClasificador": 84
+        },
+        {
+            "descripcion": "EFECTIVO - TARJETA - TRANSFERENCIA SWIFT",
+            "codigoClasificador": 85
+        },
+        {
+            "descripcion": "EFECTIVO - TARJETA - GIFT-CARD",
+            "codigoClasificador": 86
+        },
+        {
+            "descripcion": "EFECTIVO - TARJETA - CANAL DE PAGO",
+            "codigoClasificador": 87
+        },
+        {
+            "descripcion": "EFECTIVO - TARJETA - BILLETERA MOVIL",
+            "codigoClasificador": 88
+        },
+        {
+            "descripcion": "EFECTIVO - TARJETA - PAGO ONLINE",
+            "codigoClasificador": 89
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 CHEQUE - PAGO POSTERIOR",
+            "codigoClasificador": 90
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 CHEQUE - TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 91
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 CHEQUE - DEPOSITO EN CUENTA",
+            "codigoClasificador": 92
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 CHEQUE - TRANSFERENCIA SWIFT",
+            "codigoClasificador": 93
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 CHEQUE - GIFT-CARD",
+            "codigoClasificador": 94
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 CHEQUE - CANAL DE PAGO",
+            "codigoClasificador": 95
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 CHEQUE - BILLETERA MOVIL",
+            "codigoClasificador": 96
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 CHEQUE - PAGO ONLINE",
+            "codigoClasificador": 97
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 VALES - PAGO POSTERIOR",
+            "codigoClasificador": 98
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 VALES - TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 99
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 VALES - DEPOSITO EN CUENTA",
+            "codigoClasificador": 100
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 VALES - TRANSFERENCIA SWIFT",
+            "codigoClasificador": 101
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 VALES - GIFT-CARD",
+            "codigoClasificador": 102
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 VALES - CANAL DE PAGO",
+            "codigoClasificador": 103
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 VALES - BILLETERA MOVIL",
+            "codigoClasificador": 104
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 VALES - PAGO ONLINE",
+            "codigoClasificador": 105
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 PAGO POSTERIOR - TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 106
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 PAGO POSTERIOR - DEPOSITO EN CUENTA",
+            "codigoClasificador": 107
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 PAGO POSTERIOR - TRANSFERENCIA SWIFT",
+            "codigoClasificador": 108
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 PAGO POSTERIOR - GIFT-CARD",
+            "codigoClasificador": 109
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 PAGO POSTERIOR - CANAL DE PAGO",
+            "codigoClasificador": 110
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 PAGO POSTERIOR - BILLETERA MOVIL",
+            "codigoClasificador": 111
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 PAGO POSTERIOR - PAGO ONLINE",
+            "codigoClasificador": 112
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 TRANSFERENCIA BANCARIA  \\u2013 DEPOSITO EN CUENTA",
+            "codigoClasificador": 113
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 TRANSFERENCIA BANCARIA  \\u2013 TRANSFERENCIA SWIFT",
+            "codigoClasificador": 114
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 TRANSFERENCIA BANCARIA  \\u2013 GIFT-CARD",
+            "codigoClasificador": 115
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 TRANSFERENCIA BANCARIA  \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 116
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 TRANSFERENCIA BANCARIA  \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 117
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 TRANSFERENCIA BANCARIA  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 118
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 DEPOSITO EN CUENTA  \\u2013 TRANSFERENCIA SWIFT",
+            "codigoClasificador": 119
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 DEPOSITO EN CUENTA  \\u2013 GIFT-CARD",
+            "codigoClasificador": 120
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 DEPOSITO EN CUENTA  \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 121
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 DEPOSITO EN CUENTA  \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 122
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 DEPOSITO EN CUENTA  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 123
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 SWIFT - GIFT-CARD",
+            "codigoClasificador": 124
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 SWIFT - CANAL DE PAGO",
+            "codigoClasificador": 125
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 SWIFT - BILLETERA MOVIL",
+            "codigoClasificador": 126
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 SWIFT - PAGO ONLINE",
+            "codigoClasificador": 127
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 GIFT-CARD - CANAL DE PAGO",
+            "codigoClasificador": 128
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 GIFT-CARD - BILLETERA MOVIL",
+            "codigoClasificador": 129
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 GIFT-CARD - PAGO ONLINE",
+            "codigoClasificador": 130
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 CANAL PAGO - BILLETERA MOVIL",
+            "codigoClasificador": 131
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 CANAL PAGO - PAGO ONLINE",
+            "codigoClasificador": 132
+        },
+        {
+            "descripcion": "EFECTIVO \\u2013 BILLETERA MOVIL - PAGO ONLINE",
+            "codigoClasificador": 133
+        },
+        {
+            "descripcion": "TARJETA \\u2013 CHEQUE - PAGO POSTERIOR",
+            "codigoClasificador": 134
+        },
+        {
+            "descripcion": "TARJETA \\u2013 CHEQUE - TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 135
+        },
+        {
+            "descripcion": "TARJETA \\u2013 CHEQUE - DEPOSITO EN CUENTA",
+            "codigoClasificador": 136
+        },
+        {
+            "descripcion": "TARJETA \\u2013 CHEQUE - TRANSFERENCIA SWIFT",
+            "codigoClasificador": 137
+        },
+        {
+            "descripcion": "TARJETA \\u2013 CHEQUE - GIFT-CARD",
+            "codigoClasificador": 138
+        },
+        {
+            "descripcion": "TARJETA \\u2013 CHEQUE - CANAL DE PAGO",
+            "codigoClasificador": 139
+        },
+        {
+            "descripcion": "TARJETA \\u2013 CHEQUE - BILLETERA MOVIL",
+            "codigoClasificador": 140
+        },
+        {
+            "descripcion": "TARJETA \\u2013 CHEQUE - PAGO ONLINE",
+            "codigoClasificador": 141
+        },
+        {
+            "descripcion": "TARJETA \\u2013 VALES - PAGO POSTERIOR",
+            "codigoClasificador": 142
+        },
+        {
+            "descripcion": "TARJETA \\u2013 VALES - TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 143
+        },
+        {
+            "descripcion": "TARJETA \\u2013 VALES - DEPOSITO EN CUENTA",
+            "codigoClasificador": 144
+        },
+        {
+            "descripcion": "TARJETA \\u2013 VALES - TRANSFERENCIA SWIFT",
+            "codigoClasificador": 145
+        },
+        {
+            "descripcion": "TARJETA \\u2013 VALES - GIFT-CARD",
+            "codigoClasificador": 146
+        },
+        {
+            "descripcion": "TARJETA \\u2013 VALES - CANAL DE PAGO",
+            "codigoClasificador": 147
+        },
+        {
+            "descripcion": "TARJETA \\u2013 VALES - BILLETERA MOVIL",
+            "codigoClasificador": 148
+        },
+        {
+            "descripcion": "TARJETA \\u2013 VALES - PAGO ONLINE",
+            "codigoClasificador": 149
+        },
+        {
+            "descripcion": "TARJETA \\u2013 PAGO POSTERIOR - TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 150
+        },
+        {
+            "descripcion": "TARJETA \\u2013 PAGO POSTERIOR - DEPOSITO EN CUENTA",
+            "codigoClasificador": 151
+        },
+        {
+            "descripcion": "TARJETA \\u2013 PAGO POSTERIOR - TRANSFERENCIA SWIFT",
+            "codigoClasificador": 152
+        },
+        {
+            "descripcion": "TARJETA \\u2013 PAGO POSTERIOR - GIFT-CARD",
+            "codigoClasificador": 153
+        },
+        {
+            "descripcion": "TARJETA \\u2013 PAGO POSTERIOR - CANAL DE PAGO",
+            "codigoClasificador": 154
+        },
+        {
+            "descripcion": "TARJETA \\u2013 PAGO POSTERIOR - BILLETERA MOVIL",
+            "codigoClasificador": 155
+        },
+        {
+            "descripcion": "TARJETA \\u2013 PAGO POSTERIOR - PAGO ONLINE",
+            "codigoClasificador": 156
+        },
+        {
+            "descripcion": "TARJETA \\u2013 TRANSFERENCIA BANCARIA \\u2013 DEPOSITO EN CUENTA",
+            "codigoClasificador": 157
+        },
+        {
+            "descripcion": "TARJETA \\u2013 TRANSFERENCIA BANCARIA - TRANSFERENCIA SWIFT",
+            "codigoClasificador": 158
+        },
+        {
+            "descripcion": "TARJETA \\u2013 TRANSFERENCIA BANCARIA \\u2013 GIFT-CARD",
+            "codigoClasificador": 159
+        },
+        {
+            "descripcion": "TARJETA \\u2013 TRANSFERENCIA BANCARIA \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 160
+        },
+        {
+            "descripcion": "TARJETA \\u2013 TRANSFERENCIA  BANCARIA \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 161
+        },
+        {
+            "descripcion": "TARJETA \\u2013 TRANSFERENCIA BANCARIA \\u2013 PAGO ONLINE",
+            "codigoClasificador": 162
+        },
+        {
+            "descripcion": "TARJETA \\u2013 DEPOSITO EN CUENTA \\u2013 TRANSFERENCIA SWIFT",
+            "codigoClasificador": 163
+        },
+        {
+            "descripcion": "TARJETA \\u2013 DEPOSITO EN CUENTA \\u2013 GIFT-CARD",
+            "codigoClasificador": 164
+        },
+        {
+            "descripcion": "TARJETA \\u2013 DEPOSITO EN CUENTA \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 165
+        },
+        {
+            "descripcion": "TARJETA \\u2013 DEPOSITO EN CUENTA  \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 166
+        },
+        {
+            "descripcion": "TARJETA \\u2013 DEPOSITO EN CUENTA \\u2013 PAGO ONLINE",
+            "codigoClasificador": 167
+        },
+        {
+            "descripcion": "TARJETA \\u2013 SWIFT - GIFT-CARD",
+            "codigoClasificador": 168
+        },
+        {
+            "descripcion": "TARJETA \\u2013 SWIFT - CANAL DE PAGO",
+            "codigoClasificador": 169
+        },
+        {
+            "descripcion": "TARJETA \\u2013 SWIFT - BILLETERA MOVIL",
+            "codigoClasificador": 170
+        },
+        {
+            "descripcion": "TARJETA \\u2013 SWIFT - PAGO ONLINE",
+            "codigoClasificador": 171
+        },
+        {
+            "descripcion": "TARJETA \\u2013 GIFT-CARD - CANAL DE PAGO",
+            "codigoClasificador": 172
+        },
+        {
+            "descripcion": "TARJETA \\u2013 GIFT-CARD - BILLETERA MOVIL",
+            "codigoClasificador": 173
+        },
+        {
+            "descripcion": "TARJETA \\u2013 GIFT-CARD- PAGO ONLINE",
+            "codigoClasificador": 174
+        },
+        {
+            "descripcion": "TARJETA \\u2013 CANAL PAGO - BILLETERA MOVIL",
+            "codigoClasificador": 175
+        },
+        {
+            "descripcion": "TARJETA \\u2013 CANAL PAGO - PAGO ONLINE",
+            "codigoClasificador": 176
+        },
+        {
+            "descripcion": "TARJETA \\u2013 BILLETERA MOVIL - PAGO ONLINE",
+            "codigoClasificador": 177
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 VALES - PAGO POSTERIOR",
+            "codigoClasificador": 178
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 VALES - TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 179
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 VALES - DEPOSITO EN CUENTA",
+            "codigoClasificador": 180
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 VALES - TRANSFERENCIA SWIFT",
+            "codigoClasificador": 181
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 VALES - GIFT-CARD",
+            "codigoClasificador": 182
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 VALES - CANAL DE PAGO",
+            "codigoClasificador": 183
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 VALES - BILLETERA MOVIL",
+            "codigoClasificador": 184
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 VALES - PAGO ONLINE",
+            "codigoClasificador": 185
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 PAGO POSTERIOR - TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 186
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 PAGO POSTERIOR - DEPOSITO EN CUENTA",
+            "codigoClasificador": 187
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 PAGO POSTERIOR - TRANSFERENCIA SWIFT",
+            "codigoClasificador": 188
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 PAGO POSTERIOR - GIFT-CARD",
+            "codigoClasificador": 189
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 PAGO POSTERIOR - CANAL DE PAGO",
+            "codigoClasificador": 190
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 PAGO POSTERIOR - BILLETERA MOVIL",
+            "codigoClasificador": 191
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 PAGO POSTERIOR - PAGO ONLINE",
+            "codigoClasificador": 192
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 TRANSFERENCIA BANCARIA \\u2013 DEPOSITO EN CUENTA",
+            "codigoClasificador": 193
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 TRANSFERENCIA BANCARIA \\u2013 TRANSFERENCIA SWIFT",
+            "codigoClasificador": 194
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 TRANSFERENCIA BANCARIA \\u2013 GIFT-CARD",
+            "codigoClasificador": 195
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 TRANSFERENCIA BANCARIA \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 196
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 TRANSFERENCIA BANCARIA \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 197
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 TRANSFERENCIA BANCARIA \\u2013 PAGO ONLINE",
+            "codigoClasificador": 198
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 DEPOSITO EN CUENTA - TRANSFERENCIA SWIFT",
+            "codigoClasificador": 199
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 DEPOSITO EN CUENTA - GIFT-CARD",
+            "codigoClasificador": 200
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 DEPOSITO EN CUENTA - CANAL DE PAGO",
+            "codigoClasificador": 201
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 DEPOSITO EN CUENTA - BILLETERA MOVIL",
+            "codigoClasificador": 202
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 DEPOSITO EN CUENTA - PAGO ONLINE",
+            "codigoClasificador": 203
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 SWIFT - GIFT-CARD",
+            "codigoClasificador": 204
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 SWIFT - CANAL DE PAGO",
+            "codigoClasificador": 205
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 SWIFT - BILLETERA MOVIL",
+            "codigoClasificador": 206
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 SWIFT - PAGO ONLINE",
+            "codigoClasificador": 207
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 GIFT-CARD - CANAL DE PAGO",
+            "codigoClasificador": 208
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 GIFT-CARD - BILLETERA MOVIL",
+            "codigoClasificador": 209
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 GIFT-CARD - PAGO ONLINE",
+            "codigoClasificador": 210
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 CANAL PAGO - BILLETERA MOVIL",
+            "codigoClasificador": 211
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 CANAL PAGO - PAGO ONLINE",
+            "codigoClasificador": 212
+        },
+        {
+            "descripcion": "CHEQUE \\u2013 BILLETERA MOVIL  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 213
+        },
+        {
+            "descripcion": "VALES \\u2013 SWIFT - TRANSFERENCIA BANCARIA",
+            "codigoClasificador": 214
+        },
+        {
+            "descripcion": "VALES \\u2013 SWIFT - DEPOSITO EN CUENTA",
+            "codigoClasificador": 215
+        },
+        {
+            "descripcion": "VALES \\u2013 SWIFT \\u2013 OTROS",
+            "codigoClasificador": 216
+        },
+        {
+            "descripcion": "VALES \\u2013 OTROS \\u2013 GIFT CARD",
+            "codigoClasificador": 217
+        },
+        {
+            "descripcion": "VALES \\u2013 OTROS \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 218
+        },
+        {
+            "descripcion": "VALES \\u2013 SWIFT - BILLETERA MOVIL",
+            "codigoClasificador": 219
+        },
+        {
+            "descripcion": "VALES \\u2013 SWIFT - PAGO ONLINE",
+            "codigoClasificador": 220
+        },
+        {
+            "descripcion": "VALES \\u2013 GIFT-CARD - DEPOSITO EN CUENTA",
+            "codigoClasificador": 221
+        },
+        {
+            "descripcion": "VALES \\u2013 GIFT-CARD - TRANSFERENCIA SWIFT",
+            "codigoClasificador": 222
+        },
+        {
+            "descripcion": "OTROS \\u2013 GIFT CARD \\u2013 TARJETA",
+            "codigoClasificador": 223
+        },
+        {
+            "descripcion": "OTROS - GIFT CARD - CANAL DE PAGO",
+            "codigoClasificador": 224
+        },
+        {
+            "descripcion": "VALES \\u2013 GIFT CARD \\u2013 OTROS",
+            "codigoClasificador": 225
+        },
+        {
+            "descripcion": "VALES \\u2013 GIFT-CARD - PAGO ONLINE",
+            "codigoClasificador": 226
+        },
+        {
+            "descripcion": "VALES \\u2013 CANAL DE PAGO  \\u2013 TRANSFERENCIA SWIFT",
+            "codigoClasificador": 227
+        },
+        {
+            "descripcion": "VALES \\u2013 CANAL DE PAGO  \\u2013 GIFT-CARD",
+            "codigoClasificador": 228
+        },
+        {
+            "descripcion": "VALES \\u2013 CANAL PAGO \\u2013 OTROS",
+            "codigoClasificador": 229
+        },
+        {
+            "descripcion": "OTROS - CANAL DE PAGO  - BILLETERA MOVIL",
+            "codigoClasificador": 230
+        },
+        {
+            "descripcion": "VALES \\u2013 CANAL DE PAGO  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 231
+        },
+        {
+            "descripcion": "VALES \\u2013 BILLETERA MOVIL \\u2013 GIFT-CARD",
+            "codigoClasificador": 232
+        },
+        {
+            "descripcion": "VALES \\u2013 BILLETERA MOVIL \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 233
+        },
+        {
+            "descripcion": "VALES \\u2013 BILLETERA MOVIL - OTROS",
+            "codigoClasificador": 234
+        },
+        {
+            "descripcion": "VALES \\u2013 BILLETERA MOVIL \\u2013 PAGO ONLINE",
+            "codigoClasificador": 235
+        },
+        {
+            "descripcion": "VALES \\u2013 OTROS \\u2013 CANAL PAGO",
+            "codigoClasificador": 236
+        },
+        {
+            "descripcion": "VALES \\u2013 OTROS \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 237
+        },
+        {
+            "descripcion": "VALES \\u2013 PAGO ONLINE \\u2013 OTROS",
+            "codigoClasificador": 238
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 TRANSFERENCIA BANCARIA  \\u2013 DEPOSITO EN CUENTA",
+            "codigoClasificador": 239
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 TRANSFERENCIA BANCARIA  \\u2013 TRANSFERENCIA SWIFT",
+            "codigoClasificador": 240
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 TRANSFERENCIA BANCARIA  \\u2013 GIFT-CARD",
+            "codigoClasificador": 241
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 TRANSFERENCIA BANCARIA  \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 242
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 TRANSFERENCIA BANCARIA  \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 243
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 TRANSFERENCIA BANCARIA  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 244
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 DEPOSITO EN CUENTA  \\u2013 TRANSFERENCIA SWIFT",
+            "codigoClasificador": 245
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 DEPOSITO EN CUENTA  \\u2013 GIFT-CARD",
+            "codigoClasificador": 246
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 DEPOSITO EN CUENTA  \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 247
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 DEPOSITO EN CUENTA  \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 248
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 DEPOSITO EN CUENTA  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 249
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 SWIFT - GIFT-CARD",
+            "codigoClasificador": 250
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 SWIFT - CANAL DE PAGO",
+            "codigoClasificador": 251
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 SWIFT - BILLETERA MOVIL",
+            "codigoClasificador": 252
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 SWIFT - PAGO ONLINE",
+            "codigoClasificador": 253
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 GIFT-CARD - CANAL DE PAGO",
+            "codigoClasificador": 254
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 GIFT-CARD - BILLETERA MOVIL",
+            "codigoClasificador": 255
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 GIFT-CARD - PAGO ONLINE",
+            "codigoClasificador": 256
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 CANAL DE PAGO - BILLETERA MOVIL",
+            "codigoClasificador": 257
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 CANAL DE PAGO - PAGO ONLINE",
+            "codigoClasificador": 258
+        },
+        {
+            "descripcion": "PAGO POSTERIOR \\u2013 BILLETERA MOVIL - PAGO ONLINE",
+            "codigoClasificador": 259
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 DEPOSITO EN CUENTA  \\u2013 TRANSFERENCIA SWIFT",
+            "codigoClasificador": 260
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 DEPOSITO  EN CUENTA \\u2013 GIFT-CARD",
+            "codigoClasificador": 261
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 DEPOSITO  EN CUENTA \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 262
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 DEPOSITO EN CUENTA   \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 263
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA\\u2013 DEPOSITO  EN CUENTA \\u2013 PAGO ONLINE",
+            "codigoClasificador": 264
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 SWIFT  \\u2013 GIFT-CARD",
+            "codigoClasificador": 265
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 SWIFT  \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 266
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 SWIFT  \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 267
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 SWIFT  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 268
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 GIFT-CARD  \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 269
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 GIFT-CARD  \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 270
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 GIFT-CARD  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 271
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 CANAL DE PAGO \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 272
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 CANAL DE PAGO \\u2013 PAGO ONLINE",
+            "codigoClasificador": 273
+        },
+        {
+            "descripcion": "TRANSFERENCIA BANCARIA \\u2013 BILLETERA MOVIL \\u2013 PAGO ONLINE",
+            "codigoClasificador": 274
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA  \\u2013 SWIFT  \\u2013 GIFT-CARD",
+            "codigoClasificador": 275
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA  \\u2013 SWIFT  \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 276
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA  \\u2013 SWIFT  \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 277
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA  \\u2013 SWIFT  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 278
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA \\u2013 GIFT-CARD  \\u2013 CANAL DE PAGO",
+            "codigoClasificador": 279
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA \\u2013 GIFT-CARD  \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 280
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA  \\u2013 GIFT-CARD  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 281
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA \\u2013  CANAL DE PAGO  \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 282
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA \\u2013 CANAL DE PAGO   \\u2013 PAGO ONLINE",
+            "codigoClasificador": 283
+        },
+        {
+            "descripcion": "DEPOSITO EN CUENTA \\u2013 BILLETERA MOVIL  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 284
+        },
+        {
+            "descripcion": "SWIFT \\u2013 GIFT-CARD - CANAL DE PAGO",
+            "codigoClasificador": 285
+        },
+        {
+            "descripcion": "SWIFT \\u2013 GIFT-CARD - BILLETERA MOVIL",
+            "codigoClasificador": 286
+        },
+        {
+            "descripcion": "SWIFT \\u2013 GIFT-CARD - PAGO ONLINE",
+            "codigoClasificador": 287
+        },
+        {
+            "descripcion": "SWIFT \\u2013 CANAL DE PAGO  \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 288
+        },
+        {
+            "descripcion": "SWIFT \\u2013 CANAL  DE PAGO \\u2013 PAGO ONLINE",
+            "codigoClasificador": 289
+        },
+        {
+            "descripcion": "SWIFT \\u2013 BILLETERA MOVIL  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 290
+        },
+        {
+            "descripcion": "GIFT-CARD \\u2013 CANAL DE PAGO  \\u2013 BILLETERA MOVIL",
+            "codigoClasificador": 291
+        },
+        {
+            "descripcion": "GIFT-CARD \\u2013 CANAL DE PAGO  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 292
+        },
+        {
+            "descripcion": "GIFT-CARD \\u2013 BILLETERA MOVIL - PAGO ONLINE",
+            "codigoClasificador": 293
+        },
+        {
+            "descripcion": "CANAL DE PAGO \\u2013 BILLETERA MOVIL  \\u2013 PAGO ONLINE",
+            "codigoClasificador": 294
+        },
+        {
+            "descripcion": "DEBITO AUTOMATICO",
+            "codigoClasificador": 295
+        },
+        {
+            "descripcion": "DEBITO AUTOMATICO \\u2013 EFECTIVO",
+            "codigoClasificador": 296
+        },
+        {
+            "descripcion": "DEBITO AUTOMATICO -TARJETA",
+            "codigoClasificador": 297
+        },
+        {
+            "descripcion": "DEBITO AUTOMATICO \\u2013 CHEQUE",
+            "codigoClasificador": 298
+        }
+    ]
+}

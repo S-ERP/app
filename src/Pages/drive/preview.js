@@ -8,7 +8,8 @@ export default class preview extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            ...SNavigation.getAllParams()
+            ...SNavigation.getAllParams(),
+            ...props
         };
     }
 
@@ -21,6 +22,9 @@ export default class preview extends Component {
             return <SImage src={SSocket.api.drive + this.state.path} />
         }
         if (type.indexOf("video") > -1) {
+            return <SVideo paused={false} controls src={SSocket.api.drive + this.state.path} />
+        }
+        if (type.indexOf("pdf") > -1) {
             return <SVideo paused={false} controls src={SSocket.api.drive + this.state.path} />
         }
         return <SView col={"xs-12"} center flex>

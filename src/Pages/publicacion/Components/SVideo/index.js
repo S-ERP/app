@@ -44,7 +44,8 @@ export default class SVideo extends Component {
             }} style={{
                 objectFit: "scale-down",
                 width: "100%",
-                height: "100%"
+                height: "100%",
+                background:"none"
                 // flex: 1,
                 // ...this.props.style
             }}
@@ -55,7 +56,8 @@ export default class SVideo extends Component {
 
 
             >
-                <source src={this.props.src} type="video/mp4"></source>
+                <source src={this.props.src} type="video/webm"></source>
+                {/* <source src={this.props.src} type="video/mp4"></source> */}
             </video>
         </SView>
     }

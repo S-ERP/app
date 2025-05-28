@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SForm, SNavigation, SNotification, SPage, STheme } from 'servisofts-component';
+import { SForm, SHr, SNavigation, SNotification, SPage, SText, STheme } from 'servisofts-component';
 import { Container } from '../../Components';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
@@ -67,6 +67,27 @@ export default class _new extends Component {
     render() {
         return <SPage>
             <Container loading={!this.state.data}>
+                {!this.key ? null : <SText color={STheme.color.danger} onPress={e => {
+                    SSocket.sendPromise({
+                        component: "mesh",
+                        type: "editar",
+                        key_usuario: Model.usuario.Action.getKey(),
+                        key_empresa: Model.empresa.Action.getKey(),
+                        data: {
+                            key: this.key,
+                            estado: 0
+                        }
+                    }).then(e => {
+                        SNavigation.goBack();
+                    }).catch(e => {
+                        console.error(e)
+                    })
+                }}>{"ELIMINAR"}</SText>}
+                <SHr />
+                {!this.key ? null : <SText color={STheme.color.danger} onPress={e => {
+                    SNavigation.navigate("/three/preview", { url: this?.state?.data?.url })
+                }}>{"Preview"}</SText>}
+                <SHr />
                 <SForm
                     ref={(ref) => { this.form = ref; }}
                     style={{
@@ -87,6 +108,8 @@ export default class _new extends Component {
                     onSubmitName={"Subir"}
                     onSubmit={this.handleSubmit.bind(this)}
                 />
+                <SHr h={50} />
+
             </Container>
         </SPage>
     }

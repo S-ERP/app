@@ -12,10 +12,12 @@ import PHr from "./PHr"
 import Adornos from "./Adornos"
 import Btn from "./Btn"
 import Popups from "./Popups"
+import Restaurante from "./Restaurante"
 
 export {
     Btn,
-    Container
+    Container,
+    Restaurante
 
 }
 export default {
@@ -31,7 +33,8 @@ export default {
     PButtomFooter,
     Adornos,
     PHr,
-    Popups
+    Popups,
+   
 };
 
 

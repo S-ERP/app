@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Linking } from 'react-native';
 import { SButtom, SDate, SDatePicker, SHr, SInput, SLoad, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket'
-import Model from '../../Model';
+import Model from '../../../Model';
 // import { CuentaContable } from 'servisofts-rn-contabilidad';
 // import MigradorDeAmortizaciones from '../Components/MigradorDeAmortizaciones';
 class Test extends Component {
@@ -11,7 +11,7 @@ class Test extends Component {
         super(props);
         this.state = {
         };
-        this.key_empresa = SNavigation.getParam("key")
+        this.key_empresa = SNavigation.getParam("key", this.props.key_empresa)
 
     }
     ref = {}

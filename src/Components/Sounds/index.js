@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { SoundsType, SoundsPlayPropsType } from './type'
-import { SThread } from 'servisofts-component';
+import * as THREE from "three"
+
 export default class Sounds extends Component<SoundsType> {
-    static play(obj: SoundsPlayPropsType) {
+    static play(obj: SoundsPlayPropsType): Audio {
         const audio = new Audio(obj.src);
         let loopCount = 0;
 

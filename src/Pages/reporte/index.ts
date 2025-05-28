@@ -9,7 +9,7 @@ import inventario from "./Inventario";
 import reporte_compras_ventas_cuotas from "./reporte_compras_ventas_cuotas";
 import reporte_ventas_vendedores from "./reporte_ventas_vendedores";
 import reporte_compras_compradores from "./reporte_compras_compradores";
-
+import reporte_ventas from "./reporte_ventas";
 export default SPage.combinePages("reporte",
     {
         "": root,
@@ -19,6 +19,7 @@ export default SPage.combinePages("reporte",
         "dashboard": dashboard,
         "inventario": inventario,
         reporte_compras_ventas_cuotas,
+        reporte_ventas,
         reporte_ventas_vendedores,
         reporte_compras_compradores
 

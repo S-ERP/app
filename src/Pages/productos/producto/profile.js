@@ -75,6 +75,10 @@ class index extends DPA.profile {
 
     $footer() {
         return <SView col={"xs-12"} center>
+            <SText onPress={() => {
+                SNavigation.navigate("/restaurante/producto/edit", { pk: this.pk })
+            }}>{"VerEditarReauratst"}</SText>
+
             <DatosDocumentos key_producto={this.pk} />
             <SHr />
             <SView col={"xs-12"} row>

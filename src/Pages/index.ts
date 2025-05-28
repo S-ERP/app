@@ -50,17 +50,35 @@ import charts from './charts';
 import mapa from './mapa';
 import uploadv2 from "./uploadv2"
 import drive from './drive';
-import three from './three';
-import mesh from './mesh';
-import scene from './scene';
+import drive2 from './drive2';
+// Three js
+// import three from './three';
+// import mesh from './mesh';
+// import scene from './scene';
+
+import lote from './lote';
+
+import restaurante from './restaurante';
+import whatsapp from './whatsapp';
+
+import testTable from './testTable';
+import qr from './qr';
+import icons from './icons';
+
+import factura from '../Components/PDF/factura';
+
+import ricky from './ricky';
+import crm from './crm';
 export default SPage.combinePages("/", {
     // "":Example,
     // "":three,
     // "": test,
     // "": test,
     "": lobyRoot,
+    ...restaurante,
     // "": lobyRoot,
     "root": Root,
+    ricky,
     anim1,
     home,
     home2,
@@ -76,7 +94,6 @@ export default SPage.combinePages("/", {
     "test": test,
     "start": start,
     "wiki": wiki,
-    ...three,
     // upload,
     uploadv2,
     t2,
@@ -109,9 +126,18 @@ export default SPage.combinePages("/", {
     invitation,
     "invitacion": invitacion,
     terminos,
-    ...mesh,
     ...charts,
     ...mapa,
     ...drive,
-    ...scene
+    drive2,
+    // ...scene,
+    // ...mesh,
+    // ...three,
+    ...qr,
+    ...lote,
+    ...whatsapp,
+    testTable,
+    icons,
+    ...crm,
+    "pdf/factura": factura,
 })

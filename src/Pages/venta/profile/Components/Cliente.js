@@ -20,7 +20,7 @@ export default class Cliente extends Component {
                     data: this.data,
                     key_usuario: Model.usuario.Action.getKey()
                 }).then((resp) => {
-                    console.log("Se agrego el cliente con exito")
+                    console.log("Se agregó el cliente con éxito")
                 })
             }
         })
@@ -46,7 +46,7 @@ export default class Cliente extends Component {
                     data: this.data,
                     key_usuario: Model.usuario.Action.getKey()
                 }).then((resp) => {
-                    console.log("Se agrego la sucursal con exito")
+                    console.log("Se agregó la sucursal con éxito")
                 })
             }
         })

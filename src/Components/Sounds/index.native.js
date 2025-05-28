@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { SoundsType, SoundsPlayPropsType } from './type'
 import Sound from 'react-native-sound';
 
+
+
 export default class Sounds extends Component<SoundsType> {
     static play(obj: SoundsPlayPropsType) {
         var soundPlayer = new Sound(obj.src, Sound.MAIN_BUNDLE, (error) => {
@@ -18,9 +20,9 @@ export default class Sounds extends Component<SoundsType> {
                     console.log('playback failed due to audio decoding errors');
                 }
             });
-            
+
         });
-        
+
         return soundPlayer;
     }
     render() {

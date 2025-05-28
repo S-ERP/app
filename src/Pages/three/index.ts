@@ -5,11 +5,13 @@ import mesh from "./mesh";
 import fp from "./fp";
 import world from "./world"
 import human from "./human"
-import AmmoExample from "./AmmoExample";
+// import AmmoExample from "./AmmoExample";
 import PrimeraPersona from "./primeraPersona"
-import Ammo2 from "./Ammo2";
+// import Ammo2 from "./Ammo2";
 import preview from "./preview";
 import city from "./city"
+import shader from "./shader"
+
 export default SPage.combinePages("three", {
     "": root,
     world,
@@ -18,8 +20,9 @@ export default SPage.combinePages("three", {
     mesh,
     fp,
     human,
-    AmmoExample,
+    // AmmoExample,
     PrimeraPersona,
-    Ammo2,
-    preview
+    // Ammo2,
+    preview,
+    shader
 })

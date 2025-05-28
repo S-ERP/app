@@ -7,14 +7,15 @@ module.exports = merge(common, {
     mode: 'development',
     // devtool: 'source-map',
     devtool: 'cheap-module-source-map',
+    // devtool: 'cheap-module-source-map',
     devServer: {
-        port: 3010,
+        port: 3011,
         // port: 3000,
         hot: true,
         historyApiFallback: true,
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
+        // new webpack.HotModuleReplacementPlugin(),
         new ReactRefreshWebpackPlugin(),
     ],
     module: {
@@ -22,7 +23,7 @@ module.exports = merge(common, {
             {
                 test: /\.(js|jsx|tsx|ts)$/,
                 exclude: /node_modules/,
-                use: ['thread-loader', {
+                use: [{
                     loader: 'babel-loader',
                     options: {
                         plugins: [require.resolve('react-refresh/babel')],
@@ -33,7 +34,7 @@ module.exports = merge(common, {
     },
     watchOptions: {
         aggregateTimeout: 200,
-        poll: 500,
+        // poll: 500,
         ignored: /node_modules/,
     },
     optimization: {

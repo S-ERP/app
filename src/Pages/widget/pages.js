@@ -23,8 +23,8 @@ export default class root extends Component {
             "component": "usuarioPage",
             "type": "getAll",
             "estado": "cargando",
-            "key_usuario": "29acdaa5-1d51-4725-8f49-9d493cea9702",
-            "key_empresa": "78a987e5-fa54-4d4d-b8e8-3a051bb6de90"
+            "key_usuario": Model.usuario.Action.getKey(),
+            "key_empresa":  Model.empresa.Action.getKey()
         }).then(e => {
             this.setState({ data: e.data })
             console.log(e);

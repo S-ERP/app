@@ -24,12 +24,21 @@ export default class ItemIcon extends Component {
       return <SImage src={SSocket.api.drive + finalPath + "/" + encodeURI(obj.name) + "?time=" + this.props.time ?? 0} />
 
     }
+
+    if (/pdf/gi.test(obj.type)) {
+      return <SImage src={SSocket.api.drive + finalPath + "/" + encodeURI("." + obj.name) + ".png" + "?time=" + this.props.time ?? 0} />
+    }
     if (/video.*/gi.test(obj.type)) {
+      console.log(obj.type)
+      if (/mp4/g.test(obj.type)) {
+        return <SVideoPreview src={SSocket.api.drive + finalPath + "/" + obj.name} size={obj.size} />
+      }
       // if (!image) {
       return <SImage src={SSocket.api.drive + finalPath + "/" + encodeURI("." + obj.name) + ".png" + "?time=" + this.props.time ?? 0} />
       //   return <SText>Loading preview...</SText>;
       // }
-      // return <SVideoPreview src={SSocket.api.drive + path + "/" + obj.name} />
+      // return <SText>{obj.size}</SText>
+
     }
     switch (obj.type) {
       case 'directory':

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView, Platform } from 'react-native';
-import { SHr, SIcon, SLoad, SNavigation, SPage, SText, STheme, SThread, SView } from 'servisofts-component';
+import { SButtom, SHr, SIcon, SLoad, SNavigation, SPage, SText, STheme, SThread, SView } from 'servisofts-component';
 import UsuariosActivos from './Components/UsuariosActivos';
 import Container from '../../Components/Container';
 import MyPerfil from './Components/MyPerfil';
@@ -16,6 +16,7 @@ import InvitarUsuario from '../../Components/empresa/InvitarUsuario';
 import { ScrollView as ScrollViewGesture } from 'react-native-gesture-handler';
 import SSocket from 'servisofts-socket';
 import MenuOpciones from './Components/MenuOpciones';
+import MenuPaginas from './Components/MenuPaginas';
 
 export default class root extends Component {
     constructor(props) {
@@ -27,25 +28,9 @@ export default class root extends Component {
     }
 
     componentDidMount() {
-        this.loadDataUser();
     }
 
-    loadDataUser() {
-        SSocket.sendPromise({
-            service: "empresa",
-            component: "empresa_usuario_log",
-            type: "registro",
-            key_empresa: Model.empresa.Action.getKey(),
-            key_usuario: Model.usuario.Action.getUsuarioLog()?.key,
-            url: SNavigation.lastRoute.route.name
-        }).then(e => {
-            this.setState({ dataLog: e.data })
-        }).catch(e => {
-            console.error(e);
-        })
-        console.log("USUSARIOOO", Model.usuario.Action.getUsuarioLog())
-        console.log("loadDataUser", SNavigation.lastRoute.route.name)
-    }
+    
 
     renderMunuItem({ onPress, label, icon, color }) {
         return <SView width={(label.length * 8) + 45} card padding={8} onPress={onPress} center row>
@@ -78,9 +63,14 @@ export default class root extends Component {
         return <SView col={"xs-12"} center>
             <SView col={"xs-12 sm-10 md-9 lg-7 xl-6 xxl-5"} center >
                 <SHr h={16} />
+                {/* <SButtom type={"outline"}  onPress={() => {
+                    SNavigation.navigate("/restaurante")
+                 }} >Restaurante</SButtom> */}
                 <MenuOpciones />
                 <PHr />
                 <UsuariosActivos />
+                <PHr />
+                <MenuPaginas key={Model.empresa.Action.getKey()} />
                 <PHr />
                 <SView row col={"xs-12"}>
                     <SView col={"xs-6"}>
@@ -109,7 +99,9 @@ export default class root extends Component {
             Model.publicacion.Action.CLEAR();
             return;
         }} >
-            <SText padding={20} card onPress={() => { SNavigation.navigate("/three") }}>{"IR A THREE"}</SText>
+            {/* <SText padding={20} card onPress={() => { SNavigation.navigate("/three") }}>{"IR A THREE"}</SText> */}
+            {/* <SText padding={20} card onPress={() => { SNavigation.navigate("/t2") }}>{"T2"}</SText> */}
+            {/* <SText padding={20} card onPress={() => { SNavigation.navigate("/three/shader") }}>{"Shader Editor"}</SText> */}
             <Scroll >
                 <SHr h={16} />
                 <PerfilEmpresa />

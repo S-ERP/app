@@ -44,7 +44,7 @@ export default class SVideo extends Component {
             }} style={{
                 objectFit: "scale-down",
                 width: "100%",
-                height: "100%"
+                height: "100%",
                 // flex: 1,
                 // ...this.props.style
             }}

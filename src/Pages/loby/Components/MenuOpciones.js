@@ -15,7 +15,7 @@ export default class MenuOpciones extends Component {
     }
 
     renderMunuItem({ onPress, label, icon, color }) {
-        return <SView width={(label.length * 8) + 45} card padding={8} onPress={onPress} center row>
+        return <SView width={(label.length * 8) + 45} card padding={8} onPress={onPress} height={60} center row>
 
             <SView width={18} height={18} center>
                 <SIcon name={icon} width={18} height={18} fill={color ?? STheme.color.text} />
@@ -35,34 +35,36 @@ export default class MenuOpciones extends Component {
         }}>
             <>
                 {this.renderMunuItem({ label: "", icon: "Menu", onPress: () => SNavigation.navigate("/menu") })}
-                <SView width={8} />
+                <SView width={8} height={60}/>
                 {this.renderMunuItem({ label: "", icon: "widget", onPress: () => SNavigation.navigate("/widgets") })}
-                <SView width={8} />
+                <SView width={8} height={60} />
                 {/* {this.renderMunuItem({ label: "Init", icon: "Menu", onPress: () => SNavigation.navigate("/empresa/init") })}
                 <SView width={8} /> */}
                 {this.renderMunuItem({ label: "", icon: "Notify", onPress: () => SNavigation.navigate("/notification") })}
-                <SView width={8} />
+                <SView width={8} height={60} />
 
-                <Chat label={"Chat"}  >
+                {/* <Chat label={"Chat"}  >
                     {this.renderMunuItem({ label: "", icon: "Comment2", })}
-                </Chat>
-                <SView width={8} />
+                </Chat> */}
+                {/* <SView width={8} height={60} /> */}
 
-                {this.renderMunuItem({ label: "", icon: "configurar", onPress: () => SNavigation.navigate("/ajustes") })}
-                <SView width={8} />
+                {this.renderMunuItem({ label: "", icon: "configurar", onPress: () => SNavigation.navigate("/empresa/config") })}
+                <SView width={8}  height={60}/>
                 {/* <InvitarUsuario /> */}
                 {this.renderMunuItem({ label: "", icon: "share", onPress: () => SNavigation.navigate("/empresa/invite") })}
                 {/* {this.renderMunuItem({ label: "Productos", icon: "productos", onPress: () => SNavigation.navigate("/productos/tipo_producto/options") })} */}
                 {/* <SView width={8} /> */}
                 {/* <InvitarUsuario /> */}
-                <SView width={8} />
-                {this.renderMunuItem({ label: "Productos", icon: "productos", onPress: () => SNavigation.navigate("/productos/tipo_producto/options") })}
-                <SView width={8} />
+                {/* <SView width={8} height={60}/>
+                {this.renderMunuItem({ label: "Restaurante", icon: "productos", onPress: () => SNavigation.navigate("/restaurante") })}
+                <SView width={8} height={60}/>
+                {this.renderMunuItem({ label: "Productos", icon: "productos", onPress: () => SNavigation.navigate("/productos/tipo_producto/options") })} */}
+                <SView width={8} height={60}/>
                 <InvitarUsuario />
                 {/* {this.renderMunuItem({ label: "Invitar", icon: "Usuarios", color: STheme.color.danger, onPress: () => SNavigation.navigate("/root") })} */}
-                <SView width={8} />
+                <SView width={8} height={60} />
                 {this.renderMunuItem({ label: "Salir", icon: "out", onPress: () => SNavigation.navigate("/root") })}
-                <SView width={8} />
+                <SView width={8} height={60}/>
             </>
         </ScrollView>
     }

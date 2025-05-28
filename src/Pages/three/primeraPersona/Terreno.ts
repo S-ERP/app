@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { loadAsset, TextureLoader } from '../../../Components/SThree';
-import { AmmoType } from '../../../Components/SThree/SAmmoView';
+import { AmmoType } from '../../../Components/SThree/SAmmoView/index.native';
 
 export default class Terreno extends THREE.Group {
     size = 500;

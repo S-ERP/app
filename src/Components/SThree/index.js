@@ -18,6 +18,7 @@ export const RendererCofigurate = (renderer, width, height, gl) => {
     renderer.domElement.style.height = '100%';
     // renderer.domElement.style.backgroundColor = '#f0f';
 
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.antialias = false;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = 1;

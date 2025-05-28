@@ -1,0 +1,1 @@
+[{"path":"/test1/carlos","name":"carlos","lastModified":1725047776042,"type":"directory"},{"path":"/test1/.DS_Store","size":14340,"name":".DS_Store","lastModified":1725041390000},{"path":"/test1/test.txt","size":33,"name":"test.txt","lastModified":1724984542000,"type":"text/plain"}]

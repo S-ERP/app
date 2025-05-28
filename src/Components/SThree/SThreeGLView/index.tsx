@@ -12,6 +12,8 @@ type GL = {
 } & ExpoWebGLRenderingContext
 
 type SThreeGLViewProps = {
+    screenWidth?: number,
+    screenHeight?: number,
     handleTouch?: (evt: { locationX: number, locationY: number, mouseX: number, mouseY: number, screenWidth: number, screenHeight: number }) => void
     update: (evt: { delta: number }) => void,
     onCreate: (evt: { gl: GL, renderer: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.PerspectiveCamera }) => void,
@@ -28,7 +30,6 @@ const SThreeGLView = (props: SThreeGLViewProps) => {
 
 
     const _handleTouch = (event: any) => {
-        console.log(event);
         const locationX = event.nativeEvent.x
         const locationY = event.nativeEvent.y
         // const { locationX, locationY } = Platform.select({
@@ -37,8 +38,8 @@ const SThreeGLView = (props: SThreeGLViewProps) => {
         //         locationY: event.nativeEvent.clientY,
         //     }
         // });
-        const width = screenWidth;
-        const height = screenHeight;
+        const width = props.screenWidth ?? screenWidth;
+        const height = props.screenHeight ?? screenHeight;
 
         const mouseX = (locationX / width) * 2 - 1;
         const mouseY = -(locationY / height) * 2 + 1;
@@ -48,8 +49,8 @@ const SThreeGLView = (props: SThreeGLViewProps) => {
             locationY: locationY,
             mouseX: mouseX,
             mouseY: mouseY,
-            screenWidth: screenWidth,
-            screenHeight: screenHeight
+            screenWidth: width,
+            screenHeight: height
 
         })
     }
@@ -65,9 +66,10 @@ const SThreeGLView = (props: SThreeGLViewProps) => {
             //     // @ts-ignore
             //     document.removeEventListener('pointerdown', _handleTouch);
             // }
+            console.log("SE TERMINO EL RENDER")
             cancelAnimationFrame(animationFrameId);
         };
-    });
+    },[]);
 
     const initGL = async (gl: GL) => {
         glRef.current = gl;
@@ -78,6 +80,7 @@ const SThreeGLView = (props: SThreeGLViewProps) => {
 
         const width = gl.drawingBufferWidth;
         const height = gl.drawingBufferHeight;
+        console.log(width,height)
         const renderer = Renderer(gl);
         renderer.setSize(width, height);
         const scene = new THREE.Scene();

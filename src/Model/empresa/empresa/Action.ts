@@ -4,6 +4,7 @@ import { SAction } from "servisofts-model";
 import Model from "../..";
 import Config from "../../../Config";
 import DataBase from "../../../DataBase";
+import MDL from "../../../MDL";
 export default class Action extends SAction {
 
     getSelect() {
@@ -36,6 +37,7 @@ export default class Action extends SAction {
             STheme.repaint();
 
             try {
+                MDL.empresa.setEmpresa(data);
                 Model._events.CLEAR();
             } catch (error) {
                 console.error(error)

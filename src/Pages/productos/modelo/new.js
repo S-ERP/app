@@ -30,6 +30,7 @@ class index extends DPA.new {
 
     $inputs() {
         var inp = super.$inputs();
+        
         inp["key_marca"] = {
             ...inp["key_marca"],
             editable: false,
@@ -74,6 +75,7 @@ class index extends DPA.new {
                 })
             }
         }
+
         return inp;
     }
     $onSubmit(data) {

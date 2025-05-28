@@ -11,7 +11,7 @@ export default class root extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            path: SNavigation.getParam("path", "/"),
+            path: SNavigation.getParam("path", this.props.path ?? "/"),
         };
     }
 

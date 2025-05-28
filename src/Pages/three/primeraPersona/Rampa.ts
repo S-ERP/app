@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { AmmoType } from "../../../Components/SThree/SAmmoView";
+import { AmmoType } from "../../../Components/SThree/SAmmoView/index.native";
 
 export default class Rampa extends THREE.Group {
     url = "http://192.168.2.1:30017/models/laberinto.glb";

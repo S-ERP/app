@@ -23,6 +23,10 @@ class index extends Component {
             Model.cuota.Action.getAllByK({ key_proveedor: this.key_proveedor }).then(e => {
                 this.setState({ data: e.data })
             })
+        } else {
+            Model.cuota.Action.getAllByK({ key_cliente: "null" }).then(e => {
+                this.setState({ data: e.data })
+            })
         }
 
     }

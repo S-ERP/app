@@ -27,15 +27,15 @@ export default class Stats extends Component {
         return (
             <View style={{
                 position: "absolute",
-                top: 0,
-                right: 0,
+                bottom: 0,
+                left: 0,
                 width: 60,
-                height: 30,
-                backgroundColor: "#0000ff",
+                height: 20,
+                // backgroundColor: "#0000ff",
                 justifyContent: "center",
                 alignItems: "center"
             }}>
-                <SText fontSize={12}>{`${this.state.fps} FPS`}</SText>
+                <SText fontSize={10}>{`${this.state.fps} fps`}</SText>
             </View>
         );
     }

@@ -1,7 +1,9 @@
-import Ammo from 'ammojs3';
+import _AmmoType from 'ammojs-typed';
 import React, { Component } from 'react';
 
-export type AmmoType = typeof Ammo
+
+export type AmmoType = typeof _AmmoType;
+
 
 type SAmmoViewProps = {
     children?: any,
@@ -23,9 +25,14 @@ export default class SAmmoView extends Component<SAmmoViewProps> {
     }
 
     async initammo() {
+        const { default: Ammo }: { default: any } = await import('ammojs3');
         const ammo: AmmoType = await Ammo();
-        if (this.props.onCreate) this.props.onCreate({ Ammo: ammo })
+        if (this.props.onCreate) this.props.onCreate({ Ammo: ammo });
         this.setState({ ready: true });
+
+        // const ammo: AmmoType = await Ammo();
+        // if (this.props.onCreate) this.props.onCreate({ Ammo: ammo })
+        // this.setState({ ready: true });
     }
     render() {
         if (!this.state.ready) return null;

@@ -16,6 +16,8 @@ import paso2 from "./paso2"
 import paso3 from "./paso3"
 import invite from "./invite";
 import colores from "./colores";
+import portada from "./portada";
+import config from "./config";
 const model = Model.empresa;
 
 export const Parent = {
@@ -38,7 +40,9 @@ export default SPage.combinePages(Parent.name, {
     "delete": _delete,
     ...moneda,
     ...punto_venta,
-    "paso1":paso1,
-    "paso2":paso2,
-    "paso3":paso3,
+    "paso1": paso1,
+    "paso2": paso2,
+    "paso3": paso3,
+    config,
+    portada
 })

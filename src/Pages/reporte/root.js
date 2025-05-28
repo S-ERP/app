@@ -38,11 +38,14 @@ class index extends Component {
                     <MenuButtom label={"Productos"} icon={<SIcon name={"Excel"} />} onPress={() => {
                         SNavigation.navigate("/productos/producto/table")
                     }} />
-                    <MenuButtom label={"Compras"} icon={<SIcon name={"Excel"} />} onPress={() => {
+                    <MenuButtom label={"Compras con cuotas"} icon={<SIcon name={"Excel"} />} onPress={() => {
                         SNavigation.navigate("/reporte/reporte_compras_ventas_cuotas", { tipo: "compra" })
                     }} />
-                    <MenuButtom label={"Ventas"} icon={<SIcon name={"Excel"} />} onPress={() => {
+                    <MenuButtom label={"Ventas con cuotas"} icon={<SIcon name={"Excel"} />} onPress={() => {
                         SNavigation.navigate("/reporte/reporte_compras_ventas_cuotas", { tipo: "venta" })
+                    }} />
+                    <MenuButtom label={"Ventas Gerardo"} icon={<SIcon name={"Excel"} />} onPress={() => {
+                        SNavigation.navigate("/reporte/reporte_ventas", { tipo: "venta" })
                     }} />
                     <MenuButtom label={"Vendedores"} icon={<SIcon name={"Excel"} />} onPress={() => {
                         SPopup.dateBetween("Entre que fechas quiere ver?", (fecha) => {

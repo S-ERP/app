@@ -12,13 +12,14 @@ export default class PDF extends Component {
         super(props);
         this.state = {
         };
+        this.key = SNavigation.getParam("key")
     }
     componentDidMount() {
         SSocket.sendPromise({
             service: "facturacion",
             component: "factura",
             type: "getByKey",
-            key: SNavigation.getParam("key")
+            key: this.key
         }).then(e => {
             this.setState({ data: e.data })
             PDF.handlePress(e.data);

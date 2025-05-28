@@ -4,7 +4,9 @@ import { GLView } from 'expo-gl';
 import * as THREE from 'three';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { Renderer, CustomOrbitControls } from '../../Components/SThree';
-import { SPage, SText, SView } from 'servisofts-component';
+import { SPage, SStorage, SText, SView } from 'servisofts-component';
+import { JsonLoader } from '../../Components/SThree/STNode';
+import STNMaterialOutput from '../../Components/SThree/STNode/type/STNMaterialOutput';
 function degreesToRadians(degrees) {
     return degrees * (Math.PI / 180);
 }
@@ -34,6 +36,17 @@ export default function App() {
         camera.position.set(0, 3.7, 10)
         camera.rotation.set(degreesToRadians(-17), degreesToRadians(-0.7), 0)
 
+        SStorage.getItem("nodo_in_edit", (resp) => {
+            if (resp) {
+                const nodesJSON = JSON.parse(resp);
+                const nodes = new JsonLoader().load(nodesJSON);
+                const materialOut: STNMaterialOutput = nodes.find(n => n.type == "STNMaterialOutput");
+                cube.material = materialOut.output.eval();
+                
+
+                // this.state.nodes = nodes;
+            }
+        });
         // Para las rayitas
         scene.add(new THREE.AxesHelper(5))
 
@@ -46,9 +59,9 @@ export default function App() {
         const animate = () => {
             requestAnimationFrame(animate);
             controls.update(); // Llamar al método update para actualizar la cámara
-            cube.rotation.x += 0.01
+            // cube.rotation.x += 0.01
             cube.rotation.y += 0.01
-            cube.rotation.z += 0.01
+            // cube.rotation.z += 0.01
             renderer.render(scene, camera);
             gl.endFrameEXP();
         };

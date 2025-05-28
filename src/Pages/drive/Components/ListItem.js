@@ -5,7 +5,7 @@ import MenuItem from './MenuItem';
 import ItemIcon from './ItemIcon';
 import { DBUploadTask } from '../../../Components/SUpload';
 
-const h = 50
+const h = 44
 
 export default class ListItem extends Component {
     constructor(props) {
@@ -23,7 +23,7 @@ export default class ListItem extends Component {
         let name = encodeURI(this.props?.obj?.name);
         // let pathfinal = !this.props.path ? name : this.props.path + "/" + name
         let pathfinal = this.props.path + "/" + name;
-        console.log("entro aca", pathfinal, DBUploadTask)
+        // console.log("entro aca", pathfinal, DBUploadTask)
 
         const task = Object.values(DBUploadTask).find(a => {
             const pa = a.props.path;
@@ -34,7 +34,7 @@ export default class ListItem extends Component {
 
             return true;
         })
-        console.log(task)
+        // console.log(task)
 
         return task;
     }
@@ -81,7 +81,8 @@ export default class ListItem extends Component {
     buildFecha() {
         const { obj, i, path } = this.props;
         const date = new Date(obj.lastModified)
-        return new SDate(date).toString("dd MON yyyy")
+        return new SDate(date).toString("dd MON yyyy  HH")
+        // return new SDate(date).timeSince(new SDate())
     }
     buildIcon() {
         return <ItemIcon obj={this.props.obj} path={this.props.path} time={this.props.time} />
@@ -138,8 +139,9 @@ export default class ListItem extends Component {
             }}>
                 <SText col={"xs-12"} clean row fontSize={14} color={(this?.props?.obj?.name ?? "").startsWith(".") ? STheme.color.gray : STheme.color.text}>{this.buildName()}</SText>
                 {/* {!this.task ? null : <SLoad type={"bar"} />} */}
-                <SText clean fontSize={10} color={STheme.color.gray}>{"Modificado:"} {this.buildFecha()}</SText>
-                <SText clean fontSize={10} color={STheme.color.gray}>{this.humanReadableFileSize(this.props?.obj?.size) ?? "-"}</SText>
+                <SText clean fontSize={8} color={STheme.color.gray}>{"Modificado:"} {this.buildFecha()} {this.props?.obj?.lastModified/1000}</SText>
+                {/* <SText clean fontSize={10} color={STheme.color.gray}></SText> */}
+                <SText clean fontSize={8} color={STheme.color.gray}>{this.humanReadableFileSize(this.props?.obj?.size) ?? "-"}</SText>
             </SView>
             <SView width={40} height center padding={h / 4} onPress={e => {
                 MenuItem.open({ obj: this.props.obj, path: this.props.path, onEvent: this.props.onEvent })
@@ -161,6 +163,7 @@ export default class ListItem extends Component {
             row
             style={{
                 height: h,
+                backgroundColor: (this.props.index % 2)==0 ? "#00000011" : "#ffffff11",
                 borderBottomColor: STheme.color.card,
                 borderBottomWidth: 1,
             }}

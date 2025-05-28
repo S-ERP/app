@@ -57,7 +57,10 @@ export default class ChangeName extends Component {
         }}>
             <SText>Cambiar el nombre</SText>
             <SHr h={16} />
-            <SInput ref={ref => this.input = ref} defaultValue={this.props?.obj?.name} autoFocus />
+            <SInput ref={ref => this.input = ref} defaultValue={this.props?.obj?.name} autoFocus onChangeText={e => {
+                e = e.replace(/\//g, "");
+                return e;
+            }} />
             <SHr h={16} />
             <SView row col={"xs-12"}>
                 <SView flex />

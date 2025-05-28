@@ -32,7 +32,7 @@ export default class root extends Component {
         return <SView col={"xs-12"} card padding={8} onPress={() => {
             SNavigation.navigate("/scene", { pk: obj.key })
         }}>
-            <SText>{obj.descripcion}</SText>
+            <SText fontSize={16} bold>{obj.descripcion}</SText>
         </SView>
     }
     render() {
@@ -40,10 +40,12 @@ export default class root extends Component {
             <Container>
                 <SHr />
                 <SView col={"xs-12"}>
-                    <SText onPress={() => { SNavigation.navigate("/scene/new") }}>NEW</SText>
+                    <SText width={120} center card padding={8} onPress={() => { SNavigation.navigate("/scene/new") }}>CREAR SCENE</SText>
                 </SView>
                 <SHr />
                 <SList
+                    buscador
+                    order={[{ key: "descripcion", order: "asc" }]}
                     data={this.state.data}
                     render={this.renderItem}
                 />

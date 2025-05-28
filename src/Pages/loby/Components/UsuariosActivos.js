@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 import { SDate, SHr, SImage, SList, SMath, SNavigation, SText, STheme, SUuid, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
@@ -7,7 +7,7 @@ import Model from '../../../Model';
 export default class UsuariosActivos extends Component {
     constructor(props) {
         super(props);
-        this.state = { 
+        this.state = {
         };
 
     }
@@ -55,12 +55,13 @@ export default class UsuariosActivos extends Component {
         var diferenciaMiliSegundos = now - lastConect
         var diferenciasegundos = Math.floor(diferenciaMiliSegundos / 1000)
         var diferenciaminutos = Math.floor(diferenciaMiliSegundos / (1000 * 60))
+        let dif = new SDate(ultima_actividad).timeSince(new SDate())
 
         // console.log("user", alias)
         // console.log("ultima_actividad", ultima_actividad)
         // console.log("diferenciasegundos", diferenciasegundos)
         // console.log("diferenciaminutos", diferenciaminutos)
-       
+
         return <SView width={75} height={80} center onPress={() => {
             SNavigation.navigate("/usuario/profile", { pk: key_usuario })
         }}>
@@ -87,8 +88,8 @@ export default class UsuariosActivos extends Component {
                         position: "absolute",
                         bottom: 0,
                         right: 0,
-                       
-                    }} center><SText  fontSize={7}>{diferenciaminutos} min</SText></SView> : (diferenciasegundos < 60) ? <SView style={{
+
+                    }} center><SText fontSize={7}>{diferenciaminutos} min</SText></SView> : (diferenciasegundos < 60) ? <SView style={{
                         width: 14,
                         height: 14,
                         borderRadius: 100,
@@ -96,7 +97,16 @@ export default class UsuariosActivos extends Component {
                         position: "absolute",
                         bottom: 0,
                         right: 0
-                    }} /> : null}
+                    }} /> : (!ultima_actividad ? null : <SView style={{
+                        width: 35,
+                        height: 14,
+                        borderRadius: 100,
+                        backgroundColor: STheme.color.gray,
+                        position: "absolute",
+                        bottom: 0,
+                        right: 0,
+
+                    }} center><SText fontSize={7}>{dif}</SText></SView>)}
             </SView>
             <SText fontSize={10} col={"xs-12"} bold center row height={13} style={{
                 overflow: 'hidden',
@@ -109,7 +119,7 @@ export default class UsuariosActivos extends Component {
         // console.log(this.state.data)
         var dataUser = this.state.data
         //sort my list of objects by date in descending order
-        
+
 
         // dataUser.sort((a, b) => {
         //     const dateA = new Date(a.ultima_actividad);
@@ -123,12 +133,24 @@ export default class UsuariosActivos extends Component {
 
         return <SView col={"xs-12"} height={100}  >
             <SText bold fontSize={12}> Usuarios</SText>
-            <SList
+            <FlatList
+                horizontal
+                data={Object.values(this.state.data ?? {}).sort((a, b) => {
+                    if (a.ultima_actividad == null) return 1;
+                    if (b.ultima_actividad == null) return -1;
+                    const dateA = new Date(a.ultima_actividad);
+                    const dateB = new Date(b.ultima_actividad);
+                    return dateB - dateA;
+                })}
+                renderItem={({ item }) => this.usuarioItem(item)}
+
+            />
+            {/* <SList
                 horizontal
                 data={this.state.data}
-                order={[{ key: "ultima_actividad", type: "date", order: "asc" }]}
+                order={[{ key: "ultima_actividad", type: "date", order: "desc" }]}
                 render={(a) => this.usuarioItem(a)}
-            />
+            /> */}
         </SView>
     }
 }

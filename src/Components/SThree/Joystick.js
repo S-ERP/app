@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
-import Animated, { runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import Animated, { ReduceMotion, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { withSpring } from 'react-native-reanimated';
 import { SThread } from 'servisofts-component';
@@ -10,13 +10,22 @@ const halfSize = size / 2;
 const bubbleSize = size / 4;
 const bubbleRadius = bubbleSize / 2;
 
-const Joystick = ({ onMove, onJump }) => {
+const animProps = {
+    duration: 20,
+    dampingRatio: 0.5,
+    stiffness: 500,
+    overshootClamping: false,
+    restDisplacementThreshold: 0.01,
+    restSpeedThreshold: 2,
+    reduceMotion: ReduceMotion.System,
+}
+const Joystick = ({ onMove, onJump, onKeyDown }) => {
     const panHandlerRef = useRef();
     const [state, setState] = useState({ x: 0, y: 0, run: false, lastSentTime: 0 });
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
     let baseMoveSpeed = size / 4;
-    let moveSpeed = baseMoveSpeed;
+    let moveSpeed = baseMoveSpeed * 0.80;
     let speedMultiplier = 1.5;
 
     useEffect(() => {
@@ -50,7 +59,7 @@ const Joystick = ({ onMove, onJump }) => {
 
     const hilo = () => {
         if (!state.run) return;
-        new SThread(1000 / 60, "hilo_joystick", true).start(() => {
+        new SThread(1000 / 50, "hilo_joystick", true).start(() => {
             _onMove({ x: state.x, y: state.y })
             hilo();
         })
@@ -107,26 +116,26 @@ const Joystick = ({ onMove, onJump }) => {
         switch (event.code) {
             case 'ArrowUp':
             case 'KeyW':
-                translateY.value = withSpring(-moveSpeed + Math.random(), { damping: 100 }, () => {
-                    withSpring(0)
+                translateY.value = withSpring(-moveSpeed + Math.random(), animProps, () => {
+                    withSpring(0, animProps)
                 })
                 // this.velocity.z = moveSpeed;
                 break;
             case 'ArrowDown':
             case 'KeyS':
-                translateY.value = withSpring(moveSpeed + Math.random(), { damping: 100 })
+                translateY.value = withSpring(moveSpeed + Math.random(), animProps)
                 // this.velocity.z = -moveSpeed;
                 break;
             case 'ArrowLeft':
             case 'KeyA':
-                translateX.value = withSpring(-moveSpeed + Math.random(), { damping: 100 }, () => {
-                    withSpring(0)
+                translateX.value = withSpring(-moveSpeed + Math.random(), animProps, () => {
+                    withSpring(0, animProps)
                 })
                 // this.velocity.x = -moveSpeed;
                 break;
             case 'ArrowRight':
             case 'KeyD':
-                translateX.value = withSpring(moveSpeed + Math.random(), { damping: 100 })
+                translateX.value = withSpring(moveSpeed + Math.random(), animProps)
                 // this.velocity.x = moveSpeed;
                 break;
             case 'ShiftLeft':
@@ -138,6 +147,7 @@ const Joystick = ({ onMove, onJump }) => {
                 if (onJump) onJump();
                 break;
         }
+        if (onKeyDown) onKeyDown(event);
     }
 
     const handleKeyUp = (event) => {
@@ -146,13 +156,13 @@ const Joystick = ({ onMove, onJump }) => {
             case 'KeyW':
             case 'ArrowDown':
             case 'KeyS':
-                translateY.value = withSpring(0, { damping: 100 })
+                translateY.value = withSpring(0, animProps)
                 break;
             case 'ArrowLeft':
             case 'KeyA':
             case 'ArrowRight':
             case 'KeyD':
-                translateX.value = withSpring(0, { damping: 100 })
+                translateX.value = withSpring(0, animProps)
                 break;
             case 'ShiftLeft':
             case 'ShiftRight':

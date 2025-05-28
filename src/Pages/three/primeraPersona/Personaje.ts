@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { loadAsset, TextureLoader } from '../../../Components/SThree';
-import { AmmoType } from '../../../Components/SThree/SAmmoView';
+import { AmmoType } from '../../../Components/SThree/SAmmoView/index.native';
 import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';

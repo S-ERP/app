@@ -10,7 +10,7 @@ class index extends DPA.new {
     constructor(props) {
         super(props, {
             Parent: Parent,
-            excludes: ["key", "fecha_on", "key_usuario", "key_servicio", "estado"]
+            excludes: ["key", "fecha_on", "key_usuario", "key_servicio", "estado", "unidad_medida", "key_cliente", "codigo"]
         });
         this.onSelect = SNavigation.getParam("onSelect")
         this.key_compra_venta_detalle = SNavigation.getParam("key_compra_venta_detalle")
@@ -19,9 +19,14 @@ class index extends DPA.new {
         var inp = super.$inputs();
 
         inp["descripcion"].editable = true
+        inp["descripcion"].required = true
+        inp["descripcion"].label = "Descripción"
+        inp["observacion"].label = "Observación"
         inp["precio_compra"].type = "money"
         inp["precio_compra"].editable = true
+        inp["precio_venta"].required = false
         inp["precio_venta"].type = "money"
+        inp["precio_venta"].required = true
         // inp["precio_venta_credito"].type = "money"
         inp["key_modelo"] = {
             ...inp["key_modelo"],
@@ -44,8 +49,10 @@ class index extends DPA.new {
                 })
             }
         }
+        inp["key_modelo"].required = true
+        inp["cantidad"].defaultValue = "1"
         inp["key_almacen"] = {
-            label: "Almacen",
+            label: "Almacén",
             editable: false,
             value: this.state?.almacen?.key,
             render: (ref) => {
@@ -71,9 +78,10 @@ class index extends DPA.new {
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "new" })
     }
     $submitName() {
-        return "";
+        return "Aceptar";
     }
     $onSubmit(data) {
+        if(!data.key_empresa) data.key_empresa = Model.empresa.Action.getKey()
         Parent.model.Action.registro({
             data: data,
             key_almacen: this._params.key_almacen ?? this.state?.almacen?.key,
@@ -81,46 +89,38 @@ class index extends DPA.new {
             key_compra_venta_detalle: this.key_compra_venta_detalle
         }).then((resp) => {
             this.$submitFile(resp.data.key);
-
-            if (this.presolve) {
-                this.presolve({
-                    key: resp.data.key,
-                    callback: () => {
-                        if (this.onSelect) {
-                            if (this.key_last == resp.data.key) {
-                                return;
-                            }
-                            this.key_last = resp.data.key
-                            this.onSelect(resp.data);
-                            return;
-                        }
-                        SNavigation.navigate("/productos/producto/profile", { pk: this.pk })
-
-                    }
-                })
+            if (this.onSelect) {
+                if (this.key_last == resp.data.key) {
+                    return;
+                }
+                this.key_last = resp.data.key
+                this.onSelect(resp.data);
                 return;
-                // this.presolve(resp.data.key);
-                // SNavigation.replace("/cliente/profile", { pk: resp.data.key })
             }
-            this.reject("Error desconocido al registrar")
-            // SNavigation.goBack();
+            // SNavigation.navigate("/productos/producto/profile", { pk: this.pk })
+
+            // this.presolve(resp.data.key);
+            // SNavigation.replace("/cliente/profile", { pk: resp.data.key })
+            // this.reject("Error desconocido al registrar")
+            SNavigation.goBack();
         }).catch(e => {
-            this.reject("Error desconocido al registrar")
+            console.error(e);
+            // this.reject("Error desconocido al registrar")
 
         })
     }
-    $footer() {
-        return <DatosDocumentosEditar key_tipo_producto={this.state?.modelo?.key_tipo_producto} onSubmit={() => {
-            return new Promise((resolve, reject) => {
-                this.presolve = resolve;
-                this.reject = reject;
-                if (!this.form.submit()) {
-                    reject("Error en los datos")
-                }
-                // resolve("KEY_USUARIO");
-            })
-        }} />
-    }
+    // $footer() {
+    //     return <DatosDocumentosEditar key_tipo_producto={this.state?.modelo?.key_tipo_producto} onSubmit={() => {
+    //         return new Promise((resolve, reject) => {
+    //             this.presolve = resolve;
+    //             this.reject = reject;
+    //             if (!this.form.submit()) {
+    //                 reject("Error en los datos")
+    //             }
+    //             // resolve("KEY_USUARIO");
+    //         })
+    //     }} />
+    // }
 }
 
 export default connect(index);

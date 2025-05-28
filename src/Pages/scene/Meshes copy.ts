@@ -3,12 +3,14 @@ import Model from '../../Model';
 import SSocket from 'servisofts-socket';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { SNotification } from 'servisofts-component';
-import { AmmoType } from '../../Components/SThree/SAmmoView';
+import { AmmoType } from '../../Components/SThree/SAmmoView/index.native';
 import { DBModelMesh, MeshObject } from './MeshInfo';
+import GLTFLoaderCache from './GTLFLoaderCache';
 
 
 type PropsType = {
-    scene: THREE.Scene, key_scene: any, Ammo: AmmoType, physicsWorld: any, toRaycaster?: any[]
+    scene: THREE.Scene, key_scene: any, Ammo: AmmoType, physicsWorld: any, toRaycaster?: any[],
+    glftLoaderCache: GLTFLoaderCache
 }
 function lerp(start: any, end: any, t: any) {
     return start + (end - start) * t;
@@ -62,7 +64,8 @@ const slerp = (Ammo: any, q1: any, q2: any, t: any) => {
 }
 export default class Meshes {
     scene: THREE.Scene;
-    gltfLoader: GLTFLoader;
+    // gltfLoader: GLTFLoader;
+    gltfLoaderCache: GLTFLoaderCache;
     mixers: Array<THREE.AnimationMixer>;
     meshes: { [key: string]: MeshObject };
     meshesBody?: any[];
@@ -81,7 +84,8 @@ export default class Meshes {
         this.physicsWorld = props.physicsWorld;
         this.Ammo = props.Ammo;
         this.scene = props.scene;
-        this.gltfLoader = new GLTFLoader();
+        // this.gltfLoader = new GLTFLoader();
+        this.gltfLoaderCache = props.glftLoaderCache;
         this.meshesBody = [];
         this.mixers = [];
         this.meshes = {};
@@ -104,7 +108,9 @@ export default class Meshes {
     }
 
     handleOnLoad = async (mesh: DBModelMesh, result: GLTF) => {
-        const object = result.scene;
+        // let object = result.scene.clone(true)
+        let object = result.scene
+        // result.animations
 
         object.name = mesh.descripcion;
         // object.rotation.set(mesh?.data?.rotation?.x ?? 0, mesh?.data?.rotation?.y ?? 0, mesh?.data?.rotation?.z ?? 0);
@@ -214,6 +220,7 @@ export default class Meshes {
                 let dur = 0;
                 result.animations.forEach((clip) => {
 
+                    console.log("Esta animacion", clip)
                     // const meshName = clip.name.split('.')[0];
                     // const type = clip.name.split('.')[1];
                     // const mesh = object.getObjectByName(meshName);
@@ -231,7 +238,7 @@ export default class Meshes {
                     // action.clampWhenFinished = true;
                     // action.startAt(dur);
                     action.play();
-                    dur += clip.duration
+                    // dur += clip.duration
                     // }
                     // let action = mixer.clipAction(clip).play();
                     // // console.log(clip, action)
@@ -253,7 +260,7 @@ export default class Meshes {
             key: mesh.key,
         })
         try {
-            this.gltfLoader.load(mesh.url,
+            this.gltfLoaderCache.load(mesh.url,
                 this.handleOnLoad.bind(this, mesh),
                 (progress) => { },
                 error => {
@@ -334,6 +341,8 @@ export default class Meshes {
 
     }
     async update(delta: number) {
+        // }
+
         if (this.meshesBody) {
             this.meshesBody.map((child) => {
                 const objThree: THREE.Group = child;
@@ -392,13 +401,12 @@ export default class Meshes {
             });
         }
 
-
-        // }
         if (this.mixers) {
             this.mixers.forEach((mixer) => {
                 mixer.update(delta);
             });
         }
+
 
     }
 

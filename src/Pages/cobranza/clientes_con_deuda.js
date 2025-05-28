@@ -41,8 +41,7 @@ class index extends Component {
                     padding: 8
                 }} onPress={() => {
                     SNavigation.navigate("/cobranza/carrito_de_cuotas", {
-                        nit: obj.usuario.CI,
-                        key_cliente: obj.key_usuario,
+                        key_cliente: obj?.key_usuario,
                         onSelect: (obj) => {
                             if (this.onSelect) {
                                 SNavigation.goBack();

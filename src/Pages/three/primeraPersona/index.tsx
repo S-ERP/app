@@ -6,7 +6,7 @@ import * as THREE from "three"
 import SThreeGLView from '../../../Components/SThree/SThreeGLView';
 import FirstPersonControls from '../../../Components/SThree/FirstPersonControls';
 import Joystick from '../../../Components/SThree/Joystick';
-import SAmmoView, { AmmoType } from '../../../Components/SThree/SAmmoView';
+import SAmmoView, { AmmoType } from '../../../Components/SThree/SAmmoView/index.native';
 
 import Terreno from './Terreno';
 import Personaje from './Personaje';

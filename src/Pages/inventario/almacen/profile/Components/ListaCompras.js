@@ -65,7 +65,6 @@ class index extends DPA.list {
                 key_compra_venta: key_compra_venta
             });
         }}>
-
             <SView row center col={"xs-12"}>
                 <SText fontSize={18} bold flex>{descripcion}</SText>
                 <SView width={4} />
@@ -74,7 +73,6 @@ class index extends DPA.list {
                 <SView width={10} height={10} style={{ borderRadius: 100 }} backgroundColor={STheme.color.danger} />
             </SView>
             <SHr />
-
             <SView>
                 <SText color={STheme.color.lightGray}>Proveedor: {proveedor?.razon_social}</SText>
                 <SText color={STheme.color.lightGray}>Nit: {proveedor?.nit}</SText>

@@ -4,7 +4,8 @@ import { Parent } from ".."
 import { SButtom, SHr, SIcon, SList, SLoad, SNavigation, SText, SView } from 'servisofts-component';
 import Model from '../../../Model';
 import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
-import Colores from '../colores';
+// import Colores from '../colores';
+import Colores from '../Components/colores';
 class index extends DPA.profile {
     constructor(props) {
         super(props, { Parent: Parent, excludes: ["key", "key_usuario", "key_servicio", "estado"] });
@@ -37,11 +38,10 @@ class index extends DPA.profile {
                 <MenuButtom url='/empresa/paso3' params={{
                     key: this.pk,
                 }} label='Foto background' icon={<SIcon name={"iback"} />} />
-                <MenuButtom url='/empresa/colores' params={{
-                    key: this.pk,
-                }} label='Tema' icon={<SIcon name={"itema"} />}   />
+                <MenuButtom url='/empresa/colores' params={{ key: this.pk, }} label='Tema' icon={<SIcon name={"itema"} />} />
+                <MenuButtom url='/empresa/portada' params={{ key: this.pk, }} label='ifoto' icon={<SIcon name={"itema"} />} />
             </MenuPages>
-            {/* <Colores key_empresa={this.pk} /> */}
+            <Colores key_empresa={this.pk} />
         </SView>
     }
 

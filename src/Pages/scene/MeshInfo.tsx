@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { SGradient, SHr, SIcon, SInput, SList, SLoad, SPage, SRangeSlider, SText, SThread, SView } from 'servisofts-component';
+import { SGradient, SHr, SIcon, SImage, SInput, SList, SLoad, SNotification, SPage, SRangeSlider, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
 import * as THREE from "three"
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Slider } from "../../Components/RangeSlider"
 import SSocket from 'servisofts-socket';
+import { MeshItem } from './Meshes';
+import Model from '../../Model';
+import { ScrollView } from 'react-native-gesture-handler';
 
 interface xyz {
     x: number;
@@ -21,6 +24,8 @@ interface Data {
 export interface DBModelMesh {
     descripcion: string;
     key_usuario: string;
+    key_scene?: string;
+    key_mesh?: string;
     data: Data;
     fecha_on: string;
     deeplink: string | null;
@@ -31,7 +36,7 @@ export interface DBModelMesh {
 
 export type MeshObject = {
     key: string,
-    mesh: THREE.Group,
+    mesh: MeshItem,
     data: DBModelMesh,
 
 }
@@ -79,175 +84,315 @@ const slerp = (Ammo: any, q1: any, q2: any, t: any) => {
     );
     return result;
 }
-export default class MeshInfo extends Component<any> {
-    state = {
-        ready: false,
-        key: null
-    }
 
-    mesh?: MeshObject;
+const replaceFileNameWithFolder = (url: any, newFolderName: any) => {
+    // Obtener la parte de la URL sin el nombre del archivo
+    let pathParts = url.split('/');
+    pathParts.pop(); // Eliminar el nombre del archivo
+    pathParts.push(newFolderName); // Agregar el nuevo nombre de la carpeta
+
+    // Unir las partes de nuevo en una URL
+    return pathParts.join('/');
+}
+export default class MeshInfo extends Component<any> {
+    state: any = {
+        ready: false,
+        key: null,
+    }
+    loading = false;
+    _props?: MeshObject;
     Ammo?: any;
     meshWithBodys?: any[];
     position = { x: 0, y: 0, z: 0 }
     rotation = { x: 0, y: 0, z: 0 }
-    setMesh(mesh: MeshObject, Ammo: any) {
+    scale = { x: 0, y: 0, z: 0 }
+    setMesh(props: MeshObject, Ammo: any) {
         this.Ammo = Ammo;
-        this.mesh = mesh;
+        this._props = props;
+        const mesh = this._props.mesh.group;
+        const key = this._props.mesh.props.data.key;
+        if (!mesh) return;
         this.meshWithBodys = [];
 
-        this.mesh.mesh.traverse(child => {
-            // @ts-ignore
-            if (child.userData.body) {
-                this.position.x = child.position.x;
-                this.position.y = child.position.y;
-                this.position.z = child.position.z;
-                this.rotation.x = child.rotation.x;
-                this.rotation.y = child.rotation.y;
-                this.rotation.z = child.rotation.z;
-                this.meshWithBodys?.push(child);
-            }
-        })
-        if (this.meshWithBodys.length <= 0) {
-            this.position.x = mesh.mesh.position.x;
-            this.position.y = mesh.mesh.position.y;
-            this.position.z = mesh.mesh.position.z;
-            this.rotation.x = mesh.mesh.rotation.x;
-            this.rotation.y = mesh.mesh.rotation.y;
-            this.rotation.z = mesh.mesh.rotation.z;
-        }
+        this.position.x = mesh.position.x;
+        this.position.y = mesh.position.y;
+        this.position.z = mesh.position.z;
+
+        this.rotation.x = mesh.rotation.x;
+        this.rotation.y = mesh.rotation.y;
+        this.rotation.z = mesh.rotation.z;
+
+        this.scale.x = mesh.scale.x;
+        this.scale.y = mesh.scale.y;
+        this.scale.z = mesh.scale.z;
+        // }
+
+
+
         this.setState({ key: null })
         new SThread(300, "sad", true).start(() => {
-            this.setState({ key: mesh.key })
+            this.state.textures = null;
+            this.setState({ key: key, })
+            if (this._props) {
+                // "https://drive.servisofts.com/http/models/buildings/pared/pared.glb"
+                let url = this._props?.mesh?.props?.data?.url;
+                console.log(url)
+
+                if (!url) return;
+                // @ts-ignore
+                url = url.replace(SSocket.api.drive, "");
+                url = replaceFileNameWithFolder(url, "texture")
+                SSocket.sendPromise({
+                    "service": "drive",
+                    "component": "file",
+                    "type": "ls",
+                    "path": url,
+                }).then((e: any) => {
+                    this.setState({ texturePath: url, textures: e.data })
+                    console.log("textures", e)
+                }).catch(e => {
+                    console.error("textures", e)
+                })
+            }
         })
     }
 
-    moveObject({ x = 0, y = 0, z = 0 }) {
-        if (!this.mesh) return;
-        if (this.meshWithBodys && this.meshWithBodys.length > 0) {
-            //   this.mesh.mesh.userData.body
-            this.meshWithBodys.forEach(meshWithBody => {
 
-                const body = meshWithBody.userData.body;
-                // body.activate();
-
-
-                const transform = new this.Ammo.btTransform();
-                const position = transform.getOrigin();
-
-                body.getMotionState().getWorldTransform(transform);
-                const taget = new this.Ammo.btVector3(x, y, z);
-
-
-                const interpolatedX = lerp(position.x(), taget.x(), 0.4);
-                const interpolatedY = lerp(position.y(), taget.y(), 0.4);
-                const interpolatedZ = lerp(position.z(), taget.z(), 0.4);
-
-                const newPosition = new this.Ammo.btVector3(interpolatedX, interpolatedY, interpolatedZ);
-                transform.setOrigin(newPosition);
-
-                body.setWorldTransform(transform);
-                body.getMotionState().setWorldTransform(transform);
-                meshWithBody.userData["timeMoved"] = new Date().getTime();
-            })
-
-        } else {
-            this.mesh.mesh.position.set(x, y, z);
-        }
-
-    }
-    rotateObject({ x = 0, y = 0, z = 0 }) {
-        if (!this.mesh) return;
-        if (this.meshWithBodys && this.meshWithBodys.length > 0) {
-            const targetRotation = new this.Ammo.btQuaternion();
-            targetRotation.setEulerZYX(z, y, x);
-            this.meshWithBodys.forEach(meshWithBody => {
-                const body = meshWithBody.userData.body;
-                const transform = new this.Ammo.btTransform();
-                body.getMotionState().getWorldTransform(transform);
-
-                const rotation = new this.Ammo.btQuaternion();
-                const interpolatedRotation = slerp(this.Ammo, rotation, targetRotation, 0.1);
-
-
-
-                // rotation.setEulerZYX(z, y, x); // Note: Ammo.js uses ZYX order for Euler angles
-                transform.setRotation(targetRotation);
-                console.log(targetRotation.x(), targetRotation.y(), targetRotation.z());
-                body.setWorldTransform(transform);
-                body.getMotionState().setWorldTransform(transform);
-                meshWithBody.userData["timeMoved"] = new Date().getTime();
-            });
-        } else {
-            this.mesh.mesh.rotation.set(x, y, z);
-        }
-    }
     moveAxis(props: { axis: "x" | "y" | "z", value: number },) {
-        if (!this.mesh) return;
+        if (!this?._props?.mesh) return;
         this.position.x = props.axis == "x" ? props.value : this.position.x;
         this.position.y = props.axis == "y" ? props.value : this.position.y;
         this.position.z = props.axis == "z" ? props.value : this.position.z;
-        this.moveObject(this.position)
+        this._props.mesh.moveObject(this.position)
     }
     rotateAxis(props: { axis: "x" | "y" | "z", value: number },) {
-        if (!this.mesh) return;
+        if (!this?._props?.mesh) return;
         this.rotation.x = props.axis == "x" ? props.value : this.rotation.x;
         this.rotation.y = props.axis == "y" ? props.value : this.rotation.y;
         this.rotation.z = props.axis == "z" ? props.value : this.rotation.z;
         // this.rotateObject({ x: Math.PI / this.rotation.x, y: Math.PI /  this.rotation.y, z: Math.PI / this.rotation.z });
-        this.rotateObject(this.rotation)
+        this._props.mesh.rotateObject(this.rotation)
+    }
+    scaleAxis(props: { axis: "x" | "y" | "z", value: number },) {
+        if (!this?._props?.mesh) return;
+        this.scale.x = props.axis == "x" ? props.value : this.scale.x;
+        this.scale.y = props.axis == "y" ? props.value : this.scale.y;
+        this.scale.z = props.axis == "z" ? props.value : this.scale.z;
+        // this.rotateObject({ x: Math.PI / this.rotation.x, y: Math.PI /  this.rotation.y, z: Math.PI / this.rotation.z });
+        this._props.mesh.scaleObject(this.scale)
+    }
+    renderTextures() {
+        if (!this.state.textures) return null;
+        return (this.state.textures ?? []).filter((a: any) => !(a.name + "").startsWith("\.")).map((a: any) => {
+            const api: any = SSocket.api
+            return <SView width={30} height={30} onPress={() => {
+                this._props?.mesh.changeTexture(api.drive + "" + this.state.texturePath + "/" + a.name)
+            }}>
+                <SImage src={api.drive + "" + this.state.texturePath + "/" + a.name} />
+            </SView>
+        })
+    }
+    renderImputSlider(props: { onChange: (a: number) => void, defaultValue: number, label?: string }) {
+        return <SView col={"xs-12"} row center>
+            <SText width={20}>{props.label}</SText>
+            <SView width={50}>
+                <SInput height={20} defaultValue={props.defaultValue ?? "0"} onChangeText={e => {
+                    // if (!e) return;
+                    props.onChange(parseFloat((e ?? 0) + ""));
+                }} />
+            </SView>
+            <SView width={110} backgroundColor=''>
+                <Slider width={110} step={0.1} maxValue={props.defaultValue + 10} minValue={props.defaultValue - 10} initialValue={props.defaultValue ?? 0} onIndexChange={e => {
+                    props.onChange(e);
+                }} />
+            </SView>
+        </SView>
     }
     render() {
         if (!this.state.key) return null;
-        if (!this.mesh) return null;
+        if (!this?._props?.mesh) return null;
+        console.log(this._props)
+        const maxvar = 5;
         return <SView withoutFeedback style={{
             position: "absolute",
             width: 200,
-            height: 300,
+            height: 400,
             backgroundColor: "#00000088",
-        }} center>
-            <SText>{`${this.mesh.mesh.name}`}</SText>
-            <SText>{`${this.mesh.key}`}</SText>
-            <SView col={"xs-12"} center style={{
-            }}>
-                <SText>{"Position"}</SText>
-                <Slider width={180} step={0.1} maxValue={this.position?.x + 10} minValue={this.position?.x - 10} initialValue={this.position?.x ?? 0} onIndexChange={e => {
-                    this.moveAxis({ axis: "x", value: e })
-                }} />
+            alignItems: "center"
+        }} >
+            <ScrollView>
 
-                <Slider width={180} step={0.1} maxValue={10} minValue={0} initialValue={this.position?.y ?? 0} onIndexChange={e => {
-                    this.moveAxis({ axis: "y", value: e })
-                }} />
-
-                <Slider width={180} step={0.1} maxValue={this.position?.z + 10} minValue={this.position?.z - 10} initialValue={this.position?.z ?? 0} onIndexChange={e => {
-                    this.moveAxis({ axis: "z", value: e })
-                }} />
-                <SHr />
-                <SText>{"Rotation"}</SText>
-                <Slider width={180} step={0.0001} maxValue={Math.PI / 2} minValue={-(Math.PI / 2)} initialValue={this.rotation?.x ?? 0} onIndexChange={e => {
-                    this.rotateAxis({ axis: "x", value: e })
-                }} />
-
-                <Slider width={180} step={0.0001} maxValue={Math.PI / 2} minValue={-(Math.PI / 2)} initialValue={this.rotation?.y ?? 0} onIndexChange={e => {
-                    this.rotateAxis({ axis: "y", value: e })
-                }} />
-
-                <Slider width={180} step={0.0001} maxValue={Math.PI / 2} minValue={-(Math.PI / 2)} initialValue={this.rotation?.z ?? 0} onIndexChange={e => {
-                    this.rotateAxis({ axis: "z", value: e })
-                }} />
-                <SText onPress={() => {
+                <SText col={"xs-12"} style={{ textAlign: "right" }} onPress={() => {
                     this.setState({ key: "" })
-                }}>{`close`}</SText>
+                }}>{` X `}</SText>
+                <SText>{`${this?._props?.mesh?.group?.name}`}</SText>
+                {/* <SText>{`${this?._props?.mesh?.group?.userData?.key}`}</SText> */}
+                {/* <SText>{`${this.mesh?.key}`}</SText> */}
+
+                <SHr h={16} />
                 <SText onPress={() => {
+                    if (!this._props?.mesh?.props?.data) return;
                     SSocket.sendPromise({
                         component: "scene_mesh",
                         type: "editar",
+                        key_usuario: Model.usuario.Action.getKey(),
+                        key_scene: this?._props?.data.key_scene,
                         data: {
-                            key: this.mesh?.key,
+                            ...this._props?.mesh?.props?.data,
                             estado: 0,
                         }
+                    }).then(e => {
+                        this.setState({ key: null })
                     })
-                }}>{`Eliminar`}</SText>
-            </SView>
+                }} color={STheme.color.danger}>{`Eliminar`}</SText>
+                <SHr h={16} />
+                <SText onPress={() => {
+                    if (!this._props?.mesh?.props?.data) return;
+                    if (this.loading) return;
+                    this.loading = true;
+                    SSocket.sendPromise({
+                        component: "scene_mesh",
+                        type: "registro",
+                        key_usuario: Model.usuario.Action.getKey(),
+                        key_scene: this?._props?.data.key_scene,
+                        data: {
+                            ...this._props?.mesh?.props?.data,
+                            estado: 1,
+                            key: SUuid()
+                        }
+                    }).then(e => {
+                        this.loading = false;
+                        SNotification.send({
+                            body: "Clonado",
+                            title: "Objeto clonado con exito",
+                            color: STheme.color.success,
+                            time: 5000,
+                        })
+                        // this.setState({ key: null })
+                    }).catch(e => {
+                        this.loading = false;
+                    })
+                }} color={STheme.color.danger}>{`Clonar`}</SText>
+                <SHr />
+                <SText col={"xs-12"}>{"Position"}</SText>
+
+                {this.renderImputSlider({
+                    label: "x",
+                    defaultValue: this.position?.x,
+                    onChange: e => this.moveAxis({ axis: "x", value: e })
+                })}
+                {this.renderImputSlider({
+                    label: "y",
+                    defaultValue: this.position?.y,
+                    onChange: e => this.moveAxis({ axis: "y", value: e })
+                })}
+                {this.renderImputSlider({
+                    label: "z",
+                    defaultValue: this.position?.z,
+                    onChange: e => this.moveAxis({ axis: "z", value: e })
+                })}
+                {/* <Slider width={100} step={0.1} maxValue={this.position?.x + maxvar} minValue={this.position?.x - maxvar} initialValue={this.position?.x ?? 0} onIndexChange={e => {
+                this.moveAxis({ axis: "x", value: e })
+            }} />
+
+            <Slider width={180} step={0.1} maxValue={maxvar} minValue={0} initialValue={this.position?.y ?? 0} onIndexChange={e => {
+                this.moveAxis({ axis: "y", value: e })
+            }} />
+
+            <Slider width={180} step={0.1} maxValue={this.position?.z + maxvar} minValue={this.position?.z - maxvar} initialValue={this.position?.z ?? 0} onIndexChange={e => {
+                this.moveAxis({ axis: "z", value: e })
+            }} /> */}
+                <SHr />
+                <SText col={"xs-12"}>{"Rotation"}</SText>
+
+                {this.renderImputSlider({
+                    label: "x",
+                    defaultValue: this.rotation?.x,
+                    onChange: e => this.rotateAxis({ axis: "x", value: e })
+                })}
+                {this.renderImputSlider({
+                    label: "y",
+                    defaultValue: this.rotation?.y,
+                    onChange: e => this.rotateAxis({ axis: "y", value: e })
+                })}
+                {this.renderImputSlider({
+                    label: "z",
+                    defaultValue: this.rotation?.z,
+                    onChange: e => this.rotateAxis({ axis: "z", value: e })
+                })}
+                {/* <Slider width={180} step={0.0001} maxValue={Math.PI / 2} minValue={-(Math.PI / 2)} initialValue={this.rotation?.x ?? 0} onIndexChange={e => {
+                this.rotateAxis({ axis: "x", value: e })
+            }} />
+
+            <Slider width={180} step={0.0001} maxValue={Math.PI / 2} minValue={-(Math.PI / 2)} initialValue={this.rotation?.y ?? 0} onIndexChange={e => {
+                this.rotateAxis({ axis: "y", value: e })
+            }} />
+
+            <Slider width={180} step={0.0001} maxValue={Math.PI / 2} minValue={-(Math.PI / 2)} initialValue={this.rotation?.z ?? 0} onIndexChange={e => {
+                this.rotateAxis({ axis: "z", value: e })
+            }} /> */}
+                <SHr />
+                <SText col={"xs-12"}>{"Scale"}</SText>
+                {/* <Slider width={180} step={0.01} maxValue={10} minValue={0.1} initialValue={this.scale?.x ?? 0} onIndexChange={e => {
+                this.scaleAxis({ axis: "x", value: e })
+            }} />
+
+            <Slider width={180} step={0.01} maxValue={10} minValue={0.1} initialValue={this.scale?.y ?? 0} onIndexChange={e => {
+                this.scaleAxis({ axis: "y", value: e })
+            }} />
+
+            <Slider width={180} step={0.01} maxValue={10} minValue={0.1} initialValue={this.scale?.z ?? 0} onIndexChange={e => {
+                this.scaleAxis({ axis: "z", value: e })
+            }} /> */}
+                {this.renderImputSlider({
+                    label: "x",
+                    defaultValue: this.scale?.x,
+                    onChange: e => this.scaleAxis({ axis: "x", value: e })
+                })}
+                {this.renderImputSlider({
+                    label: "y",
+                    defaultValue: this.scale?.y,
+                    onChange: e => this.scaleAxis({ axis: "y", value: e })
+                })}
+                {this.renderImputSlider({
+                    label: "z",
+                    defaultValue: this.scale?.z,
+                    onChange: e => this.scaleAxis({ axis: "z", value: e })
+                })}
+
+                <SView row>
+                    {this.renderTextures()}
+                </SView>
+                <SInput label={"texture"} defaultValue={this._props?.mesh?.props?.data?.data?.texture} onChangeText={e => {
+                    new SThread(1000, "recargar", true).start(() => {
+                        this._props?.mesh.changeTexture(e)
+                    })
+                }} />
+                <SInput label={"text"} defaultValue={this._props?.mesh?.props?.data?.data?.text} onChangeText={e => {
+                    new SThread(1000, "recargar", true).start(() => {
+                        this._props?.mesh.changeText(e, true)
+                    })
+                }} />
+                <SInput label={"deeplink"} defaultValue={this._props?.mesh?.props?.data?.deeplink} onChangeText={e => {
+                    new SThread(1000, "recargar", true).start(() => {
+                        SSocket.sendPromise({
+                            component: "scene_mesh",
+                            type: "editar",
+                            key_usuario: Model.usuario.Action.getKey(),
+                            key_scene: this?._props?.data.key_scene,
+                            data: {
+                                ...this._props?.mesh?.props?.data,
+                                deeplink: e,
+                            }
+                        }).then(e => {
+                            // this.setState({ key: null })
+                        })
+                    })
+                }} />
+                <SView flex />
+
+            </ScrollView>
+
         </SView>
     }
 }

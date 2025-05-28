@@ -51,7 +51,7 @@ class index extends DPA.new {
         return imp;
     }
     $onSubmit(data) {
-        // data.tipo = "compra"
+        data.tipo = this.state.tipo;
         // if (!this.cuenta_contable_input.getValue()) {
         //     SPopup.alert("Seleccione una cuenta");
         //     return;
@@ -80,7 +80,7 @@ class index extends DPA.new {
             <SButtom type='danger' onPress={() => {
                 SNavigation.navigate("/productos/tipo_producto", {
                     onSelect: (a) => {
-
+                        console.log("asas", a.tipo)
                         this.setState({ tipo_producto: a, tipo: a.tipo })
                     }
                 })

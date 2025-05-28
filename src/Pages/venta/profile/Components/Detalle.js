@@ -65,7 +65,7 @@ export default class Detalle extends Component {
                     //     SPopup.alert("No se encontro tipo producto key_cuenta_contable_contado");
                     //     return true;
                     // }
-                    var precio_unitario = resp.precio_venta;
+                    var precio_unitario = resp.precio;
                     // if (this.props.data.tipo_pago != "contado") {
                     // precio_unitario = resp.precio_venta_credito;
                     // }
@@ -89,12 +89,12 @@ export default class Detalle extends Component {
                         data: {
                             key_compra_venta: this.data.key,
                             tipo: "producto",
-                            descripcion: resp.descripcion,
+                            descripcion: resp.nombre + " - " + resp.descripcion,
                             cantidad: 1,
                             precio_unitario: precio_unitario,
                             descuento: 0,
                             data: {
-                                precio_venta: resp.precio_venta,
+                                precio_venta: precio_unitario,
                                 precio_compra: ((resp.precio_compra ?? 0) / (resp.cantidad ?? 1)) ?? 0,
                                 key_cuenta_contable: resp?.modelo?.tipo_producto?.key_cuenta_contable,
                                 key_cuenta_contable_ganancia: resp?.modelo?.tipo_producto?.key_cuenta_contable_ganancia,

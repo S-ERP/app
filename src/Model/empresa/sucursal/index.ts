@@ -19,6 +19,7 @@ export default new SModel<Action, Reducer>({
         "key_empresa": { type: "text", fk: "empresa", notNull: true },
         "key_usuario": { type: "text", fk: "usuario" },
         "direccion": { type: "text", editable: true, label: "Direccion" },
+        "municipio": { type: "text", editable: true, label: "Municipio" },
         "lat": { type: "double", editable: true },
         "lng": { type: "double", editable: true },
     },

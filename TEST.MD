@@ -128,11 +128,11 @@ echo 'hola'
 
 1. First item Second item
 1. sadasd
-1. Third item
+2. Third item
 
 - First item
 - Second item
-- Third item
+<!-- - Third item -->
 
 `code`
 

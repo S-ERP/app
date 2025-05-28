@@ -65,8 +65,9 @@ export default class Action extends SAction {
         Object.values(compra_venta_detalle).map(((obj: any) => {
             if (!obj.estado) return;
             const { precio_unitario, precio_facturado, cantidad, descuento } = obj;
-            t.subtotal += ((precio_unitario * cantidad) - (descuento ?? 0))
-            t.credito_fiscal += precio_facturado ?? t.subtotal
+            const precio = ((precio_unitario * cantidad) - (descuento ?? 0));
+            t.subtotal += precio;
+            t.credito_fiscal += precio_facturado ?? 0
         }))
         t.total = t.subtotal - t.descuento
         t.total_a_pagar = t.total - t.gifcard

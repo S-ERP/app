@@ -10,6 +10,7 @@ class index extends DPA.list {
         super(props, {
             Parent: Parent,
             title: "Tipos de productos.",
+            params:["onSelect?"],
             itemType: "2",
             excludes: ["key", "fecha_on", "key_usuario", "estado", "key_servicio", "observacion", "key_empresa", "key_cuenta_contable"]
         });
@@ -29,6 +30,7 @@ class index extends DPA.list {
     $order() {
         return [{ key: "descripcion", order: "asc" }]
     }
+    
 
     $item(obj) {
         return <>

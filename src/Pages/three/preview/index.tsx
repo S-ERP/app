@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SGradient, SHr, SIcon, SList, SLoad, SPage, SText, SView } from 'servisofts-component';
+import { SGradient, SHr, SIcon, SList, SLoad, SNavigation, SPage, SText, SView } from 'servisofts-component';
 import SThreeGLView from '../../../Components/SThree/SThreeGLView';
 import SceneButtom from '../../../Components/SThree/SceneButtom';
 import * as THREE from "three"
@@ -57,11 +57,12 @@ export default class Preview extends Component<any> {
     actionBar?: ActionBar;
     mixer?: THREE.AnimationMixer;
     actions: { [key: string]: THREE.AnimationAction };
+    state;
     constructor(props: any) {
         super(props);
         this.state = {
             // url: "http://192.168.2.1:30017/models/muneca.glb",
-            url: "https://drive.servisofts.com/http/models/human.glb",
+            url: SNavigation.getParam("url"),
             ready: false,
         }
         this.actions = {};
@@ -89,8 +90,8 @@ export default class Preview extends Component<any> {
                     camera.position.y = 1.2;
                     scene.add(new THREE.AmbientLight(0xffffff, 2));
                     // new GLTFLoader().load("http://192.168.2.1:30017/models/muneca.glb", (glb) => {
-                        new GLTFLoader().load("https://drive.servisofts.com/http/models/human.glb", (glb) => {
-                        
+                    new GLTFLoader().load(this.state.url, (glb) => {
+
                         this.glb = glb;
                         if (this.actionBar) {
                             this.actionBar.setGlb(glb);

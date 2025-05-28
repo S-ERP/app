@@ -16,7 +16,10 @@ export default class SVideoPreview extends React.Component {
         // const { obj, path } = this.props;
         const xhr = new XMLHttpRequest();
         xhr.open('GET', this.props.src, true);
-        xhr.setRequestHeader('Range', `bytes=0-${1024 * 256}`);
+        const size = 1024 * 1024;
+        console.log(size)
+        console.log(this.props.size)
+        xhr.setRequestHeader('Range', `bytes=0-${this.props.size <= size ? "" : size}`);
         xhr.responseType = 'blob';
 
         xhr.onload = () => {
@@ -61,7 +64,7 @@ export default class SVideoPreview extends React.Component {
                 height: "100%",
                 // backgroundColor: "#000",
             }}>
-                {error && <Text>{error}</Text>}
+                {error && <Text style={{ color: "#fff" }}>{error}</Text>}
                 {image ? (
                     <SVideo paused={false} src={image} muted={true} />
                     //   <Image

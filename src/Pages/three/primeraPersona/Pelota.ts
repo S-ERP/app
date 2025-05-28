@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { loadAsset, TextureLoader } from '../../../Components/SThree';
-import { AmmoType } from '../../../Components/SThree/SAmmoView';
+import { AmmoType } from '../../../Components/SThree/SAmmoView/index.native';
 
 export default class Pelota extends THREE.Group {
     radius = 33 / 100; // Radio de la cápsula

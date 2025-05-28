@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { SLoad, SView } from 'servisofts-component';
 
-export default class Container extends Component {
+export default class Container extends Component<{ loading: boolean, flex: any, children?: any }, any> {
     constructor(props) {
         super(props);
         this.state = {

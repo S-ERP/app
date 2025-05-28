@@ -26,7 +26,7 @@ export default class Test extends Component {
         };
     }
     ref = {}
-    componentDidMount() {
+    componentDidMount() { 
         this.loadData();
         this.isRun = true;
         this.hilo();
@@ -75,20 +75,20 @@ export default class Test extends Component {
     }
 
     loadDataUser() {
-        SSocket.sendPromise({
-            service: "empresa",
-            component: "empresa_usuario_log",
-            type: "registro",
-            key_empresa: Model.empresa.Action.getKey(),
-            key_usuario: Model.usuario.Action.getUsuarioLog()?.key,
-            url: SNavigation.lastRoute.route.name
-        }).then(e => {
-            this.setState({ dataLog: e.data })
-        }).catch(e => {
-            console.error(e);
-        })
-        console.log("USUSARIOOO", Model.usuario.Action.getUsuarioLog())
-        console.log("loadDataUser", SNavigation.lastRoute.route.name)
+        // SSocket.sendPromise({
+        //     service: "empresa",
+        //     component: "empresa_usuario_log",
+        //     type: "registro",
+        //     key_empresa: Model.empresa.Action.getKey(),
+        //     key_usuario: Model.usuario.Action.getUsuarioLog()?.key,
+        //     url: SNavigation.lastRoute.route.name
+        // }).then(e => {
+        //     this.setState({ dataLog: e.data })
+        // }).catch(e => {
+        //     console.error(e);
+        // })
+        // console.log("USUSARIOOO", Model.usuario.Action.getUsuarioLog())
+        // console.log("loadDataUser", SNavigation.lastRoute.route.name)
     }
 
 
