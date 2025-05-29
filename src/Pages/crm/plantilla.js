@@ -1,26 +1,28 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SButtom, SDate, SDatePicker, SForm, SHr, SIcon, SInput, SList, SLoad, SNavigation, SNotification, SPage, SSPiner, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
+import { SButtom, SDate, SDatePicker, SForm, SHr, SIcon, SInput, SList, SLoad, SNavigation, SNotification, SPage, SScroll, SSPiner, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
 // import STextPlay from '../Components/STextPlay';
 // import Container from '../Components/Container';
 // import SMD from '../SMD';
-import MDtest1 from '../SMD/MDtest1';
+import MDtest1 from '../../SMD/MDtest1';
 // import MDtest2 from '../SMD/MDtest2';
 // import SwipeableView from '../Components/SwipeableView';
 // import Loby from "./loby/root"
 // import Publicaciones from "./publicacion/root"
 // import Menu from './menu';
-import MenuDragable from '../Components/MenuDragable';
-import Model from '../Model';
+import MenuDragable from '../../Components/MenuDragable';
+import Model from '../../Model';
 // import MultipageMenu from '../Components/MultipageMenu';
 import SSocket from 'servisofts-socket';
-import DataBase from '../DataBase';
+import DataBase from '../../DataBase';
 import { ScrollView } from 'react-native-gesture-handler';
 // import { Trigger } from 'servisofts-db';
 // import { Image } from 'react-native';
 
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";
+const formTabs = ["Detalles", "Productos", "Adicional"];
+
 
 export default class plantilla extends Component {
  constructor(props) {
@@ -35,6 +37,8 @@ export default class plantilla extends Component {
     "Recall": true,
     "FeactureRecall": true
    },
+   activeTab: "Detalles",
+   activeFormTab: "Detalles", 
   };
   this.onSelect = SNavigation.getParam("onSelect");
 
@@ -64,8 +68,137 @@ export default class plantilla extends Component {
    </SView>
    <SView width={4} />
   </>
- }
- renderLista() {
+ };
+ 
+
+ renderActiveForm() {
+  const { activeFormTab } = this.state;
+
+  if (activeFormTab === "Detalles") {
+    return <SForm
+  
+      inputs={{
+        a: { label: "Dirección", col: "xs-12", required: true },
+        b: { label: "Cliente", col: "xs-12", required: true },
+        c: { label: "Teléfono", col: "xs-6", required: true, type: "phone" },
+        d: { label: "Email", col: "xs-8", required: false },
+        e: { label: "Ciudad", col: "xs-6", required: true },
+        f: { label: "Provincia", col: "xs-6", required: true },
+      }}
+      
+    />;
+  }
+
+  if (activeFormTab === "Productos") {
+    // Estado local para productos seleccionados y cantidades
+    if (!this.state.productos) {
+      this.state.productos = {};
+    }
+    const productos = [
+      { key: "producto1", label: "Producto 1" },
+      { key: "producto2", label: "Producto 2" },
+      { key: "producto3", label: "Producto 3" },
+    ];
+    return (
+      <SView  col={"xs-12"} style={{}}>
+
+        {productos.map((prod) => {
+          const seleccionado = !!this.state.productos[prod.key];
+            return (
+              <SView
+              key={prod.key}
+              col={"xs-12"}
+              row
+              style={{
+                alignItems: "center",
+                marginBottom: 8,
+                justifyContent: "space-between", // Alinea los extremos
+                width: "100%",
+              }}
+              >
+              <SView row style={{ alignItems: "center", flex: 1 }}>
+                <SInput
+                type="checkBox"
+             
+                onChange={(val) => {
+                  this.setState({
+                  productos: {
+                    ...this.state.productos,
+                    [prod.key]: val ? { cantidad: 1 } : undefined,
+                  },
+                  });
+                }}
+                style={{ marginRight: 8 }}
+                />
+                <SText style={{ minWidth: 100 }}>{prod.label}</SText>
+              </SView>
+              <SView row style={{ alignItems: "center" }}>
+                <SText style={{ marginRight: 8 }}>Cantidad:</SText>
+                <SInput
+                type="number"
+                min={1}
+                s
+                style={{ width: 60 }}
+              
+                onChange={(val) => {
+                  this.setState({
+                  productos: {
+                    ...this.state.productos,
+                    [prod.key]: {
+                    ...this.state.productos[prod.key],
+                    cantidad: Number(val) || 1,
+                    },
+                  },
+                  });
+                }}
+                />
+              </SView>
+              </SView>
+            );
+        })}
+        <SButtom
+          style={{ marginTop: 16 }}
+          onPress={() => {
+            // Aquí puedes manejar el "carrito" con los productos seleccionados y cantidades
+            const carrito = Object.entries(this.state.productos)
+              .filter(([k, v]) => !!v)
+              .map(([k, v]) => ({ key: k, cantidad: v.cantidad }));
+            console.log("Carrito:", carrito);
+          }}
+        >
+        </SButtom>
+      </SView>
+    );
+  }
+
+  if (activeFormTab === "Adicional") {
+    return <SForm
+      // Adicional form config
+      inputs={{
+        e: { label: "Notas", col: "xs-12", required: false, type: "textarea" },
+        f: { label: "Instrucciones especiales", col: "xs-12", required: false },
+        g: { label: "Fecha de entrega", col: "xs-6", required: true, type: "date" },
+      }}
+      onSubmit={(e) => console.log("Adicional form:", e)}
+    />;
+  }
+
+  return null;
+}
+handleNextTab = () => {
+  const currentIdx = formTabs.indexOf(this.state.activeFormTab);
+  if (currentIdx < formTabs.length - 1) {
+    this.setState({ activeFormTab: formTabs[currentIdx + 1] });
+  }
+};
+handlePrevTab = () => {
+  const currentIdx = formTabs.indexOf(this.state.activeFormTab);
+  if (currentIdx > 0) {
+    this.setState({ activeFormTab: formTabs[currentIdx - 1] });
+  }
+};
+
+  renderLista() {
   return <SView col={"xs-12"} height={38} border={"transparent"}>
    <SList
     horizontal
@@ -100,7 +233,7 @@ export default class plantilla extends Component {
   // })
   // return proyectos;
 
-  return <SPage disableScroll hidden center>
+  return <SPage title="Detalles de la orden" center>
 
    <SView col={"xs-11"} center row border="transparent">
     <SHr />
@@ -115,7 +248,8 @@ export default class plantilla extends Component {
     <SView col={"xs-12"} row     >
 
      <SView col={"xs-3.8"} center  >
-      <SView col={"xs-12"} style={{ padding: 16, borderRadius: 16, borderWidth: 2 }} center border={STheme.color.card + "88"} backgroundColor={'#F6F7F9' + "88"}>
+      
+      <SView col={"xs-12"}  style={{ padding: 16, borderRadius: 16, borderWidth: 2,minHeight:515 }} center border={STheme.color.card + "88"} backgroundColor={'#F6F7F9' + "88"}>
        <SView col="xs-12" row center>
         <SView col="xs-6">
          <SText fontSize={10}>Horario de cliente</SText>
@@ -144,91 +278,67 @@ export default class plantilla extends Component {
        </SView>
        <SHr height={12} />
        <SView col={"xs-12"} center height={36}  >
+        
         <SList
          horizontal
          scrollEnabled={false}
          disableScroll={false}
          data={[
-          { key: "confirmado", label: "detalles de la orden", color: color_activado, icono: "addTarea" },
-          { key: "Cancelado", label: "Productos", color: color_activado, icono: "Check" },
-          { key: "Double", label: "Adicional", color: color_activado, icono: "World" },
+          { key: "Detalles", label: "Detalles de la orden", color: color_activado, icono: "addTarea" },
+          { key: "Productos", label: "Productos", color: color_activado, icono: "Check" },
+          { key: "Adicional", label: "Adicional", color: color_activado, icono: "World" },
          ]}
-         render={data => this.optionItem(data)}
-        />
+         render={data => (
+    <SView
+      height
+      center
+      card
+      style={{
+        paddingHorizontal: 8,
+        backgroundColor: this.state.activeFormTab === data.key ? color_activado + "88" : color_desactivado + "88"
+      }}
+      onPress={() => this.setState({ activeFormTab: data.key })}
+      row
+    >
+      <SIcon name={data.icono} width={12} height={12} fill={STheme.color.text} />
+      <SView width={8} />
+      <SText>{data.label}</SText>
+    </SView>
+  )}
+/>
        </SView>
        <SHr height={16} />
-       <SView col={"xs-12"} row border={"transparent"} >
-        <SForm row ref={(ref: any) => this.form = ref}
-         style={{ justifyContent: "space-between" }}
-         inputs={{
-          aaaaaaaaaa: {
-           col: "xs-12",
-           label: "Busqueda de direccion",
-           required: true,
-           // defaultValue: defaultData?.nombres,
-           autoFocus: true,
-           onSubmitEditing: () => this.form?.focus("apellidos"),
-          },
-          bbbbbbbb: {
-           col: "xs-12",
-           label: "Customer",
-           required: true,
-           // defaultValue: defaultData?.apellidos,
-           onSubmitEditing: () => this.form?.focus("telefono"),
-          },
-          cccccc: {
-           col: "xs-3.8",
-           label: "index",
-           required: true,
-           // defaultValue: defaultData?.telefono,
-           type: "phone",
-           onSubmitEditing: () => this.form?.focus("correo"),
-          },
-          dddddddd: {
-           col: "xs-3.8",
-           label: "Provincia",
-           type: "email",
-           required: true,
-           // defaultValue: defaultData?.correo,
-           onSubmitEditing: () => this.form?.focus("nit"),
-          },
-          eeeee: {
-           col: "xs-3.8",
-           label: "Distrito",
-           // defaultValue: defaultData?.nit,
-           required: true,
-           onSubmitEditing: () => this.form?.focus("razon_social"),
-          },
-          ffffffff: {
-           col: "xs-5.8",
-           label: "Corregimiento",
-           // defaultValue: defaultData?.nit,
-           required: true,
-           onSubmitEditing: () => this.form?.focus("razon_social"),
-          },
-          ggggggggggg: {
-           col: "xs-5.8",
-           label: "Estimate delivery time",
-           // defaultValue: defaultData?.nit,
-           required: true,
-           onSubmitEditing: () => this.form?.focus("razon_social"),
-          },
-          hhhhhhh: {
-           col: "xs-12",
-           label: "descripcion",
-           // defaultValue: defaultData?.razon_social,
-           required: true,
-           onSubmitEditing: () => this.form?.focus("direccion"),
-          },
+       <ScrollView style={{ maxHeight: 300, width: "100%" }}>
+<SView col={"xs-12"} row border={"transparent"} 
+  style={{
+ 
+    alignItems: "flex-start", 
+    justifyContent: "center"
+  }}
+>
+    {this.renderActiveForm()}
+    
 
-         }}
-         onSubmit={(e: any) => {
-
-          console.log("bienvenido")
-
-
-         }} />
-       </SView>
+  
+      </SView>
+        </ScrollView>
+        <SView col="xs-12" row center>
+          <SButtom
+          onPress={() => this.handlePrevTab()}
+          style={{ marginRight: 8 }}
+          fontSize={14}
+          type="secondary"
+          >
+          Anterior
+          </SButtom>
+          <SButtom
+          onPress={() => this.handleNextTab()}
+          fontSize={14}
+          type="primary"
+          >
+          Siguiente
+          </SButtom>
+          </SView>
       </SView>
      </SView>
 
