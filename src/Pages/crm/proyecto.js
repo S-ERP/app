@@ -6,10 +6,8 @@ import MDL from '../../MDL';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from "servisofts-socket";
 import FloatButtom from '../../Components/FloatButtom';
-import RolesDelUsuario from '../rol/Components/RolesDelUsuario';
-import FormEditarUsuario from '../usuario/Components/FormEditarUsuario';
-import FormEditarPassword from '../usuario/Components/FormEditarPassword';
 import FloatMenu from '../../Components/FloatMenu';
+import PopupRellamada from './Components/PopupRellamada';
 
 
 export default class proyecto extends Component {
@@ -25,13 +23,13 @@ export default class proyecto extends Component {
         render() {
                 return <SPage title={"Proyecto"} icon={<SIcon name='empresa' fill={STheme.color.text} />}>
 
-                        {/* <SText onPress={() => {
-                                FormRegistroProyecto.open(({
+                        <SText onPress={() => {
+                                PopupRellamada.open(({
                                         onRegister: (e) => {
-                                                this.DinamicTable.loadData();
+                                                // this.DinamicTable.loadData();
                                         }
                                 }))
-                        }}>{"Agregar proyecto"}</SText> */}
+                        }}>{"Popup rellamada"}</SText>
 
                         <DinamicTable
                                 ref={ref => this.DinamicTable = ref}
