@@ -37,12 +37,13 @@ export default class FormRegistroCliente extends Component<FormRegistroType & { 
 
 
   return <SView center>
-   <SText bold>{defaultData ? "Editar Cliente" : "Crear Cliente"}</SText>
-
-   <SForm
-    ref={(ref: any) => this.form = ref}
+   <SText bold>{defaultData ? "Actualizar Cliente" : "Registrar Cliente"}</SText>
+   <SHr height={10} />
+   <SForm row ref={(ref: any) => this.form = ref}
+    style={{ justifyContent: "space-between" }}
     inputs={{
      nombres: {
+      col: "xs-5.8",
       label: "Nombres",
       required: true,
       defaultValue: defaultData?.nombres,
@@ -50,70 +51,87 @@ export default class FormRegistroCliente extends Component<FormRegistroType & { 
       onSubmitEditing: () => this.form?.focus("apellidos"),
      },
      apellidos: {
+      col: "xs-5.8",
       label: "Apellidos",
       required: true,
       defaultValue: defaultData?.apellidos,
       onSubmitEditing: () => this.form?.focus("telefono"),
      },
      telefono: {
+      col: "xs-12",
       label: "Teléfono",
       required: true,
       defaultValue: defaultData?.telefono,
       type: "phone",
       onSubmitEditing: () => this.form?.focus("correo"),
      },
-     // correo: {
-     //  label: "Correo",
-     //  type: "email",
-     //  defaultValue: defaultData?.correo,
-     //  onSubmitEditing: () => this.form?.focus("nit"),
-     // },
-     // nit: {
-     //  label: "NIT",
-     //  defaultValue: defaultData?.nit,
-     //  onSubmitEditing: () => this.form?.focus("razon_social"),
-     // },
-     // razon_social: {
-     //  label: "Razón Social",
-     //  defaultValue: defaultData?.razon_social,
-     //  onSubmitEditing: () => this.form?.focus("direccion"),
-     // },
+     correo: {
+      col: "xs-12",
+      label: "Correo",
+      type: "email",
+      required: true,
+      defaultValue: defaultData?.correo,
+      onSubmitEditing: () => this.form?.focus("nit"),
+     },
+     nit: {
+      col: "xs-5.8",
+      label: "NIT",
+      defaultValue: defaultData?.nit,
+      required: true,
+      onSubmitEditing: () => this.form?.focus("razon_social"),
+     },
+     razon_social: {
+      col: "xs-5.8",
+      label: "Razón Social",
+      defaultValue: defaultData?.razon_social,
+      required: true,
+      onSubmitEditing: () => this.form?.focus("direccion"),
+     },
      // direccion: {
+     //  col: "xs-12",
      //  label: "Dirección",
      //  defaultValue: defaultData?.direccion,
+     //  required: true,
      //  onSubmitEditing: () => this.form?.focus("lat"),
      // },
      // lat: {
+     //  col: "xs-5.8",
      //  label: "Latitud",
      //  type: "number",
      //  defaultValue: defaultData?.lat,
      //  onSubmitEditing: () => this.form?.focus("lng"),
      // },
      // lng: {
+     //  col: "xs-5.8",
      //  label: "Longitud",
      //  type: "number",
      //  defaultValue: defaultData?.lng,
      //  onSubmitEditing: () => this.form?.focus("fecha_nacimiento"),
      // },
-     // fecha_nacimiento: {
-     //  label: "Fecha de Nacimiento",
-     //  type: "date",
-     //  defaultValue: defaultData?.fecha_nacimiento,
-     //  onSubmitEditing: () => this.form?.focus("sexo"),
-     // },
-     // sexo: {
-     //  label: "Sexo",
-     //  type: "select",
-     //  options: ["Masculino", "Femenino", "Otro"],
-     //  defaultValue: defaultData?.sexo,
-     //  onSubmitEditing: () => this.form?.focus("descripcion"),
-     // },
-     descripcion: {
-      label: "Descripción",
-      type: "textArea",
-      defaultValue: defaultData?.descripcion,
-      onSubmitEditing: () => this.form?.submit(),
-     }
+     fecha_nacimiento: {
+      col: "xs-5.8",
+      label: "Fecha de Nacimiento",
+      type: "date",
+      defaultValue: defaultData?.fecha_nacimiento,
+      required: true,
+      onSubmitEditing: () => this.form?.focus("sexo"),
+     },
+     sexo: {
+      col: "xs-5.8",
+      label: "Sexo",
+      type: "select",
+      options: ["Masculino", "Femenino", "Otro"],
+      defaultValue: defaultData?.sexo ?? "Masculino",
+      onSubmitEditing: () => this.form?.focus("descripcion"),
+     },
+     // descripcion: {
+     //  col: "xs-12",
+     //  label: "Descripción",
+     //  type: "textArea",
+     //  required: true,
+     //  defaultValue: defaultData?.descripcion,
+     //  onSubmitEditing: () => this.form?.submit(),
+     // }
     }}
     onSubmit={(e: any) => {
 
@@ -147,11 +165,9 @@ export default class FormRegistroCliente extends Component<FormRegistroType & { 
      <SView width={8} />
     </>}
 
-    <PButtom flex type="primary" onPress={() => this.form?.submit()}>{defaultData ? "ACTUALIZAR" : "CREAR"}</PButtom>
 
-    {/* <PButtom flex type='primary' onPress={() => {
-                    if (this.form) this.form.submit();
-                }}>CREAR</PButtom> */}
+    <PButtom flex type="secondary" onPress={() => this.form?.submit()}>{defaultData ? "ACTUALIZAR" : "ACEPTAR"}</PButtom>
+
    </SView>
   </SView >
  }
