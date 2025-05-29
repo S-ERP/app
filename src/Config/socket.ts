@@ -3,12 +3,12 @@ export default {
     debug: true, //para que se vea los returns del server
     name: 'serp',
 
-    // ssl: true,
-    // host: 'serp.servisofts.com',
-    // ssl: false,
-    // host: '192.168.2.1',
-    ssl: false,
-    host: '192.168.2.1',
+    //ssl: true,
+     //host: 'serp.servisofts.com',
+     ssl: false,
+     host: '192.168.2.1',
+    //ssl: false,
+    //host: '192.168.2.1',
 
     port: {
         native: 10048,
