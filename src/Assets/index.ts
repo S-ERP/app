@@ -80,6 +80,12 @@ import adicionar, { ReactComponent as adicionarW } from './svg/factura/adicionar
 import whatsappIcon, { ReactComponent as whatsappIconW } from './svg/whatsapp.svg';
 import invite2, { ReactComponent as invite2W } from './svg/invite2.svg';
 
+import guion, { ReactComponent as guionW } from './svg/proyecto/guion.svg';
+import campana, { ReactComponent as campanaW } from './svg/proyecto/campana.svg';
+import producto, { ReactComponent as productoW } from './svg/proyecto/producto.svg';
+
+
+
 
 
 import blender from './svg/blender';
@@ -168,6 +174,12 @@ export const svg =  {
     "adicionar": { Native: adicionar, Web: adicionarW },
     "whatsapp": { Native: whatsappIcon, Web: whatsappIconW },
     "invite2": { Native: invite2, Web: invite2W },
+
+    "guion": { Native: guion, Web: guionW },
+    "campana": { Native: campana, Web: campanaW },
+    "producto": { Native: producto, Web: productoW },
+
+
     ...blender
 }
 const Assets: SAssets = {

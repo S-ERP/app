@@ -5,7 +5,7 @@ import { SList, SStorage, SText, STheme, SThread, SView } from 'servisofts-compo
 import ReservedWords from './ReservedWords';
 
 type TextAreaProps = {
-    pk:string,
+    pk: string,
     defaultValue?: string,
     type: keyof typeof ReservedWords,
 }
@@ -191,11 +191,11 @@ export default class TextArea extends React.Component<TextAreaProps> {
         // console.log(mayusc)
 
         let palabrasReservadasValue = ReservedWords[this.props.type ?? "SQL"];
-        let palabrasReservadas = Object.keys(palabrasReservadasValue);
+        // let palabrasReservadas = Object.keys(palabrasReservadasValue);
 
         let wordMatch = []
-        palabrasReservadas.forEach((palabra) => {
-            let regex = new RegExp(`${palabra}`, 'gsi');
+        palabrasReservadasValue.forEach((palabra) => {
+            let regex = palabra.regex
             let match;
             while ((match = regex.exec(this.state.value)) !== null) {
                 console.log(match)
@@ -203,7 +203,7 @@ export default class TextArea extends React.Component<TextAreaProps> {
                     word: match[0],
                     indexStart: match.index,
                     indexEnd: match.index + match[0].length,
-                    color: palabrasReservadasValue[palabra]
+                    color: palabra.color
                 }
                 wordMatch.push(wordReserved);
             }

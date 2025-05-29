@@ -7,29 +7,43 @@ import { SForm, SHr, SIcon, SNotification, SPopup, SText, STheme, SView } from '
 import PButtom from '../../../Components/PButtom';
 
 
-type FormRegistroType = {
+type PopupRellamadaType = {
     onRegister: (e: any) => void,
     onActualizar: (e: any) => void,
     onCancel?: () => void,
 }
 
-export default class FormRegistroProyecto extends Component<FormRegistroType & { defaultData?: any }> {
-    static open(props: FormRegistroType) {
+export default class PopupRellamada extends Component<PopupRellamadaType & { defaultData?: any }> {
+    static open(props: PopupRellamadaType) {
         SPopup.open({
-            key: "ppupregistro",
-            content: <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 300 }} padding={16} withoutFeedback col={"xs-11"}>
-                <FormRegistroProyecto {...props} onRegister={(e) => {
-                    SPopup.close("ppupregistro")
+            key: "ppuprellamada",
+            content: <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 320 }} padding={16} withoutFeedback col={"xs-11"}>
+                <PopupRellamada {...props} onRegister={(e) => {
+                    SPopup.close("ppuprellamada")
                     if (props.onRegister) props.onRegister(e)
                 }}
                     onCancel={() => {
-                        SPopup.close("ppupregistro")
+                        SPopup.close("ppuprellamada")
                         if (props.onCancel) props.onCancel()
                     }}
                 />
             </SView>
         })
     }
+
+    time(text: string) {
+        return <SView col={"xs-2.4"} style={{ padding: 4 }}>
+            <SView padding={5} style={{
+                backgroundColor: STheme.color.card,
+                borderRadius: 12,
+                alignItems: "center",
+                justifyContent: "center",
+            }}>
+                <SText fontSize={10} color={STheme.color.text} bold>{text}</SText>
+            </SView>
+        </SView>
+    }
+
     form: SForm | null = null;
     render() {
 
@@ -37,24 +51,55 @@ export default class FormRegistroProyecto extends Component<FormRegistroType & {
 
 
         return <SView center>
-            <SText bold>{defaultData ? "Editar Proyecto" : "Crear Proyecto"}</SText>
+            <SText bold>{defaultData ? "Editar Proyecto" : "Fecha de hora de rellamada"}</SText>
+            <SHr height={20} />
+            <SView row>
+                <SText justify fontSize={12} color={STheme.color.text} bold style={{ textAlign: "center" }}>
+                    La rellamada solo se coloca a petición
+                </SText>
+                <SText fontSize={12} color={STheme.color.text} style={{ textAlign: "center" }}>
+                    En otros casps utilice botón "Llamada fallida"
+                </SText>
+                <SText justify fontSize={12} color={STheme.color.text} bold style={{ textAlign: "center" }}>
+                    Programar rellamadas no más de 1d 0h
+                </SText>
+            </SView>
+            <SHr height={15} />
+            <SView col={"xs-12"} row>
+                {this.time("10 min")}
+                {this.time("20 min")}
+                {this.time("30 min")}
+                {this.time("1 hrs")}
+                {this.time("2 hrs")}
+            </SView>
 
-            <SForm
+            <SForm row
                 ref={(ref: any) => this.form = ref}
+                style={{
+                    justifyContent: "space-between",
+                }}
                 inputs={{
-                    "nombre": {
-                        label: "Nombre del proyecto", autoFocus: true, required: true, defaultValue: defaultData?.nombre, onSubmitEditing: () => {
+                    "fecha": {
+                        col: "xs-5.8",
+                        label: "Fecha *", type: "date", autoFocus: true, required: true, defaultValue: defaultData?.nombre, onSubmitEditing: () => {
                             if (this.form) this.form.focus("description");
                         }
                     },
-                    "descripcion": {
-                        label: "Descripcion del proyecto", required: true, defaultValue: defaultData?.descripcion, type: "textArea", onSubmitEditing: () => {
-                            if (this.form) this.form.focus("guion");
-                            // if (this.form) this.form.submit();
+                    "tiempo_cliente": {
+                        col: "xs-5.8",
+                        label: "Tiempo de cliente *", type: "hour", required: true, defaultValue: defaultData?.descripcion, onSubmitEditing: () => {
+                            if (this.form) this.form.submit();
                         }
                     },
-                    "guion": {
-                        label: "Guion del proyecto", defaultValue: defaultData?.guion, type: "textArea", onSubmitEditing: () => {
+                    "comentario": {
+                        col: "xs-12",
+                        label: "Comentario", type: "textArea",  defaultValue: defaultData?.descripcion, onSubmitEditing: () => {
+                            if (this.form) this.form.submit();
+                        }
+                    },
+                     "fijar": {
+                        col: "xs-12",
+                        label: "¿Fijar la llamada?", type: "checkBox",  defaultValue: defaultData?.descripcion, onSubmitEditing: () => {
                             if (this.form) this.form.submit();
                         }
                     }
@@ -73,7 +118,7 @@ export default class FormRegistroProyecto extends Component<FormRegistroType & {
                         } else {
                             this.props.onRegister?.(res);
                         }
-                        SPopup.close("ppupregistro");
+                        SPopup.close("ppuprellamada");
                     }).catch((err) => {
                         SNotification.send({ key: "registro", title: "Error", body: err, color: STheme.color.danger });
                     });
@@ -107,7 +152,7 @@ export default class FormRegistroProyecto extends Component<FormRegistroType & {
                     <SView width={8} />
                 </>}
 
-                <PButtom flex type="primary" onPress={() => this.form?.submit()}>{defaultData ? "ACTUALIZAR" : "CREAR"}</PButtom>
+                <PButtom flex type="secondary" onPress={() => this.form?.submit()}>{defaultData ? "ACTUALIZAR" : "ACEPTAR"}</PButtom>
 
                 {/* <PButtom flex type='primary' onPress={() => {
                     if (this.form) this.form.submit();

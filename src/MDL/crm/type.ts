@@ -10,6 +10,15 @@ export type Proyecto = {
  fecha_inicio?: string;
  fecha_fin?: string;
 };
+export type Campana = {
+ key: string;
+ key_usuario: string;
+ fecha_on: string;
+ estado: number;
+ key_proyecto: string;
+ descripcion: string;
+ nombre: string;
+};
 
 export type Cliente = {
  key: string;
