@@ -30,18 +30,9 @@ export default class cliente extends Component {
    <SHr height={10} />
    <DinamicTable
     key='index' textStyle={{ fontSize: 10, color: STheme.color.lightGray }}
-    //  loadInitialState={async () => {
-    //   return {
-    //    sorters: [
-    //     { key: "apellidos", type: "number", order: "desc" }
-    //    ]
-    //   };
-    // }}
-
     ref={ref => this.DinamicTable = ref} loadData={async () => { return await MDL.crm.cliente.getAll(); }} onSelect={(e) => { console.log("Selected project:", e.row); }} >
     <DinamicTable.Col key={"key"} label='ID' width={20} data={(e) => e.index + 1} />
     <DinamicTable.Col key={"nombres"} label='Nombres' width={80} data={(e) => e.row.nombres} />
-    {/* <DinamicTable.Col key={"fecha_on"} label='fecha' width={80} data={(e) => e.row.fecha_on} /> */}
     <DinamicTable.Col key={"apellidos"} label='Apellidos' width={80} data={(e) => e.row.apellidos} />
     <DinamicTable.Col key={"telefono"} label='Teléfono' width={90} data={(e) => e.row.telefono} />
     <DinamicTable.Col key={"correo"} label='Correo' width={150} data={(e) => e.row.correo} />
