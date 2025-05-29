@@ -5,20 +5,22 @@ import MDL from '../../../MDL';
 import { DinamicTable } from 'servisofts-table';
 import { SForm, SHr, SIcon, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import PButtom from '../../../Components/PButtom';
+import { Proyecto } from '../../../MDL/crm/type';
 
 
 type FormRegistroType = {
+    proyecto: Proyecto,
     onRegister: (e: any) => void,
     onActualizar: (e: any) => void,
     onCancel?: () => void,
 }
 
-export default class FormRegistroProyecto extends Component<FormRegistroType & { defaultData?: any }> {
+export default class FormRegistroCampana extends Component<FormRegistroType & { defaultData?: any }> {
     static open(props: FormRegistroType) {
         SPopup.open({
             key: "ppupregistro",
             content: <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 300 }} padding={16} withoutFeedback col={"xs-11"}>
-                <FormRegistroProyecto {...props} onRegister={(e) => {
+                <FormRegistroCampana {...props} onRegister={(e) => {
                     SPopup.close("ppupregistro")
                     if (props.onRegister) props.onRegister(e)
                 }}
@@ -37,32 +39,27 @@ export default class FormRegistroProyecto extends Component<FormRegistroType & {
 
 
         return <SView center>
-            <SText bold>{defaultData ? "Editar Proyecto" : "Crear Proyecto"}</SText>
+            <SText bold>{defaultData ? "Editar campaña" : "Crear campaña"}</SText>
 
             <SForm
                 ref={(ref: any) => this.form = ref}
                 inputs={{
                     "nombre": {
-                        label: "Nombre del proyecto", autoFocus: true, required: true, defaultValue: defaultData?.nombre, onSubmitEditing: () => {
+                        label: "Nombre de la campaña", autoFocus: true, required: true, defaultValue: defaultData?.nombre, onSubmitEditing: () => {
                             if (this.form) this.form.focus("description");
                         }
                     },
                     "descripcion": {
-                        label: "Descripcion del proyecto", required: true, defaultValue: defaultData?.descripcion, type: "textArea", onSubmitEditing: () => {
-                            if (this.form) this.form.focus("guion");
-                            // if (this.form) this.form.submit();
-                        }
-                    },
-                    "guion": {
-                        label: "Guion del proyecto", defaultValue: defaultData?.guion, type: "textArea", onSubmitEditing: () => {
+                        label: "Descripcion de la campaña", required: true, defaultValue: defaultData?.descripcion, type: "textArea", onSubmitEditing: () => {
+                            // if (this.form) this.form.focus("guion");
                             if (this.form) this.form.submit();
                         }
                     }
                 }}
                 onSubmit={(e: any) => {
 
-                    const data = { ...defaultData, ...e };
-                    const prom = data?.key ? MDL.crm.proyecto.editar(data) : MDL.crm.proyecto.registrar(data);
+                    const data = { key_proyecto: this.props.proyecto.key, ...defaultData, ...e };
+                    const prom = data?.key ? MDL.crm.campana.editar(data) : MDL.crm.campana.registrar(data);
 
                     SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
 
