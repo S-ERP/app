@@ -13,13 +13,13 @@ export const SQL = {
 }
 
 export const MD = {
-    "```.*?```": color.red,
+    "```.*?\`\`\`": color.red,
     "\\s- ": color.blue,
     "\\s\\W> ": color.green,
     "\\d\\. ": color.blue,
     "\\[.*?\\]": color.naranja,
     "\\`.*?\\`": color.naranja,
-    "^[ \\t]{0,}?#{1,6}.*$": color.blue,
+    "#{1,6}.*?": color.blue,
     "'.*?'": color.string,
     "<!--.*?-->": color.green
 }

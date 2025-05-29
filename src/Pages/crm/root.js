@@ -23,7 +23,7 @@ export default class root extends Component {
 
    <MenuPages
     key_empresa={Model.empresa.Action.getKey()}
-    path={"/"} permiso={"page"}>
+    path={"/crm/"} permiso={"ver"}>
     <MenuButtom label={"Proyecto"} url={"/crm/proyecto"} icon={<SIcon name='empresa' fill='red' />} />
     <MenuButtom label={"Cliente"} url={"/crm/cliente"} icon={<SIcon name='invite' fill='red' />} />
 
