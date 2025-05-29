@@ -13,41 +13,48 @@ import {
     Gesture,
     GestureDetector
 } from 'react-native-gesture-handler';
+import MDL from '../../MDL';
 
 const stages = [
-    { key: '1', name: 'Prospecto' },
-    { key: '2', name: 'Calificado' },
-    { key: '3', name: 'Propuesta' },
-    { key: '4', name: 'Negociación' },
-    { key: '5', name: 'Cerrado' },
-];
+    { key: 'lead', name: 'lead', color: STheme.color.warning },
+    { key: 'inscripto', name: 'inscripto', color: STheme.color.success },
+    { key: 'Negociación', name: 'Negociación', color: STheme.color.lightGray },
+    { key: 'cerrado', name: 'cerrado', color: STheme.color.danger },
 
-const initialCards = [
-    { key: '1a', name: 'Cliente A', stage: 'Prospecto' },
-    { key: '1b', name: 'Cliente AA', stage: 'Prospecto' },
-    { key: '1c', name: 'Cliente ABC', stage: 'Prospecto' },
-    { key: '2', name: 'Cliente B', stage: 'Calificado' },
-    { key: '3', name: 'Cliente C', stage: 'Propuesta' },
-    { key: '4', name: 'Cliente D', stage: 'Negociación' },
-    { key: '5', name: 'Cliente E', stage: 'Cerrado' },
 ];
 
 export default class Dashboard extends Component {
     stageRefs = {};
+    cardRefs = {};
 
     state = {
-        cards: initialCards,
+        cards: [],
+        draggingCard: null,
+        dragOffset: { x: 0, y: 0 },
+        initialOffset: { x: 0, y: 0 },
     };
+
+    componentDidMount() {
+        MDL.crm.clienteProyecto.getAll().then(e => {
+            this.setState({
+                cards: e,
+            });
+        }).catch(e => {
+            console.error("Error fetching projects:", e);
+        })
+    }
 
     updateCardStage = (cardKey, newStage) => {
         this.setState((prev) => ({
             cards: prev.cards.map((c) =>
-                c.key === cardKey ? { ...c, stage: newStage } : c
+                c.key === cardKey ? { ...c, state: newStage } : c
             ),
         }));
     };
 
     handleDrop = (cardKey, gestureEnd) => {
+        this.setState({ draggingCard: null });
+
         for (const stageKey in this.stageRefs) {
             const ref = this.stageRefs[stageKey];
             if (!ref?.current) continue;
@@ -70,6 +77,39 @@ export default class Dashboard extends Component {
         }
     };
 
+    handleDragStart = (cardKey) => {
+        const ref = this.cardRefs[cardKey]?.current;
+        if (ref) {
+
+            const card = this.state.cards.find(c => c.key === cardKey);
+
+            const stageref = this.stageRefs[card.state];
+            const stageNode = findNodeHandle(stageref.current);
+
+            const node = findNodeHandle(ref);
+            if (node) {
+                UIManager.measure(node, (x, y, width, height, pageX, pageY) => {
+                    console.log("handleDragStart", stageref, stageNode);
+
+                    UIManager.measure(stageNode, (stageX, stageY, stageWidth, stageHeight) => {
+
+                        this.setState({
+                            draggingCard: cardKey,
+                            dragOffset: { x: 0, y: 0 },
+                            initialOffset: { x: stageX + 5, y: pageY - 42, w: width }
+                        });
+                    })
+
+
+                });
+            }
+        }
+    };
+
+    handleDragMove = (x, y) => {
+        this.setState({ dragOffset: { x, y } });
+    };
+
     render() {
         return (
             <GestureHandlerRootView style={{ flex: 1 }}>
@@ -87,47 +127,101 @@ export default class Dashboard extends Component {
                                 >
                                     <Stage
                                         stage={stage}
-                                        cards={this.state.cards.filter((c) => c.stage === stage.name)}
+                                        draggingCard={this.state.draggingCard}
+                                        cards={this.state.cards.filter((c) => c.state === stage.name)}
                                         onCardDrop={this.handleDrop}
+                                        onDragStart={this.handleDragStart}
+                                        onDragMove={this.handleDragMove}
+                                        cardRefs={this.cardRefs}
                                     />
                                 </SView>
                             );
                         })}
                     </ScrollView>
+                    {this.state.draggingCard && (() => {
+                        const card = this.state.cards.find(c => c.key === this.state.draggingCard);
+                        if (!card) return null;
+                        return (
+                            <Animated.View style={{
+                                position: "absolute",
+                                top: this.state.dragOffset.y + this.state.initialOffset.y + 4,
+                                left: this.state.dragOffset.x + this.state.initialOffset.x + 4,
+                                width: this.state.initialOffset.w,
+                                height: 70,
+                                zIndex: 9999,
+                                pointerEvents: 'none',
+                            }}>
+                                <SView
+                                    style={{
+                                        backgroundColor: STheme.color.card,
+                                        padding: 8,
+                                        borderRadius: 8,
+                                        flex: 1,
+                                    }}
+                                >
+                                    <SText>{card.cliente.telefono}</SText>
+                                    <SText>{card.cliente.nombres}</SText>
+                                </SView>
+                            </Animated.View>
+                        );
+                    })()}
                 </SPage>
             </GestureHandlerRootView>
         );
     }
 }
 
-const Stage = ({ stage, cards, onCardDrop }) => {
+const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard, cardRefs }) => {
     return (
-        <SView
+        <ScrollView
             style={{
-                padding: 8,
                 backgroundColor: STheme.color.card,
+                borderColor: STheme.color.lightGray,
+                borderWidth: 1,
                 borderRadius: 8,
                 height: "100%",
-                // height: Dimensions.get('window').height * 0.7,
+            }}
+            contentContainerStyle={{
+                padding: 8,
             }}
         >
-            <SText bold>{stage.name}</SText>
+            <SView row>
+                <SView style={{ backgroundColor: stage.color, padding: 8, borderRadius: 8 }} />
+                <SView width={8} />
+                <SText bold>{stage.name}</SText>
+            </SView>
             <SView height={8} />
-            {cards.map((card) => (
-                <DraggableCarta key={card.key} card={card} onDrop={onCardDrop} />
-            ))}
-        </SView>
+            {cards.map((card) => {
+                if (!cardRefs[card.key]) {
+                    cardRefs[card.key] = createRef();
+                }
+                return (
+                    <DraggableCarta
+                        key={card.key}
+                        card={card}
+                        onDrop={onCardDrop}
+                        onDragStart={onDragStart}
+                        onDragMove={onDragMove}
+                        ref={cardRefs[card.key]}
+                    />
+                );
+            })}
+        </ScrollView>
     );
 };
 
-const DraggableCarta = ({ card, onDrop }) => {
+const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove }, ref) => {
     const offsetX = useSharedValue(0);
     const offsetY = useSharedValue(0);
 
     const panGesture = Gesture.Pan()
+        .onBegin(() => {
+            runOnJS(onDragStart)(card.key);
+        })
         .onUpdate((e) => {
             offsetX.value = e.translationX;
             offsetY.value = e.translationY;
+            runOnJS(onDragMove)(e.translationX, e.translationY);
         })
         .onEnd((e) => {
             runOnJS(onDrop)(card.key, e);
@@ -148,16 +242,21 @@ const DraggableCarta = ({ card, onDrop }) => {
     return (
         <GestureDetector gesture={panGesture}>
             <Animated.View
+                ref={ref}
                 style={[{
-                    backgroundColor: STheme.color.danger,
+                    backgroundColor: STheme.color.background + "66",
+                    borderColor: STheme.color.lightGray,
+                    borderWidth: 1,
                     minHeight: 70,
                     padding: 8,
                     borderRadius: 8,
                     marginVertical: 4,
+                    cursor: "grab",
                 }, animatedStyle]}
             >
-                <SText>{card.name}</SText>
+                <SText>{card.cliente.telefono}</SText>
+                <SText color={STheme.color.lightGray}>{card.cliente.nombres}</SText>
             </Animated.View>
         </GestureDetector>
     );
-};
+});

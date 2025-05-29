@@ -9,7 +9,7 @@ module.exports = merge(common, {
     devtool: 'cheap-module-source-map',
     // devtool: 'cheap-module-source-map',
     devServer: {
-        port: 3011,
+        port: 3010,
         // port: 3000,
         hot: true,
         historyApiFallback: true,

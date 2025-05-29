@@ -82,3 +82,18 @@ adb install app-debug.apk
 
 
 # Etapa 5 - Reportes
+
+
+890dcea2-fbeb-4683-a333-2ecac9b26d97
+
+
+```bash
+curl --location --request GET '192.168.2.1:30051/api' \
+    --header 'Content-Type: application/json' \
+    --data '{
+    "component": "campana",
+    "type": "me_interesa",
+    "telefono": "+591 68635272",
+    "key_campana": "890dcea2-fbeb-4683-a333-2ecac9b26d97"
+    }'
+```

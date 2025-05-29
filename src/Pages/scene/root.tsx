@@ -586,7 +586,7 @@ export default class index extends Component<any> {
 
 
                             // this.humo = new HumoVolumetrico(scene);
-                            this.agua = new Agua(scene);
+                            // this.agua = new Agua(scene);
 
                             // scene.add(this.shader)
 

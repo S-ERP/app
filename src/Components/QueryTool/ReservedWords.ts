@@ -33,14 +33,14 @@ const color = {
 // }
 
 const MD = [
-    // { regex: /```.*?```/gsi, color: color.red },
+    { regex: /```.*?```/gsi, color: color.red },
     { regex: /#{1,6}.*/gi, color: color.blue },
     { regex: /\s- /gi, color: color.blue },
     { regex: /\d{0,}\. /gi, color: color.blue },
     { regex: /\s\W> /gi, color: color.green },
     { regex: /<!--.*?-->/gsi, color: color.green },
     { regex: /\`.*?\`/gsi, color: color.naranja },
-    
+
 ]
 const SQL = [
     { regex: /\b(select|from|where|left|on|between|and|or|is|not|null|as|top|group|order|by|desc|asc|join|right|inner|sum|count|array_agg)\b/gi, color: color.red },
