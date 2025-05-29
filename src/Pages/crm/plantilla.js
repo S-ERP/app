@@ -101,6 +101,7 @@ export default class plantilla extends Component {
     ];
     return (
       <SView  col={"xs-12"} style={{}}>
+        <SHr height={20} />
 
         {productos.map((prod) => {
           const seleccionado = !!this.state.productos[prod.key];
@@ -137,7 +138,7 @@ export default class plantilla extends Component {
                 <SInput
                 type="number"
                 min={1}
-                s
+                
                 style={{ width: 60 }}
               
                 onChange={(val) => {
