@@ -8,6 +8,7 @@ import SSocket from "servisofts-socket";
 import FloatButtom from '../../Components/FloatButtom';
 import FloatMenu from '../../Components/FloatMenu';
 import PopupRellamada from './Components/PopupRellamada';
+import PopupRazon from './Components/PopupRazon';
 
 
 export default class proyecto extends Component {
@@ -26,10 +27,15 @@ export default class proyecto extends Component {
                         <SText onPress={() => {
                                 PopupRellamada.open(({
                                         onRegister: (e) => {
-                                                // this.DinamicTable.loadData();
                                         }
                                 }))
                         }}>{"Popup rellamada"}</SText>
+                        <SText onPress={() => {
+                                PopupRazon.open(({
+                                        onRegister: (e) => {
+                                        }
+                                }))
+                        }}>{"Popup razón"}</SText>
 
                         <DinamicTable
                                 ref={ref => this.DinamicTable = ref}
