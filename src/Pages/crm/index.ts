@@ -2,12 +2,15 @@ import { SPage, SPageListProps } from 'servisofts-component';
 import root from './root';
 import proyecto from './proyecto';
 import cliente from './cliente';
-import dashboard from './dashboard';
-import lead from './lead';
+import operador from './operador';
+import detalleLlamada from './detalleLlamada';
+import plantilla from './plantilla';
+
 export default SPage.combinePages("crm", {
     "": root,
     proyecto,
     cliente,
-    dashboard,
-    lead,
+    operador,
+    detalleLlamada,
+    plantilla,
 });
