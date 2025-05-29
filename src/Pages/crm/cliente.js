@@ -19,13 +19,13 @@ export default class cliente extends Component {
  }
 
  render() {
-  return <SPage title={"cliente"}>
+  return <SPage title={"cliente5454"}>
 
-   {/* <SText onPress={() => {
-    FormRegistroProyecto.open(({
+   <SText onPress={() => {
+    FormRegistroCliente.open(({
      onRegister: (e) => {
       this.DinamicTable.loadData();
-     } })) }}>{"Agregar cliente"}</SText> */}
+     } })) }}>{"Agregar cliente"}</SText>
 
    <DinamicTable ref={ref => this.DinamicTable = ref} loadData={async () => { return await MDL.crm.cliente.getAll(); }} onSelect={(e) => { console.log("Selected project:", e.row); }} >
 
@@ -34,14 +34,14 @@ export default class cliente extends Component {
     <DinamicTable.Col key={"apellidos"} label='Apellidos' width={150} data={(e) => e.row.apellidos} />
     <DinamicTable.Col key={"telefono"} label='Teléfono' width={150} data={(e) => e.row.telefono} />
     <DinamicTable.Col key={"correo"} label='Correo' width={200} data={(e) => e.row.correo} />
-    <DinamicTable.Col key={"nit"} label='NIT' width={120} data={(e) => e.row.nit} />
+    {/* <DinamicTable.Col key={"nit"} label='NIT' width={120} data={(e) => e.row.nit} />
     <DinamicTable.Col key={"razon_social"} label='Razón Social' width={200} data={(e) => e.row.razon_social} />
     <DinamicTable.Col key={"direccion"} label='Dirección' width={250} data={(e) => e.row.direccion} />
     <DinamicTable.Col key={"lat"} label='Latitud' width={100} data={(e) => e.row.lat} />
     <DinamicTable.Col key={"lng"} label='Longitud' width={100} data={(e) => e.row.lng} />
     <DinamicTable.Col key={"fecha_nacimiento"} label='Nacimiento' width={150} data={(e) => e.row.fecha_nacimiento} />
     <DinamicTable.Col key={"sexo"} label='Sexo' width={80} data={(e) => e.row.sexo} />
-    <DinamicTable.Col key={"descripcion"} label='Descripción' width={250} data={(e) => e.row.descripcion} />
+    <DinamicTable.Col key={"descripcion"} label='Descripción' width={250} data={(e) => e.row.descripcion} /> */}
 
 
 {/*
