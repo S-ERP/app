@@ -81,25 +81,25 @@ export default class PopupRellamada extends Component<PopupRellamadaType & { def
                 inputs={{
                     "fecha": {
                         col: "xs-5.8",
-                        label: "Fecha", type: "date", autoFocus: true, required: true, defaultValue: defaultData?.nombre, onSubmitEditing: () => {
+                        label: "Fecha *", type: "date", autoFocus: true, required: true, defaultValue: defaultData?.nombre, onSubmitEditing: () => {
                             if (this.form) this.form.focus("description");
                         }
                     },
                     "tiempo_cliente": {
                         col: "xs-5.8",
-                        label: "Tiempo de cliente", type: "hour", required: true, defaultValue: defaultData?.descripcion, onSubmitEditing: () => {
+                        label: "Tiempo de cliente *", type: "hour", required: true, defaultValue: defaultData?.descripcion, onSubmitEditing: () => {
                             if (this.form) this.form.submit();
                         }
                     },
                     "comentario": {
                         col: "xs-12",
-                        label: "Comentario", type: "textArea", required: true, defaultValue: defaultData?.descripcion, onSubmitEditing: () => {
+                        label: "Comentario", type: "textArea",  defaultValue: defaultData?.descripcion, onSubmitEditing: () => {
                             if (this.form) this.form.submit();
                         }
                     },
                      "fijar": {
                         col: "xs-12",
-                        label: "¿Fijar la llamada?", type: "checkBox", required: true, defaultValue: defaultData?.descripcion, onSubmitEditing: () => {
+                        label: "¿Fijar la llamada?", type: "checkBox",  defaultValue: defaultData?.descripcion, onSubmitEditing: () => {
                             if (this.form) this.form.submit();
                         }
                     }
