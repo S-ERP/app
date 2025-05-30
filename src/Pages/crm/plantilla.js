@@ -4,6 +4,7 @@ import { SButtom, SDate, SDatePicker, SForm, SHr, SIcon, SInput, SList, SLoad, S
 // import STextPlay from '../Components/STextPlay';
 // import Container from '../Components/Container';
 // import SMD from '../SMD';
+import { Container } from '../../Components';
 import MDtest1 from '../../SMD/MDtest1';
 // import MDtest2 from '../SMD/MDtest2';
 // import SwipeableView from '../Components/SwipeableView';
@@ -101,62 +102,75 @@ export default class plantilla extends Component {
     ];
     return (
       <SView  col={"xs-12"} style={{}}>
-        <SHr height={20} />
+        <SHr height={0} />
 
-        {productos.map((prod) => {
-          const seleccionado = !!this.state.productos[prod.key];
-            return (
-              <SView
-              key={prod.key}
-              col={"xs-12"}
-              row
-              style={{
-                alignItems: "center",
-                marginBottom: 8,
-                justifyContent: "space-between", // Alinea los extremos
-                width: "100%",
-              }}
-              >
-              <SView row style={{ alignItems: "center", flex: 1 }}>
-                <SInput
-                type="checkBox"
-             
-                onChange={(val) => {
-                  this.setState({
-                  productos: {
-                    ...this.state.productos,
-                    [prod.key]: val ? { cantidad: 1 } : undefined,
-                  },
-                  });
-                }}
-                style={{ marginRight: 8 }}
-                />
-                <SText style={{ minWidth: 100 }}>{prod.label}</SText>
-              </SView>
-              <SView row style={{ alignItems: "center" }}>
-                <SText style={{ marginRight: 8 }}>Cantidad:</SText>
-                <SInput
-                type="number"
-                min={1}
-                
-                style={{ width: 60 }}
-              
-                onChange={(val) => {
-                  this.setState({
-                  productos: {
-                    ...this.state.productos,
-                    [prod.key]: {
-                    ...this.state.productos[prod.key],
-                    cantidad: Number(val) || 1,
-                    },
-                  },
-                  });
-                }}
-                />
-              </SView>
-              </SView>
-            );
-        })}
+{productos.map((prod) => {
+  const seleccionado = !!this.state.productos[prod.key];
+  return (
+    <SView
+      key={prod.key}
+      row
+      style={{
+        width: "100%",
+        alignItems: "center", // Asegura alineado vertical de TODOS los hijos
+        marginBottom: 12,
+      }}
+    >
+      {/* Checkbox */}
+      <SView style={{ justifyContent: "center", alignItems: "center", marginRight: 8 }}>
+        <SInput
+          type="checkBox"
+          value={seleccionado}
+          onChange={(val) => {
+            this.setState({
+              productos: {
+                ...this.state.productos,
+                [prod.key]: val ? { cantidad: 1 } : undefined,
+              },
+            });
+          }}
+        />
+      </SView>
+
+      {/* Label BIEN ALINEADO */}
+      <SView style={{
+        minWidth: 120,
+        justifyContent: "center",
+        alignItems: "center", // <-- CLAVE para el alineado
+        height: 40 // Usa el mismo alto que el input para asegurar alineado
+      }}>
+        <SText style={{margin: 0, padding: 0, lineHeight: 40}}>{prod.label}</SText>
+      </SView>
+
+      {/* Input de cantidad */}
+      <SView style={{
+        flexDirection: "row",
+        alignItems: "center",
+        marginLeft: 32, // Espaciado entre label y cantidad
+        gap: 4,
+      }}>
+        <SText style={{ marginRight: 6, lineHeight: 40 }}>Cantidad</SText>
+        <SInput
+          type="number"
+          min={1}
+          defaultValue={this.state.productos[prod.key]?.cantidad || 1}
+          style={{ width: 60, height: 40 }}
+          onChange={(val) => {
+            this.setState({
+              productos: {
+                ...this.state.productos,
+                [prod.key]: {
+                  ...this.state.productos[prod.key],
+                  cantidad: Number(val) || 1,
+                },
+              },
+            });
+          }}
+        />
+      </SView>
+    </SView>
+  );
+})}
         <SButtom
           style={{ marginTop: 16 }}
           onPress={() => {
@@ -165,12 +179,12 @@ export default class plantilla extends Component {
               .filter(([k, v]) => !!v)
               .map(([k, v]) => ({ key: k, cantidad: v.cantidad }));
             console.log("Carrito:", carrito);
-          }}
-        >
-        </SButtom>
-      </SView>
-    );
-  }
+            }}
+          >
+          </SButtom>
+          </SView>
+        );
+        }
 
   if (activeFormTab === "Adicional") {
     return <SForm
