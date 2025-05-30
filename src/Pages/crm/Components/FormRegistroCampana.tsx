@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import MDL from '../../../MDL';
 import { DinamicTable } from 'servisofts-table';
-import { SForm, SHr, SIcon, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SForm, SHr, SIcon, SInput, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import PButtom from '../../../Components/PButtom';
 import { Proyecto } from '../../../MDL/crm/type';
 
@@ -95,6 +95,16 @@ export default class FormRegistroCampana extends Component<FormRegistroType & { 
 
                 }}
             />
+            <SHr />
+            <SInput type='textArea' defaultValue={`
+            curl --location --request GET '192.168.2.1:30051/api' \
+                --header 'Content-Type: application/json' \
+                --data '{
+                 "component": "campana",
+                "type": "me_interesa",
+                "telefono": "{{NUMERO_DE_TELEFONO}}",
+                "key_campana": "${this.props.defaultData.key}"
+                }`} />
             <SHr />
             <SView row col={"xs-12"}>
                 {this.props.onCancel && <>
