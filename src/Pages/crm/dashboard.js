@@ -1,6 +1,6 @@
 import React, { Component, createRef } from 'react';
 import { Dimensions, UIManager, findNodeHandle } from 'react-native';
-import { SPage, SText, STheme, SView } from 'servisofts-component';
+import { SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -45,6 +45,7 @@ export default class Dashboard extends Component {
     }
 
     updateCardStage = (cardKey, newStage) => {
+        console.log("Updating card stage", cardKey, newStage);
         this.setState((prev) => ({
             cards: prev.cards.map((c) =>
                 c.key === cardKey ? { ...c, state: newStage } : c
@@ -71,7 +72,57 @@ export default class Dashboard extends Component {
 
                 if (isInside) {
                     const stage = stages.find((s) => s.key === stageKey);
-                    if (stage) this.updateCardStage(cardKey, stage.name);
+                    if (stage) {
+                        console.log("Card dropped in stage:", stage.name);
+                        // Quiero detectar cual es el card mas cercano al drop para colocar el card que estoy soltando luego de el card mas cercano al drop
+                        // Obtener las cards del stage destino
+                        const cardsInStage = this.state.cards.filter(c => c.state === stage.name && c.key !== cardKey);
+
+                        let closestCardKey = null;
+                        let minDistance = Infinity;
+                        let dropY = gestureEnd.absoluteY;
+
+                        // Medir cada card para encontrar la más cercana al drop
+                        const measurePromises = cardsInStage.map(c => {
+                            const cardRef = this.cardRefs[c.key];
+                            if (!cardRef?.current) return Promise.resolve(null);
+                            const node = findNodeHandle(cardRef.current);
+                            if (!node) return Promise.resolve(null);
+
+                            return new Promise(resolve => {
+                                UIManager.measure(node, (x, y, width, height, pageX, pageY) => {
+                                    // Centro vertical de la card
+                                    const cardCenterY = pageY + height;
+                                    const distance = Math.abs(dropY - cardCenterY);
+                                    resolve({ key: c.key, distance, cardCenterY });
+                                });
+                            });
+                        });
+
+                        Promise.all(measurePromises).then(results => {
+                            results.forEach(res => {
+                                if (res && res.distance < minDistance) {
+                                    minDistance = res.distance;
+                                    closestCardKey = res.key;
+                                }
+                            });
+
+                            // Aquí puedes reordenar las cards: insertar el cardKey después de closestCardKey
+                            this.setState(prev => {
+                                let newCards = prev.cards.filter(c => c.key !== cardKey);
+                                const insertIndex = closestCardKey
+                                    ? newCards.findIndex(c => c.key === closestCardKey) + 1
+                                    : 0;
+                                newCards.splice(insertIndex, 0, { ...prev.cards.find(c => c.key === cardKey), state: stage.name });
+                                return { cards: newCards };
+                            });
+                        });
+                        // Ya no llamar a this.updateCardStage aquí, porque el setState anterior lo hace
+                        return;
+
+
+                        this.updateCardStage(cardKey, stage.name);
+                    }
                 }
             });
         }
@@ -225,8 +276,10 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
         })
         .onEnd((e) => {
             runOnJS(onDrop)(card.key, e);
-            offsetX.value = withSpring(0);
-            offsetY.value = withSpring(0);
+            // offsetX.value = withSpring(0);
+            // offsetY.value = withSpring(0);
+            offsetX.value = 0;
+            offsetY.value = 0;
         });
 
     const animatedStyle = useAnimatedStyle(() => {
@@ -254,7 +307,9 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
                     cursor: "grab",
                 }, animatedStyle]}
             >
-                <SText>{card.cliente.telefono}</SText>
+                <SText onPress={() => {
+                    SNavigation.navigate("/crm/plantilla", { key: card.key })
+                }} >{card.cliente.telefono}</SText>
                 <SText color={STheme.color.lightGray}>{card.cliente.nombres}</SText>
             </Animated.View>
         </GestureDetector>
