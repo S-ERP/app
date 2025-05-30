@@ -63,7 +63,7 @@ export default class plantilla extends Component {
     // if (key == "Exportar") return this.renderExportExcel();
     var select = !!this.state.select[key]
     return <>
-      <SView height center card style={{
+      <SView center card style={{
         paddingLeft: 8,
         paddingRight: 8,
         opacity: select ? 1 : 0.5,
@@ -123,66 +123,157 @@ export default class plantilla extends Component {
             return (
               <SView
                 key={prod.key}
-                col={"xs-12"}
                 row
+                center
                 style={{
-                  alignItems: "center",
-                  marginBottom: 8,
-                  justifyContent: "space-between", // Alinea los extremos
-                  width: "100%",
+                  width: "80%",
+                  marginBottom: 24,
+                  height: 65,
+                  marginLeft: "15%",
                 }}
               >
-                <SView row style={{ alignItems: "center", flex: 1 }}>
-                  <SInput
-                    type="checkBox"
+                {/* Checkbox + Label en una sola fila */}
+                <SView row style={{ alignItems: "center", }}>
+                  <SView style={{
+                    // Tamaño estándar
+                    height: 24,
+                  }}>
 
-                    onChange={(val) => {
-                      this.setState({
-                        productos: {
-                          ...this.state.productos,
-                          [prod.key]: val ? { cantidad: 1 } : undefined,
-                        },
-                      });
+                    <SInput
+                      type="checkBox"
+                      style={{
+                        marginRight: 45,
+                      }}
+                      value={(this.state.productos[prod.key]?.cantidad || 0) > 0}
+                      onChange={(val) => {
+                        // Si el checkbox se desmarca, quitar el producto
+                        if (!val) {
+                          this.setState({
+                            productos: {
+                              ...this.state.productos,
+                              [prod.key]: undefined,
+                            },
+                          });
+                        } else {
+
+                          this.setState({
+                            productos: {
+                              ...this.state.productos,
+                              [prod.key]: { cantidad: 1 },
+                            },
+                          });
+                        }
+                      }}
+                    />
+                  </SView>
+                  <SText
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "bold",
+                      minWidth: 120,
                     }}
-                    style={{ marginRight: 8 }}
-                  />
-                  <SText style={{ minWidth: 100 }}>{prod.label}</SText>
+                  >
+                    {prod.label}
+                  </SText>
                 </SView>
-                <SView row style={{ alignItems: "center" }}>
-                  <SText style={{ marginRight: 8 }}>Cantidad:</SText>
-                  <SInput
-                    type="number"
-                    min={1}
 
-                    style={{ width: 60 }}
+                <SView center style={{
+                  alignItems: "center",
+                  flex: 1.5,
+                  justifyContent: "center",
+                  marginBottom: 15,
+                }}>
 
-                    onChange={(val) => {
-                      this.setState({
-                        productos: {
-                          ...this.state.productos,
-                          [prod.key]: {
-                            ...this.state.productos[prod.key],
-                            cantidad: Number(val) || 1,
-                          },
-                        },
-                      });
+                  <SText
+                    style={{
+                      fontSize: 12,
+                      marginRight: 8,
+                      lineHeight: 24,
                     }}
-                  />
+                  >
+                    Cantidad
+                  </SText>
+                  <SView style={{
+                    width: 60, // Ancho fijo para el input
+                    height: 36, // Altura fija para el input
+                  }}>
+                    <SButtom
+                      type="primary"
+                      children="+"
+                      style={{
+                        position: "absolute",
+                        left: 53,
+                        width: 25,
+                        height: 25,
+
+                      }}
+                      onPress={() => {
+                        const cantidadActual = this.state.productos[prod.key]?.cantidad || 0;
+                        this.setState({
+                          productos: {
+                            ...this.state.productos,
+                            [prod.key]: {
+                              ...this.state.productos[prod.key],
+                              cantidad: cantidadActual + 1,
+                            },
+                          },
+                        });
+                      }}
+                    />
+                    <SButtom
+                      type="primary"
+                      children="-"
+                      style={{
+                        position: "absolute",
+                        right: 70,
+                        width: 25,
+                        height: 25,
+
+                      }}
+                      onPress={() => {
+                        const cantidadActual = this.state.productos[prod.key]?.cantidad || 0;
+                        if (cantidadActual > 0) {
+                          this.setState({
+                            productos: {
+                              ...this.state.productos,
+                              [prod.key]: {
+                                ...this.state.productos[prod.key],
+                                cantidad: cantidadActual - 1,
+                              },
+                            },
+                          });
+                        }
+                      }}
+                      disabled={!seleccionado}
+                    />
+                    <SInput
+                      type="number"
+                      min={1}
+                      value={seleccionado ? this.state.productos[prod.key]?.cantidad : "0"}
+                      style={{
+                        width: 40,
+                        height: 25,
+                        textAlign: "center",
+                      }}
+                      onChange={(val) => {
+                        this.setState({
+                          productos: {
+                            ...this.state.productos,
+                            [prod.key]: {
+                              ...this.state.productos[prod.key],
+                              cantidad: Number(val) || 0,
+                            },
+                          },
+                        });
+                      }}
+                      disabled={!seleccionado}
+                    />
+                  </SView>
                 </SView>
               </SView>
             );
-          })}
-          <SButtom
-            style={{ marginTop: 16 }}
-            onPress={() => {
-              // Aquí puedes manejar el "carrito" con los productos seleccionados y cantidades
-              const carrito = Object.entries(this.state.productos)
-                .filter(([k, v]) => !!v)
-                .map(([k, v]) => ({ key: k, cantidad: v.cantidad }));
-              console.log("Carrito:", carrito);
-            }}
-          >
-          </SButtom>
+          })
+          }
         </SView>
       );
     }
@@ -266,7 +357,7 @@ export default class plantilla extends Component {
 
           <SView col={"xs-12 sm-3.8"} center  >
 
-            <SView col={"xs-12"} style={{ padding: 16, borderRadius: 16, borderWidth: 2, minHeight: 515 }} center border={STheme.color.card} backgroundColor={STheme.color.card}>
+            <SView col={"xs-12"} style={{ padding: 16, borderRadius: 16, borderWidth: 2, height: 450 }} center border={STheme.color.card} backgroundColor={STheme.color.card}>
               <SView col="xs-12" row center>
                 <SView col="xs-6">
                   <SText fontSize={10}>Horario de cliente</SText>
@@ -325,7 +416,7 @@ export default class plantilla extends Component {
                 />
               </SView>
               <SHr height={16} />
-              <ScrollView style={{ maxHeight: "100%", width: "100%" }}>
+              <ScrollView style={{ width: "100%", maxHeight: 400, paddingBottom: 16 }}>
                 <SView col={"xs-12"} row border={"transparent"}
                   style={{
 
@@ -334,11 +425,9 @@ export default class plantilla extends Component {
                   }}
                 >
                   {this.renderActiveForm()}
-
-
-
                 </SView>
               </ScrollView>
+
               <SView col="xs-12" row center>
                 <SButtom
                   onPress={() => this.handlePrevTab()}
