@@ -41,6 +41,18 @@ export type Cliente = {
  sexo: string;
 };
 
+export type TipoMovimientoLead = {
+ key: string;
+ key_usuario: string;
+ fecha_on: string;
+ estado: number;
+
+ key_empresa: string;
+ titulo: string;
+ tipo: string;
+ descripcion: string;
+};
+
 export type EventListener = {
  type: "onChange",
 }
