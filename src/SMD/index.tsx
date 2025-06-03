@@ -166,6 +166,7 @@ export default class SMD extends Component<SMDPropsType> {
             case 5: size = Math.round(this.props.fontSize * 0.9); break;
         }
         return <>
+        <View style={{ borderTopWidth: hsize < 3 ? 1 : 0, height: size / 2, borderColor: "#666", width: "100%" }}></View>
             {this.buildLine(resp[2], { ...style, fontSize: size, fontWeight: "600" })}
             <View style={{ borderTopWidth: hsize < 3 ? 1 : 0, height: size / 2, borderColor: "#666", width: "100%" }}></View>
         </>

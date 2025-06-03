@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { SIcon, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SIcon, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import FormRegistroProyecto from './Components/FormRegistroProyecto';
 import MDL from '../../MDL';
 import { DinamicTable } from 'servisofts-table';
@@ -19,7 +19,7 @@ export default class proyecto extends Component {
         render() {
                 return <SPage title={"Proyecto"} icon={<SIcon name='empresa' fill={STheme.color.text} />} disableScroll>
 
-                        <SText onPress={() => {
+                        {/* <SText onPress={() => {
                                 PopupRellamada.open(({
                                         onRegister: (e) => {
                                         }
@@ -30,7 +30,7 @@ export default class proyecto extends Component {
                                         onRegister: (e) => {
                                         }
                                 }))
-                        }}>{"Popup razón"}</SText>
+                        }}>{"Popup razón"}</SText> */}
 
                         <DinamicTable
                                 ref={ref => this.DinamicTable = ref}
@@ -57,7 +57,22 @@ export default class proyecto extends Component {
                                                         {
                                                                 label: "Productos",
                                                                 onPress: () => {
-
+                                                                        SNavigation.navigate("/productos/producto",{
+                                                                                onSelect: (producto) => {
+                                                                                        console.log("Producto seleccionado:", producto);
+                                                                                        // SSocket.sendPromise({
+                                                                                        //         service: "crm",
+                                                                                        //         component: "producto",
+                                                                                        //         type: "editar",
+                                                                                        //         data: { ...producto, key_proyecto: e.row.key }
+                                                                                        // }).then(e => {
+                                                                                        //         console.log("Producto actualizado:", e);
+                                                                                        //         this.DinamicTable.loadData();
+                                                                                        // }).catch(error => {
+                                                                                        //         console.error("Error al actualizar producto:", error);
+                                                                                        // });
+                                                                                }
+                                                                        })
                                                                 },
                                                                 icon: <SIcon name="producto" fill={STheme.color.text} />,
                                                         },

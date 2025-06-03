@@ -4,6 +4,7 @@ import { SHr, SIcon, SPage, STheme } from 'servisofts-component';
 import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
 import Components from '../../Components';
 import Model from '../../Model';
+import SIconApp from '../../Assets/SIconApp';
 
 export default class root extends Component {
  constructor(props) {
@@ -29,6 +30,7 @@ export default class root extends Component {
     <MenuButtom label={"Lead"} url={"/crm/lead"} icon={<SIcon name='addTarea' fill={STheme.color.text} />} />
     <MenuButtom label={"dashboard"} url={"/crm/dashboard"} icon={<SIcon name='addTarea' fill={STheme.color.text} />} />
     <MenuButtom label={"tipo movimiento lead"} url={"/crm/tipoMovimientoLead"} icon={<SIcon name='empresa' fill={STheme.color.text} />} />
+    <MenuButtom label={"Llamar"} url={"/crm/llamar"} icon={<SIconApp name='microfono' fill={STheme.color.text} />} />
 
    </MenuPages>
 

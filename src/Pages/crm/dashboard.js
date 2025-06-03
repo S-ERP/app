@@ -15,11 +15,37 @@ import {
 } from 'react-native-gesture-handler';
 import MDL from '../../MDL';
 
+// "nuevo"
+//     | "rellamada"
+//     | "llamada_fallida"
+//     | "en_espera"
+//     | "confirmado"
+//     | "cancelado"
+//     | "enviado"
+//     | "en_espera_pago"
+//     | "en_espera_pago_sin_respuesta"
+//     | "en_espera_pago_rellamada"
+//     | "rechazo"
+//     | "pagado"
+//     | "devuelto"
+//     | "spam"
+//     | "double"
 const stages = [
-    { key: 'lead', name: 'lead', color: STheme.color.warning },
-    { key: 'inscripto', name: 'inscripto', color: STheme.color.success },
-    { key: 'Negociación', name: 'Negociación', color: STheme.color.lightGray },
-    { key: 'cerrado', name: 'cerrado', color: STheme.color.danger },
+    { key: 'nuevo', name: 'nuevo', color: STheme.color.primary },
+    { key: 'rellamada', name: 'rellamada', color: STheme.color.secondary },
+    { key: 'llamada_fallida', name: 'llamada_fallida', color: STheme.color.danger },
+    { key: 'en_espera', name: 'en_espera', color: STheme.color.lightGray },
+    { key: 'confirmado', name: 'confirmado', color: STheme.color.success },
+    { key: 'cancelado', name: 'cancelado', color: STheme.color.danger },
+    { key: 'enviado', name: 'enviado', color: STheme.color.info },
+    { key: 'en_espera_pago', name: 'en_espera_pago', color: STheme.color.warning },
+    { key: 'en_espera_pago_sin_respuesta', name: 'en_espera_pago_sin_respuesta', color: STheme.color.warning },
+    { key: 'en_espera_pago_rellamada', name: 'en_espera_pago_rellamada', color: STheme.color.warning },
+    { key: 'rechazo', name: 'rechazo', color: STheme.color.danger },
+    { key: 'pagado', name: 'pagado', color: STheme.color.success },
+    { key: 'devuelto', name: 'devuelto', color: STheme.color.danger },
+    { key: 'spam', name: 'spam', color: STheme.color.danger },
+    { key: 'double', name: 'double', color: STheme.color.danger },
 
 ];
 
@@ -44,14 +70,12 @@ export default class Dashboard extends Component {
         })
     }
 
-    updateCardStage = (cardKey, newStage) => {
-        console.log("Updating card stage", cardKey, newStage);
-        this.setState((prev) => ({
-            cards: prev.cards.map((c) =>
-                c.key === cardKey ? { ...c, state: newStage } : c
-            ),
-        }));
-    };
+    stateCardChanged = (cardKey, newState) => {
+        MDL.crm.clienteProyecto.editar({
+            key: cardKey,
+            state: newState,
+        })
+    }
 
     handleDrop = (cardKey, gestureEnd) => {
         this.setState({ draggingCard: null });
@@ -110,10 +134,17 @@ export default class Dashboard extends Component {
                             // Aquí puedes reordenar las cards: insertar el cardKey después de closestCardKey
                             this.setState(prev => {
                                 let newCards = prev.cards.filter(c => c.key !== cardKey);
+                                const editCard = prev.cards.find(c => c.key === cardKey);
                                 const insertIndex = closestCardKey
                                     ? newCards.findIndex(c => c.key === closestCardKey) + 1
                                     : 0;
-                                newCards.splice(insertIndex, 0, { ...prev.cards.find(c => c.key === cardKey), state: stage.name });
+                                newCards.splice(insertIndex, 0, { ...editCard, state: stage.name });
+
+                                if (editCard.state !== stage.name) {
+                                    this.stateCardChanged(cardKey, stage.name);
+                                    console.log("Soltaste el item con key:", editCard);
+                                }
+
                                 return { cards: newCards };
                             });
                         });

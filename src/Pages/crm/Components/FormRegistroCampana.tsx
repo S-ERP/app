@@ -103,7 +103,7 @@ export default class FormRegistroCampana extends Component<FormRegistroType & { 
                  "component": "campana",
                 "type": "me_interesa",
                 "telefono": "{{NUMERO_DE_TELEFONO}}",
-                "key_campana": "${this.props.defaultData.key}"
+                "key_campana": "${this.props?.defaultData?.key}"
                 }`} />
             <SHr />
             <SView row col={"xs-12"}>

@@ -453,7 +453,7 @@ export default class plantilla extends Component {
        <SHr />
        <SView col={"xs-12"} style={{ maxHeight: "100%", overflow: "hidden" }} >
         <ScrollView>
-         <SMD fontSize={11} padding={0} space={4}>
+         <SMD fontSize={11} padding={0} space={1}>
           {this.state?.clienteProyecto?.proyecto?.guion}
          </SMD>
         </ScrollView>

@@ -8,6 +8,7 @@ import plantilla from "./plantilla";
 import dashboard from "./dashboard";
 import lead from "./lead";
 import tipoMovimientoLead from "./tipoMovimientoLead";
+import llamar from "./llamar";
 
 export default SPage.combinePages("crm", {
   "": root,
@@ -19,4 +20,5 @@ export default SPage.combinePages("crm", {
   dashboard,
   lead,
   tipoMovimientoLead,
+  llamar
 });
