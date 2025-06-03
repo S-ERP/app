@@ -39,12 +39,12 @@ export default class plantilla extends Component {
 
   this.state = {
    select: {
-    "confirmado": true,
-    "Cancelado": true,
-    "Double": true,
-    "Spam": true,
+    "confirmado": false,
+    "Cancelado": false,
+    "Double": false,
+    "Spam": false,
     "Recall": true,
-    "FeactureRecall": true
+    "FeactureRecall": false
    },
    activeTab: "Detalles",
    activeFormTab: "Detalles",
@@ -308,30 +308,57 @@ export default class plantilla extends Component {
     // scrollEnabled
     // scrollEnabled={false}
     data={[
-     { key: "confirmado", label: "confirmado", color: color_activado, icono: "addTarea" },
-     { key: "Cancelado", label: "Cancelado", color: color_activado, icono: "Check", onPress: () => { PopupRazon.open(({ tipo: "cancelacion", onRegister: (e) => {  } })) } },
-     { key: "Double", label: "Double", color: color_activado, icono: "World" },
      {
-      key: "Spam", label: "Spam", color: color_activado, icono: "Egreso", onPress: () => {
-       // console.log("aqio")
-       // PopupRazon.open(({ tipo: "spam", onRegister: (e) => { } }))
+      key: "confirmado", label: "confirmado", color: color_activado, icono: "addTarea", onPress: () => {
+       PopupRazon.open(
+        ({
+         tipo: "confirmado", onRegister: (e) => { MDL.crm.clienteProyecto.editar({ key: this.pk, state: "confirmado", key_tipo_movimiento_lead: e.selectedOption.key }) }
+        }))
       }
      },
-     { key: "Recall", label: "Recall", color: color_activado, icono: "tpGa", onPress: () => { PopupRellamada.open(({ onRegister: (e) => {
-
-     } })) } },
+     {
+      key: "Cancelado", label: "Cancelado", color: color_activado, icono: "Check", onPress: () => {
+       PopupRazon.open(
+        ({
+         tipo: "cancelado", onRegister: (e) => { MDL.crm.clienteProyecto.editar({ key: this.pk, state: "cancelado", key_tipo_movimiento_lead: e.selectedOption.key }) }
+        }))
+      }
+     },
+     {
+      key: "Double", label: "Double", color: color_activado, icono: "World", onPress: () => {
+       PopupRazon.open(
+        ({
+         tipo: "double", onRegister: (e) => { MDL.crm.clienteProyecto.editar({ key: this.pk, state: "double", key_tipo_movimiento_lead: e.selectedOption.key }) }
+        }))
+      }
+     },
+     {
+      key: "Spam", label: "Spam", color: color_activado, icono: "Egreso", onPress: () => {
+       PopupRazon.open(
+        ({
+         tipo: "spam", onRegister: (e) => {
+          // console.log("Datos registrados titulo:", e.selectedOption.content);
+          MDL.crm.clienteProyecto.editar({ key: this.pk, state: "spam", key_tipo_movimiento_lead: e.selectedOption.key })
+         }
+        }))
+      }
+     },
+     {
+      key: "Recall", label: "Recall", color: color_activado, icono: "tpGa", onPress: () => {
+       PopupRazon.open(
+        ({
+         tipo: "rellamada", onRegister: (e) => { MDL.crm.clienteProyecto.editar({ key: this.pk, state: "rellamada", key_tipo_movimiento_lead: e.selectedOption.key }) }
+        }))
+      }
+     },
      {
       key: "FeactureRecall", label: "llamada fallida", color: color_activado, icono: "productos", onPress: () => {
-
-       // console.log(eee)
-
-       PopupRazon.open(({
-        tipo: "llamada_fallida", onRegister: (selectedData) => {
-
-         console.log('key seleccionado:', selectedData?.key);
-
-     } })) } },
-
+       PopupRazon.open(
+        ({
+         tipo: "llamada_fallida", onRegister: (e) => { MDL.crm.clienteProyecto.editar({ key: this.pk, state: "llamada_fallida", key_tipo_movimiento_lead: e.selectedOption.key }) }
+        }))
+      }
+     },
     ]}
     render={data => this.optionItem(data)}
    />
@@ -385,7 +412,7 @@ export default class plantilla extends Component {
            backgroundColor: "red",
            marginRight: 8,
           }}>
-           <SText fontSize={10} color="#fff">Nuevo</SText>
+           <SText fontSize={10} color="#fff">{this.state?.clienteProyecto?.state}</SText>
           </SView>
 
           <SView>
