@@ -43,11 +43,10 @@ export default class Llamada extends React.Component<{
     });
   }
 
-  render() {
+  rendera_2() {
     return (
       <>
-        <style>{`.outer-circle{width:40px;height:40px;border-radius:20px;background-color:rgba(255,255,255,0.3);position:relative;animation:pulse 2.0s ease-out infinite;}.inner-circle{width:20px;height:20px;border-radius:10px;background-color:#FFFFFF;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 8px #fff;}@keyframes pulse{0%{transform:scale(0.3);opacity:0.8;}70%{transform:scale(2);opacity:0;}100%{transform:scale(0.3);opacity:0;}}`}</style>
-        <SPage disableScroll hidden>
+        {/* <SPage disableScroll hidden> */}
           {/* <SView col="xs-12" row center>
             <SView col="xs-3.5" row center>
               <SView width={160} center style={{ borderColor: "white", borderRadius: 48, borderWidth: 6, backgroundColor: "#8CB1F8" }}>
@@ -126,16 +125,17 @@ export default class Llamada extends React.Component<{
               </SView>
             </SView>
           </SView>
-        </SPage>
+        {/* </SPage> */}
       </>
     );
   }
 
-  // render() {
-  //     return <SView onPress={this.handlePress.bind(this)}>
-  //         {!this.llamada && <SText>{"LLAMAR 5555"}</SText>}
-  //         {this.llamada && <SText>{"COLGAR SS" + " " + this.llamada?.start_time+ "DDD"}</SText>}
-  //         <SText >{this.props.phone}</SText>
-  //     </SView>
-  // }
+  render() {
+      return <SView onPress={this.handlePress.bind(this)}>
+          {!this.llamada && <SText>{"LLAMAR"}</SText>}
+          {/* {this.llamada && <SText>{"COLGAR" + " " + this.llamada?.start_time+ "DDD"}</SText>} */}
+          {this.llamada && <SText>{"COLGAR" + " "}</SText>}
+          <SText >{this.props.phone}</SText>
+      </SView>
+  }
 }
