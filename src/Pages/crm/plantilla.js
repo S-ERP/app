@@ -309,11 +309,28 @@ export default class plantilla extends Component {
     // scrollEnabled={false}
     data={[
      { key: "confirmado", label: "confirmado", color: color_activado, icono: "addTarea" },
-     { key: "Cancelado", label: "Cancelado", color: color_activado, icono: "Check" },
+     { key: "Cancelado", label: "Cancelado", color: color_activado, icono: "Check", onPress: () => { PopupRazon.open(({ tipo: "cancelacion", onRegister: (e) => {  } })) } },
      { key: "Double", label: "Double", color: color_activado, icono: "World" },
-     { key: "Spam", label: "Spam", color: color_activado, icono: "Egreso", onPress: () => { PopupRazon.open(({ onRegister: (e) => { } })) } },
-     { key: "Recall", label: "Recall", color: color_activado, icono: "tpGa", onPress: () => { PopupRellamada.open(({ onRegister: (e) => { } })) } },
-     { key: "FeactureRecall", label: "Feacture recall", color: color_activado, icono: "productos" }
+     {
+      key: "Spam", label: "Spam", color: color_activado, icono: "Egreso", onPress: () => {
+       // console.log("aqio")
+       // PopupRazon.open(({ tipo: "spam", onRegister: (e) => { } }))
+      }
+     },
+     { key: "Recall", label: "Recall", color: color_activado, icono: "tpGa", onPress: () => { PopupRellamada.open(({ onRegister: (e) => {
+
+     } })) } },
+     {
+      key: "FeactureRecall", label: "llamada fallida", color: color_activado, icono: "productos", onPress: () => {
+
+       // console.log(eee)
+
+       PopupRazon.open(({
+        tipo: "llamada_fallida", onRegister: (selectedData) => {
+
+         console.log('key seleccionado:', selectedData?.key);
+
+     } })) } },
 
     ]}
     render={data => this.optionItem(data)}

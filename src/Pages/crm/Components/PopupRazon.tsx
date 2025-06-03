@@ -9,178 +9,145 @@ import PopupBuscaRazon from './PopupBuscaRazon';
 
 
 type PopupRazonType = {
-    onRegister: (e: any) => void,
-    onActualizar: (e: any) => void,
-    onCancel?: () => void,
+ onRegister: (e: any) => void,
+ onActualizar: (e: any) => void,
+ onCancel?: () => void,
+ tipo?: string // ⬅️ nueva prop
+
 }
 
 export default class PopupRazon extends Component<PopupRazonType & { defaultData?: any }> {
-    static open(props: PopupRazonType) {
-        SPopup.open({
-            key: "ppuprellamada",
-            content: <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 320 }} padding={16} withoutFeedback col={"xs-11"}>
-                <PopupRazon {...props} onRegister={(e) => {
-                    SPopup.close("ppuprellamada")
-                    if (props.onRegister) props.onRegister(e)
-                }}
-                    onCancel={() => {
-                        SPopup.close("ppuprellamada")
-                        if (props.onCancel) props.onCancel()
-                    }}
-                />
-            </SView>
-        })
-    }
 
-    time(text: string) {
-        return <SView col={"xs-2.4"} style={{ padding: 4 }}>
-            <SView padding={5} style={{
-                backgroundColor: STheme.color.card,
-                borderRadius: 12,
-                alignItems: "center",
-                justifyContent: "center",
-            }}>
-                <SText fontSize={10} color={STheme.color.text} bold>{text}</SText>
-            </SView>
-        </SView>
-    }
+ static open(props: PopupRazonType) {
+  SPopup.open({
+   key: "ppuprellamada",
+   content: <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 320 }} padding={16} withoutFeedback col={"xs-11"}>
+    <PopupRazon {...props} onRegister={(e) => {
+     SPopup.close("ppuprellamada")
+     if (props.onRegister) props.onRegister(e)
+    }}
+     onCancel={() => {
+      SPopup.close("ppuprellamada")
+      if (props.onCancel) props.onCancel()
+     }}
+    />
+   </SView>
+  })
+ }
 
-    getOptionsRazon() {
-        return [
-            { key: "", content: "--" },
-            { key: "1", content: "13. Publicidad tiene información diferente sobre el producto por ejemplo, pastillas en vez de gel" },
-            { key: "2", content: "25. El cliente pensó que había ganado un regalo gratis." },
-            { key: "3", content: "17. Barrera de lenguaje." },
-            { key: "4", content: "28. Cliente menor de 18 años" },
-        ]
-    }
+ constructor(props) {
+  super(props);
+  this.state = {
+   opcionesRazon: [], // ✅ Estado inicial como array
+  };
+ }
 
-    form: SForm | null = null;
-    inputdocumento: SInput | undefined;
-    popupBuscaRazon: PopupBuscaRazon | undefined;
-    render() {
+ async componentDidMount() {
+  await this.getOptionsRazon();
+ }
 
-        const { defaultData } = this.props;
+ time(text: string) {
+  return <SView col={"xs-2.4"} style={{ padding: 4 }}>
+   <SView padding={5} style={{
+    backgroundColor: STheme.color.card,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+   }}>
+    <SText fontSize={10} color={STheme.color.text} bold>{text}</SText>
+   </SView>
+  </SView>
+ }
 
 
-        return <SView center>
-            <SText bold>{"Indique la razón de spam"}</SText>
-            <SHr height={20} />
 
-            <SForm row
-                ref={(ref: any) => this.form = ref}
-                style={{
-                    justifyContent: "space-between",
-                }}
-                inputs={{
-                    "fecha": {
-                        col: "xs-12",
-                        label: "Seleccione una razón *", type: "select", autoFocus: true, required: true, defaultValue: defaultData?.nombre,
-                        options: this.getOptionsRazon(), height: 50,
-                    },
-                }}
-                onSubmit={(e: any) => {
+ getOptionsRazon = async () => {
+  try {
+   const all = await MDL.crm.tipoMovimientoLead.getAll();
+   if (!all) return;
 
-                    const data = { ...defaultData, ...e };
-                    const prom = data?.key ? MDL.crm.proyecto.editar(data) : MDL.crm.proyecto.registrar(data);
+   const tipoSeleccionado = this.props.tipo ?? "spam"; // por defecto "spam"
 
-                    SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
 
-                    prom.then((res) => {
-                        SNotification.send({ key: "registro", title: data?.key ? "Actualizado" : "Registrado", color: STheme.color.success, time: 5000 });
-                        if (data?.key) {
-                            this.props.onActualizar?.(res);
-                        } else {
-                            this.props.onRegister?.(res);
-                        }
-                        SPopup.close("ppuprellamada");
-                    }).catch((err) => {
-                        SNotification.send({ key: "registro", title: "Error", body: err, color: STheme.color.danger });
-                    });
+   const opcionesFiltradas = Object.values(all)
+    .filter(item => item.tipo === tipoSeleccionado)
+    .map(item => ({
+     key: item.key,
+     content: item.titulo
+    }));
 
-                    // MDL.crm.proyecto.registrar(e).then((e: any) => {
-                    //     SNotification.send({
-                    //         key: "registro",
-                    //         title: "Registrado con exito",
-                    //         color: STheme.color.success,
-                    //         time: 5000,
-                    //     })
-                    //     if (this.props.onRegister) this.props.onRegister(e)
-                    // }).catch((e: any) => {
-                    //     SNotification.send({
-                    //         key: "registro",
-                    //         title: "Error al registrar",
-                    //         body: e,
-                    //         color: STheme.color.danger,
-                    //         time: 5000,
-                    //     })
-                    // })
+   this.setState({ opcionesRazon: opcionesFiltradas });
+  } catch (e) {
+   console.error("Error al cargar opciones:", e);
+  }
+ }
 
-                }}
-            />
-            <SHr />
-            <SView col={"xs-12"} row center>
-                <SInput ref={ref => this.inputdocumento = ref ?? undefined} flex
-                    onFocus={(e) => {
-                        PopupBuscaRazon.open({
-                            e: e,
-                            defaultValue: "",
-                            ref: (ref) => this.popupBuscaRazon = ref,
-                            onClose: () => this.popupBuscaRazon = undefined,
-                            onSelect: (e) => {
-                                console.log(e);
-                                // if (this.inpnit) this.inpnit.setValue(e.codigotipodocumentoidentidad)
-                                // if (this.inputdocumento) this.inputdocumento.setValue(e.numerodocumento)
-                                // if (this.inprazonsocial) this.inprazonsocial.setValue(e.nombrerazonsocial)
-                                // this.props.factura.data.codigoTipoDocumentoIdentidad = e.codigotipodocumentoidentidad
-                                // this.props.factura.data.numeroDocumento = e.numerodocumento
-                                // this.props.factura.data.nombreRazonSocial = e.nombrerazonsocial
-                                this.setState({ ...this.state })
-                                PopupBuscaRazon.close();
 
-                            }
-                        })
-                    }}
-                    onBlur={() => {
-                        new SThread(300, "CerrarPopupBuscarNit", true).start(() => {
-                            PopupBuscaRazon.close();
+ form: SForm | null = null;
+ inputdocumento: SInput | undefined;
+ popupBuscaRazon: PopupBuscaRazon | undefined;
+ render() {
 
-                        })
-                    }}
-                    onChangeText={e => {
-                        // this.props.factura.data.numeroDocumento = e
-                        if (this.popupBuscaRazon) {
-                            this.popupBuscaRazon.buscar(e)
-                        }
-                        // new SThread(1000, "Asda", true).start(() => {
-                        //     if (this.props.factura.data.codigoTipoDocumentoIdentidad == "5") {
-                        //         console.log("Verificando el nit")
-                        //         MDL.factura.verificarNit(this.props.factura.data.numeroDocumento).then(e => {
-                        //             console.log(e);
-                        //         }).catch(e => {
-                        //             console.log(e);
-                        //         })
-                        //     }
+  const { defaultData } = this.props;
 
-                        // })
-                    }} />
-            </SView>
-            <SHr height={20} />
+  const { opcionesRazon } = this.state;
 
-            <SView row col={"xs-12"}>
-                {this.props.onCancel && <>
-                    <PButtom flex type='danger' onPress={() => {
-                        if (this.props.onCancel) this.props.onCancel()
-                    }}>CANCELAR</PButtom>
-                    <SView width={8} />
-                </>}
+  console.log("jajaja " + defaultData)
 
-                <PButtom flex type="secondary" onPress={() => this.form?.submit()}>{defaultData ? "ACTUALIZAR" : "ACEPTAR"}</PButtom>
+  return <SView center>
+   <SText bold>{"Indique la razón de spam"}</SText>
+   <SHr height={20} />
 
-                {/* <PButtom flex type='primary' onPress={() => {
-                    if (this.form) this.form.submit();
-                }}>CREAR</PButtom> */}
-            </SView>
-        </SView >
-    }
+   <SForm row
+    ref={(ref: any) => this.form = ref}
+    style={{
+     justifyContent: "space-between",
+    }}
+    inputs={{
+     "key_tipoMovimientoLead": {
+      col: "xs-12",
+      label: "Seleccione una razón *", type: "select", autoFocus: true, required: true,
+      defaultValue: defaultData?.titulo,
+      options: opcionesRazon ?? [], // ✅ Se asegura que sea array
+      height: 50,
+     },
+    }}
+    onSubmit={(e: any) => {
+
+     console.log("peru " + JSON.stringify(e))
+     const data = { e };
+     // const data = { ...defaultData, ...e, ...opcionesRazon, titulo: defaultData?.titulo };
+     // const prom = data?.key ? MDL.crm.proyecto.editar(data) : MDL.crm.proyecto.registrar(data);
+     // SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
+
+     // prom.then((res) => {
+     //  SNotification.send({ key: "registro", title: data?.key ? "Actualizado" : "Registrado", color: STheme.color.success, time: 5000 });
+     //  if (data?.key) {
+     //   this.props.onActualizar?.(res);
+     //  } else {
+     //   this.props.onRegister?.(res);
+     //  }
+     //  SPopup.close("ppuprellamada");
+     // }).catch((err) => {
+     //  SNotification.send({ key: "registro", title: "Error", body: err, color: STheme.color.danger });
+     // });
+
+    }}
+   />
+   <SHr />
+
+   <SHr height={20} />
+
+   <SView row col={"xs-12"}>
+    {this.props.onCancel && <>
+     <PButtom flex type='danger' onPress={() => {
+      if (this.props.onCancel) this.props.onCancel()
+     }}>CANCELAR</PButtom>
+     <SView width={8} />
+    </>}
+
+    <PButtom flex type="secondary" onPress={() => this.form?.submit()}>{defaultData ? "ACTUALIZAR" : "ACEPTAR"}</PButtom>
+   </SView>
+  </SView >
+ }
 }
