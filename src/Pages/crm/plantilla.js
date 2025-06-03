@@ -341,7 +341,7 @@ export default class plantilla extends Component {
     // return proyectos;
 
     const { clienteProyecto } = this.state;
-    return <SPage center >
+    return <SPage  >
       {/* <SText card padding={8}>{"LLAMAR"}</SText> */}
       <Llamada phone={clienteProyecto?.cliente?.telefono} />
       <SView col={"xs-12"} center row border="transparent" padding={8}>
