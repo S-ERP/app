@@ -62,7 +62,7 @@ export default class FormRegistroTipoMovimientoLead extends Component<FormRegist
       label: "Tipo",
       required: true,
       type: "select",
-      options: ["cancelacion", "llamada_fallida", "spam"].map(a => ({
+      options: ["cancelado", "double", "spam","rellamada","llamada_fallida"].map(a => ({
        key: a,
        content: a
       })),
