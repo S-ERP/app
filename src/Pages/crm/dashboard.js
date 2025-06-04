@@ -33,6 +33,7 @@ import Recargar from '../../Components/Recargar';
 //     | "double"
 const stages = [
     { key: 'nuevo', name: 'nuevo', color: STheme.color.success },
+    { key: 'en_proceso', name: 'en_proceso', color: STheme.color.warning },
     { key: 'rellamada', name: 'rellamada', color: STheme.color.secondary },
     { key: 'llamada_fallida', name: 'llamada_fallida', color: STheme.color.danger },
     { key: 'en_espera', name: 'en_espera', color: STheme.color.lightGray },
@@ -357,6 +358,7 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
                 }} >{card.cliente.telefono}</SText>
                 <SText color={STheme.color.lightGray}>{card.cliente.nombres}</SText>
                 <SText color={STheme.color.lightGray}>{fecha}</SText>
+                <SText color={STheme.color.lightGray}>{card.key_usuario_atiende}</SText>
             </Animated.View>
         </GestureDetector>
     );

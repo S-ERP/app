@@ -20,7 +20,7 @@ export default class llamar extends Component {
         }).then(e => {
             const first = e.data[0];
             if(!first) return;
-            SNavigation.replace("/crm/plantilla", { key: first.key })
+            SNavigation.replace("/crm/call", { key: first.key })
             console.log("Siguiente Lead:", e);
         }).catch(error => {
             console.error("Error al obtener el siguiente lead:", error);
