@@ -80,9 +80,17 @@ export default class HorarioDeCliente extends Component {
                 }}
                 inputs={{
                     nombres: { label: "Nombre de Cliente", col: "xs-12", required: true, defaultValue: this.state?.clienteProyecto?.cliente?.nombres ?? "", onChangeText: e => this.handleClienteChange("nombres", e) },
-                    fecha_nacimiento: { label: "Edad", col: "xs-12", type: "number", maxLength: 2, required: true, defaultValue: this.state?.clienteProyecto?.cliente?.edad ?? "", onChangeText: e => this.handleClienteChange("edad", e) },
+                 fecha_nacimiento: {
+                  label: "Edad", col: "xs-12", type: "number", maxLength: 2, required: true,
+
+
+                  defaultValue: this.state.clienteProyecto?.cliente?.fecha_nacimiento ? new SDate().toString("yyyy") - new SDate(this.state.clienteProyecto?.cliente?.fecha_nacimiento).toString("yyyy") : "",
+
+
+                  onChangeText: e => this.handleClienteChange("edad", e)
+                 },
                     currier: { label: "Currier", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.currier ?? "", onChangeText: e => this.handleClienteChange("currier", e) },
-                    departamente: { label: "Departamente", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.departamente ?? "", onChangeText: e => this.handleClienteChange("departamente", e) },
+                 departamento: { label: "Departamento", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.departamento ?? "", onChangeText: e => this.handleClienteChange("departamento", e) },
                     provincia: { label: "Provincia", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.provincia ?? "", onChangeText: e => this.handleClienteChange("provincia", e) },
                     distrito: { label: "Distrito", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.distrito ?? "", onChangeText: e => this.handleClienteChange("distrito", e) },
                     dirección: { label: "Dirección", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.direccion ?? "", onChangeText: e => this.handleClienteChange("direccion", e) },
@@ -311,7 +319,7 @@ export default class HorarioDeCliente extends Component {
                                 <SView>
                                     <SText fontSize={10}>ID de la orden</SText>
                                     <SText fontSize={28}>212</SText>
-                                    {/* <SText fontSize={16}>Edad {this.state.clienteProyecto?.cliente?.edad} </SText> */}
+                                    {/* <SText fontSize={16}>fecha {this.state.clienteProyecto?.cliente?.fecha_nacimiento} </SText> */}
                                     {/* <SText fontSize={12} color={"pink"}>año {this.state.clienteProyecto?.cliente?.edad ? new SDate().addYear((-this.state.clienteProyecto?.cliente?.edad)).toString("yyyy") : ""} </SText> */}
                                 </SView>
                             </SView>
