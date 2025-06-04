@@ -7,12 +7,15 @@ export default class ContadorTiempoRestante extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            run: true
         };
     }
 
     componentDidMount() {
+        this.state.run = true;
         // Aquí podrías iniciar un temporizador si necesitas actualizaciones en tiempo real
         setInterval(() => {
+            if (!this.state.run) return;
             this.forceUpdate(); // Forzar actualización para reflejar el tiempo restante
         }, 1000);
     }
@@ -29,6 +32,10 @@ export default class ContadorTiempoRestante extends Component {
         const timeNow = new SDate();
         const timeDiff = timeNow.diffTime(timeEnd, "minute");
         if (timeDiff <= 0) {
+            if (this.props.onTimeEnd) {
+                this.state.run = false; // Detener el contador
+                this.props.onTimeEnd();
+            }
             return <SView width={120} padding={8} card center>
                 <SText center>{"Tiempo agotado"}</SText>
             </SView>
