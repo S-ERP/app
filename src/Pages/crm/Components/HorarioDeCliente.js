@@ -34,17 +34,17 @@ export default class HorarioDeCliente extends Component {
        style: { height: 40, borderColor: STheme.color.gray },
     }}
     inputs={{
-     a: {
+     nombreCompleto: {
       label: "Nombre de Cliente", col: "xs-12", required: true, defaultValue: (this.state?.clienteProyecto?.cliente?.nombres ?? "") + " " + (this.state?.clienteProyecto?.cliente?.apellidos ?? "").trim()
      },
-     b: { label: "Edad", col: "xs-12", required: true, defaultValue: this.state?.clienteProyecto?.cliente?.edad ?? "" },
-     c: { label: "Currier", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.currier ?? "" },
-     d: { label: "Departamente", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.departamente ?? "" },
-     e: { label: "Provincia", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.provincia ?? "" },
-     f: { label: "Distrito", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.distrito ?? "" },
-     g: { label: "Dirección", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.dirección ?? "" },
-     h: { label: "Latitud", col: "xs-5.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.latitud ?? "" },
-     i: { label: "Longitud", col: "xs-5.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.longitud ?? "" }
+     edad: { label: "Edad", col: "xs-12", required: true, defaultValue: this.state?.clienteProyecto?.cliente?.edad ?? "" },
+     currier: { label: "Currier", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.currier ?? "" },
+     departamente: { label: "Departamente", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.departamente ?? "" },
+     provincia: { label: "Provincia", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.provincia ?? "" },
+     distrito: { label: "Distrito", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.distrito ?? "" },
+     dirección: { label: "Dirección", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.dirección ?? "" },
+     latitud: { label: "Latitud", col: "xs-5.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.latitud ?? "" },
+     longitud: { label: "Longitud", col: "xs-5.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.longitud ?? "" }
     }}
    />;
   }
@@ -197,9 +197,9 @@ export default class HorarioDeCliente extends Component {
   if (activeFormTab === "Adicional") {
    return <SForm
     inputs={{
-     e: { label: "Notas", col: "xs-12", required: false, type: "textarea" },
-     f: { label: "Instrucciones especiales", col: "xs-12", required: false },
-     g: { label: "Fecha de entrega", col: "xs-6", required: true, type: "date" },
+     notas: { label: "Notas", col: "xs-12", required: false, type: "textarea" },
+     especiales: { label: "Instrucciones especiales", col: "xs-12", required: false },
+     entrega: { label: "Fecha de entrega", col: "xs-12", required: true, type: "date" },
     }}
     onSubmit={(e) => console.log("Adicional form:", e)}
    />;
