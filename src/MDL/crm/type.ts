@@ -63,6 +63,7 @@ export type TipoMovimientoLead = {
 };
 
 export type StatesClienteProyecto = "nuevo"
+    | "en_proceso"
     | "rellamada"
     | "llamada_fallida"
     | "en_espera"

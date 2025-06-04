@@ -22,12 +22,12 @@ export default class cliente extends Component {
 
  render() {
   return <SPage title={"cliente"}>
-   <SView width={140} height={26} center backgroundColor={STheme.color.card} style={{ borderRadius: 4 }}  >
+   {/* <SView width={140} height={26} center backgroundColor={STheme.color.card} style={{ borderRadius: 4 }}  >
     <SText fontSize={12} color={STheme.color.white} onPress={() => {
      FormRegistroCliente.open(({ onRegister: (e) => { this.DinamicTable.loadData(); } }))
     }}>{"+ Agregar cliente"}</SText>
-   </SView>
-   <SHr height={10} />
+   </SView> */}
+   {/* <SHr height={10} /> */}
    <DinamicTable
     key='index' textStyle={{ fontSize: 10, color: STheme.color.lightGray }}
     ref={ref => this.DinamicTable = ref} loadData={async () => { return await MDL.crm.cliente.getAll(); }} onSelect={(e) => { console.log("Selected project:", e.row); }} >

@@ -41,20 +41,35 @@ export default class plantilla extends Component {
   }
 
   componentDidMount() {
-    
+
+    let llamadaActiva = true;
+
+    // Evitar recarga o cierre
     // window.addEventListener("beforeunload", function (e) {
-    //   e.preventDefault(); // Algunos navegadores requieren esto
-    //   e.returnValue = ''; // Mostrará un mensaje predeterminado del navegador
+    //   if (llamadaActiva) {
+    //     e.preventDefault();
+    //     e.returnValue = ''; // Obliga al navegador a mostrar el diálogo de confirmación
+    //   }
     // });
+
+    // // Manejar botón "atrás"
+    // history.pushState(null, '', location.href); // Insertar estado inicial
+
     // window.addEventListener('popstate', function (event) {
-    //   // Esto se dispara cuando el usuario presiona "atrás"
-    //   // history.pushState(null, '', location.href); // Vuelve a empujar la misma URL
-    //   alert("¡No puedes usar el botón atrás!");
-    //   event.preventDefault(); // Previene el comportamiento predeterminado
+    //   if (llamadaActiva) {
+    //     // Volver a insertar el estado actual para bloquear "atrás"
+    //     history.pushState(null, '', location.href);
+
+    //     // Simular manualmente el comportamiento del beforeunload
+    //     const confirmLeave = confirm("Hay una llamada activa. ¿Seguro que quieres salir?");
+    //     if (confirmLeave) {
+    //       llamadaActiva = false;
+    //       history.back(); // Ahora sí permite ir atrás
+    //     }
+    //     event.preventDefault(); // Prevenir el comportamiento por defecto del navegador
+    //   }
     // });
     MDL.crm.clienteProyecto.getFull(this.pk).then((e) => {
-
-
       this.traerAllOrdenes();
       this.setState({ clienteProyecto: e })
     })
@@ -376,7 +391,9 @@ export default class plantilla extends Component {
     // return proyectos;
 
     const { clienteProyecto } = this.state;
-    return <SPage   >
+    return <SPage preventBack onBack={() => {
+      console.log("No puedes volver atrás desde aquí.");
+    }}  >
       {/* <SText card padding={8}>{"LLAMAR"}</SText> */}
       <SHr height={10} />
       <Llamada phone={clienteProyecto?.cliente?.telefono} />
