@@ -1,25 +1,12 @@
 import React, { Component } from "react";
 import { ScrollView } from "react-native-gesture-handler";
-import {
- SButtom,
- SDate,
- SForm,
- SHr,
- SIcon,
- SImage,
- SInput,
- SList,
- SLoad,
- SMath,
- SNavigation,
- SText,
- STheme,
- SView,
-} from "servisofts-component";
+import { SButtom, SDate, SForm, SHr, SIcon, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
+import MDL from "../../../MDL";
 
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";
+const formTabs = ["Detalles", "Productos", "Adicional"];
 
 export default class HorarioDeCliente extends Component {
  constructor(props) {
@@ -28,11 +15,15 @@ export default class HorarioDeCliente extends Component {
  }
 
  componentDidMount() {
+  MDL.crm.clienteProyecto.getFull(this.props.key_cliente_proyecto).then((e) => {
+   this.setState({ clienteProyecto: e })
+  })
  }
+
 
  renderActiveForm() {
   const { activeFormTab } = this.state;
-  if (!this.props.clienteProyecto?.cliente) return <SLoad />
+  if (!this.state.clienteProyecto?.cliente) return <SLoad />
   if (activeFormTab === "Detalles") {
    return <SForm
     col={"xs-12"} row
@@ -40,18 +31,20 @@ export default class HorarioDeCliente extends Component {
      justifyContent: "space-between",
     }}
     inputProps={{
-     col: "xs-12", style: { width: "100%", height: 40, borderColor: STheme.color.gray },
+     col: "xs-12", style: { height: 40, borderColor: STheme.color.gray },
     }}
     inputs={{
-     a: { label: "Nombre de Cliente", col: "xs-12", required: true },
-     b: { label: "Edad", col: "xs-12", required: true },
-     c: { label: "Currier", col: "xs-12", required: true },
-     d: { label: "Departamente", col: "xs-3.9", required: true },
-     e: { label: "Provincia", col: "xs-3.9", required: true },
-     f: { label: "Distrito", col: "xs-3.9", required: true },
-     g: { label: "Dirección", col: "xs-12", required: true },
-     h: { label: "Latitud", col: "xs-5.9", required: true },
-     i: { label: "Longitud", col: "xs-5.9", required: true, }
+     a: {
+      label: "Nombre de Cliente", col: "xs-12", required: true, defaultValue: (this.state?.clienteProyecto?.cliente?.nombres ?? "") + " " + (this.state?.clienteProyecto?.cliente?.apellidos ?? "").trim()
+     },
+     b: { label: "Edad", col: "xs-12", required: true, defaultValue: this.state?.clienteProyecto?.cliente?.edad ?? "" },
+     c: { label: "Currier", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.currier ?? "" },
+     d: { label: "Departamente", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.departamente ?? "" },
+     e: { label: "Provincia", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.provincia ?? "" },
+     f: { label: "Distrito", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.distrito ?? "" },
+     g: { label: "Dirección", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.dirección ?? "" },
+     h: { label: "Latitud", col: "xs-5.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.latitud ?? "" },
+     i: { label: "Longitud", col: "xs-5.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.longitud ?? "" }
     }}
    />;
   }
@@ -246,7 +239,7 @@ export default class HorarioDeCliente extends Component {
          backgroundColor: "red",
          marginRight: 8,
         }}>
-         <SText fontSize={10} color="#fff">{this.props?.clienteProyecto?.state}</SText>
+         <SText fontSize={10} color="#fff">{this.state?.clienteProyecto?.state}</SText>
         </SView>
 
         <SView>
