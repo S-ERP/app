@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SLoad, SNavigation, SPage, SText } from 'servisofts-component';
+import { SHr, SLoad, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
 
@@ -24,14 +24,24 @@ export default class llamar extends Component {
             SNavigation.replace("/crm/call", { key: first.key })
             console.log("Siguiente Lead:", e);
         }).catch(error => {
+            this.setState({ error: "No hay leads disponibles" });
             console.error("Error al obtener el siguiente lead:", error);
         });
     }
     render() {
         return <SPage title={"Llamar"} center>
-            <SLoad />
-            <SHr h={64} />
-            <SText fontSize={22}>{"Buscando un lead para llamar..."}</SText>
+            {this.state.error ? <SView center>
+                <SText color={STheme.color.danger} fontSize={18}>{this.state.error}</SText>
+                <SHr h={16} />
+                <SView onPress={() => SNavigation.replace("/crm/llamar")} style={{ padding: 8, backgroundColor: STheme.color.primary, borderRadius: 4 }}>
+                    <SText color={STheme.color.text}>Volver a intentar</SText>
+                </SView>
+            </SView>
+                : <SView center>
+                    <SLoad />
+                    <SHr h={64} />
+                    <SText fontSize={22}>{"Buscando un lead para llamar..."}</SText>
+                </SView>}
         </SPage>
     }
 }

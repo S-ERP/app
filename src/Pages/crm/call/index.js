@@ -26,17 +26,11 @@ export default class index extends Component {
     }
     componentDidMount() {
         MDL.crm.clienteProyecto.getFull(this.pk).then((e) => {
-            this.setState({ data: e })
-            if (e.state == "en_proceso") {
-                // verificar si soy yo el que esta llamando
-            } else {
-                MDL.crm.clienteProyecto.editar({
-                    key: this.pk,
-                    state: "en_proceso",
-                    key_usuario_atiende: Model.usuario.Action.getKey()
-                });
+            if(e.state != "en_proceso"){
+                SNavigation.goBack();
+                return;
             }
-
+            this.setState({ data: e })
         })
 
     }
@@ -48,8 +42,8 @@ export default class index extends Component {
             <SView col={"xs-12"} center>
                 <SHr h={25} />
                 <MenuAcciones key_cliente_proyecto={this.pk} />
-                {!this.state?.data?.fecha_edit ? null : <>
-                    <SHr h={25}/>
+                {!this.state?.data?.fecha_edit || this.state?.data?.state != "en_proceso" ? null : <>
+                    <SHr h={25} />
                     <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on} />
                 </>}
                 <SHr h={25} />

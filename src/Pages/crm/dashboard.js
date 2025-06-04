@@ -1,6 +1,6 @@
 import React, { Component, createRef } from 'react';
 import { Dimensions, UIManager, findNodeHandle } from 'react-native';
-import { SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SImage, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -15,6 +15,7 @@ import {
 } from 'react-native-gesture-handler';
 import MDL from '../../MDL';
 import Recargar from '../../Components/Recargar';
+import SSocket from 'servisofts-socket';
 
 // "nuevo"
 //     | "rellamada"
@@ -34,6 +35,7 @@ import Recargar from '../../Components/Recargar';
 const stages = [
     { key: 'nuevo', name: 'nuevo', color: STheme.color.success },
     { key: 'en_proceso', name: 'en_proceso', color: STheme.color.warning },
+    { key: 'vencido', name: 'vencido', color: STheme.color.danger },
     { key: 'rellamada', name: 'rellamada', color: STheme.color.secondary },
     { key: 'llamada_fallida', name: 'llamada_fallida', color: STheme.color.danger },
     { key: 'en_espera', name: 'en_espera', color: STheme.color.lightGray },
@@ -358,8 +360,22 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
                     SNavigation.navigate("/crm/plantilla", { key: card.key })
                 }} >{card.cliente.telefono}</SText>
                 <SText color={STheme.color.lightGray}>{card.cliente.nombres}</SText>
-                <SText color={STheme.color.lightGray}>{fecha}</SText>
-                <SText color={STheme.color.lightGray}>{card.key_usuario_atiende}</SText>
+                <SText fontSize={10} color={STheme.color.lightGray}>Hace {new SDate(fecha,"yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
+                <SView style={{
+                    width: 24,
+                    height: 24,
+                    position: "absolute",
+                    right: 4,
+                    top: 4,
+                    borderRadius: 100,
+                    overflow: "hidden",
+                    backgroundColor: STheme.color.card + "66",
+                }}>
+                    <SImage src={SSocket.api.root + "usuario/" + card.key_usuario_atiende} style={{
+                        resizeMode: "cover",
+                    }} />
+                </SView>
+                {/* <SText color={STheme.color.lightGray}>{card.key_usuario_atiende}</SText> */}
             </Animated.View>
         </GestureDetector>
     );
