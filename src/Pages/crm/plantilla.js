@@ -161,11 +161,11 @@ export default class plantilla extends Component {
   return <SPage   >
    {/* <SText card padding={8}>{"LLAMAR"}</SText> */}
    <SHr height={10} />
-   <Llamada phone={clienteProyecto?.cliente?.telefono} />
+   {/* <Llamada phone={clienteProyecto?.cliente?.telefono} /> */}
 
    <SView col={"xs-12"} center row border="transparent" padding={8}>
     <SView col={"xs-12"} center row backgroundColor='transparent'>
-     {this.renderLista()}
+     {/* {this.renderLista()} */}
     </SView>
     <SHr />
 
