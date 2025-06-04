@@ -38,12 +38,6 @@ export default class HorarioDeCliente extends Component {
     }
 
 
-    // handleClienteChange = (key, value) => {
-    //  this.state.clienteProyecto.cliente[key] = value;
-    //  deberia cambiar la key fecha_nacimiento a esto  this.state.clienteProyecto?.cliente?.edad ? new SDate().addYear((-this.state.clienteProyecto?.cliente?.edad)).toString("yyyy") : ""
-
-    //  this.forceUpdate();
-    // };
 
     handleClienteChange = (key, value) => {
         this.state.clienteProyecto.cliente[key] = value;
@@ -61,7 +55,7 @@ export default class HorarioDeCliente extends Component {
         console.log("handle " + this.state.clienteProyecto.cliente[key])
         console.log("handle año " + this.state.clienteProyecto.cliente["fecha_nacimiento"])
 
-        new SThread(3000,"edit_client",true).start(()=>{
+        new SThread(3000, "edit_client", true).start(() => {
             MDL.crm.cliente.editar({
                 ...this.state.clienteProyecto.cliente
             })
@@ -70,12 +64,7 @@ export default class HorarioDeCliente extends Component {
         this.forceUpdate();
     };
 
-    handleProductoChange = (prodKey, cant) => {
-        const producto = this.state.clienteProyecto?.proyecto_producto.find(aux => aux.key == prodKey);
-        producto.cantidad = cant;
-        this.forceUpdate();
-        console.log("traee producto " + producto.key + " cantidad " + producto.cantidad)
-    };
+
 
     renderActiveForm() {
         const { activeFormTab } = this.state;
@@ -125,25 +114,25 @@ export default class HorarioDeCliente extends Component {
                                 key={prod.key}
                                 row center
                                 style={{ width: "100%", marginBottom: 8, height: 65, }} >
-                                <SView row style={{ alignItems: "center", }}>
+                                <SView row border="transparent" style={{ alignItems: "center", flex: 2, }}>
                                     <SView style={{ height: 24 }}>
                                         <SInput type="checkBox" style={{ marginRight: 45 }} value={(this.state.clienteProyecto?.proyecto_producto[prod.key]?.cantidad || 0) > 0} />
                                     </SView>
                                     <SText
                                         style={{
-                                            width: "10%",
+                                            // width: "10%",
                                             fontSize: 12,
                                             fontWeight: "bold",
                                             minWidth: 120,
                                         }}
                                     >
-                                        {prod?.producto?.nombre} x {prod?.producto?.precio}
+                                        {prod?.producto?.nombre} x {prod?.producto?.precio ?? 0} Bs
                                     </SText>
                                 </SView>
 
-                                <SView center style={{
+                                <SView center border="transparent" style={{
                                     alignItems: "center",
-                                    flex: 1.5,
+                                    flex: 2,
                                     justifyContent: "center",
                                     marginBottom: 15,
                                 }}>
@@ -156,6 +145,8 @@ export default class HorarioDeCliente extends Component {
                                     >
                                         Cantidad
                                     </SText>
+
+
                                     <SView style={{
                                         width: 60,
                                         height: 36,
@@ -221,6 +212,46 @@ export default class HorarioDeCliente extends Component {
                                         />
                                     </SView>
                                 </SView>
+
+                                <SView center border="transparent" style={{
+                                    alignItems: "center",
+                                    flex: 1,
+                                    justifyContent: "center",
+                                    marginBottom: 15,
+                                }}>
+                                    <SText
+                                        style={{
+                                            fontSize: 12,
+                                            marginRight: 8,
+                                            lineHeight: 24,
+                                        }}
+                                    >
+                                        Subtotal
+                                    </SText>
+                                    <SView
+                                        style={{
+                                            width: 60,
+                                            height: 36,
+                                        }}>
+
+                                        <SInput
+                                            type="number"
+                                            min={1}
+                                            value={((prod?.producto?.precio ?? 0) *
+                                                (this.state.clienteProyecto?.proyecto_producto[prod.key]?.cantidad ?? 0))}
+                                            style={{
+                                                width: 40,
+                                                height: 25,
+                                                textAlign: "center",
+                                            }}
+                                            disabled={!seleccionado}
+                                        />
+
+
+                                        {/* vv          {prod?.producto?.nombre} x {prod?.producto?.precio ?? 0} Bs */}
+
+                                    </SView>
+                                </SView>
                             </SView>
                         );
                     })
@@ -280,8 +311,8 @@ export default class HorarioDeCliente extends Component {
                                 <SView>
                                     <SText fontSize={10}>ID de la orden</SText>
                                     <SText fontSize={28}>212</SText>
-                                    <SText fontSize={16}>Edad {this.state.clienteProyecto?.cliente?.edad} </SText>
-                                    <SText fontSize={12} color={"pink"}>año {this.state.clienteProyecto?.cliente?.edad ? new SDate().addYear((-this.state.clienteProyecto?.cliente?.edad)).toString("yyyy") : ""} </SText>
+                                    {/* <SText fontSize={16}>Edad {this.state.clienteProyecto?.cliente?.edad} </SText> */}
+                                    {/* <SText fontSize={12} color={"pink"}>año {this.state.clienteProyecto?.cliente?.edad ? new SDate().addYear((-this.state.clienteProyecto?.cliente?.edad)).toString("yyyy") : ""} </SText> */}
                                 </SView>
                             </SView>
                         </SView>
