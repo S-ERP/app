@@ -249,7 +249,7 @@ export default class HorarioDeCliente extends Component {
          <SText fontSize={10}>ID de la orden</SText>
          <SText fontSize={28}>212</SText>
          <SText fontSize={16}>Edad {this.state.clienteProyecto?.cliente?.edad} </SText>
-         <SText fontSize={12}>año {this.state.clienteProyecto?.cliente?.edad ? new SDate().addYear((-this.state.clienteProyecto?.cliente?.edad)).toString("yyyy") : ""} </SText>
+         <SText fontSize={12} color={"pink"}>año {this.state.clienteProyecto?.cliente?.edad ? new SDate().addYear((-this.state.clienteProyecto?.cliente?.edad)).toString("yyyy") : ""} </SText>
         </SView>
        </SView>
       </SView>
