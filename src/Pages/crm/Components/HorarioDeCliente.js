@@ -31,7 +31,7 @@ export default class HorarioDeCliente extends Component {
      justifyContent: "space-between",
     }}
     inputProps={{
-     col: "xs-12", style: { height: 40, borderColor: STheme.color.gray },
+       style: { height: 40, borderColor: STheme.color.gray },
     }}
     inputs={{
      a: {

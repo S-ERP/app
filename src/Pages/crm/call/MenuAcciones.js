@@ -38,7 +38,7 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
   const space = 16;
   return <SView row center>
    <OptionItem icono={"addTarea"} label={"Confirmado"} color={STheme.color.success} onPress={() => {
-    if (window.confirm("¿Estás seguro de que quieres continuar?")) {
+    if (window.confirm("¿Estás seguro de que quieres Confirmado, continuar?")) {
      console.log("Confirmado");
      MDL.crm.clienteProyecto.editar({ key: this.pk, state: "confirmado", key_tipo_movimiento_lead: "confirmado" })
     } else {
@@ -48,25 +48,17 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
 
    <SView width={space} />
 
-
    <OptionItem icono={"addTarea"} label={"Entrega Express"} color={STheme.color.success} onPress={() => {
-    PopupRazon.open(
-     ({
-      tipo: "entrega",
-      onRegister: (e) => {
-       MDL.crm.clienteProyecto.editar({
-        key: this.props.key_cliente_proyecto,
-        state: "entrega",
-        key_tipo_movimiento_lead: e.selectedOption.key
-       }).then(e => {
-        SNavigation.goBack();
-       })
-      }
-     }))
+    if (window.confirm("¿Estás seguro de que quieres Entrega Express, continuar?")) {
+     console.log("Entrega Express");
+     MDL.crm.clienteProyecto.editar({ key: this.pk, state: "entrega_express", key_tipo_movimiento_lead: "entrega_express" })
+    } else {
+     console.log("Cancelado");
+    }
    }} />
 
-
    <SView width={space} />
+
    <OptionItem icono={"Check"}
     label={"Cancelado"}
     color={STheme.color.gray}
@@ -85,7 +77,9 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
        }
       }))
     }} />
+
    <SView width={space} />
+
    <OptionItem icono={"World"} label={"Double"} color={STheme.color.gray} onPress={() => {
     PopupRazon.open(
      ({
@@ -102,8 +96,8 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
      }))
    }} />
 
-
    <SView width={space} />
+
    <OptionItem icono={"Egreso"} label={"Spam"} color={STheme.color.gray}
     onPress={() => {
      PopupRazon.open(
@@ -122,6 +116,7 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
     }} />
 
    <SView width={space} />
+
    <OptionItem icono={"tpGa"} label={"Recall"} color={STheme.color.warning}
     onPress={() => {
      PopupRellamada.open(({ onRegister: (e) => { } }))
@@ -129,6 +124,7 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
     }} />
 
    <SView width={space} />
+
    <OptionItem icono={"addTarea"} label={"Failure call"} color={STheme.color.gray} onPress={() => {
     PopupRazon.open(
      ({
