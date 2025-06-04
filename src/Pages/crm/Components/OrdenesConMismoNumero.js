@@ -102,7 +102,7 @@ export default class OrdenesConMismoNumero extends Component {
 
  render() {
   return (
-   <SView col={"xs-12 sm-3.8"}>
+   <SView col={"xs-12"}>
     <SView
      col={"xs-12"}
      style={{ padding: 16, borderRadius: 16, borderWidth: 2 }}

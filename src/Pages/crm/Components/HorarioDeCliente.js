@@ -229,7 +229,7 @@ export default class HorarioDeCliente extends Component {
  };
  render() {
   return (
-   <SView col={"xs-12 sm-3.8"}    >
+   <SView col={"xs-12"}    >
     <SView col={"xs-12"} style={{ padding: 16, borderRadius: 16, borderWidth: 2, }} center border={STheme.color.card} backgroundColor={STheme.color.card}>
      <SView col="xs-12" row center>
       <SView col="xs-6">
