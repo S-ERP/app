@@ -8,6 +8,7 @@ import HorarioDeCliente from '../Components/HorarioDeCliente';
 import PopupRazon from '../Components/PopupRazon';
 import Model from '../../../Model';
 import MenuAcciones from './MenuAcciones';
+import ContadorTiempoRestante from './ContadorTiempoRestante';
 
 const CardContent = ({ children }) => {
     return <SView col={"xs-4"} padding={8} center>
@@ -40,23 +41,29 @@ export default class index extends Component {
 
     }
 
-    
+
     render() {
-        const { proyecto, state, fecha_on } = this.state.data || {};
+        const { proyecto, state, fecha_on, fecha_edit } = this.state.data || {};
         return <SPage title={"Call"}>
-            <SHr h={25} />
-            <MenuAcciones key_cliente_proyecto={this.pk} />
-            <SHr h={25} />
-            <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
-                <CardContent>
-                    <HorarioDeCliente key_cliente_proyecto={this.pk} clienteProyecto={this.state?.data} ></HorarioDeCliente>
-                </CardContent>
-                <CardContent>
-                    <SMD padding={0} fontSize={11} space={0}>{proyecto?.guion}</SMD>
-                </CardContent>
-                <CardContent>
-                    <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />
-                </CardContent>
+            <SView col={"xs-12"} center>
+                <SHr h={25} />
+                <MenuAcciones key_cliente_proyecto={this.pk} />
+                {!this.state?.data?.fecha_edit ? null : <>
+                    <SHr h={25}/>
+                    <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on} />
+                </>}
+                <SHr h={25} />
+                <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <CardContent>
+                        <HorarioDeCliente key_cliente_proyecto={this.pk} clienteProyecto={this.state?.data} ></HorarioDeCliente>
+                    </CardContent>
+                    <CardContent>
+                        <SMD padding={0} fontSize={11} space={0}>{proyecto?.guion}</SMD>
+                    </CardContent>
+                    <CardContent>
+                        <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />
+                    </CardContent>
+                </SView>
             </SView>
         </SPage >
     }
