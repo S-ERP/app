@@ -28,28 +28,6 @@ export default class HorarioDeCliente extends Component {
  }
 
  componentDidMount() {
-  this.traerAllOrdenes();
- }
-
- async traerAllOrdenes() {
-  try {
-   const resp: any = await SSocket.sendPromise(
-    {
-     service: "crm",
-     component: "cliente_proyecto",
-     type: "getConElMismoNumero",
-     estado: "cargando",
-     key: this.props.key_cliente_proyecto,
-    },
-    1000 * 60
-   );
-   const obj: Orden[] = Object.values(resp.data);
-   this.setState({ data_ordenes: obj, loading: false });
-   console.log("componente OrdenesConMismoNumero ", obj);
-  } catch (error) {
-   console.error("Error al traer ordenes:", error);
-   this.setState({ loading: false });
-  }
  }
 
  renderActiveForm() {
