@@ -131,7 +131,7 @@ export default class Llamada extends React.Component<{
   }
 
   render() {
-      return <SView onPress={this.handlePress.bind(this)}>
+   return <SView col={"xs-12"} center height={50} onPress={this.handlePress.bind(this)}>
           {!this.llamada && <SText>{"LLAMAR"}</SText>}
           {/* {this.llamada && <SText>{"COLGAR" + " " + this.llamada?.start_time+ "DDD"}</SText>} */}
           {this.llamada && <SText>{"COLGAR" + " "}</SText>}

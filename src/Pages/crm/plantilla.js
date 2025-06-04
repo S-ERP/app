@@ -65,6 +65,8 @@ export default class plantilla extends Component {
   // if (key == "Exportar") return this.renderExportExcel();
   var select = !!this.state.select[key]
   return <>
+   <SView col={"xs-12"} backgroundColor='transparent'  center style={{ alignItems: "center", }}>
+
    <SView center card style={{
     paddingLeft: 8,
     paddingRight: 8,
@@ -76,6 +78,7 @@ export default class plantilla extends Component {
     <SText>{label}</SText>
    </SView>
    <SView width={4} />
+   </SView>
   </>
  };
 
@@ -85,14 +88,43 @@ export default class plantilla extends Component {
   if (!this.state.clienteProyecto?.cliente) return <SLoad />
   if (activeFormTab === "Detalles") {
    return <SForm
+    col={"xs-12"}
+    // style={{ padding: 10 }}
+    inputProps={{
+     col: "xs-12",
 
+     style: {
+      width: "100%",
+      height: 40,
+
+      borderColor: STheme.color.gray,
+      // borderRadius: 8,
+
+     }
+    }}
+
+    style={{
+     justifyContent: "space-between",
+    }}
+
+    row
     inputs={{
-     a: { label: "Dirección", col: "xs-12", required: true },
-     b: { label: "Cliente", col: "xs-12", required: true },
-     c: { label: "Teléfono", col: "xs-12", required: true, type: "text", defaultValue: this.state.clienteProyecto?.cliente?.telefono || "" },
-     d: { label: "Email", col: "xs-8", required: false },
-     e: { label: "Ciudad", col: "xs-6", required: true },
-     f: { label: "Provincia", col: "xs-6", required: true },
+     a: { label: "Nombre de Cliente", col: "xs-12", required: true },
+     b: { label: "Edad", col: "xs-12", required: true },
+     c: { label: "Currier", col: "xs-12", required: true },
+
+     d: { label: "Departamente", col: "xs-3.9", required: true },
+     e: { label: "Provincia", col: "xs-3.9", required: true },
+     f: { label: "Distrito", col: "xs-3.9", required: true },
+
+     g: { label: "Dirección", col: "xs-12", required: true },
+     h: { label: "Latitud", col: "xs-3", required: true },
+     i: { label: "Longitud", col: "xs-3", required: true },
+
+     // e: { label: "Ciudad", col: "xs-6", required: true },
+     // c: { label: "Teléfono", col: "xs-12", required: true, type: "text", defaultValue: this.state.clienteProyecto?.cliente?.telefono || "" },
+     // d: { label: "Email", col: "xs-8", required: false },
+     // f: { label: "Provincia", col: "xs-6", required: true },
     }}
 
    />;
@@ -379,9 +411,11 @@ export default class plantilla extends Component {
   // return proyectos;
 
   const { clienteProyecto } = this.state;
-  return <SPage center >
+  return <SPage   >
    {/* <SText card padding={8}>{"LLAMAR"}</SText> */}
+   <SHr height={10} />
    <Llamada phone={clienteProyecto?.cliente?.telefono} />
+
    <SView col={"xs-12"} center row border="transparent" padding={8}>
     <SView col={"xs-12"} center row backgroundColor='transparent'>
      {this.renderLista()}
@@ -393,9 +427,9 @@ export default class plantilla extends Component {
     <SHr />
     <SView col={"xs-12"} row     >
 
-     <SView col={"xs-12 sm-3.8"} center  >
+     <SView col={"xs-12 sm-3.8"}    >
 
-      <SView col={"xs-12"} style={{ padding: 16, borderRadius: 16, borderWidth: 2, height: 450 }} center border={STheme.color.card} backgroundColor={STheme.color.card}>
+      <SView col={"xs-12"} style={{ padding: 16, borderRadius: 16, borderWidth: 2, }} center border={STheme.color.card} backgroundColor={STheme.color.card}>
        <SView col="xs-12" row center>
         <SView col="xs-6">
          <SText fontSize={10}>Horario de cliente</SText>
@@ -454,13 +488,13 @@ export default class plantilla extends Component {
         />
        </SView>
        <SHr height={16} />
-       <ScrollView style={{ width: "100%", maxHeight: 400, paddingBottom: 16 }}>
+       <ScrollView style={{ width: "100%", paddingBottom: 16 }}>
         <SView col={"xs-12"} row border={"transparent"}
-         style={{
+        // style={{
 
-          alignItems: "flex-start",
-          justifyContent: "center"
-         }}
+        //  alignItems: "flex-start",
+        //  justifyContent: "center"
+        // }}
         >
          {this.renderActiveForm()}
         </SView>
@@ -488,7 +522,7 @@ export default class plantilla extends Component {
 
      <SView flex />
 
-     <SView col={"xs-12 sm-3.8"} center row height  >
+     <SView col={"xs-12 sm-3.8"} row    >
       <SView col={"xs-12"} style={{ padding: 8, borderRadius: 16, borderWidth: 2 }} center border={STheme.color.card} backgroundColor={STheme.color.card}>
        <SView col="xs-12">
         <SText fontSize={10}>Script del proyecto</SText>
@@ -555,7 +589,7 @@ export default class plantilla extends Component {
      <SView flex />
 
      <SView col={"xs-12 sm-3.8"}  >
-      <SView col={"xs-12"} center style={{ padding: 16, borderRadius: 16, borderWidth: 2 }} border={STheme.color.card} backgroundColor={STheme.color.card}>
+      <SView col={"xs-12"} style={{ padding: 16, borderRadius: 16, borderWidth: 2 }} border={STheme.color.card} backgroundColor={STheme.color.card}>
        <SView col="xs-12" row center>
         <SView col="xs-12">
          <SText fontSize={14}>Órdenes con el mismo número</SText>
@@ -619,6 +653,20 @@ export default class plantilla extends Component {
        <SHr col={"xs-12"} height={20} />
        <SHr col={"xs-12"} height={1} color={STheme.color.card} />
        <SHr col={"xs-12"} height={10} />
+
+
+       <SInput
+        // customStyle={"clean"}
+        label={"Comentario"}
+        type='textArea'
+        placeholder={"Add your comment here..."}
+        placeholderTextColor={STheme.color.gray}
+        style={{
+         textAlignVertical: "top",
+         padding: 4,
+         // fontSize: 10
+        }}
+       />
 
 
        <SHr height={12} />
