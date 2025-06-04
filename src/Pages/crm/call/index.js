@@ -9,6 +9,8 @@ import PopupRazon from '../Components/PopupRazon';
 import Model from '../../../Model';
 import MenuAcciones from './MenuAcciones';
 import ContadorTiempoRestante from './ContadorTiempoRestante';
+import Llamada from '../Components/Llamada';
+import HistoricoMovimientos from './HistoricoMovimientos';
 
 const CardContent = ({ children }) => {
     return <SView col={"xs-12 sm-6 md-6 lg-4"} padding={8} center>
@@ -49,15 +51,14 @@ export default class index extends Component {
             <SView col={"xs-12"} center>
                 {!this.state?.data?.fecha_edit || this.state?.data?.state != "en_proceso" ? null : <>
                     <SHr h={16} />
-                    <SView style={{
-                    }}>
-                        <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on}
-                            onTimeEnd={() => {
-                                new SThread(5000, true, "ContadorTiempoRestante").start(() => {
-                                    this.componentDidMount();
-                                })
-                            }} />
-                    </SView>
+                    <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on}
+                        onTimeEnd={() => {
+                            new SThread(5000, true, "ContadorTiempoRestante").start(() => {
+                                this.componentDidMount();
+                            })
+                        }} />
+                    <SHr h={16} />
+                    <Llamada phone={this.state?.data?.cliente?.telefono}/>
                 </>}
                 {/* <SText onPress={() => {
                     console.log("test", this.horarioDeCliente.state.clienteProyecto);
@@ -80,6 +81,7 @@ export default class index extends Component {
                     </CardContent>
                     <CardContent>
                         <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />
+                        <HistoricoMovimientos key_cliente_proyecto={this.pk} />
                     </CardContent>
                 </SView>
             </SView>
