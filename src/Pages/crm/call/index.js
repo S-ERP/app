@@ -38,35 +38,25 @@ export default class index extends Component {
 
     render() {
         const { proyecto, state, fecha_on, fecha_edit } = this.state.data || {};
-        return <SPage title={"Call"} header={<>
+        return <SPage title={"Call"} header={<SView col={"xs-12"} center>
             <SHr />
             <MenuAcciones key_cliente_proyecto={this.pk} />
+            <SHr />
 
-            {!this.state?.data?.fecha_edit || this.state?.data?.state != "en_proceso" ? null : <>
-                <SView style={{
-                    position: "absolute",
-                    right: 16,
-                    top: 16,
-                    zIndex: 1000,
-                    backgroundColor: STheme.color.card,
-                    padding: 8,
-                    borderRadius: 8
-                }}>
-                    <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on} />
-                </SView>
-            </>}
-        </>}>
+        </SView>}
+
+        >
             <SView col={"xs-12"} center>
-                {/* <SHr h={25} /> */}
-                {/* <MenuAcciones key_cliente_proyecto={this.pk} /> */}
                 {!this.state?.data?.fecha_edit || this.state?.data?.state != "en_proceso" ? null : <>
-                    <SHr h={25} />
-                    <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on} />
+                    <SHr h={16} />
+                    <SView style={{
+                    }}>
+                        <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on} />
+                    </SView>
                 </>}
                 {/* <SText onPress={() => {
                     console.log("test", this.horarioDeCliente.state.clienteProyecto);
                 }}>{"test"}</SText> */}
-                {/* <SHr h={25} /> */}
                 <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
                     <CardContent>
                         <HorarioDeCliente
@@ -76,7 +66,9 @@ export default class index extends Component {
                         />
                     </CardContent>
                     <CardContent>
-                        <SMD padding={0} fontSize={11} space={0}>{proyecto?.guion}</SMD>
+                        <SView col={"xs-12"} padding={8}>
+                            <SMD padding={0} fontSize={12} space={0}>{proyecto?.guion}</SMD>
+                        </SView>
                     </CardContent>
                     <CardContent>
                         <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { ScrollView } from "react-native-gesture-handler";
-import { SButtom, SDate, SForm, SHr, SIcon, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SView } from "servisofts-component";
+import { SButtom, SDate, SForm, SHr, SIcon, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import MDL from "../../../MDL";
 import Model from "../../../Model";
@@ -60,6 +60,12 @@ export default class HorarioDeCliente extends Component {
         }
         console.log("handle " + this.state.clienteProyecto.cliente[key])
         console.log("handle año " + this.state.clienteProyecto.cliente["fecha_nacimiento"])
+
+        new SThread(3000,"edit_client",true).start(()=>{
+            MDL.crm.cliente.editar({
+                ...this.state.clienteProyecto.cliente
+            })
+        })
 
         this.forceUpdate();
     };

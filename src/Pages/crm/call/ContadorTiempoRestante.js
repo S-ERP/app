@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SDate, SText, SView } from 'servisofts-component';
+import { SDate, SText, STheme, SView } from 'servisofts-component';
+import SIconApp from '../../../Assets/SIconApp';
 
 export default class ContadorTiempoRestante extends Component {
     constructor(props) {
@@ -39,8 +40,12 @@ export default class ContadorTiempoRestante extends Component {
         const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
         // const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-        return <SView width={120} padding={8} card center>
-            <SText center>{formattedTime}</SText>
+        return <SView width={80} padding={6} card center row style={{
+            backgroundColor: STheme.color.success,
+        }}>
+            <SIconApp name='Reload' fill={STheme.color.text} width={12} />
+            <SView width={8} />
+            <SText bold center>{formattedTime}</SText>
             {/* <SText>{timeEnd.toString("hh:mm:ss")}</SText> */}
         </SView>
 
