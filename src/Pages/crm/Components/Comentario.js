@@ -14,11 +14,15 @@ import {
 } from "servisofts-component";
 import SSocket from "servisofts-socket";
 // import Model from "../../Model";
-export default class OrdenesConMismoNumero extends Component {
+
+
+export default class Comentario extends Component {
  constructor(props) {
   super(props);
   this.state = {};
  }
+
+
  componentDidMount() {
   this.traerAllOrdenes();
  }
@@ -105,22 +109,34 @@ export default class OrdenesConMismoNumero extends Component {
    <SView col={"xs-12"}>
     <SView
      col={"xs-12"}
+     center
      style={{ padding: 16, borderRadius: 16, borderWidth: 2 }}
      border={STheme.color.card}
      backgroundColor={STheme.color.card}
     >
      <SView col="xs-12" row center>
       <SView col="xs-12">
-       <SText fontSize={14}> Órdenes con el mismo número </SText>
+       <SText fontSize={14}>Comentario con el mismo número</SText>
       </SView>
      </SView>
+
      <SHr col={"xs-12"} height={20} />
-     {this.pintado()}
+     <SHr col={"xs-12"} height={1} color={STheme.color.card} />
+     <SHr col={"xs-12"} height={10} />
+
+     <SInput
+      label={"Comentario"}
+      type="textArea"
+      placeholder={"Add your comment here..."}
+      placeholderTextColor={STheme.color.gray}
+      style={{
+       textAlignVertical: "top",
+       padding: 4,
+      }}
+     />
+
      <SHr height={12} />
     </SView>
-
-    <SHr height={16} />
-
    </SView>
   );
  }
