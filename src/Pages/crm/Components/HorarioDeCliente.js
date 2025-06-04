@@ -38,12 +38,6 @@ export default class HorarioDeCliente extends Component {
  }
 
 
- // handleClienteChange = (key, value) => {
- //  this.state.clienteProyecto.cliente[key] = value;
- //  deberia cambiar la key fecha_nacimiento a esto  this.state.clienteProyecto?.cliente?.edad ? new SDate().addYear((-this.state.clienteProyecto?.cliente?.edad)).toString("yyyy") : ""
-
- //  this.forceUpdate();
- // };
 
  handleClienteChange = (key, value) => {
   this.state.clienteProyecto.cliente[key] = value;
@@ -64,12 +58,7 @@ export default class HorarioDeCliente extends Component {
   this.forceUpdate();
  };
 
- handleProductoChange = (prodKey, cant) => {
-  const producto = this.state.clienteProyecto?.proyecto_producto.find(aux => aux.key == prodKey);
-  producto.cantidad = cant;
-  this.forceUpdate();
-  console.log("traee producto " + producto.key + " cantidad " + producto.cantidad)
- };
+
 
  renderActiveForm() {
   const { activeFormTab } = this.state;
