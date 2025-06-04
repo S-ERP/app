@@ -47,6 +47,13 @@ export default class HorarioDeCliente extends Component {
   this.forceUpdate();
  };
 
+ handleProductoChange = (prodKey, cant) => {
+  const producto = this.state.clienteProyecto?.proyecto_producto.find(aux => aux.key == prodKey);
+  producto.cantidad = cant;
+  this.forceUpdate();
+  console.log("traee producto " + producto.key + " cantidad " + producto.cantidad)
+ };
+
  renderActiveForm() {
   const { activeFormTab } = this.state;
   if (!this.state.clienteProyecto?.cliente) return <SLoad />
@@ -77,17 +84,19 @@ export default class HorarioDeCliente extends Component {
    if (!this.state.productos) {
     this.state.productos = {};
    }
-   const productos = [
-    { key: "producto1", label: "Producto 1" },
-    { key: "producto2", label: "Producto 2" },
-    { key: "producto3", label: "Producto 3" },
-   ];
+   // const productos = [
+   //  { key: "producto1", label: "Producto 1" },
+   //  { key: "producto2", label: "Producto 2" },
+   //  { key: "producto3", label: "Producto 3" },
+   // ];
 
    return (
     <SView col={"xs-12"}>
      <SHr height={20} />
-     {productos.map((prod) => {
-      const seleccionado = !!this.state.productos[prod.key];
+
+
+     {this.state.clienteProyecto?.proyecto_producto.map((prod) => {
+      const seleccionado = !!this.state.clienteProyecto?.proyecto_producto[prod.key];
       return (
        <SView
         key={prod.key}
@@ -95,26 +104,17 @@ export default class HorarioDeCliente extends Component {
         style={{ width: "80%", marginBottom: 24, height: 65, marginLeft: "15%", }} >
         <SView row style={{ alignItems: "center", }}>
          <SView style={{ height: 24 }}>
-          <SInput type="checkBox" style={{ marginRight: 45 }} value={(this.state.productos[prod.key]?.cantidad || 0) > 0}
-           onChange={(val) => {
-            if (!val) {
-             this.setState({ productos: { ...this.state.productos, [prod.key]: undefined, }, });
-            } else {
-             this.setState({
-              productos: { ...this.state.productos, [prod.key]: { cantidad: 1 }, },
-             });
-            }
-           }}
-          />
+          <SInput type="checkBox" style={{ marginRight: 45 }} value={(this.state.clienteProyecto?.proyecto_producto[prod.key]?.cantidad || 0) > 0} />
          </SView>
          <SText
           style={{
+           width:"10%",
            fontSize: 12,
            fontWeight: "bold",
            minWidth: 120,
           }}
          >
-          {prod.label}
+          {prod.key}
          </SText>
         </SView>
 
@@ -134,8 +134,8 @@ export default class HorarioDeCliente extends Component {
           Cantidad
          </SText>
          <SView style={{
-          width: 60, // Ancho fijo para el input
-          height: 36, // Altura fija para el input
+          width: 60,
+          height: 36,
          }}>
           <SButtom
            type="primary"
@@ -145,21 +145,20 @@ export default class HorarioDeCliente extends Component {
             left: 53,
             width: 25,
             height: 25,
-
            }}
            onPress={() => {
-            const cantidadActual = this.state.productos[prod.key]?.cantidad || 0;
-            this.setState({
-             productos: {
-              ...this.state.productos,
-              [prod.key]: {
-               ...this.state.productos[prod.key],
-               cantidad: cantidadActual + 1,
-              },
-             },
-            });
+            const productos = this.state.clienteProyecto.proyecto_producto || {};
+            const productoActual = productos[prod.key] || {};
+            const cantidadActual = productoActual.cantidad || 0;
+            this.state.clienteProyecto.proyecto_producto[prod.key] = {
+             ...productoActual,
+             cantidad: cantidadActual + 1,
+            };
+            this.forceUpdate();
+            console.log("key " + prod.key + " actualizada:", this.state.clienteProyecto.proyecto_producto[prod.key].cantidad);
            }}
           />
+
           <SButtom
            type="primary"
            children="-"
@@ -171,40 +170,29 @@ export default class HorarioDeCliente extends Component {
 
            }}
            onPress={() => {
-            const cantidadActual = this.state.productos[prod.key]?.cantidad || 0;
+            const productos = this.state.clienteProyecto.proyecto_producto || {};
+            const productoActual = productos[prod.key] || {};
+            const cantidadActual = productoActual.cantidad || 0;
             if (cantidadActual > 0) {
-             this.setState({
-              productos: {
-               ...this.state.productos,
-               [prod.key]: {
-                ...this.state.productos[prod.key],
-                cantidad: cantidadActual - 1,
-               },
-              },
-             });
-            }
+             this.state.clienteProyecto.proyecto_producto[prod.key] = {
+              ...productoActual,
+              cantidad: cantidadActual - 1,
+             };
+             this.forceUpdate();
+             console.log("key " + prod.key + " actualizada:", this.state.clienteProyecto.proyecto_producto[prod.key].cantidad);
+            };
            }}
            disabled={!seleccionado}
           />
+
           <SInput
            type="number"
            min={1}
-           value={seleccionado ? this.state.productos[prod.key]?.cantidad : "0"}
+           value={this.state.clienteProyecto?.proyecto_producto[prod.key]?.cantidad ?? 0}
            style={{
             width: 40,
             height: 25,
             textAlign: "center",
-           }}
-           onChange={(val) => {
-            this.setState({
-             productos: {
-              ...this.state.productos,
-              [prod.key]: {
-               ...this.state.productos[prod.key],
-               cantidad: Number(val) || 0,
-              },
-             },
-            });
            }}
            disabled={!seleccionado}
           />
