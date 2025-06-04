@@ -32,14 +32,7 @@ import SSocket from 'servisofts-socket';
 //     | "devuelto"
 //     | "spam"
 //     | "double"
-const stages = [
-    { key: 'por_llamar', name: 'Por Llamar', color: STheme.color.lightGray, states: ["nuevo", "rellamada", "vencido", "llamada_fallida"] },
-    { key: 'en_llamada', name: 'En llamada', color: STheme.color.warning, states: ["en_proceso"] },
-    { key: 'confirmado', name: 'Confirmados', color: STheme.color.success, states: ["confirmado"] },
-    { key: 'no_llamar', name: 'No llamar', color: STheme.color.danger, states: ["spam", "double", "cancelado"] },
-
-
-];
+const stages = MDL.crm.clienteProyecto.stages;
 
 export default class Dashboard2 extends Component {
     stageRefs = {};
@@ -354,8 +347,8 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
             >
                 <SText onPress={() => {
                     SNavigation.navigate("/crm/plantilla", { key: card.key })
-                }} >{card.cliente.telefono}</SText>
-                <SText color={STheme.color.lightGray}>{card.cliente.nombres}</SText>
+                }} >{card?.cliente?.telefono}</SText>
+                <SText color={STheme.color.lightGray}>{card?.cliente?.nombres}</SText>
                 <SText fontSize={10} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
                 <SText fontSize={10} color={STheme.color.lightGray}>{card.state}</SText>
                 <SView style={{

@@ -11,8 +11,8 @@ import MenuAcciones from './MenuAcciones';
 import ContadorTiempoRestante from './ContadorTiempoRestante';
 
 const CardContent = ({ children }) => {
-    return <SView col={"xs-4"} padding={8} center>
-        <SView col={"xs-12"} card padding={8}>
+    return <SView col={"xs-12 sm-6 md-4"} padding={8} center>
+        <SView col={"xs-12"} padding={8}>
             {children}
         </SView>
     </SView>
@@ -38,18 +38,35 @@ export default class index extends Component {
 
     render() {
         const { proyecto, state, fecha_on, fecha_edit } = this.state.data || {};
-        return <SPage title={"Call"}>
+        return <SPage title={"Call"} header={<>
+            <SHr />
+            <MenuAcciones key_cliente_proyecto={this.pk} />
+
+            {!this.state?.data?.fecha_edit || this.state?.data?.state != "en_proceso" ? null : <>
+                <SView style={{
+                    position: "absolute",
+                    right: 16,
+                    top: 16,
+                    zIndex: 1000,
+                    backgroundColor: STheme.color.card,
+                    padding: 8,
+                    borderRadius: 8
+                }}>
+                    <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on} />
+                </SView>
+            </>}
+        </>}>
             <SView col={"xs-12"} center>
-                <SHr h={25} />
-                <MenuAcciones key_cliente_proyecto={this.pk} />
+                {/* <SHr h={25} /> */}
+                {/* <MenuAcciones key_cliente_proyecto={this.pk} /> */}
                 {!this.state?.data?.fecha_edit || this.state?.data?.state != "en_proceso" ? null : <>
                     <SHr h={25} />
                     <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on} />
                 </>}
-                <SText onPress={() => {
+                {/* <SText onPress={() => {
                     console.log("test", this.horarioDeCliente.state.clienteProyecto);
-                }}>{"test"}</SText>
-                <SHr h={25} />
+                }}>{"test"}</SText> */}
+                {/* <SHr h={25} /> */}
                 <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
                     <CardContent>
                         <HorarioDeCliente

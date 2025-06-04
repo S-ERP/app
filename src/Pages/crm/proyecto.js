@@ -11,6 +11,7 @@ import SMD from '../../SMD';
 import FormRegistroCampana from './Components/FormRegistroCampana';
 import PopupRellamada from './Components/PopupRellamada';
 import PopupRazon from './Components/PopupRazon';
+import Model from '../../Model';
 
 export default class proyecto extends Component {
 
@@ -46,7 +47,9 @@ export default class proyecto extends Component {
                                                 });
                                         })
 
-                                        const productos = await MDL.crm.proyectoProducto.getAll();
+                                    
+
+                                        const productos = await MDL.crm.proyectoProducto.getAllConProductos();
                                         proyectos.forEach(proyecto => {
                                                 proyecto.productos = [];
                                                 Object.keys(productos).forEach(key => {
@@ -54,8 +57,10 @@ export default class proyecto extends Component {
                                                                 proyecto.productos.push(productos[key]);
                                                         }
                                                 });
-                                        }
-                                        );
+                                        });
+
+
+
                                         return proyectos;
                                 }}
                                 onSelect={(e) => {
@@ -209,7 +214,7 @@ export default class proyecto extends Component {
                                                                         //         }
                                                                         // })
                                                                 }}>
-                                                                        <SText card padding={4} style={{ maxWidth: 200 }} numberOfLines={1}>{prd.key_producto}</SText>
+                                                                        <SText card padding={4} style={{ maxWidth: 200 }} numberOfLines={1}>{prd?.producto?.nombre} x Bs.{prd?.producto?.precio??0}</SText>
                                                                 </SView>
                                                         })}
                                                 </SView>
