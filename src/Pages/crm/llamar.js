@@ -17,9 +17,10 @@ export default class llamar extends Component {
             component: "cliente_proyecto",
             type: "get_siguiente",
             key_empresa: Model.empresa.Action.getKey(),
+            key_usuario: Model.usuario.Action.getKey(),
         }).then(e => {
-            const first = e.data[0];
-            if(!first) return;
+            const first = e.data;
+            if (!first) return;
             SNavigation.replace("/crm/call", { key: first.key })
             console.log("Siguiente Lead:", e);
         }).catch(error => {
