@@ -90,9 +90,9 @@ export default class HorarioDeCliente extends Component {
                   onChangeText: e => this.handleClienteChange("edad", e)
                  },
                     currier: { label: "Currier", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.currier ?? "", onChangeText: e => this.handleClienteChange("currier", e) },
-                 departamento: { label: "Departamento", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.departamento ?? "", onChangeText: e => this.handleClienteChange("departamento", e) },
-                    provincia: { label: "Provincia", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.provincia ?? "", onChangeText: e => this.handleClienteChange("provincia", e) },
-                    distrito: { label: "Distrito", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.distrito ?? "", onChangeText: e => this.handleClienteChange("distrito", e) },
+                 departamento: { label: "Departamento", col: "xs-4.6", required: true, defaultValue: this.state.clienteProyecto?.cliente?.departamento ?? "", onChangeText: e => this.handleClienteChange("departamento", e) },
+                    provincia: { label: "Provincia", col: "xs-3.5", required: true, defaultValue: this.state.clienteProyecto?.cliente?.provincia ?? "", onChangeText: e => this.handleClienteChange("provincia", e) },
+                    distrito: { label: "Distrito", col: "xs-3.5", required: true, defaultValue: this.state.clienteProyecto?.cliente?.distrito ?? "", onChangeText: e => this.handleClienteChange("distrito", e) },
                     dirección: { label: "Dirección", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.direccion ?? "", onChangeText: e => this.handleClienteChange("direccion", e) },
                     latitud: { label: "Latitud", col: "xs-5.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.lat ?? "", onChangeText: e => this.handleClienteChange("lat", e) },
                     longitud: { label: "Longitud", col: "xs-5.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.lng ?? "", onChangeText: e => this.handleClienteChange("lng", e) },
