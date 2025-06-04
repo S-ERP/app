@@ -11,6 +11,7 @@ import lead from "./lead";
 import tipoMovimientoLead from "./tipoMovimientoLead";
 import llamar from "./llamar";
 import call from "./call"
+import campana from "./campana";
 
 export default SPage.combinePages("crm", {
   "": root,
@@ -24,5 +25,6 @@ export default SPage.combinePages("crm", {
   lead,
   tipoMovimientoLead,
   llamar,
+  campana,
   call
 });

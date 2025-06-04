@@ -81,10 +81,10 @@ export default class OrdenesConMismoNumero extends Component {
         </SView>
        </SView>
        <SView col="xs-4">
-        <SText>????????????</SText>
+        <SText>{orden?.proyecto?.nombre}</SText>
        </SView>
        <SView col="xs-4">
-        <SText col="xs-12">{orden.key}</SText>
+        <SText col="xs-12" fontSize={8}>{orden.key}</SText>
        </SView>
       </SView>
       {/* </SView> */}
