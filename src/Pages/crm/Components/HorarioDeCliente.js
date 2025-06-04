@@ -21,6 +21,11 @@ export default class HorarioDeCliente extends Component {
  }
 
 
+ handleClienteChange = (key, value) => {
+  this.state.clienteProyecto.cliente[key] = value;
+  this.forceUpdate();
+ };
+
  renderActiveForm() {
   const { activeFormTab } = this.state;
   if (!this.state.clienteProyecto?.cliente) return <SLoad />
@@ -31,20 +36,18 @@ export default class HorarioDeCliente extends Component {
      justifyContent: "space-between",
     }}
     inputProps={{
-       style: { height: 40, borderColor: STheme.color.gray },
+     style: { height: 40, borderColor: STheme.color.gray },
     }}
     inputs={{
-     nombreCompleto: {
-      label: "Nombre de Cliente", col: "xs-12", required: true, defaultValue: (this.state?.clienteProyecto?.cliente?.nombres ?? "") + " " + (this.state?.clienteProyecto?.cliente?.apellidos ?? "").trim()
-     },
-     edad: { label: "Edad", col: "xs-12", required: true, defaultValue: this.state?.clienteProyecto?.cliente?.edad ?? "" },
-     currier: { label: "Currier", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.currier ?? "" },
-     departamente: { label: "Departamente", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.departamente ?? "" },
-     provincia: { label: "Provincia", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.provincia ?? "" },
-     distrito: { label: "Distrito", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.distrito ?? "" },
-     dirección: { label: "Dirección", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.dirección ?? "" },
-     latitud: { label: "Latitud", col: "xs-5.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.latitud ?? "" },
-     longitud: { label: "Longitud", col: "xs-5.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.longitud ?? "" }
+     nombres: { label: "Nombre de Cliente", col: "xs-12", required: true, defaultValue: this.state?.clienteProyecto?.cliente?.nombres ?? "", onChangeText: e => this.handleClienteChange("nombres", e) },
+     edad: { label: "Edad", col: "xs-12", type: "number", required: true, defaultValue: this.state?.clienteProyecto?.cliente?.edad ?? "", onChangeText: e => this.handleClienteChange("edad", e) },
+     currier: { label: "Currier", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.currier ?? "", onChangeText: e => this.handleClienteChange("currier", e) },
+     departamente: { label: "Departamente", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.departamente ?? "", onChangeText: e => this.handleClienteChange("departamente", e) },
+     provincia: { label: "Provincia", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.provincia ?? "", onChangeText: e => this.handleClienteChange("provincia", e) },
+     distrito: { label: "Distrito", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.distrito ?? "", onChangeText: e => this.handleClienteChange("distrito", e) },
+     dirección: { label: "Dirección", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.direccion ?? "", onChangeText: e => this.handleClienteChange("direccion", e) },
+     latitud: { label: "Latitud", col: "xs-5.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.lat ?? "", onChangeText: e => this.handleClienteChange("lat", e) },
+     longitud: { label: "Longitud", col: "xs-5.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.lng ?? "", onChangeText: e => this.handleClienteChange("lng", e) },
     }}
    />;
   }
@@ -245,6 +248,8 @@ export default class HorarioDeCliente extends Component {
         <SView>
          <SText fontSize={10}>ID de la orden</SText>
          <SText fontSize={28}>212</SText>
+         <SText fontSize={16}>Edad {this.state.clienteProyecto?.cliente?.edad} </SText>
+         <SText fontSize={12} color={"pink"}>año {this.state.clienteProyecto?.cliente?.edad ? new SDate().addYear((-this.state.clienteProyecto?.cliente?.edad)).toString("yyyy") : ""} </SText>
         </SView>
        </SView>
       </SView>
