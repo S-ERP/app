@@ -4,6 +4,7 @@ import { SHr, SNavigation, SPage, SText, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SMD from '../../../SMD';
 import OrdenesConMismoNumero from '../Components/OrdenesConMismoNumero';
+import HorarioDeCliente from '../Components/HorarioDeCliente';
 
 const CardContent = ({ children }) => {
     return <SView col={"xs-4"} padding={8} center>
@@ -30,9 +31,7 @@ export default class index extends Component {
         return <SPage title={"Call"}>
             <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
                 <CardContent>
-                    <SText>{state}</SText>
-                    <SHr />
-                    <SText>{fecha_on}</SText>
+                    <HorarioDeCliente key_cliente_proyecto={this.pk} clienteProyecto={this.state?.data} ></HorarioDeCliente>
                 </CardContent>
                 <CardContent>
                     <SMD padding={0} fontSize={12} space={0}>{proyecto?.guion}</SMD>
