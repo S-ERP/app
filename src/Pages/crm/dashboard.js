@@ -222,34 +222,35 @@ export default class Dashboard extends Component {
                                 </SView>
                             );
                         })}
+                        {this.state.draggingCard && (() => {
+                            const card = this.state.cards.find(c => c.key === this.state.draggingCard);
+                            if (!card) return null;
+                            return (
+                                <Animated.View style={{
+                                    position: "absolute",
+                                    top: this.state.dragOffset.y + this.state.initialOffset.y + 4,
+                                    left: this.state.dragOffset.x + this.state.initialOffset.x + 4,
+                                    width: this.state.initialOffset.w,
+                                    height: 70,
+                                    zIndex: 9999,
+                                    pointerEvents: 'none',
+                                }}>
+                                    <SView
+                                        style={{
+                                            backgroundColor: STheme.color.card,
+                                            padding: 8,
+                                            borderRadius: 8,
+                                            flex: 1,
+                                        }}
+                                    >
+                                        <SText>{card.cliente.telefono}</SText>
+                                        <SText>{card.cliente.nombres}</SText>
+                                    </SView>
+                                </Animated.View>
+                            );
+                        })()}
                     </ScrollView>
-                    {this.state.draggingCard && (() => {
-                        const card = this.state.cards.find(c => c.key === this.state.draggingCard);
-                        if (!card) return null;
-                        return (
-                            <Animated.View style={{
-                                position: "absolute",
-                                top: this.state.dragOffset.y + this.state.initialOffset.y + 4,
-                                left: this.state.dragOffset.x + this.state.initialOffset.x + 4,
-                                width: this.state.initialOffset.w,
-                                height: 70,
-                                zIndex: 9999,
-                                pointerEvents: 'none',
-                            }}>
-                                <SView
-                                    style={{
-                                        backgroundColor: STheme.color.card,
-                                        padding: 8,
-                                        borderRadius: 8,
-                                        flex: 1,
-                                    }}
-                                >
-                                    <SText>{card.cliente.telefono}</SText>
-                                    <SText>{card.cliente.nombres}</SText>
-                                </SView>
-                            </Animated.View>
-                        );
-                    })()}
+
                     <SView style={{
                         position: "absolute",
                         right: 16,
