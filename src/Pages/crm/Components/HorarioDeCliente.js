@@ -31,7 +31,16 @@ export default class HorarioDeCliente extends Component {
  handleClienteChange = (key, value) => {
   this.state.clienteProyecto.cliente[key] = value;
 
-
+  // Si se está actualizando la edad, recalcular la fecha_nacimiento
+  if (key === "edad") {
+   const edad = parseInt(value);
+   if (!isNaN(edad) && edad >= 0 && edad <= 99) {
+    const añoNacimiento = new SDate().addYear(-edad).toString("yyyy-MM-dd");
+    this.state.clienteProyecto.cliente["fecha_nacimiento"] = añoNacimiento;
+   } else {
+    this.state.clienteProyecto.cliente["fecha_nacimiento"] = "";
+   }
+  }
   console.log("handle " + this.state.clienteProyecto.cliente[key])
   console.log("handle año " + this.state.clienteProyecto.cliente["fecha_nacimiento"])
 
@@ -52,8 +61,7 @@ export default class HorarioDeCliente extends Component {
     }}
     inputs={{
      nombres: { label: "Nombre de Cliente", col: "xs-12", required: true, defaultValue: this.state?.clienteProyecto?.cliente?.nombres ?? "", onChangeText: e => this.handleClienteChange("nombres", e) },
-     edad: { label: "Edad", col: "xs-12", type: "number", maxLength: 2, required: true, defaultValue: this.state?.clienteProyecto?.cliente?.edad ?? "", onChangeText: e => this.handleClienteChange("edad", e) },
-     // edad: { label: "Edad", col: "xs-12", type: "number", maxLength: 2, required: true, defaultValue: this.state?.clienteProyecto?.cliente?.edad ?? "", onChangeText: e => this.handleClienteChange("edad", e) },
+     fecha_nacimiento: { label: "Edad", col: "xs-12", type: "number", maxLength: 2, required: true, defaultValue: this.state?.clienteProyecto?.cliente?.edad ?? "", onChangeText: e => this.handleClienteChange("edad", e) },
      currier: { label: "Currier", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.currier ?? "", onChangeText: e => this.handleClienteChange("currier", e) },
      departamente: { label: "Departamente", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.departamente ?? "", onChangeText: e => this.handleClienteChange("departamente", e) },
      provincia: { label: "Provincia", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.provincia ?? "", onChangeText: e => this.handleClienteChange("provincia", e) },
