@@ -1,19 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { SButtom, SDate, SDatePicker, SForm, SHr, SIcon, SInput, SList, SLoad, SNavigation, SNotification, SPage, SScroll, SSPiner, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
-// import STextPlay from '../Components/STextPlay';
-// import Container from '../Components/Container';
-// import SMD from '../SMD';
 import { Container } from '../../Components';
 import MDtest1 from '../../SMD/MDtest1';
-// import MDtest2 from '../SMD/MDtest2';
-// import SwipeableView from '../Components/SwipeableView';
-// import Loby from "./loby/root"
-// import Publicaciones from "./publicacion/root"
-// import Menu from './menu';
 import MenuDragable from '../../Components/MenuDragable';
 import Model from '../../Model';
-// import MultipageMenu from '../Components/MultipageMenu';
 import SSocket from 'servisofts-socket';
 import DataBase from '../../DataBase';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -22,13 +13,11 @@ import SMD from '../../SMD';
 import Llamada from './Components/Llamada';
 import PopupRellamada from './Components/PopupRellamada';
 import PopupRazon from './Components/PopupRazon';
-// import { Trigger } from 'servisofts-db';
-// import { Image } from 'react-native';
+import OrdenesConMismoNumero from './Components/OrdenesConMismoNumero';
 
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";
 const formTabs = ["Detalles", "Productos", "Adicional"];
-
 
 export default class plantilla extends Component {
 
@@ -43,41 +32,54 @@ export default class plantilla extends Component {
     "Cancelado": false,
     "Double": false,
     "Spam": false,
-    "Recall": true,
+    "Recall": false,
     "FeactureRecall": false
    },
-   activeTab: "Detalles",
    activeFormTab: "Detalles",
   };
-  this.onSelect = SNavigation.getParam("onSelect");
-
+  // this.onSelect = SNavigation.getParam("onSelect");
  }
 
  componentDidMount() {
   MDL.crm.clienteProyecto.getFull(this.pk).then((e) => {
-   this.setState({
-    clienteProyecto: e,
-   })
+
+
+   this.traerAllOrdenes();
+   this.setState({ clienteProyecto: e })
   })
+ }
+ async traerAllOrdenes() {
+  const resp: any = await SSocket.sendPromise({
+   service: "crm",
+   component: "cliente_proyecto",
+   type: "getConElMismoNumero",
+   estado: "cargando",
+   key: this.pk
+  }, 1000 * 60)
+  const obj: any = Object.values(resp.data);
+  console.log("pintado ", obj)
  }
 
  optionItem({ key, label, color, icono, onPress }) {
-  // if (key == "Exportar") return this.renderExportExcel();
   var select = !!this.state.select[key]
-  return <>
-   <SView col={"xs-12"} backgroundColor='transparent'  center style={{ alignItems: "center", }}>
 
-   <SView center card style={{
-    paddingLeft: 8,
-    paddingRight: 8,
-    opacity: select ? 1 : 0.5,
-    backgroundColor: select ? color_activado + "88" : color_desactivado + "88",
-    // backgroundColor: color + "88"
-   }} onPress={onPress} row>
-    {!select ? null : <> <SIcon name={icono} width={12} height={12} fill={STheme.color.text} /> <SView width={8} /></>}
-    <SText>{label}</SText>
-   </SView>
-   <SView width={4} />
+  // aqui pregunto
+
+  // this.state?.clienteProyecto?.state = this.state.select su valor entonces deberia ponerlo en true  el state
+
+  console.log("alvaro aqui ", select)
+  return <>
+   <SView col={"xs-12"} backgroundColor='transparent' center style={{ alignItems: "center", }}>
+    <SView center card style={{
+     paddingLeft: 8,
+     paddingRight: 8,
+     opacity: select ? 1 : 0.5,
+     backgroundColor: select ? color_activado + "88" : color_desactivado + "88",
+    }} onPress={onPress} row>
+     {!select ? null : <> <SIcon name={icono} width={12} height={12} fill={STheme.color.text} /> <SView width={8} /></>}
+     <SText>{label}</SText>
+    </SView>
+    <SView width={4} />
    </SView>
   </>
  };
@@ -88,50 +90,34 @@ export default class plantilla extends Component {
   if (!this.state.clienteProyecto?.cliente) return <SLoad />
   if (activeFormTab === "Detalles") {
    return <SForm
-    col={"xs-12"}
-    // style={{ padding: 10 }}
+    col={"xs-12"} row
     inputProps={{
-     col: "xs-12",
-
-     style: {
-      width: "100%",
-      height: 40,
-
-      borderColor: STheme.color.gray,
-      // borderRadius: 8,
-
-     }
+     col: "xs-12", style: { width: "100%", height: 40, borderColor: STheme.color.gray },
     }}
-
-    style={{
-     justifyContent: "space-between",
-    }}
-
-    row
     inputs={{
      a: { label: "Nombre de Cliente", col: "xs-12", required: true },
      b: { label: "Edad", col: "xs-12", required: true },
      c: { label: "Currier", col: "xs-12", required: true },
-
      d: { label: "Departamente", col: "xs-3.9", required: true },
      e: { label: "Provincia", col: "xs-3.9", required: true },
      f: { label: "Distrito", col: "xs-3.9", required: true },
-
      g: { label: "Dirección", col: "xs-12", required: true },
      h: { label: "Latitud", col: "xs-3", required: true },
      i: { label: "Longitud", col: "xs-3", required: true },
-
-     // e: { label: "Ciudad", col: "xs-6", required: true },
-     // c: { label: "Teléfono", col: "xs-12", required: true, type: "text", defaultValue: this.state.clienteProyecto?.cliente?.telefono || "" },
-     // d: { label: "Email", col: "xs-8", required: false },
-     // f: { label: "Provincia", col: "xs-6", required: true },
     }}
-
    />;
   }
 
+  // if (activeFormTab === "Productos") {
+  //  const items = [
+  //   { key: "producto1", label: "Producto 1" },
+  //   { key: "producto2", label: "Producto 2" },
+  //   { key: "producto3", label: "Producto 3" },
+  //  ];
+  //  const productosState = productos || {};
+
+
   if (activeFormTab === "Productos") {
-   // Estado local para productos seleccionados y cantidades
    if (!this.state.productos) {
     this.state.productos = {};
    }
@@ -140,53 +126,27 @@ export default class plantilla extends Component {
     { key: "producto2", label: "Producto 2" },
     { key: "producto3", label: "Producto 3" },
    ];
-   return (
-    <SView col={"xs-12"} style={{}}>
-     <SHr height={20} />
 
+   return (
+    <SView col={"xs-12"}>
+     <SHr height={20} />
      {productos.map((prod) => {
       const seleccionado = !!this.state.productos[prod.key];
       return (
        <SView
         key={prod.key}
-        row
-        center
-        style={{
-         width: "80%",
-         marginBottom: 24,
-         height: 65,
-         marginLeft: "15%",
-        }}
-       >
-        {/* Checkbox + Label en una sola fila */}
+        row center
+        style={{ width: "80%", marginBottom: 24, height: 65, marginLeft: "15%", }} >
         <SView row style={{ alignItems: "center", }}>
-         <SView style={{
-          // Tamaño estándar
-          height: 24,
-         }}>
+         <SView style={{ height: 24 }}>
 
-          <SInput
-           type="checkBox"
-           style={{
-            marginRight: 45,
-           }}
-           value={(this.state.productos[prod.key]?.cantidad || 0) > 0}
+          <SInput type="checkBox" style={{ marginRight: 45 }} value={(this.state.productos[prod.key]?.cantidad || 0) > 0}
            onChange={(val) => {
-            // Si el checkbox se desmarca, quitar el producto
             if (!val) {
-             this.setState({
-              productos: {
-               ...this.state.productos,
-               [prod.key]: undefined,
-              },
-             });
+             this.setState({ productos: { ...this.state.productos, [prod.key]: undefined, }, });
             } else {
-
              this.setState({
-              productos: {
-               ...this.state.productos,
-               [prod.key]: { cantidad: 1 },
-              },
+              productos: { ...this.state.productos, [prod.key]: { cantidad: 1 }, },
              });
             }
            }}
@@ -306,7 +266,6 @@ export default class plantilla extends Component {
 
   if (activeFormTab === "Adicional") {
    return <SForm
-    // Adicional form config
     inputs={{
      e: { label: "Notas", col: "xs-12", required: false, type: "textarea" },
      f: { label: "Instrucciones especiales", col: "xs-12", required: false },
@@ -335,17 +294,15 @@ export default class plantilla extends Component {
   return <SView col={"xs-12"} height={38} border={"transparent"}>
    <SList
     horizontal
-    // center
-    // flexEnd
-    // scrollEnabled
-    // scrollEnabled={false}
     data={[
      {
       key: "confirmado", label: "confirmado", color: color_activado, icono: "addTarea", onPress: () => {
-       PopupRazon.open(
-        ({
-         tipo: "confirmado", onRegister: (e) => { MDL.crm.clienteProyecto.editar({ key: this.pk, state: "confirmado", key_tipo_movimiento_lead: e.selectedOption.key }) }
-        }))
+       if (window.confirm("¿Estás seguro de que quieres continuar?")) {
+        console.log("Confirmado");
+        MDL.crm.clienteProyecto.editar({ key: this.pk, state: "confirmado", key_tipo_movimiento_lead: "confirmado" })
+       } else {
+        console.log("Cancelado");
+       }
       }
      },
      {
@@ -354,6 +311,7 @@ export default class plantilla extends Component {
         ({
          tipo: "cancelado", onRegister: (e) => { MDL.crm.clienteProyecto.editar({ key: this.pk, state: "cancelado", key_tipo_movimiento_lead: e.selectedOption.key }) }
         }))
+
       }
      },
      {
@@ -369,7 +327,6 @@ export default class plantilla extends Component {
        PopupRazon.open(
         ({
          tipo: "spam", onRegister: (e) => {
-          // console.log("Datos registrados titulo:", e.selectedOption.content);
           MDL.crm.clienteProyecto.editar({ key: this.pk, state: "spam", key_tipo_movimiento_lead: e.selectedOption.key })
          }
         }))
@@ -377,10 +334,7 @@ export default class plantilla extends Component {
      },
      {
       key: "Recall", label: "Recall", color: color_activado, icono: "tpGa", onPress: () => {
-       PopupRazon.open(
-        ({
-         tipo: "rellamada", onRegister: (e) => { MDL.crm.clienteProyecto.editar({ key: this.pk, state: "rellamada", key_tipo_movimiento_lead: e.selectedOption.key }) }
-        }))
+       PopupRellamada.open(({ onRegister: (e) => { } }))
       }
      },
      {
@@ -536,65 +490,25 @@ export default class plantilla extends Component {
          </SMD>
         </ScrollView>
        </SView>
-       {/* <SHr height={32} /> */}
-
-       {/* <SView col="xs-12" row center>
-                  <SView col="xs-6">
-                    <SText fontSize={14}>1. Saldos</SText>
-                  </SView>
-                  <SView col="xs-6" style={{ alignItems: "flex-end" }}>
-                    <SView style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                      <SText fontSize={14}>+</SText>
-                    </SView>
-                  </SView>
-                </SView>
-                <SHr height={12} />
-                <SView col="xs-12" row center>
-                  <SView col="xs-6">
-                    <SText fontSize={14}>1. Saldos</SText>
-                  </SView>
-                  <SView col="xs-6" style={{ alignItems: "flex-end" }}>
-                    <SView style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                      <SText fontSize={14}>+</SText>
-                    </SView>
-                  </SView>
-                </SView>
-                <SHr height={12} />
-                <SView col="xs-12" row center>
-                  <SView col="xs-6">
-                    <SText fontSize={14}>1. Saldos</SText>
-                  </SView>
-                  <SView col="xs-6" style={{ alignItems: "flex-end" }}>
-                    <SView style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                      <SText fontSize={14}>+</SText>
-                    </SView>
-                  </SView>
-                </SView>
-                <SHr height={12} />
-                <SView col="xs-12" row center>
-                  <SView col="xs-6">
-                    <SText fontSize={14}>1. Saldos</SText>
-                  </SView>
-                  <SView col="xs-6" style={{ alignItems: "flex-end" }}>
-                    <SView style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                      <SText fontSize={14}>+</SText>
-                    </SView>
-                  </SView>
-                </SView> */}
-       {/* <SHr height={300} /> */}
       </SView>
      </SView>
 
 
      <SView flex />
 
-     <SView col={"xs-12 sm-3.8"}  >
+     <OrdenesConMismoNumero key_cliente_proyecto={this.pk}></OrdenesConMismoNumero>
+
+     {/* <SView col={"xs-12 sm-3.8"}  >
       <SView col={"xs-12"} style={{ padding: 16, borderRadius: 16, borderWidth: 2 }} border={STheme.color.card} backgroundColor={STheme.color.card}>
        <SView col="xs-12" row center>
         <SView col="xs-12">
          <SText fontSize={14}>Órdenes con el mismo número</SText>
         </SView>
        </SView>
+
+
+       <SText fontSize={14}>mostrar la funcion</SText>
+
 
        <SHr col={"xs-12"} height={20} />
        <SHr col={"xs-12"} height={1} color={STheme.color.card} />
@@ -656,7 +570,6 @@ export default class plantilla extends Component {
 
 
        <SInput
-        // customStyle={"clean"}
         label={"Comentario"}
         type='textArea'
         placeholder={"Add your comment here..."}
@@ -664,17 +577,13 @@ export default class plantilla extends Component {
         style={{
          textAlignVertical: "top",
          padding: 4,
-         // fontSize: 10
         }}
        />
 
 
        <SHr height={12} />
       </SView>
-     </SView>
-
-
-
+     </SView> */}
     </SView>
    </SView>
   </SPage>

@@ -1,136 +1,137 @@
 
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
 import MDL from '../../../MDL';
-import { DinamicTable } from 'servisofts-table';
 import { SForm, SHr, SIcon, SInput, SNotification, SPopup, SText, STheme, SThread, SView } from 'servisofts-component';
 import PButtom from '../../../Components/PButtom';
-import PopupBuscaRazon from './PopupBuscaRazon';
 
 
 type PopupRazonType = {
  onRegister: (e: any) => void,
  onActualizar: (e: any) => void,
  onCancel?: () => void,
- tipo?: string // nueva prop
+ tipo?: string // tipo por defecto: "spam", "fuera_perfil", etc.
 };
 
 export default class PopupRazon extends Component<PopupRazonType & { defaultData?: any }> {
-
  static open(props: PopupRazonType) {
-   SPopup.open({
-     key: "ppuprellamada",
-     content: <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 320 }} padding={16} withoutFeedback col={"xs-11"}>
-       <PopupRazon {...props} onRegister={(e) => {
-         SPopup.close("ppuprellamada");
-         if (props.onRegister) props.onRegister(e);  // Pasamos los datos de vuelta al componente padre
-       }} onCancel={() => {
-         SPopup.close("ppuprellamada");
-         if (props.onCancel) props.onCancel();
-       }} />
-     </SView>
-   });
+  SPopup.open({
+   key: "ppuprellamada",
+   content: (
+    <SView
+     backgroundColor={STheme.color.background}
+     style={{ borderRadius: 8, maxWidth: 320 }}
+     padding={16}
+     withoutFeedback
+     col={"xs-11"}
+    >
+     <PopupRazon
+      {...props}
+      onRegister={(e) => {
+       SPopup.close("ppuprellamada");
+       props.onRegister?.(e);
+      }}
+      onCancel={() => {
+       SPopup.close("ppuprellamada");
+       props.onCancel?.();
+      }}
+     />
+    </SView>
+   )
+  });
  }
 
  constructor(props) {
-   super(props);
-   this.state = {
-     opcionesRazon: [],
-   };
+  super(props);
+  this.state = {
+   motivosLead: [],
+  };
  }
-
- async componentDidMount() {
-   await this.getOptionsRazon();
- }
-
- getOptionsRazon = async () => {
-   try {
-     const all = await MDL.crm.tipoMovimientoLead.getAll();
-     if (!all) return;
-
-     const tipoSeleccionado = this.props.tipo ?? "spam";  // por defecto "spam"
-
-     const opcionesFiltradas = Object.values(all)
-       .filter(item => item.tipo === tipoSeleccionado)
-       .map(item => ({
-         key: item.key,
-         content: item.titulo,
-       }));
-
-     this.setState({ opcionesRazon: opcionesFiltradas });
-   } catch (e) {
-     console.error("Error al cargar opciones:", e);
-   }
- };
 
  form: SForm | null = null;
 
+ async componentDidMount() {
+  await this.loadMotivosLead();
+ }
+
+ loadMotivosLead = async () => {
+  try {
+   const all = await MDL.crm.tipoMovimientoLead.getAll();
+   if (!all) return;
+
+   const tipoSeleccionado = this.props.tipo;
+
+   const motivosFiltrados = Object.values(all)
+    .filter(item => item.tipo === tipoSeleccionado)
+    .map(item => ({
+     key: item.key,
+     content: item.titulo,
+    }));
+
+   const motivosConDefault = [
+    { key: "", content: "--" },
+    ...motivosFiltrados
+   ];
+
+   this.setState({ motivosLead: motivosConDefault });
+  } catch (e) {
+   console.error("Error al cargar motivos:", e);
+  }
+ };
+
  render() {
-   const { defaultData } = this.props;
-   const { opcionesRazon } = this.state;
+  const { defaultData } = this.props;
+  const { motivosLead } = this.state;
 
-   return (
-     <SView center>
-       <SText bold>Indique la razón de spam</SText>
-       <SHr height={20} />
+  return (
+   <SView center>
+    <SText bold>Indique la razón de {this.props.tipo}</SText>
+    <SHr height={20} />
 
-       <SForm
-         row
-         ref={(ref: any) => (this.form = ref)}
-         style={{ justifyContent: "space-between" }}
-         inputs={{
-           "key_tipoMovimientoLead": {
-             col: "xs-12",
-             label: "Seleccione una razón *",
-             type: "select",
-             autoFocus: true,
-             required: true,
-           // defaultValue: opcionesRazon[0].key_tipoMovimientoLead,
-             options: opcionesRazon ?? [],
-             height: 50,
-           },
-         }}
-         onSubmit={(e: any) => {
-          // console.log("Datos del formulario:", e);  // Aquí obtienes la selección
+    <SForm
+     row
+     ref={(ref: any) => (this.form = ref)}
+     style={{ justifyContent: "space-between" }}
+     inputs={{
+      "key_tipoMovimientoLead": {
+       col: "xs-12",
+       label: "Seleccione una razón *",
+       type: "select",
+       autoFocus: true,
+       required: true,
+       options: motivosLead,
+       height: 50,
+       onChange: (value) => {
+        console.log("Seleccionado", value);
+        // SPopup.close("ppuprellamada");
+       }
+      },
+     }}
+     onSubmit={(formData: any) => {
+      const selectedOption = motivosLead.find(
+       option => option.key === formData.key_tipoMovimientoLead
+      );
+      const data = { selectedOption };
+       this.props.onRegister?.(data);
+     }}
+    />
 
+    <SHr height={20} />
 
-          const selectedOption = opcionesRazon.find(option => option.key === e.key_tipoMovimientoLead);
-          // console.log("Datos del formulario3:", selectedOption);  // Aquí obtienes la selección
+    <SView row col={"xs-12"}>
+     {this.props.onCancel && (
+      <>
+       <PButtom flex type="danger" onPress={this.props.onCancel}>
+        CANCELAR
+       </PButtom>
+       <SView width={8} />
+      </>
+     )}
 
-          const data = { selectedOption }; // Puedes aquí estructurar o agregar lo que necesites
-
-           if (this.props.onRegister) {
-            this.props.onRegister(data);
-           }
-          // }
-
-
-         }}
-       />
-       <SHr height={20} />
-
-       <SView row col={"xs-12"}>
-         {this.props.onCancel && (
-           <>
-             <PButtom flex type="danger" onPress={() => this.props.onCancel && this.props.onCancel()}>
-               CANCELAR
-             </PButtom>
-             <SView width={8} />
-           </>
-         )}
-
-         <PButtom
-           flex
-           type="secondary"
-           onPress={() => {
-             console.log("Submitting form...");
-             this.form?.submit();  // Llamar al submit del formulario
-           }}
-         >
-           {defaultData ? "ACTUALIZAR" : "ACEPTAR"}
-         </PButtom>
-       </SView>
-     </SView>
-   );
+     <PButtom flex type="secondary" onPress={() => this.form?.submit()}>
+      {defaultData ? "ACTUALIZAR" : "ACEPTAR"}
+     </PButtom>
+    </SView>
+   </SView>
+  );
  }
 }

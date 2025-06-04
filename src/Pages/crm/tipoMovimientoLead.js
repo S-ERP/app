@@ -30,12 +30,7 @@ export default class tipoMovimientoLead extends Component {
 
  render() {
   return <SPage title={"cliente"}>
-   <SView width={140} height={26} center backgroundColor={STheme.color.card} style={{ borderRadius: 4 }}  >
 
-    <SText fontSize={12} color={STheme.color.white} onPress={() => {
-     FormRegistroTipoMovimientoLead.open(({ onRegister: (e) => { this.DinamicTable.loadData(); } }))
-    }}>{"+ Agregar tipo de jajjaj"}</SText>
-   </SView>
    <SHr height={10} />
 
    <DinamicTable
