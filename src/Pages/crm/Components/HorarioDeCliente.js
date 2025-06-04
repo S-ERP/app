@@ -40,7 +40,7 @@ export default class HorarioDeCliente extends Component {
     }}
     inputs={{
      nombres: { label: "Nombre de Cliente", col: "xs-12", required: true, defaultValue: this.state?.clienteProyecto?.cliente?.nombres ?? "", onChangeText: e => this.handleClienteChange("nombres", e) },
-     edad: { label: "Edad", col: "xs-12", type: "number", required: true, defaultValue: this.state?.clienteProyecto?.cliente?.edad ?? "", onChangeText: e => this.handleClienteChange("edad", e) },
+     edad: { label: "Edad", col: "xs-12", type: "number", maxLength: 2, required: true, defaultValue: this.state?.clienteProyecto?.cliente?.edad ?? "", onChangeText: e => this.handleClienteChange("edad", e) },
      currier: { label: "Currier", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.currier ?? "", onChangeText: e => this.handleClienteChange("currier", e) },
      departamente: { label: "Departamente", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.departamente ?? "", onChangeText: e => this.handleClienteChange("departamente", e) },
      provincia: { label: "Provincia", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.provincia ?? "", onChangeText: e => this.handleClienteChange("provincia", e) },
