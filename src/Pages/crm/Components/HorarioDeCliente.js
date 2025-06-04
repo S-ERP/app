@@ -1,26 +1,12 @@
 import React, { Component } from "react";
 import { ScrollView } from "react-native-gesture-handler";
-import {
- SButtom,
- SDate,
- SForm,
- SHr,
- SIcon,
- SImage,
- SInput,
- SList,
- SLoad,
- SMath,
- SNavigation,
- SText,
- STheme,
- SView,
-} from "servisofts-component";
+import { SButtom, SDate, SForm, SHr, SIcon, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import MDL from "../../../MDL";
 
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";
+const formTabs = ["Detalles", "Productos", "Adicional"];
 
 export default class HorarioDeCliente extends Component {
  constructor(props) {
@@ -49,7 +35,8 @@ export default class HorarioDeCliente extends Component {
     }}
     inputs={{
      a: {
-      label: "Nombre de Cliente", col: "xs-12", required: true, defaultValue: (this.state?.clienteProyecto?.cliente?.nombres ?? "") + " " + (this.state?.clienteProyecto?.cliente?.apellidos ?? "").trim()},
+      label: "Nombre de Cliente", col: "xs-12", required: true, defaultValue: (this.state?.clienteProyecto?.cliente?.nombres ?? "") + " " + (this.state?.clienteProyecto?.cliente?.apellidos ?? "").trim()
+     },
      b: { label: "Edad", col: "xs-12", required: true, defaultValue: this.state?.clienteProyecto?.cliente?.edad ?? "" },
      c: { label: "Currier", col: "xs-12", required: true, defaultValue: this.state.clienteProyecto?.cliente?.currier ?? "" },
      d: { label: "Departamente", col: "xs-3.9", required: true, defaultValue: this.state.clienteProyecto?.cliente?.departamente ?? "" },
