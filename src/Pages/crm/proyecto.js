@@ -45,6 +45,17 @@ export default class proyecto extends Component {
                                                         }
                                                 });
                                         })
+
+                                        const productos = await MDL.crm.proyectoProducto.getAll();
+                                        proyectos.forEach(proyecto => {
+                                                proyecto.productos = [];
+                                                Object.keys(productos).forEach(key => {
+                                                        if (productos[key].key_proyecto == proyecto.key) {
+                                                                proyecto.productos.push(productos[key]);
+                                                        }
+                                                });
+                                        }
+                                        );
                                         return proyectos;
                                 }}
                                 onSelect={(e) => {
@@ -57,9 +68,14 @@ export default class proyecto extends Component {
                                                         {
                                                                 label: "Productos",
                                                                 onPress: () => {
-                                                                        SNavigation.navigate("/productos/producto",{
+                                                                        SNavigation.navigate("/productos/producto", {
                                                                                 onSelect: (producto) => {
                                                                                         console.log("Producto seleccionado:", producto);
+                                                                                        MDL.crm.proyectoProducto.registrar({
+                                                                                                key_producto: producto.key,
+                                                                                                key_proyecto: e.row.key,
+                                                                                        })
+                                                                                        // MDL.crm.x`
                                                                                         // SSocket.sendPromise({
                                                                                         //         service: "crm",
                                                                                         //         component: "producto",
@@ -168,6 +184,32 @@ export default class proyecto extends Component {
                                                                         })
                                                                 }}>
                                                                         <SText card padding={4} style={{ maxWidth: 200 }} numberOfLines={1}>{campana.nombre}</SText>
+                                                                </SView>
+                                                        })}
+                                                </SView>
+                                        }}
+                                />
+                                <DinamicTable.Col key={"productos"} label='Productos'
+                                        width={250}
+                                        data={(e) => {
+                                                return e.row.productos.map(c => c.key_producto).join(", ")
+                                        }}
+                                        cellStyle={{
+                                                justifyContent: "flex-start"
+                                        }}
+                                        customComponent={e => {
+                                                return <SView col={"xs-12"} row >
+                                                        {e.row.productos.map((prd, index) => {
+                                                                return <SView key={index} style={{ padding: 4 }} onPress={() => {
+                                                                        // FormRegistroCampana.open({
+                                                                        //         defaultData: campana,
+                                                                        //         proyecto: e.row,
+                                                                        //         onActualizar: (e) => {
+                                                                        //                 this.DinamicTable.loadData();
+                                                                        //         }
+                                                                        // })
+                                                                }}>
+                                                                        <SText card padding={4} style={{ maxWidth: 200 }} numberOfLines={1}>{prd.key_producto}</SText>
                                                                 </SView>
                                                         })}
                                                 </SView>

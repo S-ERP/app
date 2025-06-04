@@ -19,6 +19,15 @@ export type Campana = {
     descripcion: string;
     nombre: string;
 };
+export type ProyectoProducto = {
+    key: string;
+    key_usuario: string;
+    fecha_on: string;
+    estado: number;
+    key_proyecto: string;
+    key_producto: string;
+    // nombre: string;
+};
 
 export type Cliente = {
     key: string;
