@@ -35,7 +35,6 @@ export default class FormRegistroCliente extends Component<FormRegistroType & { 
 
   const { defaultData } = this.props;
 
-
   return <SView center>
    <SText bold>{defaultData ? "Actualizar Cliente" : "Registrar Cliente"}</SText>
    <SHr height={10} />
@@ -45,7 +44,7 @@ export default class FormRegistroCliente extends Component<FormRegistroType & { 
      nombres: {
       col: "xs-5.8",
       label: "Nombres",
-      required: true,
+    //   required: true,
       defaultValue: defaultData?.nombres,
       autoFocus: true,
       onSubmitEditing: () => this.form?.focus("apellidos"),
@@ -53,7 +52,7 @@ export default class FormRegistroCliente extends Component<FormRegistroType & { 
      apellidos: {
       col: "xs-5.8",
       label: "Apellidos",
-      required: true,
+    //   required: true,
       defaultValue: defaultData?.apellidos,
       onSubmitEditing: () => this.form?.focus("telefono"),
      },
@@ -61,15 +60,15 @@ export default class FormRegistroCliente extends Component<FormRegistroType & { 
       col: "xs-12",
       label: "Teléfono",
       required: true,
-      defaultValue: defaultData?.telefono,
-      type: "phone",
+      defaultValue:  defaultData?.telefono,
+    //   type: "phone",
       onSubmitEditing: () => this.form?.focus("correo"),
      },
      correo: {
       col: "xs-12",
       label: "Correo",
       type: "email",
-      required: true,
+    //   required: true,
       defaultValue: defaultData?.correo,
       onSubmitEditing: () => this.form?.focus("nit"),
      },
@@ -77,14 +76,14 @@ export default class FormRegistroCliente extends Component<FormRegistroType & { 
       col: "xs-5.8",
       label: "NIT",
       defaultValue: defaultData?.nit,
-      required: true,
+    //   required: true,
       onSubmitEditing: () => this.form?.focus("razon_social"),
      },
      razon_social: {
       col: "xs-5.8",
       label: "Razón Social",
       defaultValue: defaultData?.razon_social,
-      required: true,
+    //   required: true,
       onSubmitEditing: () => this.form?.focus("direccion"),
      },
      // direccion: {
@@ -113,7 +112,7 @@ export default class FormRegistroCliente extends Component<FormRegistroType & { 
       label: "Fecha de Nacimiento",
       type: "date",
       defaultValue: defaultData?.fecha_nacimiento,
-      required: true,
+    //   required: true,
       onSubmitEditing: () => this.form?.focus("sexo"),
      },
      sexo: {

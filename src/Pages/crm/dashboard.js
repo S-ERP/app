@@ -14,6 +14,7 @@ import {
     GestureDetector
 } from 'react-native-gesture-handler';
 import MDL from '../../MDL';
+import Recargar from '../../Components/Recargar';
 
 // "nuevo"
 //     | "rellamada"
@@ -31,19 +32,19 @@ import MDL from '../../MDL';
 //     | "spam"
 //     | "double"
 const stages = [
-    { key: 'nuevo', name: 'nuevo', color: STheme.color.primary },
+    { key: 'nuevo', name: 'nuevo', color: STheme.color.success },
     { key: 'rellamada', name: 'rellamada', color: STheme.color.secondary },
     { key: 'llamada_fallida', name: 'llamada_fallida', color: STheme.color.danger },
     { key: 'en_espera', name: 'en_espera', color: STheme.color.lightGray },
     { key: 'confirmado', name: 'confirmado', color: STheme.color.success },
     { key: 'cancelado', name: 'cancelado', color: STheme.color.danger },
-    { key: 'enviado', name: 'enviado', color: STheme.color.info },
-    { key: 'en_espera_pago', name: 'en_espera_pago', color: STheme.color.warning },
-    { key: 'en_espera_pago_sin_respuesta', name: 'en_espera_pago_sin_respuesta', color: STheme.color.warning },
-    { key: 'en_espera_pago_rellamada', name: 'en_espera_pago_rellamada', color: STheme.color.warning },
-    { key: 'rechazo', name: 'rechazo', color: STheme.color.danger },
-    { key: 'pagado', name: 'pagado', color: STheme.color.success },
-    { key: 'devuelto', name: 'devuelto', color: STheme.color.danger },
+    // { key: 'enviado', name: 'enviado', color: STheme.color.info },
+    // { key: 'en_espera_pago', name: 'en_espera_pago', color: STheme.color.warning },
+    // { key: 'en_espera_pago_sin_respuesta', name: 'en_espera_pago_sin_respuesta', color: STheme.color.warning },
+    // { key: 'en_espera_pago_rellamada', name: 'en_espera_pago_rellamada', color: STheme.color.warning },
+    // { key: 'rechazo', name: 'rechazo', color: STheme.color.danger },
+    // { key: 'pagado', name: 'pagado', color: STheme.color.success },
+    // { key: 'devuelto', name: 'devuelto', color: STheme.color.danger },
     { key: 'spam', name: 'spam', color: STheme.color.danger },
     { key: 'double', name: 'double', color: STheme.color.danger },
 
@@ -196,6 +197,7 @@ export default class Dashboard extends Component {
         return (
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <SPage title={'CRM Dashboard'} disableScroll>
+
                     <ScrollView horizontal>
                         {stages.map((stage) => {
                             if (!this.stageRefs[stage.key]) {
@@ -247,6 +249,15 @@ export default class Dashboard extends Component {
                             </Animated.View>
                         );
                     })()}
+                    <SView style={{
+                        position: "absolute",
+                        right: 16,
+                        bottom: 32,
+                    }}>
+                        <Recargar initialTime={60} onFinish={() => {
+                            this.componentDidMount();
+                        }} />
+                    </SView>
                 </SPage>
             </GestureHandlerRootView>
         );
@@ -323,6 +334,9 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
         };
     });
 
+    const fecha = card.fecha_edit ?? card.fecha_on;
+
+    console.log("DraggableCarta render", card);
     return (
         <GestureDetector gesture={panGesture}>
             <Animated.View
@@ -342,6 +356,7 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
                     SNavigation.navigate("/crm/plantilla", { key: card.key })
                 }} >{card.cliente.telefono}</SText>
                 <SText color={STheme.color.lightGray}>{card.cliente.nombres}</SText>
+                <SText color={STheme.color.lightGray}>{fecha}</SText>
             </Animated.View>
         </GestureDetector>
     );
