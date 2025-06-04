@@ -7,12 +7,23 @@ export default class Llamada extends React.Component<{
   phone: string;
 }> {
   llamada: RTCSession | null = null;
+  state = {
+    estado: "",
+  }
   handlePress = () => {
     if (!this.llamada) {
       const sip = new SIP();
       this.llamada = sip.call(this.props.phone, (e: any, evt: any) => {
         console.log("Evento de llamada:", e, evt);
+        this.setState({ estado: e });
+
       });
+      this.llamada.on("ended", (e: any) => {
+        this.llamada = null;
+        this.setState({ estado: "ended" });
+      });
+
+      // this.llamada.unmute();
       this.forceUpdate();
     } else {
       this.llamada.terminate();
@@ -47,7 +58,7 @@ export default class Llamada extends React.Component<{
     return (
       <>
         {/* <SPage disableScroll hidden> */}
-          {/* <SView col="xs-12" row center>
+        {/* <SView col="xs-12" row center>
             <SView col="xs-3.5" row center>
               <SView width={160} center style={{ borderColor: "white", borderRadius: 48, borderWidth: 6, backgroundColor: "#8CB1F8" }}>
                 <SView col="xs-12" row center>
@@ -95,47 +106,58 @@ export default class Llamada extends React.Component<{
           </SView>
           <SHr height={10} /> */}
 
-          <SView col="xs-12" row center>
-            <SView col="xs-3.5" row center>
-              <SView width={320} center style={{ borderColor: "white", borderRadius: 48, borderWidth: 6, backgroundColor: "#A0F21F" }}>
-                <SView col="xs-12" row center>
-                  <SView col="xs-5" row center>
-                    <SView col="xs-8" row>
-                      <SText color="#1D252D">Cliente en linea.</SText>
-                      <SText color="#1D252D" bold>
-                        00:00:00
+        <SView col="xs-12" row center>
+          <SView col="xs-3.5" row center>
+            <SView width={320} center style={{ borderColor: "white", borderRadius: 48, borderWidth: 6, backgroundColor: "#A0F21F" }}>
+              <SView col="xs-12" row center>
+                <SView col="xs-5" row center>
+                  <SView col="xs-8" row>
+                    <SText color="#1D252D">Cliente en linea.</SText>
+                    <SText color="#1D252D" bold>
+                      00:00:00
+                    </SText>
+                  </SView>
+                </SView>
+                <SView col="xs-2" row center border={"transparent"}>
+                  <SView width={28} height={28} row center style={{ borderRadius: 8, backgroundColor: "#FFFFFF" }}>
+                    <SIcon name="microfono" fill="#1D252D" height={18} />
+                  </SView>
+                </SView>
+                <SView col="xs-5" row center border={"transparent"}>
+                  <SView col="xs-12" row>
+                    <SView width={120} height={28} row center style={{ borderRadius: 8, backgroundColor: "#1B242C" }}>
+                      <SText color="white" fontSize={12} bold>
+                        Finalizar llamada
                       </SText>
-                    </SView>
-                  </SView>
-                  <SView col="xs-2" row center border={"transparent"}>
-                    <SView width={28} height={28} row center style={{ borderRadius: 8, backgroundColor: "#FFFFFF" }}>
-                      <SIcon name="microfono" fill="#1D252D" height={18} />
-                    </SView>
-                  </SView>
-                  <SView col="xs-5" row center border={"transparent"}>
-                    <SView col="xs-12" row>
-                      <SView width={120} height={28} row center style={{ borderRadius: 8, backgroundColor: "#1B242C" }}>
-                        <SText color="white" fontSize={12} bold>
-                          Finalizar llamada
-                        </SText>
-                      </SView>
                     </SView>
                   </SView>
                 </SView>
               </SView>
             </SView>
           </SView>
+        </SView>
         {/* </SPage> */}
       </>
     );
   }
 
   render() {
-   return <SView col={"xs-12"} center height={50} onPress={this.handlePress.bind(this)}>
-          {!this.llamada && <SText>{"LLAMAR"}</SText>}
-          {/* {this.llamada && <SText>{"COLGAR" + " " + this.llamada?.start_time+ "DDD"}</SText>} */}
-          {this.llamada && <SText>{"COLGAR" + " "}</SText>}
-          <SText >{this.props.phone}</SText>
-      </SView>
+
+    return <SView width={150} center height={50} onPress={this.handlePress.bind(this)} row style={{
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: "#1B242C",
+    }}>
+
+      {!this.llamada && <SText>{"LLAMAR"}</SText>}
+      {/* {this.llamada && <SText>{"COLGAR" + " " + this.llamada?.start_time+ "DDD"}</SText>} */}
+      {this.llamada && <>
+        <SText>{this.state.estado}</SText>
+        <SText>{"COLGAR" + " "}</SText>
+        {/* <SText>{this.llamada.isMuted() ? "Unmuted" : "Mute"}</SText> */}
+      </>}
+
+      {/* <SText >{this.props.phone}</SText> */}
+    </SView>
   }
 }

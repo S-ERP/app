@@ -1,6 +1,6 @@
 
 import JsSIP from 'jssip';
-import { ConnectingEvent } from 'jssip/lib/RTCSession';
+import { ConnectingEvent, RTCSession } from 'jssip/lib/RTCSession';
 
 
 const ws = "ws://192.168.2.3:8088/ws";
@@ -21,6 +21,7 @@ export default class SIP {
     constructor() {
         this.ua.start();
     }
+    session: RTCSession | null = null;
     call(phone: String, onEvent: (e: string, event: any) => void = () => { }) {
 
         phone = phone.toString().replace(/[^0-9]/g, ""); // Eliminar caracteres no numéricos
@@ -38,6 +39,7 @@ export default class SIP {
                 offerToReceiveVideo: 0
             }
         });
+        this.session = session;
 
         session.on('connecting', (e: ConnectingEvent) => {
             onEvent("connecting", e);
@@ -48,7 +50,7 @@ export default class SIP {
             // console.error('Código de fallo SIP:', e.message, '-', e.cause);
             // console.error('Llamada fallida:', e.cause);
         });
-
+        
         session.on("ended", (e: any) => {
             onEvent("ended", e);
             // console.log("Llamada terminada:", e);
