@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SIcon, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SNavigation, SPage, SText, STheme, SThread, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SMD from '../../../SMD';
 import OrdenesConMismoNumero from '../Components/OrdenesConMismoNumero';
@@ -11,7 +11,7 @@ import MenuAcciones from './MenuAcciones';
 import ContadorTiempoRestante from './ContadorTiempoRestante';
 
 const CardContent = ({ children }) => {
-    return <SView col={"xs-12 sm-6 md-4"} padding={8} center>
+    return <SView col={"xs-12 sm-6 md-6 lg-4"} padding={8} center>
         <SView col={"xs-12"} padding={8}>
             {children}
         </SView>
@@ -51,7 +51,12 @@ export default class index extends Component {
                     <SHr h={16} />
                     <SView style={{
                     }}>
-                        <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on} />
+                        <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on}
+                            onTimeEnd={() => {
+                                new SThread(5000, true, "ContadorTiempoRestante").start(() => {
+                                    this.componentDidMount();
+                                })
+                            }} />
                     </SView>
                 </>}
                 {/* <SText onPress={() => {
@@ -63,6 +68,9 @@ export default class index extends Component {
                             ref={ref => this.horarioDeCliente = ref}
                             key_cliente_proyecto={this.pk}
                             clienteProyecto={this.state?.data}
+                            onChangeCliente={(e) => {
+
+                            }}
                         />
                     </CardContent>
                     <CardContent>
