@@ -26,7 +26,7 @@ export default class index extends Component {
     }
     componentDidMount() {
         MDL.crm.clienteProyecto.getFull(this.pk).then((e) => {
-            if(e.state != "en_proceso"){
+            if (e.state != "en_proceso") {
                 SNavigation.goBack();
                 return;
             }
@@ -46,10 +46,17 @@ export default class index extends Component {
                     <SHr h={25} />
                     <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on} />
                 </>}
+                <SText onPress={() => {
+                    console.log("test", this.horarioDeCliente.state.clienteProyecto);
+                }}>{"test"}</SText>
                 <SHr h={25} />
                 <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
                     <CardContent>
-                        <HorarioDeCliente key_cliente_proyecto={this.pk} clienteProyecto={this.state?.data} ></HorarioDeCliente>
+                        <HorarioDeCliente
+                            ref={ref => this.horarioDeCliente = ref}
+                            key_cliente_proyecto={this.pk}
+                            clienteProyecto={this.state?.data}
+                        />
                     </CardContent>
                     <CardContent>
                         <SMD padding={0} fontSize={11} space={0}>{proyecto?.guion}</SMD>
