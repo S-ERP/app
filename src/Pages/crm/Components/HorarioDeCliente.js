@@ -4,6 +4,7 @@ import { SButtom, SDate, SForm, SHr, SIcon, SImage, SInput, SList, SLoad, SMath,
 import SSocket from "servisofts-socket";
 import MDL from "../../../MDL";
 import Model from "../../../Model";
+import Etiqueta from "../../../Components/Etiqueta";
 
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";
@@ -322,7 +323,7 @@ export default class HorarioDeCliente extends Component {
     <SView col={"xs-12"} style={{ padding: 16, borderRadius: 16, borderWidth: 2, }} center border={STheme.color.card} backgroundColor={STheme.color.card}>
      <SView col="xs-12" row center>
       <SView col="xs-6">
-       <SText fontSize={10}>Horario de cliente</SText>
+       <SText fontSize={10}>Horario de cliente8888888</SText>
        {/* <SText fontSize={28}>{hora}</SText> */}
        {/* <SText fontSize={28}> {fechaHora.toLocaleDateString()} - {fechaHora.toLocaleTimeString()} */}
        <SText fontSize={28}>{fechaHora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
@@ -333,7 +334,9 @@ export default class HorarioDeCliente extends Component {
       <SView col="xs-6" style={{ alignItems: "flex-end" }}>
        {/* Contenedor que alinea el 'Nuevo' arriba */}
        <SView style={{ flexDirection: "row", alignItems: "flex-start" }}>
-        <SView style={{
+
+        <Etiqueta tipo_leads={this.state?.clienteProyecto?.state}></Etiqueta>
+        {/* <SView style={{
          paddingHorizontal: 8,
          paddingVertical: 2,
          borderRadius: 4,
@@ -341,7 +344,7 @@ export default class HorarioDeCliente extends Component {
          marginRight: 8,
         }}>
          <SText fontSize={10} color="#fff">{this.state?.clienteProyecto?.state}</SText>
-        </SView>
+        </SView> */}
 
         <SView>
          <SText fontSize={10}>ID de la orden</SText>

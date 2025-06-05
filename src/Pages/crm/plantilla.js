@@ -198,7 +198,6 @@ export default class plantilla extends Component {
       </SView>
      </SView>
 
-
      <SView flex />
 
      <SView col={"xs-12 sm-3.8"}     >

@@ -17,6 +17,7 @@ import MDL from '../../MDL';
 import Recargar from '../../Components/Recargar';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
+import Etiqueta from '../../Components/Etiqueta';
 
 // "nuevo"
 //     | "rellamada"
@@ -236,6 +237,7 @@ export default class Dashboard2 extends Component {
                                             flex: 1,
                                         }}
                                     >
+
                                         <SText>{card.cliente.telefono}</SText>
                                         <SText>{card.cliente.nombres}</SText>
                                     </SView>
@@ -276,6 +278,7 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
             <SView row>
                 <SView style={{ backgroundColor: stage.color, padding: 8, borderRadius: 8 }} />
                 <SView width={8} />
+
                 <SText bold>{stage.name}</SText>
             </SView>
             <SText >{stage.states.join(", ")}</SText>
@@ -347,13 +350,19 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
                     cursor: "grab",
                 }, animatedStyle]}
             >
-                <SText onPress={() => {
+                <SText  onPress={() => {
                     // SNavigation.navigate("/crm/plantilla", { key: card.key })
                     SNavigation.navigate("/crm/call", { key: card.key })
                 }} >{card?.cliente?.telefono}</SText>
                 <SText color={STheme.color.lightGray}>{card?.cliente?.nombres}</SText>
-                <SText fontSize={10} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
-                <SText fontSize={10} color={STheme.color.lightGray}>{card.state}</SText>
+       <SText fontSize={10} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
+
+       {/* <SView width> */}
+       <Etiqueta tipo_leads={card?.state}></Etiqueta>
+
+        {/* </SView> */}
+
+                {/* <SText fontSize={10} color={"red"} >{card.state}</SText> */}
                 <SView style={{
                     width: 24,
                     height: 24,

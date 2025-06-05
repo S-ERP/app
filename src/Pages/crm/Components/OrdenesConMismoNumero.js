@@ -13,6 +13,7 @@ import {
  SView,
 } from "servisofts-component";
 import SSocket from "servisofts-socket";
+import Etiqueta from "../../../Components/Etiqueta";
 // import Model from "../../Model";
 export default class OrdenesConMismoNumero extends Component {
  constructor(props) {
@@ -76,9 +77,13 @@ export default class OrdenesConMismoNumero extends Component {
       {/* <SView col={"xs-12"} key={idx} card style={{ margin: 8, padding: 8 }}> */}
       <SView col="xs-12" row center>
        <SView col="xs-4" row>
-        <SView style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: this.colorState(orden.state), marginRight: 8, }} >
+
+        <Etiqueta tipo_leads={orden?.state}></Etiqueta>
+
+
+        {/* <SView style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: this.colorState(orden.state), marginRight: 8, }} >
          <SText fontSize={14} color="#fff">{orden.state}</SText>
-        </SView>
+        </SView> */}
        </SView>
        <SView col="xs-4">
         <SText>{orden?.proyecto?.nombre}</SText>
