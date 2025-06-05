@@ -275,9 +275,22 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
    <SView row>
     <SView style={{ backgroundColor: stage.color, padding: 8, borderRadius: 8 }} />
     <SView width={8} />
+    {/* quizas */}
     <SText bold>{stage.name}</SText>
    </SView>
+
    <SText >{stage.states.join(", ")}</SText>
+
+   <SText fontSize={12} color={STheme.color.text}>
+
+    {stage.states.map((state, i) => (
+     <SText key={state} color={STheme.color.text}>
+      {i > 0 && ", "}
+      <SText color={"red" || "#999"} bold>{state}</SText>
+     </SText>
+    ))}
+   </SText>
+
    <SView height={8} />
    {cards.map((card) => {
     if (!cardRefs[card.key]) {
