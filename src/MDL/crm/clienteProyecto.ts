@@ -132,7 +132,7 @@ export default class clienteProyecto {
     rellamada: "#2980b9", // azul
     vencido: "#f1c40f", // amarillo
     llamada_fallida: "#e67e22", // naranja
-    en_proceso: "red", // ámbar
+    en_proceso: "#e67e22", // ámbar
     confirmado: "#27ae60", // verde
     pagado: "#2ecc71", // verde claro
     spam: "#c0392b", // rojo
@@ -161,6 +161,5 @@ export default class clienteProyecto {
     delivery_vencido: "Delivery vencido",
     delivery_llamada_fallida: "Delivery fallido",
     delivery_en_proceso: "Delivery en proceso",
- };
-
+  };
 }
