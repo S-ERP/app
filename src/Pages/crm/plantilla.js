@@ -17,6 +17,7 @@ import OrdenesConMismoNumero from './Components/OrdenesConMismoNumero';
 // import HorarioDeCliente from './Components/HorarioDeCliente';
 import Comentario from './Components/Comentario';
 import HistoricoMovimientos from './call/HistoricoMovimientos';
+import HorarioCliente from '../../Components/Ricardo/HorarioCliente';
 
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";

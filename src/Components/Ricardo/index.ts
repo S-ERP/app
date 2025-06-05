@@ -1,9 +1,11 @@
+import Adicional from "./Adicional";
+import DetallesOrden from "./DetallesOrden";
 import HorarioCliente from "./HorarioCliente";
+import Producto from "./Producto";
 
 export default {
-  HorarioCliente
-  // DetallesDeLaOrden,
-  // Productos,
-  // sucursal,
-  // Select,
+ HorarioCliente,
+ Producto,
+ Adicional,
+ DetallesOrden
 };
