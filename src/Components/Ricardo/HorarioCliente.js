@@ -7,6 +7,7 @@ import MDL from "../../MDL";
 import Producto from "./Producto";
 import Adicional from "./Adicional";
 import DetallesOrden from "./DetallesOrden";
+import Etiqueta from "../../Pages/crm/Components/Etiqueta";
 
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";
@@ -102,19 +103,16 @@ export default class HorarioCliente extends Component {
    <SView col={"xs-12"} row center>
     <SView col="xs-6">
      <SText fontSize={10}>Horario de cliente</SText>
-     <SText fontSize={28}>{fechaHora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+     <SText fontSize={28}>{fechaHora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      {/* <SText fontSize={28}>{fechaHora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })} */}
      </SText>
     </SView>
     <SView col="xs-6" style={{ alignItems: "flex-end" }}>
      <SView style={{ flexDirection: "row", alignItems: "flex-start" }}>
-      <SView style={{
-       paddingHorizontal: 8,
-       paddingVertical: 2,
-       borderRadius: 4,
-       backgroundColor: "red",
-       marginRight: 8,
-      }}>
-       <SText fontSize={10} color="#fff">{this.state?.clienteProyecto?.state}</SText>
+
+
+      <SView style={{ marginRight: 16 }}>
+       <Etiqueta size={16} tipo_leads={this.state?.clienteProyecto?.state} ></Etiqueta>
       </SView>
       <SView>
        <SText fontSize={10}>ID de la orden</SText>
