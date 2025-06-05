@@ -16,6 +16,7 @@ import {
 import MDL from '../../MDL';
 import Recargar from '../../Components/Recargar';
 import SSocket from 'servisofts-socket';
+import Model from '../../Model';
 
 // "nuevo"
 //     | "rellamada"
@@ -59,6 +60,7 @@ export default class Dashboard2 extends Component {
         MDL.crm.clienteProyecto.editar({
             key: cardKey,
             state: newState,
+            key_usuario_atiende: Model.usuario.Action.getKey(),
         })
     }
 
