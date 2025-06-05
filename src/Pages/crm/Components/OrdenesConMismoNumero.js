@@ -13,8 +13,7 @@ import {
  SView,
 } from "servisofts-component";
 import SSocket from "servisofts-socket";
-import Etiqueta from "../../../Components/Etiqueta";
-// import Model from "../../Model";
+import Etiqueta from "./Etiqueta";
 export default class OrdenesConMismoNumero extends Component {
  constructor(props) {
   super(props);
