@@ -1,7 +1,9 @@
 import HorarioCliente from "./HorarioCliente";
+import Producto from "./Producto";
 
 export default {
-  HorarioCliente
+ HorarioCliente,
+ Producto
   // DetallesDeLaOrden,
   // Productos,
   // sucursal,

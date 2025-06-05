@@ -4,6 +4,7 @@ import { SButtom, SDate, SForm, SHr, SIcon, SImage, SInput, SList, SLoad, SMath,
 import SSocket from "servisofts-socket";
 import MDL from "../../MDL";
 import Model from "../../Model";
+import Producto from "./Producto";
 
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";
@@ -134,11 +135,16 @@ export default class HorarioCliente extends Component {
     <SView col={"xs-12"}>
      <SHr height={20} />
 
+     {/* <Producto></Producto> */}
+
 
      {(this.state.clienteProyecto?.proyecto_producto??[]).map((prod) => {
       const seleccionado = !!this.state.clienteProyecto?.proyecto_producto[prod.key];
       return (
-       <SView
+       <>
+        <Producto mdl_proyecto_producto={prod} proyecto_productopppp={this.state.clienteProyecto?.proyecto_producto[prod.key]}   ></Producto>
+
+       {/* <SView
         key={prod.key}
         row center
         style={{ width: "100%", marginBottom: 8, height: 65, }} >
@@ -148,7 +154,6 @@ export default class HorarioCliente extends Component {
          </SView>
          <SText
           style={{
-           // width: "10%",
            fontSize: 12,
            fontWeight: "bold",
            minWidth: 120,
@@ -274,13 +279,12 @@ export default class HorarioCliente extends Component {
            }}
            disabled={!seleccionado}
           />
-
-
-          {/* vv          {prod?.producto?.nombre} x {prod?.producto?.precio ?? 0} Bs */}
-
          </SView>
         </SView>
-       </SView>
+       </SView> */}
+       </>
+
+
       );
      })
      }
