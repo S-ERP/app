@@ -15,7 +15,7 @@ export default class Etiqueta extends Component<{ tipo_leads: string }> {
             padding: size / 4,
             paddingStart: size / 2,
             paddingEnd: size / 2,
-            borderRadius: 4,
+            borderRadius: size / 4,
             backgroundColor: (MDL.crm.clienteProyecto.stageColor[this.props.tipo_leads] ?? STheme.color.text),
             ...(this.props.style ?? {})
         }}>

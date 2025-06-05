@@ -28,17 +28,26 @@ export default class DashboardCard extends Component {
             <SView row col={"xs-12"}>
                 <SText fontSize={12} color={STheme.color.lightGray}>{card.codigo}</SText>
                 <SView width={8} />
-                <SText underLine onPress={() => {
+                <SText underLine 
+                 color={STheme.color.link}
+                onPress={() => {
                     // SNavigation.navigate("/crm/plantilla", { key: card.key })
                     SNavigation.navigate("/crm/call", { key: card.key })
                 }} >{card?.cliente?.telefono}</SText>
             </SView>
             <SHr />
-            <SText color={STheme.color.lightGray}>{card?.cliente?.nombres}</SText>
-            <SText fontSize={10} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
+            <SText
+                // color={STheme.color.lightGray}
+            >{card?.cliente?.nombres}</SText>
+
             <SHr />
-            <SView row>
-                <Etiqueta tipo_leads={card.state} ></Etiqueta>
+            <SHr />
+            <SView row style={{
+                alignItems: "flex-end",
+            }}>
+                <Etiqueta tipo_leads={card.state} size={9} ></Etiqueta>
+                <SView flex />
+                <SText fontSize={10} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
             </SView>
             <SView style={{
                 width: 24,
