@@ -29,7 +29,7 @@ export default class HorarioCliente extends Component {
 
   return (
    <SView col={"xs-12"}    >
-
+<SText color="red"> Alvaro programando</SText>
    </SView>
   );
  }
