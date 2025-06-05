@@ -50,28 +50,36 @@ export default class HorarioCliente extends Component {
  componentWillUnmount() {
   clearInterval(this.interval);
  }
+
+
  renderActiveForm() {
-  const { activeFormTab } = this.state;
-  if (!this.state.clienteProyecto?.cliente) return <SLoad />
+  const { activeFormTab, clienteProyecto } = this.state;
+  if (!clienteProyecto?.cliente) return <SLoad />;
+
   if (activeFormTab === "Detalles") {
-   return (<DetallesOrden mdl_clienteProyecto_cliente={this.state?.clienteProyecto?.cliente} ></DetallesOrden>);
-  }
-  if (activeFormTab === "Productos") {
-   if (!this.state.productos) { this.state.productos = {}; }
    return (
-    <SView col={"xs-12"}>
-     <SHr height={20} />
-     {(this.state.clienteProyecto?.proyecto_producto ?? []).map((prod) => {
-      return (<Producto mdl_proyecto_producto={prod} ></Producto>);
-     })
-     }
+    <SView col={"xs-12"} row>
+     <DetallesOrden mdl_clienteProyecto_cliente={clienteProyecto.cliente} />
+    </SView>
+   );
+  }
+
+  if (activeFormTab === "Productos") {
+   return (
+    <SView col={"xs-12"} row>
+     <Producto mdl_clienteProyecto_proyecto_producto={clienteProyecto.proyecto_producto} />
     </SView>
    );
   }
 
   if (activeFormTab === "Adicional") {
-   return <Adicional></Adicional>
+   return (
+    <SView col={"xs-12"} row>
+     <Adicional />
+    </SView>
+   );
   }
+
   return null;
  }
 
@@ -87,79 +95,92 @@ export default class HorarioCliente extends Component {
    this.setState({ activeFormTab: formTabs[currentIdx - 1] });
   }
  };
- render() {
-  const { fechaHora } = this.state;
 
-  return (
-   <SView col={"xs-12"}    >
-    <SView col={"xs-12"} style={{ padding: 16, borderRadius: 16, borderWidth: 2, }} center border={STheme.color.card} backgroundColor={STheme.color.card}>
-     <SView col="xs-12" row center>
-      <SView col="xs-6">
-       <SText fontSize={10}>Horario de cliente</SText>
-       <SText fontSize={28}>{fechaHora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
-       </SText>
+ header() {
+  const { fechaHora } = this.state;
+  return <>
+   <SView col={"xs-12"} row center>
+    <SView col="xs-6">
+     <SText fontSize={10}>Horario de cliente</SText>
+     <SText fontSize={28}>{fechaHora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+     </SText>
+    </SView>
+    <SView col="xs-6" style={{ alignItems: "flex-end" }}>
+     <SView style={{ flexDirection: "row", alignItems: "flex-start" }}>
+      <SView style={{
+       paddingHorizontal: 8,
+       paddingVertical: 2,
+       borderRadius: 4,
+       backgroundColor: "red",
+       marginRight: 8,
+      }}>
+       <SText fontSize={10} color="#fff">{this.state?.clienteProyecto?.state}</SText>
       </SView>
-      <SView col="xs-6" style={{ alignItems: "flex-end" }}>
-       <SView style={{ flexDirection: "row", alignItems: "flex-start" }}>
-        <SView style={{
-         paddingHorizontal: 8,
-         paddingVertical: 2,
-         borderRadius: 4,
-         backgroundColor: "red",
-         marginRight: 8,
-        }}>
-         <SText fontSize={10} color="#fff">{this.state?.clienteProyecto?.state}</SText>
-        </SView>
-        <SView>
-         <SText fontSize={10}>ID de la orden</SText>
-         <SText fontSize={28}>212</SText>
-         <SText fontSize={16}>fecha {this.state.clienteProyecto?.cliente?.fecha_nacimiento} </SText>
-         <SText fontSize={12} color={"pink"}>año {this.state.clienteProyecto?.cliente?.edad ? new SDate().addYear((-this.state.clienteProyecto?.cliente?.edad)).toString("yyyy") : ""} </SText>
-        </SView>
-       </SView>
+      <SView>
+       <SText fontSize={10}>ID de la orden</SText>
+       <SText fontSize={28}>212</SText>
+       {/* <SText fontSize={16}>fecha {this.state.clienteProyecto?.cliente?.fecha_nacimiento} </SText>
+       <SText fontSize={12} color={"pink"}>año {this.state.clienteProyecto?.cliente?.edad ? new SDate().addYear((-this.state.clienteProyecto?.cliente?.edad)).toString("yyyy") : ""} </SText> */}
       </SView>
-     </SView>
-     <SHr height={12} />
-     <SView col={"xs-12"} center height={36}  >
-      <SList
-       horizontal
-       scrollEnabled={false}
-       disableScroll={false}
-       data={[
-        { key: "Detalles", label: "Detalles de la orden", color: color_activado, icono: "addTarea" },
-        { key: "Productos", label: "Productos", color: color_activado, icono: "Check" },
-        { key: "Adicional", label: "Adicional", color: color_activado, icono: "World" },
-       ]}
-       render={data => (
-        <SView
-         height
-         center
-         card
-         style={{
-          paddingHorizontal: 8,
-          backgroundColor: this.state.activeFormTab === data.key ? color_activado + "88" : color_desactivado + "88"
-         }}
-         onPress={() => this.setState({ activeFormTab: data.key })}
-         row
-        >
-         <SIcon name={data.icono} width={12} height={12} fill={STheme.color.text} />
-         <SView width={8} />
-         <SText>{data.label}</SText>
-        </SView>
-       )}
-      />
-     </SView>
-     <SHr height={16} />
-     <ScrollView style={{ width: "100%", paddingBottom: 16 }}>
-      <SView col={"xs-12"} row border={"transparent"} >
-       {this.renderActiveForm()}
-      </SView>
-     </ScrollView>
-     <SView col="xs-12" row center>
-      <SButtom onPress={() => this.handlePrevTab()} style={{ marginRight: 8 }} fontSize={14} type="secondary" >Anterior</SButtom>
-      <SButtom onPress={() => this.handleNextTab()} fontSize={14} type="primary" >Siguiente </SButtom>
      </SView>
     </SView>
+   </SView>
+
+   <SHr height={12} />
+
+   <SView col={"xs-12"} center height={36}  >
+    <SList
+     horizontal
+     scrollEnabled={false}
+     disableScroll={false}
+     data={[
+      { key: "Detalles", label: "Detalles de la orden", color: color_activado, icono: "addTarea" },
+      { key: "Productos", label: "Productos", color: color_activado, icono: "Check" },
+      { key: "Adicional", label: "Adicional", color: color_activado, icono: "World" },
+     ]}
+     render={data => (
+      <SView
+       height
+       center
+       card
+       style={{
+        paddingHorizontal: 8,
+        backgroundColor: this.state.activeFormTab === data.key ? color_activado + "88" : color_desactivado + "88"
+       }}
+       onPress={() => this.setState({ activeFormTab: data.key })}
+       row
+      >
+       <SIcon name={data.icono} width={12} height={12} fill={STheme.color.text} />
+       <SView width={8} />
+       <SText>{data.label}</SText>
+      </SView>
+     )}
+    />
+   </SView>
+  </>
+ }
+
+ footer() {
+  return <SView col={"xs-12"} row center>
+   <SButtom onPress={() => this.handlePrevTab()} style={{ marginRight: 8 }} fontSize={14} type="secondary" >Anterior</SButtom>
+   <SButtom onPress={() => this.handleNextTab()} fontSize={14} type="primary" >Siguiente </SButtom>
+  </SView>
+ }
+ render() {
+
+  return (
+   <SView col={"xs-12"} style={{ padding: 16, borderRadius: 16, borderWidth: 2, }} center border={STheme.color.card} backgroundColor={STheme.color.card}>
+    {this.header()}
+
+    <SHr height={16} />
+
+    <ScrollView style={{ width: "100%", height: 440 }}  >
+     {this.renderActiveForm()}
+    </ScrollView>
+
+    <SHr height={16} />
+
+    {this.footer()}
    </SView>
   );
  }
