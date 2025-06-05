@@ -39,7 +39,7 @@ export default class HorarioDeCliente extends Component {
     "key_empresa": Model.empresa.Action.getKey(),
     "key_usuario": Model.usuario.Action.getKey(),
    }).then((producto) => {
-    e.proyecto_producto.map((prod) => {
+    (e?.proyecto_producto??[]).map((prod) => {
      const productoData = producto.data[prod.key_producto];
      prod.producto = productoData;
     })
@@ -139,7 +139,7 @@ export default class HorarioDeCliente extends Component {
      <SHr height={20} />
 
 
-     {this.state.clienteProyecto?.proyecto_producto.map((prod) => {
+     {(this.state.clienteProyecto?.proyecto_producto??[]).map((prod) => {
       const seleccionado = !!this.state.clienteProyecto?.proyecto_producto[prod.key];
       return (
        <SView
