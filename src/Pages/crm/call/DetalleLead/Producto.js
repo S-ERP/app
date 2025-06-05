@@ -2,61 +2,187 @@ import React, { Component } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { SButtom, SDate, SForm, SHr, SIcon, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
+import MDL from "../../../../MDL";
 export default class Producto extends Component {
     constructor(props) {
         super(props);
         this.state = {};
     }
-    renderItems() {
-        return (this.props.mdl_clienteProyecto_proyecto_producto ?? []).map((mdl_proyecto_producto) => {
-            const producto_key = mdl_proyecto_producto?.key;
-            return <SView key={producto_key} row center style={{ width: "100%", marginBottom: 8, height: 65 }}>
-                <SView row border="transparent" style={{ alignItems: "center", flex: 2 }}>
-                    <SView style={{ height: 24 }}>
-                        <SInput type="checkBox" style={{ marginRight: 45 }} value={(mdl_proyecto_producto[producto_key]?.cantidad || 0) > 0} />
-                    </SView>
-                    <SText style={{ fontSize: 12, fontWeight: "bold", minWidth: 120 }}>
-                        {mdl_proyecto_producto?.producto?.nombre} x {mdl_proyecto_producto?.producto?.precio ?? 0} Bs
-                    </SText>
-                </SView>
-                <SView center border="transparent" style={{ alignItems: "center", flex: 2, justifyContent: "center", marginBottom: 15 }}>
-                    <SText style={{ fontSize: 12, marginRight: 8, lineHeight: 24 }}>Cantidad</SText>
-                    <SView style={{ width: 60, height: 36 }}>
-                        <SButtom type="primary" children="+" style={{ position: "absolute", left: 53, width: 25, height: 25 }} onPress={() => {
-                            const productos = mdl_proyecto_producto || {};
-                            const productoActual = productos[producto_key] || {};
-                            const cantidadActual = productoActual.cantidad || 0;
-                            mdl_proyecto_producto[producto_key] = { ...productoActual, cantidad: cantidadActual + 1 };
-                            this.forceUpdate();
-                            console.log("key " + producto_key + " actualizada:", mdl_proyecto_producto[producto_key].cantidad);
-                        }} />
-                        <SButtom type="primary" children="-" style={{ position: "absolute", right: 70, width: 25, height: 25 }} onPress={() => {
-                            const productos = mdl_proyecto_producto || {};
-                            const productoActual = productos[producto_key] || {};
-                            const cantidadActual = productoActual.cantidad || 0;
-                            if (cantidadActual > 0) {
-                                mdl_proyecto_producto[producto_key] = { ...productoActual, cantidad: cantidadActual - 1 };
-                                this.forceUpdate();
-                                console.log("key " + producto_key + " actualizada:", mdl_proyecto_producto[producto_key].cantidad);
-                            }
-                        }} disabled={!mdl_proyecto_producto.key} />
-                        <SInput type="number" min={1} value={mdl_proyecto_producto[producto_key]?.cantidad ?? 0} style={{ width: 40, height: 25, textAlign: "center" }} disabled={!mdl_proyecto_producto.key} />
-                    </SView>
-                </SView>
-                <SView center border="transparent" style={{ alignItems: "center", flex: 1, justifyContent: "center", marginBottom: 15 }}>
-                    <SText style={{ fontSize: 12, marginRight: 8, lineHeight: 24 }}>Subtotal</SText>
-                    <SView style={{ width: 60, height: 36 }}>
-                        <SInput type="number" min={1} value={((mdl_proyecto_producto?.producto?.precio ?? 0) * (mdl_proyecto_producto[producto_key]?.cantidad ?? 0))} style={{ width: 40, height: 25, textAlign: "center" }} disabled={!mdl_proyecto_producto.key} />
-                    </SView>
-                </SView>
-            </SView>;
+
+
+    onChange() {
+        console.log("onChange");
+        new SThread(3000, "edit_carrito", true).start(() => {
+            MDL.crm.clienteProyecto.editarCarrito(this.props.cliente_proyecto.carrito, this.props.cliente_proyecto.key).then((resp) => {
+                this.props.cliente_proyecto.carrito = resp;
+                console.log("Carrito guardado", resp);
+                // if (resp) {
+                //     SNavigation.goBack();
+                // } else {
+                //     SNavigation.alert("Error al guardar el carrito");
+                // }
+            }).catch((e) => {
+                console.error(e);
+                // SNavigation.alert("Error al guardar el carrito");
+            });
         })
+    }
+
+    renderItem(item, item_in_carrito) {
+        const producto_key = item?.key;
+
+        const producto = item?.producto;
+        const active = item_in_carrito?.cantidad > 0
+        const calcularSubtotal = () => {
+            item_in_carrito.subtotal = (item_in_carrito.cantidad * producto.precio) || 0;
+        }
+
+        return <SView key={producto_key} row center style={{ width: "100%", marginBottom: 8, height: 65 }}>
+            <SView width={20} height={20}>
+                <SInput type="checkBox" value={active} onChangeText={e => {
+                    if (e) {
+                        item_in_carrito.cantidad = 1;
+                        calcularSubtotal();
+                        this.forceUpdate();
+                        this.onChange();
+                    } else {
+                        item_in_carrito.cantidad = 0;
+                        item_in_carrito.subtotal = 0;
+                        this.forceUpdate();
+                        this.onChange();
+                    }
+                }} />
+            </SView>
+            <SView width={8} />
+            <SView flex style={{ alignItems: "flex-start", justifyContent: "center" }} >
+                <SText style={{
+                    fontSize: 14,
+                    fontWeight: "bold",
+                    color: active ? STheme.color.text : STheme.color.gray,
+                }}>{producto?.nombre} </SText>
+            </SView>
+            <SView width={8} />
+            <SView width={90}>
+                <SInput
+                    type="number" min={1}
+                    value={item_in_carrito?.cantidad ?? 0}
+                    style={{
+                        backgroundColor: "transparent",
+                        textAlign: "center",
+                        paddingStart: 0,
+                        paddingEnd: 0,
+                        color: active ? STheme.color.text : STheme.color.gray,
+                    }}
+                    icon={<SText card width={30} center height={30}
+                        style={{
+                            backgroundColor: active ? STheme.color.text : STheme.color.gray,
+                            color: active ? STheme.color.primary : STheme.color.text,
+                        }}
+                        bold
+                        onPress={() => {
+                            if (item_in_carrito.cantidad > 0) {
+                                item_in_carrito.cantidad -= 1;
+                                calcularSubtotal();
+                                this.forceUpdate();
+                                this.onChange();
+                            }
+                        }}>{"-"}</SText>}
+                    iconR={<SText card width={30} center height={30}
+                        style={{
+                            backgroundColor: active ? STheme.color.text : STheme.color.gray,
+                            color: active ? STheme.color.primary : STheme.color.text,
+                        }}
+                        onPress={() => {
+                            item_in_carrito.cantidad = (item_in_carrito.cantidad ?? 0) + 1;
+                            calcularSubtotal();
+                            this.forceUpdate();
+                            this.onChange();
+                        }}>{"+"}</SText>}
+                    // style={{ width: 40, height: 25, textAlign: "center" }}
+                    disabled={!item.key}
+                    onChangeText={v => {
+                        item_in_carrito.cantidad = parseInt(v) || 0
+                        calcularSubtotal();
+                        this.forceUpdate();
+                        this.onChange();
+                    }}
+                />
+            </SView>
+            <SView width={16} />
+            <SView width={60}>
+                <SInput type="number"
+                    min={1}
+                    value={item_in_carrito.subtotal}
+                    icon={<SView />}
+                    style={{
+                        textAlign: "right",
+                        opacity: active ? 1 : 0.7,
+
+                    }}
+
+                    // style={{ width: 40, height: 25, textAlign: "center" }}
+                    onChangeText={v => {
+                        item_in_carrito.subtotal = v;
+                        // producto.precio = (producto.subtotal / (producto.cantidad || 1)) || 0;
+
+                        this.forceUpdate();
+                        this.onChange();
+                    }}
+                    disabled={!active}
+                />
+            </SView>
+
+        </SView>;
+    }
+    renderItems() {
+        if (!this.props?.cliente_proyecto?.carrito) {
+            this.props.cliente_proyecto.carrito = []
+        }
+        const carrito = this.props?.cliente_proyecto?.carrito
+
+        return (this.props?.cliente_proyecto?.proyecto_producto ?? []).map((proyecto_producto) => {
+
+            let item_in_carrito = carrito.find((carrito_item) => carrito_item.key_producto === proyecto_producto.key_producto);
+            if (!item_in_carrito) {
+                item_in_carrito = {
+                    key_proyecto_producto: proyecto_producto.key,
+                    key_producto: proyecto_producto.key_producto,
+                    key_cliente_proyecto: this.props.cliente_proyecto.key,
+                    cantidad: 0,
+                    subtotal: proyecto_producto?.producto?.precio || 0,
+                };
+                carrito.push(item_in_carrito);
+            }
+            return this.renderItem(proyecto_producto, item_in_carrito);
+        })
+    }
+    renderHeaders() {
+        return <SView row>
+            {/* <SView width={20} /> */}
+            <SView flex style={{ alignItems: "flex-start" }}>
+                <SText bold>Producto</SText>
+            </SView>
+            <SView width={8} />
+            <SView width={80} center>
+                <SText bold>Cantidad</SText>
+            </SView>
+            <SView width={16} />
+            <SView width={60} center>
+                <SText bold>Precio</SText>
+            </SView>
+        </SView>
     }
     render() {
         return (
             <SView col={"xs-12"}>
-                {/* <SHr height={20} /> */}
+                <SHr height={20} />
+                {this.renderHeaders()}
+                <SHr />
                 {this.renderItems()}
+                {/* <SText onPress={() => {
+                  
+                    // console.log("Guardar carrito", this.props.cliente_proyecto.carrito);    
+                }}>{"SAVE"}</SText> */}
             </SView>
         );
     }

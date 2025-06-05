@@ -68,7 +68,7 @@ export default class HorarioCliente extends Component {
   if (activeFormTab === "Productos") {
    return (
     <SView col={"xs-12"} row>
-     <Producto mdl_clienteProyecto_proyecto_producto={clienteProyecto.proyecto_producto} />
+     <Producto cliente_proyecto={clienteProyecto} />
     </SView>
    );
   }
