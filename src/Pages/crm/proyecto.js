@@ -152,6 +152,27 @@ export default class proyecto extends Component {
                                 }}
                         >
 
+                                <DinamicTable.Col key={"key"} label='Key'
+                                        width={60}
+                                        cellStyle={{
+                                                justifyContent: "flex-start",
+
+                                        }}
+                                        textStyle={{
+                                                fontSize: 8,
+                                                color: STheme.color.lightGray
+                                        }}
+                                        data={(e) => {
+                                                return e.row.key
+                                        }} />
+                                <DinamicTable.Col key={"codigo"} label='Codigo'
+                                        width={60}
+                                        cellStyle={{
+                                                justifyContent: "flex-start"
+                                        }}
+                                        data={(e) => {
+                                                return e.row.codigo
+                                        }} />
                                 <DinamicTable.Col key={"nombre"} label='Nombre'
                                         width={120}
                                         cellStyle={{

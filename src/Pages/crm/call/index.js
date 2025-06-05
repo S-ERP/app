@@ -11,6 +11,7 @@ import MenuAcciones from './MenuAcciones';
 import ContadorTiempoRestante from './ContadorTiempoRestante';
 import Llamada from '../Components/Llamada';
 import HistoricoMovimientos from './HistoricoMovimientos';
+import Comentario from '../Components/Comentario';
 
 const CardContent = ({ children }) => {
     return <SView col={"xs-12 sm-6 md-6 lg-4"} padding={8} center>
@@ -28,10 +29,10 @@ export default class index extends Component {
     }
     componentDidMount() {
         MDL.crm.clienteProyecto.getFull(this.pk).then((e) => {
-            if (e.state != "en_proceso") {
-                SNavigation.goBack();
-                return;
-            }
+            // if (e.state != "en_proceso") {
+            //     SNavigation.goBack();
+            //     return;
+            // }
             this.setState({ data: e })
         })
 
@@ -81,6 +82,7 @@ export default class index extends Component {
                     </CardContent>
                     <CardContent>
                         <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />
+                        <Comentario data={this.state.data} />
                         <HistoricoMovimientos key_cliente_proyecto={this.pk} />
                     </CardContent>
                 </SView>
