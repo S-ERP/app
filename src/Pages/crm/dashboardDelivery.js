@@ -32,9 +32,9 @@ import SSocket from 'servisofts-socket';
 //     | "devuelto"
 //     | "spam"
 //     | "double"
-const stages = MDL.crm.clienteProyecto.stages;
+const stages = MDL.crm.clienteProyecto.stagesDelivery;
 
-export default class Dashboard2 extends Component {
+export default class dashboardDelivery extends Component {
     stageRefs = {};
     cardRefs = {};
 
@@ -188,7 +188,7 @@ export default class Dashboard2 extends Component {
     render() {
         return (
             <GestureHandlerRootView style={{ flex: 1 }}>
-                <SPage title={'Dashboard Ventas'} disableScroll>
+                <SPage title={'Dashboard Delivery'} disableScroll>
 
                     <ScrollView horizontal>
                         {stages.map((stage) => {

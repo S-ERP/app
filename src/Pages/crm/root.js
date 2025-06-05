@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SIcon, SPage, STheme } from 'servisofts-component';
+import { SHr, SIcon, SPage, SText, STheme } from 'servisofts-component';
 import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
 import Components from '../../Components';
 import Model from '../../Model';
@@ -25,16 +25,24 @@ export default class root extends Component {
             <MenuPages
                 key_empresa={Model.empresa.Action.getKey()}
                 path={"/crm/"} permiso={"ver"}>
+                <SHr />
+                <SText>{"Administracion"}</SText>
+                <SHr />
                 <MenuButtom label={"tipo movimiento lead"} url={"/crm/tipoMovimientoLead"} icon={<SIconApp name='Ajustes' fill={STheme.color.text} />} />
                 <MenuButtom label={"Proyecto"} url={"/crm/proyecto"} icon={<SIcon name='empresa' fill={STheme.color.text} />} />
                 <MenuButtom label={"Cliente"} url={"/crm/cliente"} icon={<SIcon name='invite' fill={STheme.color.text} />} />
                 <SHr />
-                <MenuButtom label={"Lead"} url={"/crm/lead"} icon={<SIcon name='addTarea' fill={STheme.color.text} />} />
+                <SText>{"Ventas"}</SText>
+                <SHr />
                 {/* <MenuButtom label={"dashboard"} url={"/crm/dashboard"} icon={<SIcon name='addTarea' fill={STheme.color.text} />} /> */}
                 <MenuButtom label={"DashBoard Venta"} url={"/crm/dashboard2"} icon={<SIconApp name='menuAll' fill={STheme.color.text} />} />
-
+                <MenuButtom label={"Lead"} url={"/crm/lead"} icon={<SIcon name='addTarea' fill={STheme.color.text} />} />
                 <MenuButtom label={"Llamar"} url={"/crm/llamar"} icon={<SIconApp name='microfono' fill={STheme.color.text} />} />
                 <SHr />
+                <SHr />
+                <SText>{"Delivery"}</SText>
+                <SHr />
+                <MenuButtom label={"DashBoard Delivery"} url={"/crm/dashboardDelivery"} icon={<SIconApp name='menuAll' fill={STheme.color.text} />} />
             </MenuPages>
 
         </SPage>

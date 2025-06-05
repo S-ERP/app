@@ -55,4 +55,10 @@ export default class clienteProyecto {
         { key: 'confirmado', name: 'Confirmados', color: STheme.color.success, states: ["confirmado"] },
         { key: 'no_llamar', name: 'No llamar', color: STheme.color.danger, states: ["spam", "double", "cancelado"] },
     ];
+    stagesDelivery = [
+        { key: 'por_llamar', name: 'Por Llamar', color: STheme.color.lightGray, states: ["confirmado","delivery_nuevo", "delivery_rellamada", "delivery_vencido", "delivery_llamada_fallida"] },
+        { key: 'en_llamada', name: 'En llamada', color: STheme.color.warning, states: ["delivery_en_proceso"] },
+        { key: 'confirmado', name: 'Confirmados', color: STheme.color.success, states: ["pagado"] },
+        { key: 'no_llamar', name: 'No llamar', color: STheme.color.danger, states: ["spam", "double", "cancelado"] },
+    ];
 }
