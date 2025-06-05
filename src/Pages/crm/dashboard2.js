@@ -236,7 +236,7 @@ export default class Dashboard2 extends Component {
                                 <Animated.View style={{
                                     position: "absolute",
                                     top: this.state.dragOffset.y + this.state.initialOffset.y + 2,
-                                    left: this.state.dragOffset.x + this.state.initialOffset.x + 4,
+                                    left: this.state.dragOffset.x + this.state.initialOffset.x,
                                     width: this.state.initialOffset.w,
                                     zIndex: 9999,
                                     pointerEvents: 'none',
@@ -265,14 +265,14 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
     return (
         <ScrollView
             style={{
-                backgroundColor: STheme.color.card,
-                borderColor: STheme.color.lightGray,
+                backgroundColor: STheme.color.text + "11",
+                borderColor: STheme.color.card,
                 borderWidth: 1,
                 borderRadius: 8,
                 height: "100%",
             }}
             contentContainerStyle={{
-                padding: 8,
+                padding: 4,
             }}
         >
             <SView row>
@@ -280,7 +280,10 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                 <SView width={8} />
                 <SText bold>{stage.name}</SText>
             </SView>
-            <SText >{stage.states.join(", ")}</SText>
+            <SView row>
+                {stage.states.map((state, index) => <SText fontSize={10} padding={4} >{state}</SText>)}
+            </SView>
+
             <SView height={8} />
             {cards.map((card) => {
                 if (!cardRefs[card.key]) {

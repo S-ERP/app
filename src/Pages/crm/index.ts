@@ -5,7 +5,7 @@ import cliente from "./cliente";
 import operador from "./operador";
 import detalleLlamada from "./detalleLlamada";
 import plantilla from "./plantilla";
-import dashboard from "./dashboard";
+// import dashboard from "./dashboard";
 import dashboard2 from "./dashboard2";
 import dashboardDelivery from "./dashboardDelivery";
 import lead from "./lead";
@@ -21,7 +21,7 @@ export default SPage.combinePages("crm", {
   operador,
   detalleLlamada,
   plantilla,
-  dashboard,
+  // dashboard,
   dashboard2,
   dashboardDelivery,
   lead,
