@@ -83,6 +83,13 @@ import campana, { ReactComponent as campanaW } from "./svg/proyecto/campana.svg"
 import producto, { ReactComponent as productoW } from "./svg/proyecto/producto.svg";
 import microfono, { ReactComponent as microfonoW } from "./svg/microfono.svg";
 
+import recall, { ReactComponent as recallW } from "./svg/recall.svg";
+import spam, { ReactComponent as spamW } from "./svg/spam.svg";
+import double,{ ReactComponent as doubleW } from "./svg/double.svg";
+import confirmar,{ ReactComponent as confirmarW } from "./svg/confirmar.svg";
+import cancelado,{ ReactComponent as canceladoW } from "./svg/cancelado.svg";
+import llamadafallida,{ ReactComponent as llamadafallidaW } from "./svg/llamadafallida.svg";
+
 import blender from "./svg/blender";
 
 import drive from "./svg/drive";
@@ -170,6 +177,14 @@ export const svg = {
   campana: { Native: campana, Web: campanaW },
   producto: { Native: producto, Web: productoW },
   microfono: { Native: microfono, Web: microfonoW },
+
+  recall: { Native: recall, Web: recallW },
+  spam: { Native: spam, Web: spamW },
+  double: { Native: double, Web: doubleW },
+  confirmar: { Native: confirmar, Web: confirmarW },
+  cancelado: { Native: cancelado, Web: canceladoW },
+  llamadafallida: { Native: llamadafallida, Web: llamadafallidaW },
+  
 
   ...blender,
 };
