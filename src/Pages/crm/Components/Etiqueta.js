@@ -10,12 +10,13 @@ export default class Etiqueta extends Component<{ tipo_leads: string }> {
         this.state = {};
     }
     render() {
+        const size = this.props.size || 10;
         return <SView style={{
-            padding: 2,
-            paddingStart: 4,
-            paddingEnd: 4,
+            padding: size / 4,
+            paddingStart: size / 2,
+            paddingEnd: size / 2,
             borderRadius: 4,
-            backgroundColor: MDL.crm.clienteProyecto.stageColor[this.props.tipo_leads] ?? STheme.color.card,
+            backgroundColor: (MDL.crm.clienteProyecto.stageColor[this.props.tipo_leads] ?? STheme.color.text),
             ...(this.props.style ?? {})
         }}>
          <SText fontSize={10} color={STheme.color.text} center>{MDL.crm.clienteProyecto.stageNombre[this.props.tipo_leads]}</SText>

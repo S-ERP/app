@@ -1,6 +1,6 @@
 import React, { Component, createRef } from 'react';
 import { Dimensions, UIManager, findNodeHandle } from 'react-native';
-import { SDate, SImage, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SImage, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -281,8 +281,11 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                 <SView width={8} />
                 <SText bold>{stage.name}</SText>
             </SView>
+            <SHr />
             <SView row>
-                {stage.states.map((state, index) => <Etiqueta tipo_leads={state} />)}
+                {stage.states.map((state, index) => <Etiqueta tipo_leads={state} size={8} style={{
+                    marginRight: 8
+                }} />)}
             </SView>
 
             <SView height={8} />
