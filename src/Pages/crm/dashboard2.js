@@ -17,6 +17,7 @@ import MDL from '../../MDL';
 import Recargar from '../../Components/Recargar';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
+import DashboardCard from './Components/DashboardCard';
 
 // "nuevo"
 //     | "rellamada"
@@ -61,6 +62,19 @@ export default class Dashboard2 extends Component {
             key: cardKey,
             state: newState,
             key_usuario_atiende: Model.usuario.Action.getKey(),
+        }).then((e) => {
+            this.setState(prevState => {
+                const updatedCards = prevState.cards.map(card => {
+                    if (card.key === cardKey) {
+                        return { ...card, ...e };
+                    }
+                    return card;
+                });
+                return { cards: updatedCards };
+            });
+            // if (this.recargar) this.recargar.onPress()
+        }).catch((error) => {
+
         })
     }
 
@@ -221,35 +235,23 @@ export default class Dashboard2 extends Component {
                             return (
                                 <Animated.View style={{
                                     position: "absolute",
-                                    top: this.state.dragOffset.y + this.state.initialOffset.y + 4,
+                                    top: this.state.dragOffset.y + this.state.initialOffset.y + 2,
                                     left: this.state.dragOffset.x + this.state.initialOffset.x + 4,
                                     width: this.state.initialOffset.w,
-                                    height: 70,
                                     zIndex: 9999,
                                     pointerEvents: 'none',
                                 }}>
-                                    <SView
-                                        style={{
-                                            backgroundColor: STheme.color.card,
-                                            padding: 8,
-                                            borderRadius: 8,
-                                            flex: 1,
-                                        }}
-                                    >
-                                        <SText>{card.cliente.telefono}</SText>
-                                        <SText>{card.cliente.nombres}</SText>
-                                    </SView>
+                                    <DashboardCard data={card} />
                                 </Animated.View>
                             );
                         })()}
                     </ScrollView>
-
                     <SView style={{
                         position: "absolute",
                         right: 16,
                         bottom: 32,
                     }}>
-                        <Recargar initialTime={60} onFinish={() => {
+                        <Recargar ref={ref => this.recargar = ref} initialTime={60} onFinish={() => {
                             this.componentDidMount();
                         }} />
                     </SView>
@@ -330,45 +332,17 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
         };
     });
 
-    const fecha = card.fecha_edit ?? card.fecha_on;
+
 
     return (
         <GestureDetector gesture={panGesture}>
             <Animated.View
                 ref={ref}
                 style={[{
-                    backgroundColor: STheme.color.background + "66",
-                    borderColor: STheme.color.lightGray,
-                    borderWidth: 1,
-                    minHeight: 70,
-                    padding: 8,
-                    borderRadius: 8,
-                    marginVertical: 4,
-                    cursor: "grab",
+                    paddingBottom: 8,
                 }, animatedStyle]}
             >
-                <SText onPress={() => {
-                    // SNavigation.navigate("/crm/plantilla", { key: card.key })
-                    SNavigation.navigate("/crm/call", { key: card.key })
-                }} >{card?.cliente?.telefono}</SText>
-                <SText color={STheme.color.lightGray}>{card?.cliente?.nombres}</SText>
-                <SText fontSize={10} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
-                <SText fontSize={10} color={STheme.color.lightGray}>{card.state}</SText>
-                <SView style={{
-                    width: 24,
-                    height: 24,
-                    position: "absolute",
-                    right: 4,
-                    top: 4,
-                    borderRadius: 100,
-                    overflow: "hidden",
-                    backgroundColor: STheme.color.card + "66",
-                }}>
-                    <SImage src={SSocket.api.root + "usuario/" + card.key_usuario_atiende} style={{
-                        resizeMode: "cover",
-                    }} />
-                </SView>
-                {/* <SText color={STheme.color.lightGray}>{card.key_usuario_atiende}</SText> */}
+                <DashboardCard data={card} />
             </Animated.View>
         </GestureDetector>
     );
