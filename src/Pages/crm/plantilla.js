@@ -14,8 +14,9 @@ import Llamada from './Components/Llamada';
 import PopupRellamada from './Components/PopupRellamada';
 import PopupRazon from './Components/PopupRazon';
 import OrdenesConMismoNumero from './Components/OrdenesConMismoNumero';
-import HorarioDeCliente from './Components/HorarioDeCliente';
+// import HorarioDeCliente from './Components/HorarioDeCliente';
 import Comentario from './Components/Comentario';
+import HorarioCliente from '../../Components/Ricardo';
 
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";
@@ -175,7 +176,8 @@ export default class plantilla extends Component {
         <SHr />
         <SView col={"xs-12"} row     >
           <SView col={"xs-12 sm-3.8"}     >
-            <HorarioDeCliente key_cliente_proyecto={this.pk}></HorarioDeCliente>
+        <HorarioCliente key_cliente_proyecto={this.pk}  ></HorarioCliente>
+            {/* <HorarioDeCliente key_cliente_proyecto={this.pk}></HorarioDeCliente> */}
           </SView>
           <SView flex />
 
