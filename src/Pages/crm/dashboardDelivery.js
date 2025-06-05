@@ -282,12 +282,9 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
    <SText >{stage.states.join(", ")}</SText>
 
    <SText fontSize={12} color={STheme.color.text}>
-
     {stage.states.map((state, i) => (
-     <SText key={state} color={STheme.color.text}>
-      {i > 0 && ", "}
-      <SText color={"red" || "#999"} bold>{state}</SText>
-     </SText>
+
+     <SText key={state} color={STheme.color.text}> {i > 0 && ", "} <Etiqueta tipo_leads={state}></Etiqueta>  </SText>
     ))}
    </SText>
 
