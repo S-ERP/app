@@ -143,7 +143,24 @@ export default class clienteProyecto {
     delivery_vencido: "#f39c12", // ámbar
     delivery_llamada_fallida: "#d35400", // naranja oscuro
     delivery_en_proceso: "#f39c12", // ámbar
- };
+  };
 
+  stageNombre = {
+    nuevo: "Nuevo",
+    rellamada: "Re-llamar",
+    vencido: "Vencido",
+    llamada_fallida: "Llamada fallida",
+    en_proceso: "En proceso",
+    confirmado: "Confirmado",
+    pagado: "Pagado",
+    spam: "Spam",
+    double: "Duplicado",
+    cancelado: "Cancelado",
+    delivery_nuevo: "Delivery nuevo",
+    delivery_rellamada: "Re-llamar delivery",
+    delivery_vencido: "Delivery vencido",
+    delivery_llamada_fallida: "Delivery fallido",
+    delivery_en_proceso: "Delivery en proceso",
+ };
 
 }
