@@ -348,7 +348,8 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
                 }, animatedStyle]}
             >
                 <SText onPress={() => {
-                    SNavigation.navigate("/crm/plantilla", { key: card.key })
+                    // SNavigation.navigate("/crm/plantilla", { key: card.key })
+                    SNavigation.navigate("/crm/call", { key: card.key })
                 }} >{card?.cliente?.telefono}</SText>
                 <SText color={STheme.color.lightGray}>{card?.cliente?.nombres}</SText>
                 <SText fontSize={10} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
