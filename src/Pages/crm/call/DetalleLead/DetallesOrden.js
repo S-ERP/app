@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { SButtom, SDate, SForm, SHr, SIcon, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
-import MDL from "../../MDL";
+import MDL from "../../../../MDL";
 export default class DetallesOrden extends Component {
 
  constructor(props) {

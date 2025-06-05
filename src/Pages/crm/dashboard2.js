@@ -216,7 +216,7 @@ export default class Dashboard2 extends Component {
                                 <SView
                                     key={stage.key}
                                     ref={this.stageRefs[stage.key]}
-                                    style={{ width: 300, margin: 8 }}
+                                    style={{ width: 300, margin: 6 }}
                                 >
                                     <Stage
                                         stage={stage}

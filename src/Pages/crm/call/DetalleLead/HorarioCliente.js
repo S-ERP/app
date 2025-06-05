@@ -2,12 +2,12 @@ import React, { Component } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { SButtom, SDate, SForm, SHr, SIcon, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
-import Model from "../../Model";
-import MDL from "../../MDL";
+import Model from "../../../../Model";
+import MDL from "../../../../MDL";
 import Producto from "./Producto";
 import Adicional from "./Adicional";
 import DetallesOrden from "./DetallesOrden";
-import Etiqueta from "../../Pages/crm/Components/Etiqueta";
+import Etiqueta from "../../../../Pages/crm/Components/Etiqueta";
 
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";

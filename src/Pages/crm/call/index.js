@@ -11,7 +11,7 @@ import ContadorTiempoRestante from './ContadorTiempoRestante';
 import Llamada from '../Components/Llamada';
 import HistoricoMovimientos from './HistoricoMovimientos';
 import Comentario from '../Components/Comentario';
-import HorarioCliente from '../../../Components/Ricardo/HorarioCliente';
+import HorarioCliente from './DetalleLead/HorarioCliente';
 
 const CardContent = ({ children }) => {
     return <SView col={"xs-12 sm-6 md-6 lg-4"} padding={0} center>

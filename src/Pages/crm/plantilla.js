@@ -16,7 +16,8 @@ import PopupRazon from './Components/PopupRazon';
 import OrdenesConMismoNumero from './Components/OrdenesConMismoNumero';
 import Comentario from './Components/Comentario';
 import HistoricoMovimientos from './call/HistoricoMovimientos';
-import HorarioCliente from '../../Components/Ricardo/HorarioCliente';
+import HorarioCliente from './call/DetalleLead/HorarioCliente';
+
 
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";
