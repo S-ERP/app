@@ -7,7 +7,7 @@ import PopupRellamada from '../Components/PopupRellamada';
 
 const OptionItem = ({ key, label, color, icono, onPress }) => {
   return <>
-    <SView backgroundColor='transparent' center style={{ alignItems: "center", }}>
+    <SView backgroundColor='transparent' center style={{ alignItems: "center", padding: 4, }}>
       <SView center style={{
         paddingLeft: 16,
         paddingRight: 16,
@@ -16,7 +16,7 @@ const OptionItem = ({ key, label, color, icono, onPress }) => {
         borderWidth: 1,
         borderColor: STheme.color.card,
         backgroundColor: color,
-        borderRadius: 8
+        borderRadius: 8,
       }} onPress={onPress} row>
         <SIcon name={icono} width={12} height={12} fill={STheme.color.text} />
         <SView width={8} />
@@ -49,7 +49,7 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
           }
         }} />
 
-      <SView width={space} />
+      
 
       <OptionItem icono={"addTarea"}
         label={"Entrega Express"} color={STheme.color.success} onPress={() => {
@@ -63,7 +63,7 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
           }
         }} />
 
-      <SView width={space} />
+      
 
       <OptionItem icono={"Check"}
         label={"Cancelado"}
@@ -84,7 +84,7 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
             }))
         }} />
 
-      <SView width={space} />
+      
 
       <OptionItem icono={"World"}
         label={"Doble"} color={STheme.color.gray} onPress={() => {
@@ -103,7 +103,7 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
             }))
         }} />
 
-      <SView width={space} />
+      
 
       <OptionItem icono={"Egreso"}
         label={"Spam"} color={STheme.color.gray}
@@ -123,7 +123,7 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
             }))
         }} />
 
-      <SView width={space} />
+      
 
       <OptionItem icono={"tpGa"}
         label={"Llamar luego"} color={STheme.color.warning}
@@ -143,7 +143,7 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
 
         }} />
 
-      <SView width={space} />
+      
 
       <OptionItem icono={"addTarea"} label={"Llamada fallida"} color={STheme.color.gray} onPress={() => {
         PopupRazon.open(

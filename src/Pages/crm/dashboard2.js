@@ -264,47 +264,54 @@ export default class Dashboard2 extends Component {
 
 const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard, cardRefs }) => {
     return (
-        <ScrollView
-            style={{
-                backgroundColor: STheme.color.text + "11",
-                borderColor: STheme.color.card,
-                borderWidth: 1,
-                borderRadius: 8,
-                height: "100%",
-            }}
-            contentContainerStyle={{
-                padding: 4,
-            }}
-        >
-            <SView row>
-                <SView style={{ backgroundColor: stage.color, padding: 8, borderRadius: 8 }} />
-                <SView width={8} />
-                <SText bold>{stage.name}</SText>
+        <SView style={{
+            backgroundColor: STheme.color.text + "11",
+            borderColor: STheme.color.card,
+            borderWidth: 1,
+            borderRadius: 8,
+            height: "100%",
+        }}>
+            <SView col={"xs-12"} padding={8} center>
+                <SView row col={"xs-12"} center>
+                    <SView style={{ backgroundColor: stage.color, width: 20, height: 20, borderRadius: 20 }} />
+                    <SView width={8} />
+                    <SText bold>{stage.name}</SText>
+                    <SView flex />
+                    <SText bold card fontSize={10} padding={4}>{cards.length}</SText>
+                </SView>
+                <SHr />
+                <SView row col={"xs-12"}>
+                    {stage.states.map((state, index) => <Etiqueta tipo_leads={state} size={8} style={{
+                        marginRight: 8
+                    }} />)}
+                </SView>
             </SView>
-            <SHr />
-            <SView row>
-                {stage.states.map((state, index) => <Etiqueta tipo_leads={state} size={8} style={{
-                    marginRight: 8
-                }} />)}
-            </SView>
+            <ScrollView
 
-            <SView height={8} />
-            {cards.map((card) => {
-                if (!cardRefs[card.key]) {
-                    cardRefs[card.key] = createRef();
-                }
-                return (
-                    <DraggableCarta
-                        key={card.key}
-                        card={card}
-                        onDrop={onCardDrop}
-                        onDragStart={onDragStart}
-                        onDragMove={onDragMove}
-                        ref={cardRefs[card.key]}
-                    />
-                );
-            })}
-        </ScrollView>
+                contentContainerStyle={{
+                    padding: 4,
+                }}
+                stickyHeaderIndices={1}
+
+            >
+                {cards.map((card) => {
+                    if (!cardRefs[card.key]) {
+                        cardRefs[card.key] = createRef();
+                    }
+                    return (
+                        <DraggableCarta
+                            key={card.key}
+                            card={card}
+                            onDrop={onCardDrop}
+                            onDragStart={onDragStart}
+                            onDragMove={onDragMove}
+                            ref={cardRefs[card.key]}
+                        />
+                    );
+                })}
+            </ScrollView>
+        </SView>
+
     );
 };
 

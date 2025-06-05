@@ -134,7 +134,7 @@ export default class HorarioCliente extends Component {
      scrollEnabled={false}
      disableScroll={false}
      data={[
-      { key: "Detalles", label: "Detalles de la orden", color: color_activado, icono: "addTarea" },
+      { key: "Detalles", label: "Detalle", color: color_activado, icono: "addTarea" },
       { key: "Productos", label: "Productos", color: color_activado, icono: "Check" },
       { key: "Adicional", label: "Adicional", color: color_activado, icono: "World" },
      ]}

@@ -28,19 +28,18 @@ export default class DashboardCard extends Component {
             <SView row col={"xs-12"}>
                 <SText fontSize={12} color={STheme.color.lightGray}>{card.codigo}</SText>
                 <SView width={8} />
-                <SText underLine 
-                 color={STheme.color.link}
-                onPress={() => {
-                    // SNavigation.navigate("/crm/plantilla", { key: card.key })
-                    SNavigation.navigate("/crm/call", { key: card.key })
-                }} >{card?.cliente?.telefono}</SText>
+                <SText underLine
+                    color={STheme.color.link}
+                    onPress={() => {
+                        // SNavigation.navigate("/crm/plantilla", { key: card.key })
+                        SNavigation.navigate("/crm/call", { key: card.key })
+                    }} >{card?.cliente?.telefono}</SText>
             </SView>
-            <SHr />
+            <SHr h={4} />
             <SText
-                // color={STheme.color.lightGray}
+            // color={STheme.color.lightGray}
             >{card?.cliente?.nombres}</SText>
 
-            <SHr />
             <SHr />
             <SView row style={{
                 alignItems: "flex-end",

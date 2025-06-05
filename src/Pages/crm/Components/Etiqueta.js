@@ -10,6 +10,7 @@ export default class Etiqueta extends Component<{ tipo_leads: string }> {
         this.state = {};
     }
     render() {
+        if(!this.props.tipo_leads) return null;
         const size = this.props.size || 10;
         return <SView style={{
             padding: size / 4,
