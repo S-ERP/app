@@ -19,7 +19,7 @@ export default class Etiqueta extends Component<{ tipo_leads: string }> {
             backgroundColor: (MDL.crm.clienteProyecto.stageColor[this.props.tipo_leads] ?? STheme.color.text),
             ...(this.props.style ?? {})
         }}>
-         <SText fontSize={10} color={STheme.color.text} center>{MDL.crm.clienteProyecto.stageNombre[this.props.tipo_leads]}</SText>
+         <SText fontSize={size} color={STheme.color.text} center>{MDL.crm.clienteProyecto.stageNombre[this.props.tipo_leads]}</SText>
         </SView>
     }
 }
