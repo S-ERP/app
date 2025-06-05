@@ -16,7 +16,7 @@ import {
 import MDL from '../../MDL';
 import Recargar from '../../Components/Recargar';
 import SSocket from 'servisofts-socket';
-import Etiqueta from '../../Components/Etiqueta';
+import Etiqueta from './Components/Etiqueta';
 
 // "nuevo"
 //     | "rellamada"

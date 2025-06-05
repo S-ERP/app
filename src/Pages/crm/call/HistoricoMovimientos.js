@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { View, Text, SectionList } from 'react-native';
 import { SDate, SImage, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
-import Etiqueta from '../../../Components/Etiqueta';
+import Etiqueta from '../Components/Etiqueta';
+// import Etiqueta from '../../../Components/Etiqueta';
 
 export default class HistoricoMovimientos extends Component {
  constructor(props) {
