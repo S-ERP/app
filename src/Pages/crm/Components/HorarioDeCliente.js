@@ -8,10 +8,6 @@ import Model from "../../../Model";
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";
 const formTabs = ["Detalles", "Productos", "Adicional"];
-// const hora = new Date().toLocaleTimeString();
-// const [hora, setHora] = useState(new SDate());
-
-// const [hora, setHora] = useState(new SDate());
 
 
 export default class HorarioDeCliente extends Component {
@@ -329,7 +325,7 @@ export default class HorarioDeCliente extends Component {
        <SText fontSize={10}>Horario de cliente</SText>
        {/* <SText fontSize={28}>{hora}</SText> */}
        {/* <SText fontSize={28}> {fechaHora.toLocaleDateString()} - {fechaHora.toLocaleTimeString()} */}
-       <SText fontSize={28}>{fechaHora.toLocaleTimeString()}
+       <SText fontSize={28}>{fechaHora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
        </SText>
 
        {/* <SText fontSize={28}>Obtener la hora actual de la web</SText> */}

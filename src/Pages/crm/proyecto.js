@@ -179,15 +179,13 @@ export default class proyecto extends Component {
                                         customComponent={e => {
                                                 return <SView col={"xs-12"} row >
                                                         {e.row.campanas.map((campana, index) => {
-                                                                return <SView key={index} style={{ padding: 4 }} onPress={() => {
-                                                                        FormRegistroCampana.open({
-                                                                                defaultData: campana,
-                                                                                proyecto: e.row,
-                                                                                onActualizar: (e) => {
-                                                                                        this.DinamicTable.loadData();
+                                                                return <SView key={index} style={{ padding: 4 }}
+                                                                        onPress={() => {
+                                                                                // Acción al seleccionar la campaña
+                                                                                if (campana && campana.key) {
+                                                                                        SNavigation.navigate("/crm/perfilcampana", { key: campana.key });
                                                                                 }
-                                                                        })
-                                                                }}>
+                                                                        }}>
                                                                         <SText card padding={4} style={{ maxWidth: 200 }} numberOfLines={1}>{campana.nombre}</SText>
                                                                 </SView>
                                                         })}
@@ -272,7 +270,7 @@ export default class proyecto extends Component {
                                                 <SIcon name='Delete' width={18} />
                                                 <SView width={4} />
                                                 <SText center color={STheme.color.danger} > {"Eliminar"}</SText>
-                                        </SView>} /> */}
+                                        </SView>} */}
                         </DinamicTable>
                         <FloatButtom onPress={() => {
                                 FormRegistroProyecto.open(({
