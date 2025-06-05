@@ -1,143 +1,160 @@
 import React, { Component } from "react";
 import {
- SDate,
- SHr,
- SImage,
- SInput,
- SList,
- SLoad,
- SMath,
- SNavigation,
- SText,
- STheme,
- SView,
+    SDate,
+    SHr,
+    SImage,
+    SInput,
+    SList,
+    SLoad,
+    SMath,
+    SNavigation,
+    SText,
+    STheme,
+    SThread,
+    SView,
 } from "servisofts-component";
 import SSocket from "servisofts-socket";
+import MDL from "../../../MDL";
+import Model from "../../../Model";
 // import Model from "../../Model";
 
 
 export default class Comentario extends Component {
- constructor(props) {
-  super(props);
-  this.state = {};
- }
+    constructor(props) {
+        super(props);
+        this.state = {};
+    }
 
 
- componentDidMount() {
-  this.traerAllOrdenes();
- }
+    componentDidMount() {
+        //   this.traerAllOrdenes();
+    }
 
- async traerAllOrdenes() {
-  try {
-   const resp: any = await SSocket.sendPromise(
-    {
-     service: "crm",
-     component: "cliente_proyecto",
-     type: "getConElMismoNumero",
-     estado: "cargando",
-     key: this.props.key_cliente_proyecto,
-    },
-    1000 * 60
-   );
+    //  async traerAllOrdenes() {
+    //   try {
+    //    const resp: any = await SSocket.sendPromise(
+    //     {
+    //      service: "crm",
+    //      component: "cliente_proyecto",
+    //      type: "getConElMismoNumero",
+    //      estado: "cargando",
+    //      key: this.props.key_cliente_proyecto,
+    //     },
+    //     1000 * 60
+    //    );
 
-   const obj: Orden[] = Object.values(resp.data);
-   this.setState({ data_ordenes: obj, loading: false });
-   console.log("componente OrdenesConMismoNumero ", obj);
-  } catch (error) {
-   console.error("Error al traer ordenes:", error);
-   this.setState({ loading: false });
-  }
- }
+    //    const obj: Orden[] = Object.values(resp.data);
+    //    this.setState({ data_ordenes: obj, loading: false });
+    //    console.log("componente OrdenesConMismoNumero ", obj);
+    //   } catch (error) {
+    //    console.error("Error al traer ordenes:", error);
+    //    this.setState({ loading: false });
+    //   }
+    //  }
 
- colorState(state) {
-  const colorsMap = {
-   pagado: "#A3B7F0",
-   doble: "#272E35",
-   cancelado: "#272E35",
-   nuevo: "#A2B9F3",
-  };
-  // const state = state.toLowerCase();
-  return colorsMap[state] || "#000000"; // negro por defecto
- }
+    colorState(state) {
+        const colorsMap = {
+            pagado: "#A3B7F0",
+            doble: "#272E35",
+            cancelado: "#272E35",
+            nuevo: "#A2B9F3",
+        };
+        // const state = state.toLowerCase();
+        return colorsMap[state] || "#000000"; // negro por defecto
+    }
 
- pintado() {
-  const { data_ordenes, loading } = this.state;
-  if (loading) return <SLoad />;
-  if (!data_ordenes || data_ordenes.length === 0) {
-   return <>
-    <SHr col={"xs-12"} height={2} />
-    <SHr col={"xs-12"} height={1} color={STheme.color.card} />
-    <SHr col={"xs-12"} height={20} />
-   <SText>No hay órdenes para mostrar.</SText>;
-   </>
-  }
+    pintado() {
+        const { data_ordenes, loading } = this.state;
+        if (loading) return <SLoad />;
+        if (!data_ordenes || data_ordenes.length === 0) {
+            return <>
+                <SHr col={"xs-12"} height={2} />
+                <SHr col={"xs-12"} height={1} color={STheme.color.card} />
+                <SHr col={"xs-12"} height={20} />
+                <SText>No hay órdenes para mostrar.</SText>;
+            </>
+        }
 
-  return (
-   <>
-    {data_ordenes.map((orden, idx) => (
-     <React.Fragment key={idx}>
+        return (
+            <>
+                {data_ordenes.map((orden, idx) => (
+                    <React.Fragment key={idx}>
 
-      {/* <SView col={"xs-12"} key={idx} card style={{ margin: 8, padding: 8 }}> */}
-      <SView col="xs-12" row center>
-       <SView col="xs-4" row>
-        <SView style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: this.colorState(orden.state), marginRight: 8, }} >
-         <SText fontSize={14} color="#fff">{orden.state}</SText>
-        </SView>
-       </SView>
-       <SView col="xs-4">
-        <SText>{orden?.proyecto?.nombre}</SText>
-       </SView>
-       <SView col="xs-4">
-        <SText col="xs-12" fontSize={8}>{orden.key}</SText>
-       </SView>
-      </SView>
-      {/* </SView> */}
+                        {/* <SView col={"xs-12"} key={idx} card style={{ margin: 8, padding: 8 }}> */}
+                        <SView col="xs-12" row center>
+                            <SView col="xs-4" row>
+                                <SView style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: this.colorState(orden.state), marginRight: 8, }} >
+                                    <SText fontSize={14} color="#fff">{orden.state}</SText>
+                                </SView>
+                            </SView>
+                            <SView col="xs-4">
+                                <SText>{orden?.proyecto?.nombre}</SText>
+                            </SView>
+                            <SView col="xs-4">
+                                <SText col="xs-12" fontSize={8}>{orden.key}</SText>
+                            </SView>
+                        </SView>
+                        {/* </SView> */}
 
-      <SHr col={"xs-12"} height={10} />
-      <SHr col={"xs-12"} height={1} color={STheme.color.card} />
-      <SHr col={"xs-12"} height={10} />
-     </React.Fragment>
+                        <SHr col={"xs-12"} height={10} />
+                        <SHr col={"xs-12"} height={1} color={STheme.color.card} />
+                        <SHr col={"xs-12"} height={10} />
+                    </React.Fragment>
 
-    ))}
-   </>
-  );
- }
+                ))}
+            </>
+        );
+    }
 
 
- render() {
-  return (
-   <SView col={"xs-12"}>
-    <SView
-     col={"xs-12"}
-     center
-     style={{ padding: 16, borderRadius: 16, borderWidth: 2 }}
-     border={STheme.color.card}
-     backgroundColor={STheme.color.card}
-    >
-     <SView col="xs-12" row center>
-      <SView col="xs-12">
-       <SText fontSize={14}>Comentario con el mismo número</SText>
-      </SView>
-     </SView>
+    render() {
+        return (
+            <SView col={"xs-12"}>
+                <SView
+                    col={"xs-12"}
+                    center
+                    style={{ padding: 16, borderRadius: 16, borderWidth: 2 }}
+                    border={STheme.color.card}
+                    backgroundColor={STheme.color.card}
+                >
+                    <SView col="xs-12" row center>
+                        <SView col="xs-12">
+                            <SText fontSize={14}>Comentarios</SText>
+                        </SView>
+                    </SView>
 
-     <SHr col={"xs-12"} height={20} />
-     <SHr col={"xs-12"} height={1} color={STheme.color.card} />
-     <SHr col={"xs-12"} height={10} />
+                    <SHr col={"xs-12"} height={20} />
+                    <SHr col={"xs-12"} height={1} color={STheme.color.card} />
+                    <SHr col={"xs-12"} height={10} />
 
-     <SInput
-      label={"Comentario"}
-      type="textArea"
-      placeholder={"Add your comment here..."}
-      placeholderTextColor={STheme.color.gray}
-      style={{
-       textAlignVertical: "top",
-       padding: 4,
-      }}
-     />
+                    <SInput
+                        label={"Comentario"}
+                        type="textArea"
+                        placeholder={"Add your comment here..."}
+                        placeholderTextColor={STheme.color.gray}
+                        style={{
+                            textAlignVertical: "top",
+                            padding: 4,
+                        }}
+                        onChangeText={e => {
+                            new SThread(2000, "comentario", true).start(() => {
+                                MDL.crm.clienteProyecto.editar({
+                                    key: this.props.key_cliente_proyecto,
+                                    key_usuario_atiende: Model.usuario.Action.getKey(),
+                                    comentario: e,
+                                }).then(() => {
+                                    // SNotification.toast("Comentario guardado");
+                                }).catch((error) => {
+                                    // SNotification.toast("Error al guardar el comentario");
+                                    // console.error("Error al guardar el comentario:", error);
+                                })
+                            })
+                        }}
+                    />
 
-     <SHr height={12} />
-    </SView>
-   </SView>
-  );
- }
+                    <SHr height={12} />
+                </SView>
+            </SView>
+        );
+    }
 }
