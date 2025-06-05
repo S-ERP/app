@@ -18,6 +18,7 @@ import Recargar from '../../Components/Recargar';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
 import DashboardCard from './Components/DashboardCard';
+import Etiqueta from './Components/Etiqueta';
 
 // "nuevo"
 //     | "rellamada"
@@ -281,7 +282,7 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                 <SText bold>{stage.name}</SText>
             </SView>
             <SView row>
-                {stage.states.map((state, index) => <SText fontSize={10} padding={4} >{state}</SText>)}
+                {stage.states.map((state, index) => <Etiqueta tipo_leads={state} />)}
             </SView>
 
             <SView height={8} />
