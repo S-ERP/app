@@ -145,7 +145,9 @@ export default class HorarioCliente extends Component {
        card
        style={{
         paddingHorizontal: 8,
-        backgroundColor: this.state.activeFormTab === data.key ? color_activado + "88" : color_desactivado + "88"
+        backgroundColor: this.state.activeFormTab === data.key ? color_activado + "88" : color_desactivado + "88",
+        borderColor: this.state.activeFormTab === data.key ? color_desactivado + "88" : null,
+        borderWidth: 1
        }}
        onPress={() => this.setState({ activeFormTab: data.key })}
        row
