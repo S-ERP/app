@@ -47,7 +47,7 @@ export default class proyecto extends Component {
                                                 });
                                         })
 
-                                    
+
 
                                         const productos = await MDL.crm.proyectoProducto.getAllConProductos();
                                         proyectos.forEach(proyecto => {
@@ -182,9 +182,16 @@ export default class proyecto extends Component {
                                                                 return <SView key={index} style={{ padding: 4 }}
                                                                         onPress={() => {
                                                                                 // Acción al seleccionar la campaña
-                                                                                if (campana && campana.key) {
-                                                                                        SNavigation.navigate("/crm/perfilcampana", { key: campana.key });
-                                                                                }
+                                                                                // if (campana && campana.key) {
+                                                                                //         SNavigation.navigate("/crm/perfilcampana", { key: campana.key });
+                                                                                // }
+                                                                                FormRegistroCampana.open({
+                                                                                        defaultData: campana,
+                                                                                        proyecto: e.row,
+                                                                                        onActualizar: (e) => {
+                                                                                                this.DinamicTable.loadData();
+                                                                                        }
+                                                                                })
                                                                         }}>
                                                                         <SText card padding={4} style={{ maxWidth: 200 }} numberOfLines={1}>{campana.nombre}</SText>
                                                                 </SView>
@@ -212,7 +219,7 @@ export default class proyecto extends Component {
                                                                         //         }
                                                                         // })
                                                                 }}>
-                                                                        <SText card padding={4} style={{ maxWidth: 200 }} numberOfLines={1}>{prd?.producto?.nombre} x Bs.{prd?.producto?.precio??0}</SText>
+                                                                        <SText card padding={4} style={{ maxWidth: 200 }} numberOfLines={1}>{prd?.producto?.nombre} x Bs.{prd?.producto?.precio ?? 0}</SText>
                                                                 </SView>
                                                         })}
                                                 </SView>

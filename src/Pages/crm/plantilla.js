@@ -16,7 +16,7 @@ import PopupRazon from './Components/PopupRazon';
 import OrdenesConMismoNumero from './Components/OrdenesConMismoNumero';
 // import HorarioDeCliente from './Components/HorarioDeCliente';
 import Comentario from './Components/Comentario';
-import HorarioCliente from '../../Components/Ricardo';
+import HistoricoMovimientos from './call/HistoricoMovimientos';
 
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";
@@ -199,13 +199,14 @@ export default class plantilla extends Component {
           </SView>
 
 
-     <SView flex />
-     <SView col={"xs-12 sm-3.8"}     >
-      <OrdenesConMismoNumero key_cliente_proyecto={this.pk}></OrdenesConMismoNumero>
-        <Comentario key_cliente_proyecto={this.pk}></Comentario>
-     </SView>
-    </SView>
-   </SView>
-  </SPage>
- }
+          <SView flex />
+          <SView col={"xs-12 sm-3.8"}     >
+            <OrdenesConMismoNumero key_cliente_proyecto={this.pk}></OrdenesConMismoNumero>
+            <Comentario key_cliente_proyecto={this.pk}></Comentario>
+            <HistoricoMovimientos key_cliente_proyecto={this.pk}></HistoricoMovimientos>
+          </SView>
+        </SView>
+      </SView>
+    </SPage>
+  }
 }
