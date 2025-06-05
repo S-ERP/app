@@ -10,19 +10,11 @@ export default class Etiqueta extends Component {
   this.state = {};
  }
  render() {
-  return <>
-
-   <SView style={{
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-    backgroundColor: MDL.crm.clienteProyecto.stageColor[this.props.tipo_leads] ?? STheme.color.card,
-    marginRight: 8,
-   }}>
-    <SText fontSize={10} color={STheme.color.text}>{this.props.tipo_leads}</SText>
+  return <SView col={"xs-12"} row center>
+   <SView style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4, backgroundColor: MDL.crm.clienteProyecto.stageColor[this.props.tipo_leads] ?? STheme.color.card, marginRight: 8 }}>
+    <SText fontSize={10} color={STheme.color.text} center>{this.props.tipo_leads}</SText>
    </SView>
-
-  </>
-
+   <SView flex />
+  </SView>
  }
 }
