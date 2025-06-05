@@ -10,6 +10,13 @@ const sipPassword = "servisofts";
 
 
 export default class SIP {
+    static instance: SIP | null = null;
+    static getInstance() {
+        if (!SIP.instance) {
+            SIP.instance = new SIP();
+        }
+        return SIP.instance;
+    }
     socket = new JsSIP.WebSocketInterface(ws);
     configuration = {
         sockets: [this.socket],
@@ -20,6 +27,24 @@ export default class SIP {
 
     constructor() {
         this.ua.start();
+        console.log("SIP iniciado", this.ua);
+        this.ua.on("sipEvent", (data: any) => {
+            console.log("Evento SIP:", data);
+        });
+        this.ua.on("newRTCSession", (data: { originator: string, session: RTCSession }) => {
+            const session = data.session;
+            this.session = session;
+
+            // Detectar si es una llamada saliente anterior que aún está viva
+            console.log("Nueva sesión RTC:", session);
+            const lastCallId = ""
+            if (data.originator === "local" && session.id === lastCallId) {
+                console.log("Reanudando llamada existente...");
+                // this._attachMedia(session);
+            }
+
+            // this._bindEvents(session);
+        });
     }
     session: RTCSession | null = null;
     call(phone: String, onEvent: (e: string, event: any) => void = () => { }) {
@@ -50,7 +75,7 @@ export default class SIP {
             // console.error('Código de fallo SIP:', e.message, '-', e.cause);
             // console.error('Llamada fallida:', e.cause);
         });
-        
+
         session.on("ended", (e: any) => {
             onEvent("ended", e);
             // console.log("Llamada terminada:", e);

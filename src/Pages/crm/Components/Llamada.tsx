@@ -12,7 +12,7 @@ export default class Llamada extends React.Component<{
   }
   handlePress = () => {
     if (!this.llamada) {
-      const sip = new SIP();
+      const sip = SIP.getInstance();
       this.llamada = sip.call(this.props.phone, (e: any, evt: any) => {
         console.log("Evento de llamada:", e, evt);
         this.setState({ estado: e });
@@ -143,21 +143,26 @@ export default class Llamada extends React.Component<{
 
   render() {
 
-    return <SView width={150} center height={50} onPress={this.handlePress.bind(this)} row style={{
-      borderRadius: 8,
-      borderWidth: 1,
-      borderColor: "#1B242C",
-    }}>
+    return <SView>
+      <SText onPress={() => {
+        const sip = SIP.getInstance();
+      }}>{"RECONET"}</SText>
+      <SView width={150} center height={50} onPress={this.handlePress.bind(this)} row style={{
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: "#1B242C",
+      }}>
 
-      {!this.llamada && <SText>{"LLAMAR"}</SText>}
-      {/* {this.llamada && <SText>{"COLGAR" + " " + this.llamada?.start_time+ "DDD"}</SText>} */}
-      {this.llamada && <>
-        <SText>{this.state.estado}</SText>
-        <SText>{"COLGAR" + " "}</SText>
-        {/* <SText>{this.llamada.isMuted() ? "Unmuted" : "Mute"}</SText> */}
-      </>}
+        {!this.llamada && <SText>{"LLAMAR"}</SText>}
+        {/* {this.llamada && <SText>{"COLGAR" + " " + this.llamada?.start_time+ "DDD"}</SText>} */}
+        {this.llamada && <>
+          <SText>{this.state.estado}</SText>
+          <SText>{"COLGAR" + " "}</SText>
+          {/* <SText>{this.llamada.isMuted() ? "Unmuted" : "Mute"}</SText> */}
+        </>}
 
-      {/* <SText >{this.props.phone}</SText> */}
+        {/* <SText >{this.props.phone}</SText> */}
+      </SView>
     </SView>
   }
 }
