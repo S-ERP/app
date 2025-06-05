@@ -66,38 +66,50 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
     };
 
     time(text: string) {
+        const tiempoSeleccionado = this.state.tiempo_cliente;
+
+        // Convertimos el texto del botón a hora en formato "hh:mm"
+        let date = new SDate();
+        if (text.includes("min")) {
+            const minutos = parseInt(text.split(" ")[0]);
+            date.addMinute(minutos);
+        } else if (text.includes("hrs")) {
+            const horas = parseInt(text.split(" ")[0]);
+            date.addHour(horas);
+        }
+        const horaBoton = date.toString("hh:mm");
+
+        // Comparamos si la hora actual seleccionada es igual a la del botón
+        const esSeleccionado = tiempoSeleccionado === horaBoton;
+
         return (
             <SView col={"xs-2.4"} style={{ padding: 4 }}>
                 <SView
                     padding={5}
                     style={{
-                        backgroundColor: STheme.color.card,
+                        backgroundColor: esSeleccionado
+                            ? STheme.color.danger // Color de fondo cuando está seleccionado
+                            : STheme.color.card,   // Color por defecto
                         borderRadius: 12,
                         alignItems: "center",
                         justifyContent: "center",
                     }}
                     onPress={() => {
-                        let date = new SDate();
-
-                        if (text.includes("min")) {
-                            const minutos = parseInt(text.split(" ")[0]);
-                            date.addMinute(minutos);
-                        } else if (text.includes("hrs")) {
-                            const horas = parseInt(text.split(" ")[0]);
-                            date.addHour(horas);
-                        }
-
-                        const nuevaHora = date.toString("hh:mm");
-                        this.setTiempoCliente(nuevaHora);
+                        this.setTiempoCliente(horaBoton);
                     }}
                 >
-                    <SText fontSize={10} color={STheme.color.text} bold>
+                    <SText
+                        fontSize={10}
+                        color={esSeleccionado ? STheme.color.white : STheme.color.text}
+                        bold
+                    >
                         {text}
                     </SText>
                 </SView>
             </SView>
         );
     }
+
 
     render() {
         const { defaultData } = this.props;
