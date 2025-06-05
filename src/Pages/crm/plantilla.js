@@ -14,7 +14,6 @@ import Llamada from './Components/Llamada';
 import PopupRellamada from './Components/PopupRellamada';
 import PopupRazon from './Components/PopupRazon';
 import OrdenesConMismoNumero from './Components/OrdenesConMismoNumero';
-// import HorarioDeCliente from './Components/HorarioDeCliente';
 import Comentario from './Components/Comentario';
 import HistoricoMovimientos from './call/HistoricoMovimientos';
 import HorarioCliente from '../../Components/Ricardo/HorarioCliente';
@@ -197,7 +196,6 @@ export default class plantilla extends Component {
        </SView>
       </SView>
      </SView>
-
 
      <SView flex />
 
