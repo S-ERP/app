@@ -111,8 +111,8 @@ export default class HorarioCliente extends Component {
                     disableScroll={false}
                     data={[
                         { key: "Detalles", label: "Detalle", color: color_activado, icono: "addTarea" },
-                        { key: "Productos", label: "Productos", color: color_activado, icono: "Check" },
-                        { key: "Adicional", label: "Adicional", color: color_activado, icono: "World" },
+                        { key: "Productos", label: "Productos", color: color_activado, icono: "carritoproducto" },
+                        { key: "Adicional", label: "Adicional", color: color_activado, icono: "adicional" },
                     ]}
                     render={data => (
                         <SView

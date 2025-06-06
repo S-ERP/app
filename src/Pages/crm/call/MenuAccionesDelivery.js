@@ -103,7 +103,7 @@ export default class MenuAccionesDelivery extends Component<{ key_cliente_proyec
 
 
       <OptionItem icono={"cancelado"}
-        label={"rechazo"} color={STheme.color.danger}
+        label={"Rechazo"} color={STheme.color.danger}
         onPress={() => {
           PopupRazon.open(
             ({
