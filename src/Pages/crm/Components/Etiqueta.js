@@ -11,6 +11,10 @@ export default class Etiqueta extends Component<{ tipo_leads: string }> {
     }
     render() {
         if (!this.props.tipo_leads) return null;
+        const tipe = MDL.crm.clienteProyecto.STATES[this.props.tipo_leads] ?? {
+            name: this.props.tipo_leads,
+            color: ""
+        }
         const size = this.props.size || 10;
         return <SView
             {...this.props}
@@ -19,10 +23,10 @@ export default class Etiqueta extends Component<{ tipo_leads: string }> {
                 paddingStart: size / 2,
                 paddingEnd: size / 2,
                 borderRadius: size / 4,
-                backgroundColor: (MDL.crm.clienteProyecto.STATES[this.props.tipo_leads].color ?? STheme.color.text),
+                backgroundColor: (tipe.color ?? STheme.color.text),
                 ...(this.props.style ?? {})
             }}>
-            <SText fontSize={size} color={STheme.color.text} center>{MDL.crm.clienteProyecto.STATES[this.props.tipo_leads].name}</SText>
+            <SText fontSize={size} color={STheme.color.text} center>{tipe.name}</SText>
         </SView>
     }
 }
