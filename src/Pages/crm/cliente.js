@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SIcon, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import FormRegistroProyecto from './Components/FormRegistroProyecto';
 import MDL from '../../MDL';
 import { DinamicTable } from 'servisofts-table';
@@ -9,6 +9,7 @@ import FormRegistroCliente from './Components/FormRegistroCliente';
 import PButtom from '../../Components/PButtom';
 import FloatButtom from '../../Components/FloatButtom';
 import Config from '../../Config';
+import FloatMenu from '../../Components/FloatMenu';
 
 
 export default class cliente extends Component {
@@ -22,7 +23,7 @@ export default class cliente extends Component {
     }
 
     render() {
-        return <SPage title={"cliente"}>
+        return <SPage title={"Clientedd"}>
             {/* <SView width={140} height={26} center backgroundColor={STheme.color.card} style={{ borderRadius: 4 }}  >
     <SText fontSize={12} color={STheme.color.white} onPress={() => {
      FormRegistroCliente.open(({ onRegister: (e) => { this.DinamicTable.loadData(); } }))
@@ -35,7 +36,44 @@ export default class cliente extends Component {
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
                 language='es'
-                ref={ref => this.DinamicTable = ref} loadData={async () => { return await MDL.crm.cliente.getAll(); }} onSelect={(e) => { console.log("Selected project:", e.row); }} >
+                ref={ref => this.DinamicTable = ref} loadData={async () => { return await MDL.crm.cliente.getAll(); }} onSelect={(e) => { console.log("Selected project:", e.row); }}
+
+                    onSelect={(e) => {
+                                const { row, evt } = e;
+                                const nombreProyecto = row?.nombres || "El cliente";
+                                FloatMenu.open({
+                                    e: evt,
+                                    label: nombreProyecto,
+                                    options: [
+                                        // 🟩 Editar
+                                        {
+                                            label: "Editar", icon: <SIcon name="Edit" fill={STheme.color.text} />, onPress: () =>
+
+                                                FormRegistroCliente.open(({
+                                                    defaultData: e.row, onActualizar: (nuevoDato) => {
+                                                        this.DinamicTable.loadData();
+                                                        console.log("Cliente actualizado:", nuevoDato);
+                                                    }
+                                                }))
+
+                                         },
+                                        // 🟥 Eliminar
+                                        {
+                                            label: "Eliminar", icon: <SIcon name="Delete" fill={STheme.color.text} />, onPress: () => {
+                                                SPopup.confirm({
+                                                    title: "Eliminar tipo de leads",
+                                                    message: "¿Estás seguro de eliminar el leads?",
+                                                    onPress: () => {
+
+// sssssssssssssss
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    ]
+                                });
+                            }}
+            >
                 <DinamicTable.Col key={"key"} label='ID' width={30} data={(e) => e.index + 1} />
                 <DinamicTable.Col key={"nombres"} label='Nombre completo' width={120} data={(e) => e.row.nombres} />
                 <DinamicTable.Col key={"telefono"} label='Teléfono' width={90} data={(e) => e.row.telefono} />
@@ -48,7 +86,7 @@ export default class cliente extends Component {
                 <DinamicTable.Col key={"fecha_nacimiento"} label='Nacimiento' width={70} data={(e) => e.row.fecha_nacimiento} />
                 <DinamicTable.Col key={"sexo"} label='Sexo' width={60} data={(e) => e.row.sexo} />
                 {/* <DinamicTable.Col key={"descripcion"} label='Descripción' width={100} data={(e) => e.row.descripcion} /> */}
-                <DinamicTable.Col key={"editar"} label='Editar' width={100} data={(e) => ""}
+                {/* <DinamicTable.Col key={"editar"} label='Editar' width={100} data={(e) => ""}
                     customComponent={e => <SView row card padding={2} onPress={() => {
                         FormRegistroCliente.open(({
                             defaultData: e.row, onActualizar: (nuevoDato) => {
@@ -61,7 +99,7 @@ export default class cliente extends Component {
                         <SView width={4} />
                         <SText center color={STheme.color.green} >{"Actualizar"}</SText>
                     </SView>}
-                />
+                /> */}
                 <DinamicTable.Col key={"eliminar"} label='Delete'
                     width={100}
                     data={(e) => ""}
