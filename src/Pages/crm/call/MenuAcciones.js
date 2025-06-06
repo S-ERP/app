@@ -46,19 +46,44 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
         return <SView row center>
             <OptionItem icono={"confirmar"}
                 label={"Confirmado"} color={STheme.color.success} onPress={() => {
-                    if (window.confirm("¿Estás seguro de que quieres Confirmado, continuar?")) {
-                        console.log("Confirmado");
-                        MDL.crm.clienteProyecto.editar({
-                            key: this.pk,
-                            state: "confirmado",
-                            key_usuario_atiende: Model.usuario.Action.getKey(),
-                            key_tipo_movimiento_lead: "confirmado"
-                        }).then(e => {
-                            this.handleChange("confirmado", e);
-                        })
-                    } else {
-                        console.log("Cancelado");
-                    }
+
+                    SPopup.confirm({
+                        title: "Confirmar acción",
+                        message: "¿Estás seguro de que deseas proceder con *Confirmado*?",
+                        onPress: () => {
+                            console.log("✅ Confirmado");
+
+                            MDL.crm.clienteProyecto.editar({
+                                key: this.pk,
+                                state: "confirmado",
+                                key_usuario_atiende: Model.usuario.Action.getKey(),
+                                key_tipo_movimiento_lead: "confirmado"
+                            }).then((res) => {
+                                this.handleChange("confirmado", res);
+                                SNotification.send({
+                                    key: "confirmado_ok",
+                                    title: "Confirmado",
+                                    body: "El proceso fue confirmado correctamente.",
+                                    type: "success",
+                                    time: 1500
+                                });
+                            }).catch(err => {
+                                console.error("❌ Error al confirmar:", err);
+                                SNotification.send({
+                                    key: "confirmado_error",
+                                    title: "Error al confirmar",
+                                    body: "Ocurrió un error al confirmar. Intenta nuevamente.",
+                                    type: "error",
+                                    color: STheme.color.error,
+                                    time: 3000
+                                });
+                            });
+                        },
+                        onCancel: () => {
+                            console.log("❌ Confirmación cancelada por el usuario");
+                        }
+                    });
+
                 }} />
 
 
