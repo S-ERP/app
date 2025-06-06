@@ -85,10 +85,32 @@ import microfono, { ReactComponent as microfonoW } from "./svg/microfono.svg";
 
 import recall, { ReactComponent as recallW } from "./svg/recall.svg";
 import spam, { ReactComponent as spamW } from "./svg/spam.svg";
-import double,{ ReactComponent as doubleW } from "./svg/double.svg";
-import confirmar,{ ReactComponent as confirmarW } from "./svg/confirmar.svg";
-import cancelado,{ ReactComponent as canceladoW } from "./svg/cancelado.svg";
-import llamadafallida,{ ReactComponent as llamadafallidaW } from "./svg/llamadafallida.svg";
+import double, { ReactComponent as doubleW } from "./svg/double.svg";
+import confirmar, { ReactComponent as confirmarW } from "./svg/confirmar.svg";
+import cancelado, { ReactComponent as canceladoW } from "./svg/cancelado.svg";
+import llamadafallida, { ReactComponent as llamadafallidaW } from "./svg/llamadafallida.svg";
+
+
+import crmcliente, { ReactComponent as crmclienteW, } from "./svg/crm/cliente.svg";
+import crmdashboarddelivery, { ReactComponent as crmdashboarddeliveryW, } from "./svg/crm/dashboardDelivery.svg";
+import crmdashboardgeneral, { ReactComponent as crmdashboardgeneralW, } from "./svg/crm/dashboardGeneral.svg";
+import crmdashboardventas, { ReactComponent as crmdashboardventasW, } from "./svg/crm/dashboardVentas.svg";
+import crmgraficos, {
+  ReactComponent as crmgraficosW,
+} from "./svg/crm/graficos.svg";
+import crmllleads, { ReactComponent as crmllleadsW} from "./svg/crm/leads.svg";
+import crmllamada, {
+  ReactComponent as crmllamadaW,
+} from "./svg/crm/llamadas.svg";
+import crmmovimiento, {
+  ReactComponent as crmmovimientoW,
+} from "./svg/crm/movimiento.svg";
+import crmdproyecto, {
+  ReactComponent as crmdproyectoW,
+} from "./svg/crm/proyecto.svg";
+// import crmcliente, { ReactComponent as crmclienteW, } from "./svg/crm/cliente.svg";
+// import crmcliente, { ReactComponent as crmclienteW, } from "./svg/crm/cliente.svg";
+// import crmcliente, { ReactComponent as crmclienteW, } from "./svg/crm/cliente.svg";
 
 import blender from "./svg/blender";
 
@@ -184,12 +206,27 @@ export const svg = {
   confirmar: { Native: confirmar, Web: confirmarW },
   cancelado: { Native: cancelado, Web: canceladoW },
   llamadafallida: { Native: llamadafallida, Web: llamadafallidaW },
-  
+  crmcliente: { Native: crmcliente, Web: crmclienteW },
+  crmdashboardgeneral: {
+    Native: crmdashboardgeneral,
+    Web: crmdashboardgeneralW,
+  },
+  crmdashboarddelivery: {
+    Native: crmdashboarddelivery,
+    Web: crmdashboarddeliveryW,
+  },
+  crmdashboardventas: { Native: crmdashboardventas, Web: crmdashboardventasW },
+
+  crmdproyecto: { Native: crmdproyecto, Web: crmdproyectoW },
+  crmgraficos: { Native: crmgraficos, Web: crmgraficosW },
+  crmllamada: { Native: crmllamada, Web: crmllamadaW },
+  crmllleads: { Native: crmllleads, Web: crmllleadsW },
+  crmmovimiento: { Native: crmmovimiento, Web: crmmovimientoW },
 
   ...blender,
 };
 const Assets: SAssets = {
-  svg: svg,
+    svg: svg,
 };
 
 export type IconNamesApp = keyof typeof svg;
