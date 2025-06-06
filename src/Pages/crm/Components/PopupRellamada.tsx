@@ -192,12 +192,19 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                         // por si el usuario no usó el input para modificarlo
                         const data = { ...defaultData, ...e, tiempo_cliente: this.state.tiempo_cliente };
 
-                        console.log("todo " + JSON.stringify(data))
                         // const prom = data?.key ? MDL.crm.proyecto.editar(data) : MDL.crm.proyecto.registrar(data);
-
+                        console.log("Datos a enviar:", data);
+                        const fecha = new SDate(data.fecha + 'T' + data.tiempo_cliente + ":00", "yyyy-MM-ddThh:mm:ss");
+                        const dto = {
+                            fecha_rellamada: fecha.toString("yyyy-MM-ddThh:mm:ssTZD"),
+                            comentario: data.comentario,
+                            fijar: data.fijar
+                        }
+                        console.log("Fec:", dto);
+                        // return;
                         // SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
-                        if(this.props?.onRegister){
-                            this.props.onRegister(data);
+                        if (this.props?.onRegister) {
+                            this.props.onRegister(dto);
                         }
                         // prom
                         //     .then((res) => {

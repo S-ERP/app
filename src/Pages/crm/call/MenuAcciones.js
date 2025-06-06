@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SHr, SIcon, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SIcon, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import PopupRazon from '../Components/PopupRazon';
 import PopupRellamada from '../Components/PopupRellamada';
@@ -181,6 +181,7 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
                                 key: this.props.key_cliente_proyecto,
                                 state: "rellamada",
                                 key_tipo_movimiento_lead: "",
+                                fecha_rellamada: e.fecha_rellamada,
                                 key_usuario_atiende: Model.usuario.Action.getKey(),
                             }).then(e => {
                                 this.handleChange("rellamada", e);

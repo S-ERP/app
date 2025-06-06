@@ -20,33 +20,35 @@ import Model from '../../Model';
 import DashboardCard from './Components/DashboardCard';
 import Etiqueta from './Components/Etiqueta';
 
-// "nuevo"
-//     | "rellamada"
-//     | "llamada_fallida"
-//     | "en_espera"
-//     | "confirmado"
-//     | "cancelado"
-//     | "enviado"
-//     | "en_espera_pago"
-//     | "en_espera_pago_sin_respuesta"
-//     | "en_espera_pago_rellamada"
-//     | "rechazo"
-//     | "pagado"
-//     | "devuelto"
-//     | "spam"
-//     | "double"
-const stages = MDL.crm.clienteProyecto.stages;
 
-export default class Dashboard2 extends Component {
+export default class Dashboard extends Component {
     stageRefs = {};
     cardRefs = {};
-
     state = {
         cards: [],
         draggingCard: null,
         dragOffset: { x: 0, y: 0 },
         initialOffset: { x: 0, y: 0 },
     };
+
+    constructor(props) {
+        super(props);
+        //  = SNavigation.getParam("type") == "delivery" ?
+        this.dashboardType = SNavigation.getParam("type","");
+        this.stages = [
+            ...MDL.crm.clienteProyecto.stages.filter(a => a.key != "confirmado"),
+            ...MDL.crm.clienteProyecto.stagesDelivery
+        ]
+        if(this.dashboardType == "delivery") {
+            this.stages = MDL.crm.clienteProyecto.stagesDelivery;
+        }
+        if(this.dashboardType == "ventas") {
+            this.stages = MDL.crm.clienteProyecto.stages;
+        }
+
+    }
+
+
 
     componentDidMount() {
         MDL.crm.clienteProyecto.getAll().then(e => {
@@ -97,7 +99,7 @@ export default class Dashboard2 extends Component {
                     gestureEnd.absoluteY <= pageY + height;
 
                 if (isInside) {
-                    const stage = stages.find((s) => s.key === stageKey);
+                    const stage = this.stages.find((s) => s.key === stageKey);
                     if (stage) {
                         console.log("Card dropped in stage:", stage.name);
                         // Quiero detectar cual es el card mas cercano al drop para colocar el card que estoy soltando luego de el card mas cercano al drop
@@ -139,7 +141,7 @@ export default class Dashboard2 extends Component {
                                 let newCards = prev.cards.filter(c => c.key !== cardKey);
                                 const editCard = prev.cards.find(c => c.key === cardKey);
 
-                                const currentStage = stages.find(s => s.states.includes(editCard.state));
+                                const currentStage = this.stages.find(s => s.states.includes(editCard.state));
 
                                 const insertIndex = closestCardKey
                                     ? newCards.findIndex(c => c.key === closestCardKey) + 1
@@ -174,7 +176,7 @@ export default class Dashboard2 extends Component {
 
             const card = this.state.cards.find(c => c.key === cardKey);
 
-            const stage = stages.find(s => s.states.includes(card.state));
+            const stage = this.stages.find(s => s.states.includes(card.state));
             const stageref = this.stageRefs[stage.key];
             const stageNode = findNodeHandle(stageref.current);
 
@@ -205,10 +207,10 @@ export default class Dashboard2 extends Component {
     render() {
         return (
             <GestureHandlerRootView style={{ flex: 1 }}>
-                <SPage title={'Dashboard Ventas'} disableScroll>
+                <SPage title={'Dashboard '+this.dashboardType} disableScroll>
 
                     <ScrollView horizontal>
-                        {stages.map((stage) => {
+                        {this.stages.map((stage) => {
                             if (!this.stageRefs[stage.key]) {
                                 this.stageRefs[stage.key] = createRef();
                             }
