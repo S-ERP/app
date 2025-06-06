@@ -10,6 +10,7 @@ import PButtom from '../../Components/PButtom';
 import FloatButtom from '../../Components/FloatButtom';
 import Etiqueta from './Components/Etiqueta';
 import Alert from 'servisofts-component/img/Alert';
+import Config from '../../Config';
 
 
 export default class lead extends Component {
@@ -69,6 +70,11 @@ export default class lead extends Component {
 
             <DinamicTable
                 key='index' textStyle={{ fontSize: 10, color: STheme.color.lightGray }}
+                colors={Config.table.colors()}
+                cellStyle={Config.table.cellStyle()}
+                textStyle={Config.table.textStyle()}
+                language='es'
+
                 ref={ref => this.DinamicTable = ref} loadData={async () => { return await MDL.crm.clienteProyecto.getAll(); }} onSelect={(e) => { console.log("Selected project:", e.row); }}
                 loadInitialState={async () => {
                     return {
