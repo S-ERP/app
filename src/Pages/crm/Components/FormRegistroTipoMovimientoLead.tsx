@@ -43,7 +43,7 @@ export default class FormRegistroTipoMovimientoLead extends Component<FormRegist
     style={{ justifyContent: "space-between" }}
     inputs={{
      titulo: {
-      col: "xs-5.8",
+      col: "xs-12",
       label: "Titulo",
       required: true,
       defaultValue: defaultData?.titulo,
