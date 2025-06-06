@@ -11,23 +11,32 @@ export default class Producto extends Component {
 
 
     onChange() {
-        console.log("onChange");
-        new SThread(3000, "edit_carrito", true).start(() => {
-            MDL.crm.clienteProyecto.editarCarrito(this.props.cliente_proyecto.carrito, this.props.cliente_proyecto.key).then((resp) => {
-                this.props.cliente_proyecto.carrito = resp;
-                console.log("Carrito guardado", resp);
-                // if (resp) {
-                //     SNavigation.goBack();
-                // } else {
-                //     SNavigation.alert("Error al guardar el carrito");
-                // }
-            }).catch((e) => {
-                console.error(e);
-                // SNavigation.alert("Error al guardar el carrito");
-            });
+        this.unsavedChange = true;
+        new SThread(4000, "edit_carrito", true).start(() => {
+            this.saveChanges();
         })
     }
+    componentWillUnmount() { 
+        this.saveChanges();
+        // clearTimeout(this.timeout);
+    }
 
+    saveChanges() {
+        if (!this.unsavedChange) return;
+        this.unsavedChange = false;
+        MDL.crm.clienteProyecto.editarCarrito(this.props.cliente_proyecto.carrito, this.props.cliente_proyecto.key).then((resp) => {
+            this.props.cliente_proyecto.carrito = resp;
+            console.log("Carrito guardado", resp);
+            // if (resp) {
+            //     SNavigation.goBack();
+            // } else {
+            //     SNavigation.alert("Error al guardar el carrito");
+            // }
+        }).catch((e) => {
+            console.error(e);
+            // SNavigation.alert("Error al guardar el carrito");
+        });
+    }
     renderItem(item, item_in_carrito) {
         const producto_key = item?.key;
 

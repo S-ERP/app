@@ -91,7 +91,7 @@
     "servisofts-background-location": "^2.0.3",
     "servisofts-canvas": "^1.0.4",
     "servisofts-charts": "1.0.4",
-    "servisofts-component": "3.0.66",
+    "servisofts-component": "file:../../servisofts-component/dist",
     "servisofts-db": "^1.0.7",
     "servisofts-model": "^1.0.7",
     "servisofts-page": "^1.0.12",

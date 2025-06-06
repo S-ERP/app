@@ -28,4 +28,7 @@ export default class proyecto {
         const resp: any = await SSocket.sendPromise({ service: "crm", component: "proyecto", type: "editar", data: { ...data, estado: 0 }, key_usuario: Model.usuario.Action.getKey() });
         return resp.data;
     }
+
+    
+    
 }
