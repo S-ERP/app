@@ -39,10 +39,10 @@ export default class lead extends Component {
             return (
                 <SView key={index} col={"xs-12"} row  >
                     <SView flex>
-                        <SText fontSize={10} color={STheme.color.gray}>{nombre} {precio}bs x {cantidad}</SText>
+                        <SText fontSize={10} >{nombre} {precio}bs x {cantidad}</SText>
                     </SView>
                     <SView col={"xs-2"}>
-                        <SText fontSize={10} color={STheme.color.gray}>{subtotal}bs</SText>
+                        <SText fontSize={10} >{subtotal}bs</SText>
                     </SView>
                 </SView>
             );
@@ -50,20 +50,6 @@ export default class lead extends Component {
     }
 
 
-    // mostrarCarrito(carrito = []) {
-    //     if (!Array.isArray(carrito) || carrito.length === 0) {
-    //         return <SText fontSize={12} color='red'>Sin items</SText>;
-    //     }
-    //     const productos = carrito.map((item) => {
-    //         const nombre = item?.nombre ?? 'Producto';
-    //         const cantidad = item?.cantidad ?? 0;
-    //         const subtotal = item?.subtotal ?? 0;
-    //         const precio = cantidad > 0 ? (subtotal / cantidad).toFixed(2) : 0;
-    //         return `${nombre} X ${cantidad}     ${subtotal}bs`;
-    //         // return `${nombre} ${precio}bs X ${cantidad} ... ${subtotal}bs`;
-    //     }).join('\n');
-    //     return <SText fontSize={10} color='red'>{productos}</SText>;
-    // }
 
     render() {
         return <SPage title={"Tipos leads registrados"}>
@@ -108,12 +94,6 @@ export default class lead extends Component {
                     customComponent={e => {
                         return <Etiqueta tipo_leads={e.row.state}></Etiqueta>
                     }}
-
-                //          customComponent={e => {
-                //              const stage = MDL.crm.clienteProyecto.stages.find(stage => stage.states.includes(e.row.state))
-                //              return <SText fontSize={12} color={stage?.color}>{e.data}</SText>
-                // }}
-
                 />
                 <DinamicTable.Col key={"tipo_movimiento_lead"} label='Info' width={100} data={(e) => e.row.tipo_movimiento_lead?.titulo}
                 />
@@ -125,16 +105,12 @@ export default class lead extends Component {
                 <DinamicTable.Col key={"-fecha_edit"} label='PruebaAlvaro' width={100} dataType='date'
                     data={(e) => new SDate(e.row.fecha_edit ?? e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
                     customComponent={e => {
-                        return <SText color={STheme.color.gray} fontSize={12}>hace {new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} </SText>
                     }} />
 
 
-                {/* <SText color={STheme.color.gray} fontSize={12}>hace {new SDate(obj.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} </SText>
-                 */}
 
-                <DinamicTable.Col key={"nombres"} label='Nombres' width={80} data={(e) => e.row.cliente?.nombres} />
-                <DinamicTable.Col key={"apellidos"} label='Apellidos' width={80} data={(e) => e.row.cliente?.apellidos} />
-                <DinamicTable.Col key={"telefono"} label='Teléfono' width={80} data={(e) => e.row.cliente?.telefono} />
+                <DinamicTable.Col key={"nombres"} label='Nombre completo' width={140} data={(e) => e.row.cliente?.nombres} />
+                <DinamicTable.Col key={"telefono"} label='Teléfono' width={120} data={(e) => e.row.cliente?.telefono} />
                 <DinamicTable.Col key={"correo"} label='Correo' width={80} data={(e) => e.row.cliente?.correo} />
                 <DinamicTable.Col key={"nit"} label='NIT' width={80} data={(e) => e.row.cliente?.nit} />
                 <DinamicTable.Col key={"razon_social"} label='Razón Social' width={80} data={(e) => e.row.cliente?.razon_social} />

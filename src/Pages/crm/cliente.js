@@ -36,9 +36,8 @@ export default class cliente extends Component {
                 textStyle={Config.table.textStyle()}
                 language='es'
                 ref={ref => this.DinamicTable = ref} loadData={async () => { return await MDL.crm.cliente.getAll(); }} onSelect={(e) => { console.log("Selected project:", e.row); }} >
-                <DinamicTable.Col key={"key"} label='ID' width={20} data={(e) => e.index + 1} />
-                <DinamicTable.Col key={"nombres"} label='Nombres' width={80} data={(e) => e.row.nombres} />
-                <DinamicTable.Col key={"apellidos"} label='Apellidos' width={80} data={(e) => e.row.apellidos} />
+                <DinamicTable.Col key={"key"} label='ID' width={30} data={(e) => e.index + 1} />
+                <DinamicTable.Col key={"nombres"} label='Nombre completo' width={120} data={(e) => e.row.nombres} />
                 <DinamicTable.Col key={"telefono"} label='Teléfono' width={90} data={(e) => e.row.telefono} />
                 <DinamicTable.Col key={"correo"} label='Correo' width={150} data={(e) => e.row.correo} />
                 <DinamicTable.Col key={"nit"} label='NIT' width={90} data={(e) => e.row.nit} />
