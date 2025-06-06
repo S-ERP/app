@@ -37,7 +37,7 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
   render() {
     const space = 16;
     return <SView row center>
-      <OptionItem icono={"addTarea"}
+      <OptionItem icono={"confirmar"}
         label={"Confirmado"} color={STheme.color.success} onPress={() => {
           if (window.confirm("¿Estás seguro de que quieres Confirmado, continuar?")) {
             console.log("Confirmado");
@@ -49,9 +49,9 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
           }
         }} />
 
-      
 
-      <OptionItem icono={"addTarea"}
+
+      <OptionItem icono={"confirmar"}
         label={"Entrega Express"} color={STheme.color.success} onPress={() => {
           if (window.confirm("¿Estás seguro de que quieres Entrega Express, continuar?")) {
             console.log("Entrega Express");
@@ -63,9 +63,9 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
           }
         }} />
 
-      
 
-      <OptionItem icono={"Check"}
+
+      <OptionItem icono={"cancelado"}
         label={"Cancelado"}
         color={STheme.color.gray}
         onPress={() => {
@@ -84,9 +84,9 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
             }))
         }} />
 
-      
 
-      <OptionItem icono={"World"}
+
+      <OptionItem icono={"double"}
         label={"Doble"} color={STheme.color.gray} onPress={() => {
           PopupRazon.open(
             ({
@@ -103,9 +103,9 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
             }))
         }} />
 
-      
 
-      <OptionItem icono={"Egreso"}
+
+      <OptionItem icono={"spam"}
         label={"Spam"} color={STheme.color.gray}
         onPress={() => {
           PopupRazon.open(
@@ -123,9 +123,9 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
             }))
         }} />
 
-      
 
-      <OptionItem icono={"tpGa"}
+
+      <OptionItem icono={"recall"}
         label={"Llamar luego"} color={STheme.color.warning}
         onPress={() => {
           PopupRellamada.open(({
@@ -143,9 +143,9 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
 
         }} />
 
-      
 
-      <OptionItem icono={"addTarea"} label={"Llamada fallida"} color={STheme.color.gray} onPress={() => {
+
+      <OptionItem icono={"llamadafallida"} label={"Llamada fallida"} color={STheme.color.gray} onPress={() => {
         PopupRazon.open(
           ({
             tipo: "llamada_fallida",
