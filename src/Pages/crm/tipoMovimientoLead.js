@@ -32,7 +32,7 @@ export default class tipoMovimientoLead extends Component {
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
                 language='es'
-        selectType='multiple'
+                selectType='single'
                 loadInitialState={async () => {
                     return {
                         sorters: [{
@@ -45,7 +45,7 @@ export default class tipoMovimientoLead extends Component {
                 ref={ref => this.DinamicTable = ref} loadData={async () => { return await MDL.crm.tipoMovimientoLead.getAll(); }} onSelect={(e) => { console.log("Selected project:", e.row); }}
                 onSelect={(e) => {
                     const { row, evt } = e;
-                    const nombreProyecto = "LEAD: "+row?.titulo || "El tipo leads";
+                    const nombreProyecto = "LEAD: " + row?.titulo || "El tipo leads";
                     FloatMenu.open({
                         e: evt,
                         label: nombreProyecto,
@@ -97,7 +97,7 @@ export default class tipoMovimientoLead extends Component {
                 <DinamicTable.Col key={"descripcion"} label='descripcion' width={200} data={(e) => e.row.descripcion} />
                 <DinamicTable.Col key={"tipo"} label='tipo' width={90} data={(e) => e.row.tipo}
                     customComponent={e => {
-                        return <Etiqueta  tipo_leads={e.row.tipo}></Etiqueta>
+                        return <Etiqueta tipo_leads={e.row.tipo}></Etiqueta>
                     }}
                 />
             </DinamicTable>

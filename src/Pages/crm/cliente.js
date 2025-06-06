@@ -23,7 +23,7 @@ export default class cliente extends Component {
     }
 
     render() {
-        return <SPage title={"Clientedd"}>
+        return <SPage title={"Cliente"}>
             {/* <SView width={140} height={26} center backgroundColor={STheme.color.card} style={{ borderRadius: 4 }}  >
     <SText fontSize={12} color={STheme.color.white} onPress={() => {
      FormRegistroCliente.open(({ onRegister: (e) => { this.DinamicTable.loadData(); } }))
@@ -41,7 +41,8 @@ export default class cliente extends Component {
 
                 onSelect={(e) => {
                     const { row, evt } = e;
-                    const nombreCliente = row?.nombres || "El cliente";
+                    const nombreCliente = "CLIENTE: " + (row?.nombres ?? "");
+                    // const nombreCliente = "CLIENTE: "+ row?.nombres ?? "El cliente";
                     FloatMenu.open({
                         e: evt,
                         label: nombreCliente,
