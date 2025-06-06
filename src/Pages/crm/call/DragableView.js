@@ -35,7 +35,9 @@ export default class DraggableView extends Component<View["props"]> {
         return (<Animated.View
             {...this.panResponder.panHandlers}
             style={[this.state.pan.getLayout(), styles.box, this.props.style]}
-        />
+        >
+            {this.props.children}
+        </Animated.View>
         );
     }
 }
