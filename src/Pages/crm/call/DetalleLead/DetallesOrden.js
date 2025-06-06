@@ -38,6 +38,7 @@ export default class DetallesOrden extends Component {
     };
     render() {
         return <SForm
+            ref={ref => this.form = ref}
             col={"xs-12"} row style={{ justifyContent: "space-between" }}
             inputProps={{
                 style: { height: 40, borderColor: STheme.color.gray, paddingStart: 4, },
@@ -60,7 +61,10 @@ export default class DetallesOrden extends Component {
                         if (e == this.props.mdl_clienteProyecto_cliente?.departamento) return;
                         this.handleClienteChange("departamento", e)
                         this.handleClienteChange("provincia", "");
-                    }
+                    },
+                    // onBlur: e => {
+                    //     this.form.focus("provincia");
+                    // }
                 },
                 provincia: {
                     label: "Provincia", col: "xs-3.5", required: true,

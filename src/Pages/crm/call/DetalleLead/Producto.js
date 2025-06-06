@@ -24,6 +24,7 @@ export default class Producto extends Component {
     saveChanges() {
         if (!this.unsavedChange) return;
         this.unsavedChange = false;
+
         MDL.crm.clienteProyecto.editarCarrito(this.props.cliente_proyecto.carrito, this.props.cliente_proyecto.key).then((resp) => {
             this.props.cliente_proyecto.carrito = resp;
             console.log("Carrito guardado", resp);
@@ -46,6 +47,9 @@ export default class Producto extends Component {
             item_in_carrito.subtotal = (item_in_carrito.cantidad * producto.precio) || 0;
         }
 
+        if(item_in_carrito.nombre !== producto?.nombre){
+            item_in_carrito.nombre = producto?.nombre || "";
+        }
         return <SView key={producto_key} row center style={{ width: "100%", marginBottom: 8, height: 65 }}>
             <SView width={20} height={20}>
                 <SInput type="checkBox" value={active} onChangeText={e => {
@@ -157,6 +161,7 @@ export default class Producto extends Component {
                     key_proyecto_producto: proyecto_producto.key,
                     key_producto: proyecto_producto.key_producto,
                     key_cliente_proyecto: this.props.cliente_proyecto.key,
+                    nombre: proyecto_producto?.producto?.nombre || "",
                     cantidad: 0,
                     subtotal: proyecto_producto?.producto?.precio || 0,
                 };

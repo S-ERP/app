@@ -143,7 +143,7 @@ export default class clienteProyecto {
     nuevo: "#9b59b6", // violeta
     rellamada: "#2980b9", // azul
     vencido: "#f1c40f", // amarillo
-    llamada_fallida: "#e67e22", // naranja
+    llamada_fallida: "#666666", 
     en_proceso: "#e67e22", // ámbar
     confirmado: "#27ae60", // verde
     pagado: "#2ecc71", // verde claro

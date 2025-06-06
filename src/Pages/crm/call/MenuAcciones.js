@@ -3,6 +3,7 @@ import { SHr, SIcon, SNavigation, SPage, SText, STheme, SView } from 'servisofts
 import MDL from '../../../MDL';
 import PopupRazon from '../Components/PopupRazon';
 import PopupRellamada from '../Components/PopupRellamada';
+import Model from '../../../Model';
 
 
 const OptionItem = ({ key, label, color, icono, onPress }) => {
@@ -33,6 +34,12 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
     data: null,
   }
 
+  handleChange = (type, e) => {
+    if (this.props.onChange) {
+      this.props.onChange(type, e);
+      return;
+    }
+  }
 
   render() {
     const space = 16;
@@ -41,8 +48,13 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
         label={"Confirmado"} color={STheme.color.success} onPress={() => {
           if (window.confirm("¿Estás seguro de que quieres Confirmado, continuar?")) {
             console.log("Confirmado");
-            MDL.crm.clienteProyecto.editar({ key: this.pk, state: "confirmado", key_tipo_movimiento_lead: "confirmado" }).then(e => {
-              SNavigation.goBack();
+            MDL.crm.clienteProyecto.editar({
+              key: this.pk,
+              state: "confirmado",
+              key_usuario_atiende: Model.usuario.Action.getKey(),
+              key_tipo_movimiento_lead: "confirmado"
+            }).then(e => {
+              this.handleChange("confirmado", e);
             })
           } else {
             console.log("Cancelado");
@@ -55,8 +67,13 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
         label={"Entrega Express"} color={STheme.color.success} onPress={() => {
           if (window.confirm("¿Estás seguro de que quieres Entrega Express, continuar?")) {
             console.log("Entrega Express");
-            MDL.crm.clienteProyecto.editar({ key: this.pk, state: "entrega_express", key_tipo_movimiento_lead: "entrega_express" }).then(e => {
-              SNavigation.goBack();
+            MDL.crm.clienteProyecto.editar({
+              key: this.pk,
+              state: "entrega_express",
+              key_tipo_movimiento_lead: "entrega_express",
+              key_usuario_atiende: Model.usuario.Action.getKey(),
+            }).then(e => {
+              this.handleChange("entrega_express", e);
             })
           } else {
             console.log("Cancelado");
@@ -76,9 +93,10 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
                 MDL.crm.clienteProyecto.editar({
                   key: this.props.key_cliente_proyecto,
                   state: "cancelado",
-                  key_tipo_movimiento_lead: e.selectedOption.key
+                  key_tipo_movimiento_lead: e.selectedOption.key,
+                  key_usuario_atiende: Model.usuario.Action.getKey(),
                 }).then(e => {
-                  SNavigation.goBack();
+                  this.handleChange("cancelado", e);
                 })
               }
             }))
@@ -95,9 +113,10 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
                 MDL.crm.clienteProyecto.editar({
                   key: this.props.key_cliente_proyecto,
                   state: "double",
-                  key_tipo_movimiento_lead: e.selectedOption.key
+                  key_tipo_movimiento_lead: e.selectedOption.key,
+                  key_usuario_atiende: Model.usuario.Action.getKey(),
                 }).then(e => {
-                  SNavigation.goBack();
+                  this.handleChange("double", e);
                 })
               }
             }))
@@ -115,9 +134,10 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
                 MDL.crm.clienteProyecto.editar({
                   key: this.props.key_cliente_proyecto,
                   state: "spam",
-                  key_tipo_movimiento_lead: e.selectedOption.key
+                  key_tipo_movimiento_lead: e.selectedOption.key,
+                  key_usuario_atiende: Model.usuario.Action.getKey(),
                 }).then(e => {
-                  SNavigation.goBack();
+                  this.handleChange("spam", e);
                 })
               }
             }))
@@ -133,9 +153,10 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
               MDL.crm.clienteProyecto.editar({
                 key: this.props.key_cliente_proyecto,
                 state: "rellamada",
-                key_tipo_movimiento_lead: ""
+                key_tipo_movimiento_lead: "",
+                key_usuario_atiende: Model.usuario.Action.getKey(),
               }).then(e => {
-                SNavigation.goBack();
+                this.handleChange("rellamada", e);
               })
 
             }
@@ -153,9 +174,10 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
               MDL.crm.clienteProyecto.editar({
                 key: this.props.key_cliente_proyecto,
                 state: "llamada_fallida",
-                key_tipo_movimiento_lead: e.selectedOption.key
+                key_tipo_movimiento_lead: e.selectedOption.key,
+                key_usuario_atiende: Model.usuario.Action.getKey(),
               }).then(e => {
-                SNavigation.goBack();
+                this.handleChange("llamada_fallida", e);
               })
             }
           }))

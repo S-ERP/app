@@ -1,5 +1,5 @@
 import React from "react";
-import { GestureResponderEvent, TouchableOpacityProps } from "react-native";
+import { Dimensions, GestureResponderEvent, TouchableOpacityProps } from "react-native";
 import { SHr, SIcon, SPage, SPopup, SText, STheme, SView, SViewProps } from "servisofts-component";
 
 type Option = {
@@ -17,6 +17,12 @@ export default class FloatMenu extends React.Component<FloatMenuProps> {
 
     static open(props: FloatMenuProps) {
         const { e } = props;
+
+        let top = e.nativeEvent.pageY;
+        if(top+200 > Dimensions.get("window").height) {
+            top = Dimensions.get("window").height - 200;
+        }
+
         SPopup.open({
             key: "popup_menu_alvaro",
             type: "2",
@@ -31,7 +37,7 @@ export default class FloatMenu extends React.Component<FloatMenuProps> {
                     style={[
                         {
                             position: "absolute",
-                            top: e.nativeEvent.pageY,
+                            top: top,
                             left: e.nativeEvent.pageX,
                             backgroundColor: STheme.color.background,
                             padding: 8,

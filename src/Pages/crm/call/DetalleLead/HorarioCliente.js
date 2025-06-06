@@ -54,36 +54,7 @@ export default class HorarioCliente extends Component {
     }
 
 
-    renderActiveForm() {
-        const { activeFormTab, clienteProyecto } = this.state;
-        if (!clienteProyecto?.cliente) return <SLoad />;
 
-        if (activeFormTab === "Detalles") {
-            return (
-                <SView col={"xs-12"} row>
-                    <DetallesOrden mdl_clienteProyecto_cliente={clienteProyecto.cliente} />
-                </SView>
-            );
-        }
-
-        if (activeFormTab === "Productos") {
-            return (
-                <SView col={"xs-12"} row>
-                    <Producto cliente_proyecto={clienteProyecto} />
-                </SView>
-            );
-        }
-
-        if (activeFormTab === "Adicional") {
-            return (
-                <SView col={"xs-12"} row>
-                    <Adicional />
-                </SView>
-            );
-        }
-
-        return null;
-    }
 
     handleNextTab = () => {
         const currentIdx = formTabs.indexOf(this.state.activeFormTab);
@@ -102,19 +73,18 @@ export default class HorarioCliente extends Component {
         const { fechaHora } = this.state;
         return <>
             <SView col={"xs-12"} row center>
-                <SView col="xs-6">
+
+                <SView>
                     <SText fontSize={10}>Horario de cliente</SText>
                     <SText fontSize={28}>{fechaHora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         {/* <SText fontSize={28}>{fechaHora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })} */}
                     </SText>
                 </SView>
-                <SView col="xs-6" style={{ alignItems: "flex-end" }}>
+                <SView flex />
+                <SView style={{ alignItems: "flex-end" }}>
                     <SView style={{ flexDirection: "row", alignItems: "flex-start" }}>
 
 
-                        <SView style={{ marginRight: 16 }}>
-                            <Etiqueta size={16} tipo_leads={this.state?.clienteProyecto?.state} ></Etiqueta>
-                        </SView>
                         <SView>
                             <SText fontSize={10}>ID de la orden</SText>
                             <SText fontSize={28}  >{this.state?.clienteProyecto?.codigo} </SText>
@@ -123,10 +93,14 @@ export default class HorarioCliente extends Component {
                         </SView>
                     </SView>
                 </SView>
+                <SHr />
+
+                <SView col={"xs-12"}>
+                    <Etiqueta size={14} tipo_leads={this.state?.clienteProyecto?.state} ></Etiqueta>
+                </SView>
             </SView>
 
             <SHr height={12} />
-
             <SView col={"xs-12"} center height={36}  >
                 <SList
                     horizontal
@@ -161,6 +135,36 @@ export default class HorarioCliente extends Component {
         </>
     }
 
+    renderActiveForm() {
+        const { activeFormTab, clienteProyecto } = this.state;
+        if (!clienteProyecto?.cliente) return <SLoad />;
+
+        if (activeFormTab === "Detalles") {
+            return (
+                <SView col={"xs-12"} row>
+                    <DetallesOrden mdl_clienteProyecto_cliente={clienteProyecto.cliente} />
+                </SView>
+            );
+        }
+
+        if (activeFormTab === "Productos") {
+            return (
+                <SView col={"xs-12"} row>
+                    <Producto cliente_proyecto={clienteProyecto} />
+                </SView>
+            );
+        }
+
+        if (activeFormTab === "Adicional") {
+            return (
+                <SView col={"xs-12"} row>
+                    <Adicional cliente_proyecto={clienteProyecto} />
+                </SView>
+            );
+        }
+
+        return null;
+    }
     footer() {
         return <SView col={"xs-12"} row center style={{
             justifyContent: "space-around"

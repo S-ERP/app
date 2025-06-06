@@ -3,6 +3,7 @@ import { View, Text, SectionList } from 'react-native';
 import { SDate, SImage, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Etiqueta from '../Components/Etiqueta';
+import MDL from '../../../MDL';
 // import Etiqueta from '../../../Components/Etiqueta';
 
 export default class HistoricoMovimientos extends Component {
@@ -20,8 +21,15 @@ export default class HistoricoMovimientos extends Component {
             component: "cliente_proyecto",
             type: "getHistoricoByKey",
             key: this.props.key_cliente_proyecto
-        }).then(e => {
+        }).then(async (e) => {
+
+            const tipos_movimientos = await MDL.crm.tipoMovimientoLead.getAll()
             const historico = e.data;
+            e.data.forEach(item => {
+                if(item?.data?.key_tipo_movimiento_lead){
+                    item.tipo_movimiento = tipos_movimientos.find(tipo => tipo.key === item.data.key_tipo_movimiento_lead);
+                }
+            })
             const sections = this.groupByDate(historico);
             this.setState({ historico, sections });
         }).catch(error => {
@@ -87,9 +95,10 @@ export default class HistoricoMovimientos extends Component {
                             <SView width={8} />
                             <SText flex numberOfLines={1}>
                                 <Etiqueta tipo_leads={item?.state}></Etiqueta>
-
-                                {/* <SText clean>{item.state}</SText> */}
+                                <SText clean >{" "}</SText>
                                 <SText clean fontSize={12} numberOfLines={1} color={STheme.color.lightGray}>{item?.data?.comentario}</SText>
+                                <SText clean >{" "}</SText>
+                                <SText clean fontSize={12} numberOfLines={1} color={STheme.color.lightGray}>{item?.tipo_movimiento?.descripcion}</SText>
                             </SText>
 
                         </SView>

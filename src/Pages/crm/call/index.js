@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SIcon, SNavigation, SPage, SText, STheme, SThread, SView } from 'servisofts-component';
+import { SHr, SIcon, SLoad, SNavigation, SPage, SText, STheme, SThread, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SMD from '../../../SMD';
 import OrdenesConMismoNumero from '../Components/OrdenesConMismoNumero';
@@ -41,49 +41,62 @@ export default class index extends Component {
 
     render() {
         const { proyecto, state, fecha_on, fecha_edit } = this.state.data || {};
+        if (this.state.data == null) return <SPage title={"Call"} >
+            <SLoad />
+        </SPage >
         return <SPage title={"Call"} header={<SView col={"xs-12"} center>
             <SHr />
-            <MenuAcciones key_cliente_proyecto={this.pk} />
+            {MDL.crm.clienteProyecto.stages[0].states.includes(state) && <SText padding={8} card
+             onPress={() => {
+                MDL.crm.clienteProyecto.editar({
+                    key: this.pk,
+                    state: "en_proceso",
+                    key_usuario_atiende: Model.usuario.Action.getKey(),
+                }).then(() => {
+                    this.componentDidMount();
+                })
+            }}>{"Iniciar llamada"}</SText>}
+            {state == "en_proceso" && <MenuAcciones key_cliente_proyecto={this.pk} />}
             <SHr />
 
-        </SView>}
+        </SView >}
 
         >
-            <SView col={"xs-12"} center>
-                {!this.state?.data?.fecha_edit || this.state?.data?.state != "en_proceso" ? null : <>
-                    <SHr h={16} />
-                    <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on}
-                        onTimeEnd={() => {
-                            new SThread(5000, true, "ContadorTiempoRestante").start(() => {
-                                this.componentDidMount();
-                            })
-                        }} />
-                    <SHr h={16} />
-                    <Llamada phone={this.state?.data?.cliente?.telefono} />
-                </>}
-                <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <CardContent>
-                        <HorarioCliente
-                            ref={ref => this.horarioDeCliente = ref}
-                            key_cliente_proyecto={this.pk}
-                            clienteProyecto={this.state?.data}
-                            onChangeCliente={(e) => {
+    <SView col={"xs-12"} center>
+        {!this.state?.data?.fecha_edit || this.state?.data?.state != "en_proceso" ? null : <>
+            <SHr h={16} />
+            <ContadorTiempoRestante key_cliente_proyecto={this.pk} fecha_start={fecha_edit ?? fecha_on}
+                onTimeEnd={() => {
+                    new SThread(5000, true, "ContadorTiempoRestante").start(() => {
+                        this.componentDidMount();
+                    })
+                }} />
+            <SHr h={16} />
+            <Llamada phone={this.state?.data?.cliente?.telefono} />
+        </>}
+        <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
+            <CardContent>
+                <HorarioCliente
+                    ref={ref => this.horarioDeCliente = ref}
+                    key_cliente_proyecto={this.pk}
+                    clienteProyecto={this.state?.data}
+                    onChangeCliente={(e) => {
 
-                            }}
-                        />
-                    </CardContent>
-                    <CardContent>
-                        <SView col={"xs-12"} padding={8}>
-                            <SMD padding={0} fontSize={12} space={0}>{proyecto?.guion}</SMD>
-                        </SView>
-                    </CardContent>
-                    <CardContent>
-                        <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />
-                        <Comentario data={this.state.data} />
-                        <HistoricoMovimientos key_cliente_proyecto={this.pk} />
-                    </CardContent>
+                    }}
+                />
+            </CardContent>
+            <CardContent>
+                <SView col={"xs-12"} padding={8}>
+                    <SMD padding={0} fontSize={12} space={0}>{proyecto?.guion}</SMD>
                 </SView>
-            </SView>
+            </CardContent>
+            <CardContent>
+                <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />
+                <Comentario data={this.state.data} />
+                <HistoricoMovimientos key_cliente_proyecto={this.pk} />
+            </CardContent>
+        </SView>
+    </SView>
         </SPage >
     }
 }
