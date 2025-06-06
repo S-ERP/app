@@ -191,30 +191,30 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
 
 
 
-                        if (!comentario) {
-                            SNotification.send({
-                                key: "formulario_error_comentario",
-                                title: "Falta comentario",
-                                body: "⚠️ Debes escribir algo en el campo comentario.",
-                                type: "warning",
-                                time: 3000,
-                            });
-                            this.form?.focus?.("comentario");
-                            return;
-                        }
+                        // if (!comentario) {
+                        //     SNotification.send({
+                        //         key: "formulario_error_comentario",
+                        //         title: "Falta comentario",
+                        //         body: "⚠️ Debes escribir algo en el campo comentario.",
+                        //         type: "warning",
+                        //         time: 3000,
+                        //     });
+                        //     this.form?.focus?.("comentario");
+                        //     return;
+                        // }
 
-                        // Verificar si se seleccionó un tiempo
+                        // // Verificar si se seleccionó un tiempo
                         const tiempo_cliente = this.state.tiempo_cliente;
-                        if (!tiempo_cliente) {
-                            SNotification.send({
-                                key: "formulario_error_tiempo",
-                                title: "Tiempo no seleccionado",
-                                body: "⏱️ Debes seleccionar un tiempo antes de continuar.",
-                                type: "warning",
-                                time: 3000,
-                            });
-                            return;
-                        }
+                        // if (!tiempo_cliente) {
+                        //     SNotification.send({
+                        //         key: "formulario_error_tiempo",
+                        //         title: "Tiempo no seleccionado",
+                        //         body: "⏱️ Debes seleccionar un tiempo antes de continuar.",
+                        //         type: "warning",
+                        //         time: 3000,
+                        //     });
+                        //     return;
+                        // }
 
 
 
