@@ -193,28 +193,28 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                         const data = { ...defaultData, ...e, tiempo_cliente: this.state.tiempo_cliente };
 
                         console.log("todo " + JSON.stringify(data))
-                        const prom = data?.key ? MDL.crm.proyecto.editar(data) : MDL.crm.proyecto.registrar(data);
+                        // const prom = data?.key ? MDL.crm.proyecto.editar(data) : MDL.crm.proyecto.registrar(data);
 
                         SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
 
-                        prom
-                            .then((res) => {
-                                SNotification.send({
-                                    key: "registro",
-                                    title: data?.key ? "Actualizado" : "Registrado",
-                                    color: STheme.color.success,
-                                    time: 5000,
-                                });
-                                if (data?.key) {
-                                    this.props.onActualizar?.(res);
-                                } else {
-                                    this.props.onRegister?.(res);
-                                }
-                                SPopup.close("ppuprellamada");
-                            })
-                            .catch((err) => {
-                                SNotification.send({ key: "registro", title: "Error", body: err, color: STheme.color.danger });
-                            });
+                        // prom
+                        //     .then((res) => {
+                        //         SNotification.send({
+                        //             key: "registro",
+                        //             title: data?.key ? "Actualizado" : "Registrado",
+                        //             color: STheme.color.success,
+                        //             time: 5000,
+                        //         });
+                        //         if (data?.key) {
+                        //             this.props.onActualizar?.(res);
+                        //         } else {
+                        //             this.props.onRegister?.(res);
+                        //         }
+                        //         SPopup.close("ppuprellamada");
+                        //     })
+                        //     .catch((err) => {
+                        //         SNotification.send({ key: "registro", title: "Error", body: err, color: STheme.color.danger });
+                        //     });
                     }}
                 />
                 <SHr />
