@@ -22,6 +22,48 @@ export default class lead extends Component {
         // })
     }
 
+
+    mostrarCarrito(carrito = []) {
+        if (!Array.isArray(carrito) || carrito.length === 0) {
+            return null;
+            // return <SText fontSize={9} color={STheme.color.gray}>Sin items</SText>;
+        }
+
+        return carrito.map((item, index) => {
+            const nombre = item?.nombre ?? 'Producto';
+            const cantidad = item?.cantidad ?? 0;
+            const subtotal = item?.subtotal ?? 0;
+            const precio = (cantidad > 0) ? (subtotal / cantidad).toFixed(2) : 0;
+
+            return (
+                <SView key={index} col={"xs-12"} row  >
+                    <SView flex>
+                        <SText fontSize={10} color={STheme.color.gray}>{nombre} {precio}bs x {cantidad}</SText>
+                    </SView>
+                    <SView col={"xs-2"}>
+                        <SText fontSize={10} color={STheme.color.gray}>{subtotal}bs</SText>
+                    </SView>
+                </SView>
+            );
+        });
+    }
+
+
+    // mostrarCarrito(carrito = []) {
+    //     if (!Array.isArray(carrito) || carrito.length === 0) {
+    //         return <SText fontSize={12} color='red'>Sin items</SText>;
+    //     }
+    //     const productos = carrito.map((item) => {
+    //         const nombre = item?.nombre ?? 'Producto';
+    //         const cantidad = item?.cantidad ?? 0;
+    //         const subtotal = item?.subtotal ?? 0;
+    //         const precio = cantidad > 0 ? (subtotal / cantidad).toFixed(2) : 0;
+    //         return `${nombre} X ${cantidad}     ${subtotal}bs`;
+    //         // return `${nombre} ${precio}bs X ${cantidad} ... ${subtotal}bs`;
+    //     }).join('\n');
+    //     return <SText fontSize={10} color='red'>{productos}</SText>;
+    // }
+
     render() {
         return <SPage title={"Tipos leads registrados"}>
 
@@ -42,10 +84,20 @@ export default class lead extends Component {
                 <DinamicTable.Col key={"-key"} label='Ver' width={40} data={(e) => e.row?.proyecto?.nombre}
                     customComponent={e => <SView row center card padding={2} onPress={() => { SNavigation.navigate("/crm/call", { key: e.row.key }) }}>
                         <SIcon name='Eyes' height={14} fill={STheme.color.lightGray} ></SIcon>
-                    </SView>}/>
+                    </SView>} />
 
                 <DinamicTable.Col key={"proyecto_nombre"} label='Proyecto nombre' width={120} data={(e) => e.row?.proyecto?.nombre} />
                 <DinamicTable.Col key={"proyecto_descripcion"} label='Proyecto descripcion' width={100} data={(e) => e.row?.proyecto?.descripcion} />
+
+                <DinamicTable.Col key={"-keyCarro"} label='Carrito' width={180} data={(e) => e.row?.carrito}
+
+
+                    customComponent={e => <SView row center padding={2}>
+
+                        {this.mostrarCarrito(e.row.carrito)}
+                    </SView>} />
+
+
                 <DinamicTable.Col key={"state"} label='Leads' width={80} data={(e) => e.row.state}
                     customComponent={e => {
                         return <Etiqueta tipo_leads={e.row.state}></Etiqueta>
@@ -63,6 +115,17 @@ export default class lead extends Component {
                 <DinamicTable.Col key={"fecha_edit"} label='Fecha Leads' width={120} dataType='date'
                     data={(e) => new SDate(e.row.fecha_edit ?? e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
                     dateFormat='yyyy-MM-dd hh:mm' />
+
+                <DinamicTable.Col key={"-fecha_edit"} label='PruebaAlvaro' width={100} dataType='date'
+                    data={(e) => new SDate(e.row.fecha_edit ?? e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
+                    customComponent={e => {
+                        return <SText color={STheme.color.gray} fontSize={12}>hace {new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} </SText>
+                    }} />
+
+
+                {/* <SText color={STheme.color.gray} fontSize={12}>hace {new SDate(obj.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())} </SText>
+                 */}
+
                 <DinamicTable.Col key={"nombres"} label='Nombres' width={80} data={(e) => e.row.cliente?.nombres} />
                 <DinamicTable.Col key={"apellidos"} label='Apellidos' width={80} data={(e) => e.row.cliente?.apellidos} />
                 <DinamicTable.Col key={"telefono"} label='Teléfono' width={80} data={(e) => e.row.cliente?.telefono} />
