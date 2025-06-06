@@ -16,7 +16,7 @@ export default class Producto extends Component {
             this.saveChanges();
         })
     }
-    componentWillUnmount() { 
+    componentWillUnmount() {
         this.saveChanges();
         // clearTimeout(this.timeout);
     }
@@ -41,13 +41,13 @@ export default class Producto extends Component {
     renderItem(item, item_in_carrito) {
         const producto_key = item?.key;
 
-        const producto = item?.producto;
+        const producto = this.props.productos[item.key_producto];
         const active = item_in_carrito?.cantidad > 0
         const calcularSubtotal = () => {
             item_in_carrito.subtotal = (item_in_carrito.cantidad * producto.precio) || 0;
         }
 
-        if(item_in_carrito.nombre !== producto?.nombre){
+        if (item_in_carrito.nombre !== producto?.nombre) {
             item_in_carrito.nombre = producto?.nombre || "";
         }
         return <SView key={producto_key} row center style={{ width: "100%", marginBottom: 8, height: 65 }}>
@@ -148,6 +148,7 @@ export default class Producto extends Component {
         </SView>;
     }
     renderItems() {
+        if (!this.props.productos) return <SLoad />
         if (!this.props?.cliente_proyecto?.carrito) {
             this.props.cliente_proyecto.carrito = []
         }
@@ -157,13 +158,14 @@ export default class Producto extends Component {
 
             let item_in_carrito = carrito.find((carrito_item) => carrito_item.key_producto === proyecto_producto.key_producto);
             if (!item_in_carrito) {
+                const producto = this.props.productos[proyecto_producto.key_producto];
                 item_in_carrito = {
                     key_proyecto_producto: proyecto_producto.key,
                     key_producto: proyecto_producto.key_producto,
                     key_cliente_proyecto: this.props.cliente_proyecto.key,
-                    nombre: proyecto_producto?.producto?.nombre || "",
+                    nombre: producto?.nombre || "",
                     cantidad: 0,
-                    subtotal: proyecto_producto?.producto?.precio || 0,
+                    subtotal: producto?.precio || 0,
                 };
                 carrito.push(item_in_carrito);
             }

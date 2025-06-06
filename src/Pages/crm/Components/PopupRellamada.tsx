@@ -195,8 +195,10 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                         console.log("todo " + JSON.stringify(data))
                         // const prom = data?.key ? MDL.crm.proyecto.editar(data) : MDL.crm.proyecto.registrar(data);
 
-                        SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
-
+                        // SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
+                        if(this.props?.onRegister){
+                            this.props.onRegister(data);
+                        }
                         // prom
                         //     .then((res) => {
                         //         SNotification.send({

@@ -16,7 +16,7 @@ import PopupRazon from './Components/PopupRazon';
 import OrdenesConMismoNumero from './Components/OrdenesConMismoNumero';
 import Comentario from './Components/Comentario';
 import HistoricoMovimientos from './call/HistoricoMovimientos';
-import HorarioCliente from './call/DetalleLead/HorarioCliente';
+import HorarioCliente from './Components/DetalleLead/HorarioCliente';
 
 
 const color_activado = "#262E35";

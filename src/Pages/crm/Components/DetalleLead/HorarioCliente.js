@@ -2,12 +2,12 @@ import React, { Component } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { SButtom, SDate, SForm, SHr, SIcon, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
-import Model from "../../../../Model";
 import MDL from "../../../../MDL";
 import Producto from "./Producto";
 import Adicional from "./Adicional";
 import DetallesOrden from "./DetallesOrden";
 import Etiqueta from "../../../../Pages/crm/Components/Etiqueta";
+import Model from "../../../../Model";
 
 const color_activado = "#262E35";
 const color_desactivado = "#F6F7F9";
@@ -19,29 +19,32 @@ export default class HorarioCliente extends Component {
         super(props);
         this.state = {
             activeFormTab: "Detalles",
+            // activeFormTab: "Productos",
             fechaHora: new Date(),
         };
     }
 
     componentDidMount() {
-        MDL.crm.clienteProyecto.getFull(this.props.key_cliente_proyecto).then((e) => {
-            SSocket.sendPromise({
-                "version": "1.0",
-                "service": "inventario",
-                "component": "producto",
-                "type": "getAll",
-                "estado": "cargando",
-                "key_empresa": Model.empresa.Action.getKey(),
-                "key_usuario": Model.usuario.Action.getKey(),
-            }).then((producto) => {
-                (e?.proyecto_producto ?? []).map((prod) => {
-                    const productoData = producto.data[prod.key_producto];
-                    prod.producto = productoData;
-                })
-                this.forceUpdate()
-            })
-            this.setState({ clienteProyecto: e })
+        // MDL.crm.clienteProyecto.getFull(this.props.key_cliente_proyecto).then((e) => {
+        SSocket.sendPromise({
+            "version": "1.0",
+            "service": "inventario",
+            "component": "producto",
+            "type": "getAll",
+            "estado": "cargando",
+            "key_empresa": Model.empresa.Action.getKey(),
+            "key_usuario": Model.usuario.Action.getKey(),
+        }).then((producto) => {
+            // (this.props?.proyecto_producto ?? []).map((prod) => {
+            //     const productoData = producto.data[prod.key_producto];
+            //     prod.producto = productoData;
+            // })
+            this.state.productos = producto.data
+            // console.log("producto", producto);
+            this.forceUpdate()
         })
+        // this.setState({ clienteProyecto: e })
+        // })
 
         this.setState({ fechaHora: new Date() });
         // this.interval = setInterval(() => {
@@ -87,7 +90,7 @@ export default class HorarioCliente extends Component {
 
                         <SView>
                             <SText fontSize={10}>ID de la orden</SText>
-                            <SText fontSize={28}  >{this.state?.clienteProyecto?.codigo} </SText>
+                            <SText fontSize={28}  >{this.props?.clienteProyecto?.codigo} </SText>
                             {/* <SText fontSize={16}>fecha {this.state.clienteProyecto?.cliente?.fecha_nacimiento} </SText>
        <SText fontSize={12} color={"pink"}>año {this.state.clienteProyecto?.cliente?.edad ? new SDate().addYear((-this.state.clienteProyecto?.cliente?.edad)).toString("yyyy") : ""} </SText> */}
                         </SView>
@@ -96,7 +99,7 @@ export default class HorarioCliente extends Component {
                 <SHr />
 
                 <SView col={"xs-12"}>
-                    <Etiqueta size={14} tipo_leads={this.state?.clienteProyecto?.state} ></Etiqueta>
+                    <Etiqueta size={14} tipo_leads={this.props?.clienteProyecto?.state} ></Etiqueta>
                 </SView>
             </SView>
 
@@ -136,13 +139,13 @@ export default class HorarioCliente extends Component {
     }
 
     renderActiveForm() {
-        const { activeFormTab, clienteProyecto } = this.state;
-        if (!clienteProyecto?.cliente) return <SLoad />;
+        const { activeFormTab } = this.state;
+        if (!this.props.clienteProyecto?.cliente) return <SLoad />;
 
         if (activeFormTab === "Detalles") {
             return (
                 <SView col={"xs-12"} row>
-                    <DetallesOrden mdl_clienteProyecto_cliente={clienteProyecto.cliente} />
+                    <DetallesOrden mdl_clienteProyecto_cliente={this.props.clienteProyecto?.cliente} />
                 </SView>
             );
         }
@@ -150,7 +153,7 @@ export default class HorarioCliente extends Component {
         if (activeFormTab === "Productos") {
             return (
                 <SView col={"xs-12"} row>
-                    <Producto cliente_proyecto={clienteProyecto} />
+                    <Producto cliente_proyecto={this.props.clienteProyecto} productos={this.state.productos} />
                 </SView>
             );
         }
@@ -158,7 +161,7 @@ export default class HorarioCliente extends Component {
         if (activeFormTab === "Adicional") {
             return (
                 <SView col={"xs-12"} row>
-                    <Adicional cliente_proyecto={clienteProyecto} />
+                    <Adicional cliente_proyecto={this.props.clienteProyecto} />
                 </SView>
             );
         }
@@ -177,7 +180,7 @@ export default class HorarioCliente extends Component {
         </SView>
     }
     render() {
-
+        if (!this.props.clienteProyecto) return <SLoad />;
         return (
             <SView col={"xs-12"} style={{ padding: 16, borderRadius: 16, borderWidth: 2, }} center border={STheme.color.card} backgroundColor={STheme.color.card}>
                 {this.header()}

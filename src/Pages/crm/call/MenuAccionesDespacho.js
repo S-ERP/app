@@ -28,7 +28,7 @@ const OptionItem = ({ key, label, color, icono, onPress }) => {
 };
 
 
-export default class MenuAcciones extends Component<{ key_cliente_proyecto: string, onChange?: any }> {
+export default class MenuAccionesDespacho extends Component<{ key_cliente_proyecto: string, onChange?: any }> {
   pk = SNavigation.getParam("key");
   state = {
     data: null,
@@ -45,44 +45,22 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
     const space = 16;
     return <SView row center>
       <OptionItem icono={"confirmar"}
-        label={"Confirmado"} color={STheme.color.success} onPress={() => {
-          if (window.confirm("¿Estás seguro de que quieres Confirmado, continuar?")) {
-            console.log("Confirmado");
-            MDL.crm.clienteProyecto.editar({
-              key: this.pk,
-              state: "confirmado",
-              key_usuario_atiende: Model.usuario.Action.getKey(),
-              key_tipo_movimiento_lead: "confirmado"
-            }).then(e => {
-              this.handleChange("confirmado", e);
-            })
-          } else {
-            console.log("Cancelado");
-          }
+        label={"Pagar"} color={STheme.color.success} onPress={() => {
+          // if (window.confirm("¿Estás seguro de que quieres Confirmado, continuar?")) {
+          MDL.crm.clienteProyecto.editar({
+            key: this.pk,
+            state: "pagado",
+            key_usuario_atiende: Model.usuario.Action.getKey(),
+            key_tipo_movimiento_lead: "pagado"
+          }).then(e => {
+            this.handleChange("pagado", e);
+          })
+          // }
         }} />
 
 
 
-      <OptionItem icono={"confirmar"}
-        label={"Entrega Express"} color={STheme.color.success} onPress={() => {
-          if (window.confirm("¿Estás seguro de que quieres Entrega Express, continuar?")) {
-            console.log("Entrega Express");
-            MDL.crm.clienteProyecto.editar({
-              key: this.pk,
-              state: "entrega_express",
-              key_tipo_movimiento_lead: "entrega_express",
-              key_usuario_atiende: Model.usuario.Action.getKey(),
-            }).then(e => {
-              this.handleChange("entrega_express", e);
-            })
-          } else {
-            console.log("Cancelado");
-          }
-        }} />
-
-
-
-      <OptionItem icono={"cancelado"}
+      {/* <OptionItem icono={"cancelado"}
         label={"Cancelado"}
         color={STheme.color.gray}
         onPress={() => {
@@ -100,88 +78,88 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
                 })
               }
             }))
-        }} />
+        }} /> */}
 
 
 
-      <OptionItem icono={"double"}
-        label={"Doble"} color={STheme.color.gray} onPress={() => {
+      <OptionItem icono={"cancelado"}
+        label={"devuelto"} color={STheme.color.danger} onPress={() => {
           PopupRazon.open(
             ({
-              tipo: "double",
+              tipo: "devuelto",
               onRegister: (e) => {
                 MDL.crm.clienteProyecto.editar({
                   key: this.props.key_cliente_proyecto,
-                  state: "double",
+                  state: "devuelto",
                   key_tipo_movimiento_lead: e.selectedOption.key,
                   key_usuario_atiende: Model.usuario.Action.getKey(),
                 }).then(e => {
-                  this.handleChange("double", e);
+                  this.handleChange("devuelto", e);
                 })
               }
             }))
         }} />
 
 
-
-      <OptionItem icono={"spam"}
-        label={"Spam"} color={STheme.color.gray}
+      {/* 
+      <OptionItem icono={"cancelado"}
+        label={"rechazo"} color={STheme.color.danger}
         onPress={() => {
           PopupRazon.open(
             ({
-              tipo: "spam",
+              tipo: "rechazo",
               onRegister: (e) => {
                 MDL.crm.clienteProyecto.editar({
                   key: this.props.key_cliente_proyecto,
-                  state: "spam",
+                  state: "rechazo",
                   key_tipo_movimiento_lead: e.selectedOption.key,
                   key_usuario_atiende: Model.usuario.Action.getKey(),
                 }).then(e => {
-                  this.handleChange("spam", e);
+                  this.handleChange("rechazo", e);
                 })
               }
             }))
-        }} />
+        }} /> */}
 
 
 
-      <OptionItem icono={"recall"}
+      {/* <OptionItem icono={"recall"}
         label={"Llamar luego"} color={STheme.color.warning}
         onPress={() => {
           PopupRellamada.open(({
             onRegister: (e) => {
               MDL.crm.clienteProyecto.editar({
                 key: this.props.key_cliente_proyecto,
-                state: "rellamada",
+                state: "delivery_rellamada",
                 key_tipo_movimiento_lead: "",
                 key_usuario_atiende: Model.usuario.Action.getKey(),
               }).then(e => {
-                this.handleChange("rellamada", e);
+                this.handleChange("delivery_rellamada", e);
               })
 
             }
           }))
 
-        }} />
+        }} /> */}
 
 
 
-      <OptionItem icono={"llamadafallida"} label={"Llamada fallida"} color={STheme.color.gray} onPress={() => {
+      {/* <OptionItem icono={"llamadafallida"} label={"Llamada fallida"} color={STheme.color.gray} onPress={() => {
         PopupRazon.open(
           ({
             tipo: "llamada_fallida",
             onRegister: (e) => {
               MDL.crm.clienteProyecto.editar({
                 key: this.props.key_cliente_proyecto,
-                state: "llamada_fallida",
+                state: "delivery_llamada_fallida",
                 key_tipo_movimiento_lead: e.selectedOption.key,
                 key_usuario_atiende: Model.usuario.Action.getKey(),
               }).then(e => {
-                this.handleChange("llamada_fallida", e);
+                this.handleChange("delivery_llamada_fallida", e);
               })
             }
           }))
-      }} />
+      }} /> */}
 
     </SView>
   }
