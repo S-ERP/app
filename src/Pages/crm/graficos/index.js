@@ -21,6 +21,8 @@ export default class index extends Component {
             from cliente_proyecto JOIN proyecto
             on cliente_proyecto.key_proyecto = proyecto.key
             where proyecto.key_empresa = '${Model.empresa.Action.getKey()}'
+            and proyecto.estado > 0 
+            AND cliente_proyecto.estado > 0
             group by cliente_proyecto.state
         ) sq1
         `;

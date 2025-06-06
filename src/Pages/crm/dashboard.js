@@ -34,15 +34,15 @@ export default class Dashboard extends Component {
     constructor(props) {
         super(props);
         //  = SNavigation.getParam("type") == "delivery" ?
-        this.dashboardType = SNavigation.getParam("type","");
+        this.dashboardType = SNavigation.getParam("type", "");
         this.stages = [
             ...MDL.crm.clienteProyecto.stages.filter(a => a.key != "confirmado"),
             ...MDL.crm.clienteProyecto.stagesDelivery
         ]
-        if(this.dashboardType == "delivery") {
+        if (this.dashboardType == "delivery") {
             this.stages = MDL.crm.clienteProyecto.stagesDelivery;
         }
-        if(this.dashboardType == "ventas") {
+        if (this.dashboardType == "ventas") {
             this.stages = MDL.crm.clienteProyecto.stages;
         }
 
@@ -81,9 +81,11 @@ export default class Dashboard extends Component {
         })
     }
 
-    handleDrop = (cardKey, gestureEnd) => {
+    handleDrop = (cardKey, gestureEnd, prevenChange) => {
         this.setState({ draggingCard: null });
+        console.log("handleDrop", cardKey, gestureEnd);
 
+        if(prevenChange) return;
         for (const stageKey in this.stageRefs) {
             const ref = this.stageRefs[stageKey];
             if (!ref?.current) continue;
@@ -207,7 +209,7 @@ export default class Dashboard extends Component {
     render() {
         return (
             <GestureHandlerRootView style={{ flex: 1, }}>
-                <SPage title={'Dashboard '+this.dashboardType} disableScroll>
+                <SPage title={'Dashboard ' + this.dashboardType} disableScroll>
                     <ScrollView horizontal>
                         {this.stages.map((stage) => {
                             if (!this.stageRefs[stage.key]) {
@@ -217,7 +219,7 @@ export default class Dashboard extends Component {
                                 <SView
                                     key={stage.key}
                                     ref={this.stageRefs[stage.key]}
-                                    style={{ width: 300, margin: 6, userSelect:'text' }}
+                                    style={{ width: 300, margin: 6, userSelect: 'text' }}
                                 >
                                     <Stage
                                         stage={stage}
@@ -332,10 +334,7 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
         .onFinalize(() => {
             // Aquí puedes manejar la lógica de soltar la carta
             // Por ejemplo, podrías llamar a onDrop con el key de la carta y las coordenadas finales
-            runOnJS(onDrop)(card.key, {
-                absoluteX: offsetX.value,
-                absoluteY: offsetY.value,
-            });
+            runOnJS(onDrop)(card.key, null, true);
         })
         .onEnd((e) => {
             runOnJS(onDrop)(card.key, e);
