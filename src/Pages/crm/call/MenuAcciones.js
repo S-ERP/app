@@ -51,6 +51,7 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
             MDL.crm.clienteProyecto.editar({
               key: this.pk,
               state: "confirmado",
+              entrega_express: false,
               key_usuario_atiende: Model.usuario.Action.getKey(),
               key_tipo_movimiento_lead: "confirmado"
             }).then(e => {
@@ -70,6 +71,7 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
             MDL.crm.clienteProyecto.editar({
               key: this.pk,
               state: "confirmado",
+              entrega_express: true,
               key_tipo_movimiento_lead: "entrega_express",
               key_usuario_atiende: Model.usuario.Action.getKey(),
             }).then(e => {
