@@ -43,7 +43,7 @@ export default class FormRegistroCliente extends Component<FormRegistroType & { 
                 inputs={{
                     nombres: {
                         col: "xs-12",
-                        label: "Nombres",
+                        label: "Nombre completo",
                         //   required: true,
                         defaultValue: defaultData?.nombres,
                         autoFocus: true,
