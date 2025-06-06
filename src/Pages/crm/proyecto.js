@@ -171,7 +171,7 @@ export default class proyecto extends Component {
                     data={(e) => {
                         return e.row.key
                     }} />
-                <DinamicTable.Col key={"codigo"} label='Codigo'
+                <DinamicTable.Col key={"codigo"} label='Código'
                     width={60}
                     cellStyle={{
                         justifyContent: "flex-start"
@@ -187,7 +187,7 @@ export default class proyecto extends Component {
                     data={(e) => {
                         return e.row.nombre
                     }} />
-                <DinamicTable.Col key={"descripcion"} label='Descripcion'
+                <DinamicTable.Col key={"descripcion"} label='Descripción'
 
                     width={150}
                     cellStyle={{
@@ -261,7 +261,7 @@ export default class proyecto extends Component {
                         </SView>
                     }}
                 />
-                <DinamicTable.Col key={"guion"} label='Guion'
+                <DinamicTable.Col key={"guion"} label='Guión'
                     width={350}
                     wrap={true}
                     data={(e) => {

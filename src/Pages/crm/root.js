@@ -26,7 +26,7 @@ export default class root extends Component {
                 key_empresa={Model.empresa.Action.getKey()}
                 path={"/crm/"} permiso={"ver"}>
                 <SHr />
-                <SText>{"Administracion"}</SText>
+                <SText>{"Administración"}</SText>
                 <SHr />
                 <MenuButtom label={"tipo movimiento lead"} url={"/crm/tipoMovimientoLead"} icon={<SIconApp name='Ajustes' fill={STheme.color.text} />} />
                 <MenuButtom label={"Proyecto"} url={"/crm/proyecto"} icon={<SIcon name='empresa' fill={STheme.color.text} />} />
@@ -35,15 +35,15 @@ export default class root extends Component {
                 <SHr />
                 <SText>{"Ventas"}</SText>
                 <SHr />
-                {/* <MenuButtom label={"dashboard"} url={"/crm/dashboard"} icon={<SIcon name='addTarea' fill={STheme.color.text} />} /> */}
-                <MenuButtom label={"DashBoard Venta"} url={"/crm/dashboard2"} icon={<SIconApp name='menuAll' fill={STheme.color.text} />} />
-                <MenuButtom label={"Lead"} url={"/crm/lead"} icon={<SIcon name='addTarea' fill={STheme.color.text} />} />
-                <MenuButtom label={"Llamar"} url={"/crm/llamar"} icon={<SIconApp name='microfono' fill={STheme.color.text} />} />
+                {/* <MenuButtom label={"Dashboard"} url={"/crm/dashboard"} icon={<SIcon name='addTarea' fill={STheme.color.text} />} /> */}
+                <MenuButtom label={"Dashboard de Ventas"} url={"/crm/dashboard2"} icon={<SIconApp name='menuAll' fill={STheme.color.text} />} />
+                <MenuButtom label={"Leads"} url={"/crm/lead"} icon={<SIcon name='addTarea' fill={STheme.color.text} />} />
+                <MenuButtom label={"Llamadas"} url={"/crm/llamar"} icon={<SIconApp name='microfono' fill={STheme.color.text} />} />
                 <SHr />
                 <SHr />
-                <SText>{"Delivery"}</SText>
+                <SText>Delivery</SText>
                 <SHr />
-                <MenuButtom label={"DashBoard Delivery"} url={"/crm/dashboardDelivery"} icon={<SIconApp name='menuAll' fill={STheme.color.text} />} />
+                <MenuButtom label={"Dashboard de Delivery"} url={"/crm/dashboardDelivery"} icon={<SIconApp name='menuAll' fill={STheme.color.text} />} />
             </MenuPages>
 
         </SPage>

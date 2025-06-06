@@ -55,8 +55,8 @@ export default class lead extends Component {
         return <SPage title={"Tipos leads registrados"} disableScroll>
 
             <DinamicTable
-                key='index' 
-                
+                key='index'
+
                 colors={Config.table.colors()}
                 cellStyle={Config.table.cellStyle()}
                 selectType='single'
@@ -102,19 +102,11 @@ export default class lead extends Component {
                 <DinamicTable.Col key={"fecha_edit"} label='Fecha Leads' width={120} dataType='date'
                     data={(e) => new SDate(e.row.fecha_edit ?? e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
                     dateFormat='yyyy-MM-dd hh:mm' />
-
-                <DinamicTable.Col key={"-fecha_edit"} label='PruebaAlvaro' width={100} dataType='date'
-                    data={(e) => new SDate(e.row.fecha_edit ?? e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
-                    customComponent={e => {
-                    }} />
-
-
-
                 <DinamicTable.Col key={"nombres"} label='Nombre completo' width={140} data={(e) => e.row.cliente?.nombres} />
                 <DinamicTable.Col key={"telefono"} label='Teléfono' width={120} data={(e) => e.row.cliente?.telefono} />
                 <DinamicTable.Col key={"correo"} label='Correo' width={80} data={(e) => e.row.cliente?.correo} />
-                <DinamicTable.Col key={"nit"} label='NIT' width={80} data={(e) => e.row.cliente?.nit} />
-                <DinamicTable.Col key={"razon_social"} label='Razón Social' width={80} data={(e) => e.row.cliente?.razon_social} />
+                <DinamicTable.Col key={"nit"} label='Nit' width={80} data={(e) => e.row.cliente?.nit} />
+                <DinamicTable.Col key={"razon_social"} label='Razón social' width={80} data={(e) => e.row.cliente?.razon_social} />
             </DinamicTable>
         </SPage >
     }
