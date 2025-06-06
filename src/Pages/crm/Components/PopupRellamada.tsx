@@ -154,7 +154,7 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                             required: true,
                             defaultValue: new SDate().toString("yyyy-MM-dd"),
                             onSubmitEditing: () => {
-                                this.form && this.form.focus && this.form.focus("tiempo_cliente");
+                                this.form?.focus?.("tiempo_cliente");
                             },
                         },
                         tiempo_cliente: {
@@ -165,60 +165,73 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                             value: tiempo_cliente,
                             onChange: (val: string) => this.setTiempoCliente(val),
                             onSubmitEditing: () => {
-                                this.form && this.form.submit && this.form.submit();
+                                this.form?.focus?.("comentario");
                             },
                         },
                         comentario: {
                             col: "xs-12",
-                            label: "Comentario",
+                            label: "Comentario *",
                             type: "textArea",
-                            defaultValue: defaultData?.descripcion,
+                            required: true,
+                            defaultValue: defaultData?.descripcion || "",
                             onSubmitEditing: () => {
-                                this.form && this.form.submit && this.form.submit();
+                                this.form?.submit?.();
                             },
                         },
                         fijar: {
                             col: "xs-12",
                             label: "¿Fijar la llamada?",
                             type: "checkBox",
-                            defaultValue: defaultData?.descripcion,
-                            onSubmitEditing: () => {
-                                this.form && this.form.submit && this.form.submit();
-                            },
+                            defaultValue: defaultData?.fijar || false,
                         },
                     }}
                     onSubmit={(e: any) => {
-                        // Forzamos que el valor de tiempo_cliente sea el que esté en estado,
-                        // por si el usuario no usó el input para modificarlo
-                        const data = { ...defaultData, ...e, tiempo_cliente: this.state.tiempo_cliente };
+                        const comentario = e?.comentario?.trim?.();
 
-                        console.log("todo " + JSON.stringify(data))
-                        // const prom = data?.key ? MDL.crm.proyecto.editar(data) : MDL.crm.proyecto.registrar(data);
 
-                        // SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
-                        if(this.props?.onRegister){
+
+                        if (!comentario) {
+                            SNotification.send({
+                                key: "formulario_error_comentario",
+                                title: "Falta comentario",
+                                body: "⚠️ Debes escribir algo en el campo comentario.",
+                                type: "warning",
+                                time: 3000,
+                            });
+                            this.form?.focus?.("comentario");
+                            return;
+                        }
+
+                        // Verificar si se seleccionó un tiempo
+                        const tiempo_cliente = this.state.tiempo_cliente;
+                        if (!tiempo_cliente) {
+                            SNotification.send({
+                                key: "formulario_error_tiempo",
+                                title: "Tiempo no seleccionado",
+                                body: "⏱️ Debes seleccionar un tiempo antes de continuar.",
+                                type: "warning",
+                                time: 3000,
+                            });
+                            return;
+                        }
+
+
+
+                        const data = {
+                            ...defaultData,
+                            ...e,
+                            comentario, // comentario limpio
+                            tiempo_cliente: this.state.tiempo_cliente,
+                        };
+
+                        console.log("✅ Datos a registrar:", data);
+
+                        if (this.props?.onRegister) {
                             this.props.onRegister(data);
                         }
-                        // prom
-                        //     .then((res) => {
-                        //         SNotification.send({
-                        //             key: "registro",
-                        //             title: data?.key ? "Actualizado" : "Registrado",
-                        //             color: STheme.color.success,
-                        //             time: 5000,
-                        //         });
-                        //         if (data?.key) {
-                        //             this.props.onActualizar?.(res);
-                        //         } else {
-                        //             this.props.onRegister?.(res);
-                        //         }
-                        //         SPopup.close("ppuprellamada");
-                        //     })
-                        //     .catch((err) => {
-                        //         SNotification.send({ key: "registro", title: "Error", body: err, color: STheme.color.danger });
-                        //     });
                     }}
                 />
+
                 <SHr />
                 <SView row col={"xs-12"}>
                     {this.props.onCancel && (
