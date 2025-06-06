@@ -24,10 +24,9 @@ export default class tipoMovimientoLead extends Component {
         })
     }
     render() {
-        return <SPage title={"Tipo de Leads"} disableScroll>
+        return <SPage title={"Tipo de leads"} disableScroll>
             <DinamicTable
                 key='index'
-
                 colors={Config.table.colors()}
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
@@ -93,7 +92,7 @@ export default class tipoMovimientoLead extends Component {
                 }}
             >
                 <DinamicTable.Col key={"key"} label='ID' width={35} data={(e) => e.index + 1} />
-                <DinamicTable.Col key={"tipo"} label='tipo' width={90} data={(e) => e.row.tipo}
+                <DinamicTable.Col key={"tipo"} label='Tipo' width={120} data={(e) => e.row.tipo}
                     customComponent={e => {
                         return <SView center>
                             <Etiqueta tipo_leads={e.row.tipo} onPress={() => {
@@ -103,8 +102,8 @@ export default class tipoMovimientoLead extends Component {
                         </SView>
                     }}
                 />
-                <DinamicTable.Col key={"titulo"} label='titulo' width={200} data={(e) => e.row.titulo} />
-                <DinamicTable.Col key={"descripcion"} label='descripcion' width={200} data={(e) => e.row.descripcion} />
+                <DinamicTable.Col key={"titulo"} label='Titulo' width={200} data={(e) => e.row.titulo} />
+                <DinamicTable.Col key={"descripcion"} label='Descripción' width={200} data={(e) => e.row.descripcion} />
 
             </DinamicTable>
             <FloatButtom onPress={() => {

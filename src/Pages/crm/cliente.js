@@ -111,13 +111,13 @@ export default class cliente extends Component {
                 <DinamicTable.Col key={"nombres"} label='Nombre completo' width={180} data={(e) => e.row.nombres} />
                 <DinamicTable.Col key={"telefono"} label='Teléfono' width={120} data={(e) => e.row.telefono} />
                 <DinamicTable.Col key={"correo"} label='Correo' width={150} data={(e) => e.row.correo} />
-                <DinamicTable.Col key={"nit"} label='NIT' width={90} data={(e) => e.row.nit} />
-                <DinamicTable.Col key={"razon_social"} label='Razón Social' width={90} data={(e) => e.row.razon_social} />
+                <DinamicTable.Col key={"nit"} label='Nit' width={90} data={(e) => e.row.nit} />
+                <DinamicTable.Col key={"razon_social"} label='Razón social' width={90} data={(e) => e.row.razon_social} />
                 {/* <DinamicTable.Col key={"direccion"} label='Dirección' width={100} data={(e) => e.row.direccion} /> */}
                 {/* <DinamicTable.Col key={"lat"} label='Latitud' width={70} data={(e) => e.row.lat} /> */}
                 {/* <DinamicTable.Col key={"lng"} label='Longitud' width={70} data={(e) => e.row.lng} /> */}
-                <DinamicTable.Col key={"fecha_nacimiento"} label='Nacimiento' width={70} data={(e) => e.row.fecha_nacimiento} />
-                <DinamicTable.Col key={"sexo"} label='Sexo' width={60} data={(e) => e.row.sexo} />
+                <DinamicTable.Col key={"fecha_nacimiento"} label='F. Nacimiento' width={110} data={(e) => e.row.fecha_nacimiento} />
+                <DinamicTable.Col key={"sexo"} label='Sexo' width={80} data={(e) => e.row.sexo} />
                 {/* <DinamicTable.Col key={"descripcion"} label='Descripción' width={100} data={(e) => e.row.descripcion} /> */}
                 {/* <DinamicTable.Col key={"editar"} label='Editar' width={100} data={(e) => ""}
                     customComponent={e => <SView row card padding={2} onPress={() => {
