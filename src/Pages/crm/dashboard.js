@@ -206,9 +206,8 @@ export default class Dashboard extends Component {
 
     render() {
         return (
-            <GestureHandlerRootView style={{ flex: 1 }}>
+            <GestureHandlerRootView style={{ flex: 1, }}>
                 <SPage title={'Dashboard '+this.dashboardType} disableScroll>
-
                     <ScrollView horizontal>
                         {this.stages.map((stage) => {
                             if (!this.stageRefs[stage.key]) {
@@ -218,7 +217,7 @@ export default class Dashboard extends Component {
                                 <SView
                                     key={stage.key}
                                     ref={this.stageRefs[stage.key]}
-                                    style={{ width: 300, margin: 6 }}
+                                    style={{ width: 300, margin: 6, userSelect:'text' }}
                                 >
                                     <Stage
                                         stage={stage}
@@ -330,6 +329,14 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
             offsetY.value = e.translationY;
             runOnJS(onDragMove)(e.translationX, e.translationY);
         })
+        .onFinalize(() => {
+            // Aquí puedes manejar la lógica de soltar la carta
+            // Por ejemplo, podrías llamar a onDrop con el key de la carta y las coordenadas finales
+            runOnJS(onDrop)(card.key, {
+                absoluteX: offsetX.value,
+                absoluteY: offsetY.value,
+            });
+        })
         .onEnd((e) => {
             runOnJS(onDrop)(card.key, e);
             // offsetX.value = withSpring(0);
@@ -356,6 +363,7 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
                 ref={ref}
                 style={[{
                     paddingBottom: 8,
+                    // userSelect:'text'
                 }, animatedStyle]}
             >
                 <DashboardCard data={card} />

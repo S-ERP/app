@@ -14,6 +14,7 @@ import Comentario from '../Components/Comentario';
 import HorarioCliente from '../Components/DetalleLead/HorarioCliente';
 import MenuAccionesDelivery from './MenuAccionesDelivery';
 import MenuAccionesDespacho from './MenuAccionesDespacho';
+import DraggableView from './DragableView';
 
 const CardContent = ({ children }) => {
     return <SView col={"xs-12 sm-6 md-6 lg-4"} padding={0} center>
@@ -110,7 +111,29 @@ export default class index extends Component {
             {this.renderMenuByState()}
             <SHr />
 
+
         </SView >}
+            footer={
+                <SView col={"xs-12"} center style={{
+                    position: "absolute",
+                }}>
+                    <View style={{
+                        top: 35,
+                         width: 180,
+                    }}>
+                        <DraggableView style={{
+                            // top: 50,
+                            // left: "50%",
+                            width: 180,
+                            height: 40,
+                            borderRadius: 8,
+                            borderWidth: 1,
+                            borderColor: STheme.color.text,
+                            backgroundColor: STheme.color.success
+                        }} />
+                    </View>
+                </SView>
+            }
 
         >
             <SView col={"xs-12"} center>
