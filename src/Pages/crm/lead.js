@@ -59,9 +59,9 @@ export default class lead extends Component {
                 
                 colors={Config.table.colors()}
                 cellStyle={Config.table.cellStyle()}
+                selectType='single'
                 textStyle={Config.table.textStyle()}
                 language='es'
-
                 ref={ref => this.DinamicTable = ref} loadData={async () => { return await MDL.crm.clienteProyecto.getAll(); }} onSelect={(e) => { console.log("Selected project:", e.row); }}
                 loadInitialState={async () => {
                     return {

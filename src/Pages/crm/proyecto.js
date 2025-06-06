@@ -67,6 +67,7 @@ export default class proyecto extends Component {
                 colors={Config.table.colors()}
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
+                selectType='single'
                 language='es'
                 onSelect={(e) => {
                     console.log("Selected project:", e.row);
