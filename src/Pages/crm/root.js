@@ -28,10 +28,12 @@ export default class root extends Component {
                 <SHr />
                 <SText>{"Administración"}</SText>
                 <SHr />
+                <MenuButtom label={"Dashboard General"} url={"/crm/dashboardGeneral"} icon={<SIconApp name='menuAll' fill={STheme.color.text} />} />
                 <MenuButtom label={"tipo movimiento lead"} url={"/crm/tipoMovimientoLead"} icon={<SIconApp name='Ajustes' fill={STheme.color.text} />} />
                 <MenuButtom label={"Proyecto"} url={"/crm/proyecto"} icon={<SIcon name='empresa' fill={STheme.color.text} />} />
                 <MenuButtom label={"Cliente"} url={"/crm/cliente"} icon={<SIcon name='invite' fill={STheme.color.text} />} />
                 <MenuButtom label={"Graficos"} url={"/crm/graficos"} icon={<SIconApp name='pinchito' fill={STheme.color.text} />} />
+
                 <SHr />
                 <SText>{"Ventas"}</SText>
                 <SHr />

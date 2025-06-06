@@ -8,6 +8,7 @@ import plantilla from "./plantilla";
 // import dashboard from "./dashboard";
 import dashboard2 from "./dashboard2";
 import dashboardDelivery from "./dashboardDelivery";
+import dashboardGeneral from "./dashboardGeneral";
 import lead from "./lead";
 import tipoMovimientoLead from "./tipoMovimientoLead";
 import llamar from "./llamar";
@@ -25,6 +26,7 @@ export default SPage.combinePages("crm", {
   // dashboard,
   dashboard2,
   dashboardDelivery,
+  dashboardGeneral,
   lead,
   tipoMovimientoLead,
   llamar,

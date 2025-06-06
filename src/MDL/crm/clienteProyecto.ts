@@ -185,7 +185,7 @@ export default class clienteProyecto {
         },
         {
             key: "en_llamada",
-            name: "En llamada",
+            name: "En proceso venta",
             color: STheme.color.warning,
             states: ["en_proceso"],
         },
@@ -204,8 +204,8 @@ export default class clienteProyecto {
     ];
     stagesDelivery = [
         {
-            key: "por_llamar",
-            name: "Por Llamar",
+            key: "por_llamar_delivery",
+            name: "Por atender delivery",
             color: STheme.color.lightGray,
             states: [
                 "confirmado",
@@ -216,8 +216,8 @@ export default class clienteProyecto {
             ],
         },
         {
-            key: "en_llamada",
-            name: "En proceso",
+            key: "en_llamada_delivery",
+            name: "En proceso delivery",
             color: STheme.color.warning,
             states: ["delivery_en_proceso"],
         },
@@ -228,14 +228,14 @@ export default class clienteProyecto {
             states: ["despacho"],
         },
         {
-            key: "confirmado",
-            name: "Confirmados",
+            key: "Pagados",
+            name: "Pagados",
             color: STheme.color.success,
             states: ["pagado"],
         },
         {
-            key: "no_llamar",
-            name: "No llamar",
+            key: "no_llamar_delivery",
+            name: "Rechazados",
             color: STheme.color.danger,
             states: ["devuelto", "rechazo"],
         },
