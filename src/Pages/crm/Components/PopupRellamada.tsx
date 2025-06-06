@@ -23,7 +23,9 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
 
     constructor(props: PopupRellamadaType) {
         super(props);
-        const now = new SDate().toString("hh:mm");
+        // const now = new SDate().toString("hh:mm");
+        const now = new SDate().addMinute(10).toString("hh:mm");
+
         this.state = {
             tiempo_cliente: props.defaultData?.tiempo_cliente || now,
         };
@@ -172,7 +174,6 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                             col: "xs-12",
                             label: "Comentario *",
                             type: "textArea",
-                            required: true,
                             defaultValue: defaultData?.descripcion || "",
                             onSubmitEditing: () => {
                                 this.form?.submit?.();
@@ -190,30 +191,30 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
 
 
 
-                        if (!comentario) {
-                            SNotification.send({
-                                key: "formulario_error_comentario",
-                                title: "Falta comentario",
-                                body: "⚠️ Debes escribir algo en el campo comentario.",
-                                type: "warning",
-                                time: 3000,
-                            });
-                            this.form?.focus?.("comentario");
-                            return;
-                        }
+                        // if (!comentario) {
+                        //     SNotification.send({
+                        //         key: "formulario_error_comentario",
+                        //         title: "Falta comentario",
+                        //         body: "⚠️ Debes escribir algo en el campo comentario.",
+                        //         type: "warning",
+                        //         time: 3000,
+                        //     });
+                        //     this.form?.focus?.("comentario");
+                        //     return;
+                        // }
 
                         // Verificar si se seleccionó un tiempo
-                        const tiempo_cliente = this.state.tiempo_cliente;
-                        if (!tiempo_cliente) {
-                            SNotification.send({
-                                key: "formulario_error_tiempo",
-                                title: "Tiempo no seleccionado",
-                                body: "⏱️ Debes seleccionar un tiempo antes de continuar.",
-                                type: "warning",
-                                time: 3000,
-                            });
-                            return;
-                        }
+                        // const tiempo_cliente = this.state.tiempo_cliente;
+                        // if (!tiempo_cliente) {
+                        //     SNotification.send({
+                        //         key: "formulario_error_tiempo",
+                        //         title: "Tiempo no seleccionado",
+                        //         body: "⏱️ Debes seleccionar un tiempo antes de continuar.",
+                        //         type: "warning",
+                        //         time: 3000,
+                        //     });
+                        //     return;
+                        // }
 
 
 
