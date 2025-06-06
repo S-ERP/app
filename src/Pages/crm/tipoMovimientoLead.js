@@ -24,10 +24,10 @@ export default class tipoMovimientoLead extends Component {
         })
     }
     render() {
-        return <SPage title={"Tipo de Leads"}>
-            <SHr height={10} />
+        return <SPage title={"Tipo de Leads"} disableScroll>
             <DinamicTable
-                key='index' textStyle={{ fontSize: 10, color: STheme.color.lightGray }}
+                key='index'
+
                 colors={Config.table.colors()}
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
@@ -93,13 +93,19 @@ export default class tipoMovimientoLead extends Component {
                 }}
             >
                 <DinamicTable.Col key={"key"} label='ID' width={35} data={(e) => e.index + 1} />
-                <DinamicTable.Col key={"titulo"} label='titulo' width={200} data={(e) => e.row.titulo} />
-                <DinamicTable.Col key={"descripcion"} label='descripcion' width={200} data={(e) => e.row.descripcion} />
                 <DinamicTable.Col key={"tipo"} label='tipo' width={90} data={(e) => e.row.tipo}
                     customComponent={e => {
-                        return <Etiqueta  tipo_leads={e.row.tipo}></Etiqueta>
+                        return <SView center>
+                            <Etiqueta tipo_leads={e.row.tipo} onPress={() => {
+                                this.DinamicTable.filtros.push({ col: "tipo", operator: "=", value: e.row.tipo });
+                                this.DinamicTable.applyFilter()
+                            }}></Etiqueta>
+                        </SView>
                     }}
                 />
+                <DinamicTable.Col key={"titulo"} label='titulo' width={200} data={(e) => e.row.titulo} />
+                <DinamicTable.Col key={"descripcion"} label='descripcion' width={200} data={(e) => e.row.descripcion} />
+
             </DinamicTable>
             <FloatButtom onPress={() => {
                 FormRegistroTipoMovimientoLead.open(({ onRegister: (e) => { this.DinamicTable.loadData(); } }))

@@ -52,10 +52,11 @@ export default class lead extends Component {
 
 
     render() {
-        return <SPage title={"Tipos leads registrados"}>
+        return <SPage title={"Tipos leads registrados"} disableScroll>
 
             <DinamicTable
-                key='index' textStyle={{ fontSize: 10, color: STheme.color.lightGray }}
+                key='index' 
+                
                 colors={Config.table.colors()}
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
