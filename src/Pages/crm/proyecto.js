@@ -12,6 +12,7 @@ import FormRegistroCampana from './Components/FormRegistroCampana';
 import PopupRellamada from './Components/PopupRellamada';
 import PopupRazon from './Components/PopupRazon';
 import Model from '../../Model';
+import Config from '../../Config';
 
 export default class proyecto extends Component {
 
@@ -63,6 +64,10 @@ export default class proyecto extends Component {
 
                                         return proyectos;
                                 }}
+                                colors={Config.table.colors()}
+                                cellStyle={Config.table.cellStyle()}
+                                textStyle={Config.table.textStyle()}
+                                language='es'
                                 onSelect={(e) => {
                                         console.log("Selected project:", e.row);
                                         FloatMenu.open({
