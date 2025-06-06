@@ -31,6 +31,7 @@ export default class root extends Component {
                 <MenuButtom label={"tipo movimiento lead"} url={"/crm/tipoMovimientoLead"} icon={<SIconApp name='Ajustes' fill={STheme.color.text} />} />
                 <MenuButtom label={"Proyecto"} url={"/crm/proyecto"} icon={<SIcon name='empresa' fill={STheme.color.text} />} />
                 <MenuButtom label={"Cliente"} url={"/crm/cliente"} icon={<SIcon name='invite' fill={STheme.color.text} />} />
+                <MenuButtom label={"Graficos"} url={"/crm/graficos"} icon={<SIconApp name='pinchito' fill={STheme.color.text} />} />
                 <SHr />
                 <SText>{"Ventas"}</SText>
                 <SHr />

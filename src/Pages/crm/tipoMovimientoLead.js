@@ -97,7 +97,19 @@ export default class tipoMovimientoLead extends Component {
                     customComponent={e => {
                         return <SView center>
                             <Etiqueta tipo_leads={e.row.tipo} onPress={() => {
-                                this.DinamicTable.filtros.push({ col: "tipo", operator: "=", value: e.row.tipo });
+                                const activeFilter = this.DinamicTable.filtros.findIndex(f => f.col === "tipo");
+
+                                if (activeFilter !== -1) {
+                                    if (e.row.tipo == this.DinamicTable.filtros[activeFilter].value) {
+                                        return;
+                                    }
+                                    this.DinamicTable.filtros.splice(activeFilter, 1);
+                                }
+                                this.DinamicTable.filtros.push({
+                                    col: "tipo",
+                                    operator: "=",
+                                    value: e.row.tipo
+                                });
                                 this.DinamicTable.applyFilter()
                             }}></Etiqueta>
                         </SView>

@@ -7,6 +7,7 @@ import clienteProyecto from "./clienteProyecto";
 import tipoMovimientoLead from "./tipoMovimientoLead";
 import proyectoProducto from "./proyectoProducto";
 import paises from "./paises";
+import db from "./db";
 export default class crm extends MDLAbstract<EventListener> {
     paises = paises
 
@@ -17,5 +18,6 @@ export default class crm extends MDLAbstract<EventListener> {
     campana = new campana();
     tipoMovimientoLead = new tipoMovimientoLead();
     proyectoProducto = new proyectoProducto();
+    db= new db();
 
 }
