@@ -69,11 +69,11 @@ export default class MenuAcciones extends Component<{ key_cliente_proyecto: stri
             console.log("Entrega Express");
             MDL.crm.clienteProyecto.editar({
               key: this.pk,
-              state: "entrega_express",
+              state: "confirmado",
               key_tipo_movimiento_lead: "entrega_express",
               key_usuario_atiende: Model.usuario.Action.getKey(),
             }).then(e => {
-              this.handleChange("entrega_express", e);
+              this.handleChange("confirmado", e);
             })
           } else {
             console.log("Cancelado");
