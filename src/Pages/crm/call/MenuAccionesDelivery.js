@@ -81,7 +81,7 @@ export default class MenuAccionesDelivery extends Component<{ key_cliente_proyec
         }} /> */}
 
 
-{/* 
+      {/* 
       <OptionItem icono={"cancelado"}
         label={"devuelto"} color={STheme.color.danger} onPress={() => {
           PopupRazon.open(
@@ -132,6 +132,7 @@ export default class MenuAccionesDelivery extends Component<{ key_cliente_proyec
                 key: this.props.key_cliente_proyecto,
                 state: "delivery_rellamada",
                 key_tipo_movimiento_lead: "",
+                fecha_rellamada: e.fecha_rellamada,
                 key_usuario_atiende: Model.usuario.Action.getKey(),
               }).then(e => {
                 this.handleChange("delivery_rellamada", e);

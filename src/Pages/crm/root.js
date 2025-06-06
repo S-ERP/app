@@ -28,7 +28,7 @@ export default class root extends Component {
                 <SHr />
                 <SText>{"Administración"}</SText>
                 <SHr />
-                <MenuButtom label={"Dashboard General"} url={"/crm/dashboardGeneral"} icon={<SIconApp name='menuAll' fill={STheme.color.text} />} />
+                <MenuButtom label={"Dashboard General"} url={"/crm/dashboard"} icon={<SIconApp name='menuAll' fill={STheme.color.text} />} />
                 <MenuButtom label={"tipo movimiento lead"} url={"/crm/tipoMovimientoLead"} icon={<SIconApp name='Ajustes' fill={STheme.color.text} />} />
                 <MenuButtom label={"Proyecto"} url={"/crm/proyecto"} icon={<SIcon name='empresa' fill={STheme.color.text} />} />
                 <MenuButtom label={"Cliente"} url={"/crm/cliente"} icon={<SIcon name='invite' fill={STheme.color.text} />} />
@@ -38,14 +38,14 @@ export default class root extends Component {
                 <SText>{"Ventas"}</SText>
                 <SHr />
                 {/* <MenuButtom label={"Dashboard"} url={"/crm/dashboard"} icon={<SIcon name='addTarea' fill={STheme.color.text} />} /> */}
-                <MenuButtom label={"Dashboard de Ventas"} url={"/crm/dashboard2"} icon={<SIconApp name='menuAll' fill={STheme.color.text} />} />
+                <MenuButtom label={"Dashboard de Ventas"} url={"/crm/dashboard"} params={{ type: "ventas" }} icon={<SIconApp name='menuAll' fill={STheme.color.text} />} />
                 <MenuButtom label={"Leads"} url={"/crm/lead"} icon={<SIcon name='addTarea' fill={STheme.color.text} />} />
                 <MenuButtom label={"Llamadas"} url={"/crm/llamar"} icon={<SIconApp name='microfono' fill={STheme.color.text} />} />
                 <SHr />
                 <SHr />
                 <SText>Delivery</SText>
                 <SHr />
-                <MenuButtom label={"Dashboard de Delivery"} url={"/crm/dashboardDelivery"} icon={<SIconApp name='menuAll' fill={STheme.color.text} />} />
+                <MenuButtom label={"Dashboard de Delivery"} url={"/crm/dashboard"} params={{ type: "delivery" }} icon={<SIconApp name='menuAll' fill={STheme.color.text} />} />
             </MenuPages>
 
         </SPage>
