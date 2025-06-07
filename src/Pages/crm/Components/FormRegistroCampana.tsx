@@ -19,7 +19,12 @@ export default class FormRegistroCampana extends Component<FormRegistroType & { 
     static open(props: FormRegistroType) {
         SPopup.open({
             key: "ppupregistro",
-            content: <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 300 }} padding={16} withoutFeedback col={"xs-11"}>
+            content: <SView backgroundColor={STheme.color.background} style={{
+                borderRadius: 8, maxWidth: 500,
+                // @ts-ignore
+                userSelect: "text",
+                cursor: "default",
+            }} padding={16} withoutFeedback col={"xs-11"}>
                 <FormRegistroCampana {...props} onRegister={(e) => {
                     SPopup.close("ppupregistro")
                     if (props.onRegister) props.onRegister(e)
@@ -39,8 +44,13 @@ export default class FormRegistroCampana extends Component<FormRegistroType & { 
 
 
         return <SView center>
-            <SText bold>{defaultData ? "Editar campaña" : "Crear campaña"}</SText>
-
+            <SText style={{
+                // @ts-ignore
+                userSelect: "text",
+            }} bold>{defaultData ? "Editar campaña" : "Crear campaña"}</SText>
+            <SHr />
+            <SText>{this.props?.defaultData?.key}</SText>
+            <SHr />
             <SForm
                 ref={(ref: any) => this.form = ref}
                 inputs={{
@@ -96,20 +106,21 @@ export default class FormRegistroCampana extends Component<FormRegistroType & { 
                 }}
             />
             <SHr />
-            {/* <SInput type='textArea' defaultValue={`
-            curl --location --request GET '192.168.2.1:30051/api' \
-                --header 'Content-Type: application/json' \
-                --data '{
-                 "component": "campana",
-                "type": "me_interesa",
-                "telefono": "{{NUMERO_DE_TELEFONO}}",
-                "key_campana": "${this.props?.defaultData?.key}"
-                }`} />
-            <SHr /> */}
+            {/* <SInput type='textArea' height={180} defaultValue={`{
+    "component": "campana",
+    "type": "me_interesa",
+    "telefono": "{{NUMERO_DE_TELEFONO}}",
+    "key_campana": "${this.props?.defaultData?.key}"
+}`} /> */}
+            <SHr />
             <SText onPress={() => {
                 SNavigation.navigate("/crm/campana", { pk: this.props?.defaultData?.key })
                 if (this.props.onCancel) this.props.onCancel()
             }}>{"VER PAGINA"}</SText>
+            <SText onPress={() => {
+                SNavigation.navigate("/crm/campana", { pk: this.props?.defaultData?.key })
+                if (this.props.onCancel) this.props.onCancel()
+            }}>{"LINKS"}</SText>
             <SHr />
             <SView row col={"xs-12"}>
                 {this.props.onCancel && <>

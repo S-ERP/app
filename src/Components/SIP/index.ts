@@ -3,7 +3,8 @@ import JsSIP from 'jssip';
 import { ConnectingEvent, RTCSession } from 'jssip/lib/RTCSession';
 
 
-const ws = "ws://192.168.2.3:8088/ws";
+// const ws = "ws://192.168.2.3:8088/ws";
+const ws = "wss://crm.servisofts.com/wrts";
 
 const sip = "sip:50002@192.168.2.3";
 const sipPassword = "servisofts";
