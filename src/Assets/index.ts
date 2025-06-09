@@ -90,6 +90,9 @@ import confirmar, { ReactComponent as confirmarW } from "./svg/confirmar.svg";
 import cancelado, { ReactComponent as canceladoW } from "./svg/cancelado.svg";
 import llamadafallida, { ReactComponent as llamadafallidaW } from "./svg/llamadafallida.svg";
 
+import adicional, { ReactComponent as adicionalW } from "./svg/adicional.svg";
+import carritoproducto, { ReactComponent as carritoproductoW } from "./svg/carritoproducto.svg";
+
 
 import crmcliente, { ReactComponent as crmclienteW, } from "./svg/crm/cliente.svg";
 import crmdashboarddelivery, { ReactComponent as crmdashboarddeliveryW, } from "./svg/crm/dashboardDelivery.svg";
@@ -162,6 +165,8 @@ export const svg = {
   eliminar: { Native: eliminar, Web: eliminarW },
   eliminar2: { Native: eliminar2, Web: eliminar2W },
   tarea: { Native: tarea, Web: tareaW },
+  adicional: { Native: adicional, Web: adicionalW },
+  carritoproducto: { Native: carritoproducto, Web: carritoproductoW },
 
   emp1: { Native: emp1, Web: emp1W },
   emp2: { Native: emp2, Web: emp2W },

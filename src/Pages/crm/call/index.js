@@ -84,7 +84,7 @@ export default class index extends Component {
                 this.componentDidMount();
             }} />
         }
-        if (stageDelivery?.key == "por_llamar") {
+        if (stageDelivery?.key == "por_llamar_delivery") {
             return this.renderAntenderDelivery();
         }
         if (state == "delivery_en_proceso") {
@@ -117,21 +117,7 @@ export default class index extends Component {
                 <SView col={"xs-12"} center style={{
                     position: "absolute",
                 }}>
-                    <View style={{
-                        top: 35,
-                         width: 180,
-                    }}>
-                        <DraggableView style={{
-                            // top: 50,
-                            // left: "50%",
-                            width: 180,
-                            height: 40,
-                            borderRadius: 8,
-                            borderWidth: 1,
-                            borderColor: STheme.color.text,
-                            backgroundColor: STheme.color.success
-                        }} />
-                    </View>
+                    <Llamada ref={ref => this.llamada = ref}  />
                 </SView>
             }
 
@@ -146,8 +132,11 @@ export default class index extends Component {
                             })
                         }} />
                     <SHr h={16} />
-                    <Llamada phone={this.state?.data?.cliente?.telefono} />
+                    {/* <Llamada phone={this.state?.data?.cliente?.telefono} /> */}
                 </>}
+                <SText padding={8} card onPress={()=>{
+                    this.llamada.llamar(this.state?.data?.cliente?.telefono);
+                }}>{"LLAMAR"}</SText>
                 <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
                     <CardContent>
                         <HorarioCliente

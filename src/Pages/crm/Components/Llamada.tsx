@@ -1,45 +1,69 @@
 import React from "react";
-import { SHr, SIcon, SPage, SText, SThread, SView } from "servisofts-component";
+import { SHr, SIcon, SPage, SText, STheme, SThread, SView } from "servisofts-component";
 import SIP from "../../../Components/SIP";
 import { RTCSession } from "jssip/lib/RTCSession";
+import { View } from "react-native";
+import DraggableView from "../call/DragableView";
+import SIconApp from "../../../Assets/SIconApp";
 
 export default class Llamada extends React.Component<{
-  phone: string;
+  phone?: string;
 }> {
   llamada: RTCSession | null = null;
   state = {
     estado: "",
   }
-  handlePress = () => {
-    if (!this.llamada) {
-      const sip = SIP.getInstance();
-      this.llamada = sip.call(this.props.phone, (e: any, evt: any) => {
-        console.log("Evento de llamada:", e, evt);
-        this.setState({ estado: e });
-
-      });
-      this.llamada.on("ended", (e: any) => {
+  evt: any = null;
+  llamar = (phone: string) => {
+    // if (!this.llamada) {
+    const sip = SIP.getInstance();
+    this.llamada = sip.call(phone, (e: any, evt: any) => {
+      console.log("Evento de llamada:", e, evt);
+      this.evt = evt;
+      this.setState({ estado: e });
+      if (e == "ended") {
         this.llamada = null;
-        this.setState({ estado: "ended" });
-      });
+        this.forceUpdate();
+      }
 
-      // this.llamada.unmute();
-      this.forceUpdate();
-    } else {
-      this.llamada.terminate();
-      this.llamada = null;
-      this.forceUpdate();
-    }
+    });
+
+    this.state.estado = "connecting";
+    // this.llamada.on("ended", (e: any) => {
+    //   this.llamada = null;
+    //   this.setState({ estado: "ended" });
+    // });
+
+    // this.llamada.unmute();
+    this.forceUpdate();
+    // } else {
+    //   this.llamada.terminate();
+    //   this.llamada = null;
+    //   this.forceUpdate();
+    // }
     // console.log(this.llamada?.)
   };
+
+  colgar = () => {
+    if (!this.llamada) return;
+    this.llamada.terminate();
+    this.llamada = null;
+    this.forceUpdate();
+  }
   isRun = true;
   componentDidMount() {
+    SIP.getInstance();
     this.isRun = true;
-    this.hilo();
+    // this.hilo();
   }
   componentWillUnmount() {
     this.isRun = false;
     if (this.llamada) {
+      if (this.llamada.isEnded()) {
+        this.llamada = null;
+        // this.forceUpdate();
+        return;
+      }
       this.llamada.terminate();
       this.llamada = null;
     }
@@ -141,8 +165,167 @@ export default class Llamada extends React.Component<{
     );
   }
 
+
+  renderFailed() {
+    return <View style={{
+      top: 4,
+      width: 180,
+    }}>
+      <DraggableView style={{
+        // top: 50,
+        // left: "50%",
+        width: "100%",
+        height: 40,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: STheme.color.text,
+        backgroundColor: STheme.color.danger,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 4,
+      }} >
+        <SView flex>
+          <SText>{this.evt.cause}</SText>
+          <SText fontSize={8}>{this.evt?.message?.reason_phrase}</SText>
+
+        </SView>
+        <SView width={20} height={20} onPress={() => {
+          this.llamada = null;
+          this.forceUpdate();
+          return;
+        }}>
+          <SIconApp name="Close" fill={STheme.color.text} />
+        </SView>
+
+
+      </DraggableView>
+    </View>
+  }
+  renderConnecting() {
+    return <View style={{
+      top: 4,
+      width: 180,
+    }}>
+      <DraggableView style={{
+        // top: 50,
+        // left: "50%",
+        width: "100%",
+        height: 40,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: STheme.color.text,
+        backgroundColor: "#799DF8",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 4,
+      }} >
+        <SView flex>
+          <SText>{"Conectando..."}</SText>
+          <SText fontSize={8}>{"00:00:00"}</SText>
+
+        </SView>
+        <SView width={20} height={20} onPress={() => {
+          console.log(this.llamada?.isMuted())
+          // this.llamada = null;
+          // this.forceUpdate();
+          return;
+        }}>
+          <SIconApp name="microfono" fill={STheme.color.text} />
+        </SView>
+
+      </DraggableView>
+    </View>
+  }
+  renderEnLinea() {
+    return <View style={{
+      top: 4,
+      width: 180,
+    }}>
+      <DraggableView style={{
+        // top: 50,
+        // left: "50%",
+        width: "100%",
+        height: 40,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: STheme.color.text,
+        backgroundColor: "#B0F333",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 4,
+      }} >
+        <SView flex>
+          <SText>{"Conectando..."}</SText>
+          <SText fontSize={8}>{"00:00:00"}</SText>
+
+        </SView>
+        <SView width={20} height={20} onPress={() => {
+          if (!this.llamada) return;
+          try {
+            if (this.llamada.isMuted().audio) {
+              console.log("Unmuting audio...");
+              this.llamada.unmute("audio");
+            } else {
+              console.log("Muting audio...");
+              this.llamada.mute("audio");
+            }
+          } catch (err) {
+            console.error("Error al mutear/desmutear:", err);
+          }
+          // this.llamada = null;
+          // this.forceUpdate();
+          return;
+        }}>
+          <SIconApp name="microfono" fill={STheme.color.text} />
+        </SView>
+        <SView width={20} height={20} onPress={() => {
+          if (!this.llamada) return;
+          this.llamada.terminate();
+          this.llamada = null;
+          this.forceUpdate();
+        }}>
+          <SIconApp name="Close" fill={STheme.color.text} />
+        </SView>
+
+      </DraggableView>
+    </View>
+  }
+
   render() {
 
+    if (!this.llamada) return null;
+    let color = STheme.color.success;
+    if (["failed"].includes(this.state.estado)) {
+      return this.renderFailed();
+    }
+    if (["connecting"].includes(this.state.estado)) {
+      return this.renderConnecting();
+    }
+    if (["accepted"].includes(this.state.estado)) {
+      return this.renderEnLinea();
+    }
+    return <View style={{
+      top: 4,
+      width: 180,
+    }}>
+      <DraggableView style={{
+        // top: 50,
+        // left: "50%",
+        width: "100%",
+        height: 40,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: STheme.color.text,
+        backgroundColor: color,
+      }} >
+        <SText>{this.state.estado}</SText>
+
+
+      </DraggableView>
+    </View>
     return <SView>
       <SText onPress={() => {
         const sip = SIP.getInstance();
