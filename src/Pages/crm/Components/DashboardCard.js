@@ -36,9 +36,9 @@ export default class DashboardCard extends Component {
                     }} >{card?.cliente?.telefono}</SText>
             </SView>
             <SHr h={4} />
-            <SText
-            // color={STheme.color.lightGray}
-            >{card?.cliente?.nombres}</SText>
+            <SText>{card?.cliente?.nombres}</SText>
+            <SHr h={16} />
+            <SText>{card?.proyecto?.nombre}</SText>
 
             <SHr />
             <SView row style={{

@@ -34,15 +34,15 @@ export default class Dashboard extends Component {
     constructor(props) {
         super(props);
         //  = SNavigation.getParam("type") == "delivery" ?
-        this.dashboardType = SNavigation.getParam("type","");
+        this.dashboardType = SNavigation.getParam("type", "");
         this.stages = [
             ...MDL.crm.clienteProyecto.stages.filter(a => a.key != "confirmado"),
             ...MDL.crm.clienteProyecto.stagesDelivery
         ]
-        if(this.dashboardType == "delivery") {
+        if (this.dashboardType == "delivery") {
             this.stages = MDL.crm.clienteProyecto.stagesDelivery;
         }
-        if(this.dashboardType == "ventas") {
+        if (this.dashboardType == "ventas") {
             this.stages = MDL.crm.clienteProyecto.stages;
         }
 
@@ -207,7 +207,7 @@ export default class Dashboard extends Component {
     render() {
         return (
             <GestureHandlerRootView style={{ flex: 1, }}>
-                <SPage title={'Dashboard '+this.dashboardType} disableScroll>
+                <SPage title={'Dashboard ' + this.dashboardType} disableScroll>
                     <ScrollView horizontal>
                         {this.stages.map((stage) => {
                             if (!this.stageRefs[stage.key]) {
@@ -217,7 +217,7 @@ export default class Dashboard extends Component {
                                 <SView
                                     key={stage.key}
                                     ref={this.stageRefs[stage.key]}
-                                    style={{ width: 300, margin: 6, userSelect:'text' }}
+                                    style={{ width: 300, margin: 6, userSelect: 'text' }}
                                 >
                                     <Stage
                                         stage={stage}
@@ -281,11 +281,7 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                     <SText bold card fontSize={10} padding={4}>{cards.length}</SText>
                 </SView>
                 <SHr />
-                <SView row col={"xs-12"}>
-                    {stage.states.map((state, index) => <Etiqueta tipo_leads={state} size={8} style={{
-                        marginRight: 8
-                    }} />)}
-                </SView>
+                <SView row col={"xs-12"}>{stage.states.map((state, index) => <Etiqueta tipo_leads={state} size={8} style={{ marginRight: 8, marginBottom: 8 }} />)}</SView>
             </SView>
             <ScrollView
 
@@ -359,13 +355,7 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
 
     return (
         <GestureDetector gesture={panGesture}>
-            <Animated.View
-                ref={ref}
-                style={[{
-                    paddingBottom: 8,
-                    // userSelect:'text'
-                }, animatedStyle]}
-            >
+            <Animated.View ref={ref} style={[{ paddingBottom: 8 }, animatedStyle]} >
                 <DashboardCard data={card} />
             </Animated.View>
         </GestureDetector>
