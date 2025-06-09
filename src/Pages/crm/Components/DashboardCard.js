@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SDate, SHr, SImage, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SIcon, SImage, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Etiqueta from './Etiqueta';
 
@@ -38,13 +38,31 @@ export default class DashboardCard extends Component {
             <SHr h={4} />
             <SText>{card?.cliente?.nombres}</SText>
             <SHr h={16} />
-            <SText>{card?.proyecto?.nombre}</SText>
 
-            <SHr />
+            <SView row col={"xs-12"} center>
+                <SIcon name="producto" width={14} height={18} fill={"#384052"} />
+                <SView width={8} />
+                <SView style={{ padding: 4, backgroundColor: "#3840526b", borderRadius: 1 }}>
+                    <SText color={STheme.color.lightGray} >Proyecto: {card?.proyecto?.nombre}</SText>
+                </SView>
+                <SView flex />
+            </SView>
+            <SHr h={8} />
+
+            <SView row col={"xs-12"} center>
+                <SIcon name="tpIn" width={14} height={18} fill={"#384052"} />
+                <SView width={8} />
+                <SView style={{ padding: 4, backgroundColor: "#3840526b", borderRadius: 1 }}>
+                    <SText style={{ maxWidth: 203 }} numberOfLines={1} color={STheme.color.lightGray}> Campaña: {card?.campana?.nombre}</SText>
+                </SView>
+                <SView flex />
+            </SView>
+
+            <SHr h={16} />
             <SView row style={{
                 alignItems: "flex-end",
             }}>
-                <Etiqueta tipo_leads={card.state} size={9} ></Etiqueta>
+                <Etiqueta tipo_leads={card.state} size={12} ></Etiqueta>
                 <SView flex />
                 <SText fontSize={10} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
             </SView>
