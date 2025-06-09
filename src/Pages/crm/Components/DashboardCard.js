@@ -26,14 +26,16 @@ export default class DashboardCard extends Component {
         }} >
 
             <SView row col={"xs-12"}>
+
                 <SText fontSize={12} color={STheme.color.lightGray}>{card.codigo}</SText>
                 <SView width={8} />
-                <SText underLine
+                <SText fontSize={14} underLine style={{ marginTop: -1 }}
                     color={STheme.color.link}
                     onPress={() => {
                         // SNavigation.navigate("/crm/plantilla", { key: card.key })
                         SNavigation.navigate("/crm/call", { key: card.key })
-                    }} >{card?.cliente?.telefono}</SText>
+                        // }} >{card?.cliente?.telefono}</SText>
+                    }} >{card?.campana?.nombre}</SText>
             </SView>
             <SHr h={4} />
             <SText>{card?.cliente?.nombres}</SText>
@@ -59,12 +61,15 @@ export default class DashboardCard extends Component {
             </SView>
 
             <SHr h={16} />
-            <SView row style={{
-                alignItems: "flex-end",
-            }}>
+            <SView row style={{ alignItems: "flex-end" }}>
+
                 <Etiqueta tipo_leads={card.state} size={12} ></Etiqueta>
                 <SView flex />
-                <SText fontSize={10} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
+                <SView row center>
+                    <SIcon name="history" width={10} fill={STheme.color.lightGray} />
+                    <SView width={4} />
+                    <SText fontSize={10} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
+                </SView>
             </SView>
             <SView style={{
                 width: 24,
