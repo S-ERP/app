@@ -195,7 +195,7 @@ export default class proyecto extends Component {
                     }} />
                 <DinamicTable.Col key={"descripcion"} label='Descripción'
 
-                    width={150}
+                    width={200}
                     cellStyle={{
                         justifyContent: "flex-start"
                     }}
