@@ -158,7 +158,13 @@ export default class proyecto extends Component {
                 }}
             >
 
-                <DinamicTable.Col key={"key"} label='Key'
+
+                <DinamicTable.Col key={"key"} label='ID' cellStyle={{
+                    justifyContent: "flex-start"
+                }}  width={30} data={(e) => e.index + 1} />
+
+
+                {/* <DinamicTable.Col key={"key"} label='Key'
                     width={60}
                     cellStyle={{
                         justifyContent: "flex-start",
@@ -170,7 +176,7 @@ export default class proyecto extends Component {
                     }}
                     data={(e) => {
                         return e.row.key
-                    }} />
+                    }} /> */}
                 <DinamicTable.Col key={"codigo"} label='Código'
                     width={60}
                     cellStyle={{
@@ -180,7 +186,7 @@ export default class proyecto extends Component {
                         return e.row.codigo
                     }} />
                 <DinamicTable.Col key={"nombre"} label='Nombre'
-                    width={120}
+                    width={170}
                     cellStyle={{
                         justifyContent: "flex-start"
                     }}
@@ -341,7 +347,7 @@ export default class proyecto extends Component {
                         padding: 0,
                     }}
                     customComponent={e => {
-                        return <SView col={"xs-12"} style={{ maxHeight: 150, overflow: "hidden" }} >
+                        return <SView col={"xs-12"} style={{ maxHeight: 155, overflow: "hidden" }} >
                             <ScrollView>
                                 <SMD space={1} fontSize={9} >{e.data}</SMD>
                             </ScrollView>
