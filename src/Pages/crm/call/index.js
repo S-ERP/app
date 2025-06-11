@@ -183,50 +183,47 @@ export default class index extends Component {
         )
     }
 
-
-renderFechaSeparador(fecha) {
-    return (
-        <SView col={"xs-12"} center style={{ margin: 20 }}>
-            <SView style={{ backgroundColor: "#182229", paddingHorizontal: 15, paddingVertical: 8, borderRadius: 8 }}>
-                <SText color={"#8696a0"} fontSize={12}>{fecha}</SText>
+    renderFechaSeparador(fecha) {
+        return (
+            <SView col={"xs-12"} center style={{ margin: 10 }}>
+                <SView style={{ backgroundColor: "#182229", paddingHorizontal: 15, paddingVertical: 8, borderRadius: 8 }}>
+                    <SText color={"#8696a0"} fontSize={12}>{fecha}</SText>
+                </SView>
             </SView>
-        </SView>
-    )
-}
+        );
+    }
 
-renderMensaje(mensaje) {
-    const isEnviado = mensaje.enviado;
-    return (
-        <SView  key={mensaje.id} style={{ marginBottom: 10 }}>
-            <SView      style={{ alignSelf: isEnviado ? "flex-end" : "flex-start", backgroundColor: isEnviado ? "#005c4b" : "#202c33", borderRadius: 8, padding: 20, marginHorizontal: 10 }}>
-                <SText color={"white"} fontSize={14}>{mensaje.texto}</SText>
+    renderMensaje(mensaje) {
+        const isEnviado = mensaje.enviado;
+        return (
+            <SView col={"xs-12"} key={mensaje.id} border={"transparent"} style={{ marginBottom: 2 }}>
+                <SView style={{ alignSelf: isEnviado ? "flex-end" : "flex-start", backgroundColor: isEnviado ? "#005c4b" : "#202c33", borderRadius: 8, padding: 12, marginHorizontal: 10, width: "auto", maxWidth: "100%" }}>
+                    <SText color={"white"} fontSize={14}>{mensaje.texto}</SText>
+                </SView>
+                <SView style={{ alignSelf: isEnviado ? "flex-end" : "flex-start", marginHorizontal: 15, width: "auto", maxWidth: "100%", }}>
+                    <SText color={"#8696a0"} fontSize={11}>{mensaje.hora} {isEnviado && <SText color={"#53bdeb"}>✓✓</SText>}</SText>
+                </SView>
             </SView>
-            <SView style={{ alignSelf: isEnviado ? "flex-end" : "flex-start", marginHorizontal: 15, marginTop: 5 }}>
-                <SText color={"#8696a0"} fontSize={11}>{mensaje.hora} {isEnviado && <SText color={"#53bdeb"}>✓✓</SText>}</SText>
+        );
+    }
+
+    renderChat() {
+        let fechaActual = "";
+        return (
+            <SView col={"xs-12"} flex style={{ backgroundColor: "#0b141a", paddingBottom: 20 }}>
+                {this.state.mensajes.map((mensaje) => {
+                    const mostrarFecha = fechaActual !== mensaje.fecha;
+                    if (mostrarFecha) fechaActual = mensaje.fecha;
+                    return (
+                        <SView col={"xs-12"} key={`container-${mensaje.id}`}>
+                            {mostrarFecha && this.renderFechaSeparador(mensaje.fecha)}
+                            {this.renderMensaje(mensaje)}
+                        </SView>
+                    );
+                })}
             </SView>
-        </SView>
-    )
-}
-
-renderChat() {
-    let fechaActual = "";
-    return (
-        <SView col={"xs-12"} flex center style={{ backgroundColor: "#0b141a", paddingBottom: 100 }}>
-            {this.state.mensajes.map((mensaje) => {
-                const mostrarFecha = fechaActual !== mensaje.fecha;
-                if (mostrarFecha) fechaActual = mensaje.fecha;
-                return (
-                    <SView col={"xs-11"} row  key={mensaje.id}>
-                        {mostrarFecha && this.renderFechaSeparador(mensaje.fecha)}
-                        {this.renderMensaje(mensaje)}
-                    </SView>
-                );
-            })}
-        </SView>
-    )
-}
-
-
+        );
+    }
 
 
     renderBarraEntrada() {
@@ -295,10 +292,13 @@ renderChat() {
                         </SView>
                     </CardContent>
                     <CardContent>
-                        {/* <OrdenesConMismoNumero key_cliente_proyecto={this.pk} /> */}
-                        {/* <Comentario data={this.state.data} /> */}
+                        <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />
+                        <Comentario data={this.state.data} />
                         <SView col={"xs-12"}>
-                            <SView col={"xs-12"} center style={{ padding: 16, borderRadius: 16, borderWidth: 2 }} border={STheme.color.card} backgroundColor={STheme.color.card}>
+                            <SView col={"xs-12"} style={{ padding: 16, borderRadius: 16, borderWidth: 2 }} border={STheme.color.card} backgroundColor={STheme.color.card}>
+                                <SHr />
+                                <SText color={"white"} fontSize={14}>Chat</SText>
+                                <SHr />
                                 {this.renderHeader()}
                                 {this.renderChat()}
                                 {this.renderBarraEntrada()}
@@ -306,7 +306,7 @@ renderChat() {
                         </SView>
 
 
-                        {/* <HistoricoMovimientos ref={ref => this.historicoMovimientos = ref} key_cliente_proyecto={this.pk} /> */}
+                        <HistoricoMovimientos ref={ref => this.historicoMovimientos = ref} key_cliente_proyecto={this.pk} />
                     </CardContent>
                 </SView>
             </SView>
