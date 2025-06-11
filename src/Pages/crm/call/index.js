@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SIcon, SLoad, SNavigation, SPage, SText, STheme, SThread, SView } from 'servisofts-component';
+import { SHr, SIcon, SImage, SInput, SLoad, SNavigation, SPage, SText, STheme, SThread, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SMD from '../../../SMD';
 import OrdenesConMismoNumero from '../Components/OrdenesConMismoNumero';
@@ -15,6 +15,8 @@ import HorarioCliente from '../Components/DetalleLead/HorarioCliente';
 import MenuAccionesDelivery from './MenuAccionesDelivery';
 import MenuAccionesDespacho from './MenuAccionesDespacho';
 import DraggableView from './DragableView';
+import Chatwhatsapp from '../Components/ChatWhatsapp';
+import SSocket from "servisofts-socket";
 
 const CardContent = ({ children }) => {
     return <SView col={"xs-12 sm-6 md-6 lg-4"} padding={0} center>
@@ -27,8 +29,71 @@ const CardContent = ({ children }) => {
 
 export default class index extends Component {
     pk = SNavigation.getParam("key");
+    // state = {
+    //     data: null,
+    // }
+
     state = {
         data: null,
+
+        mensaje: "",
+        mensajes: [
+            {
+                id: 1,
+                texto: "Q dice ps",
+                hora: "4:38 p.m.",
+                enviado: false,
+                fecha: "Ayer",
+            },
+            {
+                id: 2,
+                texto: "anda de parranda",
+                hora: "6:17 p.m.",
+                enviado: false,
+                fecha: "Ayer",
+            },
+            {
+                id: 3,
+                texto: "?",
+                hora: "6:17 p.m.",
+                enviado: false,
+                fecha: "Ayer",
+            },
+            {
+                id: 4,
+                texto: "Profe",
+                hora: "9:54 p.m.",
+                enviado: true,
+                fecha: "Ayer",
+            },
+            {
+                id: 5,
+                texto: "Estoy en camino",
+                hora: "9:54 p.m.",
+                enviado: true,
+                fecha: "Ayer",
+            },
+            {
+                id: 6,
+                texto: "delay",
+                hora: "9:55 p.m.",
+                enviado: false,
+                fecha: "Ayer",
+            },
+            {
+                id: 7,
+                texto:
+                    "De acuerdo a lo acordado se pasas la actualización de los nuevos servicios, estos ya están disponibles en el sitio de desarrollo",
+                hora: "2:23 a.m.",
+                enviado: false,
+                fecha: "Hoy",
+                archivo: {
+                    nombre: "Servicios_de_Integración.docx",
+                    tipo: "DOCX",
+                    tamaño: "241 kB",
+                },
+            },
+        ],
     }
     componentDidMount() {
 
@@ -101,6 +166,187 @@ export default class index extends Component {
     }
 
 
+    renderHeader() {
+        return (
+            <SView col={"xs-12"} row style={{ backgroundColor: STheme.color.card, padding: 15, borderBottomWidth: 1, borderBottomColor: "green" }}>
+                <SView col={"xs-8"} row style={{ justifyContent: "flex-start" }}>
+                    <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden" }}>
+                        <SImage enablePreview src={SSocket.api.root + "usuario/1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b"} style={{ resizeMode: "cover" }} />
+                    </SView>
+                    <SText color={"white"} fontSize={18}> </SText>
+                    <SText color={"white"} fontSize={18} bold>+591 75395848</SText>
+                </SView>
+                <SView col={"xs-4"} row center style={{ justifyContent: "flex-end" }}>
+                    <SIcon name='drive-menu' fill='white' width={18} height={18} />
+                </SView>
+            </SView>
+        )
+    }
+
+
+
+    renderNotificacion() {
+        return (
+            <SView
+                col={"xs-12"}
+                style={{
+                    backgroundColor: "#182229",
+                    borderWidth: 1,
+                    borderColor: "#2a3942",
+                    borderRadius: 8,
+                    padding: 15,
+                    margin: 20,
+                }}
+                center
+            >
+                <SText color={"#8696a0"} fontSize={13} center>
+                    🔒 Se activaron los mensajes temporales. Los mensajes nuevos desaparecerán de este chat después de 24 horas de
+                    haber sido enviados, a menos que se use la opción para conservarlos. Haz clic para cambiar esto.
+                </SText>
+            </SView>
+        )
+    }
+
+    renderFechaSeparador(fecha) {
+        return (
+            <SView col={"xs-12"} center style={{ margin: 20 }}>
+                <SView
+                    style={{
+                        backgroundColor: "#182229",
+                        paddingHorizontal: 15,
+                        paddingVertical: 8,
+                        borderRadius: 8,
+                    }}
+                >
+                    <SText color={"#8696a0"} fontSize={12}>
+                        {fecha}
+                    </SText>
+                </SView>
+            </SView>
+        )
+    }
+
+
+    renderArchivo(archivo) {
+        return (
+            <SView
+                row
+                style={{
+                    backgroundColor: "#2a3942",
+                    borderRadius: 8,
+                    padding: 10,
+                    marginBottom: 10,
+                }}
+            >
+                <SView
+                    style={{
+                        width: 40,
+                        height: 40,
+                        backgroundColor: "#0084ff",
+                        borderRadius: 8,
+                        marginRight: 15,
+                    }}
+                    center
+                >
+                    <SText color={"white"} fontSize={16} bold>
+                        W
+                    </SText>
+                </SView>
+                <SView flex>
+                    <SText color={"white"} fontSize={14} bold>
+                        {archivo.nombre}
+                    </SText>
+                    <SText color={"#8696a0"} fontSize={12}>
+                        {archivo.tipo} • {archivo.tamaño}
+                    </SText>
+                </SView>
+            </SView>
+        )
+    }
+
+
+
+    renderMensaje(mensaje) {
+        const isEnviado = mensaje.enviado
+
+        return (
+            <SView key={mensaje.id} col={"xs-12"} style={{ marginBottom: 10 }}>
+                <SView
+
+                    col={"xs-12"}
+                    row
+                    style={{
+                        alignSelf: isEnviado ? "flex-end" : "flex-start",
+                        backgroundColor: isEnviado ? "#005c4b" : "#202c33",
+                        borderRadius: 8,
+                        padding: 20,
+                        marginHorizontal: 10,
+                    }}
+                >
+                    {mensaje.archivo && this.renderArchivo(mensaje.archivo)}
+                    <SText color={"white"} fontSize={14}>
+                        {mensaje.texto}
+                    </SText>
+                </SView>
+                <SView
+                    style={{
+                        alignSelf: isEnviado ? "flex-end" : "flex-start",
+                        marginHorizontal: 15,
+                        marginTop: 5,
+                    }}
+                >
+                    <SText color={"#8696a0"} fontSize={11}>
+                        {mensaje.hora} {isEnviado && <SText color={"#53bdeb"}>✓✓</SText>}
+                    </SText>
+                </SView>
+            </SView>
+        )
+    }
+
+    renderChat() {
+        let fechaActual = ""
+
+        return (
+            <SView
+                col={"xs-12"}
+                flex
+                style={{
+                    backgroundColor: "#0b141a",
+                    paddingBottom: 100, // Espacio para la barra de entrada
+                }}
+            >
+                {/* {this.renderNotificacion()} */}
+
+                {this.state.mensajes.map((mensaje) => {
+                    const mostrarFecha = fechaActual !== mensaje.fecha
+                    if (mostrarFecha) {
+                        fechaActual = mensaje.fecha
+                    }
+
+                    return (
+                        <SView key={mensaje.id}>
+                            {mostrarFecha && this.renderFechaSeparador(mensaje.fecha)}
+                            {this.renderMensaje(mensaje)}
+                        </SView>
+                    )
+                })}
+            </SView>
+        )
+    }
+
+    renderBarraEntrada() {
+        return (<SView col={"xs-12"} row style={{ backgroundColor: STheme.color.card, padding: 15, bottom: 0, left: 0, right: 0 }}>
+            <SView style={{ marginRight: 15 }}><SIcon name='add1' fill='white' width={18} /></SView>
+            <SView style={{ marginRight: 15 }}><SIcon name='addTarea' fill='white' width={18} /></SView>
+            <SView flex style={{ marginRight: 15 }}>
+                <SInput placeholder="Escribe un mensaje" placeholderTextColor="#8696a0" style={{ backgroundColor: "#2a3942", borderRadius: 20, paddingHorizontal: 20, color: "white", borderWidth: 0 }} />
+            </SView>
+            <SView onPress={() => { alert("mensaje enviado") }}
+            ><SIcon name='MessageSend' fill='white' width={18} /></SView>
+        </SView>
+        )
+    }
+
     render() {
         const { proyecto, state, fecha_on, fecha_edit } = this.state.data || {};
         if (this.state.data == null) return <SPage title={"Call"} >
@@ -117,7 +363,7 @@ export default class index extends Component {
                 <SView col={"xs-12"} center style={{
                     position: "absolute",
                 }}>
-                    <Llamada ref={ref => this.llamada = ref}  />
+                    <Llamada ref={ref => this.llamada = ref} />
                 </SView>
             }
 
@@ -134,7 +380,7 @@ export default class index extends Component {
                     <SHr h={16} />
                     {/* <Llamada phone={this.state?.data?.cliente?.telefono} /> */}
                 </>}
-                <SText padding={8} card onPress={()=>{
+                <SText padding={8} card onPress={() => {
                     this.llamada.llamar(this.state?.data?.cliente?.telefono);
                 }}>{"LLAMAR"}</SText>
                 <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -156,6 +402,28 @@ export default class index extends Component {
                     <CardContent>
                         <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />
                         <Comentario data={this.state.data} />
+
+
+                        <SView col={"xs-12"}>
+                            <SView
+
+                                col={"xs-12"}
+                                center
+                                style={{ padding: 16, borderRadius: 16, borderWidth: 2 }}
+                                border={STheme.color.card}
+                                backgroundColor={STheme.color.card}
+                            >
+                                {this.renderHeader()}
+                                {/* {this.renderChat()} */}
+
+
+
+
+                                {this.renderBarraEntrada()}
+                            </SView>
+                        </SView>
+
+
                         <HistoricoMovimientos ref={ref => this.historicoMovimientos = ref} key_cliente_proyecto={this.pk} />
                     </CardContent>
                 </SView>
