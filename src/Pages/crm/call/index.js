@@ -38,62 +38,16 @@ export default class index extends Component {
 
         mensaje: "",
         mensajes: [
-            {
-                id: 1,
-                texto: "Q dice ps",
-                hora: "4:38 p.m.",
-                enviado: false,
-                fecha: "Ayer",
-            },
-            {
-                id: 2,
-                texto: "anda de parranda",
-                hora: "6:17 p.m.",
-                enviado: false,
-                fecha: "Ayer",
-            },
-            {
-                id: 3,
-                texto: "?",
-                hora: "6:17 p.m.",
-                enviado: false,
-                fecha: "Ayer",
-            },
-            {
-                id: 4,
-                texto: "Profe",
-                hora: "9:54 p.m.",
-                enviado: true,
-                fecha: "Ayer",
-            },
-            {
-                id: 5,
-                texto: "Estoy en camino",
-                hora: "9:54 p.m.",
-                enviado: true,
-                fecha: "Ayer",
-            },
-            {
-                id: 6,
-                texto: "delay",
-                hora: "9:55 p.m.",
-                enviado: false,
-                fecha: "Ayer",
-            },
-            {
-                id: 7,
-                texto:
-                    "De acuerdo a lo acordado se pasas la actualización de los nuevos servicios, estos ya están disponibles en el sitio de desarrollo",
-                hora: "2:23 a.m.",
-                enviado: false,
-                fecha: "Hoy",
-                archivo: {
-                    nombre: "Servicios_de_Integración.docx",
-                    tipo: "DOCX",
-                    tamaño: "241 kB",
-                },
-            },
-        ],
+            { id: 1, texto: "Buenas, vi tu anuncio del monitor. ¿Sigue en venta?", hora: "6:42 p.m.", enviado: true, fecha: "Ayer" },
+            { id: 2, texto: "Hola, sí. Es un Samsung de 27 pulgadas, full HD.", hora: "6:44 p.m.", enviado: false, fecha: "Ayer" },
+            { id: 3, texto: "¿Funciona todo bien? ¿Tiene detalles?", hora: "6:45 p.m.", enviado: true, fecha: "Ayer" },
+            { id: 4, texto: "Está en buen estado, sin rayones. Lo vendo porque actualicé setup.", hora: "6:47 p.m.", enviado: false, fecha: "Ayer" },
+            { id: 5, texto: "Perfecto, me interesa.", hora: "9:12 a.m.", enviado: true, fecha: "Hoy" },
+            { id: 6, texto: "¿Podemos encontrarnos hoy en la tarde por el centro?", hora: "9:13 a.m.", enviado: true, fecha: "Hoy" },
+            { id: 7, texto: "Sí, tipo 5 p.m. por la plaza principal te va?", hora: "9:15 a.m.", enviado: false, fecha: "Hoy" }
+        ]
+
+
     }
     componentDidMount() {
 
