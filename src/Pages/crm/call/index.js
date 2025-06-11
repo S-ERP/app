@@ -184,155 +184,50 @@ export default class index extends Component {
     }
 
 
-
-    renderNotificacion() {
-        return (
-            <SView
-                col={"xs-12"}
-                style={{
-                    backgroundColor: "#182229",
-                    borderWidth: 1,
-                    borderColor: "#2a3942",
-                    borderRadius: 8,
-                    padding: 15,
-                    margin: 20,
-                }}
-                center
-            >
-                <SText color={"#8696a0"} fontSize={13} center>
-                    🔒 Se activaron los mensajes temporales. Los mensajes nuevos desaparecerán de este chat después de 24 horas de
-                    haber sido enviados, a menos que se use la opción para conservarlos. Haz clic para cambiar esto.
-                </SText>
+renderFechaSeparador(fecha) {
+    return (
+        <SView col={"xs-12"} center style={{ margin: 20 }}>
+            <SView style={{ backgroundColor: "#182229", paddingHorizontal: 15, paddingVertical: 8, borderRadius: 8 }}>
+                <SText color={"#8696a0"} fontSize={12}>{fecha}</SText>
             </SView>
-        )
-    }
+        </SView>
+    )
+}
 
-    renderFechaSeparador(fecha) {
-        return (
-            <SView col={"xs-12"} center style={{ margin: 20 }}>
-                <SView
-                    style={{
-                        backgroundColor: "#182229",
-                        paddingHorizontal: 15,
-                        paddingVertical: 8,
-                        borderRadius: 8,
-                    }}
-                >
-                    <SText color={"#8696a0"} fontSize={12}>
-                        {fecha}
-                    </SText>
-                </SView>
+renderMensaje(mensaje) {
+    const isEnviado = mensaje.enviado;
+    return (
+        <SView  key={mensaje.id} style={{ marginBottom: 10 }}>
+            <SView      style={{ alignSelf: isEnviado ? "flex-end" : "flex-start", backgroundColor: isEnviado ? "#005c4b" : "#202c33", borderRadius: 8, padding: 20, marginHorizontal: 10 }}>
+                <SText color={"white"} fontSize={14}>{mensaje.texto}</SText>
             </SView>
-        )
-    }
-
-
-    renderArchivo(archivo) {
-        return (
-            <SView
-                row
-                style={{
-                    backgroundColor: "#2a3942",
-                    borderRadius: 8,
-                    padding: 10,
-                    marginBottom: 10,
-                }}
-            >
-                <SView
-                    style={{
-                        width: 40,
-                        height: 40,
-                        backgroundColor: "#0084ff",
-                        borderRadius: 8,
-                        marginRight: 15,
-                    }}
-                    center
-                >
-                    <SText color={"white"} fontSize={16} bold>
-                        W
-                    </SText>
-                </SView>
-                <SView flex>
-                    <SText color={"white"} fontSize={14} bold>
-                        {archivo.nombre}
-                    </SText>
-                    <SText color={"#8696a0"} fontSize={12}>
-                        {archivo.tipo} • {archivo.tamaño}
-                    </SText>
-                </SView>
+            <SView style={{ alignSelf: isEnviado ? "flex-end" : "flex-start", marginHorizontal: 15, marginTop: 5 }}>
+                <SText color={"#8696a0"} fontSize={11}>{mensaje.hora} {isEnviado && <SText color={"#53bdeb"}>✓✓</SText>}</SText>
             </SView>
-        )
-    }
+        </SView>
+    )
+}
+
+renderChat() {
+    let fechaActual = "";
+    return (
+        <SView col={"xs-12"} flex center style={{ backgroundColor: "#0b141a", paddingBottom: 100 }}>
+            {this.state.mensajes.map((mensaje) => {
+                const mostrarFecha = fechaActual !== mensaje.fecha;
+                if (mostrarFecha) fechaActual = mensaje.fecha;
+                return (
+                    <SView col={"xs-11"} row  key={mensaje.id}>
+                        {mostrarFecha && this.renderFechaSeparador(mensaje.fecha)}
+                        {this.renderMensaje(mensaje)}
+                    </SView>
+                );
+            })}
+        </SView>
+    )
+}
 
 
 
-    renderMensaje(mensaje) {
-        const isEnviado = mensaje.enviado
-
-        return (
-            <SView key={mensaje.id} col={"xs-12"} style={{ marginBottom: 10 }}>
-                <SView
-
-                    col={"xs-12"}
-                    row
-                    style={{
-                        alignSelf: isEnviado ? "flex-end" : "flex-start",
-                        backgroundColor: isEnviado ? "#005c4b" : "#202c33",
-                        borderRadius: 8,
-                        padding: 20,
-                        marginHorizontal: 10,
-                    }}
-                >
-                    {mensaje.archivo && this.renderArchivo(mensaje.archivo)}
-                    <SText color={"white"} fontSize={14}>
-                        {mensaje.texto}
-                    </SText>
-                </SView>
-                <SView
-                    style={{
-                        alignSelf: isEnviado ? "flex-end" : "flex-start",
-                        marginHorizontal: 15,
-                        marginTop: 5,
-                    }}
-                >
-                    <SText color={"#8696a0"} fontSize={11}>
-                        {mensaje.hora} {isEnviado && <SText color={"#53bdeb"}>✓✓</SText>}
-                    </SText>
-                </SView>
-            </SView>
-        )
-    }
-
-    renderChat() {
-        let fechaActual = ""
-
-        return (
-            <SView
-                col={"xs-12"}
-                flex
-                style={{
-                    backgroundColor: "#0b141a",
-                    paddingBottom: 100, // Espacio para la barra de entrada
-                }}
-            >
-                {/* {this.renderNotificacion()} */}
-
-                {this.state.mensajes.map((mensaje) => {
-                    const mostrarFecha = fechaActual !== mensaje.fecha
-                    if (mostrarFecha) {
-                        fechaActual = mensaje.fecha
-                    }
-
-                    return (
-                        <SView key={mensaje.id}>
-                            {mostrarFecha && this.renderFechaSeparador(mensaje.fecha)}
-                            {this.renderMensaje(mensaje)}
-                        </SView>
-                    )
-                })}
-            </SView>
-        )
-    }
 
     renderBarraEntrada() {
         return (<SView col={"xs-12"} row style={{ backgroundColor: STheme.color.card, padding: 15, bottom: 0, left: 0, right: 0 }}>
@@ -400,31 +295,18 @@ export default class index extends Component {
                         </SView>
                     </CardContent>
                     <CardContent>
-                        <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />
-                        <Comentario data={this.state.data} />
-
-
+                        {/* <OrdenesConMismoNumero key_cliente_proyecto={this.pk} /> */}
+                        {/* <Comentario data={this.state.data} /> */}
                         <SView col={"xs-12"}>
-                            <SView
-
-                                col={"xs-12"}
-                                center
-                                style={{ padding: 16, borderRadius: 16, borderWidth: 2 }}
-                                border={STheme.color.card}
-                                backgroundColor={STheme.color.card}
-                            >
+                            <SView col={"xs-12"} center style={{ padding: 16, borderRadius: 16, borderWidth: 2 }} border={STheme.color.card} backgroundColor={STheme.color.card}>
                                 {this.renderHeader()}
-                                {/* {this.renderChat()} */}
-
-
-
-
+                                {this.renderChat()}
                                 {this.renderBarraEntrada()}
                             </SView>
                         </SView>
 
 
-                        <HistoricoMovimientos ref={ref => this.historicoMovimientos = ref} key_cliente_proyecto={this.pk} />
+                        {/* <HistoricoMovimientos ref={ref => this.historicoMovimientos = ref} key_cliente_proyecto={this.pk} /> */}
                     </CardContent>
                 </SView>
             </SView>
