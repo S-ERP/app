@@ -82,9 +82,10 @@ export default class MsgVideo extends Component {
                     <SView width={50} height={50} center style={{
                         backgroundColor: "#ffffff99",
                         borderRadius: 100,
-                        padding: 12
+                        padding: 12,
+                        justifyContent: "center",
                     }}>
-                        <SIconApp name="MessageSend" fill="#444" />
+                        <SIconApp name="crmplay" fill="#444" />
                     </SView>
                 </SView>
                 <SText style={{

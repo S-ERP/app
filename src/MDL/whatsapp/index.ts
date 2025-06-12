@@ -12,7 +12,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
   // url = "https://wtspp.servisofts.com";
 
   async send(params: { phone: string; message: string }) {
-    fetch(this.url + "/send", {
+    const resp = await fetch(this.url + "/send", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -23,13 +23,8 @@ export default class whatsapp extends MDLAbstract<EventListener> {
         mensaje: params.message,
       }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Respuesta del servidor:", data);
-      })
-      .catch((error) => {
-        console.error("Error al hacer la solicitud:", error);
-      });
+    const json = await resp.json();
+    return json
   }
 
   async getAllChatsById(params: {
@@ -45,7 +40,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
       },
       body: JSON.stringify({
         key: this.key,
-        idchat: "591"+params.phone+"@c.us",
+        idchat: "591" + params.phone + "@c.us",
         // idchat: "59178505744@c.us",
         // idchat: params.idchat,
         limit: 20,
@@ -53,8 +48,8 @@ export default class whatsapp extends MDLAbstract<EventListener> {
         offset: 0,
       }),
     })
-      const json = await resp.json()
-      return json.data
+    const json = await resp.json()
+    return json.data
 
   }
 }

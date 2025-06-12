@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { SDate, SHr, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView, SIcon } from "servisofts-component";
+import { SDate, SHr, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView, SIcon, SUuid } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import MDL from "../../../../MDL";
 import Typemessage from "./Typemessage";
@@ -40,7 +40,20 @@ export default class Chatlead extends Component {
         const { telefono } = this.props.data?.cliente || {};
         if (telefono && message) {
 
-            MDL.whatsapp.send({ phone: telefono, message });
+            MDL.whatsapp.send({ phone: telefono, message }).then(e=>{
+
+                this.state.data.push({
+                    id: SUuid(),
+                    body: message,
+                    type: "chat",
+                    fromMe: true,
+                    timestamp: new Date().getTime()/1000,
+                    mediaData: null,
+                    location: null
+                })
+                this.forceUpdate();
+                // this.componentDidMount();
+            })
 
             console.log(`Mensaje enviado a ${telefono}: ${message}`);
             this.campos.setValue("");
@@ -50,7 +63,7 @@ export default class Chatlead extends Component {
     renderHeader() {
         const { cliente } = this.props.data || {};
         return (
-            <SView col="xs-12" row style={{ backgroundColor: STheme.color.card, padding: 8,}}>
+            <SView col="xs-12" row style={{ backgroundColor: STheme.color.card, padding: 8, }}>
                 <SView col="xs-8" row style={{ justifyContent: "flex-start" }}>
                     <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden" }}>
                         <SImage enablePreview src="https://avatars.githubusercontent.com/u/69025139?v=4" style={{ resizeMode: "cover" }} />
@@ -87,7 +100,7 @@ export default class Chatlead extends Component {
         return (
             <SView col={"xs-12"} key={mensaje.id} style={{
                 alignItems: isEnviado ? "flex-end" : "flex-start",
-                marginBottom:8
+                marginBottom: 8
             }}>
                 <Typemessage mensaje={mensaje} ></Typemessage>
             </SView>
