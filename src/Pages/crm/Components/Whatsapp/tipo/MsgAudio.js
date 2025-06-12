@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { TouchableOpacity, View } from "react-native";
-import { SImage, SText, SView, SIcon } from "servisofts-component";
+import { SImage, SText, SView, SIcon, SHr } from "servisofts-component";
+import HoraLabel from "../Comp/HoraLabel";
+import Sounds from "../../../../../Components/Sounds";
 
 export default class MsgAudio extends Component {
     constructor(props) {
@@ -8,7 +10,7 @@ export default class MsgAudio extends Component {
         this.state = {
             isPlaying: false,
             progress: 0,
-            duration: 70,
+            duration: this.props.mensaje.duration,
             waveform: Array.from({ length: 25 }, () => Math.random() * 0.8 + 0.2),
         };
         this.interval = null;
@@ -19,6 +21,9 @@ export default class MsgAudio extends Component {
     }
 
     togglePlay = () => {
+        const si = Sounds.play(this.props.mensaje.mediaData);
+        console.log("entro " + JSON.stringify(this.props.mensaje.mediaData))
+
         if (this.state.isPlaying) {
             clearInterval(this.interval);
             this.setState({ isPlaying: false });
@@ -58,70 +63,73 @@ export default class MsgAudio extends Component {
     };
 
     render() {
-        const isEnviado = this.props.mensaje.fromMe;
-        const texto = this.props.mensaje.body;
-        const hora = new Date(500 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const { isPlaying } = this.state;
-
+        // this.props.mensaje.mediaData; donde iria para que se escuche mi audio
         return (
-            <View style={{
+            <SView row style={{
                 backgroundColor: this.props.color || "#075E54",
                 borderRadius: 8,
-                padding: 12,
+                padding: 8,
                 marginHorizontal: 10,
                 width: "80%",
-                flexDirection: "row",
-                alignItems: "center",
             }}>
-                {/* Avatar */}
-                <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden", marginRight: 8 }}>
-                    <SImage
-                        enablePreview
-                        src="https://avatars.githubusercontent.com/u/69025139?v=4"
-                        style={{ resizeMode: "cover" }}
-                    />
+
+                <SView col={"xs-12"} row center >
+                    <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden", marginRight: 8 }}>
+                        <SImage
+                            enablePreview
+                            src="https://avatars.githubusercontent.com/u/69025139?v=4"
+                            style={{ resizeMode: "cover" }}
+                        />
+                    </SView>
+
+                    <SView flex row >
+
+                        <SView style={{ flexDirection: "row", alignItems: "center" }}>
+
+                            {/* Botón Play/Pause */}
+                            <TouchableOpacity onPress={this.togglePlay}>
+                                <View style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 16,
+                                    backgroundColor: "rgba(255,255,255,0.2)",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginRight: 10
+                                }}>
+                                    <SIcon name={isPlaying ? "crmpause" : "crmplay"} fill="white" width={16} height={16} />
+                                </View>
+                            </TouchableOpacity>
+
+                            {/* Waveform */}
+                            {this.renderWaveform()}
+
+
+                        </SView>
+
+                        {/* Tiempo y checks */}
+
+                    </SView>
+
                 </SView>
 
-                {/* Botón Play/Pause */}
-                <TouchableOpacity onPress={this.togglePlay}>
-                    <View style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 16,
-                        backgroundColor: "rgba(255,255,255,0.2)",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        marginRight: 10
-                    }}>
-                        <SIcon name={isPlaying ? "crmpause" : "crmplay"} fill="white" width={16} height={16} />
-                    </View>
-                </TouchableOpacity>
-
-                {/* Waveform */}
-                {this.renderWaveform()}
-
-                {/* Hora */}
-                <SView style={{ marginLeft: 8 }}>
-                    <SText color={"rgba(255,255,255,0.7)"} fontSize={10}>{55}</SText>
-                </SView>
-
+                <SHr height={5} />
 
                 {/* Tiempo y checks */}
-                <View style={{ flexDirection: "row", justifyContent: "flex-end", marginTop: 4, alignItems: "center" }}>
-                    <SText color="rgba(255,255,255,0.7)" fontSize={11}>
-                        {hora}
+                <SView col={"xs-12"} row center   >
 
-                        {/* {Math.floor(progress / 60)}:{(progress % 60).toString().padStart(2, "0")} */}
-                    </SText>
-                    <View style={{ width: 8 }} />
-                    <SText color="rgba(255,255,255,0.7)" fontSize={11}>
-                        {hora}
-                    </SText>
-                    <View style={{ width: 4 }} />
-
-                </View>
-
-            </View>
+                    <SView col={"xs-4"}   >
+                        <SText color="rgba(255,255,255,0.7)" fontSize={11}>
+                            {Math.floor(this.state.progress / 60)}:{(this.state.progress % 60).toString().padStart(2, "0")}
+                        </SText>
+                    </SView>
+                    <SView flex />
+                    <SView col={"xs-4"} style={{ alignItems: "flex-end" }}  >
+                        <HoraLabel mesaje={this.props.mensaje} />
+                    </SView>
+                </SView>
+            </SView>
         );
     }
 }
