@@ -43,7 +43,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
         idchat: "591" + params.phone + "@c.us",
         // idchat: "59178505744@c.us",
         // idchat: params.idchat,
-        limit: 20,
+        limit: 50,
         // limit: params.limit,
         offset: 0,
       }),

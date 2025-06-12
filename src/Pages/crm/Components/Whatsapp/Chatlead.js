@@ -40,14 +40,14 @@ export default class Chatlead extends Component {
         const { telefono } = this.props.data?.cliente || {};
         if (telefono && message) {
 
-            MDL.whatsapp.send({ phone: telefono, message }).then(e=>{
+            MDL.whatsapp.send({ phone: telefono, message }).then(e => {
 
                 this.state.data.push({
                     id: SUuid(),
                     body: message,
                     type: "chat",
                     fromMe: true,
-                    timestamp: new Date().getTime()/1000,
+                    timestamp: new Date().getTime() / 1000,
                     mediaData: null,
                     location: null
                 })
@@ -81,10 +81,14 @@ export default class Chatlead extends Component {
     }
 
     renderFechaSeparador(fecha) {
+        let mensage = fecha;
+        if (fecha == new SDate().toString("yyyy-MM-dd")) {
+            mensage = "Hoy";
+        }
         return (
             <SView col="xs-12" center style={{ margin: 10 }}>
                 <SView style={{ backgroundColor: "#182229", paddingHorizontal: 15, paddingVertical: 8, borderRadius: 8 }}>
-                    <SText color="#8696a0" fontSize={12}>{fecha}</SText>
+                    <SText color="#8696a0" fontSize={12}>{mensage}</SText>
                 </SView>
             </SView>
         );
@@ -113,11 +117,12 @@ export default class Chatlead extends Component {
         return (
             <SView col="xs-12" flex style={{ backgroundColor: "#0b141a", paddingBottom: 20 }}>
                 {(this.state.data ?? []).map((mensaje) => {
-                    const mostrarFecha = fechaActual !== mensaje.fecha;
-                    if (mostrarFecha) fechaActual = mensaje.fecha;
+                    const fecha = new SDate(new Date(mensaje.timestamp * 1000)).toString("yyyy-MM-dd");
+                    const mostrarFecha = fechaActual !== fecha;
+                    if (mostrarFecha) fechaActual = fecha;
                     return (
                         <SView col="xs-12" key={`container-${mensaje.id}`}>
-                            {mostrarFecha && this.renderFechaSeparador(mensaje.fecha)}
+                            {mostrarFecha && this.renderFechaSeparador(fecha)}
                             {this.renderMensaje(mensaje)}
                         </SView>
                     );
