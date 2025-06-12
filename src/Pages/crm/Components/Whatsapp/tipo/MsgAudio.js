@@ -21,13 +21,24 @@ export default class MsgAudio extends Component {
     }
 
     togglePlay = () => {
-        const si = Sounds.play(this.props.mensaje.mediaData);
-        console.log("entro " + JSON.stringify(this.props.mensaje.mediaData))
+
+        // console.log("entro " + JSON.stringify(this.props.mensaje.mediaData))
 
         if (this.state.isPlaying) {
             clearInterval(this.interval);
             this.setState({ isPlaying: false });
+            if (this.audioPlay) {
+                console.log("detener audio", this.audioPlay);
+                this.audioPlay.pause();
+            }
         } else {
+            if (!this.audioPlay) {
+                this.audioPlay = Sounds.play({ src: this.props.mensaje.mediaData });
+            }else{
+                console.log("reproducir audio", this.audioPlay);
+                this.audioPlay.play();
+            }
+
             this.setState({ isPlaying: true });
             this.interval = setInterval(() => {
                 this.setState((prev) => {
