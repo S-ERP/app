@@ -34,7 +34,7 @@ export default class MsgAudio extends Component {
         } else {
             if (!this.audioPlay) {
                 this.audioPlay = Sounds.play({ src: this.props.mensaje.mediaData });
-            }else{
+            } else {
                 console.log("reproducir audio", this.audioPlay);
                 this.audioPlay.play();
             }
@@ -69,7 +69,7 @@ export default class MsgAudio extends Component {
                         height: value * 20,
                         backgroundColor: "white",
                         opacity: isActive ? 1 : 0.3,
-                        marginRight: 2,
+                        marginRight: 2.5,
                         borderRadius: 1,
                     }}
                 />
@@ -77,7 +77,7 @@ export default class MsgAudio extends Component {
         });
 
         return (
-            <SView backgroundColor={"red"} >
+            <SView flex row style={{ flexDirection: "row", alignItems: "center", }}>
                 {bars}
             </SView>
         );
@@ -89,51 +89,47 @@ export default class MsgAudio extends Component {
         // this.props.mensaje.mediaData; donde iria para que se escuche mi audio
         return (
             <SView row style={{
-                backgroundColor: "purple",
-                // backgroundColor: this.props.color || "#075E54",
+                backgroundColor: this.props.color || "#075E54",
                 borderRadius: 8,
                 padding: 8,
                 marginHorizontal: 10,
                 width: "80%",
             }}>
 
-                <SView col={"xs-12"} row center backgroundColor="yellow" >
+                <SView col={"xs-12"} row center  >
                     <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden", marginRight: 8 }}>
                         <SImage
                             enablePreview
-                            src="https://avatars.githubusercontent.com/u/69025139?v=4"
+                            src="https://us.123rf.com/450wm/belopoppa/belopoppa1809/belopoppa180900002/109693900-profile-placeholder-image-gray-silhouette-no-photo-of-a-person-on-the-avatar-the-default-pic-is.jpg"
                             style={{ resizeMode: "cover" }}
                         />
                     </SView>
 
-                    {/* <SView flex   backgroundColor="yellow" > */}
 
-                        <SView flex backgroundColor="blue" row >
+                    <SView flex row >
 
-                            {/* Botón Play/Pause */}
-                            <TouchableOpacity onPress={this.togglePlay}>
-                                <SView style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 16,
-                                    backgroundColor: "rgba(255,255,255,0.2)",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    marginRight: 10
-                                }}>
-                                    <SIcon name={isPlaying ? "crmpause" : "crmplay"} fill="white" width={16} height={16} />
-                                </SView>
-                            </TouchableOpacity>
+                        {/* Botón Play/Pause */}
+                        <TouchableOpacity onPress={this.togglePlay}>
+                            <SView style={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: 16,
+                                backgroundColor: "rgba(255,255,255,0.2)",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginRight: 10
+                            }}>
+                                <SIcon name={isPlaying ? "crmpause" : "crmplay"} fill="white" width={16} height={16} />
+                            </SView>
+                        </TouchableOpacity>
 
-                            {/* Waveform */}
-                            {this.renderWaveform()}
+                        {/* Waveform */}
+                        {this.renderWaveform()}
 
 
-                        </SView>
+                    </SView>
 
-                        {/* Tiempo y checks */}
 
-                    {/* </SView> */}
 
                 </SView>
 
