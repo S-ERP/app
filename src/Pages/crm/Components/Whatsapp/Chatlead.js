@@ -13,15 +13,6 @@ export default class Chatlead extends Component {
             mensaje: "",
             chatssssssss: "",
 
-            mensajes: [
-                { id: 1, texto: "Buenas, vi tu anuncio del monitor. ¿Sigue en venta?", hora: "6:42 p.m.", enviado: true, fecha: "Ayer" },
-                { id: 2, texto: "Hola, sí. Es un Samsung de 27 pulgadas, full HD.", hora: "6:44 p.m.", enviado: false, fecha: "Ayer" },
-                { id: 3, texto: "¿Funciona todo bien? ¿Tiene detalles?", hora: "6:45 p.m.", enviado: true, fecha: "Ayer" },
-                { id: 4, texto: "Está en buen estado, sin rayones. Lo vendo porque actualicé setup.", hora: "6:47 p.m.", enviado: false, fecha: "Ayer" },
-                { id: 5, texto: "Perfecto, me interesa.", hora: "9:12 a.m.", enviado: true, fecha: "Hoy" },
-                { id: 6, texto: "¿Podemos encontrarnos hoy en la tarde por el centro?", hora: "9:13 a.m.", enviado: true, fecha: "Hoy" },
-                { id: 7, texto: "Sí, tipo 5 p.m. por la plaza principal te va?", hora: "9:15 a.m.", enviado: false, fecha: "Hoy" }
-            ]
         };
     }
 
@@ -160,7 +151,9 @@ export default class Chatlead extends Component {
                     <SHr />
                     {this.renderHeader()}
 
-                    <ScrollView style={{ width: "100%", height: 450 }} >
+                    <ScrollView ref={ref => this.scrollViewRef = ref} style={{ width: "100%", height: 450 }} onContentSizeChange={(e) => {
+                        this.scrollViewRef.scrollToEnd({ animated: false });
+                    }}>
 
                         {this.renderChat()}
                     </ScrollView>

@@ -15,8 +15,9 @@ export default class Llamada extends React.Component<{
   }
   evt: any = null;
   llamar = (phone: string) => {
-    // if (!this.llamada) {
+    
     const sip = SIP.getInstance();
+    if (this.llamada) return;
     this.llamada = sip.call(phone, (e: any, evt: any) => {
       console.log("Evento de llamada:", e, evt);
       this.evt = evt;

@@ -64,7 +64,7 @@ export default class root extends Component {
                 <MenuButtom
                     label="Dashboard de Ventas"
                     url="/crm/dashboard"
-                    params={{ type: "crmdashboardventas" }}
+                    params={{ type: "ventas" }}
                     icon={<SIconApp name='crmdashboardventas' fill={"#333"} />}
                 />
                 <MenuButtom
