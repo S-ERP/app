@@ -85,11 +85,11 @@ export default class Chatlead extends Component {
         const tipoMensaje = mensaje.type;
 
         return (
-            <SView col={"xs-12"} key={mensaje.id} border={"transparent"} style={{ marginBottom: 2 }}>
-
-
+            <SView col={"xs-12"} key={mensaje.id} style={{
+                marginBottom: 2,
+                alignItems: isEnviado ? "flex-end" : "flex-start",
+            }}>
                 <Typemessage mensaje={mensaje} ></Typemessage>
-
             </SView>
         );
     }

@@ -40,7 +40,7 @@ export default class Typemessage extends Component {
         const opciones = { hour: 'numeric', minute: '2-digit', hour12: true };
         const hora = date.toLocaleTimeString('en-US', opciones);
 
-
+        return this.condicion();
 
         return <SView col={"xs-12"} key={id} border={"transparent"} style={{ marginBottom: 2 }}>
             {this.condicion()}
