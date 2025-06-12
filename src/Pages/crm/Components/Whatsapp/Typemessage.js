@@ -4,6 +4,8 @@ import SSocket from "servisofts-socket";
 import MsgText from "./tipo/MsgText";
 import MsgStiker from "./tipo/MsgStiker";
 import MsgImg from "./tipo/MsgImg";
+import MsgGps from "./tipo/MsgGps";
+import MsgAudio from "./tipo/MsgAudio";
 
 export default class Typemessage extends Component {
     constructor(props) {
@@ -16,8 +18,9 @@ export default class Typemessage extends Component {
     condicion() {
         if (this.props.mensaje.type == "chat") return <MsgText colorado={this.props.mensaje} />
         if (this.props.mensaje.type == "image") return <MsgImg colorado={this.props.mensaje} />
-        // if (this.props.mensaje.type == "sticker") return <MsgStiker colorado={this.props.mensaje} />
-        // if (this.props.mensaje.type == "ppt") return <MsgStiker colorado={this.props.mensaje} />
+        if (this.props.mensaje.type == "sticker") return <MsgStiker colorado={this.props.mensaje} />
+        if (this.props.mensaje.type == "ppt") return <MsgAudio colorado={this.props.mensaje} />
+        if (this.props.mensaje.type == "location") return <MsgGps colorado={this.props.mensaje} />
     }
 
 
@@ -27,21 +30,10 @@ export default class Typemessage extends Component {
         const isEnviado = this.props.mensaje.fromMe;
         const tipoMensaje = this.props.mensaje.type;
         const id = this.props.mensaje.id;
-
         const texto = this.props.mensaje.body;
-        // const hora = this.props.mensaje.time;
-
-        // const timestamp = 1749712776;
-
-        // Convertir a milisegundos y crear un Date
         const date = new Date(this.props.mensaje.timestamp * 1000);
-
-        // Formatear a hora legible
         const opciones = { hour: 'numeric', minute: '2-digit', hour12: true };
         const hora = date.toLocaleTimeString('en-US', opciones);
-
-        return this.condicion();
-
         return <SView col={"xs-12"} key={id} border={"transparent"} style={{ marginBottom: 2 }}>
             {this.condicion()}
 
