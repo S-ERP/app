@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { SImage, SText, SView, SIcon, SHr } from "servisofts-component";
 import HoraLabel from "../Comp/HoraLabel";
+import Sounds from "../../../../../Components/Sounds";
 
 export default class MsgAudio extends Component {
     constructor(props) {
@@ -20,6 +21,9 @@ export default class MsgAudio extends Component {
     }
 
     togglePlay = () => {
+        const si = Sounds.play(this.props.mensaje.mediaData);
+        console.log("entro " + JSON.stringify(this.props.mensaje.mediaData))
+
         if (this.state.isPlaying) {
             clearInterval(this.interval);
             this.setState({ isPlaying: false });
