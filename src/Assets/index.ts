@@ -98,6 +98,11 @@ import crmcliente, { ReactComponent as crmclienteW, } from "./svg/crm/cliente.sv
 import crmdashboarddelivery, { ReactComponent as crmdashboarddeliveryW, } from "./svg/crm/dashboardDelivery.svg";
 import crmdashboardgeneral, { ReactComponent as crmdashboardgeneralW, } from "./svg/crm/dashboardGeneral.svg";
 import crmdashboardventas, { ReactComponent as crmdashboardventasW, } from "./svg/crm/dashboardVentas.svg";
+
+import crmplay, { ReactComponent as crmplayW } from "./svg/crm/play.svg";
+import crmpause, { ReactComponent as crmpauseW } from "./svg/crm/pause.svg";
+
+
 import crmgraficos, {
   ReactComponent as crmgraficosW,
 } from "./svg/crm/graficos.svg";
@@ -227,6 +232,9 @@ export const svg = {
   crmllamada: { Native: crmllamada, Web: crmllamadaW },
   crmllleads: { Native: crmllleads, Web: crmllleadsW },
   crmmovimiento: { Native: crmmovimiento, Web: crmmovimientoW },
+
+  crmpause: { Native: crmpause, Web: crmpauseW },
+  crmplay: { Native: crmplay, Web: crmplayW },
 
   ...blender,
 };
