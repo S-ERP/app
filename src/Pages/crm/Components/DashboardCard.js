@@ -34,9 +34,8 @@ export default class DashboardCard extends Component {
                     onPress={() => {
                         // SNavigation.navigate("/crm/plantilla", { key: card.key })
                         SNavigation.navigate("/crm/call", { key: card.key })
-                        // }} >{card?.cliente?.telefono}</SText>
-                    }} >{card?.campana?.nombre}</SText>
-            </SView>
+                        }} >{card?.cliente?.telefono}</SText>
+             </SView>
             <SHr h={4} />
             <SText>{card?.cliente?.nombres}</SText>
             <SHr h={16} />

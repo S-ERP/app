@@ -29,13 +29,8 @@ const CardContent = ({ children }) => {
 
 export default class index extends Component {
     pk = SNavigation.getParam("key");
-    // state = {
-    //     data: null,
-    // }
-
     state = {
         data: null,
-
         mensaje: "",
         mensajes: [
             { id: 1, texto: "Buenas, vi tu anuncio del monitor. ¿Sigue en venta?", hora: "6:42 p.m.", enviado: true, fecha: "Ayer" },
@@ -46,8 +41,6 @@ export default class index extends Component {
             { id: 6, texto: "¿Podemos encontrarnos hoy en la tarde por el centro?", hora: "9:13 a.m.", enviado: true, fecha: "Hoy" },
             { id: 7, texto: "Sí, tipo 5 p.m. por la plaza principal te va?", hora: "9:15 a.m.", enviado: false, fecha: "Hoy" }
         ]
-
-
     }
     componentDidMount() {
 
@@ -125,10 +118,10 @@ export default class index extends Component {
             <SView col={"xs-12"} row style={{ backgroundColor: STheme.color.card, padding: 15, borderBottomWidth: 1, borderBottomColor: "green" }}>
                 <SView col={"xs-8"} row style={{ justifyContent: "flex-start" }}>
                     <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden" }}>
-                        <SImage enablePreview src={SSocket.api.root + "usuario/1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b"} style={{ resizeMode: "cover" }} />
+                        <SImage enablePreview src={SSocket.api.root + "usuario/" + this.state?.data?.cliente.key_u} style={{ resizeMode: "cover" }} />
                     </SView>
                     <SText color={"white"} fontSize={18}> </SText>
-                    <SText color={"white"} fontSize={18} bold>+591 75395848</SText>
+                    <SText color={"white"} fontSize={18} bold>{this.state?.data?.cliente?.telefono}</SText>
                 </SView>
                 <SView col={"xs-4"} row center style={{ justifyContent: "flex-end" }}>
                     <SIcon name='drive-menu' fill='white' width={18} height={18} />
@@ -180,14 +173,22 @@ export default class index extends Component {
     }
 
 
-    renderBarraEntrada() {
+    renderBarraEntrada( ) {
         return (<SView col={"xs-12"} row style={{ backgroundColor: STheme.color.card, padding: 15, bottom: 0, left: 0, right: 0 }}>
             <SView style={{ marginRight: 15 }}><SIcon name='add1' fill='white' width={18} /></SView>
             <SView style={{ marginRight: 15 }}><SIcon name='addTarea' fill='white' width={18} /></SView>
             <SView flex style={{ marginRight: 15 }}>
-                <SInput placeholder="Escribe un mensaje" placeholderTextColor="#8696a0" style={{ backgroundColor: "#2a3942", borderRadius: 20, paddingHorizontal: 20, color: "white", borderWidth: 0 }} />
+                <SInput ref={ref =>this.campos = ref}  placeholder="Escribe un mensaje" placeholderTextColor="#8696a0" style={{ backgroundColor: "#2a3942", borderRadius: 20, paddingHorizontal: 20, color: "white", borderWidth: 0 }} />
             </SView>
-            <SView onPress={() => { alert("mensaje enviado") }}
+            <SView onPress={() => {
+                MDL.whatsapp.send({
+                    phone: this.state?.data?.cliente?.telefono,
+                    message: this.campos.getValue(),
+                });
+
+                console.log("aqui " + this.state?.data?.cliente?.telefono+ " mensaje "+ this.campos.getValue())
+
+            }}
             ><SIcon name='MessageSend' fill='white' width={18} /></SView>
         </SView>
         )
@@ -230,6 +231,7 @@ export default class index extends Component {
                     this.llamada.llamar(this.state?.data?.cliente?.telefono);
                 }}>{"LLAMAR"}</SText>
                 <SView row col={"xs-12"} style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
+
                     <CardContent>
                         <HorarioCliente
                             ref={ref => this.horarioDeCliente = ref}
@@ -240,11 +242,14 @@ export default class index extends Component {
                             }}
                         />
                     </CardContent>
+
                     <CardContent>
                         <SView col={"xs-12"} padding={8}>
                             <SMD padding={0} fontSize={12} space={0}>{proyecto?.guion}</SMD>
                         </SView>
                     </CardContent>
+
+
                     <CardContent>
                         <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />
                         <Comentario data={this.state.data} />
@@ -258,8 +263,6 @@ export default class index extends Component {
                                 {this.renderBarraEntrada()}
                             </SView>
                         </SView>
-
-
                         <HistoricoMovimientos ref={ref => this.historicoMovimientos = ref} key_cliente_proyecto={this.pk} />
                     </CardContent>
                 </SView>
