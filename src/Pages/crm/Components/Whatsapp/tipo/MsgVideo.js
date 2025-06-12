@@ -4,6 +4,7 @@ import SSocket from "servisofts-socket";
 import HoraLabel from "../Comp/HoraLabel";
 import { Image, View } from "react-native";
 import SVideo from "../../../../../Components/SVideo";
+import SIconApp from "../../../../../Assets/SIconApp";
 
 export default class MsgVideo extends Component {
     constructor(props) {
@@ -67,10 +68,31 @@ export default class MsgVideo extends Component {
                 this.setState({ widthContainer: width, heightContainer: height });
 
             }}>
-                <SVideo enablePreview src={this.props.mensaje.mediaData} style={{
+                <SImage enablePreview src={this.props.mensaje.mediaData} style={{
                     borderRadius: 8,
                 }} />
-
+                <SView style={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    // backgroundColor: "rgba(0,0,0,0.5)",
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}>
+                    <SView width={50} height={50} center style={{
+                        backgroundColor: "#ffffff99",
+                        borderRadius: 100,
+                        padding: 12
+                    }}>
+                        <SIconApp name="MessageSend" fill="#444" />
+                    </SView>
+                </SView>
+                <SText style={{
+                    position: "absolute",
+                    bottom: 2, left: 5, color: "white",
+                    fonWeight: "bold",
+                    fontSize: 11
+                }}>{this.props.mensaje.duration}</SText>
                 <HoraLabel style={{
                     position: "absolute",
                     bottom: 2, right: 5, color: "white",

@@ -15,7 +15,7 @@ export default class Typemessage extends Component {
         const color = isEnviado ? "#005c4b" : "#202c33";
         if (this.props.mensaje.type == "chat") return <MsgText mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "image") return <MsgImg mensaje={this.props.mensaje} color={color} />
-        if (this.props.mensaje.type == "cideo") return <MsgVideo mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "video") return <MsgVideo mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "sticker") return <MsgStiker mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "ptt") return <MsgAudio mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "location") return <MsgGps mensaje={this.props.mensaje} color={color} />
