@@ -54,38 +54,50 @@ export default class MsgAudio extends Component {
 
     renderWaveform = () => {
         const { waveform, progress, duration } = this.state;
-        const progressRatio = progress / duration;
+
+        // Evita división por cero y limita el ratio entre 0 y 1
+        const progressRatio = duration > 0 ? Math.min(Math.max(progress / duration, 0), 1) : 0;
+        const activeIndex = Math.floor(waveform.length * progressRatio);
+
         const bars = waveform.map((value, index) => {
-            const isActive = index < waveform.length * progressRatio;
+            const isActive = index < activeIndex;
             return (
-                <View
+                <SView
                     key={index}
                     style={{
                         width: 2,
                         height: value * 20,
-                        backgroundColor: isActive ? "white" : "rgba(255,255,255,0.3)",
+                        backgroundColor: "white",
+                        opacity: isActive ? 1 : 0.3,
                         marginRight: 2,
                         borderRadius: 1,
                     }}
                 />
             );
         });
-        return <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>{bars}</View>;
+
+        return (
+            <SView backgroundColor={"red"} >
+                {bars}
+            </SView>
+        );
     };
+
 
     render() {
         const { isPlaying } = this.state;
         // this.props.mensaje.mediaData; donde iria para que se escuche mi audio
         return (
             <SView row style={{
-                backgroundColor: this.props.color || "#075E54",
+                backgroundColor: "purple",
+                // backgroundColor: this.props.color || "#075E54",
                 borderRadius: 8,
                 padding: 8,
                 marginHorizontal: 10,
                 width: "80%",
             }}>
 
-                <SView col={"xs-12"} row center >
+                <SView col={"xs-12"} row center backgroundColor="yellow" >
                     <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden", marginRight: 8 }}>
                         <SImage
                             enablePreview
@@ -94,13 +106,13 @@ export default class MsgAudio extends Component {
                         />
                     </SView>
 
-                    <SView flex row >
+                    {/* <SView flex   backgroundColor="yellow" > */}
 
-                        <SView style={{ flexDirection: "row", alignItems: "center" }}>
+                        <SView flex backgroundColor="blue" row >
 
                             {/* Botón Play/Pause */}
                             <TouchableOpacity onPress={this.togglePlay}>
-                                <View style={{
+                                <SView style={{
                                     width: 32,
                                     height: 32,
                                     borderRadius: 16,
@@ -110,7 +122,7 @@ export default class MsgAudio extends Component {
                                     marginRight: 10
                                 }}>
                                     <SIcon name={isPlaying ? "crmpause" : "crmplay"} fill="white" width={16} height={16} />
-                                </View>
+                                </SView>
                             </TouchableOpacity>
 
                             {/* Waveform */}
@@ -121,7 +133,7 @@ export default class MsgAudio extends Component {
 
                         {/* Tiempo y checks */}
 
-                    </SView>
+                    {/* </SView> */}
 
                 </SView>
 
@@ -131,9 +143,15 @@ export default class MsgAudio extends Component {
                 <SView col={"xs-12"} row center   >
 
                     <SView col={"xs-4"}   >
+
                         <SText color="rgba(255,255,255,0.7)" fontSize={11}>
-                            {Math.floor(this.state.progress / 60)}:{(this.state.progress % 60).toString().padStart(2, "0")}
+                            {this.state.isPlaying
+                                ? `${Math.floor(this.state.progress / 60)}:${(this.state.progress % 60).toString().padStart(2, "0")} `
+                                : `${Math.floor(this.state.duration / 60)}:${(this.state.duration % 60).toString().padStart(2, "0")}`
+                            }
                         </SText>
+
+
                     </SView>
                     <SView flex />
                     <SView col={"xs-4"} style={{ alignItems: "flex-end" }}  >
