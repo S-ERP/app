@@ -3,8 +3,9 @@ import { SDate, SHr, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, ST
 import SSocket from "servisofts-socket";
 import HoraLabel from "../Comp/HoraLabel";
 import { Image, View } from "react-native";
+import SVideo from "../../../../../Components/SVideo";
 
-export default class MsgImg extends Component {
+export default class MsgVideo extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -66,7 +67,7 @@ export default class MsgImg extends Component {
                 this.setState({ widthContainer: width, heightContainer: height });
 
             }}>
-                <SImage enablePreview src={this.props.mensaje.mediaData} style={{
+                <SVideo enablePreview src={this.props.mensaje.mediaData} style={{
                     borderRadius: 8,
                 }} />
 

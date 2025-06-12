@@ -6,73 +6,19 @@ import MsgStiker from "./tipo/MsgStiker";
 import MsgImg from "./tipo/MsgImg";
 import MsgGps from "./tipo/MsgGps";
 import MsgAudio from "./tipo/MsgAudio";
+import MsgVideo from "./tipo/MsgVideo";
 
 export default class Typemessage extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-
-    condicion() {
-        if (this.props.mensaje.type == "chat") return <MsgText colorado={this.props.mensaje} />
-        if (this.props.mensaje.type == "image") return <MsgImg colorado={this.props.mensaje} />
-        if (this.props.mensaje.type == "sticker") return <MsgStiker colorado={this.props.mensaje} />
-        if (this.props.mensaje.type == "ppt") return <MsgAudio colorado={this.props.mensaje} />
-        if (this.props.mensaje.type == "location") return <MsgGps colorado={this.props.mensaje} />
-    }
-
 
     render() {
-        console.log(this.props.mensaje)
-
         const isEnviado = this.props.mensaje.fromMe;
-        const tipoMensaje = this.props.mensaje.type;
-        const id = this.props.mensaje.id;
-        const texto = this.props.mensaje.body;
-        const date = new Date(this.props.mensaje.timestamp * 1000);
-        const opciones = { hour: 'numeric', minute: '2-digit', hour12: true };
-        const hora = date.toLocaleTimeString('en-US', opciones);
-        return <SView col={"xs-12"} key={id} border={"transparent"} style={{ marginBottom: 2 }}>
-            {this.condicion()}
-
-            {(tipoMensaje === "chat") && (
-                <SView
-                    style={{
-                        alignSelf: isEnviado ? "flex-end" : "flex-start",
-                        marginHorizontal: 15,
-                        width: "auto",
-                        maxWidth: "100%",
-                    }}
-                >
-
-                    <SText color={"#8696a0"} fontSize={11}>
-                        {hora} {isEnviado && <SText color={"#53bdeb"}>✓✓</SText>}
-                    </SText>
-                </SView>
-            )}
-
-
-
-            {(tipoMensaje === "image") && (
-                <SView border={"red"}
-                    style={{
-                        alignSelf: isEnviado ? "flex-end" : "flex-start",
-                        marginHorizontal: 15,
-                        width: "auto",
-                        maxWidth: "100%",
-                    }}
-                >
-                    <SView style={{ position: "absolute", marginTop: -25, marginLeft: isEnviado ? -70 : 195, width: 75 }}  >
-                        <SText color={"#8696a0"} fontSize={11}>
-                            {hora} {isEnviado && <SText color={"#53bdeb"}>✓✓</SText>}
-                        </SText>
-                    </SView>
-                </SView>
-            )}
-        </SView>
-
-
+        const color = isEnviado ? "#005c4b" : "#202c33";
+        if (this.props.mensaje.type == "chat") return <MsgText mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "image") return <MsgImg mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "cideo") return <MsgVideo mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "sticker") return <MsgStiker mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "ptt") return <MsgAudio mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "location") return <MsgGps mensaje={this.props.mensaje} color={color} />
+        return <SText color={STheme.color.danger} padding={4}>{this.props.mensaje.type}</SText>;
     }
 }

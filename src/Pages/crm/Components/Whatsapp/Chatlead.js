@@ -50,7 +50,7 @@ export default class Chatlead extends Component {
     renderHeader() {
         const { cliente } = this.props.data || {};
         return (
-            <SView col="xs-12" row style={{ backgroundColor: STheme.color.card, padding: 15, borderBottomWidth: 1, borderBottomColor: "green" }}>
+            <SView col="xs-12" row style={{ backgroundColor: STheme.color.card, padding: 8, borderBottomWidth: 1, borderBottomColor: "green" }}>
                 <SView col="xs-8" row style={{ justifyContent: "flex-start" }}>
                     <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden" }}>
                         <SImage enablePreview src="https://avatars.githubusercontent.com/u/69025139?v=4" style={{ resizeMode: "cover" }} />
@@ -86,8 +86,8 @@ export default class Chatlead extends Component {
 
         return (
             <SView col={"xs-12"} key={mensaje.id} style={{
-                marginBottom: 2,
                 alignItems: isEnviado ? "flex-end" : "flex-start",
+                marginBottom:8
             }}>
                 <Typemessage mensaje={mensaje} ></Typemessage>
             </SView>
@@ -142,16 +142,11 @@ export default class Chatlead extends Component {
         return (
             <SView col="xs-12">
                 <SHr height={16} />
-                <SView col="xs-12" style={{ padding: 16, borderRadius: 16, borderWidth: 2 }} border={STheme.color.card} backgroundColor={STheme.color.card}>
-                    <SView col="xs-12" row center>
-                        <SView col="xs-12">
-                            <SText fontSize={14} bold>Chat</SText>
-                        </SView>
-                    </SView>
-                    <SHr />
+                <SView col="xs-12" style={{ borderRadius: 16, borderWidth: 2 }} border={STheme.color.card} backgroundColor={STheme.color.card}>
+                    {/* <SHr /> */}
                     {this.renderHeader()}
 
-                    <ScrollView ref={ref => this.scrollViewRef = ref} style={{ width: "100%", height: 450 }} onContentSizeChange={(e) => {
+                    <ScrollView ref={ref => this.scrollViewRef = ref} style={{ width: "100%", height: 550 }} onContentSizeChange={(e) => {
                         this.scrollViewRef.scrollToEnd({ animated: false });
                     }}>
 
