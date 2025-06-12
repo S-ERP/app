@@ -283,11 +283,7 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                     <SText bold card fontSize={10} padding={4}>{cards.length}</SText>
                 </SView>
                 <SHr />
-                <SView row col={"xs-12"}>
-                    {stage.states.map((state, index) => <Etiqueta tipo_leads={state} size={8} style={{
-                        marginRight: 8
-                    }} />)}
-                </SView>
+                <SView row col={"xs-12"}>{stage.states.map((state, index) => <Etiqueta tipo_leads={state} size={8} style={{ marginRight: 8, marginBottom: 8 }} />)}</SView>
             </SView>
             <ScrollView
 
@@ -358,13 +354,7 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
 
     return (
         <GestureDetector gesture={panGesture}>
-            <Animated.View
-                ref={ref}
-                style={[{
-                    paddingBottom: 8,
-                    // userSelect:'text'
-                }, animatedStyle]}
-            >
+            <Animated.View ref={ref} style={[{ paddingBottom: 8 }, animatedStyle]} >
                 <DashboardCard data={card} />
             </Animated.View>
         </GestureDetector>

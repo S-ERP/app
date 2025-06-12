@@ -5,6 +5,7 @@ import MDL from '../../../MDL';
 import { DinamicTable } from 'servisofts-table';
 import { SDate, SForm, SHr, SIcon, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import PButtom from '../../../Components/PButtom';
+import Background from 'servisofts-component/img/Background';
 
 
 type PopupRellamadaType = {
@@ -172,6 +173,8 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                         },
                         comentario: {
                             col: "xs-12",
+                            padding:10,
+                            // style: {{Backgroundcolo}} ,
                             label: "Comentario *",
                             type: "textArea",
                             defaultValue: defaultData?.descripcion || "",

@@ -158,7 +158,13 @@ export default class proyecto extends Component {
                 }}
             >
 
-                <DinamicTable.Col key={"key"} label='Key'
+
+                <DinamicTable.Col key={"key"} label='ID' cellStyle={{
+                    justifyContent: "flex-start"
+                }}  width={30} data={(e) => e.index + 1} />
+
+
+                {/* <DinamicTable.Col key={"key"} label='Key'
                     width={60}
                     cellStyle={{
                         justifyContent: "flex-start",
@@ -170,7 +176,7 @@ export default class proyecto extends Component {
                     }}
                     data={(e) => {
                         return e.row.key
-                    }} />
+                    }} /> */}
                 <DinamicTable.Col key={"codigo"} label='Código'
                     width={60}
                     cellStyle={{
@@ -180,7 +186,7 @@ export default class proyecto extends Component {
                         return e.row.codigo
                     }} />
                 <DinamicTable.Col key={"nombre"} label='Nombre'
-                    width={120}
+                    width={170}
                     cellStyle={{
                         justifyContent: "flex-start"
                     }}
@@ -189,7 +195,7 @@ export default class proyecto extends Component {
                     }} />
                 <DinamicTable.Col key={"descripcion"} label='Descripción'
 
-                    width={150}
+                    width={200}
                     cellStyle={{
                         justifyContent: "flex-start"
                     }}
@@ -216,17 +222,57 @@ export default class proyecto extends Component {
                         return <SView col={"xs-12"} row >
                             {e.row.campanas.map((campana, index) => {
                                 return <SView key={index} style={{ padding: 4 }}
-                                    onPress={() => {
-                                        // Acción al seleccionar la campaña
-                                        // if (campana && campana.key) {
-                                        //         SNavigation.navigate("/crm/perfilcampana", { key: campana.key });
-                                        // }
-                                        FormRegistroCampana.open({
-                                            defaultData: campana,
-                                            proyecto: e.row,
-                                            onActualizar: (e) => {
-                                                this.DinamicTable.loadData();
-                                            }
+                                    onPress={(f) => {
+                                        // FormRegistroCampana.open({
+                                        //     defaultData: campana,
+                                        //     proyecto: e.row,
+                                        //     onActualizar: (e) => {
+                                        //         this.DinamicTable.loadData();
+                                        //     }
+                                        // })
+
+                                        FloatMenu.open({
+                                            e: f,
+                                            label: campana.nombre,
+                                            options: [
+                                                {
+                                                    label: "Editar Campaña",
+                                                    onPress: () => {
+                                                        FormRegistroCampana.open({
+                                                            defaultData: campana,
+                                                            proyecto: e.row,
+                                                            onActualizar: (e) => {
+                                                                this.DinamicTable.loadData();
+                                                            }
+                                                        })
+                                                    },
+                                                    icon: <SIcon name="Edit" fill={STheme.color.text} />,
+                                                },
+
+                                                {
+                                                    label: "Eliminar Campaña",
+                                                    onPress: () => {
+                                                        SPopup.confirm({
+                                                            title: "Eliminar Campaña",
+                                                            message: "¿Estas seguro de eliminar la campaña?",
+                                                            onPress: () => {
+                                                                SSocket.sendPromise({
+                                                                    service: "crm",
+                                                                    component: "campana",
+                                                                    type: "editar",
+                                                                    data: { ...campana, estado: 0 }
+                                                                }).then(e => {
+                                                                    console.error("❌ Error al recargar campañas:", e);
+                                                                    SNotification.send({ key: "eliminar", title: "eliminado", type: "loading", time: 1000, body: e.error, color: STheme.color.error, })
+                                                                    this.DinamicTable.loadData();
+                                                                })
+                                                            }
+                                                        })
+                                                    },
+                                                    icon: <SIcon name="Delete" fill={STheme.color.text} />,
+                                                },
+
+                                            ]
                                         })
                                     }}>
                                     <SText card padding={4} style={{ maxWidth: 200 }} numberOfLines={1}>{campana.nombre}</SText>
@@ -246,14 +292,44 @@ export default class proyecto extends Component {
                     customComponent={e => {
                         return <SView col={"xs-12"} row >
                             {e.row.productos.map((prd, index) => {
-                                return <SView key={index} style={{ padding: 4 }} onPress={() => {
-                                    // FormRegistroCampana.open({
-                                    //         defaultData: campana,
-                                    //         proyecto: e.row,
-                                    //         onActualizar: (e) => {
-                                    //                 this.DinamicTable.loadData();
-                                    //         }
-                                    // })
+                                return <SView key={index} style={{ padding: 4 }} onPress={(f) => {
+
+                                    FloatMenu.open({
+                                        e: f,
+                                        label: prd?.producto?.nombre,
+                                        options: [
+                                            {
+                                                label: "Editar Producto",
+                                                onPress: () => {
+
+                                                    SNavigation.navigate("/restaurante/producto/edit", { pk: prd?.producto?.key });
+                                                },
+                                                icon: <SIcon name="Edit" fill={STheme.color.text} />,
+                                            },
+                                            {
+                                                label: "Eliminar Producto",
+                                                onPress: () => {
+                                                    console.log("Eliminar Producto:", prd?.producto?.key);
+                                                    SPopup.confirm({
+                                                        title: "Eliminar Producto",
+                                                        message: "¿Estás seguro de eliminar el producto?",
+                                                        onPress: () => {
+                                                            MDL.crm.proyectoProducto.eliminar({ ...prd, estado: 0 }).then(e => {
+                                                                console.error("Producto eliminado:", e);
+                                                                SNotification.send({ key: "eliminar", title: "eliminado", type: "loading", time: 1000, body: e.error, color: STheme.color.error, })
+                                                                this.DinamicTable.loadData();
+                                                            }).catch(error => {
+                                                                console.error("Error al eliminar producto:", error);
+                                                                SNotification.send({ key: "eliminar", title: "error", type: "danger", time: 1000, body: error.message, color: STheme.color.error, })
+                                                            })
+
+                                                        }
+                                                    })
+                                                },
+                                                icon: <SIcon name="Delete" fill={STheme.color.text} />,
+                                            },
+                                        ]
+                                    })
                                 }}>
                                     <SText card padding={4} style={{ maxWidth: 200 }} numberOfLines={1}>{prd?.producto?.nombre} x Bs.{prd?.producto?.precio ?? 0}</SText>
                                 </SView>
@@ -271,7 +347,7 @@ export default class proyecto extends Component {
                         padding: 0,
                     }}
                     customComponent={e => {
-                        return <SView col={"xs-12"} style={{ maxHeight: 150, overflow: "hidden" }} >
+                        return <SView col={"xs-12"} style={{ maxHeight: 155, overflow: "hidden" }} >
                             <ScrollView>
                                 <SMD space={1} fontSize={9} >{e.data}</SMD>
                             </ScrollView>
