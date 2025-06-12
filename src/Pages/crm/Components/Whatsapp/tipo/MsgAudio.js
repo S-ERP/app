@@ -34,7 +34,9 @@ export default class MsgAudio extends Component {
                 flexDirection: "row"
             }}>
                 <SText color={"white"} fontSize={14}>{texto}</SText>
-
+                {/* <SIcon name={"crmplay"} width={16} fill="white" /> */}
+                <SIcon name="crmplay" fill="white" width={18} height={18} />
+                <SIcon name="crmpause" fill="white" width={18} height={18} />
 
                 <SView flex={1} />
             </View>
