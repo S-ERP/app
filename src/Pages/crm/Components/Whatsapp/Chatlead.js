@@ -90,7 +90,7 @@ export default class Chatlead extends Component {
             <SView col="xs-12" row style={{ backgroundColor: STheme.color.card, padding: 8, }}>
                 <SView col="xs-8" row style={{ justifyContent: "flex-start" }}>
                     <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden" }}>
-                        <SImage enablePreview src="https://avatars.githubusercontent.com/u/69025139?v=4" style={{ resizeMode: "cover" }} />
+                        <SImage enablePreview src="https://us.123rf.com/450wm/belopoppa/belopoppa1809/belopoppa180900002/109693900-profile-placeholder-image-gray-silhouette-no-photo-of-a-person-on-the-avatar-the-default-pic-is.jpg" style={{ resizeMode: "cover" }} />
                     </SView>
                     <SView flex row style={{ marginLeft: 16 }}>
                         <SText col="xs-12" color="white" fontSize={14} bold>{cliente?.nombres}</SText>

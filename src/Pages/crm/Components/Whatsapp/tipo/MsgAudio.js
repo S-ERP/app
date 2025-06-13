@@ -34,7 +34,7 @@ export default class MsgAudio extends Component {
         } else {
             if (!this.audioPlay) {
                 this.audioPlay = Sounds.play({ src: this.props.mensaje.mediaData });
-            }else{
+            } else {
                 console.log("reproducir audio", this.audioPlay);
                 this.audioPlay.play();
             }
@@ -54,24 +54,35 @@ export default class MsgAudio extends Component {
 
     renderWaveform = () => {
         const { waveform, progress, duration } = this.state;
-        const progressRatio = progress / duration;
+
+        // Evita división por cero y limita el ratio entre 0 y 1
+        const progressRatio = duration > 0 ? Math.min(Math.max(progress / duration, 0), 1) : 0;
+        const activeIndex = Math.floor(waveform.length * progressRatio);
+
         const bars = waveform.map((value, index) => {
-            const isActive = index < waveform.length * progressRatio;
+            const isActive = index < activeIndex;
             return (
-                <View
+                <SView
                     key={index}
                     style={{
                         width: 2,
                         height: value * 20,
-                        backgroundColor: isActive ? "white" : "rgba(255,255,255,0.3)",
-                        marginRight: 2,
+                        backgroundColor: "white",
+                        opacity: isActive ? 1 : 0.3,
+                        marginRight: 2.5,
                         borderRadius: 1,
                     }}
                 />
             );
         });
-        return <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>{bars}</View>;
+
+        return (
+            <SView flex row style={{ flexDirection: "row", alignItems: "center", }}>
+                {bars}
+            </SView>
+        );
     };
+
 
     render() {
         const { isPlaying } = this.state;
@@ -85,43 +96,40 @@ export default class MsgAudio extends Component {
                 width: "80%",
             }}>
 
-                <SView col={"xs-12"} row center >
+                <SView col={"xs-12"} row center  >
                     <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden", marginRight: 8 }}>
                         <SImage
                             enablePreview
-                            src="https://avatars.githubusercontent.com/u/69025139?v=4"
+                            src="https://us.123rf.com/450wm/belopoppa/belopoppa1809/belopoppa180900002/109693900-profile-placeholder-image-gray-silhouette-no-photo-of-a-person-on-the-avatar-the-default-pic-is.jpg"
                             style={{ resizeMode: "cover" }}
                         />
                     </SView>
 
+
                     <SView flex row >
 
-                        <SView style={{ flexDirection: "row", alignItems: "center" }}>
+                        {/* Botón Play/Pause */}
+                        <TouchableOpacity onPress={this.togglePlay}>
+                            <SView style={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: 16,
+                                backgroundColor: "rgba(255,255,255,0.2)",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginRight: 10
+                            }}>
+                                <SIcon name={isPlaying ? "crmpause" : "crmplay"} fill="white" width={16} height={16} />
+                            </SView>
+                        </TouchableOpacity>
 
-                            {/* Botón Play/Pause */}
-                            <TouchableOpacity onPress={this.togglePlay}>
-                                <View style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 16,
-                                    backgroundColor: "rgba(255,255,255,0.2)",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    marginRight: 10
-                                }}>
-                                    <SIcon name={isPlaying ? "crmpause" : "crmplay"} fill="white" width={16} height={16} />
-                                </View>
-                            </TouchableOpacity>
+                        {/* Waveform */}
+                        {this.renderWaveform()}
 
-                            {/* Waveform */}
-                            {this.renderWaveform()}
-
-
-                        </SView>
-
-                        {/* Tiempo y checks */}
 
                     </SView>
+
+
 
                 </SView>
 
@@ -131,9 +139,15 @@ export default class MsgAudio extends Component {
                 <SView col={"xs-12"} row center   >
 
                     <SView col={"xs-4"}   >
+
                         <SText color="rgba(255,255,255,0.7)" fontSize={11}>
-                            {Math.floor(this.state.progress / 60)}:{(this.state.progress % 60).toString().padStart(2, "0")}
+                            {this.state.isPlaying
+                                ? `${Math.floor(this.state.progress / 60)}:${(this.state.progress % 60).toString().padStart(2, "0")} `
+                                : `${Math.floor(this.state.duration / 60)}:${(this.state.duration % 60).toString().padStart(2, "0")}`
+                            }
                         </SText>
+
+
                     </SView>
                     <SView flex />
                     <SView col={"xs-4"} style={{ alignItems: "flex-end" }}  >
