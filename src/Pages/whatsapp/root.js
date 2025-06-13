@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SPage, SView, SText, STheme, SIcon, SPopup, SInput, SButtom, SHr, SNotification } from 'servisofts-component';
+import { SPage, SView, SText, STheme, SIcon, SPopup, SInput, SButtom, SHr, SNotification, SNavigation } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import FloatButtom from '../../Components/FloatButtom';
 import MDL from '../../MDL';
@@ -156,7 +156,7 @@ class WhatsappDevices extends Component {
                     <DinamicTable.Col key={"editar"} label='Editar' width={100} data={() => ""}
                         customComponent={e => (
                             <SView row card padding={2} onPress={() => this.formulario(e?.row)}>
-                                <SIcon name='Edit' fill='blue' stroke='red' width={18} />
+                                <SIcon name='Pencil' fill='blue' width={14} />
                                 <SView width={4} />
                                 <SText center color={STheme.color.green}>{"Actualizar"}</SText>
                             </SView>
@@ -175,10 +175,25 @@ class WhatsappDevices extends Component {
                                     }
                                 })
                             }}>
-                                <SIcon name='Delete' width={18} />
+                                <SIcon name='Cerrar' fill='blue' width={14} />
                                 <SView width={4} />
                                 <SText center color={STheme.color.green}>
                                     {"Eliminar"}
+                                </SText>
+                            </SView>
+                        )}
+                    />
+
+                    <DinamicTable.Col key={"chats"} label='Accion' width={100} data={() => ""}
+                        customComponent={e => (
+                            <SView row card padding={2} onPress={() => {
+                                alert("mira " + e?.row?.key)
+                                SNavigation.navigate("/whatsapp/chats", { pk: e?.row?.key })
+                            }}>
+                                <SIcon name='MessageSend' fill='blue' width={14} />
+                                <SView width={4} />
+                                <SText center color={STheme.color.green}>
+                                    {"Ver chats"}
                                 </SText>
                             </SView>
                         )}
