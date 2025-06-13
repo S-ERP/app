@@ -4,12 +4,12 @@ import * as THREE from "three"
 
 export default class Sounds extends Component<SoundsType> {
     static play(obj: SoundsPlayPropsType): Audio {
-        const audio = new Audio(obj.src);
+        const audio: HTMLAudioElement = new Audio(obj.src);
         let loopCount = 0;
 
         // Función para manejar la reproducción en bucle
         const playAudio = () => {
-            audio.play();
+            audio.play()
             loopCount++;
             if ((loopCount < (obj.loops ?? 1)) || obj.loops < 0) {
                 audio.addEventListener('ended', playAudio, { once: true });
@@ -18,6 +18,7 @@ export default class Sounds extends Component<SoundsType> {
 
         // Iniciar la reproducción
         playAudio();
+
 
         return audio;
 

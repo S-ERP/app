@@ -4,6 +4,7 @@ import SSocket from "servisofts-socket";
 import MDL from "../../../../MDL";
 import Typemessage from "./Typemessage";
 import { ScrollView } from "react-native-gesture-handler";
+import FileChooser from "../../../../Components/SUpload/FileChooser";
 
 export default class Chatlead extends Component {
     constructor(props) {
@@ -59,6 +60,29 @@ export default class Chatlead extends Component {
             this.campos.setValue("");
         }
     };
+    // sendImage = (image) => {
+    //     const { telefono } = this.props.data?.cliente || {};
+    //     if (telefono && image) {
+
+    //         MDL.whatsapp.send({ phone:  this.props.data?.cliente?.telefono, image:image }).then(e => {
+
+    //             this.state.data.push({
+    //                 id: SUuid(),
+    //                 body: message,
+    //                 type: "image",
+    //                 fromMe: true,
+    //                 timestamp: new Date().getTime() / 1000,
+    //                 mediaData: "data:image/png;base64," + image,
+    //                 location: null
+    //             })
+    //             this.forceUpdate();
+    //             // this.componentDidMount();
+    //         })
+
+    //         console.log(`Mensaje enviado a ${telefono}: ${message}`);
+    //         this.campos.setValue("");
+    //     }
+    // };
 
     renderHeader() {
         const { cliente } = this.props.data || {};
@@ -134,12 +158,42 @@ export default class Chatlead extends Component {
     renderBarraEntrada() {
         return (
             <SView col="xs-12" row style={{ backgroundColor: STheme.color.card, padding: 8, bottom: 0, left: 0, right: 0 }}>
-                <SView style={{ marginRight: 15 }}>
+                <SView style={{ marginRight: 15 }} onPress={() => {
+                    FileChooser({
+                        accept: "image/*",
+
+                    }).then((files) => {
+                        const reader = new FileReader();
+                        const telefono = this.props.data?.cliente?.telefono;
+                        const INSTANCE  = this;
+                        reader.onload = function () {
+                            const base64Image = reader.result.split(',')[1];
+                            // const file = files[0];
+                            // this.sendImage(base64Image);
+                            MDL.whatsapp.send({ phone: telefono, message:"foto", image: base64Image }).then(e => {
+                                INSTANCE.state.data.push({
+                                    id: SUuid(),
+                                    body: "foto",
+                                    type: "image",
+                                    fromMe: true,
+                                    timestamp: new Date().getTime() / 1000,
+                                    mediaData: "data:image/png;base64," + base64Image,
+                                    location: null
+                                })
+                                INSTANCE.forceUpdate();
+                                // this.componentDidMount();
+                            })
+
+                            console.log("file", base64Image);
+                        }
+                        reader.readAsDataURL(files[0]);
+                    })
+                }}>
                     <SIcon name="add1" fill="white" width={18} />
                 </SView>
-                <SView style={{ marginRight: 15 }}>
+                {/* <SView style={{ marginRight: 15 }}>
                     <SIcon name="addTarea" fill="white" width={18} />
-                </SView>
+                </SView> */}
                 <SView flex style={{ marginRight: 15 }}>
                     <SInput ref={(ref) => (this.campos = ref)} placeholder="Escribe un mensaje" placeholderTextColor="#8696a0" style={{ backgroundColor: "#2a3942", borderRadius: 20, paddingHorizontal: 20, color: "white", borderWidth: 0 }}
                         onKeyPress={(e) => {

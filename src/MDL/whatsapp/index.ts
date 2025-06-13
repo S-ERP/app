@@ -11,7 +11,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
   key = "servisofts";
   // url = "https://wtspp.servisofts.com";
 
-  async send(params: { phone: string; message: string }) {
+  async send(params: { phone: string; message?: string, image?: string }) {
     const resp = await fetch(this.url + "/send", {
       method: "POST",
       headers: {
@@ -21,6 +21,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
         key: this.key,
         numero: params.phone,
         mensaje: params.message,
+        imagen: params.image,
       }),
     })
     const json = await resp.json();
