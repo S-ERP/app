@@ -42,10 +42,13 @@ class WhatsappDevices extends Component {
                     <SText fontSize={12}>Complete la información y escanee el código QR para sincronizar un nuevo dispositivo de WhatsApp Business.</SText>
                     <SHr height={16} />
                     <SInput
+                        autoFocus
+
                         label="Descripción"
                         placeholder={"Nombre del dispositivo"}
                         defaultValue={data?.descripcion || ""}
                         ref={ref => descripcionRef = ref}
+                        required={true}
                         style={{
                             height: 40,
                             borderRadius: 4,
@@ -54,7 +57,7 @@ class WhatsappDevices extends Component {
                         }}
                     />
 
-                    <SInput
+                    {/* <SInput
                         label="Número"
                         placeholder={"+591 XXXXXXXX"}
                         defaultValue={""}
@@ -65,9 +68,9 @@ class WhatsappDevices extends Component {
                             backgroundColor: STheme.color.lightGray + "30",
                             color: STheme.color.text,
                         }}
-                    />
+                    /> */}
 
-                    <SInput
+                    {/* <SInput
                         label="Empresa"
                         placeholder={"Seleccione empresa"}
                         defaultValue={data?.key_empresa || ""}
@@ -78,7 +81,7 @@ class WhatsappDevices extends Component {
                             backgroundColor: STheme.color.lightGray + "30",
                             color: STheme.color.text,
                         }}
-                    />
+                    /> */}
                     <SHr height={32} />
                     <SView row center>
                         <SButtom
@@ -109,7 +112,7 @@ class WhatsappDevices extends Component {
                                 }
                                 SNotification.send({
                                     title: isEdit ? "Dispositivo actualizado" : "Dispositivo registrado",
-                                    body: "",
+                                    body: isEdit ? "Dispositivo actualizado" : "Dispositivo registrado",
                                     color: STheme.color.success,
                                     time: 4000,
                                 });
@@ -149,14 +152,14 @@ class WhatsappDevices extends Component {
                     <DinamicTable.Col key="index" label="N°" width={40} data={e => e.index + 1} />
                     <DinamicTable.Col key="key" label="Key" width={200} data={e => e.row.key} />
                     <DinamicTable.Col key="descripcion" label="descripcion" width={100} data={e => e.row.descripcion} />
-                    <DinamicTable.Col key="key_empresa" label="Empresa" width={200} data={e => e.row.key_empresa} />
+                    {/* <DinamicTable.Col key="key_empresa" label="Empresa" width={200} data={e => e.row.key_empresa} /> */}
 
                     <DinamicTable.Col key="estatus" label="Conexion" width={200} data={e => e.row?.session?.status} />
 
                     <DinamicTable.Col key={"editar"} label='Editar' width={100} data={() => ""}
                         customComponent={e => (
                             <SView row card padding={2} onPress={() => this.formulario(e?.row)}>
-                                <SIcon name='Pencil' fill='blue' width={14} />
+                                <SIcon name='Pencil' fill={STheme.color.green} width={14} />
                                 <SView width={4} />
                                 <SText center color={STheme.color.green}>{"Actualizar"}</SText>
                             </SView>
@@ -171,12 +174,20 @@ class WhatsappDevices extends Component {
                                     message: "Se le enviara a la lista de compras.",
                                     onPress: () => {
                                         MDL.whatsapp.device.edit(e?.row?.key, { estado: 0 })
+
+                                        SNotification.send({
+                                            title: "Dispositivo eliminado",
+                                            body: "Dispositivo eliminado.",
+                                            color: STheme.color.danger,
+                                            time: 4000,
+                                        });
                                         this.DinamicTable.loadData();
                                     }
                                 })
                             }}>
-                                <SIcon name='Cerrar' fill='blue' width={14} />
-                                <SView width={4} />
+
+                                <SIcon name='Cerrar' fill={"white"}  width={14} />
+                                <SView width={8} />
                                 <SText center color={STheme.color.green}>
                                     {"Eliminar"}
                                 </SText>
@@ -187,14 +198,11 @@ class WhatsappDevices extends Component {
                     <DinamicTable.Col key={"chats"} label='Accion' width={100} data={() => ""}
                         customComponent={e => (
                             <SView row card padding={2} onPress={() => {
-                                alert("mira " + e?.row?.key)
                                 SNavigation.navigate("/whatsapp/chats", { pk: e?.row?.key })
                             }}>
-                                <SIcon name='MessageSend' fill='blue' width={14} />
+                                <SIcon name='MessageSend' fill='green' width={14} />
                                 <SView width={4} />
-                                <SText center color={STheme.color.green}>
-                                    {"Ver chats"}
-                                </SText>
+                                <SText center color={STheme.color.green}>  {"Ver chats"}</SText>
                             </SView>
                         )}
                     />
