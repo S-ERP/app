@@ -5,12 +5,13 @@ import { SStorage, STheme, SThread } from "servisofts-component";
 import { Platform } from "react-native";
 import packageInfo from "../../../package.json";
 import MDLAbstract from "../MDLAbstract";
-
+import Device from "./device"
 export default class whatsapp extends MDLAbstract<EventListener> {
   url = "http://192.168.3.3:3000";
   key = "servisofts";
   // url = "https://wtspp.servisofts.com";
 
+    device = new Device();
   async send(params: { phone: string; message?: string, image?: string }) {
     const resp = await fetch(this.url + "/send", {
       method: "POST",

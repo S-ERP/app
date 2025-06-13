@@ -1,0 +1,51 @@
+import SSocket from "servisofts-socket";
+import Model from "../../Model";
+import { Empresa, EventListener } from "./type";
+import { SStorage, STheme, SThread } from "servisofts-component";
+import { Platform } from "react-native";
+import packageInfo from "../../../package.json";
+import MDLAbstract from "../MDLAbstract";
+
+export default class whatsapp extends MDLAbstract<EventListener> {
+  url = "http://192.168.3.3:3000";
+  // url = "https://wtspp.servisofts.com";
+
+  async registrar(params: { descripcion: string }) {
+    const resp = await fetch(this.url + "/api/device", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        key_usuario: Model.usuario.Action.getKey(),
+        key_empresa: Model.empresa.Action.getKey(),
+        descripcion: params.descripcion,
+      }),
+    });
+    const json = await resp.json();
+    return json;
+  }
+
+  async getAll() {
+    const resp = await fetch(this.url + "/api/device", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const json = await resp.json();
+    return json;
+  }
+
+  async edit(key:string,obj:any) {
+    const resp = await fetch(this.url + "/api/device/"+key, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(obj),
+    });
+    const json = await resp.json();
+    return json;
+  }
+}

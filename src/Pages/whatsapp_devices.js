@@ -1,64 +1,157 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SHr, SPage, SText, STheme, SView } from 'servisofts-component';
-import { Container } from '../Components';
-class whatsapp_devices extends Component {
-    render() {
-        return <SPage
-            // navBar={this.navBar()}
-            // footer={this.footer()}
-            title={"Términos y Condiciones"}
-        >
-            <Container >
-                <SHr height={40} />
-                <SText bold center fontSize={18} >{`TÉRMINOS Y CONDICIONES DE USO PARA LA SERP`}</SText>
-                <SHr height={20} />
-                <SView col={"xs-12"}  >
-                    <SText fontSize={16} bold style={{ textTransform: "uppercase" }}>
-                        1. Introducción
-                    </SText>
+import { SPage, SView, SText, STheme, SIcon, SPopup, SInput, SButtom, SHr, SNotification } from 'servisofts-component';
+import { DinamicTable } from 'servisofts-table';
+import FloatButtom from '../Components/FloatButtom';
+import MDL from '../MDL';
+
+
+
+
+const mockDevices = [
+    {
+        key: "WA001",
+        dispositivo_name: "Ventas Principal",
+        dispositivo_phone: "+5491123456789",
+        key_empresa: "ACME001",
+        status: "connected",
+        lastSync: "2023-06-12T15:30:00"
+    },
+    {
+        key: "WA002",
+        dispositivo_name: "Soporte Técnico",
+        dispositivo_phone: "+5491187654321",
+        key_empresa: "ACME001",
+        status: "disconnected",
+        lastSync: "2023-06-10T09:15:00"
+    },
+];
+
+class WhatsappDevices extends Component {
+
+    formulario = (data = null) => {
+        const isEdit = !!data;
+        let descripcionRef;
+
+        return SPopup.open({
+            key: "formulario_dispositivo",
+            content: (
+                <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 300 }} padding={16} withoutFeedback col={"xs-11"}  >
+                    <SView center>
+
+                        <SText fontSize={16} bold> {isEdit ? "Editar Dispositivo" : "Registrar Dispositivo"} </SText>
+                        <SHr height={16} />
+                        <SInput
+                            label="Descripción"
+                            defaultValue={data?.descripcion || ""}
+                            ref={ref => descripcionRef = ref}
+                            style={{
+                                height: 40,
+                                borderRadius: 4,
+                                backgroundColor: STheme.color.lightGray + "30",
+                                textAlign: "center",
+                                color: STheme.color.text,
+                            }}
+                        />
+                        <SHr height={24} />
+                        <SHr height={32} />
+                        <SView row>
+                            <SButtom
+                                type={isEdit ? "outline" : "success"}
+                                onPress={async () => {
+                                    const descripcion = descripcionRef.getValue();
+                                    if (!descripcion) {
+                                        SNotification.send({
+                                            title: "Error",
+                                            body: "Debe ingresar una descripción.",
+                                            color: STheme.color.danger,
+                                        });
+                                        return;
+                                    }
+                                    if (isEdit) {
+                                        await MDL.whatsapp.device.edit(data.key, { descripcion });
+                                    } else {
+                                        await MDL.whatsapp.device.registrar({ descripcion });
+                                    }
+                                    SNotification.send({
+                                        title: isEdit ? "Dispositivo actualizado" : "Dispositivo registrado",
+                                        body: "",
+                                        color: STheme.color.success,
+                                        time: 4000,
+                                    });
+                                    this.forceUpdate();
+                                }}
+                            >
+                                {isEdit ? "Actualizar" : "Registrar"}
+                            </SButtom>
+                            <SView width={16} />
+                            <SButtom
+                                type={"danger"}
+                                onPress={() => {
+                                    SPopup.close("formulario_dispositivo");
+                                }}
+                            >
+                                {"Cancelar"}
+                            </SButtom>
+                        </SView>
+                        <SView col={"xs-12"} />
+                    </SView>
                 </SView>
-
-                <SView col={"xs-12"}  >
-                    <SText fontSize={16} bold style={{ textTransform: "uppercase" }}>
-                        9. Contacto
-                    </SText>
-                </SView>
-                <SView col={"xs-12"}  >
-                    <SText style={{ textAlign: 'justify' }}>
-                        Para cualquier pregunta o inquietud respecto a nuestra política de privacidad, por favor contacte a nuestro oficial de privacidad en servisofts.srl@gmail.com.
-                    </SText>
-                </SView>
-                <SHr height={20} />
-
-                <SView col={"xs-12"}  >
-                    <SText fontSize={16} bold style={{ textTransform: "uppercase" }}>
-                        10. Cambios en la Política de Privacidad
-                    </SText>
-                </SView>
-                <SText style={{ textAlign: 'justify' }}>
-                    SERP puede modificar esta política de privacidad periódicamente. Cualquier cambio será comunicado a través de nuestra aplicación o por correo electrónico.
-                </SText>
-                <SHr />
-                {/* <SText fontSize={14} justify>{`
-
-Al descargar, instalar y/o usar la aplicación "SERP" (en adelante, "la Aplicación"), usted acepta los siguientes términos y condiciones:
-
-Propiedad y Licencia: SERP y sus licenciantes son propietarios exclusivos de la Aplicación. Al descargar y usar la Aplicación, se le otorga una licencia limitada, no exclusiva y no transferible para usarla. No está permitido distribuir, vender, alquilar, sub-licenciar o realizar acciones que comprometan los derechos de propiedad de la Aplicación.
- spender su acceso a la Aplicación en cualquier momento y por cualquier motivo.
-
-Cambios a los Términos y Condiciones: SERP puede modificar estos términos y condiciones en cualquier momento. Al continuar usando la Aplicación después de cualquier modificación, acepta y está de acuerdo con las modificaciones.
-
-Legislación y Jurisdicción: Estos términos y condiciones se rigen por las leyes [del país o estado en cuestión]. Cualquier disputa relacionada con la Aplicación será resuelta en los tribunales [del país o estado en cuestión].
-
-                  `}</SText> */}
-                <SHr height={40} />
-            </Container>
-        </SPage>
+            )
+        });
     }
 
+    render() {
+        return (
+            <SPage title="Dispositivos WhatsApp">
+                <DinamicTable
+                    loadData={async () => await MDL.whatsapp.device.getAll()}
+                    key="id"
+                    language="es"
+                >
+                    <DinamicTable.Col key="index" label="N°" width={40} data={e => e.index + 1} />
+                    <DinamicTable.Col key="key" label="Key" width={200} data={e => e.row.key} />
+                    <DinamicTable.Col key="descripcion" label="descripcion" width={100} data={e => e.row.descripcion} />
+                    <DinamicTable.Col key="key_empresa" label="Empresa" width={200} data={e => e.row.key_empresa} />
+
+                    <DinamicTable.Col key="estatus" label="Conexion" width={200} data={e => e.row?.session?.status} />
+
+                    <DinamicTable.Col key={"editar"} label='Editar' width={100} data={() => ""}
+                        customComponent={e => (
+                            <SView row card padding={2} onPress={() => this.formulario(e?.row)}>
+                                <SIcon name='Edit' width={18} />
+                                <SView width={4} />
+                                <SText center color={STheme.color.green}>
+                                    {"Actualizar"}
+                                </SText>
+                            </SView>
+                        )}
+                    />
+
+                    <DinamicTable.Col key={"eliminar"} label='Eliminar' width={100} data={() => ""}
+                        customComponent={e => (
+                            <SView row card padding={2} onPress={() => {
+                                SPopup.confirm({
+                                    title: "Esta seguro que quiere eliminar?",
+                                    message: "Se le enviara a la lista de compras.",
+                                    onPress: () => { MDL.whatsapp.device.edit(e?.row?.key, { estado: 0 }) }
+                                })
+                            }}>
+                                <SIcon name='Delete' width={18} />
+                                <SView width={4} />
+                                <SText center color={STheme.color.green}>
+                                    {"Eliminar"}
+                                </SText>
+                            </SView>
+                        )}
+                    />
+                </DinamicTable>
+
+                <FloatButtom onPress={() => this.formulario()} />
+            </SPage>
+        );
+    }
 }
-const initStates = (state) => {
-    return { state }
-};
-export default connect(initStates)(whatsapp_devices);
+
+const initStates = state => ({ state });
+export default connect(initStates)(WhatsappDevices);
