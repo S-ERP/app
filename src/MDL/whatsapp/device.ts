@@ -36,9 +36,32 @@ export default class whatsapp extends MDLAbstract<EventListener> {
     const json = await resp.json();
     return json;
   }
+  async getByKey(key: string) {
+    const resp = await fetch(this.url + "/api/device/" + key, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const json = await resp.json();
+    return json;
+  }
+  async getChats(key: string) {
+    const resp = await fetch(this.url + "/api/device/" + key + "/chats", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const json = await resp.json();
+    return json;
+  }
 
-  async edit(key:string,obj:any) {
-    const resp = await fetch(this.url + "/api/device/"+key, {
+  getUrlImage(key: string, id: any) {
+    return this.url + "/api/device/" + key + "/profilePic/" + id;
+  }
+  async edit(key: string, obj: any) {
+    const resp = await fetch(this.url + "/api/device/" + key, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
