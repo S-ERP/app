@@ -37,15 +37,7 @@ class WhatsappDevices extends Component {
             key: "formulario_dispositivo",
             content: (
                 <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 300 }} padding={16} withoutFeedback col={"xs-11"}    >
-                    {/* <SView center>
-                    </SView> */}
-
-
-                    {/* Registrar nuevo dispositivo WhatsApp
-                        Complete la información y escanee el código QR para sincronizar un nuevo dispositivo de WhatsApp Business. */}
-
                     <SText fontSize={16} bold>{isEdit ? "Actualizar dispositivo WhatsApp" : "Registrar nuevo dispositivo WhatsApp"} </SText>
-
                     <SHr height={8} />
                     <SText fontSize={12}>Complete la información y escanee el código QR para sincronizar un nuevo dispositivo de WhatsApp Business.</SText>
                     <SHr height={16} />
@@ -58,7 +50,6 @@ class WhatsappDevices extends Component {
                             height: 40,
                             borderRadius: 4,
                             backgroundColor: STheme.color.lightGray + "30",
-                            // textAlign: "center",
                             color: STheme.color.text,
                         }}
                     />
@@ -66,13 +57,12 @@ class WhatsappDevices extends Component {
                     <SInput
                         label="Número"
                         placeholder={"+591 XXXXXXXX"}
-                        defaultValue={data?.descripcion || ""}
+                        defaultValue={""}
                         ref={ref => telefonoRef = ref}
                         style={{
                             height: 40,
                             borderRadius: 4,
                             backgroundColor: STheme.color.lightGray + "30",
-                            // textAlign: "center",
                             color: STheme.color.text,
                         }}
                     />
@@ -80,14 +70,12 @@ class WhatsappDevices extends Component {
                     <SInput
                         label="Empresa"
                         placeholder={"Seleccione empresa"}
-
                         defaultValue={data?.key_empresa || ""}
                         ref={ref => telefonoRef = ref}
                         style={{
                             height: 40,
                             borderRadius: 4,
                             backgroundColor: STheme.color.lightGray + "30",
-                            // textAlign: "center",
                             color: STheme.color.text,
                         }}
                     />
@@ -168,11 +156,9 @@ class WhatsappDevices extends Component {
                     <DinamicTable.Col key={"editar"} label='Editar' width={100} data={() => ""}
                         customComponent={e => (
                             <SView row card padding={2} onPress={() => this.formulario(e?.row)}>
-                                <SIcon name='Edit' fill='blue' width={18} />
+                                <SIcon name='Edit' fill='blue' stroke='red' width={18} />
                                 <SView width={4} />
-                                <SText center color={STheme.color.green}>
-                                    {"Actualizar"}
-                                </SText>
+                                <SText center color={STheme.color.green}>{"Actualizar"}</SText>
                             </SView>
                         )}
                     />
