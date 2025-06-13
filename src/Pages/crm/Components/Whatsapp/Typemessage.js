@@ -7,6 +7,7 @@ import MsgImg from "./tipo/MsgImg";
 import MsgGps from "./tipo/MsgGps";
 import MsgAudio from "./tipo/MsgAudio";
 import MsgVideo from "./tipo/MsgVideo";
+import MsgTextDelete from "./tipo/MsgTextDelete";
 
 export default class Typemessage extends Component {
 
@@ -19,6 +20,7 @@ export default class Typemessage extends Component {
         if (this.props.mensaje.type == "sticker") return <MsgStiker mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "ptt") return <MsgAudio mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "location") return <MsgGps mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "revoked") return <MsgTextDelete mensaje={this.props.mensaje} color={color} />
         return <SText color={STheme.color.danger} padding={4}>{this.props.mensaje.type}</SText>;
     }
 }
