@@ -41,7 +41,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
       },
       body: JSON.stringify({
         key: this.key,
-        idchat: "591" + params.phone + "@c.us",
+        idchat: "" + params.phone.replace(" ","") + "@c.us",
         // idchat: "59178505744@c.us",
         // idchat: params.idchat,
         limit: 50,
