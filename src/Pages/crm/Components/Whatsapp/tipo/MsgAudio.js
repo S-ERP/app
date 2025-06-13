@@ -83,18 +83,10 @@ export default class MsgAudio extends Component {
         );
     };
 
-
     render() {
         const { isPlaying } = this.state;
-        // this.props.mensaje.mediaData; donde iria para que se escuche mi audio
         return (
-            <SView row style={{
-                backgroundColor: this.props.color || "#075E54",
-                borderRadius: 8,
-                padding: 8,
-                marginHorizontal: 10,
-                width: "80%",
-            }}>
+            <View style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 8, marginHorizontal: 10, width: "auto", maxWidth: "80%", alignItems: "flex-end" }}>
 
                 <SView col={"xs-12"} row center  >
                     <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden", marginRight: 8 }}>
@@ -150,11 +142,11 @@ export default class MsgAudio extends Component {
 
                     </SView>
                     <SView flex />
-                    <SView col={"xs-4"} style={{ alignItems: "flex-end" }}  >
+                    <SView col={"xs-4"} border={"red"} style={{ alignItems: "flex-end" }}  >
                         <HoraLabel mesaje={this.props.mensaje} />
                     </SView>
                 </SView>
-            </SView>
+            </View>
         );
     }
 }
