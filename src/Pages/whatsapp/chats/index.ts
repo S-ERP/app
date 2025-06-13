@@ -1,8 +1,7 @@
 import { SPage } from "servisofts-component";
 import root from "./root";
-import chats from "./chats";
-export default SPage.combinePages("whatsapp", {
+
+export default SPage.combinePages("chats", {
     "": root,
-    ...chats,
 
 })
