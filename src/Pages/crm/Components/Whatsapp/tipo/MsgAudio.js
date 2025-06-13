@@ -13,7 +13,7 @@ export default class MsgAudio extends Component {
             isPlaying: false,
             progress: 0,
             duration: this.props.mensaje.duration,
-            waveform: Array.from({ length: 25 }, () => Math.random() * 0.8 + 0.2),
+            waveform: Array.from({ length: 30 }, () => Math.random() * 0.8 + 0.2),
         };
         this.interval = null;
     }
@@ -67,8 +67,8 @@ export default class MsgAudio extends Component {
                 <SView
                     key={index}
                     style={{
-                        width: 2,
-                        height: value * 20,
+                        width: 1.5,
+                        height: value * 10,
                         backgroundColor: "white",
                         opacity: isActive ? 1 : 0.3,
                         marginRight: 2.5,
@@ -79,11 +79,12 @@ export default class MsgAudio extends Component {
         });
 
         return (
-            <SView flex row style={{ flexDirection: "row", alignItems: "center", }}>
+            <SView flex row  style={{ flexDirection: "row", alignItems: "center", }}>
                 {bars}
             </SView>
         );
     };
+
 
     render() {
         const { isPlaying, progress, duration } = this.state;
@@ -115,7 +116,7 @@ export default class MsgAudio extends Component {
                         style={{ resizeMode: "cover" }}
                     />
                 </SView>
-                <SView col={"xs-12"} row center style={{ position: "absolute", top: 16, left: isEnviado ? 12:-12 }}>
+                <SView col={"xs-12"} row center style={{ position: "absolute", top: 16, left: isEnviado ? 12 : -12 }}>
                     <SIcon name="crmmicrofono" width={42} fill={isEnviado ? STheme.color.lightGray : "#43ABCD"} stroke={color} />
                 </SView>
             </SView>
@@ -128,7 +129,7 @@ export default class MsgAudio extends Component {
                 </SView>
 
                 <SView flex row center backgroundColor={"transparent"}>
-                    <SView col={"xs-12"} row center>
+                    <SView flex  row >
                         {this.renderWaveform()}
                     </SView>
 
@@ -149,17 +150,12 @@ export default class MsgAudio extends Component {
             </SView>
         );
 
+
         return (
-            <View style={{
-                backgroundColor: color,
-                borderRadius: 8,
-                padding: 8,
-                marginHorizontal: 10,
-                width: "auto",
-                maxWidth: "80%",
-                alignItems: "flex-end"
-            }}>
-                <SView col={"xs-12"} row center>
+            <View style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 8, marginHorizontal: 10, width: "60%" }}>
+
+
+                <SView col={"xs-12"} row center   >
                     {isEnviado ? (
                         <>
                             {userIcon}

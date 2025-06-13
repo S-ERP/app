@@ -56,7 +56,6 @@ class index extends Component {
                     path={"/"} permiso={"page"}>
                     {/* <MenuButtom label={"Migrador2"} url={"/bots/amortizaciones"} icon={<SIcon name={"Box"} fill='#f098a7' />} /> */}
                     <MenuButtom label={"Mi perfil"} url={"/profile"} icon={this.getIconProfile()} />
-                    {/* <MenuButtom label={"Reto"} url={"/tarea/reto"}  /> */}
                     {/* <MenuButtom label={"Lote"} url={"/lote"}  icon={<SIcon name={"Marker"} />} />
                     <MenuButtom label={"Drive"} url={"/drive"}  icon={<SIcon name={"drive-icon"} />} />
                     <MenuButtom label={"Three"} url={"/three"} icon={<SIcon name={"iThree"} />}/> */}
