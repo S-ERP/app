@@ -51,7 +51,6 @@ import mapa from './mapa';
 import uploadv2 from "./uploadv2"
 import drive from './drive';
 import drive2 from './drive2';
-import whatsapp_devices from "./whatsapp_devices";
 // Three js
 // import three from './three';
 // import mesh from './mesh';
@@ -143,5 +142,4 @@ export default SPage.combinePages("/", {
   ...crm,
   "pdf/factura": factura,
   plantilla,
-  whatsapp_devices,
 });
