@@ -123,6 +123,9 @@ import crmdproyecto, {
 import blender from "./svg/blender";
 
 import drive from "./svg/drive";
+import crmmicrofono, {
+  ReactComponent as crmmicrofonoW,
+} from "./svg/crm/microfono.svg";
 
 export const svg = {
   Logo: { Native: Logo, Web: LogoW },
@@ -235,6 +238,7 @@ export const svg = {
 
   crmpause: { Native: crmpause, Web: crmpauseW },
   crmplay: { Native: crmplay, Web: crmplayW },
+  crmmicrofono: { Native: crmmicrofono, Web: crmmicrofonoW },
 
   ...blender,
 };

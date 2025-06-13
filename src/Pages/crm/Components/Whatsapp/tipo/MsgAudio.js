@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import { TouchableOpacity, View } from "react-native";
-import { SImage, SText, SView, SIcon, SHr } from "servisofts-component";
+import { SImage, SText, SView, SIcon, SHr, STheme } from "servisofts-component";
 import HoraLabel from "../Comp/HoraLabel";
 import Sounds from "../../../../../Components/Sounds";
+
+// corlor
 
 export default class MsgAudio extends Component {
     constructor(props) {
@@ -84,69 +86,94 @@ export default class MsgAudio extends Component {
     };
 
     render() {
-        const { isPlaying } = this.state;
-        return (
-            <View style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 8, marginHorizontal: 10, width: "auto", maxWidth: "80%", alignItems: "flex-end" }}>
+        const { isPlaying, progress, duration } = this.state;
+        const { mensaje, color } = this.props;
+        const isEnviado = mensaje.fromMe;
 
-                <SView col={"xs-12"} row center  >
-                    <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden", marginRight: 8 }}>
-                        <SImage
-                            enablePreview
-                            src="https://us.123rf.com/450wm/belopoppa/belopoppa1809/belopoppa180900002/109693900-profile-placeholder-image-gray-silhouette-no-photo-of-a-person-on-the-avatar-the-default-pic-is.jpg"
-                            style={{ resizeMode: "cover" }}
-                        />
-                    </SView>
+        const playButton = (
+            <TouchableOpacity onPress={this.togglePlay}>
+                <SView style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: "rgba(255,255,255,0.2)",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginRight: 10
+                }}>
+                    <SIcon name={isPlaying ? "crmpause" : "crmplay"} fill="white" width={16} height={16} />
+                </SView>
+            </TouchableOpacity>
+        );
 
+        const userIcon = (
+            <SView col={"xs-3"} row center backgroundColor={"transparent"}>
+                <SView width={40} height={40} border={"transparent"} style={{ borderRadius: 100, overflow: "hidden", marginRight: 8 }}>
+                    <SImage
+                        enablePreview
+                        src="https://us.123rf.com/450wm/belopoppa/belopoppa1809/belopoppa180900002/109693900-profile-placeholder-image-gray-silhouette-no-photo-of-a-person-on-the-avatar-the-default-pic-is.jpg"
+                        style={{ resizeMode: "cover" }}
+                    />
+                </SView>
+                <SView col={"xs-12"} row center style={{ position: "absolute", top: 16, left: isEnviado ? 12:-12 }}>
+                    <SIcon name="crmmicrofono" width={42} fill={isEnviado ? STheme.color.lightGray : "#43ABCD"} stroke={color} />
+                </SView>
+            </SView>
+        );
 
-                    <SView flex row >
-
-                        {/* Botón Play/Pause */}
-                        <TouchableOpacity onPress={this.togglePlay}>
-                            <SView style={{
-                                width: 32,
-                                height: 32,
-                                borderRadius: 16,
-                                backgroundColor: "rgba(255,255,255,0.2)",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                marginRight: 10
-                            }}>
-                                <SIcon name={isPlaying ? "crmpause" : "crmplay"} fill="white" width={16} height={16} />
-                            </SView>
-                        </TouchableOpacity>
-
-                        {/* Waveform */}
-                        {this.renderWaveform()}
-
-
-                    </SView>
-
-
-
+        const waveformSection = (
+            <SView flex row center backgroundColor={"transparent"}>
+                <SView col={"xs-3"} row center backgroundColor={"transparent"}>
+                    {playButton}
                 </SView>
 
-                <SHr height={5} />
-
-                {/* Tiempo y checks */}
-                <SView col={"xs-12"} row center   >
-
-                    <SView col={"xs-4"}   >
-
-                        <SText color="rgba(255,255,255,0.7)" fontSize={11}>
-                            {this.state.isPlaying
-                                ? `${Math.floor(this.state.progress / 60)}:${(this.state.progress % 60).toString().padStart(2, "0")} `
-                                : `${Math.floor(this.state.duration / 60)}:${(this.state.duration % 60).toString().padStart(2, "0")}`
-                            }
-                        </SText>
-
-
+                <SView flex row center backgroundColor={"transparent"}>
+                    <SView col={"xs-12"} row center>
+                        {this.renderWaveform()}
                     </SView>
-                    <SView flex />
-                    <SView col={"xs-4"} border={"red"} style={{ alignItems: "flex-end" }}  >
-                        <HoraLabel mesaje={this.props.mensaje} />
+
+                    <SView col={"xs-12"} row center style={{ position: "absolute", top: 20 }}>
+                        <SView col={"xs-4"} center>
+                            <SText color="rgba(255,255,255,0.7)" fontSize={11}>
+                                {isPlaying
+                                    ? `${Math.floor(progress / 60)}:${(progress % 60).toString().padStart(2, "0")}`
+                                    : `${Math.floor(duration / 60)}:${(duration % 60).toString().padStart(2, "0")}`}
+                            </SText>
+                        </SView>
+                        <SView flex />
+                        <SView col={"xs-4"} border={"transparent"} style={{ alignItems: "flex-end" }}>
+                            <HoraLabel mesaje={mensaje} />
+                        </SView>
                     </SView>
+                </SView>
+            </SView>
+        );
+
+        return (
+            <View style={{
+                backgroundColor: color,
+                borderRadius: 8,
+                padding: 8,
+                marginHorizontal: 10,
+                width: "auto",
+                maxWidth: "80%",
+                alignItems: "flex-end"
+            }}>
+                <SView col={"xs-12"} row center>
+                    {isEnviado ? (
+                        <>
+                            {userIcon}
+                            {waveformSection}
+                        </>
+                    ) : (
+                        <>
+                            {waveformSection}
+                            {userIcon}
+                        </>
+                    )}
                 </SView>
             </View>
         );
     }
+
 }
