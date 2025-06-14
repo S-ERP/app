@@ -109,7 +109,7 @@ export default class MensajesMasivos extends Component {
                 />
 
                 <DinamicTable.Col key={"key"} label='ID' width={35} data={(e) => e.index + 1} />
-                <DinamicTable.Col key={"nombres"} label='Nombre completo' width={180} data={(e) => e.row.nombres} />
+                <DinamicTable.Col key={"nombres"} label='Nombre completo' width={180} data={(e) => e.row.nombres?.trim() ? e.row.nombres : "Sin nombre"} />
                 <DinamicTable.Col key={"telefono"} label='Teléfono' width={120} data={(e) => e.row.telefono} />
                 <DinamicTable.Col key={"estado"} label='Status' width={120} data={(e) => e.row.estado} />
 
