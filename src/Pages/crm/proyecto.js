@@ -13,8 +13,10 @@ import PopupRellamada from './Components/PopupRellamada';
 import PopupRazon from './Components/PopupRazon';
 import Model from '../../Model';
 import Config from '../../Config';
+import PopupDispositivo from './Components/PopupDispositivo';
 
 export default class proyecto extends Component {
+
 
 
 
@@ -161,7 +163,7 @@ export default class proyecto extends Component {
 
                 <DinamicTable.Col key={"key"} label='ID' cellStyle={{
                     justifyContent: "flex-start"
-                }}  width={30} data={(e) => e.index + 1} />
+                }} width={30} data={(e) => e.index + 1} />
 
 
                 {/* <DinamicTable.Col key={"key"} label='Key'
@@ -351,6 +353,42 @@ export default class proyecto extends Component {
                             <ScrollView>
                                 <SMD space={1} fontSize={9} >{e.data}</SMD>
                             </ScrollView>
+                        </SView>
+                    }}
+                />
+                <DinamicTable.Col key={"key_whatsapp_device"} label='Accion'
+                    width={350}
+                    wrap={true}
+                    data={(e) => {
+                        return e.row.key_whatsapp_device
+                    }}
+                    cellStyle={{
+                        padding: 0,
+                    }}
+                    customComponent={ex => {
+                        return <SView row card padding={2} center
+
+                            onPress={() => {
+                                PopupDispositivo.open(
+                                    ({
+                                        key_whatsapp_device: ex?.row?.key_whatsapp_device,
+                                        onRegister: (e) => {
+                                            // console.log("seleccionado " + e.selectedOption.key)
+                                            // console.log("seleccionado " + e.selectedOption.content)
+                                            MDL.crm.proyecto.editar({
+                                                key: ex.row.key,
+                                                key_whatsapp_device: e.selectedOption.key
+                                            }).then(e => {
+                                                this.DinamicTable.loadData();
+                                            })
+                                        }
+                                    }))
+                            }}
+                        >
+                            <SView width={4} />
+                            <SIcon name='recall' fill='green' width={14} />
+                            <SView width={4} />
+                            <SText center color={STheme.color.green}>ADD Device</SText>
                         </SView>
                     }}
                 />
