@@ -520,7 +520,7 @@ export default class proyecto extends Component {
                     <DinamicTable.Col
                         key={"key_whatsapp_device"}
                         label="Dispositivo WhatsApp"
-                        width={350}
+                        width={240}
                         wrap={true}
                         data={(e) => {
                             return e.row.key_whatsapp_device;
@@ -537,7 +537,7 @@ export default class proyecto extends Component {
                                     col={"xs-12"} center
                                     style={{ maxHeight: 155, overflow: "hidden" }}
                                 >
-                                    {!device?.descripcion ? <SView
+                                    <SView
                                         width={120}
                                         padding={4}
                                         row
@@ -569,13 +569,17 @@ export default class proyecto extends Component {
                                             Add Device
                                         </SText>
                                         <SView width={8} />
+
                                     </SView>
-                                        :
-                                        <SView center col={"xs-12"} style={{ maxHeight: 155, overflow: "hidden" }}>
+
+
+                                    {device?.descripcion ?
+
+                                        <SView center card col={"xs-8"} style={{ maxHeight: 155, overflow: "hidden", marginTop: 16 }}>
                                             <SText>Dispositivo vinculado:</SText>
                                             <SText> <SView width="80" backgroundColor="red" borderRadius={50} />   {device?.descripcion}</SText>
-                                        </SView>}
-
+                                        </SView>
+                                        : ""}
 
                                 </SView>
                             );
