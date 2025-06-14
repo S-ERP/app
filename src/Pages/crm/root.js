@@ -90,10 +90,9 @@ export default class root extends Component {
                 />
 
                 <MenuButtom
-                    label="masico"
+                    label="Mensajes masivos"
                     url="/crm/masivo"
-                    // params={{ type: "delivery" }}
-                    icon={<SIconApp name='Girl' fill={"#333"} />}
+                    icon={<SIconApp name='whatsapp' fill={"#333"} />}
                 />
             </MenuPages>
 

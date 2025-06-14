@@ -47,9 +47,9 @@ export default class MensajesMasivos extends Component {
 
     render() {
         return <SPage
-            title={<SView row>
-                <SIcon name="whatsapp" fill='red' width={14} />
-                <SText>  Mensajes masivos </SText>
+            title={<SView row center>
+                <SIcon name="whatsapp" fill='green' width={16} />
+                <SText fontSize={18}>  Mensajes masivos </SText>
             </SView>}
             center
         >
@@ -92,7 +92,7 @@ export default class MensajesMasivos extends Component {
 
             >
 
-                <DinamicTable.Col key={" "} label='sELECCIONADO' width={100} data={() => ""}
+                <DinamicTable.Col key={" "} label='' width={50} data={() => ""}
                     customComponent={e => <SInput
                         type="checkBox"
                         value={this.state.seleccionados.find(sel => sel.key === e.row.key) ? true : false}
