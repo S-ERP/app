@@ -14,8 +14,54 @@ import PopupRazon from './Components/PopupRazon';
 import Model from '../../Model';
 import Config from '../../Config';
 import PopupDispositivo from './Components/PopupDispositivo';
+import { any } from 'three/examples/jsm/nodes/Nodes';
 
 export default class proyecto extends Component {
+
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            descripcionesDispositivo: {}, // <--- clave: key_device, valor: descripción
+        };
+
+    }
+
+
+
+    componentDidMount() {
+        MDL.whatsapp.device.getAll().then(e => {
+            this.setState({ devices: e })
+        })
+    }
+
+    async cargarDescripcionDispositivo(key) {
+        if (!key) return;
+
+        // Evitar repetir si ya está cargado
+        if (this.state.descripcionesDispositivo[key]) return;
+
+        try {
+            const devices = await MDL.whatsapp.device.getAll();
+            const dispositivo = devices.find(d => d?.key === key);
+            const descripcion = dispositivo?.descripcion ?? "No encontrado";
+
+            this.setState(prevState => ({
+                descripcionesDispositivo: {
+                    ...prevState.descripcionesDispositivo,
+                    [key]: "dispositivo: " + descripcion,
+                },
+            }));
+        } catch (e) {
+            console.error("Error al obtener dispositivo:", e);
+            this.setState(prevState => ({
+                descripcionesDispositivo: {
+                    ...prevState.descripcionesDispositivo,
+                    [key]: "Error al cargar dispositivo",
+                },
+            }));
+        }
+    }
 
 
 
@@ -366,30 +412,41 @@ export default class proyecto extends Component {
                         padding: 0,
                     }}
                     customComponent={ex => {
-                        return <SView row card padding={2} center
 
-                            onPress={() => {
-                                PopupDispositivo.open(
-                                    ({
-                                        key_whatsapp_device: ex?.row?.key_whatsapp_device,
-                                        onRegister: (e) => {
-                                            // console.log("seleccionado " + e.selectedOption.key)
-                                            // console.log("seleccionado " + e.selectedOption.content)
-                                            MDL.crm.proyecto.editar({
-                                                key: ex.row.key,
-                                                key_whatsapp_device: e.selectedOption.key
-                                            }).then(e => {
-                                                this.DinamicTable.loadData();
-                                            })
-                                        }
-                                    }))
-                            }}
-                        >
-                            <SView width={4} />
-                            <SIcon name='recall' fill='green' width={14} />
-                            <SView width={4} />
-                            <SText center color={STheme.color.green}>ADD Device</SText>
+                        const device = (this.state.devices??[]).find(a => a.key == ex?.row?.key_whatsapp_device);
+                        return <SView col={"xs-12"} style={{ maxHeight: 155, overflow: "hidden" }} >
+
+
+                            <SView row card padding={2} center
+                                onPress={() => {
+                                    PopupDispositivo.open(
+                                        ({
+                                            key_whatsapp_device: ex?.row?.key_whatsapp_device,
+                                            onRegister: (e) => {
+                                                MDL.crm.proyecto.editar({
+                                                    key: ex.row.key,
+                                                    key_whatsapp_device: e.selectedOption.key
+                                                }).then(e => {
+                                                    this.DinamicTable.loadData();
+                                                })
+                                            }
+                                        }))
+                                }}
+                            >
+                                <SView width={4} />
+                                <SIcon name='recall' fill='green' width={14} />
+                                <SView width={4} />
+                                <SText center color={STheme.color.green}>ADD Device</SText>
+                            </SView>
+                            <SView col={"xs-12"} style={{ maxHeight: 155, overflow: "hidden" }} >
+
+                                <SText >
+                                    key {device?.descripcion}
+
+                                </SText>
+                            </SView>
                         </SView>
+
                     }}
                 />
 

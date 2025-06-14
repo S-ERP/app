@@ -19,6 +19,7 @@ export default class Chatlead extends Component {
 
 
     componentDidMount() {
+        MDL.whatsapp.key = this.props.data.proyecto.key_whatsapp_device;
         const dell = MDL.whatsapp.getAllChatsById({ phone: this.props.data?.cliente?.telefono }).then(e => {
 
             console.log(e)
@@ -86,6 +87,8 @@ export default class Chatlead extends Component {
 
     renderHeader() {
         const { cliente } = this.props.data || {};
+        console.log("sssss " + JSON.stringify(this.props.data.proyecto.key_whatsapp_device))
+
         return (
             <SView col="xs-12" row style={{ backgroundColor: STheme.color.card, padding: 8, }}>
                 <SView col="xs-8" row style={{ justifyContent: "flex-start" }}>
@@ -93,7 +96,7 @@ export default class Chatlead extends Component {
                         <SImage enablePreview src="https://us.123rf.com/450wm/belopoppa/belopoppa1809/belopoppa180900002/109693900-profile-placeholder-image-gray-silhouette-no-photo-of-a-person-on-the-avatar-the-default-pic-is.jpg" style={{ resizeMode: "cover" }} />
                     </SView>
                     <SView flex row style={{ marginLeft: 16 }}>
-                        <SText col="xs-12" color="white" fontSize={14} bold>{cliente?.nombres}</SText>
+                        <SText col="xs-12" color="white" fontSize={14} bold>{cliente?.nombres} - {this.props.data.proyecto.key_whatsapp_device} </SText>
                         <SText col="xs-12" color="white" fontSize={12} bold>{cliente?.telefono}</SText>
                     </SView>
                 </SView>
