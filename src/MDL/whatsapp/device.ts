@@ -46,6 +46,20 @@ export default class whatsapp extends MDLAbstract<EventListener> {
     const json = await resp.json();
     return json;
   }
+
+
+  async edit(key: string, obj: any) {
+    const resp = await fetch(this.url + "/api/device/" + key, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(obj),
+    });
+    const json = await resp.json();
+    return json;
+  }
+
   async getChats(key: string) {
     const resp = await fetch(this.url + "/api/device/" + key + "/chats", {
       method: "GET",
@@ -57,18 +71,18 @@ export default class whatsapp extends MDLAbstract<EventListener> {
     return json;
   }
 
-  getUrlImage(key: string, id: any) {
-    return this.url + "/api/device/" + key + "/profilePic/" + id;
-  }
-  async edit(key: string, obj: any) {
-    const resp = await fetch(this.url + "/api/device/" + key, {
-      method: "PUT",
+  async getChatById(key: string, idchat: string) {
+    const resp = await fetch(this.url + "/api/device/" + key + "/chatsById/" + idchat, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(obj),
     });
     const json = await resp.json();
     return json;
+  }
+
+  getUrlImage(key: string, id: any) {
+    return this.url + "/api/device/" + key + "/profilePic/" + id;
   }
 }

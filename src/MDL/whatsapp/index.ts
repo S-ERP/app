@@ -5,13 +5,13 @@ import { SStorage, STheme, SThread } from "servisofts-component";
 import { Platform } from "react-native";
 import packageInfo from "../../../package.json";
 import MDLAbstract from "../MDLAbstract";
-import Device from "./device"
+import Device from "./device";
 export default class whatsapp extends MDLAbstract<EventListener> {
   url = "http://192.168.3.3:3000";
   key = "servisofts";
   // url = "https://wtspp.servisofts.com";
+  device = new Device();
 
-    device = new Device();
   async send(params: { phone: string; message?: string, image?: string }) {
     const resp = await fetch(this.url + "/send", {
       method: "POST",
@@ -35,14 +35,14 @@ export default class whatsapp extends MDLAbstract<EventListener> {
     offset: string;
     phone: string;
   }) {
-    const resp = await fetch(this.url + "/getAllChatsById", {
+    const resp = await fetch(this.url + "/api/device/getAllChatsById", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         key: this.key,
-        idchat: "" + params.phone.replace(" ","") + "@c.us",
+        idchat: params.idchat || ("" + params.phone.replace(" ", "") + "@c.us"),
         // idchat: "59178505744@c.us",
         // idchat: params.idchat,
         limit: 50,

@@ -3,11 +3,13 @@ import { View, Text, FlatList } from 'react-native';
 import { SImage, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import { Container } from '../../../Components';
+import Whatsapp from '../../crm/Components/Whatsapp';
 
 export default class root extends Component {
 
     pk = SNavigation.getParam("pk");
     state = {
+        idchat: "",
         data: null
     }
 
@@ -26,10 +28,13 @@ export default class root extends Component {
         if (!this.state.data) return <SText>Loading...</SText>;
         return <FlatList
             data={this.state.data}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id._serialized}
             renderItem={({ item }) => (
                 <View style={{ padding: 10, }}>
-                    <SView row center>
+                    <SView row center onPress={() => {
+                        this.setState({ idchat: item.id._serialized, });
+                        // SNavigation.navigate("/crm/whatsapp/chatlead", { idchat: item.id, pk: this.pk });
+                    }}>
                         <SView style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: STheme.color.card, justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
                             <SImage src={MDL.whatsapp.device.getUrlImage(this.pk, item.id._serialized)} />
                         </SView>
@@ -57,11 +62,21 @@ export default class root extends Component {
         return <SPage title={"Whatsapp Chats "} disableScroll>
             {/* <SText>{this.pk}</SText> */}
             <View style={{
-                maxWidth: 500,
+                flexDirection: "row",
                 width: "100%",
-                flex: 1,
+                height: "100%",
             }}>
-                {this.renderChats()}
+                <View style={{
+                    width: 300,
+                    height: "100%",
+                }}>
+                    {this.renderChats()}
+                </View>
+                <View style={{
+                    flex: 1,
+                }}>
+                    {this.state.idchat && <Whatsapp.ChatById key={this.state.idchat} idDevice={this.pk} idchat={this.state.idchat} />}
+                </View>
             </View>
         </SPage>
     }
