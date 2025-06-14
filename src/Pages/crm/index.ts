@@ -9,9 +9,10 @@ import dashboard from "./dashboard";
 import lead from "./lead";
 import tipoMovimientoLead from "./tipoMovimientoLead";
 import llamar from "./llamar";
-import call from "./call"
+import call from "./call";
 import campana from "./campana";
 import graficos from "./graficos";
+import masivo from "./masivo";
 
 export default SPage.combinePages("crm", {
   "": root,
@@ -26,5 +27,6 @@ export default SPage.combinePages("crm", {
   llamar,
   campana,
   graficos,
-  call
+  call,
+  masivo,
 });

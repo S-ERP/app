@@ -115,7 +115,7 @@ class WhatsappDevices extends Component {
             if (isEdit) {
                 await MDL.whatsapp.device.edit(data.key, { descripcion, webhook });
             } else {
-                await MDL.whatsapp.device.registrar({ descripcion });
+                await MDL.whatsapp.device.registrar({ descripcion, webhook });
             }
 
             SNotification.send({
@@ -154,8 +154,11 @@ class WhatsappDevices extends Component {
                         }}
                         onKeyPress={(e) => {
                             if (e.key === "Enter") {
+
+                                webhookRef.focus();
                                 e.preventDefault();
-                                handleSubmit();
+
+
                             }
 
                             if (e.key === "Escape") {
@@ -166,13 +169,13 @@ class WhatsappDevices extends Component {
                     />
 
                     <SInput
-                        autoFocus
+                        // autoFocus
 
                         label="webhook"
                         placeholder={"Nombre del dispositivo"}
                         defaultValue={data?.webhook || ""}
                         ref={ref => webhookRef = ref}
-                        required={true}
+                        // required={true}
                         style={{
                             height: 40,
                             borderRadius: 4,
@@ -257,11 +260,11 @@ class WhatsappDevices extends Component {
                     <DinamicTable.Col key="key" label="Key" width={200} data={e => e.row.key} />
                     <DinamicTable.Col key="descripcion" label="descripcion" width={100} data={e => e.row.descripcion} />
                     <DinamicTable.Col key="webhook" label="webhook" width={180} data={e => e.row.webhook} />
-                    <DinamicTable.Col key="qr" label="qr" width={150} center data={e => e.row?.session?.qr}
+                    <DinamicTable.Col key="qr" label="qr" width={100} center data={e => e.row?.session?.qr}
                         customComponent={e =>
                             e.row?.session?.qr ?
                                 (<SView row center>
-                                    <SView width={100} height={100} card  >
+                                    <SView width={50} height={50} card  >
                                         <Qr content={e.row.session.qr} />
                                     </SView>
                                 </SView>

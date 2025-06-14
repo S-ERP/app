@@ -10,7 +10,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
   url = "http://192.168.3.3:3000";
   // url = "https://wtspp.servisofts.com";
 
-  async registrar(params: { descripcion: string }) {
+  async registrar(params: { descripcion: string; webhook: string }) {
     const resp = await fetch(this.url + "/api/device", {
       method: "POST",
       headers: {
@@ -19,7 +19,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
       body: JSON.stringify({
         key_usuario: Model.usuario.Action.getKey(),
         key_empresa: Model.empresa.Action.getKey(),
-        descripcion: params.descripcion,
+        ...params,
       }),
     });
     const json = await resp.json();
@@ -47,7 +47,6 @@ export default class whatsapp extends MDLAbstract<EventListener> {
     return json;
   }
 
-
   async edit(key: string, obj: any) {
     const resp = await fetch(this.url + "/api/device/" + key, {
       method: "PUT",
@@ -72,12 +71,15 @@ export default class whatsapp extends MDLAbstract<EventListener> {
   }
 
   async getChatById(key: string, idchat: string) {
-    const resp = await fetch(this.url + "/api/device/" + key + "/chatsById/" + idchat, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const resp = await fetch(
+      this.url + "/api/device/" + key + "/chatsById/" + idchat,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     const json = await resp.json();
     return json;
   }

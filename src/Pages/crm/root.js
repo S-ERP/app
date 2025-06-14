@@ -88,6 +88,13 @@ export default class root extends Component {
                     params={{ type: "delivery" }}
                     icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
                 />
+
+                <MenuButtom
+                    label="masico"
+                    url="/crm/masivo"
+                    params={{ type: "delivery" }}
+                    icon={<SIconApp name='Girl' fill={"#333"} />}
+                />
             </MenuPages>
 
         </SPage>
