@@ -64,10 +64,13 @@ export default class MensajesMasivos extends Component {
                 selectKey='key'
                 ref={ref => this.DinamicTable = ref}
                 language='es'
-                loadData={async () => { return await MDL.crm.cliente.getAll(); }}
-
+                loadData={async () => {
+                    let all = await MDL.crm.cliente.getAll();
+                    all = all.filter(e => e.telefono && e.telefono.length >= 8);
+                    all.sort((a, b) => (a.telefono?.length || 0) - (b.telefono?.length || 0));
+                    return all;
+                }}
                 onSelect={(e) => {
-                    // Manejo de selección manual
                     let seleccionados = [...this.state.seleccionados];
                     const yaExiste = seleccionados.find(item => item.key === e.row.key);
                     if (!yaExiste) {
@@ -78,19 +81,15 @@ export default class MensajesMasivos extends Component {
                     }
                     this.setState({ seleccionados });
 
-                    // SNotification.send({
-                    //     title: "Seleccionado",
-                    //     body: `total ${seleccionados.length} clientes.`,
-                    //     color: STheme.color.warning
-                    // });
+                    SNotification.send({
+                        title: "Seleccionado",
+                        body: `total ${seleccionados.length} clientes.`,
+                        color: STheme.color.warning
+                    });
 
                 }}
 
-                loadInitialState={async () => {
-                    return {
-                        // filtros opcionales
-                    };
-                }}
+
             >
 
                 <DinamicTable.Col key={" "} label='sELECCIONADO' width={100} data={() => ""}
@@ -113,7 +112,6 @@ export default class MensajesMasivos extends Component {
                 <DinamicTable.Col key={"nombres"} label='Nombre completo' width={180} data={(e) => e.row.nombres} />
                 <DinamicTable.Col key={"telefono"} label='Teléfono' width={120} data={(e) => e.row.telefono} />
                 <DinamicTable.Col key={"estado"} label='Status' width={120} data={(e) => e.row.estado} />
-                <DinamicTable.Col key={"mensaje"} label='Mensaje' width={120} data={(e) => e.row?.mensaje} />
 
             </DinamicTable>
 
@@ -127,10 +125,10 @@ export default class MensajesMasivos extends Component {
             }} width={140} height={50} center
 
                 onPress={() => {
-                    // console.log("📤 Enviar a:", this.state.seleccionados);
-                    // alert("Enviando mensajes a los seleccionados: " + this.state.seleccionados.map(item => item.telefono).join(", "));
+                    console.log("📤 Enviar a:", this.state.seleccionados);
+                    alert("Enviando mensajes a los seleccionados: " + this.state.seleccionados.map(item => item.telefono).join(", "));
 
-                    this.enviarMensajesSeleccionados()
+                    // this.enviarMensajesSeleccionados()
 
                 }}
             >
