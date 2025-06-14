@@ -127,9 +127,7 @@ export default class MensajesMasivos extends Component {
                 onPress={() => {
                     console.log("📤 Enviar a:", this.state.seleccionados);
                     alert("Enviando mensajes a los seleccionados: " + this.state.seleccionados.map(item => item.telefono).join(", "));
-
-                    // this.enviarMensajesSeleccionados()
-
+                    this.enviarMensajesSeleccionados()
                 }}
             >
 
