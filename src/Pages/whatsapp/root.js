@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SPage, SView, SText, STheme, SIcon, SPopup, SInput, SButtom, SHr, SNotification, SNavigation } from 'servisofts-component';
+import { SPage, SView, SText, STheme, SIcon, SPopup, SInput, SButtom, SHr, SNotification, SNavigation, SImage } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import FloatButtom from '../../Components/FloatButtom';
 import MDL from '../../MDL';
 import Config from '../../Config';
+import Model from '../../Model';
+import Qr from './qr';
 
 
 
@@ -29,6 +31,12 @@ const mockDevices = [
 ];
 
 class WhatsappDevices extends Component {
+
+
+    componentDidMount() {
+        this.setState({ loading: true })
+
+    }
 
     estado(status) {
         let mensaje = "";
@@ -94,6 +102,7 @@ class WhatsappDevices extends Component {
 
         const handleSubmit = async () => {
             const descripcion = descripcionRef.getValue();
+            const webhook = webhookRef.getValue();
             if (!descripcion) {
                 SNotification.send({
                     title: "Error",
@@ -104,7 +113,7 @@ class WhatsappDevices extends Component {
             }
 
             if (isEdit) {
-                await MDL.whatsapp.device.edit(data.key, { descripcion });
+                await MDL.whatsapp.device.edit(data.key, { descripcion, webhook });
             } else {
                 await MDL.whatsapp.device.registrar({ descripcion });
             }
@@ -136,6 +145,33 @@ class WhatsappDevices extends Component {
                         placeholder={"Nombre del dispositivo"}
                         defaultValue={data?.descripcion || ""}
                         ref={ref => descripcionRef = ref}
+                        required={true}
+                        style={{
+                            height: 40,
+                            borderRadius: 4,
+                            backgroundColor: STheme.color.lightGray + "30",
+                            color: STheme.color.text,
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleSubmit();
+                            }
+
+                            if (e.key === "Escape") {
+                                e.preventDefault();
+                                SPopup.close("formulario_dispositivo");
+                            }
+                        }}
+                    />
+
+                    <SInput
+                        autoFocus
+
+                        label="webhook"
+                        placeholder={"Nombre del dispositivo"}
+                        defaultValue={data?.webhook || ""}
+                        ref={ref => webhookRef = ref}
                         required={true}
                         style={{
                             height: 40,
@@ -200,97 +236,121 @@ class WhatsappDevices extends Component {
                     <SView col={"xs-12"} />
                 </SView>
             )
-    });
-}
+        });
+    }
 
-render() {
-    return (
-        <SPage title="Dispositivos WhatsApp">
-            <DinamicTable
-                ref={ref => this.DinamicTable = ref}
-                loadData={async () => await MDL.whatsapp.device.getAll()}
-                key="id"
-                language="es"
-                colors={Config.table.colors()}
-                cellStyle={Config.table.cellStyle()}
-                textStyle={Config.table.textStyle()}
-                selectType='single'
-            >
-                <DinamicTable.Col key="index" label="N°" width={40} data={e => e.index + 1} />
-                <DinamicTable.Col key="key" label="Key" width={200} data={e => e.row.key} />
-                <DinamicTable.Col key="descripcion" label="descripcion" width={100} data={e => e.row.descripcion} />
-                <DinamicTable.Col key="estatus" label="Conexion" width={150} data={() => ""} customComponent={e => (this.estado(e.row?.session?.status))} />
-                <DinamicTable.Col key={"editar"} label='Editar' width={100} data={() => ""}
-                    customComponent={e => (
-                        <SView row center card padding={2} onPress={() => this.formulario(e?.row)}>
-                            <SView width={4} />
-                            <SIcon name='Pencil' fill={STheme.color.lightGray} width={14} />
-                            <SView width={4} />
-                            <SText center  >{"Actualizar"}</SText>
-                        </SView>
-                    )}
-                />
+    render() {
+        return (
+            <SPage title="Dispositivos WhatsApp">
+                <DinamicTable
+                    ref={ref => this.DinamicTable = ref}
+                    loadData={async () => await MDL.whatsapp.device.getAll()}
+                    key="id"
+                    language="es"
+                    colors={Config.table.colors()}
+                    cellStyle={Config.table.cellStyle()}
+                    textStyle={Config.table.textStyle()}
+                    selectType='single'
 
-                <DinamicTable.Col key={"eliminar"} label='Eliminar' width={100} data={() => ""}
-                    customComponent={e => (
-                        <SView row center card padding={4} onPress={() => {
-                            SPopup.confirm({
-                                title: "Esta seguro que quiere eliminar?",
-                                message: "Se le enviara a la lista de compras.",
-                                onPress: () => {
-                                    MDL.whatsapp.device.edit(e?.row?.key, { estado: 0 })
+                >
+                    <DinamicTable.Col key="index" label="N°" width={40} data={e => e.index + 1} />
+                    <DinamicTable.Col key="key" label="Key" width={200} data={e => e.row.key} />
+                    <DinamicTable.Col key="descripcion" label="descripcion" width={100} data={e => e.row.descripcion} />
+                    <DinamicTable.Col key="webhook" label="webhook" width={180} data={e => e.row.webhook} />
+                    <DinamicTable.Col key="qr" label="qr" width={150} center data={e => e.row?.session?.qr}
+                        customComponent={e =>
+                            e.row?.session?.qr ?
+                                (<SView row center>
+                                    <SView width={100} height={100} card  >
+                                        <Qr content={e.row.session.qr} />
+                                    </SView>
+                                </SView>
+                                ) : null
+                        }
+                    />
 
-                                    SNotification.send({
-                                        title: "Dispositivo eliminado",
-                                        body: "Dispositivo eliminado.",
-                                        color: STheme.color.danger,
-                                        time: 4000,
-                                    });
-                                    this.DinamicTable.loadData();
-                                }
-                             })
-                        }}
+                    {/* <DinamicTable.Col key="webhub" label="webhub" width={300} center data={e => e.row?.session?.qr}
+                        customComponent={e =>
+                            <SView row center>
+                                <SView width={250}   center  >
+                                    <SInput name={"text"} label={"WebHub"} ></SInput>
+                                </SView>
+                            </SView>
+                        }
+                    /> */}
 
+                    <DinamicTable.Col key="estatus" label="Conexion" width={150} data={() => ""} customComponent={e => (this.estado(e.row?.session?.status))} />
+                    <DinamicTable.Col key={"editar"} label='Editar' width={100} data={() => ""}
+                        customComponent={e => (
+                            <SView row center card padding={2} onPress={() => this.formulario(e?.row)}>
+                                <SView width={4} />
+                                <SIcon name='Pencil' fill={STheme.color.lightGray} width={14} />
+                                <SView width={4} />
+                                <SText center  >{"Actualizar"}</SText>
+                            </SView>
+                        )}
+                    />
 
-                        >
-                            <SView width={4} />
-                            <SIcon name='Cerrar' fill={STheme.color.lightGray} width={14} />
-                            <SView width={8} />
-                            <SText center color={STheme.color.green}>
-                                {"Eliminar"}
-                            </SText>
-                        </SView>
-                    )}
-                />
-
-                <DinamicTable.Col key={"chats"} label='Accion' width={110} data={() => ""}
-                    customComponent={e => (
-                        <SView row card padding={2} center
-
-                            onPress={() => {
-                                SNavigation.navigate("/whatsapp/chats", { pk: e?.row?.key })
-                            }}
-                            onLongPress={() => {
+                    <DinamicTable.Col key={"eliminar"} label='Eliminar' width={100} data={() => ""}
+                        customComponent={e => (
+                            <SView row center card padding={4} onPress={() => {
                                 SPopup.confirm({
-                                    title: "Ver chats",
-                                    message: "Abre el historial de conversaciones de este dispositivo.",
-                                    // type: "1",
-                                });
-                            }}
-                        >
-                            <SView width={4} />
-                            <SIcon name='MessageSend' fill='green' width={14} />
-                            <SView width={4} />
-                            <SText center color={STheme.color.green}>  {"Ver chats"}</SText>
-                        </SView>
-                    )}
-                />
-            </DinamicTable>
+                                    title: "Esta seguro que quiere eliminar?",
+                                    message: "Se le enviara a la lista de compras.",
+                                    onPress: () => {
+                                        MDL.whatsapp.device.edit(e?.row?.key, { estado: 0 })
 
-            <FloatButtom onPress={() => this.formulario()} />
-        </SPage>
-    );
-}
+                                        SNotification.send({
+                                            title: "Dispositivo eliminado",
+                                            body: "Dispositivo eliminado.",
+                                            color: STheme.color.danger,
+                                            time: 4000,
+                                        });
+                                        this.DinamicTable.loadData();
+                                    }
+                                })
+                            }}
+
+
+                            >
+                                <SView width={4} />
+                                <SIcon name='Cerrar' fill={STheme.color.lightGray} width={14} />
+                                <SView width={8} />
+                                <SText center color={STheme.color.green}>
+                                    {"Eliminar"}
+                                </SText>
+                            </SView>
+                        )}
+                    />
+
+                    <DinamicTable.Col key={"chats"} label='Accion' width={110} data={() => ""}
+                        customComponent={e => (
+                            <SView row card padding={2} center
+
+                                onPress={() => {
+                                    SNavigation.navigate("/whatsapp/chats", { pk: e?.row?.key })
+                                }}
+                                onLongPress={() => {
+                                    SPopup.confirm({
+                                        title: "Ver chats",
+                                        message: "Abre el historial de conversaciones de este dispositivo.",
+                                        // type: "1",
+                                    });
+                                }}
+                            >
+                                <SView width={4} />
+                                <SIcon name='MessageSend' fill='green' width={14} />
+                                <SView width={4} />
+                                <SText center color={STheme.color.green}>  {"Ver chats"}</SText>
+                            </SView>
+                        )}
+                    />
+                </DinamicTable>
+
+                <FloatButtom onPress={() => this.formulario()} />
+            </SPage>
+        );
+    }
 }
 
 export default WhatsappDevices
