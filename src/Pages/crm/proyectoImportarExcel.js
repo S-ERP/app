@@ -28,7 +28,7 @@ export default class ProyectoImportarExcel extends Component {
                 const worksheet = workbook.Sheets[firstSheetName];
                 const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
                 const columnas = Object.keys(jsonData[0] || {});
-                this.setState({ excelData: jsonData, columnasDetectadas: columnas }, this.openMappingPopup);
+                this.setState({ excelData: jsonData, columnasDetectadas: columnas, data: null }, this.openMappingPopup);
             };
             reader.readAsArrayBuffer(files[0]);
         });
@@ -41,9 +41,7 @@ export default class ProyectoImportarExcel extends Component {
         SPopup.open({
             key: "popup-mapeo",
             content: (
-                     <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 300 }} padding={16} withoutFeedback col={"xs-11"}    >
-
-                {/* <SView width={350} padding={20} backgroundColor={STheme.color.card} borderRadius={10}> */}
+                <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 300 }} padding={16} withoutFeedback col={"xs-11"}    >
                     <SText bold fontSize={18}>📋 Mapear columnas</SText>
                     <SView height={12} />
                     {columnasDetectadas.map((col, i) => (
@@ -55,8 +53,6 @@ export default class ProyectoImportarExcel extends Component {
                                 center
                                 options={[
                                     { key: "none", content: "-" },
-                                    // { key: "none", content: "--- Ignorar ---" },
-                                    // { key: "index", content: "Index" },
                                     { key: "cliente", content: "Cliente" },
                                     { key: "telefono", content: "Teléfono" },
                                 ]}
@@ -69,18 +65,31 @@ export default class ProyectoImportarExcel extends Component {
                         </SView>
                     ))}
                     <SView height={20} />
+
                     <SView row center>
-                        <SView flex />
                         <SView
-                            backgroundColor={STheme.color.primary}
+                            backgroundColor={"red"}
                             padding={10}
                             borderRadius={8}
                             onPress={() => {
-                                this.setState({ mapeo: tempMapeo }, this.applyMapping);
+                                this.setState({ mapeo: null, data: null }); // limpia mapeo y tabla
                                 SPopup.close("popup-mapeo");
                             }}
                         >
-                            <SText color={"#fff"}>Aceptar</SText>
+                            <SText color={"black"}>cancelar</SText>
+                        </SView>
+
+                        <SView flex />
+                        <SView
+                            backgroundColor={"white"}
+                            padding={10}
+                            borderRadius={8}
+                            onPress={() => {
+                                this.setState({ mapeo: tempMapeo, data: null }, this.applyMapping);
+                                SPopup.close("popup-mapeo");
+                            }}
+                        >
+                            <SText color={"black"}>Importar lista</SText>
                         </SView>
                     </SView>
                 </SView>
@@ -135,26 +144,57 @@ export default class ProyectoImportarExcel extends Component {
                     </SView>
                 )}
 
+
+
                 <SView
-                    backgroundColor='white'
+                    backgroundColor='transparent'
                     style={{
                         position: "absolute",
                         top: 20,
-                        right: "30%",
-                        borderRadius: 4,
-                        overflow: "hidden",
+                        right: "20%",
+                        backgroundColor: "white",
+                        // borderRadius: 4,
+                        // overflow: "hidden",
                     }}
-                    width={140}
+                    width={180}
                     height={50}
                     center
                     onPress={this.handleExcelImport}
                 >
-                    <SView row>
-                        <SIcon name='Reload' width={15} />
-                        <SView width={10} />
-                        <SText color='black' fontSize={18}>Importar</SText>
+                    <SView row backgroundColor='transparent' center>
+                        <SIcon name="Excel" width={18} height={18} fill={"black"} stroke={"blue"} />
+                        <SView width={8} />
+                        <SText color='black' fontSize={18}>Importar Excel</SText>
                     </SView>
                 </SView>
+
+                <SView
+                    backgroundColor='transparent'
+                    style={{
+                        position: "absolute",
+                        top: 20,
+                        right: "8%",
+                        backgroundColor: "white",
+
+                    }}
+                    width={180}
+                    height={50}
+                    center
+                    onPress={
+                        () => {
+                            this.setState({ mapeo: null, data: null }); // limpia mapeo y tabla
+                            SPopup.close("popup-mapeo");
+                        }
+                    }
+                >
+                    <SView row backgroundColor='transparent' center>
+                        {/* <SIcon name="clear" width={18} height={18} fill={"black"} stroke={"blue"} /> */}
+                        <SView width={8} />
+                        <SText color='black' fontSize={18}>limpiar</SText>
+                    </SView>
+                </SView>
+
+
             </SPage>
         );
     }
