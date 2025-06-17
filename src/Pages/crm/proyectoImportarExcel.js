@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput } from 'servisofts-component';
+import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2 } from 'servisofts-component';
 import FileChooser from '../../Components/SUpload/FileChooser';
 import * as XLSX from "xlsx";
 
-// import React, { Component } from 'react';
-// import { SPage, SView, SIcon, SText, STable, STheme, SNavigation, SPopup, SInput } from 'servisofts-component';
-// import FileChooser from '../../Components/SUpload/FileChooser';
-// import * as XLSX from "xlsx";
+
 
 export default class ProyectoImportarExcel extends Component {
     constructor(props) {
@@ -38,6 +35,45 @@ export default class ProyectoImportarExcel extends Component {
         });
     };
 
+    formatearTelefono = (telefono) => {
+        if (!telefono) return "";
+        // convertir a string por si es número o algo más
+        let telStr = String(telefono);
+        // quitar todo lo que no sea dígito
+        telStr = telStr.replace(/\D/g, "");
+        // Si ya tiene código 591 al inicio, lo eliminamos para evitar repetidos
+        if (telStr.startsWith("591")) {
+            telStr = telStr.slice(3);
+        }
+        // Si el número resultante tiene 8 dígitos, le ponemos +591 al inicio
+        if (telStr.length === 8) {
+            return "+591 " + telStr;
+        }
+        return telStr; // si no tiene 8 dígitos, devuelve solo los números para validar luego
+    };
+
+    validarTelefono = (telefono) => {
+        if (!telefono || telefono.toString().trim() === "") {
+            return "No hay número de teléfono";
+        }
+        let telStr = String(telefono).replace(/\D/g, "");
+        if (telStr.length < 8) {
+            return `Error en el teléfono, lleva ${telStr.length} dígitos`;
+        }
+        if (telStr.length > 8) {
+            return `Error en el teléfono, lleva ${telStr.length} dígitos, no pertenece a Bolivia`;
+        }
+        // Si tiene 8 dígitos, no hay error
+        return "";
+    }
+
+    validarCliente = (cliente) => {
+        if (!cliente || cliente.toString().trim() === "" || cliente.toString().toLowerCase().includes("sin nombre")) {
+            return "El campo nombre tiene error";
+        }
+        return "";
+    }
+
     openMappingPopup = () => {
         const { columnasDetectadas = [], mapeo = {} } = this.state;
         const camposEsperados = ["cliente", "telefono"];
@@ -68,7 +104,6 @@ export default class ProyectoImportarExcel extends Component {
                                     ...(tempMapeo[campo] && tempMapeo[campo] !== "none" ? {
                                         borderWidth: 1,
                                         borderColor: "#f7c548",
-                                        // backgroundColor: "#fffde7"
                                     } : {})
                                 }}
                             />
@@ -107,14 +142,40 @@ export default class ProyectoImportarExcel extends Component {
 
     applyMapping = () => {
         const { excelData = [], mapeo = {} } = this.state;
-        const data = excelData.map((row, index) => {
+        let data = excelData.map((row, index) => {
+            const clienteRaw = row[mapeo["cliente"]] ?? "";
+            const telefonoRaw = row[mapeo["telefono"]] ?? "";
+
+            const telefonoFormateado = this.formatearTelefono(telefonoRaw);
+            const descripcionCliente = this.validarCliente(clienteRaw);
+            const descripcionTelefono = this.validarTelefono(telefonoRaw);
+
+            let descripcion = "";
+            if (descripcionCliente) descripcion = descripcionCliente;
+            else if (descripcionTelefono) descripcion = descripcionTelefono;
+
             return {
                 key: `row_${index}`,
                 index: index + 1,
-                cliente: row[mapeo["cliente"]] ?? "",
-                telefono: row[mapeo["telefono"]] ?? ""
+                cliente: clienteRaw,
+                telefono: telefonoRaw,
+                telefonoFormateado,
+                descripcion,
             };
         });
+
+        // Ordenar: los que tienen descripción (error) van al final
+        data = data.sort((a, b) => {
+            if (a.descripcion && !b.descripcion) return 1;
+            if (!a.descripcion && b.descripcion) return -1;
+            return 0;
+        });
+
+        this.setState({ data });
+    };
+
+    eliminarFila = (key) => {
+        const data = this.state.data.filter(row => row.index !== key);
         this.setState({ data });
     };
 
@@ -122,23 +183,29 @@ export default class ProyectoImportarExcel extends Component {
         return (
             <SPage title="Importar contactos desde Excel" disableScroll>
                 {this.state.data ? (
-                    <STable
+                    <STable2
                         header={[
                             { key: "index", label: "#", width: 40 },
                             { key: "cliente", label: "Nombre completo", width: 250 },
-                            { key: "telefono", label: "Teléfono", width: 250 },
-                            // {
-                            //     key: "key_campana",
-                            //     label: "key_campana",
-                            //     width: 320,
-                            //     render: () => this.key_campana || "Sin key_campana"
-                            // },
-                            // {
-                            //     key: "key_proyecto",
-                            //     label: "key_proyecto",
-                            //     width: 320,
-                            //     render: () => this.key_proyecto || "Sin proyecto"
-                            // }
+                            { key: "telefono", label: "Teléfono original", width: 150 },
+                            { key: "telefonoFormateado", label: "Teléfono formateado", width: 180 },
+                            { key: "descripcion", label: "Descripción", width: 280 },
+                            {
+                                key: "-descripcion", label: "Descripción", width: 280,
+
+                                component: (c) => {
+                                    return <SText underLine fontSize={12} color={STheme.color.link} onPress={() => {
+
+
+                                        this.eliminarFila(c.index)
+
+                                        console.log("Descripción:", c.descripcion);
+                                    }}>Eliminar</SText>
+                                }
+                            },
+
+
+
                         ]}
                         data={this.state.data}
                     />
