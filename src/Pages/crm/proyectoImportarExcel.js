@@ -3,6 +3,10 @@ import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup,
 import FileChooser from '../../Components/SUpload/FileChooser';
 import * as XLSX from "xlsx";
 
+// import React, { Component } from 'react';
+// import { SPage, SView, SIcon, SText, STable, STheme, SNavigation, SPopup, SInput } from 'servisofts-component';
+// import FileChooser from '../../Components/SUpload/FileChooser';
+// import * as XLSX from "xlsx";
 
 export default class ProyectoImportarExcel extends Component {
     constructor(props) {
@@ -35,50 +39,54 @@ export default class ProyectoImportarExcel extends Component {
     };
 
     openMappingPopup = () => {
-        const { columnasDetectadas, mapeo = {} } = this.state;
+        const { columnasDetectadas = [], mapeo = {} } = this.state;
+        const camposEsperados = ["cliente", "telefono"];
         const tempMapeo = { ...mapeo };
 
         SPopup.open({
             key: "popup-mapeo",
             content: (
-                <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 300 }} padding={16} withoutFeedback col={"xs-11"}    >
+                <SView backgroundColor={STheme.color.black} style={{ borderRadius: 8, maxWidth: 300 }} padding={16} withoutFeedback col={"xs-11"}>
                     <SText bold fontSize={18}>📋 Mapear columnas</SText>
                     <SView height={12} />
-                    {columnasDetectadas.map((col, i) => (
-                        <SView key={col} marginBottom={12}>
-                            <SText color={STheme.color.text} fontSize={14}>{col}</SText>
+                    {camposEsperados.map((campo) => (
+                        <SView key={campo} marginBottom={12}>
+                            <SText color={STheme.color.text} fontSize={14}>{campo.charAt(0).toUpperCase() + campo.slice(1)}</SText>
                             <SInput
                                 type="select"
-                                defaultValue={tempMapeo[col] ?? "none"}
+                                defaultValue={tempMapeo[campo] ?? "none"}
                                 center
                                 options={[
                                     { key: "none", content: "-" },
-                                    { key: "cliente", content: "Cliente" },
-                                    { key: "telefono", content: "Teléfono" },
+                                    ...columnasDetectadas.map(col => ({ key: col, content: col }))
                                 ]}
                                 onChangeText={(val) => {
-                                    tempMapeo[col] = val;
-
+                                    tempMapeo[campo] = val;
                                 }}
-                                style={{ textAlign: "center" }}
+                                style={{
+                                    textAlign: "center",
+                                    ...(tempMapeo[campo] && tempMapeo[campo] !== "none" ? {
+                                        borderWidth: 1,
+                                        borderColor: "#f7c548",
+                                        // backgroundColor: "#fffde7"
+                                    } : {})
+                                }}
                             />
                         </SView>
                     ))}
                     <SView height={20} />
-
                     <SView row center>
                         <SView
-                            backgroundColor={"red"}
+                            backgroundColor={"#ffdddd"}
                             padding={10}
                             borderRadius={8}
                             onPress={() => {
-                                this.setState({ mapeo: null, data: null }); // limpia mapeo y tabla
+                                this.setState({ mapeo: {}, data: null });
                                 SPopup.close("popup-mapeo");
                             }}
                         >
-                            <SText color={"black"}>cancelar</SText>
+                            <SText color={"black"}>Cancelar</SText>
                         </SView>
-
                         <SView flex />
                         <SView
                             backgroundColor={"white"}
@@ -100,61 +108,54 @@ export default class ProyectoImportarExcel extends Component {
     applyMapping = () => {
         const { excelData = [], mapeo = {} } = this.state;
         const data = excelData.map((row, index) => {
-            const newRow = { key: `row_${index}`, index: index + 1 };
-            for (let col in mapeo) {
-                const mappedKey = mapeo[col];
-                if (mappedKey && mappedKey !== "none") {
-                    newRow[mappedKey] = row[col] || "";
-                }
-            }
-            return newRow;
+            return {
+                key: `row_${index}`,
+                index: index + 1,
+                cliente: row[mapeo["cliente"]] ?? "",
+                telefono: row[mapeo["telefono"]] ?? ""
+            };
         });
-        // }).filter(e => e.telefono && e.telefono.toString().length >= 8);
-
         this.setState({ data });
     };
 
     render() {
         return (
             <SPage title="Importar contactos desde Excel" disableScroll>
-                {/* {this.state.data ? ( */}
-                <STable
-                    header={[
-                        { key: "index", label: "#", width: 40 },
-                        { key: "cliente", label: "Nombre completo", width: 250 },
-                        { key: "telefono", label: "Teléfono", width: 250 },
-                        // { key: "key_campana", label: "key_campana", width: 320, render: () => this.key_campana || "Sin key_campana" },
-                        // { key: "key_proyecto", label: "key_proyecto", width: 320, render: () => this.key_proyecto || "Sin proyecto" }
-                    ]}
-                    data={this.state.data ?? []}
-                />
-                {/* ) */}
-                {/* : ( */}
-                {/* <SView center flex>
-                    <SText color={STheme.color.lightGray}>📂 Aún no se ha importado ningún archivo</SText>
-                </SView> */}
-                {/* ) */}
-
-                {/* } */}
-
-
+                {this.state.data ? (
+                    <STable
+                        header={[
+                            { key: "index", label: "#", width: 40 },
+                            { key: "cliente", label: "Nombre completo", width: 250 },
+                            { key: "telefono", label: "Teléfono", width: 250 },
+                            // {
+                            //     key: "key_campana",
+                            //     label: "key_campana",
+                            //     width: 320,
+                            //     render: () => this.key_campana || "Sin key_campana"
+                            // },
+                            // {
+                            //     key: "key_proyecto",
+                            //     label: "key_proyecto",
+                            //     width: 320,
+                            //     render: () => this.key_proyecto || "Sin proyecto"
+                            // }
+                        ]}
+                        data={this.state.data}
+                    />
+                ) : (
+                    <SView center flex>
+                        <SText color={STheme.color.lightGray}>📂 Aún no se ha importado ningún archivo</SText>
+                    </SView>
+                )}
 
                 <SView
-                    backgroundColor='transparent'
-                    style={{
-                        position: "absolute",
-                        top: 20,
-                        right: "20%",
-                        backgroundColor: "white",
-                        // borderRadius: 4,
-                        // overflow: "hidden",
-                    }}
+                    style={{ position: "absolute", top: 20, right: "20%", backgroundColor: "white" }}
                     width={180}
                     height={50}
                     center
                     onPress={this.handleExcelImport}
                 >
-                    <SView row backgroundColor='transparent' center>
+                    <SView row center>
                         <SIcon name="Excel" width={18} height={18} fill={"black"} stroke={"blue"} />
                         <SView width={8} />
                         <SText color='black' fontSize={18}>Importar Excel</SText>
@@ -162,32 +163,20 @@ export default class ProyectoImportarExcel extends Component {
                 </SView>
 
                 <SView
-                    backgroundColor='transparent'
-                    style={{
-                        position: "absolute",
-                        top: 20,
-                        right: "8%",
-                        backgroundColor: "white",
-
-                    }}
+                    style={{ position: "absolute", top: 20, right: "8%", backgroundColor: "white" }}
                     width={180}
                     height={50}
                     center
-                    onPress={
-                        () => {
-                            this.setState({ mapeo: null, data: null }); // limpia mapeo y tabla
-                            SPopup.close("popup-mapeo");
-                        }
-                    }
+                    onPress={() => {
+                        this.setState({ mapeo: {}, data: null });
+                        SPopup.close("popup-mapeo");
+                    }}
                 >
-                    <SView row backgroundColor='transparent' center>
-                        {/* <SIcon name="clear" width={18} height={18} fill={"black"} stroke={"blue"} /> */}
+                    <SView row center>
                         <SView width={8} />
-                        <SText color='black' fontSize={18}>limpiar</SText>
+                        <SText color='black' fontSize={18}>Limpiar</SText>
                     </SView>
                 </SView>
-
-
             </SPage>
         );
     }
