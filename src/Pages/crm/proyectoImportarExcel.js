@@ -117,32 +117,25 @@ export default class ProyectoImportarExcel extends Component {
     render() {
         return (
             <SPage title="Importar contactos desde Excel" disableScroll>
-                {this.state.data ? (
-                    <STable
-                        header={[
-                            { key: "index", label: "#", width: 40 },
-                            { key: "cliente", label: "Nombre completo", width: 250 },
-                            { key: "telefono", label: "Teléfono", width: 250 },
-                            {
-                                key: "key_campana",
-                                label: "key_campana",
-                                width: 320,
-                                render: () => this.key_campana || "Sin key_campana"
-                            },
-                            {
-                                key: "key_proyecto",
-                                label: "key_proyecto",
-                                width: 320,
-                                render: () => this.key_proyecto || "Sin proyecto"
-                            }
-                        ]}
-                        data={this.state.data}
-                    />
-                ) : (
-                    <SView center flex>
-                        <SText color={STheme.color.lightGray}>📂 Aún no se ha importado ningún archivo</SText>
-                    </SView>
-                )}
+                {/* {this.state.data ? ( */}
+                <STable
+                    header={[
+                        { key: "index", label: "#", width: 40 },
+                        { key: "cliente", label: "Nombre completo", width: 250 },
+                        { key: "telefono", label: "Teléfono", width: 250 },
+                        // { key: "key_campana", label: "key_campana", width: 320, render: () => this.key_campana || "Sin key_campana" },
+                        // { key: "key_proyecto", label: "key_proyecto", width: 320, render: () => this.key_proyecto || "Sin proyecto" }
+                    ]}
+                    data={this.state.data ?? []}
+                />
+                {/* ) */}
+                {/* : ( */}
+                {/* <SView center flex>
+                    <SText color={STheme.color.lightGray}>📂 Aún no se ha importado ningún archivo</SText>
+                </SView> */}
+                {/* ) */}
+
+                {/* } */}
 
 
 
