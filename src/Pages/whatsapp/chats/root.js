@@ -4,6 +4,8 @@ import { SImage, SNavigation, SPage, SText, STheme, SView } from 'servisofts-com
 import MDL from '../../../MDL';
 import { Container } from '../../../Components';
 import Whatsapp from '../../crm/Components/Whatsapp';
+import SSocket from 'servisofts-socket';
+import Model from '../../../Model';
 
 export default class root extends Component {
 
@@ -14,6 +16,17 @@ export default class root extends Component {
     }
 
     componentDidMount() {
+        this.loadData();
+        SSocket.addEventListener("onMessage", this.onMessageSocket)
+        SSocket.sendPromise({
+            component: "whatsapp",
+            type: "addListener",
+            key_usuario: Model.usuario.Action.getKey(),
+            key_device: this.pk
+        })
+    }
+
+    loadData() {
         MDL.whatsapp.device.getChats(this.pk).then(e => {
             console.log("Whatsapp Device", e);
             this.setState({
@@ -22,6 +35,27 @@ export default class root extends Component {
         }).catch(e => {
             console.error("Error fetching Whatsapp Device", e);
         })
+
+    }
+    componentWillUnmount() {
+        SSocket.removeEventListener("onMessage", this.onMessageSocket);
+        SSocket.sendPromise({
+            component: "whatsapp",
+            type: "removeListener",
+            key_usuario: Model.usuario.Action.getKey(),
+            key_device: this.pk
+        });
+    }
+
+    onMessageSocket = (data) => {
+        if (data.component != "whatsapp") return;
+        if (data.type != "event") return;
+        if (data.event == "message") {
+            this.loadData();
+
+        }
+        // if (data.type != "event") return;
+        console.log("onMessageSocket", data);
     }
 
     renderChats() {
