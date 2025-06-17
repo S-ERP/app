@@ -364,6 +364,23 @@ export default class proyecto extends Component {
                                                                     />
                                                                 ),
                                                             },
+                                                            {
+                                                                label: "importar/subir leads",
+                                                                onPress: () => {
+
+                                                                    // FormRegistroCampana.open({
+                                                                    //     defaultData: campana,
+                                                                    //     proyecto: e.row,
+                                                                    //     onActualizar: (e) => {
+                                                                    //         this.DinamicTable.loadData();
+                                                                    //     },
+                                                                    // });
+                                                                },
+                                                                icon: (
+                                                                    <SIcon name="Edit" fill={STheme.color.text} />
+                                                                ),
+                                                            },
+
                                                         ],
                                                     });
                                                 }}
