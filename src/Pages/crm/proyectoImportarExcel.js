@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2, SHr } from 'servisofts-component';
+import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2, SHr, SNotification } from 'servisofts-component';
 import FileChooser from '../../Components/SUpload/FileChooser';
 import * as XLSX from "xlsx";
 
@@ -89,7 +89,7 @@ export default class ProyectoImportarExcel extends Component {
         SPopup.open({
             key: "popup-mapeo",
             content: (
-                <SView col="xs-11" backgroundColor={STheme.color.black} padding={16} style={{ borderRadius: 8, maxWidth: 300 }}>
+                <SView withoutFeedback  col="xs-11" backgroundColor={STheme.color.black} padding={16} style={{ borderRadius: 8, maxWidth: 300 }}>
                     <SText bold fontSize={18}>📋 Mapear columnas</SText>
                     <SHr height={12} />
                     {campos.map((campo) => (
@@ -154,9 +154,14 @@ export default class ProyectoImportarExcel extends Component {
         SPopup.open({
             key: "editar-popup",
             content: (
-                <SView col="xs-11" backgroundColor={STheme.color.background} padding={16} style={{ borderRadius: 8, maxWidth: 320 }}>
+                <SView withoutFeedback col="xs-11" backgroundColor={STheme.color.background} padding={16} style={{ borderRadius: 8, maxWidth: 320 }} >
                     <SView row><SIcon name='crmeditar' width={20} fill='white' /><SText bold fontSize={16}> Editar contacto</SText></SView>
+                    <SHr height={6} />
+                    <SText fontSize={12} color={STheme.color.lightGray}>Modifica la información del contacto</SText>
+
+                    {/* <SView row><SIcon name='crmeditar' width={14} fill='white' /><SText bold fontSize={16}> sssssssssssssssssssss</SText></SView> */}
                     <SHr height={8} />
+
                     <SInput label="Nombre completo" defaultValue={item?.cliente} onChangeText={v => nuevo.cliente = v} />
                     <SHr height={8} />
                     <SInput label="Teléfono" type='telefono' defaultValue={`${item?.telefono}`} onChangeText={v => nuevo.telefono = v} />
@@ -172,6 +177,11 @@ export default class ProyectoImportarExcel extends Component {
                             nuevo.descripcion = [descCliente, descTel].filter(Boolean).join(" · ");
                             const data = this.state.data.map(d => d.key === nuevo.key ? nuevo : d);
                             this.setState({ data });
+                            // SNotification.send({
+                            //     title: "✅ Carga completado",
+                            //     body: `Se enviaron ${data.length} mensajes correctamente.`,
+                            //     color: STheme.color.primary
+                            // });
                             SPopup.close("editar-popup");
                         }}><SText color={"white"}>Guardar Cambios</SText></SView>
                     </SView>
@@ -204,13 +214,11 @@ export default class ProyectoImportarExcel extends Component {
                     </SView>
                 </SView>
 
-                {
-                    (!this.state.data.length > 0) ?
-                        <SView center style={{ position: "absolute", top: 180, left: "25%",  }} >
-                            <SText color={STheme.color.lightGray} fontSize={16}>📂 Aún no se ha importado ningún archivo</SText>
-                        </SView>
-                        : null
-                }
+                {(!this.state.data.length > 0) ?
+                    <SView center style={{ position: "absolute", top: 180, left: "25%", }} >
+                        <SText color={STheme.color.lightGray} fontSize={16}>📂 Aún no se ha importado ningún archivo</SText>
+                    </SView>
+                    : null}
 
 
                 <STable2
