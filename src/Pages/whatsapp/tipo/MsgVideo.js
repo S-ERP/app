@@ -3,8 +3,7 @@ import { SDate, SHr, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, ST
 import SSocket from "servisofts-socket";
 import HoraLabel from "../Comp/HoraLabel";
 import { Image, View } from "react-native";
-import SVideo from "../../../../../Components/SVideo";
-import SIconApp from "../../../../../Assets/SIconApp";
+import SIconApp from "../../../Assets/SIconApp";
 
 export default class MsgVideo extends Component {
     constructor(props) {

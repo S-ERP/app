@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { SDate, SHr, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView, SIcon, SUuid } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import MDL from "../../../../MDL";
-import Typemessage from "./Typemessage";
+import Typemessage from "../../../whatsapp/Typemessage";
 import { ScrollView } from "react-native-gesture-handler";
 import FileChooser from "../../../../Components/SUpload/FileChooser";
 

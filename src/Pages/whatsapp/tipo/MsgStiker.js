@@ -19,11 +19,20 @@ export default class MsgStiker extends Component {
 
     render() {
         return (
-            <SView>
+            <SView style={{
+                alignItems: "flex-end"
+            }}>
                 <SView width={130} height={130}>
                     <SImage src={this.props.mensaje.stickerData} />
                 </SView>
-                <HoraLabel mesaje={this.props.mensaje} />
+                <HoraLabel mesaje={this.props.mensaje} style={{
+                    // position: "absolute",
+                    width: 50,
+                    // bottom: -8, right: 4,
+                    backgroundColor: this.props.color,
+                    padding: 4,
+                    borderRadius: 8
+                }} />
 
             </SView>
 

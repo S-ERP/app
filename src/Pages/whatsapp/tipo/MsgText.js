@@ -27,9 +27,14 @@ export default class MsgText extends Component {
 
         return (
 
-            <SView style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 8, marginHorizontal: 10, width: "auto", maxWidth: "80%" , alignItems:"flex-end"}}>
-                <SText color={"white"} fontSize={14}>{texto}</SText>
-                <HoraLabel mesaje={this.props.mensaje} />
+            <SView style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 8, marginHorizontal: 10, width: "auto", maxWidth: "80%", alignItems: "flex-end" }}>
+                <SText color={"white"} fontSize={14}>{texto}
+                    <SText clean>{"               "}</SText>
+                </SText>
+                <HoraLabel mesaje={this.props.mensaje} style={{
+                    position: "absolute",
+                    bottom: 4, right: 4,
+                }} />
             </SView>
 
 

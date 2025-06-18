@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { SDate, SHr, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView, SIcon, SUuid } from "servisofts-component";
 import SSocket from "servisofts-socket";
-import MDL from "../../../../MDL";
+import MDL from "../../MDL";
 import Typemessage from "./Typemessage";
 import { ScrollView } from "react-native-gesture-handler";
-import FileChooser from "../../../../Components/SUpload/FileChooser";
+import FileChooser from "../../Components/SUpload/FileChooser";
 
 export default class Chatlead extends Component {
     constructor(props) {
@@ -18,8 +18,24 @@ export default class Chatlead extends Component {
 
 
     componentDidMount() {
-        // const id = "" + this.props.data?.cliente?.telefono.replace(" ", "") + "@c.us"
-        const dell = MDL.whatsapp.getAllChatsById({ idchat: this.props.idchat }).then(e => {
+
+        SSocket.addEventListener("onMessage", this.onMessageSocket)
+        this.loadData();
+
+    }
+    componentWillUnmount() {
+        SSocket.removeEventListener("onMessage", this.onMessageSocket);
+    }
+
+    onMessageSocket = (data) => {
+        if (data.component != "whatsapp") return;
+        if (data.type != "event") return;
+        if (!["message_create", "message"].includes(data.event)) return;
+        this.loadData();
+
+    }
+    loadData() {
+        const dell = MDL.whatsapp.getAllChatsById({ key_device: this.props.idDevice, idchat: this.props.idchat }).then(e => {
 
             console.log(e)
             this.setState({
@@ -27,21 +43,13 @@ export default class Chatlead extends Component {
             })
         })
 
-        // dell.map((obj) => {
-        //     console.log("mernsaje " + obj.body)
-
-        //     const mensaje = obj.body;
-
-        // })
-
-
     }
 
     sendMessage = (message) => {
         const telefono = this.props.idchat.split("@")[0];
         if (telefono && message) {
 
-            MDL.whatsapp.send({ phone: telefono, message }).then(e => {
+            MDL.whatsapp.send({ key_device: this.props.idDevice, phone: telefono, message }).then(e => {
 
                 this.state.data.push({
                     id: SUuid(),
@@ -139,21 +147,20 @@ export default class Chatlead extends Component {
     renderChat() {
         let fechaActual = "";
 
-        return (
-            <SView col="xs-12" flex style={{ backgroundColor: "#0b141a", paddingBottom: 20 }}>
-                {(this.state.data ?? []).map((mensaje) => {
-                    const fecha = new SDate(new Date(mensaje.timestamp * 1000)).toString("yyyy-MM-dd");
-                    const mostrarFecha = fechaActual !== fecha;
-                    if (mostrarFecha) fechaActual = fecha;
-                    return (
-                        <SView col="xs-12" key={`container-${mensaje.id}`}>
-                            {mostrarFecha && this.renderFechaSeparador(fecha)}
-                            {this.renderMensaje(mensaje)}
-                        </SView>
-                    );
-                })}
-            </SView>
-        );
+        return (this.state.data ?? []).map((mensaje) => {
+            const fecha = new SDate(new Date(mensaje.timestamp * 1000)).toString("yyyy-MM-dd");
+            const mostrarFecha = fechaActual !== fecha;
+            if (mostrarFecha) fechaActual = fecha;
+            return (
+                <SView col="xs-12" key={`container-${mensaje.id}`} style={{
+                    selectable: true, // Evita que el texto sea seleccionable
+                    userSelect: "text", // Evita que el texto sea seleccionable
+                }}>
+                    {mostrarFecha && this.renderFechaSeparador(fecha)}
+                    {this.renderMensaje(mensaje)}
+                </SView>
+            );
+        })
     }
 
     renderBarraEntrada() {
@@ -171,7 +178,7 @@ export default class Chatlead extends Component {
                             const base64Image = reader.result.split(',')[1];
                             // const file = files[0];
                             // this.sendImage(base64Image);
-                            MDL.whatsapp.send({ phone: telefono, message: "", image: base64Image }).then(e => {
+                            MDL.whatsapp.send({ key_device: this.props.idDevice, phone: telefono, message: "", image: base64Image }).then(e => {
                                 INSTANCE.state.data.push({
                                     id: SUuid(),
                                     body: "foto",
@@ -196,9 +203,13 @@ export default class Chatlead extends Component {
                     <SIcon name="addTarea" fill="white" width={18} />
                 </SView> */}
                 <SView flex style={{ marginRight: 15 }}>
-                    <SInput ref={(ref) => (this.campos = ref)} placeholder="Escribe un mensaje" placeholderTextColor="#8696a0" style={{ backgroundColor: "#2a3942", borderRadius: 20, paddingHorizontal: 20, color: "white", borderWidth: 0 }}
+                    <SInput multiline={true} ref={(ref) => (this.campos = ref)} placeholder="Escribe un mensaje" placeholderTextColor="#8696a0"
+                        style={{
+                            paddingTop: 5,
+                            backgroundColor: "#2a3942", borderRadius: 20, paddingHorizontal: 20, color: "white", borderWidth: 0,
+                        }}
                         onKeyPress={(e) => {
-                            if (e.key === "Enter") {
+                            if (e.key === "Enter" && !e.shiftKey) {
                                 e.preventDefault();
                                 this.sendMessage(this.campos.getValue());
                             }
@@ -213,20 +224,18 @@ export default class Chatlead extends Component {
     }
     render() {
         return (
-            <SView col="xs-12" flex>
+            <SView col="xs-12" flex >
                 {/* <SHr height={16} /> */}
-                <SView col="xs-12" flex style={{ borderRadius: 16, borderWidth: 2 }} border={STheme.color.card} backgroundColor={STheme.color.card}>
-                    {/* <SHr /> */}
-                    {this.renderHeader()}
+                {/* <SHr /> */}
+                {this.renderHeader()}
 
-                    <ScrollView ref={ref => this.scrollViewRef = ref} style={{ width: "100%", flex: 1, }} onContentSizeChange={(e) => {
-                        this.scrollViewRef.scrollToEnd({ animated: false });
-                    }}>
+                <ScrollView ref={ref => this.scrollViewRef = ref} style={{ width: "100%", flex: 1, }} onContentSizeChange={(e) => {
+                    this.scrollViewRef.scrollToEnd({ animated: false });
+                }}>
 
-                        {this.renderChat()}
-                    </ScrollView>
-                    {this.renderBarraEntrada()}
-                </SView>
+                    {this.renderChat()}
+                </ScrollView>
+                {this.renderBarraEntrada()}
                 {/* <SHr height={16} /> */}
             </SView>
         );

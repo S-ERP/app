@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { SImage, SText, SView, SIcon, SHr, STheme } from "servisofts-component";
 import HoraLabel from "../Comp/HoraLabel";
-import Sounds from "../../../../../Components/Sounds";
+import Sounds from "../../../Components/Sounds";
 
 // corlor
 

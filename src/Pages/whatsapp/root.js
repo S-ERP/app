@@ -6,7 +6,6 @@ import FloatButtom from '../../Components/FloatButtom';
 import MDL from '../../MDL';
 import Config from '../../Config';
 import Model from '../../Model';
-import Qr from './qr';
 
 
 
@@ -72,7 +71,7 @@ class WhatsappDevices extends Component {
                 backgroundColor = STheme.color.danger;
                 break;
             default:
-                mensaje = "Desconocido";
+                mensaje = status;
                 backgroundColor = STheme.color.gray;
                 break;
         }
@@ -244,7 +243,7 @@ class WhatsappDevices extends Component {
 
     render() {
         return (
-            <SPage title="Dispositivos WhatsApp">
+            <SPage title="Dispositivos WhatsApp" disableScroll>
                 <DinamicTable
                     ref={ref => this.DinamicTable = ref}
                     loadData={async () => await MDL.whatsapp.device.getAll()}
@@ -260,7 +259,7 @@ class WhatsappDevices extends Component {
                     <DinamicTable.Col key="key" label="Key" width={200} data={e => e.row.key} />
                     <DinamicTable.Col key="descripcion" label="descripcion" width={100} data={e => e.row.descripcion} />
                     <DinamicTable.Col key="webhook" label="webhook" width={180} data={e => e.row.webhook} />
-                    <DinamicTable.Col key="qr" label="qr" width={100} center data={e => e.row?.session?.qr}
+                    {/* <DinamicTable.Col key="qr" label="qr" width={100} center data={e => e.row?.session?.qr}
                         customComponent={e =>
                             e.row?.session?.qr ?
                                 (<SView row center>
@@ -270,7 +269,7 @@ class WhatsappDevices extends Component {
                                 </SView>
                                 ) : null
                         }
-                    />
+                    /> */}
 
                     {/* <DinamicTable.Col key="webhub" label="webhub" width={300} center data={e => e.row?.session?.qr}
                         customComponent={e =>

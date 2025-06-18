@@ -6,7 +6,8 @@ import { ConnectingEvent, RTCSession } from 'jssip/lib/RTCSession';
 // const ws = "ws://192.168.2.3:8088/ws";
 const ws = "wss://crm.servisofts.com/wrts";
 
-const sip = "sip:50002@192.168.2.3";
+// const sip = "sip:50002@192.168.2.3";
+const sip = "sip:50002@sip.servisofts.com";
 const sipPassword = "servisofts";
 
 
@@ -22,7 +23,15 @@ export default class SIP {
     configuration = {
         sockets: [this.socket],
         uri: sip,
-        password: sipPassword
+        password: sipPassword,
+        // session_timers: false,
+        // use_preloaded_route: false,
+        // hack_via_tcp: false,
+        // hack_ip_in_contact: true,
+        // hack_allow_unregistered_datasets: true,
+        // rtcConfiguration: {
+        //     iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+        // }
     };
     ua = new JsSIP.UA(this.configuration);
 
@@ -55,11 +64,13 @@ export default class SIP {
         if (phone.startsWith("591")) {
             phone = phone.slice(3);
         }
+        // alert("llamando a la 1003 con STUN")
+        // const session = this.ua.call(`sip:${"1003"}@from-internal`, {
         const session = this.ua.call(`sip:${phone}@from-internal`, {
             mediaConstraints: { audio: true, video: false },
-            pcConfig: {
-                iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
-            },
+            // pcConfig: {
+            //     iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+            // },
             rtcOfferConstraints: {
                 offerToReceiveAudio: 1,
                 offerToReceiveVideo: 0

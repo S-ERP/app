@@ -8,18 +8,17 @@ import MDLAbstract from "../MDLAbstract";
 import Device from "./device";
 export default class whatsapp extends MDLAbstract<EventListener> {
   url = "http://192.168.3.3:3000";
-  key = "servisofts";
   // url = "https://wtspp.servisofts.com";
   device = new Device();
 
-  async send(params: { phone: string; message?: string, image?: string }) {
+  async send(params: { key_device: string, phone: string; message?: string, image?: string }) {
     const resp = await fetch(this.url + "/send", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        key: this.key,
+        key: params.key_device,
         numero: params.phone,
         mensaje: params.message,
         imagen: params.image,
@@ -30,6 +29,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
   }
 
   async getAllChatsById(params: {
+    key_device: string;
     idchat: string;
     limit: string;
     offset: string;
@@ -41,7 +41,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        key: this.key,
+        key: params.key_device,
         idchat: params.idchat || ("" + params.phone.replace(" ", "") + "@c.us"),
         // idchat: "59178505744@c.us",
         // idchat: params.idchat,

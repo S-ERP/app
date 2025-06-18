@@ -17,9 +17,9 @@ export default class HoraLabel extends Component {
         // No esta otmando en cuenta la zona horaria, si es necesario, puedes ajustarlo según tu necesidad.
 
 
-
+        const formattedTimeAMPM = new SDate(new Date(hora)).toString("HH");
         // O simplemente mostrar la hora sin formatear
         // return <Text>{formattedTime}</Text>;
-        return <SText fontSize={11} color={STheme.color.lightGray} {...this.props}>{formattedTime}</SText>
+        return <SText clean fontSize={10} color={STheme.color.lightGray} {...this.props}>{formattedTimeAMPM}</SText>
     }
 }
