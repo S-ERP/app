@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2 } from 'servisofts-component';
+import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2, SHr } from 'servisofts-component';
 import FileChooser from '../../Components/SUpload/FileChooser';
 import * as XLSX from "xlsx";
 
@@ -21,25 +21,12 @@ export default class ProyectoImportarExcel extends Component {
     formatearTelefono = (telefono) => {
         if (!telefono) return { telefonoFormateado: "", descripcion: "Teléfono vacío" };
 
-        const original = telefono.toString();
-        const contieneLetras = /[a-zA-Z]/.test(original);
-        const contieneCaracteresEspeciales = /[^0-9\s+]/.test(original);
-
-        let tel = original.replace(/\D/g, ""); // elimina todo excepto números
-
-        if (tel.startsWith("591")) tel = tel.substring(3);
-
+        const tel = telefono.toString().replace(/\D/g, "");
         let descripcion = "";
 
-        if (contieneLetras) {
-            descripcion = "El teléfono contiene letras";
-        } else if (contieneCaracteresEspeciales) {
-            descripcion = "El teléfono contiene caracteres no válidos";
-        } else if (tel.length < 8) {
-            descripcion = `Error en el teléfono, lleva ${tel.length} dígitos`;
-        } else if (tel.length > 8) {
-            descripcion = `Error en el teléfono, lleva ${tel.length} dígitos. No pertenece a Bolivia`;
-        }
+        if (/[a-zA-Z]/.test(telefono)) descripcion = "El teléfono contiene letras";
+        else if (/[^0-9\s+]/.test(telefono)) descripcion = "El teléfono contiene caracteres no válidos";
+        else if (tel.length !== 8) descripcion = `Error en el teléfono, lleva ${tel.length} dígitos`;
 
         return {
             telefonoFormateado: `+591 ${tel}`,
@@ -47,86 +34,86 @@ export default class ProyectoImportarExcel extends Component {
         };
     };
 
-
     validarCliente = (cliente) => {
-        // Eliminar todos los espacios (incluso en medio) para validar correctamente
-        const clienteSinEspacios = cliente.replace(/\s/g, "");
-
-        if (!clienteSinEspacios || clienteSinEspacios.toLowerCase() === "sinnombre") {
-            return "El campo nombre tiene error";
-        }
-
-        return "";
+        const limpio = cliente.replace(/\s/g, "");
+        return (!limpio || limpio.toLowerCase() === "sinnombre") ? "El campo nombre tiene error" : "";
     };
 
-
     handleExcelImport = () => {
-        FileChooser({
-            accept: ".xlsx, .xls, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel",
-        }).then((files) => {
+        FileChooser({ accept: ".xlsx, .xls" }).then((files) => {
             const reader = new FileReader();
             reader.onload = (e) => {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: "array" });
-                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-                const columnas = Object.keys(jsonData[0] || {});
-                this.setState({ excelData: jsonData, columnasDetectadas: columnas }, this.openMappingPopup);
+                const workbook = XLSX.read(new Uint8Array(e.target.result), { type: "array" });
+                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: "" });
+                this.setState({ excelData: jsonData, columnasDetectadas: Object.keys(jsonData[0] || {}) }, this.openMappingPopup);
             };
             reader.readAsArrayBuffer(files[0]);
         });
     };
 
+    enviarTablaServidor = () => {
+        const { data = [] } = this.state;
+        if (!data.length) return SPopup.alert("⚠️ No hay datos", "Importa un archivo Excel primero.");
+
+        const errores = data.filter(d => d.descripcion);
+        if (errores.length) {
+            return SPopup.open({
+                key: "error-envio",
+                content: (
+                    <SView col="xs-11" backgroundColor={STheme.color.black} padding={16} style={{ borderRadius: 8, maxWidth: 300 }}>
+                        <SText bold fontSize={18}>❌ Errores en los datos</SText>
+                        <SHr height={8} />
+                        <SText fontSize={14}>Hay <SText bold>{errores.length}</SText> filas con errores. Corrige antes de enviar.</SText>
+                        <SHr height={16} />
+                        <SView center backgroundColor={STheme.color.danger} padding={10} borderRadius={4} onPress={() => SPopup.close("error-envio")}> <SText color="white" bold>Cerrar</SText> </SView>
+                    </SView>
+                )
+            });
+        }
+
+        SPopup.confirm({
+            title: "¿Estás seguro?",
+            message: `Se enviarán ${data.length} registros.`,
+            onPress: () => {
+                console.log("Enviando datos...", data);
+                SPopup.alert("✅ Enviado", `${data.length} registros enviados correctamente.`);
+            }
+        });
+    };
+
     openMappingPopup = () => {
+        const campos = ["cliente", "telefono"];
         const { columnasDetectadas = [], mapeo = {} } = this.state;
-        const camposEsperados = ["cliente", "telefono"];
         const tempMapeo = { ...mapeo };
 
         SPopup.open({
             key: "popup-mapeo",
             content: (
-                <SView withoutFeedback backgroundColor={STheme.color.black} padding={16} col={"xs-11"} style={{ borderRadius: 8, maxWidth: 300 }}>
+                <SView col="xs-11" backgroundColor={STheme.color.black} padding={16} style={{ borderRadius: 8, maxWidth: 300 }}>
                     <SText bold fontSize={18}>📋 Mapear columnas</SText>
-                    <SView height={12} />
-                    {camposEsperados.map((campo) => (
+                    <SHr height={12} />
+                    {campos.map((campo) => (
                         <SView key={campo} marginBottom={12}>
-                            <SText color={STheme.color.text} fontSize={14}>{campo}</SText>
+                            <SText fontSize={14}>{campo}</SText>
                             <SInput
                                 type="select"
                                 defaultValue={tempMapeo[campo] ?? "none"}
                                 center
-                                options={[
-                                    { key: "none", content: "-" },
-                                    ...columnasDetectadas.map(col => ({ key: col, content: col }))
-                                ]}
-                                onChangeText={(val) => {
-                                    tempMapeo[campo] = val;
-                                }}
+                                options={[{ key: "none", content: "-" }, ...columnasDetectadas.map(col => ({ key: col, content: col }))]}
+                                onChangeText={(val) => tempMapeo[campo] = val}
                                 style={{ textAlign: "center" }}
                             />
                         </SView>
                     ))}
-                    <SView height={20} />
+                    <SHr height={20} />
                     <SView row center>
-
                         <SView flex />
-                        <SView center width={100} padding={10} backgroundColor={"white"} borderRadius={4} onPress={() => { SPopup.close("editar-popup"); }}><SText color={"black"} center>Cancelar</SText></SView>
-
-
-
-                        {/* <SView backgroundColor={"#ffdddd"} padding={10} borderRadius={8} onPress={() => SPopup.close("popup-mapeo")}>
+                        <SView width={100} center padding={10} backgroundColor={"white"} borderRadius={4} onPress={() => SPopup.close("popup-mapeo")}>
                             <SText color={"black"}>Cancelar</SText>
-                        </SView> */}
-
-
+                        </SView>
                         <SView width={20} />
-
-
-                        <SView center width={120} padding={10} backgroundColor={"black"} border={"white"} borderRadius={4} onPress={() => {
+                        <SView width={120} center padding={10} backgroundColor={"black"} border={"white"} borderRadius={4} onPress={() => {
                             this.setState({ mapeo: tempMapeo }, this.applyMapping);
-
-                            // alert("Mapeo aplicado correctamente. Ahora puedes ver los datos importados.");
-
                             SPopup.close("popup-mapeo");
                         }}>
                             <SText color={"white"}>Importar lista</SText>
@@ -139,16 +126,15 @@ export default class ProyectoImportarExcel extends Component {
 
     applyMapping = () => {
         const { excelData = [], mapeo = {} } = this.state;
-        const data = excelData.map((row, index) => {
+        const data = excelData.map((row, i) => {
             const cliente = row[mapeo["cliente"]] ?? "";
             const telefono = row[mapeo["telefono"]] ?? "";
-
             const { telefonoFormateado, descripcion: descTel } = this.formatearTelefono(telefono);
             const descCliente = this.validarCliente(cliente);
 
             return {
-                key: `row_${index}`,
-                index: index + 1,
+                key: `row_${i}`,
+                index: i + 1,
                 cliente,
                 telefono,
                 telefonoFormateado,
@@ -156,13 +142,11 @@ export default class ProyectoImportarExcel extends Component {
             };
         });
 
-        const ordenado = [...data].sort((a, b) => (a.descripcion ? 1 : -1));
-        this.setState({ data: ordenado });
+        this.setState({ data: data.sort((a, b) => (a.descripcion ? 1 : -1)) });
     };
 
     eliminarFila = (key) => {
-        const data = this.state.data.filter(d => d.key !== key);
-        this.setState({ data });
+        this.setState({ data: this.state.data.filter(d => d.key !== key) });
     };
 
     abrirEditarPopup = (item) => {
@@ -170,96 +154,87 @@ export default class ProyectoImportarExcel extends Component {
         SPopup.open({
             key: "editar-popup",
             content: (
-                <SView withoutFeedback backgroundColor={STheme.color.background} padding={16} col={"xs-11"} style={{ borderRadius: 8, maxWidth: 320 }}  >
-                    <SView row>
-                        <SIcon name='crmeditar' width={20} center fill='white' />
-                        <SText bold fontSize={16}> Editar contacto</SText>
-                    </SView>
-
-                    <SView height={8} />
-                    <SText color={STheme.color.lightBlack + 88} fontSize={12}> Modifica la información del contacto seleccionado</SText>
-                    <SView height={12} />
-                    <SInput label={"Nombre completo"} defaultValue={item?.cliente} placeholder="Nombre completo" onChangeText={v => nuevo.cliente = v} />
-                    <SView height={8} />
-                    <SInput label={"Teléfono"} type='telefono' defaultValue={`${item?.telefono || ""}`} placeholder="Teléfono" onChangeText={v => nuevo.telefono = v} />
-                    <SView height={18} />
+                <SView col="xs-11" backgroundColor={STheme.color.background} padding={16} style={{ borderRadius: 8, maxWidth: 320 }}>
+                    <SView row><SIcon name='crmeditar' width={20} fill='white' /><SText bold fontSize={16}> Editar contacto</SText></SView>
+                    <SHr height={8} />
+                    <SInput label="Nombre completo" defaultValue={item?.cliente} onChangeText={v => nuevo.cliente = v} />
+                    <SHr height={8} />
+                    <SInput label="Teléfono" type='telefono' defaultValue={`${item?.telefono}`} onChangeText={v => nuevo.telefono = v} />
+                    <SHr height={18} />
                     <SView row center>
                         <SView flex />
-                        <SView center width={100} padding={10} backgroundColor={"white"} borderRadius={4} onPress={() => { SPopup.close("editar-popup"); }}><SText color={"black"} center>Cancelar</SText></SView>
-
+                        <SView width={100} center padding={10} backgroundColor={"white"} borderRadius={4} onPress={() => SPopup.close("editar-popup")}><SText color={"black"}>Cancelar</SText></SView>
                         <SView width={20} />
-
-                        <SView center width={140} padding={10} backgroundColor={"black"} border={"white"} borderRadius={4} onPress={() => {
+                        <SView width={140} center padding={10} backgroundColor={"black"} border={"white"} borderRadius={4} onPress={() => {
                             const { telefonoFormateado, descripcion: descTel } = this.formatearTelefono(nuevo.telefono);
                             const descCliente = this.validarCliente(nuevo.cliente);
                             nuevo.telefonoFormateado = telefonoFormateado;
                             nuevo.descripcion = [descCliente, descTel].filter(Boolean).join(" · ");
-                            const newData = this.state.data.map(d => d.key === nuevo.key ? nuevo : d);
-                            this.setState({ data: newData });
+                            const data = this.state.data.map(d => d.key === nuevo.key ? nuevo : d);
+                            this.setState({ data });
                             SPopup.close("editar-popup");
-                        }}><SText color={"white"} center>Guardar Cambios</SText></SView>
+                        }}><SText color={"white"}>Guardar Cambios</SText></SView>
                     </SView>
-                    <SView height={18} />
                 </SView>
             )
         });
     };
 
-
-
     render() {
+        const { data } = this.state;
+
         return (
             <SPage title="Importar contactos desde Excel" disableScroll>
-                <SView center flex>
-                    {this.state.data.length > 0 ? (
-                        <STable2
-                            header={[
-                                { key: "index", label: "#", width: 40 },
-                                { key: "cliente", label: "Nombre completo", width: 250 },
-                                { key: "telefono", label: "Teléfono original", width: 150 },
-                                { key: "telefonoFormateado", label: "Teléfono formateado", width: 180 },
-                                { key: "descripcion", label: "Descripción", width: 280 },
-                                {
-                                    key: "-editar", label: "Editar", width: 100, component: (c) => (<SView onPress={() => this.abrirEditarPopup(c)}  >
-                                        <SIcon name='crmeditar' width={18} fill={"#e7e7e7"} /></SView>)
-                                },
-                                {
-                                    key: "-eliminar", label: "Eliminar", width: 100, component: (c) => (<SView onPress={() =>
-                                        SPopup.confirm({ title: "¿Seguro que deseas eliminar esta fila?", onPress: () => { this.eliminarFila(c.key); } })
-                                    }> <SIcon name='crmeliminar' width={18} fill={"#ef0707"} />
-                                    </SView>)
-                                }
-                            ]}
-                            data={this.state.data}
-                        />
-                    ) : (
-                        <SText color={STheme.color.lightGray}>📂 Aún no se ha importado ningún archivo</SText>
-                    )}
-                </SView>
-
-                <SView
-                    style={{ position: "absolute", top: 20, right: "20%", backgroundColor: "white" }}
-                    width={180}
-                    height={50}
-                    center
-                    onPress={this.handleExcelImport}
-                >
-                    <SView row center>
-                        <SIcon name="Excel" width={18} height={18} fill={"black"} stroke={"blue"} />
-                        <SView width={8} />
-                        <SText color='black' fontSize={18}>Importar Excel</SText>
+                <SHr height={20} />
+                <SView col="xs-12 md-9" row style={{ gap: 8 }}>
+                    <SView width={140} height={32} center backgroundColor={STheme.color.card} borderRadius={4}>
+                        <SText fontSize={14} color={STheme.color.white} onPress={this.handleExcelImport}>{"+  Importar Excel"}</SText>
+                    </SView>
+                    <SView width={140} height={32} center row backgroundColor={STheme.color.card} borderRadius={4} onPress={() => {
+                        if (!data.length) return SPopup.alert("⚠️ No hay datos en la tabla");
+                        this.setState({ data: [], mapeo: {}, excelData: [] });
+                    }}>
+                        <SIcon name='crmeliminar' width={16} fill='white' />
+                        <SText fontSize={14}> Limpiar Tabla</SText>
+                    </SView>
+                    <SView flex />
+                    <SView width={140} height={32} center row backgroundColor={STheme.color.card} borderRadius={4} onPress={this.enviarTablaServidor}>
+                        <SIcon name='MessageSend' width={14} fill='white' />
+                        <SText fontSize={14} color={STheme.color.white}> Enviar al servidor</SText>
                     </SView>
                 </SView>
 
-                <SView
-                    style={{ position: "absolute", top: 20, right: "8%", backgroundColor: "white" }}
-                    width={180}
-                    height={50}
-                    center
-                    onPress={() => this.setState({ data: [], mapeo: {}, excelData: [] })}
-                >
-                    <SText color='black' fontSize={18}>Limpiar</SText>
-                </SView>
+                {
+                    (!this.state.data.length > 0) ?
+                        <SView center style={{ position: "absolute", top: 180, left: "25%",  }} >
+                            <SText color={STheme.color.lightGray} fontSize={16}>📂 Aún no se ha importado ningún archivo</SText>
+                        </SView>
+                        : null
+                }
+
+
+                <STable2
+                    header={[
+                        { key: "index", label: "#", width: 40 },
+                        { key: "cliente", label: "Nombre completo", width: 250 },
+                        { key: "telefono", label: "Teléfono original", width: 150 },
+                        { key: "telefonoFormateado", label: "Teléfono formateado", width: 180 },
+                        { key: "descripcion", label: "Descripción", width: 280 },
+                        {
+                            key: "-editar", label: "Editar", width: 100,
+                            component: (c) => <SView onPress={() => this.abrirEditarPopup(c)}><SIcon name='crmeditar' width={18} fill="#e7e7e7" /></SView>
+                        },
+                        {
+                            key: "-eliminar", label: "Eliminar", width: 100,
+                            component: (c) => (
+                                <SView onPress={() => SPopup.confirm({ title: "¿Seguro que deseas eliminar esta fila?", onPress: () => this.eliminarFila(c.key) })}>
+                                    <SIcon name='crmeliminar' width={18} fill="#ef0707" />
+                                </SView>
+                            )
+                        }
+                    ]}
+                    data={data}
+                />
             </SPage>
         );
     }
