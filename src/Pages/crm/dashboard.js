@@ -8,6 +8,7 @@ import Animated, {
     runOnJS
 } from 'react-native-reanimated';
 import {
+    FlatList,
     GestureHandlerRootView,
     ScrollView,
     Gesture,
@@ -85,7 +86,7 @@ export default class Dashboard extends Component {
         this.setState({ draggingCard: null });
         console.log("handleDrop", cardKey, gestureEnd);
 
-        if(prevenChange) return;
+        if (prevenChange) return;
         for (const stageKey in this.stageRefs) {
             const ref = this.stageRefs[stageKey];
             if (!ref?.current) continue;
@@ -103,6 +104,11 @@ export default class Dashboard extends Component {
                 if (isInside) {
                     const stage = this.stages.find((s) => s.key === stageKey);
                     if (stage) {
+                        if (this.dragginCard) {
+                            this.dragginCard.setState({
+                                draggingCard: "",
+                            });
+                        }
                         console.log("Card dropped in stage:", stage.name);
                         // Quiero detectar cual es el card mas cercano al drop para colocar el card que estoy soltando luego de el card mas cercano al drop
                         // Obtener las cards del stage destino
@@ -112,7 +118,7 @@ export default class Dashboard extends Component {
                         let closestCardKey = null;
                         let minDistance = Infinity;
                         let dropY = gestureEnd.absoluteY;
-
+                        console.log("dropY", dropY, "cardsInStage", cardsInStage);
                         // Medir cada card para encontrar la más cercana al drop
                         const measurePromises = cardsInStage.map(c => {
                             const cardRef = this.cardRefs[c.key];
@@ -123,7 +129,7 @@ export default class Dashboard extends Component {
                             return new Promise(resolve => {
                                 UIManager.measure(node, (x, y, width, height, pageX, pageY) => {
                                     // Centro vertical de la card
-                                    const cardCenterY = pageY + height;
+                                    const cardCenterY = pageY - (height/2);
                                     const distance = Math.abs(dropY - cardCenterY);
                                     resolve({ key: c.key, distance, cardCenterY });
                                 });
@@ -137,6 +143,7 @@ export default class Dashboard extends Component {
                                     closestCardKey = res.key;
                                 }
                             });
+                            console.log("closestCardKey", closestCardKey, "minDistance", minDistance);
 
                             // Aquí puedes reordenar las cards: insertar el cardKey después de closestCardKey
                             this.setState(prev => {
@@ -146,7 +153,7 @@ export default class Dashboard extends Component {
                                 const currentStage = this.stages.find(s => s.states.includes(editCard.state));
 
                                 const insertIndex = closestCardKey
-                                    ? newCards.findIndex(c => c.key === closestCardKey) + 1
+                                    ? newCards.findIndex(c => c.key === closestCardKey) + 0
                                     : 0;
 
 
@@ -189,11 +196,18 @@ export default class Dashboard extends Component {
 
                     UIManager.measure(stageNode, (stageX, stageY, stageWidth, stageHeight) => {
 
-                        this.setState({
-                            draggingCard: cardKey,
-                            dragOffset: { x: 0, y: 0 },
-                            initialOffset: { x: stageX + 5, y: pageY - 42, w: width }
-                        });
+                        if (this.dragginCard) {
+                            this.dragginCard.setState({
+                                draggingCard: cardKey,
+                                dragOffset: { x: 0, y: 0 },
+                                initialOffset: { x: stageX + 5, y: pageY - 42, w: width }
+                            });
+                        }
+                        // this.setState({
+                        //     draggingCard: cardKey,
+                        //     dragOffset: { x: 0, y: 0 },
+                        //     initialOffset: { x: stageX + 5, y: pageY - 42, w: width }
+                        // });
                     })
 
 
@@ -203,7 +217,9 @@ export default class Dashboard extends Component {
     };
 
     handleDragMove = (x, y) => {
-        this.setState({ dragOffset: { x, y } });
+        if (this.dragginCard) this.dragginCard.setState({ dragOffset: { x, y } })
+
+        // this.setState({ dragOffset: { x, y } });
     };
 
     render() {
@@ -233,22 +249,10 @@ export default class Dashboard extends Component {
                                 </SView>
                             );
                         })}
-                        {this.state.draggingCard && (() => {
-                            const card = this.state.cards.find(c => c.key === this.state.draggingCard);
-                            if (!card) return null;
-                            return (
-                                <Animated.View style={{
-                                    position: "absolute",
-                                    top: this.state.dragOffset.y + this.state.initialOffset.y + 2,
-                                    left: this.state.dragOffset.x + this.state.initialOffset.x,
-                                    width: this.state.initialOffset.w,
-                                    zIndex: 9999,
-                                    pointerEvents: 'none',
-                                }}>
-                                    <DashboardCard data={card} />
-                                </Animated.View>
-                            );
-                        })()}
+                        <DragginCard ref={ref => this.dragginCard = ref} cards={this.state.cards} />
+                        {/* {this.state.draggingCard && (() => {
+
+                        })()} */}
                     </ScrollView>
                     <SView style={{
                         position: "absolute",
@@ -265,6 +269,28 @@ export default class Dashboard extends Component {
     }
 }
 
+class DragginCard extends Component {
+    state = {
+
+    }
+    render() {
+        if (!this.state.draggingCard) return null;
+        const card = this.props.cards.find(c => c.key === this.state.draggingCard);
+        if (!card) return null;
+        return (
+            <Animated.View style={{
+                position: "absolute",
+                top: this.state.dragOffset.y + this.state.initialOffset.y + 2,
+                left: this.state.dragOffset.x + this.state.initialOffset.x,
+                width: this.state.initialOffset.w,
+                zIndex: 9999,
+                pointerEvents: 'none',
+            }}>
+                <DashboardCard data={card} />
+            </Animated.View>
+        );
+    }
+}
 const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard, cardRefs }) => {
     return (
         <SView style={{
@@ -285,7 +311,28 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                 <SHr />
                 <SView row col={"xs-12"}>{stage.states.map((state, index) => <Etiqueta tipo_leads={state} size={8} style={{ marginRight: 8, marginBottom: 8 }} />)}</SView>
             </SView>
-            <ScrollView
+            <FlatList
+                contentContainerStyle={{
+                    padding: 4,
+                }}
+                data={cards}
+                renderItem={({ item }) => {
+                    if (!cardRefs[item.key]) {
+                        cardRefs[item.key] = createRef();
+                    }
+                    return (
+                        <DraggableCarta
+                            key={item.key}
+                            card={item}
+                            onDrop={onCardDrop}
+                            onDragStart={onDragStart}
+                            onDragMove={onDragMove}
+                            ref={cardRefs[item.key]}
+                        />
+                    );
+                }}
+            />
+            {/* <ScrollView
 
                 contentContainerStyle={{
                     padding: 4,
@@ -308,7 +355,7 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                         />
                     );
                 })}
-            </ScrollView>
+            </ScrollView> */}
         </SView>
 
     );
