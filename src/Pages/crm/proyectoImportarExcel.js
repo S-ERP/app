@@ -108,15 +108,28 @@ export default class ProyectoImportarExcel extends Component {
                     ))}
                     <SView height={20} />
                     <SView row center>
-                        <SView backgroundColor={"#ffdddd"} padding={10} borderRadius={8} onPress={() => SPopup.close("popup-mapeo")}>
-                            <SText color={"black"}>Cancelar</SText>
-                        </SView>
+
                         <SView flex />
-                        <SView backgroundColor={"white"} padding={10} borderRadius={8} onPress={() => {
+                        <SView center width={100} padding={10} backgroundColor={"white"} borderRadius={4} onPress={() => { SPopup.close("editar-popup"); }}><SText color={"black"} center>Cancelar</SText></SView>
+
+
+
+                        {/* <SView backgroundColor={"#ffdddd"} padding={10} borderRadius={8} onPress={() => SPopup.close("popup-mapeo")}>
+                            <SText color={"black"}>Cancelar</SText>
+                        </SView> */}
+
+
+                        <SView width={20} />
+
+
+                        <SView center width={120} padding={10} backgroundColor={"black"} border={"white"} borderRadius={4} onPress={() => {
                             this.setState({ mapeo: tempMapeo }, this.applyMapping);
+
+                            // alert("Mapeo aplicado correctamente. Ahora puedes ver los datos importados.");
+
                             SPopup.close("popup-mapeo");
                         }}>
-                            <SText color={"black"}>Importar lista</SText>
+                            <SText color={"white"}>Importar lista</SText>
                         </SView>
                     </SView>
                 </SView>
@@ -157,22 +170,26 @@ export default class ProyectoImportarExcel extends Component {
         SPopup.open({
             key: "editar-popup",
             content: (
-                <SView withoutFeedback backgroundColor={STheme.color.background} padding={16} col={"xs-11"} style={{ borderRadius: 8, maxWidth: 320 }}>
-                    <SText bold fontSize={16}><SIcon name='pencil' width={18} fill='red' /> Editar contacto</SText>
+                <SView withoutFeedback backgroundColor={STheme.color.background} padding={16} col={"xs-11"} style={{ borderRadius: 8, maxWidth: 320 }}  >
+                    <SView row>
+                        <SIcon name='crmeditar' width={20} center fill='white' />
+                        <SText bold fontSize={16}> Editar contacto</SText>
+                    </SView>
+
                     <SView height={8} />
-                    <SText color={STheme.color.lightBlack + 99} fontSize={12}> Modifica la información del contacto seleccionado</SText>
+                    <SText color={STheme.color.lightBlack + 88} fontSize={12}> Modifica la información del contacto seleccionado</SText>
                     <SView height={12} />
                     <SInput label={"Nombre completo"} defaultValue={item?.cliente} placeholder="Nombre completo" onChangeText={v => nuevo.cliente = v} />
                     <SView height={8} />
                     <SInput label={"Teléfono"} type='telefono' defaultValue={`${item?.telefono || ""}`} placeholder="Teléfono" onChangeText={v => nuevo.telefono = v} />
                     <SView height={18} />
-                    <SView row>
+                    <SView row center>
                         <SView flex />
-                        <SView center width={100} padding={10} backgroundColor={"white"} borderRadius={4} onPress={() => { SPopup.close("editar-popup"); }}>  <SText color={"black"}>Cancelar</SText>  </SView>
+                        <SView center width={100} padding={10} backgroundColor={"white"} borderRadius={4} onPress={() => { SPopup.close("editar-popup"); }}><SText color={"black"} center>Cancelar</SText></SView>
 
-                        <SView flex />
+                        <SView width={20} />
 
-                        <SView center padding={10} backgroundColor={"white"} borderRadius={4} onPress={() => {
+                        <SView center width={140} padding={10} backgroundColor={"black"} border={"white"} borderRadius={4} onPress={() => {
                             const { telefonoFormateado, descripcion: descTel } = this.formatearTelefono(nuevo.telefono);
                             const descCliente = this.validarCliente(nuevo.cliente);
                             nuevo.telefonoFormateado = telefonoFormateado;
@@ -180,12 +197,9 @@ export default class ProyectoImportarExcel extends Component {
                             const newData = this.state.data.map(d => d.key === nuevo.key ? nuevo : d);
                             this.setState({ data: newData });
                             SPopup.close("editar-popup");
-                        }}>
-                            <SText color={"black"}>Guardar Cambios</SText>
-                        </SView>
+                        }}><SText color={"white"} center>Guardar Cambios</SText></SView>
                     </SView>
                     <SView height={18} />
-
                 </SView>
             )
         });
@@ -207,21 +221,14 @@ export default class ProyectoImportarExcel extends Component {
                                 { key: "descripcion", label: "Descripción", width: 280 },
                                 {
                                     key: "-editar", label: "Editar", width: 100, component: (c) => (<SView onPress={() => this.abrirEditarPopup(c)}  >
-                                        <SIcon name='crmeditar' width={18} fill={"#ffff"} /></SView>)
+                                        <SIcon name='crmeditar' width={18} fill={"#e7e7e7"} /></SView>)
                                 },
                                 {
                                     key: "-eliminar", label: "Eliminar", width: 100, component: (c) => (<SView onPress={() =>
                                         SPopup.confirm({ title: "¿Seguro que deseas eliminar esta fila?", onPress: () => { this.eliminarFila(c.key); } })
-                                    }> <SIcon name='crmeliminar' width={18} fill={"white"} />
-                                    </SView>  )
+                                    }> <SIcon name='crmeliminar' width={18} fill={"#ef0707"} />
+                                    </SView>)
                                 }
-
-
-
-
-
-
-
                             ]}
                             data={this.state.data}
                         />
