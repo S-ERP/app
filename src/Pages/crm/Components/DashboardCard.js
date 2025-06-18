@@ -67,16 +67,22 @@ export default class DashboardCard extends Component {
 
 
             <SHr h={16} />
+
+            {card.state == "rellamada" && <>
+                <SView row  >
+                    <SView width={4} />
+                    <SIconApp name='recall' width={14} height={14} fill={STheme.color.lightGray} />
+                    <SView width={4} />
+                    <SText clean fontSize={10} color={STheme.color.lightGray}>{new SDate(card?.fecha_rellamada, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")}</SText>
+                </SView>
+                <SHr h={8} />
+
+            </>}
+
+
             <SView row style={{ alignItems: "flex-end" }}>
                 <Etiqueta tipo_leads={card.state} size={12} ></Etiqueta>
-                {card?.fecha_rellamada && <>
-                    <SView row center>
-                        <SView width={4} />
-                        <SIconApp name='recall' width={14} height={14} fill={STheme.color.lightGray} />
-                        <SView width={4} />
-                        <SText clean fontSize={10} color={STheme.color.lightGray}>{new SDate(card?.fecha_rellamada, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")}</SText>
-                    </SView>
-                </>}
+
 
                 <SView flex />
 
