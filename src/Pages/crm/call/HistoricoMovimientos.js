@@ -4,6 +4,7 @@ import { SDate, SImage, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Etiqueta from '../Components/Etiqueta';
 import MDL from '../../../MDL';
+import SIconApp from '../../../Assets/SIconApp';
 // import Etiqueta from '../../../Components/Etiqueta';
 
 export default class HistoricoMovimientos extends Component {
@@ -26,7 +27,7 @@ export default class HistoricoMovimientos extends Component {
             const tipos_movimientos = await MDL.crm.tipoMovimientoLead.getAll()
             const historico = e.data;
             e.data.forEach(item => {
-                if(item?.data?.key_tipo_movimiento_lead){
+                if (item?.data?.key_tipo_movimiento_lead) {
                     item.tipo_movimiento = tipos_movimientos.find(tipo => tipo.key === item.data.key_tipo_movimiento_lead);
                 }
             })
@@ -99,6 +100,17 @@ export default class HistoricoMovimientos extends Component {
                                 <SText clean fontSize={12} numberOfLines={1} color={STheme.color.lightGray}>{item?.data?.comentario}</SText>
                                 <SText clean >{" "}</SText>
                                 <SText clean fontSize={12} numberOfLines={1} color={STheme.color.lightGray}>{item?.tipo_movimiento?.descripcion}</SText>
+
+                                {item.data.fecha_rellamada && <>
+                                    <SView row center>
+                                        <SView width={4} />
+                                        <SIconApp name='recall' width={14} height={14} fill={STheme.color.lightGray} />
+                                        <SView width={4} />
+
+                                        <SText clean fontSize={10} color={STheme.color.lightGray}> {" " + new SDate(item.data.fecha_rellamada, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")}</SText>
+
+                                    </SView>
+                                </>}
                             </SText>
 
                         </SView>

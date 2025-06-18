@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { SDate, SHr, SIcon, SImage, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Etiqueta from './Etiqueta';
+import SIconApp from '../../../Assets/SIconApp';
 
 export default class DashboardCard extends Component {
     constructor(props) {
@@ -34,8 +35,8 @@ export default class DashboardCard extends Component {
                     onPress={() => {
                         // SNavigation.navigate("/crm/plantilla", { key: card.key })
                         SNavigation.navigate("/crm/call", { key: card.key })
-                        }} >{card?.cliente?.telefono}</SText>
-             </SView>
+                    }} >{card?.cliente?.telefono}</SText>
+            </SView>
             <SHr h={4} />
             <SText>{card?.cliente?.nombres}</SText>
             <SHr h={16} />
@@ -57,19 +58,35 @@ export default class DashboardCard extends Component {
                     <SText style={{ maxWidth: 203 }} numberOfLines={1} color={STheme.color.lightGray}> Campaña: {card?.campana?.nombre}</SText>
                 </SView>
                 <SView flex />
+
+
             </SView>
+
+
+
+
 
             <SHr h={16} />
             <SView row style={{ alignItems: "flex-end" }}>
-
                 <Etiqueta tipo_leads={card.state} size={12} ></Etiqueta>
+                {card?.fecha_rellamada && <>
+                    <SView row center>
+                        <SView width={4} />
+                        <SIconApp name='recall' width={14} height={14} fill={STheme.color.lightGray} />
+                        <SView width={4} />
+                        <SText clean fontSize={10} color={STheme.color.lightGray}>{new SDate(card?.fecha_rellamada, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")}</SText>
+                    </SView>
+                </>}
+
                 <SView flex />
+
                 <SView row center>
                     <SIcon name="history" width={10} fill={STheme.color.lightGray} />
                     <SView width={4} />
                     <SText fontSize={10} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
                 </SView>
             </SView>
+
             <SView style={{
                 width: 24,
                 height: 24,
