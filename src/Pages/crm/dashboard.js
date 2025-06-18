@@ -83,7 +83,11 @@ export default class Dashboard extends Component {
     }
 
     handleDrop = (cardKey, gestureEnd, prevenChange) => {
-        this.setState({ draggingCard: null });
+        if (this.dragginCard) {
+            this.dragginCard.setState({
+                draggingCard: "",
+            });
+        }
         console.log("handleDrop", cardKey, gestureEnd);
 
         if (prevenChange) return;
@@ -104,11 +108,7 @@ export default class Dashboard extends Component {
                 if (isInside) {
                     const stage = this.stages.find((s) => s.key === stageKey);
                     if (stage) {
-                        if (this.dragginCard) {
-                            this.dragginCard.setState({
-                                draggingCard: "",
-                            });
-                        }
+
                         console.log("Card dropped in stage:", stage.name);
                         // Quiero detectar cual es el card mas cercano al drop para colocar el card que estoy soltando luego de el card mas cercano al drop
                         // Obtener las cards del stage destino
@@ -129,7 +129,7 @@ export default class Dashboard extends Component {
                             return new Promise(resolve => {
                                 UIManager.measure(node, (x, y, width, height, pageX, pageY) => {
                                     // Centro vertical de la card
-                                    const cardCenterY = pageY - (height/2);
+                                    const cardCenterY = pageY - (height / 2);
                                     const distance = Math.abs(dropY - cardCenterY);
                                     resolve({ key: c.key, distance, cardCenterY });
                                 });
@@ -235,7 +235,7 @@ export default class Dashboard extends Component {
                                 <SView
                                     key={stage.key}
                                     ref={this.stageRefs[stage.key]}
-                                    style={{ width: 300, margin: 6, userSelect: 'text' }}
+                                    style={{ width: 320, margin: 6, userSelect: 'text' }}
                                 >
                                     <Stage
                                         stage={stage}
@@ -308,8 +308,8 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                     <SView flex />
                     <SText bold card fontSize={10} padding={4}>{cards.length}</SText>
                 </SView>
-                <SHr />
-                <SView row col={"xs-12"}>{stage.states.map((state, index) => <Etiqueta tipo_leads={state} size={8} style={{ marginRight: 8, marginBottom: 8 }} />)}</SView>
+                {/* <SHr /> */}
+                <SView row col={"xs-12"}>{stage.states.map((state, index) => <Etiqueta tipo_leads={state} size={8} style={{ marginRight: 4, marginTop: 4 }} />)}</SView>
             </SView>
             <FlatList
                 contentContainerStyle={{
