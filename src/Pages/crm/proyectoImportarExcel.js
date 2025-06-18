@@ -18,19 +18,56 @@ export default class ProyectoImportarExcel extends Component {
         this.key_proyecto = SNavigation.getParam("key_proyecto");
     }
 
+    // formatearTelefono = (telefono) => {
+    //     if (!telefono) return { telefonoFormateado: "", descripcion: "Teléfono vacío" };
+
+    //     const tel = telefono.toString().replace(/\D/g, "");
+    //     let descripcion = "";
+
+    //     if (/[a-zA-Z]/.test(telefono)) descripcion = "El teléfono contiene letras";
+    //     else if (/[^0-9\s+]/.test(telefono)) descripcion = "El teléfono contiene caracteres no válidos";
+    //     else if (tel.length !== 8) descripcion = `Error en el teléfono, lleva ${tel.length} dígitos`;
+
+    //     return {
+    //         telefonoFormateado: `+591 ${tel}`,
+    //         descripcion
+    //     };
+    // };
+
     formatearTelefono = (telefono) => {
         if (!telefono) return { telefonoFormateado: "", descripcion: "Teléfono vacío" };
 
-        const tel = telefono.toString().replace(/\D/g, "");
+        const telefonoStr = telefono.toString().trim();
         let descripcion = "";
 
-        if (/[a-zA-Z]/.test(telefono)) descripcion = "El teléfono contiene letras";
-        else if (/[^0-9\s+]/.test(telefono)) descripcion = "El teléfono contiene caracteres no válidos";
-        else if (tel.length !== 8) descripcion = `Error en el teléfono, lleva ${tel.length} dígitos`;
+        // Validaciones generales
+        if (/[a-zA-Z]/.test(telefonoStr)) {
+            return { telefonoFormateado: "", descripcion: "El teléfono contiene letras" };
+        }
 
+        if (/[^0-9\s+]/.test(telefonoStr)) {
+            return { telefonoFormateado: "", descripcion: "El teléfono contiene caracteres no válidos" };
+        }
+
+        // Si comienza con + y lo que sigue son solo dígitos → es internacional → lo dejamos tal cual
+        if (/^\+\d+$/.test(telefonoStr)) {
+            return {
+                telefonoFormateado: telefonoStr,
+                descripcion: ""
+            };
+        }
+
+        // Caso Bolivia (sin +), debe tener exactamente 8 dígitos
+        const telLimpio = telefonoStr.replace(/\D/g, "");
+        if (telLimpio.length !== 8) {
+            descripcion = `Error en el teléfono boliviano, debe tener 8 dígitos (tiene ${telLimpio.length})`;
+            return { telefonoFormateado: "", descripcion };
+        }
+
+        // Retorno formateado con código Bolivia
         return {
-            telefonoFormateado: `+591 ${tel}`,
-            descripcion
+            telefonoFormateado: `+591 ${telLimpio}`,
+            descripcion: ""
         };
     };
 
