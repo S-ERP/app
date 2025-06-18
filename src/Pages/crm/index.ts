@@ -13,6 +13,7 @@ import call from "./call";
 import campana from "./campana";
 import graficos from "./graficos";
 import masivo from "./masivo";
+import proyectoImportarExcel from "./proyectoImportarExcel";
 
 export default SPage.combinePages("crm", {
   "": root,
@@ -29,4 +30,5 @@ export default SPage.combinePages("crm", {
   graficos,
   call,
   masivo,
+  proyectoImportarExcel,
 });

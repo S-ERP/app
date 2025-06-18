@@ -24,6 +24,7 @@ import Model from "../../Model";
 import Config from "../../Config";
 import PopupDispositivo from "./Components/PopupDispositivo";
 import { any } from "three/examples/jsm/nodes/Nodes";
+import FileChooser from "../../Components/SUpload/FileChooser";
 
 export default class proyecto extends Component {
     constructor(props) {
@@ -325,7 +326,6 @@ export default class proyecto extends Component {
                                                                     <SIcon name="Edit" fill={STheme.color.text} />
                                                                 ),
                                                             },
-
                                                             {
                                                                 label: "Eliminar Campaña",
                                                                 onPress: () => {
@@ -362,6 +362,17 @@ export default class proyecto extends Component {
                                                                         name="Delete"
                                                                         fill={STheme.color.text}
                                                                     />
+                                                                ),
+                                                            },
+                                                            {
+                                                                label: "importar/subir leads",
+                                                                onPress: () => {
+                                                                    SNavigation.navigate("/crm/proyectoImportarExcel", {
+                                                                        key_campana: campana.key, key_proyecto: e.row.key,
+                                                                    });
+                                                                },
+                                                                icon: (
+                                                                    <SIcon name="Edit" fill={STheme.color.text} />
                                                                 ),
                                                             },
                                                         ],

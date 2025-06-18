@@ -102,6 +102,9 @@ import crmdashboardventas, { ReactComponent as crmdashboardventasW, } from "./sv
 import crmplay, { ReactComponent as crmplayW } from "./svg/crm/play.svg";
 import crmpause, { ReactComponent as crmpauseW } from "./svg/crm/pause.svg";
 
+import crmeditar, { ReactComponent as crmeditarW } from "./svg/crm/editar.svg";
+import crmeliminar, { ReactComponent as crmeliminarW } from "./svg/crm/eliminar.svg";
+
 
 import crmgraficos, {
   ReactComponent as crmgraficosW,
@@ -239,6 +242,9 @@ export const svg = {
   crmpause: { Native: crmpause, Web: crmpauseW },
   crmplay: { Native: crmplay, Web: crmplayW },
   crmmicrofono: { Native: crmmicrofono, Web: crmmicrofonoW },
+
+  crmeditar: { Native: crmeditar, Web: crmeditarW },
+  crmeliminar: { Native: crmeliminar, Web: crmeliminarW },
 
   ...blender,
 };

@@ -143,6 +143,10 @@ export default class index extends Component {
                         <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />
                         <Comentario data={this.state.data} />
                         {/* <Chatlead data={this.state?.data} /> */}
+
+                        {/* <Comentario data={this.state.data} /> */}
+                        {/* <SText clean >{" "}</SText> */}
+                        {/* <Chatlead data={this.state?.data} /> */}
                         <HistoricoMovimientos ref={ref => this.historicoMovimientos = ref} key_cliente_proyecto={this.pk} />
                     </CardContent>
                 </SView>
