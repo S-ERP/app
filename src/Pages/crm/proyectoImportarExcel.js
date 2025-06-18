@@ -206,56 +206,14 @@ export default class ProyectoImportarExcel extends Component {
                                 { key: "telefonoFormateado", label: "Teléfono formateado", width: 180 },
                                 { key: "descripcion", label: "Descripción", width: 280 },
                                 {
-                                    key: "-editar", label: "Editar", width: 100, component: (c) => (
-
-                                        <SView onPress={() => this.abrirEditarPopup(c)}  >
-
-                                            <SIcon name='crmeditar' width={18} fill={"white"}   >Editar</SIcon>
-
-                                        </SView>
-
-
-
-                                    )
+                                    key: "-editar", label: "Editar", width: 100, component: (c) => (<SView onPress={() => this.abrirEditarPopup(c)}  >
+                                        <SIcon name='crmeditar' width={18} fill={"#ffff"} /></SView>)
                                 },
-                                // { key: "-editar", label: "Editar", width: 100, component: (c) => (<SText underLine fontSize={12} color={STheme.color.link} onPress={() => this.abrirEditarPopup(c)}>Editar</SText>) },
-
-                                // Pencil
-
                                 {
-                                    key: "-eliminar",
-                                    label: "Eliminar",
-                                    width: 100,
-                                    component: (c) => (
-                                        <SIcon
-                                            name='crmeliminar' width={18} fill={"white"}
-                                            onPress={() =>
-                                                SPopup.confirm({
-                                                    title: "¿Seguro que deseas eliminar esta fila?",
-                                                    onPress: () => {
-                                                        this.eliminarFila(c.key);
-                                                    }
-                                                })
-                                            }
-                                        >
-                                            Eliminar
-                                        </SIcon>
-                                        // <SText
-                                        //     underLine
-                                        //     fontSize={12}
-                                        //     color={"#D84315"}
-                                        //     onPress={() =>
-                                        //         SPopup.confirm({
-                                        //             title: "¿Seguro que deseas eliminar esta fila?",
-                                        //             onPress: () => {
-                                        //                 this.eliminarFila(c.key);
-                                        //             }
-                                        //         })
-                                        //     }
-                                        // >
-                                        //     Eliminar
-                                        // </SText>
-                                    )
+                                    key: "-eliminar", label: "Eliminar", width: 100, component: (c) => (<SView onPress={() =>
+                                        SPopup.confirm({ title: "¿Seguro que deseas eliminar esta fila?", onPress: () => { this.eliminarFila(c.key); } })
+                                    }> <SIcon name='crmeliminar' width={18} fill={"white"} />
+                                    </SView>  )
                                 }
 
 
