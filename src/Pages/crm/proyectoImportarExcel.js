@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2, SHr, SNotification } from 'servisofts-component';
 import FileChooser from '../../Components/SUpload/FileChooser';
 import * as XLSX from "xlsx";
-
+import SSocket from 'servisofts-socket';
 
 
 export default class ProyectoImportarExcel extends Component {
@@ -55,7 +55,12 @@ export default class ProyectoImportarExcel extends Component {
         const { data = [] } = this.state;
         if (!data.length) return SPopup.alert("⚠️ No hay datos", "Importa un archivo Excel primero.");
 
+
+
         const errores = data.filter(d => d.descripcion);
+
+
+
         if (errores.length) {
             return SPopup.open({
                 key: "error-envio",
@@ -74,8 +79,27 @@ export default class ProyectoImportarExcel extends Component {
         SPopup.confirm({
             title: "¿Estás seguro?",
             message: `Se enviarán ${data.length} registros.`,
-            onPress: () => {
-                console.log("Enviando datos...", data);
+            onPress: async () => {
+                // console.log("Enviando datos...", data);
+                const dataSinErrores = data.filter(d => !d.descripcion).map(d => ({
+                    nombres: d.cliente,
+                    telefono: d.telefonoFormateado,
+                    key_campana: this.key_campana,
+                    key_proyecto: this.key_proyecto
+                }))
+
+                await SSocket.sendPromise({
+                    service: "crm",
+                    component: "campana",
+                    type: "importar_array",
+                    data: dataSinErrores
+                });
+
+
+
+                console.log("Datos a enviar:", dataSinErrores);
+
+
                 SPopup.alert("✅ Enviado", `${data.length} registros enviados correctamente.`);
             }
         });
@@ -89,7 +113,7 @@ export default class ProyectoImportarExcel extends Component {
         SPopup.open({
             key: "popup-mapeo",
             content: (
-                <SView withoutFeedback  col="xs-11" backgroundColor={STheme.color.black} padding={16} style={{ borderRadius: 8, maxWidth: 300 }}>
+                <SView withoutFeedback col="xs-11" backgroundColor={STheme.color.black} padding={16} style={{ borderRadius: 8, maxWidth: 300 }}>
                     <SText bold fontSize={18}>📋 Mapear columnas</SText>
                     <SHr height={12} />
                     {campos.map((campo) => (
