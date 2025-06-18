@@ -6,347 +6,157 @@ import { View } from "react-native";
 import DraggableView from "../call/DragableView";
 import SIconApp from "../../../Assets/SIconApp";
 
-export default class Llamada extends React.Component<{
-  phone?: string;
-}> {
-  llamada: RTCSession | null = null;
-  state = {
-    estado: "",
-  }
-  evt: any = null;
-  llamar = (phone: string) => {
-    
-    const sip = SIP.getInstance();
-    if (this.llamada) return;
-    this.llamada = sip.call(phone, (e: any, evt: any) => {
-      console.log("Evento de llamada:", e, evt);
-      this.evt = evt;
-      this.setState({ estado: e });
-      if (e == "ended") {
+export default class Llamada extends React.Component<{ phone?: string }> {
+    llamada: RTCSession | null = null;
+    timer: any = null;
+    state = {
+        estado: "",
+        duracion: 0, // segundos
+        evt: null,
+    };
+
+    componentWillUnmount() {
+        clearInterval(this.timer);
+        if (this.llamada && !this.llamada.isEnded()) {
+            this.llamada.terminate();
+        }
         this.llamada = null;
-        this.forceUpdate();
-      }
-
-    });
-
-    this.state.estado = "connecting";
-    // this.llamada.on("ended", (e: any) => {
-    //   this.llamada = null;
-    //   this.setState({ estado: "ended" });
-    // });
-
-    // this.llamada.unmute();
-    this.forceUpdate();
-    // } else {
-    //   this.llamada.terminate();
-    //   this.llamada = null;
-    //   this.forceUpdate();
-    // }
-    // console.log(this.llamada?.)
-  };
-
-  colgar = () => {
-    if (!this.llamada) return;
-    this.llamada.terminate();
-    this.llamada = null;
-    this.forceUpdate();
-  }
-  isRun = true;
-  componentDidMount() {
-    SIP.getInstance();
-    this.isRun = true;
-    // this.hilo();
-  }
-  componentWillUnmount() {
-    this.isRun = false;
-    if (this.llamada) {
-      if (this.llamada.isEnded()) {
-        this.llamada = null;
-        // this.forceUpdate();
-        return;
-      }
-      this.llamada.terminate();
-      this.llamada = null;
     }
-  }
-  hilo() {
-    new SThread(1000, "new", false).start(() => {
-      if (!this.isRun) return;
-      if (this.llamada) {
-        this.forceUpdate();
-      }
-      this.hilo();
-    });
-  }
 
-  rendera_2() {
-    return (
-      <>
-        {/* <SPage disableScroll hidden> */}
-        {/* <SView col="xs-12" row center>
-            <SView col="xs-3.5" row center>
-              <SView width={160} center style={{ borderColor: "white", borderRadius: 48, borderWidth: 6, backgroundColor: "#8CB1F8" }}>
-                <SView col="xs-12" row center>
-                  <SView col="xs-7" row center>
-                    <SView col="xs-9" row>
-                      <SText color="#1D252D">Conectando.</SText>
-                      <SText color="#1D252D" bold>
-                        00:00:00
-                      </SText>
-                    </SView>
-                  </SView>
-                  <SView col="xs-5" row center>
-                    <SView width={28} height={28} row style={{ borderRadius: 8, backgroundColor: "#FFFFFF" }} />
-                  </SView>
-                </SView>
-              </SView>
-            </SView>
-          </SView>
-          <SHr height={10} />
-          <SView col="xs-12" row center>
-            <SView col="xs-3.5" row center>
-              <SView width={180} center style={{ borderColor: "white", borderRadius: 48, borderWidth: 6, backgroundColor: "#8CB1F8" }}>
-                <SView col="xs-12" row center>
-                  <SView col="xs-3" row center>
-                    <div className="outer-circle">
-                      <div className="inner-circle"></div>
-                    </div>
-                  </SView>
-                  <SView col="xs-6" row center>
-                    <SView col="xs-9" row>
-                      <SText color="#1D252D">Llamando.</SText>
-                      <SText color="#1D252D" bold>
-                        00:00:00
-                      </SText>
-                    </SView>
-                  </SView>
-                  <SView col="xs-3" row center>
-                    <SView width={28} height={28} row center style={{ borderRadius: 8, backgroundColor: "#FFFFFF" }}>
-                      <SIcon name="microfono" fill="#1D252D" height={18} />
-                    </SView>
-                  </SView>
-                </SView>
-              </SView>
-            </SView>
-          </SView>
-          <SHr height={10} /> */}
+    startTimer = () => {
+        clearInterval(this.timer);
+        this.setState({ duracion: 0 });
+        this.timer = setInterval(() => {
+            this.setState((prev) => ({ duracion: prev.duracion + 1 }));
+        }, 1000);
+    };
 
-        <SView col="xs-12" row center>
-          <SView col="xs-3.5" row center>
-            <SView width={320} center style={{ borderColor: "white", borderRadius: 48, borderWidth: 6, backgroundColor: "#A0F21F" }}>
-              <SView col="xs-12" row center>
-                <SView col="xs-5" row center>
-                  <SView col="xs-8" row>
-                    <SText color="#1D252D">Cliente en linea.</SText>
-                    <SText color="#1D252D" bold>
-                      00:00:00
-                    </SText>
-                  </SView>
-                </SView>
-                <SView col="xs-2" row center border={"transparent"}>
-                  <SView width={28} height={28} row center style={{ borderRadius: 8, backgroundColor: "#FFFFFF" }}>
-                    <SIcon name="microfono" fill="#1D252D" height={18} />
-                  </SView>
-                </SView>
-                <SView col="xs-5" row center border={"transparent"}>
-                  <SView col="xs-12" row>
-                    <SView width={120} height={28} row center style={{ borderRadius: 8, backgroundColor: "#1B242C" }}>
-                      <SText color="white" fontSize={12} bold>
-                        Finalizar llamada
-                      </SText>
-                    </SView>
-                  </SView>
-                </SView>
-              </SView>
-            </SView>
-          </SView>
-        </SView>
-        {/* </SPage> */}
-      </>
-    );
-  }
+    formatDuracion = () => {
+        const { duracion } = this.state;
+        const h = Math.floor(duracion / 3600).toString().padStart(2, "0");
+        const m = Math.floor((duracion % 3600) / 60).toString().padStart(2, "0");
+        const s = (duracion % 60).toString().padStart(2, "0");
+        return `${h}:${m}:${s}`;
+    };
 
-
-  renderFailed() {
-    return <View style={{
-      top: 4,
-      width: 180,
-    }}>
-      <DraggableView style={{
-        // top: 50,
-        // left: "50%",
-        width: "100%",
-        height: 40,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: STheme.color.text,
-        backgroundColor: STheme.color.danger,
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 4,
-      }} >
-        <SView flex>
-          <SText>{this.evt.cause}</SText>
-          <SText fontSize={8}>{this.evt?.message?.reason_phrase}</SText>
-
-        </SView>
-        <SView width={20} height={20} onPress={() => {
-          this.llamada = null;
-          this.forceUpdate();
-          return;
-        }}>
-          <SIconApp name="Close" fill={STheme.color.text} />
-        </SView>
-
-
-      </DraggableView>
-    </View>
-  }
-  renderConnecting() {
-    return <View style={{
-      top: 4,
-      width: 180,
-    }}>
-      <DraggableView style={{
-        // top: 50,
-        // left: "50%",
-        width: "100%",
-        height: 40,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: STheme.color.text,
-        backgroundColor: "#799DF8",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 4,
-      }} >
-        <SView flex>
-          <SText>{"Conectando..."}</SText>
-          <SText fontSize={8}>{"00:00:00"}</SText>
-
-        </SView>
-        <SView width={20} height={20} onPress={() => {
-          console.log(this.llamada?.isMuted())
-          // this.llamada = null;
-          // this.forceUpdate();
-          return;
-        }}>
-          <SIconApp name="microfono" fill={STheme.color.text} />
-        </SView>
-
-      </DraggableView>
-    </View>
-  }
-  renderEnLinea() {
-    return <View style={{
-      top: 4,
-      width: 180,
-    }}>
-      <DraggableView style={{
-        // top: 50,
-        // left: "50%",
-        width: "100%",
-        height: 40,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: STheme.color.text,
-        backgroundColor: "#B0F333",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 4,
-      }} >
-        <SView flex>
-          <SText>{"Conectando..."}</SText>
-          <SText fontSize={8}>{"00:00:00"}</SText>
-
-        </SView>
-        <SView width={20} height={20} onPress={() => {
-          if (!this.llamada) return;
-          try {
-            if (this.llamada.isMuted().audio) {
-              console.log("Unmuting audio...");
-              this.llamada.unmute("audio");
-            } else {
-              console.log("Muting audio...");
-              this.llamada.mute("audio");
-            }
-          } catch (err) {
-            console.error("Error al mutear/desmutear:", err);
-          }
-          // this.llamada = null;
-          // this.forceUpdate();
-          return;
-        }}>
-          <SIconApp name="microfono" fill={STheme.color.text} />
-        </SView>
-        <SView width={20} height={20} onPress={() => {
-          if (!this.llamada) return;
-          this.llamada.terminate();
-          this.llamada = null;
-          this.forceUpdate();
-        }}>
-          <SIconApp name="Close" fill={STheme.color.text} />
-        </SView>
-
-      </DraggableView>
-    </View>
-  }
-
-  render() {
-
-    if (!this.llamada) return null;
-    let color = STheme.color.success;
-    if (["failed"].includes(this.state.estado)) {
-      return this.renderFailed();
-    }
-    if (["connecting"].includes(this.state.estado)) {
-      return this.renderConnecting();
-    }
-    if (["accepted"].includes(this.state.estado)) {
-      return this.renderEnLinea();
-    }
-    return <View style={{
-      top: 4,
-      width: 180,
-    }}>
-      <DraggableView style={{
-        // top: 50,
-        // left: "50%",
-        width: "100%",
-        height: 40,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: STheme.color.text,
-        backgroundColor: color,
-      }} >
-        <SText>{this.state.estado}</SText>
-
-
-      </DraggableView>
-    </View>
-    return <SView>
-      <SText onPress={() => {
+    llamar = (phone: string) => {
+        if (this.llamada) return;
         const sip = SIP.getInstance();
-      }}>{"RECONET"}</SText>
-      <SView width={150} center height={50} onPress={this.handlePress.bind(this)} row style={{
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: "#1B242C",
-      }}>
+        this.llamada = sip.call(phone, (e: string, evt: any) => {
+            this.setState({ estado: e, evt });
+            if (e === "connecting") {
+                this.startTimer(); // Inicia el contador al conectar
+            }
+            if (e === "ended" || e === "failed") {
+                clearInterval(this.timer);
+                this.llamada = null;
+            }
+        });
 
-        {!this.llamada && <SText>{"LLAMAR"}</SText>}
-        {/* {this.llamada && <SText>{"COLGAR" + " " + this.llamada?.start_time+ "DDD"}</SText>} */}
-        {this.llamada && <>
-          <SText>{this.state.estado}</SText>
-          <SText>{"COLGAR" + " "}</SText>
-          {/* <SText>{this.llamada.isMuted() ? "Unmuted" : "Mute"}</SText> */}
-        </>}
+        this.setState({ estado: "connecting" });
+    };
 
-        {/* <SText >{this.props.phone}</SText> */}
-      </SView>
-    </SView>
-  }
+    colgar = () => {
+        if (!this.llamada) return;
+        this.llamada.terminate();
+        this.llamada = null;
+        clearInterval(this.timer);
+        this.forceUpdate();
+    };
+
+    toggleMute = () => {
+        if (!this.llamada) return;
+        try {
+            const muted = this.llamada.isMuted()?.audio;
+            if (muted) this.llamada.unmute("audio");
+            else this.llamada.mute("audio");
+        } catch (err) {
+            console.error("Error al mutear/desmutear:", err);
+        }
+    };
+
+    renderEstadoLlamada = (estado: string, color: string, texto: string) => (
+        <View style={{ top: 4, width: 180 }}>
+            <DraggableView
+                style={{
+                    width: "100%",
+                    height: 40,
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: STheme.color.text,
+                    backgroundColor: color,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: 4,
+                }}
+            >
+                <SView flex>
+                    <SText>{texto}</SText>
+                    <SText fontSize={8}>{this.formatDuracion()}</SText>
+                </SView>
+                {estado === "accepted" && (
+                    <SView width={20} height={20} onPress={this.toggleMute}>
+                        <SIconApp name="microfono" fill={STheme.color.text} />
+                    </SView>
+                )}
+                <SView width={20} height={20} onPress={this.colgar}>
+                    <SIconApp name="Close" fill={STheme.color.text} />
+                </SView>
+            </DraggableView>
+        </View>
+    );
+
+    renderFailed = () => (
+        <View style={{ top: 4, width: 180 }}>
+            <DraggableView
+                style={{
+                    width: "100%",
+                    height: 40,
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: STheme.color.text,
+                    backgroundColor: STheme.color.danger,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: 4,
+                }}
+            >
+                <SView flex>
+                    <SText>{this.state.evt?.cause}</SText>
+                    <SText fontSize={8}>{this.state.evt?.message?.reason_phrase}</SText>
+                </SView>
+                <SView width={20} height={20} onPress={() => this.setState({ estado: "" })}>
+                    <SIconApp name="Close" fill={STheme.color.text} />
+                </SView>
+            </DraggableView>
+        </View>
+    );
+
+    render() {
+        const { estado } = this.state;
+        if (!this.llamada) return null;
+
+        if (estado === "failed") return this.renderFailed();
+        if (estado === "connecting") return this.renderEstadoLlamada(estado, "#799DF8", "Conectando...");
+        if (estado === "accepted") return this.renderEstadoLlamada(estado, "#B0F333", "Cliente en línea");
+
+        return (
+            <View style={{ top: 4, width: 180 }}>
+                <DraggableView
+                    style={{
+                        width: "100%",
+                        height: 40,
+                        borderRadius: 8,
+                        borderWidth: 1,
+                        borderColor: STheme.color.text,
+                        backgroundColor: STheme.color.success,
+                    }}
+                >
+                    <SText>{estado}</SText>
+                </DraggableView>
+            </View>
+        );
+    }
 }
