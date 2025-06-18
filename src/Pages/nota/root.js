@@ -160,7 +160,7 @@ export default class root extends Component {
             <SView flex col={"xs-12"} backgroundColor={this.state?.data?.color ?? "#E9E389"}>
                 {!this.state?.data ? null : <UsuariosNota key_nota={this.pk} />}
                 {this.menu()}
-        
+
                 <SInput ref={ref => this.inp = ref}
                     type={"textArea"}
                     customStyle={"clean"}
@@ -171,7 +171,7 @@ export default class root extends Component {
                     multiline
                     style={{
                         color: "#000",
-                        height: "100%",
+                        flex:1,
                         // backgroundColor:"#f0f",
                         padding: 6,
                         textAlignVertical: 'top'
@@ -191,7 +191,7 @@ export default class root extends Component {
                 />
 
             </SView>
-      
+
             {/* <SView height={50} backgroundColor={STheme.color.danger} style={{position:"relative", bottom:0, right:0}}>
                 <SText center color={STheme.color.white} fontSize={12} >{"Nota guardada automaticamente"}</SText>
             </SView> */}

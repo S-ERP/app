@@ -38,60 +38,43 @@ export default class DashboardCard extends Component {
                     }} >{card?.cliente?.telefono}</SText>
             </SView>
             <SHr h={4} />
-            <SText>{card?.cliente?.nombres}</SText>
-            <SHr h={16} />
+            <SText bold>{card?.cliente?.nombres}</SText>
+            <SHr h={4} />
 
-            <SView row col={"xs-12"} center>
-                <SIcon name="producto" width={14} height={18} fill={"#384052"} />
-                <SView width={8} />
-                <SView style={{ padding: 4, backgroundColor: "#3840526b", borderRadius: 1 }}>
-                    <SText color={STheme.color.lightGray} >Proyecto: {card?.proyecto?.nombre}</SText>
-                </SView>
-                <SView flex />
-            </SView>
-            <SHr h={8} />
-
-            <SView row col={"xs-12"} center>
-                <SIcon name="tpIn" width={14} height={18} fill={"#384052"} />
-                <SView width={8} />
-                <SView style={{ padding: 4, backgroundColor: "#3840526b", borderRadius: 1 }}>
-                    <SText style={{ maxWidth: 203 }} numberOfLines={1} color={STheme.color.lightGray}> Campaña: {card?.campana?.nombre}</SText>
-                </SView>
-                <SView flex />
-
-
-            </SView>
-
-
-
-
-
-            <SHr h={16} />
-
-            {card.state == "rellamada" && <>
-                <SView row  >
+            <SView row col={"xs-12"} >
+                <Etiqueta tipo_leads={card.state} size={10} style={{
+                    padding: 0,
+                    // paddingStart: 0,
+                    // paddingEnd: 0,
+                    height: 18,
+                    justifyContent: 'center',
+                    marginRight: 4, marginBottom: 4
+                }} ></Etiqueta>
+                <SView style={{ padding: 3, backgroundColor: "#3840526b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                    <SIcon name="producto" width={12} height={14} fill={"#384052"} />
                     <SView width={4} />
-                    <SIconApp name='recall' width={14} height={14} fill={STheme.color.lightGray} />
-                    <SView width={4} />
-                    <SText clean fontSize={10} color={STheme.color.lightGray}>{new SDate(card?.fecha_rellamada, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")}</SText>
+                    <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{card?.proyecto?.nombre}</SText>
                 </SView>
-                <SHr h={8} />
-
-            </>}
-
-
-            <SView row style={{ alignItems: "flex-end" }}>
-                <Etiqueta tipo_leads={card.state} size={12} ></Etiqueta>
-
-
-                <SView flex />
-
-                <SView row center>
-                    <SIcon name="history" width={10} fill={STheme.color.lightGray} />
+                <SView style={{ padding: 3, backgroundColor: "#3840526b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                    <SIcon name="tpIn" width={12} height={14} fill={"#384052"} />
                     <SView width={4} />
-                    <SText fontSize={10} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
+                    <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{card?.campana?.nombre}</SText>
+                </SView>
+
+
+                {card.state == "rellamada" && <SView style={{ padding: 3, backgroundColor: "#3840526b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                    <SIcon name="recall" width={12} height={14} fill={"#384052"} />
+                    <SView width={4} />
+                    <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{new SDate(card?.fecha_rellamada, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")}</SText>
+                </SView>}
+                <SView style={{ padding: 3, backgroundColor: "#3840526b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                    <SIcon name="history" width={12} height={14} fill={"#384052"} />
+                    <SView width={4} />
+                    <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
                 </SView>
             </SView>
+
+
 
             <SView style={{
                 width: 24,
@@ -107,6 +90,6 @@ export default class DashboardCard extends Component {
                     resizeMode: "cover",
                 }} />
             </SView>
-        </SView>
+        </SView >
     }
 }

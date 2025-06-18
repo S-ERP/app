@@ -37,7 +37,9 @@ export default class proyecto extends Component {
     componentDidMount() {
         MDL.whatsapp.device.getAll().then((e) => {
             this.setState({ devices: e });
-        });
+        }).catch(e=>{
+            console.log("Dispositivos cargados:", e);
+        })
     }
 
     async cargarDescripcionDispositivo(key) {
