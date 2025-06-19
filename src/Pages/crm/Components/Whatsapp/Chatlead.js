@@ -133,8 +133,8 @@ export default class Chatlead extends Component {
                 alignItems: isEnviado ? "flex-end" : "flex-start",
                 marginBottom: 8
             }}>
-                <Typemessage mensaje={mensaje} ></Typemessage>
-            </SView>
+                <Typemessage mensaje={mensaje} key_device={this.props.data.proyecto.key_whatsapp_device}></Typemessage>
+            </SView >
         );
     }
 
@@ -168,12 +168,12 @@ export default class Chatlead extends Component {
                     }).then((files) => {
                         const reader = new FileReader();
                         const telefono = this.props.data?.cliente?.telefono;
-                        const INSTANCE  = this;
+                        const INSTANCE = this;
                         reader.onload = function () {
                             const base64Image = reader.result.split(',')[1];
                             // const file = files[0];
                             // this.sendImage(base64Image);
-                            MDL.whatsapp.send({ phone: telefono, message:"foto", image: base64Image }).then(e => {
+                            MDL.whatsapp.send({ phone: telefono, message: "foto", image: base64Image }).then(e => {
                                 INSTANCE.state.data.push({
                                     id: SUuid(),
                                     body: "foto",

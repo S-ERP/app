@@ -87,6 +87,9 @@ export default class whatsapp extends MDLAbstract<EventListener> {
   getUrlImage(key: string, id: any) {
     return this.url + "/api/device/" + key + "/profilePic/" + id;
   }
+  getMedia(key: string, id: any) {
+    return this.url + "/api/device/" + key + "/media/" + id;
+  }
   async reconnect(key: string) {
     const resp = await fetch(
       this.url + "/api/device/" + key + "/reconnect",

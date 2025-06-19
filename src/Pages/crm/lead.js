@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SDate, SHr, SIcon, SNavigation, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SIcon, SImage, SNavigation, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
 import FormRegistroProyecto from './Components/FormRegistroProyecto';
 import MDL from '../../MDL';
 import { DinamicTable } from 'servisofts-table';
@@ -61,7 +61,7 @@ export default class lead extends Component {
                 cellStyle={Config.table.cellStyle()}
                 selectType='single'
                 center
-                textStyle={Config.table.textStyle(), { height: 40, alignContent: "center", alignItems: "center" }}
+                textStyle={Config.table.textStyle()}
                 language='es'
                 ref={ref => this.DinamicTable = ref} loadData={async () => { return await MDL.crm.clienteProyecto.getAll(); }} onSelect={(e) => { console.log("Selected project:", e.row); }}
                 loadInitialState={async () => {
@@ -73,35 +73,70 @@ export default class lead extends Component {
                     }
                 }}
             >
-                <DinamicTable.Col key={"key"} label='ID' width={20} data={(e) => e.index + 1} />
+                <DinamicTable.Col key={"key"} label='ID' width={28} textStyle={{
+                    color: STheme.color.lightGray,
+                    fontSize: 10
+                }} data={(e) => e.index + 1} />
 
                 <DinamicTable.Col key={"-key"} label='Ver' width={40} data={(e) => e.row?.proyecto?.nombre}
-                    customComponent={e => <SView row center card padding={8} onPress={() => { SNavigation.navigate("/crm/call", { key: e.row.key }) }}>
+                    customComponent={e => <SView row center card padding={2} onPress={() => { SNavigation.navigate("/crm/call", { key: e.row.key }) }}>
                         <SIcon name='Eyes' height={14} fill={STheme.color.lightGray} ></SIcon>
                     </SView>} />
+                <DinamicTable.Col key={"foto"} label='User'
+                    data={(e) => e.row?.key_usuario_atiende}
+                    width={35}
+                    customComponent={e => <SView style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: 100,
+                        overflow: "hidden",
+                        backgroundColor: STheme.color.card + "66",
+                    }}>
+                        <SImage src={SSocket.api.root + "usuario/" + e.data} style={{
+                            resizeMode: "cover",
+                        }} />
+                    </SView>} />
 
-                <DinamicTable.Col key={"proyecto_nombre"} label='Proyecto' width={180} center data={(e) => e.row?.proyecto?.nombre} />
-                <DinamicTable.Col key={"proyecto_descripcion"} label='Descripción' width={340} data={(e) => e.row?.proyecto?.descripcion} />
+                <DinamicTable.Col key={"state"} label='Leads' width={110}
+                    data={(e) => e.row.state}
+                    customComponent={e => {
+                        return <SView col={"xs-12"} row center>
+                            <Etiqueta size={10} tipo_leads={e.row.state} />
+                        </SView>
+                    }}
+                />
+                <DinamicTable.Col key={"codigo"} label='Codigo' width={50} center data={(e) => e.row?.codigo}
+                    customComponent={e => <SView style={{ borderRadius: 100, borderWidth: 1, borderColor: STheme.color.card, padding: 3 }} center>
+                        <SText bold fontSize={12}>{e.data}</SText>
+                    </SView>} />
+                <DinamicTable.Col key={"proyecto_nombre"} label='Proyecto' width={100} center data={(e) => e.row?.proyecto?.nombre} />
+                <DinamicTable.Col key={"nombres"} label='Nombre completo' width={170} textStyle={{
+                    fontWeight: "bold",
+                    fontSize: 13,
+                }} data={(e) => e.row.cliente?.nombres} />
+                <DinamicTable.Col key={"telefono"} label='Teléfono' width={110} data={(e) => e.row.cliente?.telefono} />
+                {/* <DinamicTable.Col key={"proyecto_descripcion"} label='Descripción' width={340} data={(e) => e.row?.proyecto?.descripcion} /> */}
 
-                <DinamicTable.Col key={"-keyCarro"} label='Carrito' width={200} data={(e) => e.row?.carrito} customComponent={e => <SView row center padding={2}> {this.mostrarCarrito(e.row.carrito)}  </SView>} />
+                <DinamicTable.Col key={"-keyCarro"} label='Carrito' width={200}
+                    data={(e) => e.row?.carrito}
+                    customComponent={e => <SView row center >{this.mostrarCarrito(e.row.carrito)}</SView>}
+                />
 
 
-                <DinamicTable.Col key={"state"} label='Leads' width={150} data={(e) => e.row.state} customComponent={e => {
-                    return <SView col={"xs-12"} row center>
-                        <Etiqueta size={14} width={100} tipo_leads={e.row.state}></Etiqueta>
-                    </SView>
-                }} />
+
                 {/* <DinamicTable.Col key={"tipo_movimiento_lead"} label='Info' width={100} data={(e) => e.row.tipo_movimiento_lead?.titulo}
                 /> */}
                 <DinamicTable.Col key={"fecha_on"} label='Fecha Registro' width={125} dataType='date' data={(e) => new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date} dateFormat='yyyy-MM-dd hh:mm' />
                 <DinamicTable.Col key={"fecha_edit"} label='Fecha Leads' width={125} dataType='date'
                     data={(e) => new SDate(e.row.fecha_edit ?? e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
                     dateFormat='yyyy-MM-dd hh:mm' />
-                <DinamicTable.Col key={"nombres"} label='Nombre completo' width={170} data={(e) => e.row.cliente?.nombres} />
-                <DinamicTable.Col key={"telefono"} label='Teléfono' width={110} data={(e) => e.row.cliente?.telefono} />
+
                 <DinamicTable.Col key={"correo"} label='Correo' width={120} data={(e) => e.row.cliente?.correo} />
+
                 <DinamicTable.Col key={"nit"} label='Nit' width={120} data={(e) => e.row.cliente?.nit} />
                 <DinamicTable.Col key={"razon_social"} label='Razón social' width={120} data={(e) => e.row.cliente?.razon_social} />
+                <DinamicTable.Col key={"campana"} label='Campaña' width={100} center data={(e) => e.row?.campana?.nombre} />
+
             </DinamicTable>
         </SPage >
     }

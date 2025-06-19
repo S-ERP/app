@@ -8,19 +8,22 @@ import MsgGps from "./tipo/MsgGps";
 import MsgAudio from "./tipo/MsgAudio";
 import MsgVideo from "./tipo/MsgVideo";
 import MsgTextDelete from "./tipo/MsgTextDelete";
+import Msg_e2e_notification from "./tipo/Msg_e2e_notification";
 
 export default class Typemessage extends Component {
 
     render() {
         const isEnviado = this.props.mensaje.fromMe;
         const color = isEnviado ? "#005c4b" : "#202c33";
-        if (this.props.mensaje.type == "chat") return <MsgText mensaje={this.props.mensaje} color={color} />
-        if (this.props.mensaje.type == "image") return <MsgImg mensaje={this.props.mensaje} color={color} />
-        if (this.props.mensaje.type == "video") return <MsgVideo mensaje={this.props.mensaje} color={color} />
-        if (this.props.mensaje.type == "sticker") return <MsgStiker mensaje={this.props.mensaje} color={color} />
-        if (this.props.mensaje.type == "ptt") return <MsgAudio mensaje={this.props.mensaje} color={color} />
-        if (this.props.mensaje.type == "location") return <MsgGps mensaje={this.props.mensaje} color={color} />
-        if (this.props.mensaje.type == "revoked") return <MsgTextDelete mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "chat") return <MsgText key_device={this.props.key_device} mensaje={this.props.mensaje} color={color}  />
+        if (this.props.mensaje.type == "image") return <MsgImg key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "video") return <MsgVideo key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "sticker") return <MsgStiker key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "ptt") return <MsgAudio key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "location") return <MsgGps key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "revoked") return <MsgTextDelete key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "e2e_notification") return <Msg_e2e_notification key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
+
         return <SText color={STheme.color.danger} padding={4}>{this.props.mensaje.type}</SText>;
     }
 }
