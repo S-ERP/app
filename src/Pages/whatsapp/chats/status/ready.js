@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, FlatList } from 'react-native';
-import { SHr, SImage, SInput, SLoad, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SImage, SInput, SLoad, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../../MDL';
 import Whatsapp from '../../../crm/Components/Whatsapp';
 import SIconApp from '../../../../Assets/SIconApp';
@@ -99,32 +99,35 @@ export default class ready extends Component {
                                 <SImage src={MDL.whatsapp.device.getUrlImage(this.props?.device?.key, item.id._serialized)} />
                             </SView>
                             <SView style={{ width: 10 }} />
-                            <SView flex row style={{
+                            <SView border="transparent" flex row style={{
                                 height: "100%",
                                 borderBottomWidth: 1,
                                 borderBottomColor: STheme.color.card,
                             }}>
-                                <SView flex>
+                                <SView flex border="transparent" >
                                     <SText bold>{item.name}</SText>
                                     <SText numberOfLines={1} flex color={STheme.color.lightGray}>
                                         {item?.lastMessage?.type === "chat" ? item.lastMessage.body : item?.lastMessage?.type}
                                     </SText>
                                 </SView>
-                                {!!item?.unreadCount && (
-                                    <SView style={{
-                                        width: 15,
-                                        height: 15,
-                                        borderRadius: 15,
-                                        backgroundColor: STheme.color.success,
-                                        justifyContent: "center",
-                                        alignItems: "center"
-                                    }}>
-                                        <SText fontSize={10} color={STheme.color.black}>{item?.unreadCount}</SText>
+                                <SView flex border="transparent" >
+                                    <SView col={"xs-12"} style={{ justifyContent: "flex-end", alignItems: "flex-end" }} >
+                                        <SText style={{ marginLeft: 8 }} color={item?.unreadCount ? "#22be60" : STheme.color.gray} fontSize={12}>
+                                            {item?.lastMessage?.timestamp ? new Date(item.lastMessage.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "Sin mensajes"}
+                                        </SText>
                                     </SView>
-                                )}
+                                    <SView col={"xs-12"} style={{ justifyContent: "flex-end", alignItems: "flex-end" }} >
+                                        {!!item?.unreadCount && (
+                                            <SView style={{
+                                                width: 20, height: 20, borderRadius: 10, backgroundColor: "#22be60", justifyContent: "center", alignItems: "center"
+                                            }}>
+                                                <SText fontSize={10} color={STheme.color.black}>{item?.unreadCount}</SText>
+                                            </SView>)}
+                                    </SView>
+                                </SView>
                             </SView>
                         </SView>
-                    </View>
+                    </ View>
                 )}
             />
         );
@@ -136,11 +139,14 @@ export default class ready extends Component {
         return <View style={{ flexDirection: "row", width: "100%", flex: 1, }}>
             <View style={{ width: 300, height: "100%", borderTopColor: STheme.color.card, borderRightColor: STheme.color.card, borderTopWidth: 1, borderRightWidth: 1, }}>
                 <SText style={{ padding: 10 }} fontSize={20} bold>Chats</SText>
-                <SHr height={5} />
-
-                <SInput type='text' placeholder='Buscar chat' onChangeText={this.handleSearch} />
+                <SView col={"xs-12"} padding={4} style={{ marginBottom: 16 }} >
+                    <SInput type='' placeholder='Buscar chat' onChangeText={this.handleSearch}
+                        icon={<SIcon fill={STheme.color.gray} name='Search' height={22} />}
+                        style={{ padding: 10, borderRadius: 16, }}
+                        placeholderTextColor={STheme.color.gray}
+                    />
+                </SView>
                 {this.renderChats()}
-
             </View>
             <View style={{ flex: 1, }}>
                 {this.state.idchat && <Whatsapp.ChatById key={this.state.idchat} idDevice={device?.key} idchat={this.state.idchat} />}
