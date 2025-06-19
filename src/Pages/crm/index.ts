@@ -14,6 +14,7 @@ import campana from "./campana";
 import graficos from "./graficos";
 import masivo from "./masivo";
 import proyectoImportarExcel from "./proyectoImportarExcel";
+import proyectoImportarWasap from "./proyectoImportarWasap";
 
 export default SPage.combinePages("crm", {
   "": root,
@@ -31,4 +32,5 @@ export default SPage.combinePages("crm", {
   call,
   masivo,
   proyectoImportarExcel,
+  proyectoImportarWasap
 });

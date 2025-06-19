@@ -377,6 +377,17 @@ export default class proyecto extends Component {
                                                                     <SIcon name="Edit" fill={STheme.color.text} />
                                                                 ),
                                                             },
+                                                            {
+                                                                label: "subir wasap",
+                                                                onPress: () => {
+                                                                    SNavigation.navigate("/crm/proyectoImportarWasap", {
+                                                                        key_campana: campana.key, key_proyecto: e.row.key,
+                                                                    });
+                                                                },
+                                                                icon: (
+                                                                    <SIcon name="Edit" fill={STheme.color.text} />
+                                                                ),
+                                                            },
                                                         ],
                                                     });
                                                 }}
