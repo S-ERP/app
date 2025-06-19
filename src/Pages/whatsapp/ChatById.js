@@ -17,11 +17,11 @@ export default class Chatlead extends Component {
     }
 
 
-    componentDidMount() {
-
+    async componentDidMount() {
         SSocket.addEventListener("onMessage", this.onMessageSocket)
         this.loadData();
-
+        const dispositivo = await MDL.whatsapp.device.getByKey(this.props.idDevice);
+        this.setState({ dispositivo });
     }
     componentWillUnmount() {
         SSocket.removeEventListener("onMessage", this.onMessageSocket);
@@ -37,7 +37,7 @@ export default class Chatlead extends Component {
     loadData() {
         const dell = MDL.whatsapp.getAllChatsById({ key_device: this.props.idDevice, idchat: this.props.idchat }).then(e => {
 
-            console.log(e)
+            console.log("si ",e)
             this.setState({
                 data: e
             })
@@ -93,24 +93,44 @@ export default class Chatlead extends Component {
     // };
 
     renderHeader() {
-        const { cliente } = this.props.data || {};
+        const { data, idDevice, idchat } = this.props;
+        const { dispositivo } = this.state;
+
+        if (!dispositivo) return <SLoad />;
+
+        const lastSeenRaw = dispositivo?.fecha_on;
+        const lastSeenDate = lastSeenRaw ? new Date(lastSeenRaw) : null;
+
+        let lastSeenText = "desconocido";
+        if (lastSeenDate) {
+            const now = new Date();
+            const isToday = lastSeenDate.toDateString() === now.toDateString();
+
+            const timeStr = lastSeenDate.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+            });
+
+            const dateStr = lastSeenDate.toLocaleDateString();
+
+            lastSeenText = isToday ? `hoy a la(s) ${timeStr}` : `${dateStr} a la(s) ${timeStr}`;
+        }
+
         return (
-            <SView col="xs-12" row style={{ backgroundColor: STheme.color.card, padding: 8, }}>
+            <SView col="xs-12" row style={{ backgroundColor: STheme.color.card, padding: 8 }}>
                 <SView col="xs-8" row style={{ justifyContent: "flex-start" }}>
                     <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden" }}>
-                        <SImage enablePreview
-                            src={MDL.whatsapp.device.getUrlImage(this.props.idDevice, this.props.idchat)} style={{ resizeMode: "cover" }} />
+                        <SImage
+                            enablePreview
+                            src={MDL.whatsapp.device.getUrlImage(idDevice, idchat)}
+                            style={{ resizeMode: "cover" }}
+                        />
                     </SView>
                     <SView flex row style={{ marginLeft: 16 }} center>
-                        {/* <SText col="xs-12" color="white" fontSize={14} bold>{cliente?.nombres}</SText> */}
-                        {/* <SText col="xs-12" color="white" fontSize={12} bold>{cliente?.telefono}</SText> */}
-                        <SText col="xs-12" color="white" fontSize={12} bold>Alvaro</SText>
-                        <SText col="xs-12" color="white" fontSize={12} bold>últ. vez hoy a la(s) 2:55 AM</SText>
-                        {/* poner la ultima vez que se conecto */}
-
+                        <SText col="xs-12" color="white" fontSize={14} bold>{data?.name || "Sin nombre"}</SText>
+                        <SText col="xs-12" color="white" fontSize={12} bold>últ. vez {lastSeenText}</SText>
                         <SText col="xs-12" color="white" fontSize={12} bold>En línea</SText>
-
-
                     </SView>
                 </SView>
                 <SView col="xs-4" row center style={{ justifyContent: "flex-end" }}>
@@ -119,6 +139,7 @@ export default class Chatlead extends Component {
             </SView>
         );
     }
+
 
     renderFechaSeparador(fecha) {
         let mensage = fecha;
@@ -146,7 +167,7 @@ export default class Chatlead extends Component {
                 alignItems: isEnviado ? "flex-end" : "flex-start",
                 marginBottom: 8
             }}>
-                <Typemessage mensaje={mensaje} key_device={this.props.idDevice} ></Typemessage>
+                <Typemessage mensaje={mensaje} ></Typemessage>
             </SView>
         );
     }
@@ -162,9 +183,7 @@ export default class Chatlead extends Component {
                 <SView col="xs-12" key={`container-${mensaje.id}`} style={{
                     selectable: true, // Evita que el texto sea seleccionable
                     userSelect: "text", // Evita que el texto sea seleccionable
-                }} onPress={e=>{
-                    console.log("Mensaje presionado", mensaje);
-                }}> 
+                }}>
                     {mostrarFecha && this.renderFechaSeparador(fecha)}
                     {this.renderMensaje(mensaje)}
                 </SView>
