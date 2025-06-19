@@ -167,7 +167,7 @@ export default class Chatlead extends Component {
                 alignItems: isEnviado ? "flex-end" : "flex-start",
                 marginBottom: 8
             }}>
-                <Typemessage mensaje={mensaje} ></Typemessage>
+                <Typemessage mensaje={mensaje}  key_device={this.props.idDevice}></Typemessage>
             </SView>
         );
     }

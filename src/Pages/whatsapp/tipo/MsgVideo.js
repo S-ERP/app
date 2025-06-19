@@ -86,6 +86,7 @@ export default class MsgVideo extends Component {
                         // height: vidHeight,
                     }} /> */}
                     <SVideo
+                    
                         src={MDL.whatsapp.device.getMedia(this.props.key_device, this.props.mensaje.id._serialized)}
                         poster={{
                             source: { uri: `data:img/png;base64,${this.props.mensaje._data.body}` },
