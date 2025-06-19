@@ -9,6 +9,7 @@ import MsgAudio from "./tipo/MsgAudio";
 import MsgVideo from "./tipo/MsgVideo";
 import MsgTextDelete from "./tipo/MsgTextDelete";
 import Msg_e2e_notification from "./tipo/Msg_e2e_notification";
+import MVCard from "./tipo/MVCard";
 import MsgDocument from "./tipo/MsgDocument";
 
 export default class Typemessage extends Component {
@@ -25,6 +26,7 @@ export default class Typemessage extends Component {
         if (this.props.mensaje.type == "location") return <MsgGps key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "revoked") return <MsgTextDelete key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "e2e_notification") return <Msg_e2e_notification key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "vcard") return <MVCard key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
 
         return <SText color={STheme.color.danger} padding={4}>{this.props.mensaje.type}</SText>;
     }

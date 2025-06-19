@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { SText, SView } from "servisofts-component";
 import HoraLabel from "../Comp/HoraLabel";
+import QuotedMsg from "../Comp/QuotedMsg";
 
 export default class MsgText extends Component {
     constructor(props) {
@@ -28,10 +29,13 @@ export default class MsgText extends Component {
         const formattedTexto = this.formatText(texto);
 
         return (
-            <SView style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 6, width: "auto", maxWidth: "80%", alignItems: "flex-end" }}>
+            <SView style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 6, width: "auto", maxWidth: "80%", alignItems: "flex-start" }} onPress={() => {
+                console.log("Mensaje presionado:", this.props.mensaje);
+            }}>
+                {this.props.mensaje.hasQuotedMsg && <QuotedMsg mensaje={this.props.mensaje} key_device={this.props.key_device} />}
                 <SText color={"white"} fontSize={14}>
-                    <div dangerouslySetInnerHTML={{ __html: formattedTexto }} />
-                    <SText clean>{"               "}</SText>
+                    <div dangerouslySetInnerHTML={{ __html: formattedTexto + "               " }} />
+                    {/* <SText clean>{"               "}</SText> */}
                 </SText>
                 <HoraLabel mesaje={this.props.mensaje} style={{
                     position: "absolute",

@@ -3,6 +3,7 @@ import { SDate, SHr, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, ST
 import SSocket from "servisofts-socket";
 import HoraLabel from "../Comp/HoraLabel";
 import MDL from "../../../MDL";
+import QuotedMsg from "../Comp/QuotedMsg";
 
 export default class MsgStiker extends Component {
     constructor(props) {
@@ -21,15 +22,19 @@ export default class MsgStiker extends Component {
     render() {
         return (
             <SView style={{
-                alignItems: "flex-end"
+                alignItems: "center",
+                backgroundColor: this.props.mensaje.hasQuotedMsg ? this.props.color:"",
+                padding:4,
+                borderRadius:8,
             }}>
+                {this.props.mensaje.hasQuotedMsg && <QuotedMsg mensaje={this.props.mensaje} key_device={this.props.key_device} />}
                 <SView width={130} height={130}>
                     <SImage src={MDL.whatsapp.device.getMedia(this.props.key_device, this.props.mensaje.id._serialized)} />
                 </SView>
                 <HoraLabel mesaje={this.props.mensaje} style={{
-                    // position: "absolute",
+                    position: "absolute",
                     width: 50,
-                    // bottom: -8, right: 4,
+                    bottom: 0, right: 4,
                     backgroundColor: this.props.color,
                     padding: 4,
                     borderRadius: 8

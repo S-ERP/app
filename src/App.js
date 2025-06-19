@@ -19,7 +19,8 @@ setProps(Config.socket);
 
 
 
-SMapView.bootstrapURLKeys.key = "AIzaSyC4rcy6GRVM5_i9ZF0vGFmb1HRc0mXsAdk"
+// SMapView.bootstrapURLKeys.key = "AIzaSyC4rcy6GRVM5_i9ZF0vGFmb1HRc0mXsAdk"
+SMapView.bootstrapURLKeys.key = "AIzaSyAr7BQ9lDDYgKUq2pIbvMRXS1HqFLI3gDw"
 const App = (props) => {
     useEffect(() => {
         // SplashScreen.hide();

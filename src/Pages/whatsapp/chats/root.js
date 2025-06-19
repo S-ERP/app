@@ -79,7 +79,7 @@ export default class root extends Component {
 
 
     render() {
-        return <SPage title={"Whatsapp Chats "} disableScroll>
+        return <SPage title={"Whatsapp Chats " + (this.state?.device?.descripcion ?? "")} disableScroll>
             {this.renderStatus()}
         </SPage>
     }
