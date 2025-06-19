@@ -9,6 +9,7 @@ import MsgAudio from "./tipo/MsgAudio";
 import MsgVideo from "./tipo/MsgVideo";
 import MsgTextDelete from "./tipo/MsgTextDelete";
 import Msg_e2e_notification from "./tipo/Msg_e2e_notification";
+import MsgDocument from "./tipo/MsgDocument";
 
 export default class Typemessage extends Component {
 
@@ -17,6 +18,7 @@ export default class Typemessage extends Component {
         const color = isEnviado ? "#005c4b" : "#202c33";
         if (this.props.mensaje.type == "chat") return <MsgText key_device={this.props.key_device} mensaje={this.props.mensaje} color={color}  />
         if (this.props.mensaje.type == "image") return <MsgImg key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "document") return <MsgDocument key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "video") return <MsgVideo key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "sticker") return <MsgStiker key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "ptt") return <MsgAudio key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
