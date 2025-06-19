@@ -153,7 +153,7 @@ export default class MsgAudio extends Component {
 
 
         return (
-            <View style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 10, marginHorizontal: 10, width: "25%" }}>
+            <View style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 10, marginHorizontal: 10, maxWidth: "80%", width: 300 }}>
 
 
                 <SView col={"xs-12"} row center   >
