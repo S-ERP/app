@@ -6,6 +6,8 @@ import FloatButtom from '../../Components/FloatButtom';
 import MDL from '../../MDL';
 import Config from '../../Config';
 import Model from '../../Model';
+import FloatMenu from '../../Components/FloatMenu';
+import SIconApp from '../../Assets/SIconApp';
 
 
 
@@ -72,25 +74,28 @@ class WhatsappDevices extends Component {
                 break;
             default:
                 mensaje = status;
+                if(!mensaje) mensaje = "Desconectado";
                 backgroundColor = STheme.color.gray;
                 break;
         }
 
         return (
-            <SView
-                padding={4}
-                style={{
-                    backgroundColor: backgroundColor,
-                    borderRadius: 24,
-                    alignItems: "center",
-                    justifyContent: "center",
-                }}
-            >
-                <SText fontSize={12} color={STheme.color.white} bold center>
-                    {mensaje}
-                </SText>
+            <SView center>
+                <SView
+                    padding={4}
+                    style={{
+                        backgroundColor: backgroundColor,
+                        borderRadius: 4,
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+                    <SText fontSize={12} color={STheme.color.white} bold center>
+                        {mensaje}
+                    </SText>
+                </SView>
             </SView>
-        );
+        )
     }
 
 
@@ -169,14 +174,14 @@ class WhatsappDevices extends Component {
 
                     <SInput
                         // autoFocus
-
+                        type='textArea'
                         label="webhook"
                         placeholder={"Nombre del dispositivo"}
                         defaultValue={data?.webhook || ""}
                         ref={ref => webhookRef = ref}
                         // required={true}
                         style={{
-                            height: 40,
+                            height: 60,
                             borderRadius: 4,
                             backgroundColor: STheme.color.lightGray + "30",
                             color: STheme.color.text,
@@ -254,11 +259,93 @@ class WhatsappDevices extends Component {
                     textStyle={Config.table.textStyle()}
                     selectType='single'
 
+                    onSelect={(e) => {
+                        console.log("Selected project:", e.row);
+                        FloatMenu.open({
+                            e: e.evt,
+                            label: e.row.nombre,
+
+                            options: [
+                                {
+                                    label: "Editar whatsapp",
+                                    onPress: () => {
+                                        this.formulario(e.row);
+                                        // FormRegistroProyecto.open({
+                                        //     defaultData: e.row,
+                                        //     onActualizar: (nuevoDato) => {
+                                        //         this.DinamicTable.loadData();
+                                        //         console.log("Proyecto actualizado:", nuevoDato);
+                                        //     },
+                                        // });
+                                    },
+                                    icon: <SIcon name="Edit" fill={STheme.color.text} />,
+                                },
+                                {
+                                    label: "Eliminar whatsapp",
+                                    icon: <SIcon name="Delete" fill={STheme.color.text} />,
+                                    onPress: () => {
+                                        SPopup.confirm({
+                                            title: "Eliminar whatsapp",
+                                            message: "¿Estas seguro de eliminar el whatsapp?",
+                                            onPress: () => {
+                                                MDL.whatsapp.device.edit(e?.row?.key, { estado: 0 }).then(e => {
+                                                    SNotification.send({
+                                                        title: "Dispositivo eliminado",
+                                                        body: "Dispositivo eliminado.",
+                                                        color: STheme.color.danger,
+                                                        time: 4000,
+                                                    });
+                                                    this.DinamicTable.loadData();
+                                                })
+
+
+                                            },
+                                        });
+                                    },
+                                },
+                            ],
+                        });
+                    }}
+
                 >
-                    <DinamicTable.Col key="index" label="N°" width={40} data={e => e.index + 1} />
-                    <DinamicTable.Col key="key" label="Key" width={200} data={e => e.row.key} />
-                    <DinamicTable.Col key="descripcion" label="descripcion" width={100} data={e => e.row.descripcion} />
-                    <DinamicTable.Col key="webhook" label="webhook" width={180} data={e => e.row.webhook} />
+                    <DinamicTable.Col key="index" label="N°" width={40} textStyle={{
+                        fontSize: 10, color: STheme.color.lightGray
+                    }} data={e => e.index + 1} />
+
+                    <DinamicTable.Col key="key" label="Key" width={100} textStyle={{
+                        fontSize: 10, color: STheme.color.lightGray
+                    }} data={e => e.row.key} />
+
+                    <DinamicTable.Col key={"chats"} label='Accion' width={110} data={() => ""}
+                        customComponent={e => (
+                            <SView row card padding={2} height={40} center
+
+                                onPress={() => {
+                                    SNavigation.navigate("/whatsapp/chats", { pk: e?.row?.key })
+                                }}
+                                // onLongPress={() => {
+                                //     SPopup.confirm({
+                                //         title: "Ingresar",
+                                //         message: "Abre el historial de conversaciones de este dispositivo.",
+                                //         // type: "1",
+                                //     });
+                                // }}
+                            >
+                                <SView width={4} />
+                                <SIconApp name='whatsapp' fill='green' width={18} />
+                                <SView width={4} />
+                                <SText center color={STheme.color.green}>{""}</SText>
+                            </SView>
+                        )}
+                    />
+                    <DinamicTable.Col key="descripcion" textStyle={{
+                        fontWeight: "bold",
+                        fontSize: 14
+                    }} label="descripcion" width={150} data={e => e.row.descripcion} />
+                    <DinamicTable.Col key="estatus" label="Conexion" width={120} data={() => ""} customComponent={e => (this.estado(e.row?.session?.status))} />
+                    <DinamicTable.Col key="webhook" label="webhook" width={180} wrap data={e => e.row.webhook} textStyle={{
+                        color: STheme.color.link,
+                    }} />
                     {/* <DinamicTable.Col key="qr" label="qr" width={100} center data={e => e.row?.session?.qr}
                         customComponent={e =>
                             e.row?.session?.qr ?
@@ -281,8 +368,7 @@ class WhatsappDevices extends Component {
                         }
                     /> */}
 
-                    <DinamicTable.Col key="estatus" label="Conexion" width={150} data={() => ""} customComponent={e => (this.estado(e.row?.session?.status))} />
-                    <DinamicTable.Col key={"editar"} label='Editar' width={100} data={() => ""}
+                    {/* <DinamicTable.Col key={"editar"} label='Editar' width={100} data={() => ""}
                         customComponent={e => (
                             <SView row center card padding={2} onPress={() => this.formulario(e?.row)}>
                                 <SView width={4} />
@@ -323,30 +409,9 @@ class WhatsappDevices extends Component {
                                 </SText>
                             </SView>
                         )}
-                    />
+                    /> */}
 
-                    <DinamicTable.Col key={"chats"} label='Accion' width={110} data={() => ""}
-                        customComponent={e => (
-                            <SView row card padding={2} center
 
-                                onPress={() => {
-                                    SNavigation.navigate("/whatsapp/chats", { pk: e?.row?.key })
-                                }}
-                                onLongPress={() => {
-                                    SPopup.confirm({
-                                        title: "Ver chats",
-                                        message: "Abre el historial de conversaciones de este dispositivo.",
-                                        // type: "1",
-                                    });
-                                }}
-                            >
-                                <SView width={4} />
-                                <SIcon name='MessageSend' fill='green' width={14} />
-                                <SView width={4} />
-                                <SText center color={STheme.color.green}>  {"Ver chats"}</SText>
-                            </SView>
-                        )}
-                    />
                 </DinamicTable>
 
                 <FloatButtom onPress={() => this.formulario()} />

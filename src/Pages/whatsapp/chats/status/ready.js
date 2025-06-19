@@ -110,9 +110,9 @@ export default class ready extends Component {
                                         {item?.lastMessage?.type === "chat" ? item.lastMessage.body : item?.lastMessage?.type}
                                     </SText>
                                 </SView>
-                                <SView flex border="transparent" >
+                                <SView border="transparent" >
                                     <SView col={"xs-12"} style={{ justifyContent: "flex-end", alignItems: "flex-end" }} >
-                                        <SText style={{ marginLeft: 8 }} color={item?.unreadCount ? "#22be60" : STheme.color.gray} fontSize={12}>
+                                        <SText style={{ marginLeft: 4 }} color={item?.unreadCount ? "#22be60" : STheme.color.gray} fontSize={12}>
                                             {item?.lastMessage?.timestamp ? new Date(item.lastMessage.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "Sin mensajes"}
                                         </SText>
                                     </SView>
@@ -138,8 +138,18 @@ export default class ready extends Component {
         const { device } = this.props;
         return <View style={{ flexDirection: "row", width: "100%", flex: 1, }}>
             <View style={{ width: 300, height: "100%", borderTopColor: STheme.color.card, borderRightColor: STheme.color.card, borderTopWidth: 1, borderRightWidth: 1, }}>
-                <SText style={{ padding: 10 }} fontSize={20} bold>Chats</SText>
-                <SView col={"xs-12"} padding={4} style={{ marginBottom: 16 }} >
+                <SView row col={"xs-12"} center padding={4}>
+                    <SView width={50} height={50} style={{
+                        borderRadius: 100,
+                        overflow: "hidden"
+                    }}>
+                        <SImage src={MDL.whatsapp.device.getUrlImage(this.props?.device?.key, device?.session?.info?.wid?._serialized)} />
+                    </SView>
+                    <SView style={{ width: 10 }} />
+                    <SText fontSize={20} bold>Chats - {device.descripcion}</SText>
+                    <SView flex />
+                </SView>
+                <SView col={"xs-12"} padding={4} style={{ marginBottom: 4 }} >
                     <SInput type='' placeholder='Buscar chat' onChangeText={this.handleSearch}
                         icon={<SIcon fill={STheme.color.gray} name='Search' height={22} />}
                         style={{ padding: 10, borderRadius: 16, }}
