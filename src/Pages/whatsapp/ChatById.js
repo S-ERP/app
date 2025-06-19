@@ -101,9 +101,11 @@ export default class Chatlead extends Component {
                         <SImage enablePreview
                             src={MDL.whatsapp.device.getUrlImage(this.props.idDevice, this.props.idchat)} style={{ resizeMode: "cover" }} />
                     </SView>
-                    <SView flex row style={{ marginLeft: 16 }}>
-                        <SText col="xs-12" color="white" fontSize={14} bold>{cliente?.nombres}</SText>
-                        <SText col="xs-12" color="white" fontSize={12} bold>{cliente?.telefono}</SText>
+                    <SView flex row style={{ marginLeft: 16 }} center>
+                        {/* <SText col="xs-12" color="white" fontSize={14} bold>{cliente?.nombres}</SText> */}
+                        {/* <SText col="xs-12" color="white" fontSize={12} bold>{cliente?.telefono}</SText> */}
+                        <SText col="xs-12" color="white" fontSize={12} bold>Alvaro</SText>
+                        <SText col="xs-12" color="white" fontSize={12} bold>últ. vez hoy a la(s) 2:55 AM</SText>
                     </SView>
                 </SView>
                 <SView col="xs-4" row center style={{ justifyContent: "flex-end" }}>
