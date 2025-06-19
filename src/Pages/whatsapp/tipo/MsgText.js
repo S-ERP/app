@@ -28,7 +28,7 @@ export default class MsgText extends Component {
         const formattedTexto = this.formatText(texto);
 
         return (
-            <SView style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 8, marginHorizontal: 10, width: "auto", maxWidth: "80%", alignItems: "flex-end" }}>
+            <SView style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 6, width: "auto", maxWidth: "80%", alignItems: "flex-end" }}>
                 <SText color={"white"} fontSize={14}>
                     <div dangerouslySetInnerHTML={{ __html: formattedTexto }} />
                     <SText clean>{"               "}</SText>

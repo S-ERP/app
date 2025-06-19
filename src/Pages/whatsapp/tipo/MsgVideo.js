@@ -4,6 +4,8 @@ import SSocket from "servisofts-socket";
 import HoraLabel from "../Comp/HoraLabel";
 import { Image, View } from "react-native";
 import SIconApp from "../../../Assets/SIconApp";
+import SVideo from "../../../Components/SVideo";
+import MDL from "../../../MDL";
 
 export default class MsgVideo extends Component {
     constructor(props) {
@@ -76,11 +78,20 @@ export default class MsgVideo extends Component {
                     justifyContent: "center",
                     alignItems: "center"
                 }}>
-                    <SImage enablePreview src={this.props.mensaje.mediaData} style={{
+                    {/* <SImage src={`data:img/png;base64,${this.props.mensaje._data.body}`} style={{
+                        position: "absolute",
                         borderRadius: 8,
-                        width: vidWidth,
-                        height: vidHeight,
-                    }} />
+                        resizeMode: "cover",
+                        // width: vidWidth,
+                        // height: vidHeight,
+                    }} /> */}
+                    <SVideo
+                        src={MDL.whatsapp.device.getMedia(this.props.key_device, this.props.mensaje.id._serialized)}
+                        poster={{
+                            source: { uri: `data:img/png;base64,${this.props.mensaje._data.body}` },
+                            resizeMode: "cover",
+                        }}
+                    />
                     <SView style={{
                         position: "absolute",
                         width: "100%",

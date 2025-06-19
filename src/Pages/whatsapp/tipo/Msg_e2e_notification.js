@@ -15,6 +15,16 @@ export default class Msg_e2e_notification extends Component {
 
 
 
+    renderSubType() {
+        const subType = this.props.mensaje._data.subtype;
+        if (subType == "encrypt"){
+            return <SView col={"xs-12"} center>
+                <SText color={"#FEC966"} center fontSize={12}>Los mensajes y las llamadas están cifrados de extremo a extremo. Solo las personas en este chat pueden leerlos, escucharlos o compartirlos. Obten más información.</SText>
+            </SView>
+        }
+            return <SText color={"white"} fontSize={14}>{subType}</SText>
+    }
+
 
 
     render() {
@@ -25,16 +35,14 @@ export default class Msg_e2e_notification extends Component {
         const texto = this.props.mensaje.body;
         const hora = this.props.mensaje.time;
 
+
+
         return (
 
-            <SView style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 8, marginHorizontal: 10, width: "auto", maxWidth: "80%", alignItems: "flex-end" }}>
-                <SText color={"white"} fontSize={14}>{JSON.stringify(this.props.mensaje)}
-                    <SText clean>{"               "}</SText>
-                </SText>
-                <HoraLabel mesaje={this.props.mensaje} style={{
-                    position: "absolute",
-                    bottom: 4, right: 4,
-                }} />
+            <SView col={"xs-12"} center>
+                <SView style={{ backgroundColor: STheme.color.card, borderRadius: 4, padding: 8, marginHorizontal: 10, width: 300, maxWidth: "80%", alignItems: "center" }}>
+                    {this.renderSubType()}
+                </SView>
             </SView>
 
 

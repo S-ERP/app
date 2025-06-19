@@ -42,7 +42,7 @@ export default class SVideo extends Component {
                     this.video = ref
                 }
             }} style={{
-                objectFit: "scale-down",
+                objectFit: "cover",
                 width: "100%",
                 height: "100%",
                 // flex: 1,
@@ -51,6 +51,8 @@ export default class SVideo extends Component {
                 // controls
                 // autoPlay={!this.props.paused}
                 {...this.props}
+                poster={this?.props?.poster?.source?.uri}
+
                 // controls
 
 

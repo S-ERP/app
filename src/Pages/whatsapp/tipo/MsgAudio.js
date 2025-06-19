@@ -133,7 +133,6 @@ export default class MsgAudio extends Component {
                     <SView flex row >
                         {this.renderWaveform()}
                     </SView>
-
                     <SView col={"xs-12"} row center style={{ position: "absolute", top: 20 }}>
                         <SView col={"xs-4"} center>
                             <SText color="rgba(255,255,255,0.7)" fontSize={11}>
@@ -154,8 +153,6 @@ export default class MsgAudio extends Component {
 
         return (
             <View style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 10, marginHorizontal: 10, maxWidth: "80%", width: 300 }}>
-
-
                 <SView col={"xs-12"} row center   >
                     {isEnviado ? (
                         <>
