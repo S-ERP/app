@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import { SDate, SHr, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView, SIcon } from "servisofts-component";
-import SSocket from "servisofts-socket";
-import HoraLabel from "../Comp/HoraLabel";
 import { Image, View } from "react-native";
+import { SImage, SText } from "servisofts-component";
+import HoraLabel from "../Comp/HoraLabel";
 
 export default class MsgImg extends Component {
     constructor(props) {
@@ -10,8 +9,6 @@ export default class MsgImg extends Component {
         this.state = {
             widthImage: 0,
             heightImage: 0,
-            widthContainer: 0,
-            heightContainer: 0,
         };
     }
 
@@ -28,58 +25,67 @@ export default class MsgImg extends Component {
         });
     }
 
-    calcularHeight() {
-        const { widthContainer, heightContainer, widthImage, heightImage } = this.state;
-        if (widthContainer === 0 || heightContainer === 0 || widthImage === 0 || heightImage === 0) {
-            return 300; // Valor por defecto si no se han calculado las dimensiones
-        }
-        const aspectRatio = widthImage / heightImage;
-        const newHeight = widthContainer / aspectRatio;
-        return Math.min(newHeight, heightContainer); // Limitar la altura al contenedor
-    }
-
-    calcularWidth() {
-        const { widthContainer, heightContainer, widthImage, heightImage } = this.state;
-        if (widthContainer === 0 || heightContainer === 0 || widthImage === 0 || heightImage === 0) {
-            return "75%"; // Valor por defecto si no se han calculado las dimensiones
-        }
-        const aspectRatio = widthImage / heightImage;
-        const newWidth = heightContainer * aspectRatio;
-        return Math.min(newWidth, widthContainer); // Limitar el ancho al contenedor
-    }
     render() {
-
+        const { widthImage, heightImage } = this.state;
+        const texto = this.props.mensaje.body;
+        const fixedWidth = 250;
+        const fixedHeight = 300;
+        let imgWidth = fixedWidth;
+        let imgHeight = fixedHeight;
+        if (widthImage && heightImage) {
+            const aspectRatio = widthImage / heightImage;
+            imgHeight = fixedWidth / aspectRatio;
+            if (imgHeight > fixedHeight) {
+                imgHeight = fixedHeight;
+                imgWidth = fixedHeight * aspectRatio;
+            } else {
+                imgWidth = fixedWidth;
+            }
+        }
         return (
-            <View style={{
-                width: this.calcularWidth(),
-                height: this.calcularHeight(),
-                overflow: 'hidden',
-                marginHorizontal: 10,
-                backgroundColor: this.props.color,
-                borderWidth: 2,
-                borderColor: this.props.color,
-                borderRadius: 8,
-                overflow: "hidden",
-
-            }} onLayout={e => {
-                const { width, height } = e.nativeEvent.layout;
-                this.setState({ widthContainer: width, heightContainer: height });
-
-            }}>
-                <SImage enablePreview src={this.props.mensaje.mediaData} style={{
+            <View style={{ alignItems: 'flex-end', marginBottom: 8 }}>
+                <View style={{
+                    width: fixedWidth,
+                    height: fixedHeight,
+                    backgroundColor: this.props.color,
+                    borderWidth: 2,
+                    borderColor: this.props.color,
                     borderRadius: 8,
-                }} />
-
-                <HoraLabel style={{
-                    position: "absolute",
-                    bottom: 2, right: 5, color: "white",
-                    fonWeight: "bold"
-                }} mesaje={this.props.mensaje} />
+                    overflow: "hidden",
+                    marginHorizontal: 10,
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}>
+                    <SImage
+                        enablePreview
+                        src={this.props.mensaje.mediaData}
+                        style={{
+                            width: imgWidth,
+                            height: imgHeight,
+                            borderRadius: 8,
+                        }}
+                    />
+                    <HoraLabel style={{
+                        position: "absolute",
+                        bottom: 2, right: 5, color: "white",
+                        fontWeight: "bold"
+                    }} mesaje={this.props.mensaje} />
+                </View>
+                {!!texto && (
+                    <View style={{ marginTop: 4, maxWidth: 250, alignSelf: 'flex-start' }}>
+                        <SText style={{
+                            backgroundColor: "#056162",
+                            color: "white",
+                            fontSize: 18,
+                            borderRadius: 6,
+                            paddingHorizontal: 4,
+                            paddingVertical: 2,
+                        }}>
+                            {texto}
+                        </SText>
+                    </View>
+                )}
             </View>
-
         );
     }
-
-
-
 }

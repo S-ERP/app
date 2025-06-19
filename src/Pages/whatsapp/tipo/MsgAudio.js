@@ -79,7 +79,7 @@ export default class MsgAudio extends Component {
         });
 
         return (
-            <SView flex row  style={{ flexDirection: "row", alignItems: "center", }}>
+            <SView flex row style={{ flexDirection: "row", alignItems: "center", }}>
                 {bars}
             </SView>
         );
@@ -129,7 +129,7 @@ export default class MsgAudio extends Component {
                 </SView>
 
                 <SView flex row center backgroundColor={"transparent"}>
-                    <SView flex  row >
+                    <SView flex row >
                         {this.renderWaveform()}
                     </SView>
 
@@ -152,7 +152,7 @@ export default class MsgAudio extends Component {
 
 
         return (
-            <View style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 8, marginHorizontal: 10, width: "60%" }}>
+            <View style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 10, marginHorizontal: 10, width: "25%" }}>
 
 
                 <SView col={"xs-12"} row center   >
