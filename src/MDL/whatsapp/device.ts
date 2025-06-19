@@ -83,6 +83,19 @@ export default class whatsapp extends MDLAbstract<EventListener> {
     const json = await resp.json();
     return json;
   }
+  async sendSeen(key: string, idchat: string) {
+    const resp = await fetch(
+      this.url + "/api/device/" + key + "/sendSeen/" + idchat,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const json = await resp.json();
+    return json;
+  }
 
   getUrlImage(key: string, id: any) {
     return this.url + "/api/device/" + key + "/profilePic/" + id;
