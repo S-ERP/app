@@ -86,14 +86,15 @@ export default class MsgVideo extends Component {
                         // height: vidHeight,
                     }} /> */}
                     <SVideo
-                    
-                        src={MDL.whatsapp.device.getMedia(this.props.key_device, this.props.mensaje.id._serialized)}
-                        poster={{
-                            source: { uri: `data:img/png;base64,${this.props.mensaje._data.body}` },
-                            resizeMode: "cover",
-                        }}
+
+                        controls
+                        src={MDL.whatsapp.device.getFile(this.props.key_device, this.props.mensaje.id._serialized)}
+                    // poster={{
+                    //     source: { uri: `data:img/png;base64,${this.props.mensaje._data.body}` },
+                    //     resizeMode: "cover",
+                    // }}
                     />
-                    <SView style={{
+                    {/* <SView style={{
                         position: "absolute",
                         width: "100%",
                         height: "100%",
@@ -108,7 +109,7 @@ export default class MsgVideo extends Component {
                         }}>
                             <SIconApp name="crmplay" fill="#444" />
                         </SView>
-                    </SView>
+                    </SView> */}
                     <SText style={{
                         position: "absolute",
                         bottom: 2, left: 5, color: "white",
