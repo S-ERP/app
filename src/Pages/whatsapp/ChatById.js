@@ -30,18 +30,20 @@ export default class Chatlead extends Component {
     onMessageSocket = (data) => {
         if (data.component != "whatsapp") return;
         if (data.type != "event") return;
-        if (!["message_create", "message"].includes(data.event)) return;
+        if (!["message_create", "message", "message_ack"].includes(data.event)) return;
         this.loadData();
 
     }
     loadData() {
+        
         const dell = MDL.whatsapp.getAllChatsById({ key_device: this.props.idDevice, idchat: this.props.idchat }).then(e => {
 
-            console.log("si ",e)
+            console.log("si ", e)
             this.setState({
                 data: e
             })
         })
+        MDL.whatsapp.device.sendSeen(this.props.idDevice, this.props.idchat);
 
     }
 
@@ -167,7 +169,7 @@ export default class Chatlead extends Component {
                 alignItems: isEnviado ? "flex-end" : "flex-start",
                 marginBottom: 8
             }}>
-                <Typemessage mensaje={mensaje}  key_device={this.props.idDevice}></Typemessage>
+                <Typemessage mensaje={mensaje} key_device={this.props.idDevice}></Typemessage>
             </SView>
         );
     }

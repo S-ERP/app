@@ -33,7 +33,6 @@ export default class MsgStiker extends Component {
                 </SView>
                 <HoraLabel mesaje={this.props.mensaje} style={{
                     position: "absolute",
-                    width: 50,
                     bottom: 0, right: 4,
                     backgroundColor: this.props.color,
                     padding: 4,

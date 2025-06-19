@@ -23,6 +23,7 @@ export default class Typemessage extends Component {
         if (this.props.mensaje.type == "video") return <MsgVideo key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "sticker") return <MsgStiker key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "ptt") return <MsgAudio key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
+        if (this.props.mensaje.type == "audio") return <MsgAudio key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "location") return <MsgGps key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "revoked") return <MsgTextDelete key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />
         if (this.props.mensaje.type == "e2e_notification") return <Msg_e2e_notification key_device={this.props.key_device} mensaje={this.props.mensaje} color={color} />

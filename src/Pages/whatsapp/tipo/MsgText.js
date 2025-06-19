@@ -34,7 +34,7 @@ export default class MsgText extends Component {
             }}>
                 {this.props.mensaje.hasQuotedMsg && <QuotedMsg mensaje={this.props.mensaje} key_device={this.props.key_device} />}
                 <SText color={"white"} fontSize={14}>
-                    <div dangerouslySetInnerHTML={{ __html: formattedTexto + "               " }} />
+                    <div dangerouslySetInnerHTML={{ __html: formattedTexto + "                  " }} />
                     {/* <SText clean>{"               "}</SText> */}
                 </SText>
                 <HoraLabel mesaje={this.props.mensaje} style={{
