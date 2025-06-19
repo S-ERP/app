@@ -106,6 +106,11 @@ export default class Chatlead extends Component {
                         {/* <SText col="xs-12" color="white" fontSize={12} bold>{cliente?.telefono}</SText> */}
                         <SText col="xs-12" color="white" fontSize={12} bold>Alvaro</SText>
                         <SText col="xs-12" color="white" fontSize={12} bold>últ. vez hoy a la(s) 2:55 AM</SText>
+                        {/* poner la ultima vez que se conecto */}
+
+                        <SText col="xs-12" color="white" fontSize={12} bold>En línea</SText>
+
+
                     </SView>
                 </SView>
                 <SView col="xs-4" row center style={{ justifyContent: "flex-end" }}>
