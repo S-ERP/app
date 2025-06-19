@@ -1,34 +1,36 @@
 import React, { Component } from "react";
-import { SDate, SHr, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView, SIcon } from "servisofts-component";
-import SSocket from "servisofts-socket";
+import { SText, SView } from "servisofts-component";
 import HoraLabel from "../Comp/HoraLabel";
 
 export default class MsgText extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-
-        };
+        this.state = {};
     }
 
+    // Función para formatear el texto
+    formatText = (texto) => {
+        // Reemplazar texto entre asteriscos por negrita
+        let formattedText = texto.replace(/\*(.*?)\*/g, (match, p1) => `<b>${p1}</b>`);
 
+        // Reemplazar links por etiquetas <a> con la URL
+        formattedText = formattedText.replace(/https?:\/\/[^\s]+/g, (match) => `<a href="${match}" target="_blank">${match}</a>`);
 
-
-
-
+        return formattedText;
+    }
 
     render() {
         const isEnviado = this.props.mensaje.fromMe;
-        const tipoMensaje = this.props.mensaje.type;
-        const id = this.props.mensaje.id;
-
         const texto = this.props.mensaje.body;
         const hora = this.props.mensaje.time;
 
-        return (
+        // Formatear el texto antes de mostrarlo
+        const formattedTexto = this.formatText(texto);
 
+        return (
             <SView style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 8, marginHorizontal: 10, width: "auto", maxWidth: "80%", alignItems: "flex-end" }}>
-                <SText color={"white"} fontSize={14}>{texto}
+                <SText color={"white"} fontSize={14}>
+                    <div dangerouslySetInnerHTML={{ __html: formattedTexto }} />
                     <SText clean>{"               "}</SText>
                 </SText>
                 <HoraLabel mesaje={this.props.mensaje} style={{
@@ -36,16 +38,6 @@ export default class MsgText extends Component {
                     bottom: 4, right: 4,
                 }} />
             </SView>
-
-
-
-
-
-
-
         );
     }
-
-
-
 }
