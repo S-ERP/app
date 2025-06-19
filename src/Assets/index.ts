@@ -173,6 +173,23 @@ import crmpdf, { ReactComponent as crmpdfW } from "./svg/crm/pdf.svg";
 import crmplay, { ReactComponent as crmplayW } from "./svg/crm/play.svg";
 import crmpause, { ReactComponent as crmpauseW } from "./svg/crm/pause.svg";
 
+import crmword, { ReactComponent as crmwordW } from "./svg/crm/archivoword.svg";
+import crmexcel, {
+  ReactComponent as crmexcelW,
+} from "./svg/crm/archivoexcel.svg";
+
+import crmpresentacion, {
+  ReactComponent as crmpresentacionW,
+} from "./svg/crm/archivopresentacion.svg";
+
+import crmpdescargararchivo, {
+  ReactComponent as crmpdescargararchivoW,
+} from "./svg/crm/archivodescargar.svg";
+
+import crmpdarchivo, {
+  ReactComponent as crmpdarchivoW,
+} from "./svg/crm/archivosdefault.svg";
+
 import crmeditar, { ReactComponent as crmeditarW } from "./svg/crm/editar.svg";
 import crmeliminar, {
   ReactComponent as crmeliminarW,
@@ -318,6 +335,15 @@ export const svg = {
 
   crmeditar: { Native: crmeditar, Web: crmeditarW },
   crmeliminar: { Native: crmeliminar, Web: crmeliminarW },
+
+  crmword: { Native: crmword, Web: crmwordW },
+  crmexcel: { Native: crmexcel, Web: crmexcelW },
+  crmpresentacion: { Native: crmpresentacion, Web: crmpresentacionW },
+  crmpdescargararchivo: {
+    Native: crmpdescargararchivo,
+    Web: crmpdescargararchivoW,
+  },
+  crmpdarchivo: { Native: crmpdarchivo, Web: crmpdarchivoW },
 
   ...blender,
 };
