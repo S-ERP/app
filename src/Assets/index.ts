@@ -1,31 +1,49 @@
 import { SAssets } from "servisofts-component";
 
 import Logo, { ReactComponent as LogoW } from "./svg/logo.svg";
-import logoCompleto, { ReactComponent as logoCompletoW } from "./svg/logoCompleto.svg";
+import logoCompleto, {
+  ReactComponent as logoCompletoW,
+} from "./svg/logoCompleto.svg";
 import profile2, { ReactComponent as profile2W } from "./svg/profile2.svg";
-import IconChecked, { ReactComponent as IconCheckedW } from "./svg/iconChecked.svg";
-import IconCheckedOk, { ReactComponent as IconCheckedOkW } from "./svg/iconCheckedOk.svg";
+import IconChecked, {
+  ReactComponent as IconCheckedW,
+} from "./svg/iconChecked.svg";
+import IconCheckedOk, {
+  ReactComponent as IconCheckedOkW,
+} from "./svg/iconCheckedOk.svg";
 import pregunta1, { ReactComponent as pregunta1W } from "./svg/pregunta1.svg";
 import empresa, { ReactComponent as empresaW } from "./svg/empresa.svg";
-import empresaBuscar, { ReactComponent as empresaBuscarW } from "./svg/empresaBuscar.svg";
+import empresaBuscar, {
+  ReactComponent as empresaBuscarW,
+} from "./svg/empresaBuscar.svg";
 import bg1, { ReactComponent as bg1W } from "./svg/bg1.svg";
 import img1, { ReactComponent as img1W } from "./svg/img1.svg";
-import construEmpresa, { ReactComponent as construEmpresaW } from "./svg/construEmpresa.svg";
+import construEmpresa, {
+  ReactComponent as construEmpresaW,
+} from "./svg/construEmpresa.svg";
 import imgFranja, { ReactComponent as imgFranjaW } from "./svg/imgFranja.svg";
-import configurar, { ReactComponent as configurarW } from "./svg/configurar.svg";
+import configurar, {
+  ReactComponent as configurarW,
+} from "./svg/configurar.svg";
 import bgBoton, { ReactComponent as bgBotonW } from "./svg/bgBoton.svg";
 import cola, { ReactComponent as colaW } from "./svg/cola.svg";
 import picture, { ReactComponent as pictureW } from "./svg/picture.svg";
 import hand, { ReactComponent as handW } from "./svg/hand.svg";
 import chip, { ReactComponent as chipW } from "./svg/chip.svg";
 import pinchito, { ReactComponent as pinchitoW } from "./svg/pinchito.svg";
-import notaEsquina, { ReactComponent as notaEsquinaW } from "./svg/notaEsquina.svg";
+import notaEsquina, {
+  ReactComponent as notaEsquinaW,
+} from "./svg/notaEsquina.svg";
 import addUser, { ReactComponent as addUserW } from "./svg/addUser.svg";
 import history, { ReactComponent as historyW } from "./svg/history.svg";
-import removeNotes, { ReactComponent as removeNotesW } from "./svg/removeNotes.svg";
+import removeNotes, {
+  ReactComponent as removeNotesW,
+} from "./svg/removeNotes.svg";
 import remove, { ReactComponent as removeW } from "./svg/remove.svg";
 import pass, { ReactComponent as passW } from "./svg/pass.svg";
-import ubiPermiso, { ReactComponent as ubiPermisoW } from "./svg/ubiPermiso.svg";
+import ubiPermiso, {
+  ReactComponent as ubiPermisoW,
+} from "./svg/ubiPermiso.svg";
 import mapIcon, { ReactComponent as mapIconW } from "./svg/mapIcon.svg";
 import widget, { ReactComponent as widgetW } from "./svg/widget.svg";
 import ifoto, { ReactComponent as ifotoW } from "./svg/ifoto.svg";
@@ -34,17 +52,35 @@ import itema, { ReactComponent as itemaW } from "./svg/itema.svg";
 
 import Heart, { ReactComponent as HeartW } from "./svg/social/Heart.svg";
 import Comment, { ReactComponent as CommentW } from "./svg/social/Comment.svg";
-import Comment2, { ReactComponent as Comment2W } from "./svg/social/Comment2.svg";
-import addPublicacion, { ReactComponent as addPublicacionW } from "./svg/social/addPublicacion.svg";
+import Comment2, {
+  ReactComponent as Comment2W,
+} from "./svg/social/Comment2.svg";
+import addPublicacion, {
+  ReactComponent as addPublicacionW,
+} from "./svg/social/addPublicacion.svg";
 
 import tareaUser, { ReactComponent as tareaUserW } from "./svg/tarea/user.svg";
-import tarea_engranaje, { ReactComponent as tarea_engranajeW } from "./svg/tarea/engranaje.svg";
-import tarea_close, { ReactComponent as tarea_closeW } from "./svg/tarea/close.svg";
-import tarea_label, { ReactComponent as tarea_labelW } from "./svg/tarea/label.svg";
-import addNotas, { ReactComponent as addNotasW } from "./svg/tarea/addNotas.svg";
-import addTarea, { ReactComponent as addTareaW } from "./svg/tarea/addTarea.svg";
-import eliminar, { ReactComponent as eliminarW } from "./svg/tarea/eliminar.svg";
-import eliminar2, { ReactComponent as eliminar2W } from "./svg/tarea/eliminar2.svg";
+import tarea_engranaje, {
+  ReactComponent as tarea_engranajeW,
+} from "./svg/tarea/engranaje.svg";
+import tarea_close, {
+  ReactComponent as tarea_closeW,
+} from "./svg/tarea/close.svg";
+import tarea_label, {
+  ReactComponent as tarea_labelW,
+} from "./svg/tarea/label.svg";
+import addNotas, {
+  ReactComponent as addNotasW,
+} from "./svg/tarea/addNotas.svg";
+import addTarea, {
+  ReactComponent as addTareaW,
+} from "./svg/tarea/addTarea.svg";
+import eliminar, {
+  ReactComponent as eliminarW,
+} from "./svg/tarea/eliminar.svg";
+import eliminar2, {
+  ReactComponent as eliminar2W,
+} from "./svg/tarea/eliminar2.svg";
 import tarea, { ReactComponent as tareaW } from "./svg/tarea/tarea.svg";
 
 import emp1, { ReactComponent as emp1W } from "./svg/empresa/emp1.svg";
@@ -59,10 +95,16 @@ import tpAf, { ReactComponent as tpAfW } from "./svg/producto/tpAf.svg";
 import tpGa, { ReactComponent as tpGaW } from "./svg/producto/tpGa.svg";
 import tpIn, { ReactComponent as tpInW } from "./svg/producto/tpIn.svg";
 import tpVs, { ReactComponent as tpVsW } from "./svg/producto/tpVs.svg";
-import productos, { ReactComponent as productosW } from "./svg/producto/productos.svg";
+import productos, {
+  ReactComponent as productosW,
+} from "./svg/producto/productos.svg";
 import add1, { ReactComponent as add1W } from "./svg/producto/add1.svg";
-import deleteAll, { ReactComponent as deleteAllW } from "./svg/producto/deleteAll.svg";
-import menuAll, { ReactComponent as menuAllW } from "./svg/producto/menuAll.svg";
+import deleteAll, {
+  ReactComponent as deleteAllW,
+} from "./svg/producto/deleteAll.svg";
+import menuAll, {
+  ReactComponent as menuAllW,
+} from "./svg/producto/menuAll.svg";
 
 import iCamera, { ReactComponent as iCameraW } from "./svg/scene/iCamera.svg";
 import iEchado, { ReactComponent as iEchadoW } from "./svg/scene/iEchado.svg";
@@ -70,17 +112,33 @@ import iExit, { ReactComponent as iExitW } from "./svg/scene/iExit.svg";
 import iJump, { ReactComponent as iJumpW } from "./svg/scene/iJump.svg";
 import iThree, { ReactComponent as iThreeW } from "./svg/scene/three.svg";
 
-import imprimir, { ReactComponent as imprimirW } from "./svg/factura/imprimir.svg";
-import revertir, { ReactComponent as revertirW } from "./svg/factura/revertir.svg";
-import sucursal, { ReactComponent as sucursalW } from "./svg/factura/sucursal.svg";
-import eliminarI, { ReactComponent as eliminarIW } from "./svg/factura/eliminar.svg";
-import adicionar, { ReactComponent as adicionarW } from "./svg/factura/adicionar.svg";
-import whatsappIcon, { ReactComponent as whatsappIconW } from "./svg/whatsapp.svg";
+import imprimir, {
+  ReactComponent as imprimirW,
+} from "./svg/factura/imprimir.svg";
+import revertir, {
+  ReactComponent as revertirW,
+} from "./svg/factura/revertir.svg";
+import sucursal, {
+  ReactComponent as sucursalW,
+} from "./svg/factura/sucursal.svg";
+import eliminarI, {
+  ReactComponent as eliminarIW,
+} from "./svg/factura/eliminar.svg";
+import adicionar, {
+  ReactComponent as adicionarW,
+} from "./svg/factura/adicionar.svg";
+import whatsappIcon, {
+  ReactComponent as whatsappIconW,
+} from "./svg/whatsapp.svg";
 import invite2, { ReactComponent as invite2W } from "./svg/invite2.svg";
 
 import guion, { ReactComponent as guionW } from "./svg/proyecto/guion.svg";
-import campana, { ReactComponent as campanaW } from "./svg/proyecto/campana.svg";
-import producto, { ReactComponent as productoW } from "./svg/proyecto/producto.svg";
+import campana, {
+  ReactComponent as campanaW,
+} from "./svg/proyecto/campana.svg";
+import producto, {
+  ReactComponent as productoW,
+} from "./svg/proyecto/producto.svg";
 import microfono, { ReactComponent as microfonoW } from "./svg/microfono.svg";
 
 import recall, { ReactComponent as recallW } from "./svg/recall.svg";
@@ -88,28 +146,42 @@ import spam, { ReactComponent as spamW } from "./svg/spam.svg";
 import double, { ReactComponent as doubleW } from "./svg/double.svg";
 import confirmar, { ReactComponent as confirmarW } from "./svg/confirmar.svg";
 import cancelado, { ReactComponent as canceladoW } from "./svg/cancelado.svg";
-import llamadafallida, { ReactComponent as llamadafallidaW } from "./svg/llamadafallida.svg";
+import llamadafallida, {
+  ReactComponent as llamadafallidaW,
+} from "./svg/llamadafallida.svg";
 
 import adicional, { ReactComponent as adicionalW } from "./svg/adicional.svg";
-import carritoproducto, { ReactComponent as carritoproductoW } from "./svg/carritoproducto.svg";
+import carritoproducto, {
+  ReactComponent as carritoproductoW,
+} from "./svg/carritoproducto.svg";
 
+import crmcliente, {
+  ReactComponent as crmclienteW,
+} from "./svg/crm/cliente.svg";
+import crmdashboarddelivery, {
+  ReactComponent as crmdashboarddeliveryW,
+} from "./svg/crm/dashboardDelivery.svg";
+import crmdashboardgeneral, {
+  ReactComponent as crmdashboardgeneralW,
+} from "./svg/crm/dashboardGeneral.svg";
+import crmdashboardventas, {
+  ReactComponent as crmdashboardventasW,
+} from "./svg/crm/dashboardVentas.svg";
 
-import crmcliente, { ReactComponent as crmclienteW, } from "./svg/crm/cliente.svg";
-import crmdashboarddelivery, { ReactComponent as crmdashboarddeliveryW, } from "./svg/crm/dashboardDelivery.svg";
-import crmdashboardgeneral, { ReactComponent as crmdashboardgeneralW, } from "./svg/crm/dashboardGeneral.svg";
-import crmdashboardventas, { ReactComponent as crmdashboardventasW, } from "./svg/crm/dashboardVentas.svg";
+import crmpdf, { ReactComponent as crmpdfW } from "./svg/crm/pdf.svg";
 
 import crmplay, { ReactComponent as crmplayW } from "./svg/crm/play.svg";
 import crmpause, { ReactComponent as crmpauseW } from "./svg/crm/pause.svg";
 
 import crmeditar, { ReactComponent as crmeditarW } from "./svg/crm/editar.svg";
-import crmeliminar, { ReactComponent as crmeliminarW } from "./svg/crm/eliminar.svg";
-
+import crmeliminar, {
+  ReactComponent as crmeliminarW,
+} from "./svg/crm/eliminar.svg";
 
 import crmgraficos, {
   ReactComponent as crmgraficosW,
 } from "./svg/crm/graficos.svg";
-import crmllleads, { ReactComponent as crmllleadsW} from "./svg/crm/leads.svg";
+import crmllleads, { ReactComponent as crmllleadsW } from "./svg/crm/leads.svg";
 import crmllamada, {
   ReactComponent as crmllamadaW,
 } from "./svg/crm/llamadas.svg";
@@ -238,6 +310,7 @@ export const svg = {
   crmllamada: { Native: crmllamada, Web: crmllamadaW },
   crmllleads: { Native: crmllleads, Web: crmllleadsW },
   crmmovimiento: { Native: crmmovimiento, Web: crmmovimientoW },
+  crmpdf: { Native: crmpdf, Web: crmpdfW },
 
   crmpause: { Native: crmpause, Web: crmpauseW },
   crmplay: { Native: crmplay, Web: crmplayW },
@@ -249,7 +322,7 @@ export const svg = {
   ...blender,
 };
 const Assets: SAssets = {
-    svg: svg,
+  svg: svg,
 };
 
 export type IconNamesApp = keyof typeof svg;
