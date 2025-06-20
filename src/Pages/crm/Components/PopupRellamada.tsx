@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import MDL from '../../../MDL';
@@ -6,6 +5,7 @@ import { DinamicTable } from 'servisofts-table';
 import { SDate, SForm, SHr, SIcon, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import PButtom from '../../../Components/PButtom';
 import Background from 'servisofts-component/img/Background';
+
 
 
 type PopupRellamadaType = {
@@ -21,14 +21,14 @@ interface State {
 
 export default class PopupRellamada extends Component<PopupRellamadaType, State> {
     form: SForm | null = null;
+    private _tiempo_manual: string = "";
 
     constructor(props: PopupRellamadaType) {
         super(props);
-        // const now = new SDate().toString("hh:mm");
         const now = new SDate().addMinute(10).toString("hh:mm");
-
+        this._tiempo_manual = props.defaultData?.tiempo_cliente || now;
         this.state = {
-            tiempo_cliente: props.defaultData?.tiempo_cliente || now,
+            tiempo_cliente: this._tiempo_manual,
         };
     }
 
@@ -47,11 +47,11 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                         {...props}
                         onRegister={(e) => {
                             SPopup.close("ppuprellamada");
-                            if (props.onRegister) props.onRegister(e);
+                            props.onRegister?.(e);
                         }}
                         onCancel={() => {
                             SPopup.close("ppuprellamada");
-                            if (props.onCancel) props.onCancel();
+                            props.onCancel?.();
                         }}
                     />
                 </SView>
@@ -59,64 +59,19 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
         });
     }
 
-    setTiempoCliente = (val: string) => {
-        this.setState({ tiempo_cliente: val });
-        if (this.form) {
-            // Actualiza el valor en el formulario, si SForm acepta esta forma (depende de implementación)
-            // Si no funciona, lo manejamos solo por estado y en onSubmit tomamos el estado
-            this.form.setValue && this.form.setValue("tiempo_cliente", val);
+    setTiempoCliente = (val: any) => {
+        let tiempo = "";
+        if (val?.nativeEvent?.text !== undefined) {
+            tiempo = val.nativeEvent.text;
+        } else {
+            tiempo = (val ?? "").toString();
         }
+        this._tiempo_manual = tiempo;
+      
     };
-
-    time(text: string) {
-        const tiempoSeleccionado = this.state.tiempo_cliente;
-
-        // Convertimos el texto del botón a hora en formato "hh:mm"
-        let date = new SDate();
-        if (text.includes("min")) {
-            const minutos = parseInt(text.split(" ")[0]);
-            date.addMinute(minutos);
-        } else if (text.includes("hrs")) {
-            const horas = parseInt(text.split(" ")[0]);
-            date.addHour(horas);
-        }
-        const horaBoton = date.toString("hh:mm");
-
-        // Comparamos si la hora actual seleccionada es igual a la del botón
-        const esSeleccionado = tiempoSeleccionado === horaBoton;
-
-        return (
-            <SView col={"xs-2.4"} style={{ padding: 4 }}>
-                <SView
-                    padding={5}
-                    style={{
-                        backgroundColor: esSeleccionado
-                            ? STheme.color.danger // Color de fondo cuando está seleccionado
-                            : STheme.color.card,   // Color por defecto
-                        borderRadius: 12,
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                    onPress={() => {
-                        this.setTiempoCliente(horaBoton);
-                    }}
-                >
-                    <SText
-                        fontSize={10}
-                        color={esSeleccionado ? STheme.color.white : STheme.color.text}
-                        bold
-                    >
-                        {text}
-                    </SText>
-                </SView>
-            </SView>
-        );
-    }
-
 
     render() {
         const { defaultData } = this.props;
-        const { tiempo_cliente } = this.state;
 
         return (
             <SView center>
@@ -134,20 +89,18 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                     </SText>
                 </SView>
                 <SHr height={15} />
-                <SView col={"xs-12"} row>
-                    {this.time("10 min")}
-                    {this.time("20 min")}
-                    {this.time("30 min")}
-                    {this.time("1 hrs")}
-                    {this.time("2 hrs")}
-                </SView>
-
+                <BotonesOpciones
+                    tiempo_cliente={this._tiempo_manual}
+                    onChange={(e) => {
+                        this._tiempo_manual = e.tiempo_cliente;
+                        this.setState({ tiempo_cliente: e.tiempo_cliente });
+                        this.form?.setValues?.({ tiempo_cliente: e.tiempo_cliente });
+                    }}
+                />
                 <SForm
                     row
                     ref={(ref: any) => (this.form = ref)}
-                    style={{
-                        justifyContent: "space-between",
-                    }}
+                    style={{ justifyContent: "space-between" }}
                     inputs={{
                         fecha: {
                             col: "xs-5.8",
@@ -156,31 +109,24 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                             autoFocus: true,
                             required: true,
                             defaultValue: new SDate().toString("yyyy-MM-dd"),
-                            onSubmitEditing: () => {
-                                this.form?.focus?.("tiempo_cliente");
-                            },
+                            onSubmitEditing: () => this.form?.focus?.("tiempo_cliente"),
                         },
                         tiempo_cliente: {
                             col: "xs-5.8",
                             label: "Tiempo de cliente *",
                             type: "hour",
                             required: true,
-                            value: tiempo_cliente,
-                            onChange: (val: string) => this.setTiempoCliente(val),
-                            onSubmitEditing: () => {
-                                this.form?.focus?.("comentario");
-                            },
+                            defaultValue: this._tiempo_manual,
+                            onChange: this.setTiempoCliente,
+                            onSubmitEditing: () => this.form?.focus?.("comentario"),
                         },
                         comentario: {
                             col: "xs-12",
-                            padding:10,
-                            // style: {{Backgroundcolo}} ,
+                            padding: 10,
                             label: "Comentario *",
                             type: "textArea",
                             defaultValue: defaultData?.descripcion || "",
-                            onSubmitEditing: () => {
-                                this.form?.submit?.();
-                            },
+                            onSubmitEditing: () => this.form?.submit?.(),
                         },
                         fijar: {
                             col: "xs-12",
@@ -191,64 +137,26 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                     }}
                     onSubmit={(e: any) => {
                         const comentario = e?.comentario?.trim?.();
-
-
-
-                        // if (!comentario) {
-                        //     SNotification.send({
-                        //         key: "formulario_error_comentario",
-                        //         title: "Falta comentario",
-                        //         body: "⚠️ Debes escribir algo en el campo comentario.",
-                        //         type: "warning",
-                        //         time: 3000,
-                        //     });
-                        //     this.form?.focus?.("comentario");
-                        //     return;
-                        // }
-
-                        // // Verificar si se seleccionó un tiempo
-                        const tiempo_cliente = this.state.tiempo_cliente;
-                        // if (!tiempo_cliente) {
-                        //     SNotification.send({
-                        //         key: "formulario_error_tiempo",
-                        //         title: "Tiempo no seleccionado",
-                        //         body: "⏱️ Debes seleccionar un tiempo antes de continuar.",
-                        //         type: "warning",
-                        //         time: 3000,
-                        //     });
-                        //     return;
-                        // }
-
-
+                        const tiempo_cliente = this._tiempo_manual;
 
                         const data = {
                             ...defaultData,
                             ...e,
-                            comentario, // comentario limpio
-                            tiempo_cliente: this.state.tiempo_cliente,
+                            comentario,
+                            tiempo_cliente,
                         };
 
-
-                        // const prom = data?.key ? MDL.crm.proyecto.editar(data) : MDL.crm.proyecto.registrar(data);
-                        console.log("Datos a enviar:", data);
                         const fecha = new SDate(data.fecha + 'T' + data.tiempo_cliente + ":00", "yyyy-MM-ddThh:mm:ss");
                         const dto = {
                             fecha_rellamada: fecha.toString("yyyy-MM-ddThh:mm:ssTZD"),
                             comentario: data.comentario,
-                            fijar: data.fijar
-                        }
-                        console.log("Fec:", dto);
-                        // return;
-                        // SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
-                        if (this.props?.onRegister) {
-                            this.props.onRegister(dto);
-                            console.log("✅ Datos a registrar:", data);
+                            fijar: data.fijar,
+                        };
 
-                        }
-                    }
-                    }
+                        this.props?.onRegister?.(dto);
+                        console.log("✅ Datos a registrar:", data);
+                    }}
                 />
-
                 <SHr />
                 <SView row col={"xs-12"}>
                     {this.props.onCancel && (
@@ -256,20 +164,69 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                             <PButtom
                                 flex
                                 type="danger"
-                                onPress={() => {
-                                    if (this.props.onCancel) this.props.onCancel();
-                                }}
+                                onPress={() => this.props.onCancel?.()}
                             >
                                 CANCELAR
                             </PButtom>
                             <SView width={8} />
                         </>
                     )}
-
-                    <PButtom flex type="secondary" onPress={() => this.form?.submit && this.form.submit()}>
+                    <PButtom flex type="secondary" onPress={() => this.form?.submit?.()}>
                         {defaultData ? "ACTUALIZAR" : "ACEPTAR"}
                     </PButtom>
                 </SView>
+            </SView>
+        );
+    }
+}
+
+class BotonesOpciones extends Component<{ tiempo_cliente: string, onChange?: (e: any) => void }> {
+    time = (text: string) => {
+        let date = new SDate();
+        if (text.includes("min")) {
+            const minutos = parseInt(text.split(" ")[0]);
+            date.addMinute(minutos);
+        } else if (text.includes("hrs")) {
+            const horas = parseInt(text.split(" ")[0]);
+            date.addHour(horas);
+        }
+        const horaBoton = date.toString("hh:mm");
+        const esSeleccionado = this.props.tiempo_cliente === horaBoton;
+
+        return (
+            <SView col={"xs-2.4"} style={{ padding: 4 }}>
+                <SView
+                    padding={5}
+                    style={{
+                        backgroundColor: esSeleccionado ? STheme.color.danger : STheme.color.card,
+                        borderRadius: 12,
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                    onPress={() => {
+                        this.props.onChange?.({ tiempo_cliente: horaBoton });
+                    }}
+                >
+                    <SText
+                        fontSize={10}
+                        color={esSeleccionado ? STheme.color.white : STheme.color.text}
+                        bold
+                    >
+                        {text}
+                    </SText>
+                </SView>
+            </SView>
+        );
+    };
+
+    render() {
+        return (
+            <SView col={"xs-12"} row>
+                {this.time("10 min")}
+                {this.time("20 min")}
+                {this.time("30 min")}
+                {this.time("1 hrs")}
+                {this.time("2 hrs")}
             </SView>
         );
     }
