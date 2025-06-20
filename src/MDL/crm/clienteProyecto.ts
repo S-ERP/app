@@ -191,13 +191,33 @@ export default class clienteProyecto {
             key: "por_llamar",
             name: "Por Llamar",
             color: STheme.color.lightGray,
-            states: ["nuevo", "rellamada", "vencido", "llamada_fallida", "enviando_whatsapp"],
+            states: ["nuevo", "rellamada", "vencido", "llamada_fallida"],
         },
         {
             key: "en_llamada",
             name: "En proceso venta",
             color: STheme.color.warning,
             states: ["en_proceso"],
+        },
+        {
+            key: "confirmado",
+            name: "Confirmados",
+            color: STheme.color.success,
+            states: ["confirmado"],
+        },
+        {
+            key: "no_llamar",
+            name: "No llamar",
+            color: STheme.color.danger,
+            states: ["spam", "double", "cancelado"],
+        },
+    ];
+    stagesWhatsApp = [
+        {
+            key: "por_llamar",
+            name: "Por Llamar",
+            color: STheme.color.lightGray,
+            states: ["enviando_whatsapp"],
         },
         {
             key: "en_whatsapp",

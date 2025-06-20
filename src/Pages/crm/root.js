@@ -89,6 +89,18 @@ export default class root extends Component {
                     icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
                 />
 
+
+                <SHr height={20} />
+                <SText fontSize={20}>WhatsApp</SText>
+                <SHr height={20} />
+
+                <MenuButtom
+                    label="Dashboard de WhatsApp"
+                    url="/crm/dashboard"
+                    params={{ type: "whatsapp" }}
+                    icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
+                />
+
                 <MenuButtom
                     label="Mensajes masivos"
                     url="/crm/masivo"

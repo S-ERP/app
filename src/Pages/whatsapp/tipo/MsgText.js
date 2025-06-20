@@ -31,19 +31,16 @@ export default class MsgText extends Component {
         return (
             <SView style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 6, width: "auto", maxWidth: "80%", alignItems: "flex-start" }}>
                 {this.props.mensaje.hasQuotedMsg && <QuotedMsg mensaje={this.props.mensaje} key_device={this.props.key_device} />}
-                <SText clean color={"white"} style={{
-                    width: "100%"
-                }}>
+                <SText col={"xs-12"} clean color={"white"} fontSize={14}>
                     {/* <span style={{  }} dangerouslySetInnerHTML={{ __html: formattedTexto + "                  " }} /> */}
                     {formattedTexto}{"                   "}
-                    <HoraLabel mesaje={this.props.mensaje} style={{
-                        flex: 1,
-                        // position: "absolute",
-                        // bottom: 4, right: 4,
-                    }} />
+
                     {/* <SText clean>{"               "}</SText> */}
                 </SText>
-
+                <HoraLabel mesaje={this.props.mensaje} style={{
+                    position: "absolute",
+                    bottom: 4, right: 4,
+                }} />
 
             </SView>
         );
