@@ -40,34 +40,45 @@ export default class proyectoImportarWasap extends Component {
         const telefonoStr = telefono.toString().trim();
         let descripcion = "";
 
-        // Validaciones generales
+        // Si contiene letras
         if (/[a-zA-Z]/.test(telefonoStr)) {
             return { telefonoFormateado: "", descripcion: "El teléfono contiene letras" };
         }
 
+        // Si contiene caracteres no válidos
         if (/[^0-9\s+]/.test(telefonoStr)) {
             return { telefonoFormateado: "", descripcion: "El teléfono contiene caracteres no válidos" };
         }
 
-        // Si comienza con + y lo que sigue son solo dígitos → es internacional → lo dejamos tal cual
-        if (/^\+\d+$/.test(telefonoStr)) {
+        // Si ya está bien con +591
+        if (/^\+591\s?\d{8}$/.test(telefonoStr)) {
             return {
-                telefonoFormateado: telefonoStr,
+                telefonoFormateado: telefonoStr.replace(/\s+/, " "), // asegura un solo espacio
                 descripcion: ""
             };
         }
 
-        // Caso Bolivia (sin +), debe tener exactamente 8 dígitos
-        const telLimpio = telefonoStr.replace(/\D/g, "");
-        if (telLimpio.length !== 8) {
-            descripcion = `Error en el teléfono boliviano, debe tener 8 dígitos (tiene ${telLimpio.length})`;
-            return { telefonoFormateado: "", descripcion };
+        // Si comienza con 591 pero sin el +
+        if (/^591\d{8}$/.test(telefonoStr)) {
+            return {
+                telefonoFormateado: `+591 ${telefonoStr.slice(3)}`,
+                descripcion: ""
+            };
         }
 
-        // Retorno formateado con código Bolivia
+        // Si tiene solo 8 dígitos → se asume boliviano
+        const soloNumeros = telefonoStr.replace(/\D/g, "");
+        if (/^\d{8}$/.test(soloNumeros)) {
+            return {
+                telefonoFormateado: `+591 ${soloNumeros}`,
+                descripcion: ""
+            };
+        }
+
+        // No cumple ninguna condición válida
         return {
-            telefonoFormateado: `+591 ${telLimpio}`,
-            descripcion: ""
+            telefonoFormateado: "",
+            descripcion: "Formato de teléfono no reconocido"
         };
     };
 

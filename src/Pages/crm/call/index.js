@@ -18,6 +18,7 @@ import DraggableView from './DragableView';
 import SSocket from "servisofts-socket";
 import Chatlead from '../Components/Whatsapp/Chatlead';
 import { ScrollView } from 'react-native-gesture-handler';
+import ChatById from '../../whatsapp/ChatById';
 const CardContent = ({ children }) => {
     return <SView col={"xs-12 sm-6 md-6 lg-4"} padding={0} center>
         <SView col={"xs-12"} padding={4}>
@@ -94,8 +95,14 @@ export default class index extends Component {
 
     }
 
+    telefonoToWhatsapp(telefono) {
+        if (!telefono) return null;
+        telefono = telefono.replace(/[^0-9]/g, ""); // Eliminar caracteres
+        telefono = telefono.trim(); // Eliminar espacios al inicio y al final
+        return `${telefono}@c.us`
+    }
     render() {
-        const { proyecto, state, fecha_on, fecha_edit } = this.state.data || {};
+        const { proyecto, state, fecha_on, fecha_edit, cliente } = this.state.data || {};
         if (this.state.data == null) return <SPage title={"Call"} >
             <SLoad />
         </SPage >
@@ -138,8 +145,14 @@ export default class index extends Component {
                         <SView col={"xs-12"} padding={8}>
                             <SMD padding={0} fontSize={12} space={0}>{proyecto?.guion}</SMD>
                         </SView>
+
                     </CardContent>
                     <CardContent>
+                        {proyecto.key_whatsapp_device && <SView col={"xs-12"} height={500} card style={{ marginBottom: 16 }}>
+                            <ChatById idDevice={proyecto.key_whatsapp_device} idchat={this.telefonoToWhatsapp(cliente.telefono)}
+
+                                data={{ name: cliente.nombres }} />
+                        </SView>}
                         <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />
                         <Comentario data={this.state.data} />
                         {/* <Chatlead data={this.state?.data} /> */}
@@ -147,6 +160,8 @@ export default class index extends Component {
                         {/* <Comentario data={this.state.data} /> */}
                         {/* <SText clean >{" "}</SText> */}
                         {/* <Chatlead data={this.state?.data} /> */}
+                        {/* <SHr /> */}
+
                         <HistoricoMovimientos ref={ref => this.historicoMovimientos = ref} key_cliente_proyecto={this.pk} />
                     </CardContent>
                 </SView>

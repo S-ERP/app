@@ -53,6 +53,7 @@ export default class MsgDocument extends Component {
             <View
                 style={{
                     width: 350,
+                    maxWidth: "80%",
                     marginHorizontal: 10,
                     backgroundColor: this.props.color,
                     borderRadius: 12,

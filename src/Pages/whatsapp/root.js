@@ -74,7 +74,7 @@ class WhatsappDevices extends Component {
                 break;
             default:
                 mensaje = status;
-                if(!mensaje) mensaje = "Desconectado";
+                if (!mensaje) mensaje = "Desconectado";
                 backgroundColor = STheme.color.gray;
                 break;
         }
@@ -103,10 +103,11 @@ class WhatsappDevices extends Component {
     formulario = (data = null) => {
         const isEdit = !!data;
         let descripcionRef;
+        let webhookRef;
 
         const handleSubmit = async () => {
             const descripcion = descripcionRef.getValue();
-            const webhook = webhookRef.getValue();
+            const webhook = webhookRef.getValue().split(",").map(item => item.trim()).filter(item => item); // Convertir a array y eliminar espacios
             if (!descripcion) {
                 SNotification.send({
                     title: "Error",
@@ -117,9 +118,9 @@ class WhatsappDevices extends Component {
             }
 
             if (isEdit) {
-                await MDL.whatsapp.device.edit(data.key, { descripcion, webhook });
+                await MDL.whatsapp.device.edit(data.key, { descripcion, webhooks: webhook });
             } else {
-                await MDL.whatsapp.device.registrar({ descripcion, webhook });
+                await MDL.whatsapp.device.registrar({ descripcion, webhooks: webhook });
             }
 
             SNotification.send({
@@ -137,7 +138,7 @@ class WhatsappDevices extends Component {
         return SPopup.open({
             key: "formulario_dispositivo",
             content: (
-                <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 300 }} padding={16} withoutFeedback col={"xs-11"}    >
+                <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, width: 500, maxWidth: "100%" }} padding={16} withoutFeedback     >
                     <SText fontSize={16} bold>{isEdit ? "Actualizar dispositivo WhatsApp" : "Registrar nuevo dispositivo WhatsApp"} </SText>
                     <SHr height={8} />
                     <SText fontSize={12}>Complete la información y escanee el código QR para sincronizar un nuevo dispositivo de WhatsApp Business.</SText>
@@ -156,24 +157,25 @@ class WhatsappDevices extends Component {
                             backgroundColor: STheme.color.lightGray + "30",
                             color: STheme.color.text,
                         }}
-                        onKeyPress={(e) => {
-                            if (e.key === "Enter") {
+                    // onKeyPress={(e) => {
+                    //     if (e.key === "Enter") {
 
-                                webhookRef.focus();
-                                e.preventDefault();
+                    //         webhookRef.focus();
+                    //         e.preventDefault();
 
 
-                            }
+                    //     }
 
-                            if (e.key === "Escape") {
-                                e.preventDefault();
-                                SPopup.close("formulario_dispositivo");
-                            }
-                        }}
+                    //     if (e.key === "Escape") {
+                    //         e.preventDefault();
+                    //         SPopup.close("formulario_dispositivo");
+                    //     }
+                    // }}
                     />
-
+                    {/* 
                     <SInput
-                        // autoFocus
+                    
+                        // autoFocus https://serp.servisofts.com/rest/sapi/whatsapp_event
                         type='textArea'
                         label="webhook"
                         placeholder={"Nombre del dispositivo"}
@@ -197,6 +199,33 @@ class WhatsappDevices extends Component {
                                 SPopup.close("formulario_dispositivo");
                             }
                         }}
+                    /> */}
+                    <SInput
+                        // autoFocus
+                        type='textArea'
+                        label="webhooks"
+                        placeholder={"Webhooks separados por comas"}
+                        defaultValue={data?.webhooks ? data.webhooks.join(", ") : ""}
+                        // defaultValue={data?.webhook || ""}
+                        ref={ref => webhookRef = ref}
+                        // required={true}
+                        style={{
+                            height: 100,
+                            borderRadius: 4,
+                            backgroundColor: STheme.color.lightGray + "30",
+                            color: STheme.color.text,
+                        }}
+                    // onKeyPress={(e) => {
+                    //     if (e.key === "Enter") {
+                    //         e.preventDefault();
+                    //         handleSubmit();
+                    //     }
+
+                    //     if (e.key === "Escape") {
+                    //         e.preventDefault();
+                    //         SPopup.close("formulario_dispositivo");
+                    //     }
+                    // }}
                     />
 
                     {/* <SInput
@@ -258,7 +287,7 @@ class WhatsappDevices extends Component {
                     cellStyle={Config.table.cellStyle()}
                     textStyle={Config.table.textStyle()}
                     selectType='single'
-
+                    keyExtractor={e => e.key}
                     onSelect={(e) => {
                         console.log("Selected project:", e.row);
                         FloatMenu.open({
@@ -323,13 +352,13 @@ class WhatsappDevices extends Component {
                                 onPress={() => {
                                     SNavigation.navigate("/whatsapp/chats", { pk: e?.row?.key })
                                 }}
-                                // onLongPress={() => {
-                                //     SPopup.confirm({
-                                //         title: "Ingresar",
-                                //         message: "Abre el historial de conversaciones de este dispositivo.",
-                                //         // type: "1",
-                                //     });
-                                // }}
+                            // onLongPress={() => {
+                            //     SPopup.confirm({
+                            //         title: "Ingresar",
+                            //         message: "Abre el historial de conversaciones de este dispositivo.",
+                            //         // type: "1",
+                            //     });
+                            // }}
                             >
                                 <SView width={4} />
                                 <SIconApp name='whatsapp' fill='green' width={18} />
@@ -343,7 +372,7 @@ class WhatsappDevices extends Component {
                         fontSize: 14
                     }} label="descripcion" width={150} data={e => e.row.descripcion} />
                     <DinamicTable.Col key="estatus" label="Conexion" width={120} data={() => ""} customComponent={e => (this.estado(e.row?.session?.status))} />
-                    <DinamicTable.Col key="webhook" label="webhook" width={180} wrap data={e => e.row.webhook} textStyle={{
+                    <DinamicTable.Col key="webhooks" label="webhook" width={180} wrap data={e => e.row.webhooks} textStyle={{
                         color: STheme.color.link,
                     }} />
                     {/* <DinamicTable.Col key="qr" label="qr" width={100} center data={e => e.row?.session?.qr}

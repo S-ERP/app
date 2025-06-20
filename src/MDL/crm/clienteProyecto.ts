@@ -88,6 +88,11 @@ export default class clienteProyecto {
             name: "Nuevo",
             key: "nuevo",
         },
+        enviando_whatsapp: {
+            color: "#41C34A", // violeta
+            name: "Enviando WhatsApp",
+            key: "enviando_whatsapp",
+        },
         rellamada: {
             color: "#2980b9", // azul
             name: "Re-llamar",
@@ -107,6 +112,11 @@ export default class clienteProyecto {
             color: "#e67e22", // ámbar
             name: "En proceso",
             key: "en_proceso",
+        },
+        en_proceso_whatsapp: {
+            color: "#41C34A", // violeta
+            name: "En Proceso WhatsApp",
+            key: "en_proceso_whatsapp",
         },
         confirmado: {
             color: "#27ae60", // verde
@@ -188,6 +198,32 @@ export default class clienteProyecto {
             name: "En proceso venta",
             color: STheme.color.warning,
             states: ["en_proceso"],
+        },
+        {
+            key: "confirmado",
+            name: "Confirmados",
+            color: STheme.color.success,
+            states: ["confirmado"],
+        },
+        {
+            key: "no_llamar",
+            name: "No llamar",
+            color: STheme.color.danger,
+            states: ["spam", "double", "cancelado"],
+        },
+    ];
+    stagesWhatsApp = [
+        {
+            key: "por_llamar",
+            name: "Por Llamar",
+            color: STheme.color.lightGray,
+            states: ["enviando_whatsapp"],
+        },
+        {
+            key: "en_whatsapp",
+            name: "En proceso Whatsapp",
+            color: STheme.color.warning,
+            states: ["en_proceso_whatsapp"],
         },
         {
             key: "confirmado",

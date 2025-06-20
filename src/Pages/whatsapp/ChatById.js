@@ -6,7 +6,7 @@ import Typemessage from "./Typemessage";
 import { ScrollView } from "react-native-gesture-handler";
 import FileChooser from "../../Components/SUpload/FileChooser";
 
-export default class Chatlead extends Component {
+export default class ChatById extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -121,7 +121,9 @@ export default class Chatlead extends Component {
 
         return (
             <SView col="xs-12" row style={{ backgroundColor: STheme.color.card, padding: 8 }}>
-                <SView col="xs-8" row style={{ justifyContent: "flex-start" }}>
+                <SView col="xs-8" row style={{ justifyContent: "flex-start" }} onPress={()=>{
+                    // console.log(data, this.state.data)
+                }}>
                     <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden" }}>
                         <SImage
                             enablePreview
@@ -131,8 +133,8 @@ export default class Chatlead extends Component {
                     </SView>
                     <SView flex row style={{ marginLeft: 16 }} center>
                         <SText col="xs-12" color="white" fontSize={14} bold>{data?.name || "Sin nombre"}</SText>
-                        <SText col="xs-12" color="white" fontSize={12} bold>últ. vez {lastSeenText}</SText>
-                        <SText col="xs-12" color="white" fontSize={12} bold>En línea</SText>
+                        {/* <SText col="xs-12" color="white" fontSize={12} bold>últ. vez {lastSeenText}</SText> */}
+                        {/* <SText col="xs-12" color="white" fontSize={12} bold>En línea</SText> */}
                     </SView>
                 </SView>
                 <SView col="xs-4" row center style={{ justifyContent: "flex-end" }}>
@@ -167,7 +169,7 @@ export default class Chatlead extends Component {
         return (
             <SView col={"xs-12"} key={mensaje.id} style={{
                 alignItems: isEnviado ? "flex-end" : "flex-start",
-                marginBottom: 8
+                marginBottom: 4
             }}>
                 <Typemessage mensaje={mensaje} key_device={this.props.idDevice}></Typemessage>
             </SView>
@@ -235,7 +237,8 @@ export default class Chatlead extends Component {
                 <SView flex style={{ marginRight: 15 }}>
                     <SInput multiline={true} ref={(ref) => (this.campos = ref)} placeholder="Escribe un mensaje" placeholderTextColor="#8696a0"
                         style={{
-                            paddingTop: 5,
+                            height:30,
+                            paddingTop: 4,
                             backgroundColor: "#2a3942", borderRadius: 20, paddingHorizontal: 20, color: "white", borderWidth: 0,
                         }}
                         onKeyPress={(e) => {

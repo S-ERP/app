@@ -46,6 +46,9 @@ export default class Dashboard extends Component {
         if (this.dashboardType == "ventas") {
             this.stages = MDL.crm.clienteProyecto.stages;
         }
+        if (this.dashboardType == "whatsapp") {
+            this.stages = MDL.crm.clienteProyecto.stagesWhatsApp;
+        }
 
     }
 
