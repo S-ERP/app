@@ -59,6 +59,7 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
         });
     }
 
+
     setTiempoCliente = (val: any) => {
         let tiempo = "";
         if (val?.nativeEvent?.text !== undefined) {
@@ -67,9 +68,21 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
             tiempo = (val ?? "").toString();
         }
         this._tiempo_manual = tiempo;
-      
     };
 
+
+
+    // setTiempoCliente = (val: any) => {
+    //     let tiempo = "";
+    //     if (val?.nativeEvent?.text !== undefined) {
+    //         tiempo = val.nativeEvent.text;
+    //     } else {
+    //         tiempo = (val ?? "").toString();
+    //     }
+    //     this._tiempo_manual = tiempo;
+    // };
+
+    botoneso: any = null
     render() {
         const { defaultData } = this.props;
 
@@ -90,11 +103,18 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                 </SView>
                 <SHr height={15} />
                 <BotonesOpciones
+                    ref={(ref) => {
+                        this.botoneso = ref;
+                    }}
                     tiempo_cliente={this._tiempo_manual}
                     onChange={(e) => {
+
                         this._tiempo_manual = e.tiempo_cliente;
-                        this.setState({ tiempo_cliente: e.tiempo_cliente });
+                        this.state.tiempo_cliente = e.tiempo_cliente
+                        // this.setState({ tiempo_cliente: e.tiempo_cliente });
                         this.form?.setValues?.({ tiempo_cliente: e.tiempo_cliente });
+
+
                     }}
                 />
                 <SForm
@@ -117,8 +137,18 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                             type: "hour",
                             required: true,
                             defaultValue: this._tiempo_manual,
-                            onChange: this.setTiempoCliente,
+                            //onChange: this.setTiempoCliente,
                             onSubmitEditing: () => this.form?.focus?.("comentario"),
+                            onKeyPress: () => {
+                                console.log("presiono");
+                                try {
+                                    if (this.botoneso?.setState) {
+                                        this.botoneso.setState({ nuevo_tiempo: "" });
+                                    }
+                                } catch (e) {
+                                    console.error("Error al limpiar botones:", e);
+                                }
+                            },
                         },
                         comentario: {
                             col: "xs-12",
@@ -137,16 +167,15 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
                     }}
                     onSubmit={(e: any) => {
                         const comentario = e?.comentario?.trim?.();
-                        const tiempo_cliente = this._tiempo_manual;
 
                         const data = {
                             ...defaultData,
                             ...e,
                             comentario,
-                            tiempo_cliente,
                         };
 
-                        const fecha = new SDate(data.fecha + 'T' + data.tiempo_cliente + ":00", "yyyy-MM-ddThh:mm:ss");
+                        const fecha = new SDate(data?.fecha + 'T' + data?.tiempo_cliente + ":00", "yyyy-MM-ddThh:mm:ss");
+
                         const dto = {
                             fecha_rellamada: fecha.toString("yyyy-MM-ddThh:mm:ssTZD"),
                             comentario: data.comentario,
@@ -181,6 +210,11 @@ export default class PopupRellamada extends Component<PopupRellamadaType, State>
 }
 
 class BotonesOpciones extends Component<{ tiempo_cliente: string, onChange?: (e: any) => void }> {
+
+    state = {
+        nuevo_tiempo: new SDate().addMinute(10).toString("hh:mm")
+    }
+
     time = (text: string) => {
         let date = new SDate();
         if (text.includes("min")) {
@@ -191,11 +225,14 @@ class BotonesOpciones extends Component<{ tiempo_cliente: string, onChange?: (e:
             date.addHour(horas);
         }
         const horaBoton = date.toString("hh:mm");
-        const esSeleccionado = this.props.tiempo_cliente === horaBoton;
+        const esSeleccionado = this.state.nuevo_tiempo === horaBoton;
 
+
+        console.log("hola " + esSeleccionado)
         return (
             <SView col={"xs-2.4"} style={{ padding: 4 }}>
                 <SView
+
                     padding={5}
                     style={{
                         backgroundColor: esSeleccionado ? STheme.color.danger : STheme.color.card,
@@ -203,8 +240,21 @@ class BotonesOpciones extends Component<{ tiempo_cliente: string, onChange?: (e:
                         alignItems: "center",
                         justifyContent: "center",
                     }}
+
                     onPress={() => {
-                        this.props.onChange?.({ tiempo_cliente: horaBoton });
+                        this.setState({
+                            nuevo_tiempo: esSeleccionado ? "" : horaBoton
+                        })
+                        this.props.onChange?.({
+                            tiempo_cliente: esSeleccionado ? "" : horaBoton,
+                            // tiempo_cliente: esSeleccionado ? "" : text,
+
+                            // esSeleccionado: null
+                            // si tiempo es diferente a la hora seleecionada
+                            // tiempo_cliente: horaBoton
+                        });
+                        // esSeleccionado = false,
+                        // console.log("jaja "+1)
                     }}
                 >
                     <SText
