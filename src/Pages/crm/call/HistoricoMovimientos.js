@@ -39,34 +39,68 @@ export default class HistoricoMovimientos extends Component {
     }
 
     groupByDate(data) {
-        // Primero ordenamos por fecha descendente
-        const sorted = data.sort((a, b) => {
-            return new SDate(b.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime() - new SDate(a.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime();
-        });
+        const resultado = [];
+        let prevKey = null;
+        let ultimoComentario = null;
 
-        // Usamos un objeto para agrupar por fecha (yyyy-MM-dd)
+        for (let i = 0; i < data.length; i++) {
+            const item = data[i];
+            const usuario = item.data?.key_usuario_atiende;
+            const isComentario = !item?.state;
+
+            if (isComentario) {
+                // Si cambia de usuario, reseteamos el último comentario
+                if (usuario !== prevKey && ultimoComentario) {
+                    resultado.push(ultimoComentario);
+                    ultimoComentario = null;
+                }
+                // Solo guardamos el comentario más reciente de este bloque
+                ultimoComentario = item;
+            } else {
+                // Si veníamos acumulando comentario, lo guardamos antes del estado
+                if (ultimoComentario) {
+                    resultado.push(ultimoComentario);
+                    ultimoComentario = null;
+                }
+                resultado.push(item); // Siempre mostrar estados
+            }
+
+            prevKey = usuario;
+        }
+
+        // Si quedó un comentario pendiente al final, lo agregamos
+        if (ultimoComentario) {
+            resultado.push(ultimoComentario);
+        }
+
+        // Ordenamos por fecha
+        const sorted = resultado.sort((a, b) =>
+            new SDate(b.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime() -
+            new SDate(a.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime()
+        );
+
+        // Agrupamos por fecha (yyyy-MM-dd)
         const grouped = {};
         sorted.forEach(item => {
             const fecha = new SDate(item.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd");
-            if (!grouped[fecha]) {
-                grouped[fecha] = [];
-            }
+            if (!grouped[fecha]) grouped[fecha] = [];
             grouped[fecha].push(item);
         });
 
-        // Convertimos el objeto en un array de secciones
         const sections = Object.keys(grouped).map(fecha => ({
             title: fecha,
             data: grouped[fecha],
         }));
 
-        // Ordenamos las secciones por fecha descendente
         sections.sort((a, b) => (a.title < b.title ? 1 : -1));
 
         return sections;
     }
 
     render() {
+
+
+
         return (
             <View style={{ flex: 1 }}>
                 <Text>HistoricoMovimientos</Text>

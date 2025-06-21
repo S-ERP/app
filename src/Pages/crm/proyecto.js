@@ -1,13 +1,7 @@
 import React, { Component } from "react";
 import { View, Text, ScrollView } from "react-native";
 import {
-    SIcon,
-    SNavigation,
-    SNotification,
-    SPage,
-    SPopup,
-    SText,
-    STheme,
+    SIcon, SNavigation, SNotification, SPage, SPopup, SText, STheme,
     SView,
 } from "servisofts-component";
 import FormRegistroProyecto from "./Components/FormRegistroProyecto";
@@ -37,7 +31,7 @@ export default class proyecto extends Component {
     componentDidMount() {
         MDL.whatsapp.device.getAll().then((e) => {
             this.setState({ devices: e });
-        }).catch(e=>{
+        }).catch(e => {
             console.log("Dispositivos cargados:", e);
         })
     }
@@ -132,27 +126,31 @@ export default class proyecto extends Component {
                                 {
                                     label: "Productos",
                                     onPress: () => {
-                                        SNavigation.navigate("/productos/producto", {
-                                            onSelect: (producto) => {
-                                                console.log("Producto seleccionado:", producto);
-                                                MDL.crm.proyectoProducto.registrar({
-                                                    key_producto: producto.key,
-                                                    key_proyecto: e.row.key,
-                                                });
-                                                // MDL.crm.x`
-                                                // SSocket.sendPromise({
-                                                //         service: "crm",
-                                                //         component: "producto",
-                                                //         type: "editar",
-                                                //         data: { ...producto, key_proyecto: e.row.key }
-                                                // }).then(e => {
-                                                //         console.log("Producto actualizado:", e);
-                                                //         this.DinamicTable.loadData();
-                                                // }).catch(error => {
-                                                //         console.error("Error al actualizar producto:", error);
-                                                // });
-                                            },
-                                        });
+
+                                        // aqui estubo alvaro
+                                        SNavigation.navigate("/crm/producto");
+
+                                        // SNavigation.navigate("/productos/producto", {
+                                        //     onSelect: (producto) => {
+                                        //         console.log("Producto seleccionado:", producto);
+                                        //         MDL.crm.proyectoProducto.registrar({
+                                        //             key_producto: producto.key,
+                                        //             key_proyecto: e.row.key,
+                                        //         });
+                                        //         // MDL.crm.x`
+                                        //         // SSocket.sendPromise({
+                                        //         //         service: "crm",
+                                        //         //         component: "producto",
+                                        //         //         type: "editar",
+                                        //         //         data: { ...producto, key_proyecto: e.row.key }
+                                        //         // }).then(e => {
+                                        //         //         console.log("Producto actualizado:", e);
+                                        //         //         this.DinamicTable.loadData();
+                                        //         // }).catch(error => {
+                                        //         //         console.error("Error al actualizar producto:", error);
+                                        //         // });
+                                        //     },
+                                        // });
                                     },
                                     icon: <SIcon name="producto" fill={STheme.color.text} />,
                                 },
@@ -655,7 +653,7 @@ export default class proyecto extends Component {
                         });
                     }}
                 />
-            </SPage>
+            </SPage >
         );
     }
 }
