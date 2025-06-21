@@ -16,7 +16,7 @@ export default {
         return {
             borderWidth: 0,
             borderBottomWidth: 1,
-            borderLeftWidth: 1,
+            // borderLeftWidth: 1,
             // padding: 4,
             // justifyContent: "flex-start"
         }

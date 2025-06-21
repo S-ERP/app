@@ -115,6 +115,14 @@ export default class lead extends Component {
                     fontSize: 13,
                 }} data={(e) => e.row.cliente?.nombres} />
                 <DinamicTable.Col key={"telefono"} label='Teléfono' width={110} data={(e) => e.row.cliente?.telefono} />
+                <DinamicTable.Col key={"departamento"} label='Departamento' width={110} data={(e) => e.row?.cliente?.departamento}
+
+                    customComponent={e => {
+                        if (!e.data) return null;
+                        return <SView style={{ padding: 3, backgroundColor: STheme.colorFromText(e.data), borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                            <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} bold color={STheme.color.text}>{!e.data ? "" : e.data}</SText>
+                        </SView>
+                    }} />
                 {/* <DinamicTable.Col key={"proyecto_descripcion"} label='Descripción' width={340} data={(e) => e.row?.proyecto?.descripcion} /> */}
 
                 <DinamicTable.Col key={"-keyCarro"} label='Carrito' width={200}

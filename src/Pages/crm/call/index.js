@@ -150,7 +150,7 @@ export default class index extends Component {
                     <CardContent>
                         {proyecto.key_whatsapp_device && <SView col={"xs-12"} height={500} card style={{ marginBottom: 16 }}>
                             <ChatById idDevice={proyecto.key_whatsapp_device} idchat={this.telefonoToWhatsapp(cliente.telefono)}
-
+                                addListener
                                 data={{ name: cliente.nombres }} />
                         </SView>}
                         <OrdenesConMismoNumero key_cliente_proyecto={this.pk} />

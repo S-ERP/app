@@ -5,6 +5,7 @@ import MDL from "../../MDL";
 import Typemessage from "./Typemessage";
 import { ScrollView } from "react-native-gesture-handler";
 import FileChooser from "../../Components/SUpload/FileChooser";
+import Model from "../../Model";
 
 export default class ChatById extends Component {
     constructor(props) {
@@ -22,9 +23,26 @@ export default class ChatById extends Component {
         this.loadData();
         const dispositivo = await MDL.whatsapp.device.getByKey(this.props.idDevice);
         this.setState({ dispositivo });
+        if (this.props.addListener) {
+            SSocket.sendPromise({
+                component: "whatsapp",
+                type: "addListener",
+                key_usuario: Model.usuario.Action.getKey(),
+                key_device: this.props.idDevice
+            })
+        }
+
     }
     componentWillUnmount() {
         SSocket.removeEventListener("onMessage", this.onMessageSocket);
+        if (this.props.addListener) {
+            SSocket.sendPromise({
+                component: "whatsapp",
+                type: "removeListener",
+                key_usuario: Model.usuario.Action.getKey(),
+                key_device: this.props.idDevice
+            });
+        }
     }
 
     onMessageSocket = (data) => {
@@ -35,7 +53,7 @@ export default class ChatById extends Component {
 
     }
     loadData() {
-        
+
         const dell = MDL.whatsapp.getAllChatsById({ key_device: this.props.idDevice, idchat: this.props.idchat }).then(e => {
 
             console.log("si ", e)
@@ -121,7 +139,7 @@ export default class ChatById extends Component {
 
         return (
             <SView col="xs-12" row style={{ backgroundColor: STheme.color.card, padding: 8 }}>
-                <SView col="xs-8" row style={{ justifyContent: "flex-start" }} onPress={()=>{
+                <SView col="xs-8" row style={{ justifyContent: "flex-start" }} onPress={() => {
                     // console.log(data, this.state.data)
                 }}>
                     <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden" }}>
@@ -237,7 +255,7 @@ export default class ChatById extends Component {
                 <SView flex style={{ marginRight: 15 }}>
                     <SInput multiline={true} ref={(ref) => (this.campos = ref)} placeholder="Escribe un mensaje" placeholderTextColor="#8696a0"
                         style={{
-                            height:30,
+                            height: 30,
                             paddingTop: 4,
                             backgroundColor: "#2a3942", borderRadius: 20, paddingHorizontal: 20, color: "white", borderWidth: 0,
                         }}
