@@ -48,8 +48,6 @@ export default class Comentario extends Component {
                     </SView>
 
                     <SHr col={"xs-12"} height={8} />
-                    {/* <SHr col={"xs-12"} height={1} color={STheme.color.card} /> */}
-                    {/* <SHr col={"xs-12"} height={8} /> */}
 
                     <SInput
                         // label={"Comentario"}
@@ -71,16 +69,11 @@ export default class Comentario extends Component {
                                     key_usuario_atiende: Model.usuario.Action.getKey(),
                                     comentario: e,
                                 }).then(() => {
-                                    // SNotification.toast("Comentario guardado");
                                 }).catch((error) => {
-                                    // SNotification.toast("Error al guardar el comentario");
-                                    // console.error("Error al guardar el comentario:", error);
                                 })
                             })
                         }}
                     />
-
-                    {/* <SHr height={8} /> */}
                 </SView>
             </SView>
         );
