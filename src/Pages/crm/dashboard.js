@@ -1,6 +1,6 @@
 import React, { Component, createRef } from 'react';
 import { Dimensions, UIManager, findNodeHandle } from 'react-native';
-import { SDate, SHr, SImage, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SImage, SInput, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -224,11 +224,53 @@ export default class Dashboard extends Component {
 
         // this.setState({ dragOffset: { x, y } });
     };
+    departamentos = [
+        { key: "none", content: "Todos" },
+        { key: "Beni", content: "Beni" },
+        { key: "Santa Cruz", content: "Santa Cruz" },
+        { key: "Cochabamba", content: "Cochabamba" },
+        { key: "La Paz", content: "La Paz" },
+        { key: "Oruro", content: "Oruro" },
+        { key: "Potosí", content: "Potosí" },
+        { key: "Tarija", content: "Tarija" },
+        { key: "Chuquisaca", content: "Chuquisaca" },
+    ];
 
     render() {
+        console.log("DATAS", this.state.cards);
         return (
             <GestureHandlerRootView style={{ flex: 1, }}>
                 <SPage title={'Dashboard ' + this.dashboardType} disableScroll>
+                    <SView col={"xs-12"} style={{ padding: 8, backgroundColor: STheme.color.background }} row >
+                       
+                        <SView width={8} />
+                        <SView center style={{
+                            // borderWidth: 1,
+                            // borderColor: STheme.color.warning,
+                            borderRadius: 4,
+                            width: 120,
+                            textAlign: 'center',
+                            height: 30,
+                        }}>
+                            <SInput
+                                type="select"
+                                defaultValue={"none"}
+                                center
+                                options={this.departamentos}
+                                onChangeText={(val) => {
+                                    if (val === "none") {
+                                        this.componentDidMount();
+                                    } else {
+                                        this.setState({
+                                            cards: this.state?.cards.filter(c => c.cliente?.departamento === val)
+                                        });
+                                        console.log("Filtrando por departamento:", val);
+                                    }
+                                }}
+                                style={{ textAlign: "center" }}
+                            />
+                        </SView>
+                    </SView>
                     <ScrollView horizontal>
                         {this.stages.map((stage) => {
                             if (!this.stageRefs[stage.key]) {
