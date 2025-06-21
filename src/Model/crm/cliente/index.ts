@@ -22,6 +22,7 @@ export default new SModel<Action, Reducer>({
         "correo": { type: "text", editable: true, label: "Correo" },
         "fecha_nacimiento": { type: "date", editable: true, },
         "sexo": { type: "text", editable: true, },
+        "departamento": { type: "text", editable: true, label: "Departamento" },
         "direccion": { type: "text", editable: true, label: "Direccion" },
         "lat": { type: "text", editable: true, },
         "lng": { type: "text", editable: true, },

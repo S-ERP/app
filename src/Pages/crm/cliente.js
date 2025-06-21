@@ -118,6 +118,7 @@ export default class cliente extends Component {
                 {/* <DinamicTable.Col key={"lng"} label='Longitud' width={70} data={(e) => e.row.lng} /> */}
                 <DinamicTable.Col key={"fecha_nacimiento"} label='F. Nacimiento' width={110} data={(e) => e.row.fecha_nacimiento} />
                 <DinamicTable.Col key={"sexo"} label='Sexo' width={80} data={(e) => e.row.sexo} />
+                <DinamicTable.Col key={"departamento"} label='Departamento' width={100} data={(e) => e.row.departamento} />
                 {/* <DinamicTable.Col key={"descripcion"} label='Descripción' width={100} data={(e) => e.row.descripcion} /> */}
                 {/* <DinamicTable.Col key={"editar"} label='Editar' width={100} data={(e) => ""}
                     customComponent={e => <SView row card padding={2} onPress={() => {
