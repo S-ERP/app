@@ -283,23 +283,6 @@ export default class Dashboard extends Component {
                                 style={{ textAlign: "center" }}
                             />
                         </SView>
-                        <SView width={8} />
-                        <SView center style={{
-                            borderWidth: 1,
-                            borderColor: STheme.color.warning,
-                            borderRadius: 4,
-                            width: 60,
-                            textAlign: 'center',
-                            height: 30,
-                        }} onPress={() => {
-                            this.setState({
-                                cards: this.state.cards.filter(c => c.cliente?.departamento === "Beni")
-                            });
-                        }}>
-                            <SText fontSize={12} center color={STheme.color.text} >
-                                Santa Cruz
-                            </SText>
-                        </SView>
                     </SView>
                     <ScrollView horizontal>
                         {this.stages.map((stage) => {
