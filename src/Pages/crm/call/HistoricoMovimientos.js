@@ -39,13 +39,32 @@ export default class HistoricoMovimientos extends Component {
     }
 
     groupByDate(data) {
-        // Primero ordenamos por fecha descendente
-        const sorted = data.sort((a, b) => {
-            return new SDate(b.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime() - new SDate(a.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime();
+        // Paso 1: Filtrar los mensajes sin state (comentarios)
+        const sinState = data.filter(item => !item?.state);
+
+        // Paso 2: Solo mantener el último comentario por bloque de usuario
+        const ultimosPorBloque = sinState.filter((item, index, arr) => {
+            const actualKey = item.data?.key_usuario_atiende;
+            const siguiente = arr[index + 1];
+            const siguienteKey = siguiente?.data?.key_usuario_atiende;
+            return actualKey !== siguienteKey;
         });
 
-        // Usamos un objeto para agrupar por fecha (yyyy-MM-dd)
+        // Paso 3: Obtener los items que tienen state definido
+        const conState = data.filter(item => item?.state);
+
+        // Paso 4: Combinar ambos (comentarios filtrados + estados)
+        const combinados = [...ultimosPorBloque, ...conState];
+
+        // Paso 5: Ordenar todos por fecha descendente
+        const sorted = combinados.sort((a, b) =>
+            new SDate(b.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime() -
+            new SDate(a.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime()
+        );
+
+        // Paso 6: Agrupar por fecha yyyy-MM-dd
         const grouped = {};
+
         sorted.forEach(item => {
             const fecha = new SDate(item.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd");
             if (!grouped[fecha]) {
@@ -67,6 +86,9 @@ export default class HistoricoMovimientos extends Component {
     }
 
     render() {
+
+
+
         return (
             <View style={{ flex: 1 }}>
                 <Text>HistoricoMovimientos</Text>
