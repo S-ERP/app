@@ -242,20 +242,7 @@ export default class Dashboard extends Component {
             <GestureHandlerRootView style={{ flex: 1, }}>
                 <SPage title={'Dashboard ' + this.dashboardType} disableScroll>
                     <SView col={"xs-12"} style={{ padding: 8, backgroundColor: STheme.color.background }} row center>
-                        <SView center card style={{
-                            // borderWidth: 1,
-                            // borderColor: STheme.color.ca,
-                            borderRadius: 4,
-                            width: 60,
-                            textAlign: 'center',
-                            height: 40,
-                        }} onPress={() => {
-                            this.componentDidMount();
-                        }}>
-                            <SText fontSize={12} center color={STheme.color.text} >
-                                Todos
-                            </SText>
-                        </SView>
+                       
                         <SView width={8} />
                         <SView center style={{
                             // borderWidth: 1,
