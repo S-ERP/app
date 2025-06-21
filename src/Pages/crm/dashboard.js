@@ -30,6 +30,7 @@ export default class Dashboard extends Component {
         draggingCard: null,
         dragOffset: { x: 0, y: 0 },
         initialOffset: { x: 0, y: 0 },
+        dpto: "all", // Estado para el departamento seleccionado
     };
 
     constructor(props) {
@@ -225,7 +226,8 @@ export default class Dashboard extends Component {
         // this.setState({ dragOffset: { x, y } });
     };
     departamentos = [
-        { key: "none", content: "Todos" },
+        { key: "all", content: "Todos" },
+        { key: "void", content: "Sin DPTO" },
         { key: "Beni", content: "Beni" },
         { key: "Santa Cruz", content: "Santa Cruz" },
         { key: "Cochabamba", content: "Cochabamba" },
@@ -242,7 +244,7 @@ export default class Dashboard extends Component {
             <GestureHandlerRootView style={{ flex: 1, }}>
                 <SPage title={'Dashboard ' + this.dashboardType} disableScroll>
                     <SView col={"xs-12"} style={{ padding: 8, backgroundColor: STheme.color.background }} row >
-                       
+
                         <SView width={8} />
                         <SView center style={{
                             // borderWidth: 1,
@@ -254,18 +256,19 @@ export default class Dashboard extends Component {
                         }}>
                             <SInput
                                 type="select"
-                                defaultValue={"none"}
+                                defaultValue={"all"}
                                 center
                                 options={this.departamentos}
                                 onChangeText={(val) => {
-                                    if (val === "none") {
-                                        this.componentDidMount();
-                                    } else {
-                                        this.setState({
-                                            cards: this.state?.cards.filter(c => c.cliente?.departamento === val)
-                                        });
-                                        console.log("Filtrando por departamento:", val);
-                                    }
+                                    this.setState({
+                                        dpto: val
+                                    });
+                                    // if (val === "none") {
+                                    //     this.componentDidMount();
+                                    // } else {
+
+                                    //     console.log("Filtrando por departamento:", val);
+                                    // }
                                 }}
                                 style={{ textAlign: "center" }}
                             />
@@ -285,7 +288,15 @@ export default class Dashboard extends Component {
                                     <Stage
                                         stage={stage}
                                         draggingCard={this.state.draggingCard}
-                                        cards={this.state.cards.filter((c) => stage.states.includes(c.state))}
+                                        cards={this.state.cards.filter((c) => {
+                                            if (!stage.states.includes(c.state)) return false;
+                                            if (this.state.dpto == "all") return true;
+                                            if (this.state.dpto == "void") {
+                                                return !c?.cliente?.departamento;
+                                            }
+                                            return c?.cliente?.departamento == this.state.dpto
+
+                                        })}
                                         onCardDrop={this.handleDrop}
                                         onDragStart={this.handleDragStart}
                                         onDragMove={this.handleDragMove}
