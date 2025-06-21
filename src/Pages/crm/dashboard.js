@@ -241,7 +241,7 @@ export default class Dashboard extends Component {
         return (
             <GestureHandlerRootView style={{ flex: 1, }}>
                 <SPage title={'Dashboard ' + this.dashboardType} disableScroll>
-                    <SView col={"xs-12"} style={{ padding: 8, backgroundColor: STheme.color.background }} row center>
+                    <SView col={"xs-12"} style={{ padding: 8, backgroundColor: STheme.color.background }} row >
                        
                         <SView width={8} />
                         <SView center style={{
