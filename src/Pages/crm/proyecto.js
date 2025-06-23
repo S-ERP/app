@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { View, Text, ScrollView } from "react-native";
 import {
-    SIcon, SNavigation, SNotification, SPage, SPopup, SText, STheme,
+    SIcon, SImage, SNavigation, SNotification, SPage, SPopup, SText, STheme,
     SView,
 } from "servisofts-component";
 import FormRegistroProyecto from "./Components/FormRegistroProyecto";
@@ -124,11 +124,19 @@ export default class proyecto extends Component {
 
                             options: [
                                 {
-                                    label: "Productos",
+                                    label: "Agregar Productos",
                                     onPress: () => {
 
                                         // aqui estubo alvaro
-                                        SNavigation.navigate("/crm/producto");
+                                        SNavigation.navigate("/restaurante/producto", {
+                                            onSelect: (producto) => {
+                                                MDL.crm.proyectoProducto.registrar({
+                                                    key_producto: producto.key,
+                                                    key_proyecto: e.row.key,
+                                                });
+                                                console.log("Producto seleccionado:", producto);
+                                            }
+                                        });
 
                                         // SNavigation.navigate("/productos/producto", {
                                         //     onSelect: (producto) => {
@@ -496,14 +504,19 @@ export default class proyecto extends Component {
                                                         ],
                                                     });
                                                 }}
+                                                row
+                                                center
                                             >
+                                                <SView width={20} height={20} style={{ borderRadius: 4, overflow: "hidden" ,overflow:"hidden" }} card>
+                                                    <SImage src={SSocket.api.inventario + "producto/" + prd.key_producto} />
+                                                </SView>
                                                 <SText
                                                     card
                                                     padding={4}
                                                     style={{ maxWidth: 200 }}
                                                     numberOfLines={1}
                                                 >
-                                                    {prd?.producto?.nombre} x Bs.
+                                                    {prd?.producto?.nombre}  Bs.
                                                     {prd?.producto?.precio ?? 0}
                                                 </SText>
                                             </SView>

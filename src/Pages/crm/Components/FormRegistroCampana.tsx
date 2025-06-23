@@ -6,6 +6,8 @@ import { DinamicTable } from 'servisofts-table';
 import { SForm, SHr, SIcon, SInput, SNavigation, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import PButtom from '../../../Components/PButtom';
 import { Proyecto } from '../../../MDL/crm/type';
+import TextAreaPopupOpenIcon from '../../../Components/QueryTool/TextAreaPopupOpenIcon';
+import def from 'ajv/dist/vocabularies/applicator/additionalItems';
 
 
 type FormRegistroType = {
@@ -60,9 +62,23 @@ export default class FormRegistroCampana extends Component<FormRegistroType & { 
                         }
                     },
                     "descripcion": {
-                        label: "Descripcion de la campaña", required: true, defaultValue: defaultData?.descripcion, type: "textArea", onSubmitEditing: () => {
+                        label: "Descripcion de la campaña", required: true, defaultValue: defaultData?.descripcion, type: "textArea",
+
+                        iconR: <TextAreaPopupOpenIcon
+                            type={"MD"}
+                            title='Descripcion de la campaña'
+                            getDefaultValue={() => {
+                                return this.form?.getValues()?.descripcion || defaultData?.descripcion || "";
+                            }}
+                            defaultValue={defaultData?.descripcion}
+                            onChangeText={(text: string) => {
+                                if (this.form) {
+                                    this.form.setValues({ "descripcion": text });
+                                }
+                            }} />,
+                        onSubmitEditing: () => {
                             // if (this.form) this.form.focus("guion");
-                            if (this.form) this.form.submit();
+                            // if (this.form) this.form.submit();
                         }
                     }
                 }}
@@ -113,7 +129,7 @@ export default class FormRegistroCampana extends Component<FormRegistroType & { 
     "key_campana": "${this.props?.defaultData?.key}"
 }`} /> */}
             <SHr />
-            <SText onPress={() => {
+            {/* <SText onPress={() => {
                 SNavigation.navigate("/crm/campana", { pk: this.props?.defaultData?.key })
                 if (this.props.onCancel) this.props.onCancel()
             }}>{"VER PAGINA"}</SText>
@@ -121,7 +137,7 @@ export default class FormRegistroCampana extends Component<FormRegistroType & { 
                 SNavigation.navigate("/crm/campana", { pk: this.props?.defaultData?.key })
                 if (this.props.onCancel) this.props.onCancel()
             }}>{"LINKS"}</SText>
-            <SHr />
+            <SHr /> */}
             <SView row col={"xs-12"}>
                 {this.props.onCancel && <>
                     <PButtom flex type='danger' onPress={() => {

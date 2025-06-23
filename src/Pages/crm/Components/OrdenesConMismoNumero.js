@@ -14,6 +14,7 @@ import {
 } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import Etiqueta from "./Etiqueta";
+import { ScrollView } from "react-native";
 export default class OrdenesConMismoNumero extends Component {
     constructor(props) {
         super(props);
@@ -65,39 +66,35 @@ export default class OrdenesConMismoNumero extends Component {
             </>
         }
 
-        return (
-            <>
-                {data_ordenes.map((orden, idx) => (
-                    <React.Fragment key={idx}>
+        return data_ordenes.sort((a, b) => a.fecha_on >= b.fecha_on ? -1 : 1).map((orden, idx) => (
+            <React.Fragment key={idx}>
 
-                        {/* <SView col={"xs-12"} key={idx} card style={{ margin: 8, padding: 8 }}> */}
-                        <SView col="xs-12" row center>
-                            <SView col="xs-4" row>
+                {/* <SView col={"xs-12"} key={idx} card style={{ margin: 8, padding: 8 }}> */}
+                <SView col="xs-12" row center>
+                    <SView col="xs-4" row>
 
-                                <Etiqueta tipo_leads={orden?.state}></Etiqueta>
+                        <Etiqueta tipo_leads={orden?.state}></Etiqueta>
 
 
-                                {/* <SView style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: this.colorState(orden.state), marginRight: 8, }} >
+                        {/* <SView style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: this.colorState(orden.state), marginRight: 8, }} >
          <SText fontSize={14} color="#fff">{orden.state}</SText>
         </SView> */}
-                            </SView>
-                            <SView col="xs-5">
-                                <SText>{orden?.proyecto?.nombre}</SText>
-                            </SView>
-                            <SView col="xs-3">
-                                <SText col="xs-12" >{orden.codigo}</SText>
-                            </SView>
-                        </SView>
-                        {/* </SView> */}
+                    </SView>
+                    <SView col="xs-5">
+                        <SText>{orden?.proyecto?.nombre}</SText>
+                    </SView>
+                    <SView col="xs-3">
+                        <SText col="xs-12" >{orden.codigo}</SText>
+                    </SView>
+                </SView>
+                {/* </SView> */}
 
-                        <SHr col={"xs-12"} height={8} />
-                        <SHr col={"xs-12"} height={1} color={STheme.color.card} />
-                        <SHr col={"xs-12"} height={8} />
-                    </React.Fragment>
+                <SHr col={"xs-12"} height={8} />
+                <SHr col={"xs-12"} height={1} color={STheme.color.card} />
+                <SHr col={"xs-12"} height={8} />
+            </React.Fragment>
 
-                ))}
-            </>
-        );
+        ));
     }
 
 
@@ -106,7 +103,7 @@ export default class OrdenesConMismoNumero extends Component {
             <SView col={"xs-12"}>
                 <SView
                     col={"xs-12"}
-                    style={{ padding: 16, borderRadius: 16, borderWidth: 2 }}
+                    style={{ padding: 16, borderRadius: 16, borderWidth: 2, }}
                     border={STheme.color.card}
                     backgroundColor={STheme.color.card}
                 >
@@ -118,12 +115,12 @@ export default class OrdenesConMismoNumero extends Component {
                     <SHr col={"xs-12"} height={8} />
                     <SHr col={"xs-12"} height={1} color={STheme.color.card} />
                     <SHr col={"xs-12"} height={8} />
-                    {this.pintado()}
-                    <SHr height={8} />
+                    <ScrollView style={{ width: "100%", flex: 1, maxHeight: 250 }} >
+                        {this.pintado()}
+                    </ScrollView>
+
                 </SView>
-
-                <SHr height={16} />
-
+                <SHr height={8} />
             </SView>
         );
     }

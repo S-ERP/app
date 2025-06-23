@@ -97,15 +97,15 @@ export default class root extends Component {
                 <MenuButtom
                     label="Dashboard de WhatsApp"
                     url="/crm/dashboard"
-                    params={{ type: "whatsapp" }}
+                    params={{ type: "whatsapp", startState: "enviando_whatsapp" }}
                     icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
                 />
 
-                <MenuButtom
+                {/* <MenuButtom
                     label="Mensajes masivos"
                     url="/crm/masivo"
                     icon={<SIconApp name='whatsapp' fill={"#333"} />}
-                />
+                /> */}
             </MenuPages>
 
         </SPage>

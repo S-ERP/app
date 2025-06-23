@@ -55,10 +55,10 @@ export default class CrearNuevo extends Component {
                     alignItems: "center",
                     position: "absolute",
                     top: 0,
-                    backgroundColor: STheme.color.card,
+                    backgroundColor: STheme.color.background,
                     borderColor: STheme.color.card,
-                    // borderWidth: 1,
-                    // borderRadius: 8
+                    borderWidth: 1,
+                    borderRadius: 8
 
                 }, this.props.style]}>
                 {this.renderItem({ key: "producto", icon: require("../../../../Assets/img/PRODUCTO.png"), label: "Producto" })}

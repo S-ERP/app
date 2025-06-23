@@ -20,6 +20,10 @@ import SSocket from 'servisofts-socket';
 import Model from '../../Model';
 import DashboardCard from './Components/DashboardCard';
 import Etiqueta from './Components/Etiqueta';
+import SIconApp from '../../Assets/SIconApp';
+import FormRegistroLead from './Components/FormRegistroLead';
+
+const HEADER_HEIGHT = 30;// Altura del header
 
 
 export default class Dashboard extends Component {
@@ -30,13 +34,14 @@ export default class Dashboard extends Component {
         draggingCard: null,
         dragOffset: { x: 0, y: 0 },
         initialOffset: { x: 0, y: 0 },
-        dpto: "all", // Estado para el departamento seleccionado
+        dpto: "all", // Estado para el departamento seleccionado,
     };
-
+    startState = "nuevo"
     constructor(props) {
         super(props);
         //  = SNavigation.getParam("type") == "delivery" ?
         this.dashboardType = SNavigation.getParam("type", "");
+        this.startState = SNavigation.getParam("startState", "nuevo");
         this.stages = [
             ...MDL.crm.clienteProyecto.stages.filter(a => a.key != "confirmado"),
             ...MDL.crm.clienteProyecto.stagesDelivery
@@ -243,21 +248,41 @@ export default class Dashboard extends Component {
         return (
             <GestureHandlerRootView style={{ flex: 1, }}>
                 <SPage title={'Dashboard ' + this.dashboardType} disableScroll>
-                    <SView col={"xs-12"} style={{ padding: 8, backgroundColor: STheme.color.background }} row >
-
+                    <SView col={"xs-12"} style={{ padding: 2, height: HEADER_HEIGHT, backgroundColor: STheme.color.background, alignItems: "center" }} row >
                         <SView width={8} />
+                        <SView row padding={6} card onPress={() => {
+                            console.log("Agregar Lead");
+                            FormRegistroLead.open({
+                                state: this.startState,
+                                onRegister: (data) => {
+                                    this.componentDidMount();
+                                }
+                            })
+
+                        }}>
+                            <SIconApp width={14} height={14} name='Add' fill='#fff' />
+                            <SView width={2} />
+                            <SText fontSize={12} bold>Agregar Lead</SText>
+                        </SView>
+                        <SView width={8} />
+                        <SView width={8} />
+                        <SView width={8} />
+                        <SView width={8} />
+                        <SText fontSize={12} bold>DPTO:</SText>
+                        <SView width={4} />
                         <SView center style={{
                             // borderWidth: 1,
                             // borderColor: STheme.color.warning,
                             borderRadius: 4,
-                            width: 120,
+                            width: 90,
                             textAlign: 'center',
-                            height: 30,
+                            height: 20,
                         }}>
                             <SInput
                                 type="select"
                                 defaultValue={"all"}
                                 center
+                                height={20}
                                 options={this.departamentos}
                                 onChangeText={(val) => {
                                     this.setState({
@@ -336,7 +361,7 @@ class DragginCard extends Component {
         return (
             <Animated.View style={{
                 position: "absolute",
-                top: this.state.dragOffset.y + this.state.initialOffset.y + 2,
+                top: this.state.dragOffset.y + this.state.initialOffset.y + 2 - HEADER_HEIGHT,
                 left: this.state.dragOffset.x + this.state.initialOffset.x,
                 width: this.state.initialOffset.w,
                 zIndex: 9999,

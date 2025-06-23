@@ -5,6 +5,10 @@ import MDL from '../../../MDL';
 import { DinamicTable } from 'servisofts-table';
 import { SForm, SHr, SIcon, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import PButtom from '../../../Components/PButtom';
+import TextArea from '../../../Components/QueryTool/TextArea';
+import SIconApp from '../../../Assets/SIconApp';
+import TextAreaPopup from '../../../Components/QueryTool/TextAreaPopup';
+import TextAreaPopupOpenIcon from '../../../Components/QueryTool/TextAreaPopupOpenIcon';
 
 
 type FormRegistroType = {
@@ -31,6 +35,8 @@ export default class FormRegistroProyecto extends Component<FormRegistroType & {
         })
     }
     form: SForm | null = null;
+
+
     render() {
 
         const { defaultData } = this.props;
@@ -48,13 +54,41 @@ export default class FormRegistroProyecto extends Component<FormRegistroType & {
                         }
                     },
                     "descripcion": {
-                        label: "Descripcion del proyecto", required: true, defaultValue: defaultData?.descripcion, type: "textArea", onSubmitEditing: () => {
+                        label: "Descripcion del proyecto", required: true, defaultValue: defaultData?.descripcion, type: "textArea",
+
+                        iconR: <TextAreaPopupOpenIcon
+                            type={"MD"}
+                            title='Descripción del proyecto'
+                            getDefaultValue={() => {
+                                return this.form?.getValues()?.descripcion || defaultData?.descripcion || "";
+                            }}
+                            onChangeText={(text: string) => {
+                                if (this.form) {
+                                    this.form.setValues({ "descripcion": text });
+                                }
+                            }} />,
+                        onSubmitEditing: () => {
                             if (this.form) this.form.focus("guion");
                             // if (this.form) this.form.submit();
                         }
                     },
                     "guion": {
-                        label: "Guion del proyecto", defaultValue: defaultData?.guion, type: "textArea", onSubmitEditing: () => {
+                        label: "Guion del proyecto", defaultValue: defaultData?.guion, type: "textArea",
+                        height: 100,
+
+                        iconR: <TextAreaPopupOpenIcon
+                            type={"MD"}
+                            title='Guion del proyecto'
+                            getDefaultValue={() => {
+                                return this.form?.getValues()?.guion || defaultData?.guion || "";
+                            }}
+                            onChangeText={(text: string) => {
+                                if (this.form) {
+                                    this.form.setValues({ "guion": text });
+                                }
+                            }} />,
+
+                        onSubmitEditing: () => {
                             if (this.form) this.form.submit();
                         }
                     }
@@ -98,6 +132,8 @@ export default class FormRegistroProyecto extends Component<FormRegistroType & {
 
                 }}
             />
+
+
             <SHr />
             <SView row col={"xs-12"}>
                 {this.props.onCancel && <>

@@ -26,23 +26,31 @@ export default class HorarioCliente extends Component {
 
     componentDidMount() {
         // MDL.crm.clienteProyecto.getFull(this.props.key_cliente_proyecto).then((e) => {
-        SSocket.sendPromise({
-            "version": "1.0",
-            "service": "inventario",
-            "component": "producto",
-            "type": "getAll",
-            "estado": "cargando",
-            "key_empresa": Model.empresa.Action.getKey(),
-            "key_usuario": Model.usuario.Action.getKey(),
-        }).then((producto) => {
-            // (this.props?.proyecto_producto ?? []).map((prod) => {
-            //     const productoData = producto.data[prod.key_producto];
-            //     prod.producto = productoData;
-            // })
-            this.state.productos = producto.data
-            // console.log("producto", producto);
-            this.forceUpdate()
+        console.log("clienteProyecto", this.props.clienteProyecto);
+        MDL.crm.proyecto.getAllFull().then(e => {
+            const proyecto = e.find(e => e.key == this.props.clienteProyecto.key_proyecto);
+            this.state.productos = proyecto.productos
+            this.forceUpdate();
+            console.log("proyecto", proyecto);
+
         })
+        // SSocket.sendPromise({
+        //     "version": "1.0",
+        //     "service": "inventario",
+        //     "component": "producto",
+        //     "type": "getAll",
+        //     "estado": "cargando",
+        //     "key_empresa": Model.empresa.Action.getKey(),
+        //     "key_usuario": Model.usuario.Action.getKey(),
+        // }).then((producto) => {
+        //     // (this.props?.proyecto_producto ?? []).map((prod) => {
+        //     //     const productoData = producto.data[prod.key_producto];
+        //     //     prod.producto = productoData;
+        //     // })
+        //     this.state.productos = producto.data
+        //     // console.log("producto", producto);
+        //     this.forceUpdate()
+        // })
         // this.setState({ clienteProyecto: e })
         // })
 
@@ -153,7 +161,8 @@ export default class HorarioCliente extends Component {
         if (activeFormTab === "Productos") {
             return (
                 <SView col={"xs-12"} row>
-                    <Producto cliente_proyecto={this.props.clienteProyecto} productos={this.state.productos} />
+
+                    {this.state.productos && <Producto cliente_proyecto={this.props.clienteProyecto} productos={this.state.productos} />}
                 </SView>
             );
         }

@@ -119,13 +119,13 @@ export default class lead extends Component {
 
                     customComponent={e => {
                         if (!e.data) return null;
-                        return <SView style={{ padding: 3, backgroundColor: STheme.colorFromText(e.data), borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                        return <SView style={{ padding: 3, backgroundColor: STheme.colorFromText(e.data)+"66", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
                             <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} bold color={STheme.color.text}>{!e.data ? "" : e.data}</SText>
                         </SView>
                     }} />
                 {/* <DinamicTable.Col key={"proyecto_descripcion"} label='Descripción' width={340} data={(e) => e.row?.proyecto?.descripcion} /> */}
 
-                <DinamicTable.Col key={"-keyCarro"} label='Carrito' width={200}
+                <DinamicTable.Col key={"carrito"} label='Carrito' width={200}
                     data={(e) => e.row?.carrito}
                     customComponent={e => <SView row center >{this.mostrarCarrito(e.row.carrito)}</SView>}
                 />

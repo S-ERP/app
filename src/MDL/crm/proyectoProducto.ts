@@ -11,18 +11,22 @@ export default class proyectoProducto {
   async getAllConProductos() {
     const resp: any = await SSocket.sendPromise({ service: "crm", component: "proyecto_producto", type: "getAll", key_usuario: Model.usuario.Action.getKey() });
     const respProductos: any = await SSocket.sendPromise({
-      "version": "1.0",
       "service": "inventario",
       "component": "producto",
-      "type": "getAll",
-      "estado": "cargando",
+      "type": "getCategoriasProductosDetallePartner",
       "key_empresa": Model.empresa.Action.getKey(),
       "key_usuario": Model.usuario.Action.getKey(),
     })
 
     const arr = Object.values(resp.data);
+    const productos: any = {};
+    respProductos.data.forEach((cat: any) => {
+      cat.productos.forEach((producto: any) => {
+        productos[producto.key] = producto;
+      });
+    })
     arr.forEach((obj: any) => {
-      obj.producto = respProductos.data[obj.key_producto];
+      obj.producto = productos[obj.key_producto];
     })
     return arr;
   }

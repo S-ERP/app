@@ -1,13 +1,16 @@
 // @ts-nocheck
-import { Text, View, TextInput, ScrollView, KeyboardAvoidingView, Platform, TextStyle } from 'react-native'
+import { Text, View, TextInput, ScrollView, KeyboardAvoidingView, Platform, TextStyle, ViewStyle } from 'react-native'
 import React, { Component } from 'react'
 import { SList, SStorage, SText, STheme, SThread, SView } from 'servisofts-component'
 import ReservedWords from './ReservedWords';
 
-type TextAreaProps = {
-    pk: string,
+export type TextAreaProps = {
+    pk?: string,
     defaultValue?: string,
     type: keyof typeof ReservedWords,
+    onChangeText?: (text: string) => void,
+    title?:string,
+    style?: ViewStyle
 }
 export default class TextArea extends React.Component<TextAreaProps> {
     inp;
@@ -24,6 +27,7 @@ export default class TextArea extends React.Component<TextAreaProps> {
             selection: { start: 1, end: 1 }
         }
     }
+
 
 
 
@@ -65,9 +69,11 @@ export default class TextArea extends React.Component<TextAreaProps> {
         }
     }
     componentDidMount() {
-        SStorage.getItem("sql_tap_" + this.props.pk, (val) => {
-            this.setState({ value: val ?? "" })
-        })
+        if (this.props.pk) {
+            SStorage.getItem("sql_tap_" + this.props.pk, (val) => {
+                this.setState({ value: val ?? "" })
+            })
+        }
         if (Platform.OS == "web") {
             window.addEventListener('keydown', this.handleKey);
         }
@@ -168,8 +174,12 @@ export default class TextArea extends React.Component<TextAreaProps> {
     handleOnChangeText = (text) => {
         this.state.value = text;
         this.setState({ value: this.state.value })
+        if (this.props.onChangeText) {
+            this.props.onChangeText(text);
+        }
         new SThread(500, "sad", true).start(() => {
             console.log("fuardo el elmento")
+            if (!this.props.pk) return;
             SStorage.setItem("sql_tap_" + this.props.pk, this.state.value)
         })
 
@@ -281,8 +291,9 @@ export default class TextArea extends React.Component<TextAreaProps> {
                             </SView>
                             <SView width={20} style={{
                                 borderRightWidth: 1,
-                                borderColor: STheme.color.card
+                                borderColor: STheme.color.card,
                             }} ></SView>
+                            <SView width={2} style={{}} ></SView>
                             <SView flex height={"100%"} >
                                 <ScrollView horizontal
                                     ref={ref => this.scrollViewHorizontal = ref}
@@ -290,7 +301,7 @@ export default class TextArea extends React.Component<TextAreaProps> {
                                         flex: 1
                                     }} >
                                     <SView row style={{
-                                        width: Math.max(500, (this.state?.layout?.width ?? 100) - 60),
+                                        width: Math.max(500, (this.state?.layout?.width ?? 100) - 80),
                                         // width: 3000,
                                         height: Math.max(parseFloat(this.state?.height ?? 0), this.state?.layout?.height ?? 100),
                                     }}>
@@ -312,7 +323,7 @@ export default class TextArea extends React.Component<TextAreaProps> {
                                                     margin: 0,
                                                     width: "100%",
                                                     height: "100%",
-                                                    color: "#ffffff00",
+                                                    color: "#ffffff",
                                                 }}
                                                 autoCorrect={false}
                                                 autoFocus

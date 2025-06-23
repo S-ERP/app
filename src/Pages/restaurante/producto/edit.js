@@ -47,7 +47,7 @@ const FotoDePerfil = ({ key_producto, onChange }) => {
 
 export default class edit extends Component {
     _inputs = {}
-    static TOPBAR = <TopBar type={"usuario_back"} />
+    // static TOPBAR = <TopBar type={"usuario_back"} />
     imageToUpload = null;
     constructor(props) {
         super(props);
@@ -201,7 +201,7 @@ export default class edit extends Component {
             style={{ flex: 1 }}
         >
 
-            <SPage hidden footer={this.renderSaveChange()}>
+            <SPage  footer={this.renderSaveChange()}>
                 <Container loading={!this.state.ready || !this.state.data}>
                     <SHr />
                     <PageTitle title='AGREGAR PRODUCTO'/>

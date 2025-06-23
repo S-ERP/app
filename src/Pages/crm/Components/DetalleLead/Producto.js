@@ -1,175 +1,81 @@
-import React, { Component } from "react";
-import { ScrollView } from "react-native-gesture-handler";
-import { SButtom, SDate, SForm, SHr, SIcon, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView } from "servisofts-component";
-import SSocket from "servisofts-socket";
-import MDL from "../../../../MDL";
+import React, { Component } from 'react';
+import { View, Text, FlatList } from 'react-native';
+import { SInput, SNotification, SText, STheme, SThread, SView } from 'servisofts-component';
+import ProductoItem from './ProductoItem';
+import MDL from '../../../../MDL';
+
 export default class Producto extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+        };
     }
 
-
-    onChange() {
-        this.unsavedChange = true;
-        new SThread(4000, "edit_carrito", true).start(() => {
-            this.saveChanges();
-        })
-    }
-    componentWillUnmount() {
-        this.saveChanges();
-        // clearTimeout(this.timeout);
+    productos_final;
+    buildProductosCombinados() {
+        const { productos, cliente_proyecto } = this.props
+        const carrito = cliente_proyecto?.carrito;
+        let productos_final = {};
+        if (carrito) {
+            // Si hay carrito agregamos los productos del carrito
+            carrito.map((item) => {
+                if (!productos_final[item.key_producto]) productos_final[item.key_producto] = {}
+                productos_final[item.key_producto].carrito = item;
+            })
+        }
+        if (productos) {
+            // Agregamos los productos del proyecto
+            productos.map((item) => {
+                if (!productos_final[item.key_producto]) productos_final[item.key_producto] = {}
+                productos_final[item.key_producto].producto = item;
+            })
+        }
+        this.productos_final = productos_final;
+        return Object.values(productos_final)
     }
 
     saveChanges() {
         if (!this.unsavedChange) return;
-        this.unsavedChange = false;
+        SNotification.send({
+            title: "Guardando cambios en el carrito...",
+            type: "loading",
+            key: "edit_carrito"
+        })
+        const carrito = this.props.cliente_proyecto?.carrito;
 
-        MDL.crm.clienteProyecto.editarCarrito(this.props.cliente_proyecto.carrito, this.props.cliente_proyecto.key).then((resp) => {
+        const arr = Object.values(this.productos_final).filter(item => !!item.carrito_edit).map(item => { return { ...item.carrito_edit, key_cliente_proyecto: this.props.cliente_proyecto.key } });
+        console.log(arr)
+        MDL.crm.clienteProyecto.editarCarrito(arr, this.props.cliente_proyecto.key).then((resp) => {
             this.props.cliente_proyecto.carrito = resp;
-            console.log("Carrito guardado", resp);
-            // if (resp) {
-            //     SNavigation.goBack();
-            // } else {
-            //     SNavigation.alert("Error al guardar el carrito");
+            this.unsavedChange = false;
+            SNotification.send({
+                title: "Carrito guardado",
+                color: STheme.color.success,
+                time: 2000,
+                key: "edit_carrito"
+            });
             // }
         }).catch((e) => {
+            SNotification.send({
+                title: "Error guardado de carrito",
+                color: STheme.color.danger,
+                time: 2000,
+                key: "edit_carrito"
+            });
             console.error(e);
             // SNavigation.alert("Error al guardar el carrito");
         });
     }
-    renderItem(item, item_in_carrito) {
-        const producto_key = item?.key;
 
-        const producto = this.props.productos[item.key_producto];
-        const active = item_in_carrito?.cantidad > 0
-        const calcularSubtotal = () => {
-            item_in_carrito.subtotal = (item_in_carrito.cantidad * producto.precio) || 0;
-        }
-
-        if (item_in_carrito.nombre !== producto?.nombre) {
-            item_in_carrito.nombre = producto?.nombre || "";
-        }
-        return <SView key={producto_key} row center style={{ width: "100%", marginBottom: 8, height: 65 }}>
-            <SView width={20} height={20}>
-                <SInput type="checkBox" value={active} onChangeText={e => {
-                    if (e) {
-                        item_in_carrito.cantidad = 1;
-                        calcularSubtotal();
-                        this.forceUpdate();
-                        this.onChange();
-                    } else {
-                        item_in_carrito.cantidad = 0;
-                        item_in_carrito.subtotal = 0;
-                        this.forceUpdate();
-                        this.onChange();
-                    }
-                }} />
-            </SView>
-            <SView width={8} />
-            <SView flex style={{ alignItems: "flex-start", justifyContent: "center" }} >
-                <SText style={{
-                    fontSize: 14,
-                    fontWeight: "bold",
-                    color: active ? STheme.color.text : STheme.color.gray,
-                }}>{producto?.nombre} </SText>
-            </SView>
-            <SView width={8} />
-            <SView width={90}>
-                <SInput
-                    type="number" min={1}
-                    value={item_in_carrito?.cantidad ?? 0}
-                    style={{
-                        backgroundColor: "transparent",
-                        textAlign: "center",
-                        paddingStart: 0,
-                        paddingEnd: 0,
-                        color: active ? STheme.color.text : STheme.color.gray,
-                    }}
-                    icon={<SText card width={30} center height={30}
-                        style={{
-                            backgroundColor: active ? STheme.color.text : STheme.color.gray,
-                            color: active ? STheme.color.primary : STheme.color.text,
-                        }}
-                        bold
-                        onPress={() => {
-                            if (item_in_carrito.cantidad > 0) {
-                                item_in_carrito.cantidad -= 1;
-                                calcularSubtotal();
-                                this.forceUpdate();
-                                this.onChange();
-                            }
-                        }}>{"-"}</SText>}
-                    iconR={<SText card width={30} center height={30}
-                        style={{
-                            backgroundColor: active ? STheme.color.text : STheme.color.gray,
-                            color: active ? STheme.color.primary : STheme.color.text,
-                        }}
-                        onPress={() => {
-                            item_in_carrito.cantidad = (item_in_carrito.cantidad ?? 0) + 1;
-                            calcularSubtotal();
-                            this.forceUpdate();
-                            this.onChange();
-                        }}>{"+"}</SText>}
-                    // style={{ width: 40, height: 25, textAlign: "center" }}
-                    disabled={!item.key}
-                    onChangeText={v => {
-                        item_in_carrito.cantidad = parseInt(v) || 0
-                        calcularSubtotal();
-                        this.forceUpdate();
-                        this.onChange();
-                    }}
-                />
-            </SView>
-            <SView width={16} />
-            <SView width={60}>
-                <SInput type="number"
-                    min={1}
-                    value={item_in_carrito.subtotal}
-                    icon={<SView />}
-                    style={{
-                        textAlign: "right",
-                        opacity: active ? 1 : 0.7,
-
-                    }}
-
-                    // style={{ width: 40, height: 25, textAlign: "center" }}
-                    onChangeText={v => {
-                        item_in_carrito.subtotal = v;
-                        // producto.precio = (producto.subtotal / (producto.cantidad || 1)) || 0;
-
-                        this.forceUpdate();
-                        this.onChange();
-                    }}
-                    disabled={!active}
-                />
-            </SView>
-
-        </SView>;
+    componentWillUnmount() {
+        this.saveChanges();
+        // clearTimeout(this.timeout);
     }
-    renderItems() {
-        if (!this.props.productos) return <SLoad />
-        if (!this.props?.cliente_proyecto?.carrito) {
-            this.props.cliente_proyecto.carrito = []
-        }
-        const carrito = this.props?.cliente_proyecto?.carrito
-
-        return (this.props?.cliente_proyecto?.proyecto_producto ?? []).map((proyecto_producto) => {
-
-            let item_in_carrito = carrito.find((carrito_item) => carrito_item.key_producto === proyecto_producto.key_producto);
-            if (!item_in_carrito) {
-                const producto = this.props.productos[proyecto_producto.key_producto];
-                item_in_carrito = {
-                    key_proyecto_producto: proyecto_producto.key,
-                    key_producto: proyecto_producto.key_producto,
-                    key_cliente_proyecto: this.props.cliente_proyecto.key,
-                    nombre: producto?.nombre || "",
-                    cantidad: 0,
-                    subtotal: producto?.precio || 0,
-                };
-                carrito.push(item_in_carrito);
-            }
-            return this.renderItem(proyecto_producto, item_in_carrito);
+    onChangeProducto() {
+        this.unsavedChange = true;
+        new SThread(4000, "edit_carrito", true).start(() => {
+            console.log("Guardando cambios en el carrito...");
+            this.saveChanges();
         })
     }
     renderHeaders() {
@@ -182,24 +88,28 @@ export default class Producto extends Component {
             <SView width={80} center>
                 <SText bold>Cantidad</SText>
             </SView>
-            <SView width={16} />
-            <SView width={60} center>
+            <SView width={8} />
+            <SView width={50} center>
                 <SText bold>Precio</SText>
             </SView>
         </SView>
     }
     render() {
-        return (
-            <SView col={"xs-12"}>
-                <SHr height={20} />
-                {this.renderHeaders()}
-                <SHr />
-                {this.renderItems()}
-                {/* <SText onPress={() => {
-                  
-                    // console.log("Guardar carrito", this.props.cliente_proyecto.carrito);    
-                }}>{"SAVE"}</SText> */}
-            </SView>
-        );
+        return <SView col={"xs-12"}>
+            {this.renderHeaders()}
+            <FlatList data={this.buildProductosCombinados()}
+                style={{ width: "100%" }}
+                ListHeaderComponent={() => <View style={{ height: 16 }} />}
+                ItemSeparatorComponent={() => <View style={{ height: 32 }} />}
+                renderItem={({ item }) => <ProductoItem data={item} onChange={(e) => {
+                    this.onChangeProducto(e);
+                }} />}
+                ListFooterComponent={() => <View style={{ height: 32 }} />}
+            />
+            {/* <SText onPress={e => {
+                this.saveChanges();
+            }}>{"GUARDAR"}</SText> */}
+        </SView >
     }
 }
+

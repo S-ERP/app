@@ -10,6 +10,7 @@ import ListItem from './Components/ListItem';
 import CrearNuevo from './Components/CrearNuevo';
 // import Roles from '../../../Roles';
 import PageTitle from '../../../Components/PageTitle';
+import { Container } from '../../../Components';
 
 
 
@@ -62,14 +63,16 @@ const hanlePressCrear = (e, key_restaurante) => {
 }
 
 export default class list extends Component {
-    static TOPBAR = <>
-        <TopBar type={"usuario"} />
-        {/* <SView backgroundColor={"#96BE00"} height={20} col={"xs-12"}></SView> */}
-    </>
-    static FOOTER = <>
-        <SView flex />
-        {/* <PBarraFooter url={"menu"} /> */}
-    </>
+    // static TOPBAR = <>
+    //     <TopBar type={"usuario"} />
+    //     {/* <SView backgroundColor={"#96BE00"} height={20} col={"xs-12"}></SView> */}
+    // </>
+    // static FOOTER = <>
+    //     <SView flex />
+    //     {/* <PBarraFooter url={"menu"} /> */}
+    // </>
+
+    onSelect = SNavigation.getParam("onSelect");
     static INSTANCE;
     constructor(props) {
         super(props);
@@ -150,7 +153,7 @@ export default class list extends Component {
         //     key_restaurante: this.key_restaurante
         // })
         const categorias = await SSocket.sendPromise({
-            service:"inventario",
+            service: "inventario",
             component: "producto",
             type: "getCategoriasProductosDetallePartner",
             // key_sucursal: this.key_sucursal
@@ -197,6 +200,12 @@ export default class list extends Component {
         const renderItem = (itemprops) => (
             <ListItem {...itemprops} key_restaurante={this.key_restaurante}
                 image_time={this.state.image_time}
+                onPress={(e) => {
+                    if (this.onSelect) {
+                        this.onSelect(itemprops.item);
+                        SNavigation.goBack();
+                    }
+                }}
                 onChange={e => {
                     this.setState({ ...this.state })
                 }} />
@@ -204,13 +213,13 @@ export default class list extends Component {
 
         const renderHeader = () => (
             <SView col={"xs-12"}>
-                <PageTitle title={"MENÚ"} />
+                <PageTitle title={"PRODUCTOS"} />
                 {/* <SText font='Montserrat-Bold' fontSize={16}>MENÚ</SText> */}
                 {/* <SText fontSize={12} font='Montserrat-Bold' color={STheme.color.primary}>{this.state?.restaurante?.nombre}</SText> */}
                 <SView col={"xs-12"} style={{
                     alignItems: "flex-end"
                 }}>
-                    <SView width={140} height={26} center backgroundColor={STheme.color.primary} style={{
+                    <SView width={140} height={26} center backgroundColor={STheme.color.card} style={{
                         borderRadius: 4
                     }} onPress={e => hanlePressCrear(e, this.key_restaurante)}>
                         <SText fontSize={12} color={STheme.color.white}>+ Crear Nuevo</SText>
@@ -332,32 +341,38 @@ export default class list extends Component {
             <View style={styles.emptySection} />
         );
 
-        return <SectionList
-            refreshControl={<RefreshControl refreshing={false} onRefresh={(e) => {
-                this.setState({ data: null })
-                this.componentDidMount();
-            }} />}
-            contentContainerStyle={{
-                padding: 8,
-                width: "100%",
+        return <SPage title={"Poductos"} disableScroll>
+            <Container flex>
+                <SView col={"xs-12"} flex>
+                    <SectionList
+                        refreshControl={<RefreshControl refreshing={false} onRefresh={(e) => {
+                            this.setState({ data: null })
+                            this.componentDidMount();
+                        }} />}
+                        contentContainerStyle={{
+                            padding: 8,
+                            width: "100%",
 
-            }}
-            sections={this.state.data.map(sec => ({
-                ...sec,
-                data: this.state.openSections[sec.key] ? sec.data : [renderEmptySection]
-            }))}
-            keyExtractor={(item, index) => item.key}
-            // SectionSeparatorComponent={renderSectionSeparator}
-            renderItem={({ item, index, section }) => (typeof item === 'function' ? item() : renderItem({ item, index, section }))}
-            renderSectionHeader={renderSectionHeader}
-            ListHeaderComponent={renderHeader}
-            // ItemSeparatorComponent={() => <View style={styles.sectionSeparator} />}
-            SectionSeparatorComponent={(d) => {
-                if (d.trailingItem) return null;
-                return <View style={styles.sectionSeparator} />
-            }}
+                        }}
+                        sections={this.state.data.map(sec => ({
+                            ...sec,
+                            data: this.state.openSections[sec.key] ? sec.data : [renderEmptySection]
+                        }))}
+                        keyExtractor={(item, index) => item.key}
+                        // SectionSeparatorComponent={renderSectionSeparator}
+                        renderItem={({ item, index, section }) => (typeof item === 'function' ? item() : renderItem({ item, index, section }))}
+                        renderSectionHeader={renderSectionHeader}
+                        ListHeaderComponent={renderHeader}
+                        // ItemSeparatorComponent={() => <View style={styles.sectionSeparator} />}
+                        SectionSeparatorComponent={(d) => {
+                            if (d.trailingItem) return null;
+                            return <View style={styles.sectionSeparator} />
+                        }}
 
-        />
+                    />
+                </SView>
+            </Container>
+        </SPage>
     }
 }
 

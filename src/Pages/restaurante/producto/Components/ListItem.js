@@ -32,7 +32,7 @@ const tiempoHabilitacion = (item) => {
 
     return `No disponible\npor ${horas % 24} horas`;
 }
-export default ({ item, section, index, key_restaurante, onChange, image_time }) => {
+export default ({ item, section, index, key_restaurante, onChange, image_time, onPress }) => {
 
     const hanlePress = (e) => {
         Vibration.vibrate(100)
@@ -91,8 +91,8 @@ export default ({ item, section, index, key_restaurante, onChange, image_time })
     const cantidad_sub_productos = spr.length;
 
     return <SView col={"xs-12"} row >
-        <View style={styles.item}>
-            <SView col={"xs-12"} row>
+        <View style={styles.item}  >
+            <SView col={"xs-12"} row onPress={onPress}>
                 <SView style={{ width: 40, height: 40, borderRadius: 4, overflow: "hidden" }} card>
                     <SImage src={SSocket.api.inventario + "producto/" + item.key + "?date=" + image_time} style={{
                         resizeMode: "cover"
