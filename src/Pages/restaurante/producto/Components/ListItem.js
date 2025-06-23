@@ -62,7 +62,7 @@ export default ({ item, section, index, key_restaurante, onChange, image_time })
                         }
 
                         SSocket.sendPromise({
-                            service: "inventario",
+                            service:"inventario",
                             component: "producto",
                             type: "editar",
                             key_usuario: Model.usuario.Action.getKey(),
@@ -92,13 +92,7 @@ export default ({ item, section, index, key_restaurante, onChange, image_time })
 
     return <SView col={"xs-12"} row >
         <View style={styles.item}>
-            <SView col={"xs-12"} row backgroundColor='blue'
-
-            // onPress={() => {
-            //     alert("viva")
-
-            // }}
-            >
+            <SView col={"xs-12"} row>
                 <SView style={{ width: 40, height: 40, borderRadius: 4, overflow: "hidden" }} card>
                     <SImage src={SSocket.api.inventario + "producto/" + item.key + "?date=" + image_time} style={{
                         resizeMode: "cover"
