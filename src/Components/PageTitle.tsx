@@ -1,5 +1,5 @@
 import React from "react";
-import { SPage, SText, STheme, SView } from "servisofts-component";
+import { SIcon, SPage, SText, STheme, SView } from "servisofts-component";
 import Model from "../Model";
 
 type PageTitlePropsType = {
@@ -8,9 +8,17 @@ type PageTitlePropsType = {
 export default class PageTitle extends React.Component<PageTitlePropsType> {
     render() {
         const empresa = Model.empresa.Action.getSelect();
-        return <SView col={"xs-12"}>
-            <SText font='Montserrat-ExtraBold' fontSize={16} color={STheme.color.text}>{this.props.title}</SText>
-            <SText font={"Montserrat-SemiBold"} fontSize={14} color={STheme.color.text} >{empresa?.razon_social}</SText>
+        return <SView col={"xs-12"} row>
+            <SText col={"xs-12"} font='Montserrat-ExtraBold' fontSize={16} color={STheme.color.text}>{this.props.title}</SText>
+
+            <SView col={"xs-12"} row>
+                <SView width={30} border={"transparent"}>
+                    <SIcon name="empresa" fill="blue" width={16} center />
+                </SView>
+                <SView flex  >
+                    <SText col={"xs-12"} font={"Montserrat-SemiBold"} fontSize={14} color={STheme.color.text} > {empresa?.razon_social}</SText>
+                </SView>
+            </SView>
         </SView>
     }
 }

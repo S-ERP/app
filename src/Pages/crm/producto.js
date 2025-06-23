@@ -37,13 +37,14 @@ const hanlePressCrear = (e, key_restaurante) => {
         SPopup.open({
             key: key_popup,
             type: "2",
-            backgroundColor:"red",
+
             content: <CrearNuevo
-                style={{
-                    left: left,
-                    top: top,
-                    width: itemWidth,
-                    height: itemHeight,
+            style={{
+                left: left,
+                top: top,
+                width: itemWidth,
+                height: itemHeight,
+                backgroundColor: "#fff",
                 }}
                 onSelect={(e) => {
                     SPopup.close(key_popup)
@@ -205,7 +206,7 @@ export default class producto extends Component {
 
         const renderHeader = () => (
             <SView col={"xs-12"}>
-                <PageTitle title={"MENÚ"} />
+                <PageTitle title={"Catalogo de productos"} />
                 {/* <SText font='Montserrat-Bold' fontSize={16}>MENÚ</SText> */}
                 {/* <SText fontSize={12} font='Montserrat-Bold' color={STheme.color.primary}>{this.state?.restaurante?.nombre}</SText> */}
                 <SView col={"xs-12"} style={{
@@ -242,7 +243,10 @@ export default class producto extends Component {
                     }
                     this.setState({ ...this.state })
                 }} row>
-                    <SView flex>
+                    <SView flex
+
+
+                    >
                         <SText style={{ fontSize: 14, }} font='Montserrat-Bold'>{section?.nombre}</SText>
                         <SText color={STheme.color.gray} fontSize={12}>{section.cantidad > 0 ? section.cantidad + " productos" : "Sin productos"}</SText>
                     </SView>
