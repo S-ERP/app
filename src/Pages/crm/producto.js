@@ -39,12 +39,12 @@ const hanlePressCrear = (e, key_restaurante) => {
             type: "2",
 
             content: <CrearNuevo
-            style={{
-                left: left,
-                top: top,
-                width: itemWidth,
-                height: itemHeight,
-                backgroundColor: "#fff",
+                style={{
+                    left: left,
+                    top: top,
+                    width: itemWidth,
+                    height: itemHeight,
+                    backgroundColor: "#fff",
                 }}
                 onSelect={(e) => {
                     SPopup.close(key_popup)
@@ -245,6 +245,21 @@ export default class producto extends Component {
                 }} row>
                     <SView flex
 
+                        onPress={() => {
+
+                            SNavigation.navigate("/crm/proyecto", {
+                                key_rol: this.props.key_rol,
+
+                                // onSelect: (itm) => {
+                                //     this.props.onSelect(itm);
+                                //     SNavigation.goBack();
+                                // }
+                            });
+
+                            // if (onChange) onChange();
+                            // if (onSelect) onSelect(item); // ← devuelve el producto al padre
+
+                        }}
 
                     >
                         <SText style={{ fontSize: 14, }} font='Montserrat-Bold'>{section?.nombre}</SText>

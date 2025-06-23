@@ -62,7 +62,7 @@ export default ({ item, section, index, key_restaurante, onChange, image_time, o
                         }
 
                         SSocket.sendPromise({
-                            service: "inventario",
+                            service:"inventario",
                             component: "producto",
                             type: "editar",
                             key_usuario: Model.usuario.Action.getKey(),
