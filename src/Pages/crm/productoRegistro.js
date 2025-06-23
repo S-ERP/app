@@ -11,6 +11,7 @@ import BtnNaranja from '../restaurante/producto/Components/BtnNaranja';
 import FormularioProducto from '../restaurante/producto/Components/FormularioProducto';
 import FormularioOpciones from '../restaurante/producto/Components/FormularioOpciones';
 import PageTitle from '../../Components/PageTitle';
+import { InputValidator } from '../restaurante/producto/Components/Input';
 // import Input, { InputValidator } from './Components/Input';
 // import VentanaLista from "./list";
 const colorGray = "#999999"
@@ -29,7 +30,7 @@ const FotoDePerfil = ({ key_producto, onChange }) => {
                 borderRadius: 8,
             }} /> */}
             <DropFileSingle
-                defaultValue={SSocket.api.inventario + "producto/" + key_producto+"?date="+new SDate().getTime()}
+                defaultValue={SSocket.api.inventario + "producto/" + key_producto + "?date=" + new SDate().getTime()}
                 accept={"image/*"}
                 style={{
                     resizeMode: "cover"
@@ -203,17 +204,17 @@ export default class edit extends Component {
         >
 
             <SPage hidden footer={this.renderSaveChange()}>
-                <Container loading={!this.state.ready || !this.state.data}>
+                <Container loading={!this.state.ready || !this.state.data} border={"green"} >
                     <SHr />
-                    <PageTitle title='AGREGAR PRODUCTO'/>
+                    <PageTitle title='REGISTRAR PRODUCTO' />
                     <SHr h={32} />
                     <FotoDePerfil key_producto={this.pk} onChange={(e) => {
                         this.imageToUpload = e[0];
                     }} />
                     <SHr h={32} />
-                    <FormularioProducto ref={ref => this.formProducto = ref} producto={this.state.data} key_restaurante={this.key_restaurante} />
+                    <FormularioProducto ref={ref => this.formProducto = ref} producto={this.state.data} key_restaurante={this.key_restaurante}  />
                     <SHr h={32} />
-                    <SView col={"xs-12"} row>
+                    <SView col={"xs-12"} row >
                         <SText flex color={STheme.color.text} fontSize={14} font={"Montserrat-Bold"}>{"OPCIONES"}</SText>
                         <BtnNaranja onPress={() => {
                             FormularioOpciones.openPopup({
@@ -235,7 +236,7 @@ export default class edit extends Component {
                     <SHr h={8} />
                     <ListaDeOpciones producto={this.state.data} />
                     <SHr h={32} />
-                    <BtnNaranja onPress={() => {
+                    <SView width={250} height={40} borderRadius={8} center style={{ backgroundColor: "blue", padding: 8, }} onPress={() => {
                         this.formProducto.handleGuardar();
 
 
@@ -260,7 +261,7 @@ export default class edit extends Component {
                             type: "loading"
                         })
 
-                        if(!this.state.data.key_empresa){
+                        if (!this.state.data.key_empresa) {
                             this.state.data.key_empresa = Model.empresa.Action.getKey()
                         }
                         SSocket.sendPromise({
@@ -305,7 +306,7 @@ export default class edit extends Component {
                             })
                             console.error(e);
                         })
-                    }}>{"Guardar"}</BtnNaranja>
+                    }}>  < SText fontSize={12} font='Montserrat' color={"#fff"}>Guardar</SText> </SView>
                 </Container>
                 <SHr h={100} />
             </SPage>

@@ -145,20 +145,30 @@ export default class proyecto extends Component {
                                         //             key_producto: producto.key,
                                         //             key_proyecto: e.row.key,
                                         //         });
-                                        //         // MDL.crm.x`
-                                        //         // SSocket.sendPromise({
-                                        //         //         service: "crm",
-                                        //         //         component: "producto",
-                                        //         //         type: "editar",
-                                        //         //         data: { ...producto, key_proyecto: e.row.key }
-                                        //         // }).then(e => {
-                                        //         //         console.log("Producto actualizado:", e);
-                                        //         //         this.DinamicTable.loadData();
-                                        //         // }).catch(error => {
-                                        //         //         console.error("Error al actualizar producto:", error);
-                                        //         // });
                                         //     },
                                         // });
+
+                                        SNavigation.navigate("/productos/producto", {
+                                            onSelect: (producto) => {
+                                                console.log("Producto seleccionado:", producto);
+                                                MDL.crm.proyectoProducto.registrar({
+                                                    key_producto: producto.key,
+                                                    key_proyecto: e.row.key,
+                                                });
+                                                // MDL.crm.x`
+                                                // SSocket.sendPromise({
+                                                //         service: "crm",
+                                                //         component: "producto",
+                                                //         type: "editar",
+                                                //         data: { ...producto, key_proyecto: e.row.key }
+                                                // }).then(e => {
+                                                //         console.log("Producto actualizado:", e);
+                                                //         this.DinamicTable.loadData();
+                                                // }).catch(error => {
+                                                //         console.error("Error al actualizar producto:", error);
+                                                // });
+                                            },
+                                        });
                                     },
                                     icon: <SIcon name="producto" fill={STheme.color.text} />,
                                 },
