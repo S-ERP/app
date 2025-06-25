@@ -14,14 +14,14 @@ export default class reporte {
     return Object.values(resp.data);
   }
 
-  async registrar(data: reporte) {
-    data.key_empresa = Model.empresa.Action.getKey();
+  async _get_confirmados_ranking(aaaa: String, bbbb: String) {
     const resp: any = await SSocket.sendPromise({
       service: "crm",
-      component: "proyecto",
-      type: "registro",
-      data: data,
-      key_usuario: Model.usuario.Action.getKey(),
+      component: "reporte",
+      type: "_get_confirmados_ranking",
+      key_empresa: Model.empresa.Action.getKey(),
+      fecha_inicio: aaaa,
+      fecha_fin: bbbb,
     });
     return resp.data;
   }
