@@ -56,29 +56,50 @@ export default class reporteconfirmado extends Component {
                         <SView col={"xs-12"} height={50} center row  >
                             <SView col={"xs-5"} backgroundColor='transparent'>
                                 <SInput
-                                    type="date" placeholder="Fecha Inicio" label={"Fecha Inicio"} style={{ width: "100%", borderRadius: 4, backgroundColor: STheme.color.card, borderColor: "#666" }}
-                                    defaultValue={fecha_inicio} onChangeText={(val) => this.handleFechaChange("fecha_inicio", val)}
+                                    type="date" placeholder="Fecha Inicio" label={"Fecha Inicio"} style={{ width: "100%", borderRadius: 4, backgroundColor: STheme.color.card, }}
+                                    iconR={<SIcon name='Evento' width={28} fill='#666' />} defaultValue={fecha_inicio} onChangeText={(val) => this.handleFechaChange("fecha_inicio", val)}
                                 />
                             </SView>
 
                             <SView flex />
                             <SView col={"xs-5"} >
                                 <SInput
-                                    type="date" placeholder="Fecha Fin" label={"Fecha Fin"} style={{ width: "100%", borderRadius: 4, backgroundColor: STheme.color.card, borderColor: "#666" }}
-                                    defaultValue={fecha_fin} onChangeText={(val) => this.handleFechaChange("fecha_fin", val)}
+                                    type="date" placeholder="Fecha Fin" label={"Fecha Fin"} style={{ width: "100%", borderRadius: 4, backgroundColor: STheme.color.card, }}
+                                    iconR={<SIcon name='Evento' width={28} fill='#666' />} defaultValue={fecha_fin} onChangeText={(val) => this.handleFechaChange("fecha_fin", val)}
                                 />
                             </SView>
                         </SView>
                     </SView>
 
                     <SHr height={150} />
+                    <SView col={"xs-12 md-5"} row center>
 
-                    <SView style={{ width: 300, height: 300 }}>
-                        <SCharts
-                            type="Donut_gauge" strokeWidth={1} data={data} colors={["#ff00ff", "#ffff00"]}
-                            textColor={STheme.color.text} showLabel showValue
-                        />
+                        <SView style={{ width: 300, height: 300 }}>
+                            <SCharts
+                                type="Donut_gauge" strokeWidth={1} data={data} colors={["#ff00ff", "#ffff00"]}
+                                textColor={STheme.color.text} showLabel showValue
+                            />
+                        </SView>
+                        <SView flex />
+                        <SView style={{ width: 200, height: 300, }}  >
+                            <SView style={{ width: 200, height: 250, }}  >
+                                <SCharts
+                                    type='Column'
+                                    interval_prop={["#ff00ff", "#ffff00"]}
+                                    strokeWidth={1}
+                                    borderColors={["#ff00ff", "#ffff00"]}
+                                    space={0}
+                                    padding={0.4}
+                                    data={data}
+                                    colors={["#ff00ff", "#ffff00"]}
+                                    textColor={STheme.color.text}
+                                    showLabel
+                                    showValue
+                                />
+                            </SView>
+                        </SView>
                     </SView>
+
                 </SView>
 
             </SPage>

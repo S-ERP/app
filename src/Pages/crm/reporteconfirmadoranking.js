@@ -13,8 +13,8 @@ export default class reporteconfirmadoranking extends Component {
         super(props);
         this.state = {
             data: null,
-                 fecha_inicio: new SDate("2025-06-02").toString("yyyy-MM-dd"),
-                        fecha_fin: new SDate("2025-06-08").toString("yyyy-MM-dd"),
+            fecha_inicio: new SDate("2025-06-02").toString("yyyy-MM-dd"),
+            fecha_fin: new SDate("2025-06-08").toString("yyyy-MM-dd"),
 
         };
     }
@@ -69,19 +69,19 @@ export default class reporteconfirmadoranking extends Component {
                     language='es'
                     ref={ref => this.DinamicTable = ref} loadData={async () => { return await MDL.crm.reporte._get_confirmados_ranking(); }} onSelect={(e) => { console.log("Selected confirmado:", e.row); }}
 
-                    // loadInitialState={async () => {
-                    //     return {
-                    //         sorters: [
-                    //             // { key: "fecha_on", order: "desc", type: "date" },
-                    //             { key: "fecha_edit", order: "desc", type: "date" }
-                    //         ]
-                    //     }
-                    // }}
+                // loadInitialState={async () => {
+                //     return {
+                //         sorters: [
+                //             // { key: "fecha_on", order: "desc", type: "date" },
+                //             { key: "fecha_edit", order: "desc", type: "date" }
+                //         ]
+                //     }
+                // }}
                 >
 
                     <DinamicTable.Col key={"key"} label='ID' width={28} textStyle={{
-                                        color: STheme.color.lightGray,
-                                        fontSize: 10
+                        color: STheme.color.lightGray,
+                        fontSize: 10
                     }} data={(e) => e.index + 1} />
 
                     {/* <DinamicTable.Col key={"key"} label='ID' width={28} textStyle={{
@@ -120,11 +120,11 @@ export default class reporteconfirmadoranking extends Component {
 
                     <DinamicTable.Col key={"total_confirmados"} label='total_confirmados' width={250}
                         data={(e) => e.row.total_confirmados}
-                        // customComponent={e => {
-                        //     return <SView col={"xs-12"} row center>
-                        //         <Etiqueta size={10} tipo_leads={e.row.state} />
-                        //     </SView>
-                        // }}
+                    // customComponent={e => {
+                    //     return <SView col={"xs-12"} row center>
+                    //         <Etiqueta size={10} tipo_leads={e.row.state} />
+                    //     </SView>
+                    // }}
                     />
                     {/* <DinamicTable.Col key={"state"} label='Leads' width={110}
                         data={(e) => e.row.state}
