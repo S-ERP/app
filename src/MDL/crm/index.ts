@@ -8,13 +8,15 @@ import tipoMovimientoLead from "./tipoMovimientoLead";
 import proyectoProducto from "./proyectoProducto";
 import paises from "./paises";
 import db from "./db";
+import reporte from "./reporte";
 export default class crm extends MDLAbstract<EventListener> {
     paises = paises
 
-    
+
     proyecto = new proyecto();
     clienteProyecto = new clienteProyecto();
     cliente = new cliente();
+    reporte = new reporte();
     campana = new campana();
     tipoMovimientoLead = new tipoMovimientoLead();
     proyectoProducto = new proyectoProducto();
