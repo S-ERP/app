@@ -1,30 +1,76 @@
 import React, { Component } from "react";
 import { ScrollView } from "react-native-gesture-handler";
-import { SButtom, SDate, SForm, SHr, SIcon, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView } from "servisofts-component";
+import { SButtom, SDate, SForm, SHr, SIcon, SImage, SInput, SList, SLoad, SMath, SNavigation, SNotification, SText, STheme, SThread, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import MDL from "../../../../MDL";
 import Model from "../../../../Model";
+import { cameraPosition } from "three/examples/jsm/nodes/Nodes";
+import { ToastAndroid } from "react-native";
 export default class Adicional extends Component {
 
     constructor(props) {
         super(props);
+
         this.state = {};
+        this.old = {}; // Aquí se guarda el estado anterior
+
     }
 
+    // handleChange = (key, value) => {
+    //     this.props.cliente_proyecto[key] = value;
+    //     const cp = this.props.cliente_proyecto;
+
+
+    //     this.forceUpdate();
+    //     new SThread(3000, "edit_adicional", true).start(() => {
+
+    //         const sas = MDL.crm.clienteProyecto.editar({
+    //             key: this.props.cliente_proyecto.key,
+    //             notas: this.props.cliente_proyecto.notas,
+    //             instrucciones_especiales: this.props.cliente_proyecto.instrucciones_especiales,
+    //             fecha_entrega: this.props.cliente_proyecto.fecha_entrega,
+    //             key_usuario_atiende: Model.usuario.Action.getKey(),
+    //          })
+    //     })
+    // }
+
+    // old = {}
+
     handleChange = (key, value) => {
-        this.props.cliente_proyecto[key] = value;
+        const cp = this.props.cliente_proyecto;
+        this.old[key] = cp[key];
+        cp[key] = value;
         this.forceUpdate();
+
         new SThread(3000, "edit_adicional", true).start(() => {
-            const sas = MDL.crm.clienteProyecto.editar({
+
+            const valores = {
                 key: this.props.cliente_proyecto.key,
-                notas: this.props.cliente_proyecto.notas,
-                instrucciones_especiales: this.props.cliente_proyecto.instrucciones_especiales,
-                fecha_entrega: this.props.cliente_proyecto.fecha_entrega,
                 key_usuario_atiende: Model.usuario.Action.getKey(),
-            })
-            console.log("actualizado " + sas)
-        })
+            }
+
+            if (this.old.notas !== cp.notas) {
+                console.log("nota")
+                valores.notas = cp.notas
+            }
+
+            if (this.old.instrucciones_especiales !== cp.instrucciones_especiales) {
+                console.log("espec")
+                valores.instrucciones_especiales = cp.instrucciones_especiales
+            }
+
+            if (this.old.fecha_entrega !== cp.fecha_entrega) {
+                console.log("fecha")
+                valores.fecha_entrega = cp.fecha_entrega
+            }
+
+            console.log("Valores a guardar:", valores); // ✅ verificación
+
+            MDL.crm.clienteProyecto.editar(valores)
+        });
     }
+
+
     render() {
         const { cliente_proyecto } = this.props;
         const fecha_capturada = new Date(cliente_proyecto.fecha_entrega).toISOString().split('T')[0];
@@ -53,6 +99,8 @@ export default class Adicional extends Component {
                     onChangeText: e => this.handleChange("fecha_entrega", e),
                 },
             }}
+
+
             onSubmit={(e) => {
                 console.log("Adicional Form Submitted", e);
             }}
