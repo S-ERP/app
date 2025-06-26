@@ -3,11 +3,13 @@ import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup,
 import FileChooser from '../../Components/SUpload/FileChooser';
 import * as XLSX from "xlsx";
 import SSocket from 'servisofts-socket';
-import Model from '../../Model';
 import MDL from '../../MDL';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../Config';
 import SCharts from 'servisofts-charts';
+import Usuarios from 'servisofts-component/img/Usuarios';
+import Model from '../../Model';
+import { version } from 'process';
 
 
 export default class reporteusuariosstate extends Component {
@@ -15,29 +17,12 @@ export default class reporteusuariosstate extends Component {
         super(props);
         this.state = {
             data: null,
-            fecha_inicio: new SDate("2025-06-01").toString("yyyy-MM-dd"),
-            fecha_fin: new SDate("2025-06-30").toString("yyyy-MM-dd"),
+            fecha_inicio: new SDate().toString("yyyy-MM-dd"),
+            fecha_fin: new SDate().toString("yyyy-MM-dd"),
         };
     }
 
-    componentDidMount() {
-        // this.cargar();
-    }
 
-    cargar = () => {
-        const { fecha_inicio, fecha_fin } = this.state;
-        if (!fecha_inicio || !fecha_fin) return;
-
-        MDL.crm.reporte._get_usuarios_states_total("2025-01-01", "2025-10-28")
-            // MDL.crm.reporte._get_usuarios_states_total(fecha_inicio, fecha_fin)
-            .then(data => {
-                this.setState({ data });
-                console.log("Datos recibidos:", data);
-            })
-            .catch(err => {
-                console.error("Error cargando datos:", err);
-            });
-    };
 
     handleFechaChange = (key, value) => {
         this.setState({ [key]: value }, this.cargar);
@@ -45,7 +30,9 @@ export default class reporteusuariosstate extends Component {
 
     render() {
         const { data, fecha_inicio, fecha_fin } = this.state;
-        // if (!data) return <SLoad />;
+        if (!fecha_inicio || !fecha_fin) return;
+
+
 
         console.log("data  ", JSON.stringify(data))
         return (
@@ -90,26 +77,52 @@ export default class reporteusuariosstate extends Component {
                     center
                     language='es'
                     ref={ref => this.DinamicTable = ref}
+                    keyExtractor={e => e.key_usuario}
                     loadData={async () => {
-
-                        const { fecha_inicio, fecha_fin } = this.state;
-                        if (!fecha_inicio || !fecha_fin) return;
-
-                        const all = await MDL.crm.reporte._get_usuarios_states_total("2025-01-01", "2025-10-28")
+                        const all = await MDL.crm.reporte._get_usuarios_states_total(fecha_inicio + "T00:00:00", fecha_fin + "T23:59:59")
+                        const usuarios = await MDL.usuario.getByKeys(Object.keys(all));
+                        console.log(usuarios, all)
                         const arr = Object.keys(all).map(k => {
                             const obj = all[k]
                             obj.key_usuario = k
+                            obj.usuario = usuarios.find(a => a.key == k)
+                            console.log(obj)
                             return obj
                         })
+                        this.DinamicTable.loadData();
                         return arr;
                     }}
-                // onSelect={(e) => { console.log("Selected project:", e.row); }}
 
                 >
                     <DinamicTable.Col key={"key"} label='ID' width={35} data={(e) => e.index + 1} />
-                    {/* <DinamicTable.Col key={"key_usuario"} label='key_usuario' width={60} data={(e) => e.row.key_usuario} /> */}
-                    <DinamicTable.Col key={"nombre"} label='Usuario' width={60} data={(e) => e.row.key_usuario} />
+                    <DinamicTable.Col key={"nombre"} label='Usuario' width={100} data={(e) => e.row?.usuario?.Nombres} />
 
+
+                    <DinamicTable.Col key={"foto"} label='User'
+                        data={(e) => e.row?.key_usuario}
+                        width={45}
+                        customComponent={e => <SView style={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: 100,
+                            overflow: "hidden",
+                            backgroundColor: STheme.color.card + "66",
+                        }}>
+                            <SImage src={SSocket.api.root + "usuario/" + e.data} style={{ resizeMode: "cover", }} />
+                        </SView>}
+
+                    />
+
+
+
+                    <DinamicTable.Col key={"total"} label='Total' width={100} data={(e) => {
+                        let total = 0
+                        Object.keys(e.row).filter(a => !["usuario", "key_usuario", "sin estado"].includes(a)).map((a) => {
+                            total += parseFloat(e.row[a] ?? 0)
+                        })
+                        return total;
+
+                    }} />
                     <DinamicTable.Col key={"confirmado"} label='confirmado' width={100} data={(e) => e.row.confirmado} />
                     <DinamicTable.Col key={"cancelado"} label='cancelado' width={100} data={(e) => e.row.cancelado} />
                     <DinamicTable.Col key={"delivery_en_proceso"} label='delivery proceso' width={100} data={(e) => e.row.delivery_en_proceso} />
@@ -133,7 +146,6 @@ export default class reporteusuariosstate extends Component {
 
                     <DinamicTable.Col key={"en_proceso_whatsapp"} label='en proceso whatsapp' width={100} data={(e) => e.row.en_proceso_whatsapp} />
                     <DinamicTable.Col key={"enviando_whatsapp"} label='enviando whatsapp' width={100} data={(e) => e.row.enviando_whatsapp} />
-                    <DinamicTable.Col key={"llamada_fallida"} label='despacho' width={100} data={(e) => e.row.confirmado} />
 
                 </DinamicTable>
 

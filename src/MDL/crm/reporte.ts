@@ -31,10 +31,10 @@ export default class reporte {
       component: "reporte",
       type: "_get_usuarios_states_total",
       key_empresa: Model.empresa.Action.getKey(),
-      fecha_inicio: "2025-01-01",
-      fecha_fin: "2025-12-25",
-      //   fecha_inicio: aaaa,
-      //   fecha_fin: bbbb,
+    //   fecha_inicio: "2025-01-01",
+    //   fecha_fin: "2025-12-25",
+        fecha_inicio: aaaa,
+        fecha_fin: bbbb,
     });
 
     return resp.data;
