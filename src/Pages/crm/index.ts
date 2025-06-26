@@ -17,6 +17,8 @@ import proyectoImportarExcel from "./proyectoImportarExcel";
 import proyectoImportarWasap from "./proyectoImportarWasap";
 import producto from "./producto";
 import productoRegistro from "./productoRegistro";
+import reporteconfirmado from "./reporteconfirmado";
+import reporteusuariosstate from "./reporteusuariosstate";
 
 export default SPage.combinePages("crm", {
   "": root,
@@ -36,5 +38,7 @@ export default SPage.combinePages("crm", {
   proyectoImportarExcel,
   proyectoImportarWasap,
   producto,
-  productoRegistro
+  productoRegistro,
+  reporteconfirmado,
+  reporteusuariosstate,
 });

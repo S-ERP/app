@@ -101,6 +101,36 @@ export default class root extends Component {
                     icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
                 />
 
+                <SHr height={20} />
+                <SText fontSize={20}>Modulo Reportes</SText>
+                <SHr height={20} />
+
+                <MenuButtom
+                    label="Usuarios - Leads Confirmados"
+                    url="/crm/reporteconfirmado"
+                    params={{ type: "whatsapp", startState: "enviando_whatsapp" }}
+                    icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
+                />
+                <MenuButtom
+                    label="Tiempo promedio"
+                    url="/crm/dashboard"
+                    params={{ type: "whatsapp", startState: "enviando_whatsapp" }}
+                    icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
+                />
+                <MenuButtom
+                    label="Usuarios - Resumen Confirmaciones"
+                    url="/crm/dashboard"
+                    params={{ type: "whatsapp", startState: "enviando_whatsapp" }}
+                    icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
+                />
+
+                <MenuButtom
+                    label="Usuarios - states total"
+                    url="/crm/reporteusuariosstate"
+                    params={{ type: "whatsapp", startState: "enviando_whatsapp" }}
+                    icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
+                />
+
                 {/* <MenuButtom
                     label="Mensajes masivos"
                     url="/crm/masivo"
