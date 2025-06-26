@@ -15,17 +15,22 @@ export default class Adicional extends Component {
         this.props.cliente_proyecto[key] = value;
         this.forceUpdate();
         new SThread(3000, "edit_adicional", true).start(() => {
-            MDL.crm.clienteProyecto.editar({
+            const sas = MDL.crm.clienteProyecto.editar({
                 key: this.props.cliente_proyecto.key,
                 notas: this.props.cliente_proyecto.notas,
                 instrucciones_especiales: this.props.cliente_proyecto.instrucciones_especiales,
                 fecha_entrega: this.props.cliente_proyecto.fecha_entrega,
                 key_usuario_atiende: Model.usuario.Action.getKey(),
             })
+            console.log("actualizado " + sas)
         })
     }
     render() {
         const { cliente_proyecto } = this.props;
+        const fecha_capturada = new Date(cliente_proyecto.fecha_entrega).toISOString().split('T')[0];
+        console.log("render " + cliente_proyecto.fecha_entrega)
+
+
         return <SForm
             ref={ref => this.form = ref}
             inputs={{
@@ -44,7 +49,7 @@ export default class Adicional extends Component {
                 fecha_entrega: {
                     label: "Fecha de entrega",
                     col: "xs-12", required: true, type: "date",
-                    value: cliente_proyecto?.fecha_entrega,
+                    value: fecha_capturada ?? "",
                     onChangeText: e => this.handleChange("fecha_entrega", e),
                 },
             }}
