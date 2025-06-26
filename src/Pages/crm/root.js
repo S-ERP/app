@@ -124,6 +124,13 @@ export default class root extends Component {
                     icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
                 />
 
+                <MenuButtom
+                    label="Usuarios - states total"
+                    url="/crm/reporteusuariosstate"
+                    params={{ type: "whatsapp", startState: "enviando_whatsapp" }}
+                    icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
+                />
+
                 {/* <MenuButtom
                     label="Mensajes masivos"
                     url="/crm/masivo"

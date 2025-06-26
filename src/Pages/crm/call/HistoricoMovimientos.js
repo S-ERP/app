@@ -16,6 +16,30 @@ export default class HistoricoMovimientos extends Component {
         };
     }
 
+    validarcomentario(item) {
+        if (!item || !item.data) return "";
+
+        const { notas, instrucciones_especiales, fecha_entrega } = item.data;
+
+        // Prioridad: si item tiene tipo_movimiento.descripcion, se muestra
+        if (item?.tipo_movimiento?.descripcion) {
+            return item.tipo_movimiento.descripcion;
+        }
+
+        // Validaciones individuales
+        // if (notas) return "Notas: " + item?.data?.notas;
+        // if (instrucciones_especiales) return "Instrucciones especiales: " + item?.data?.instrucciones_especiales;
+        // if (fecha_entrega) return "Fecha de entrega: " + item?.data?.fecha_entrega;
+
+        // Si hay al menos uno de los tres campos, muestra mensaje genérico
+        if (notas || instrucciones_especiales || fecha_entrega) {
+            return "Se agregó información adicional";
+        }
+
+        return "";
+    }
+
+
     componentDidMount() {
         SSocket.sendPromise({
             service: "crm",
@@ -29,9 +53,15 @@ export default class HistoricoMovimientos extends Component {
             e.data.forEach(item => {
                 if (item?.data?.key_tipo_movimiento_lead) {
                     item.tipo_movimiento = tipos_movimientos.find(tipo => tipo.key === item.data.key_tipo_movimiento_lead);
+                    // console.log("cocacola " + item.tipo_movimiento)
+
                 }
             })
+
+
             const sections = this.groupByDate(historico);
+            console.log("cocacola " + JSON.stringify(historico))
+
             this.setState({ historico, sections });
         }).catch(error => {
             // manejar error
@@ -116,7 +146,13 @@ export default class HistoricoMovimientos extends Component {
                         <SView row center padding={4} style={{
                             borderBottomWidth: 1,
                             borderColor: STheme.color.card,
-                        }}>
+                        }}
+                            onPress={() => {
+                                console.log("------------------------------------", item)
+                                alert("sss");
+                            }}
+
+                        >
                             <SText fontSize={10} color={STheme.color.gray}>
                                 {new SDate(item.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("hh:mm")}
                             </SText>
@@ -128,13 +164,12 @@ export default class HistoricoMovimientos extends Component {
                                 <SImage enablePreview src={SSocket.api.root + "usuario/" + item.data?.key_usuario_atiende} style={{ resizeMode: "cover" }} />
                             </SView>
                             <SView width={8} />
-                            <SText flex numberOfLines={1}>
+                            <SText flex numberOfLines={1} >
                                 <Etiqueta tipo_leads={item?.state}></Etiqueta>
                                 <SText clean >{" "}</SText>
-                                <SText clean fontSize={12} numberOfLines={1} color={STheme.color.lightGray}>{item?.data?.comentario}</SText>
+                                <SText clean fontSize={12} numberOfLines={1} color={STheme.color.lightGray}> {item?.data?.comentario}</SText>
                                 <SText clean >{" "}</SText>
-                                <SText clean fontSize={12} numberOfLines={1} color={STheme.color.lightGray}>{item?.tipo_movimiento?.descripcion}</SText>
-
+                                <SText clean fontSize={12} numberOfLines={1} color={STheme.color.lightGray}>{this.validarcomentario(item)}</SText>
                                 {item.data.fecha_rellamada && <>
                                     <SView row center>
                                         <SView width={4} />

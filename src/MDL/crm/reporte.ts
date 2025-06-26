@@ -25,4 +25,18 @@ export default class reporte {
     });
     return resp.data;
   }
+  async _get_usuarios_states_total(aaaa: String, bbbb: String) {
+    const resp: any = await SSocket.sendPromise({
+      service: "crm",
+      component: "reporte",
+      type: "_get_usuarios_states_total",
+      key_empresa: Model.empresa.Action.getKey(),
+    //   fecha_inicio: "2025-01-01",
+    //   fecha_fin: "2025-12-25",
+        fecha_inicio: aaaa,
+        fecha_fin: bbbb,
+    });
+
+    return resp.data;
+  }
 }
