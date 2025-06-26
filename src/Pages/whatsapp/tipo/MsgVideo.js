@@ -121,22 +121,18 @@ export default class MsgVideo extends Component {
                         bottom: 2, right: 5, color: "white",
                         fontWeight: "bold"
                     }} mesaje={this.props.mensaje} />
+                    {texto && <SView style={{
+                        position: "absolute",
+                        bottom: 0, left: 0, right: 0,
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                        padding: 5,
+                    }}>
+                        <SText color={"white"}>{texto}</SText>
+                    </SView>
+                    }
                 </View>
-                {!!texto && (
-                    <View style={{ marginTop: 4, maxWidth: 250, alignSelf: 'flex-start' }}>
-                        <SText style={{
-                            backgroundColor: "#056162",
-                            color: "white",
-                            fontSize: 18,
-                            borderRadius: 6,
-                            paddingHorizontal: 4,
-                            paddingVertical: 2,
-                            flexWrap: 'wrap',
-                        }}>
-                            {texto}
-                        </SText>
-                    </View>
-                )}
+
+
             </View>
         );
 
