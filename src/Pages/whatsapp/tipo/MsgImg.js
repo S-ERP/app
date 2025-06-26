@@ -46,11 +46,12 @@ export default class MsgImg extends Component {
             return "75%"; // Valor por defecto si no se han calculado las dimensiones
         }
         const aspectRatio = widthImage / heightImage;
+
         const newWidth = heightContainer * aspectRatio;
         return Math.min(newWidth, widthContainer); // Limitar el ancho al contenedor
     }
     render() {
-
+        const texto = this.props.mensaje.body;
         return (
             <View style={{
                 width: this.calcularWidth(),
@@ -75,13 +76,21 @@ export default class MsgImg extends Component {
                 <SImage enablePreview src={MDL.whatsapp.device.getMedia(this.props.key_device, this.props.mensaje.id._serialized)} style={{
                     borderRadius: 8,
                 }} />
-
                 <HoraLabel style={{
                     position: "absolute",
                     bottom: 2, right: 5, color: "white",
                     fonWeight: "bold"
                 }} mesaje={this.props.mensaje} />
+                {texto && <SView style={{
+                    position: "absolute",
+                    bottom: 0, left: 0, right: 0,
+                    backgroundColor: "rgba(0,0,0,0.5)",
+                    padding: 5,
+                }}>
+                    <SText color={"white"}>{texto}</SText>
+                </SView>}
             </View>
+
 
         );
     }
