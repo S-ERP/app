@@ -117,18 +117,6 @@ export default class root extends Component {
                     params={{ type: "whatsapp", startState: "enviando_whatsapp" }}
                     icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
                 />
-                <MenuButtom
-                    label="Tiempo promedio"
-                    url="/crm/dashboard"
-                    params={{ type: "whatsapp", startState: "enviando_whatsapp" }}
-                    icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
-                />
-                <MenuButtom
-                    label="Usuarios - Resumen Confirmaciones"
-                    url="/crm/dashboard"
-                    params={{ type: "whatsapp", startState: "enviando_whatsapp" }}
-                    icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
-                />
 
                 <MenuButtom
                     label="Usuarios - states total"

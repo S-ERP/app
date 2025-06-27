@@ -15,8 +15,8 @@ export default class reporteconfirmado extends Component {
         super(props);
         this.state = {
             data: null,
-            fecha_inicio: new SDate("2025-06-05").toString("yyyy-MM-dd"),
-            fecha_fin: new SDate("2025-06-08").toString("yyyy-MM-dd"),
+            fecha_inicio: new SDate().toString("yyyy-MM-dd"),
+            fecha_fin: new SDate().toString("yyyy-MM-dd"),
         };
     }
 
