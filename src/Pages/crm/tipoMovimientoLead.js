@@ -57,6 +57,7 @@ export default class tipoMovimientoLead extends Component {
                     const { row, evt } = e;
                     const nombreProyecto = "LEAD: " + row?.titulo || "El tipo leads";
                     const options = [];
+
                     if (MDL.rolesPermisos.getPermiso({
                         url: URL,
                         permiso: "edit",
