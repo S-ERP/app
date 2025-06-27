@@ -36,25 +36,27 @@ export default class infovendedor extends Component {
         const { fecha_inicio, fecha_fin } = this.state;
         if (!fecha_inicio || !fecha_fin) return;
 
-
+        const key_usuario = Model.usuario.Action.getUsuarioLog()?.key;
 
         MDL.crm.reporte._get_usuarios_states_total(fecha_inicio + "T00:00:00", fecha_fin + "T23:59:59")
             .then(data => {
                 MDL.usuario.getByKeys(Object.keys(data)).then((usuarios) => {
-                    const nd = {}
-                    Object.keys(data).map(k => {
-                        const obj = data[k]
-                        const user = usuarios.find(a => a.key == k)
-                        nd[user.Nombres] = obj
-                    })
+                    const nd = {};
+                    Object.keys(data).forEach(k => {
+                        if (k !== key_usuario) return;
+                        const obj = data[k];
+                        const user = usuarios.find(a => a.key == k);
+                        if (user) nd[user.Nombres] = obj;
+                    });
                     this.setState({ data: nd });
-                    console.log("Datos recibidos:", nd);
-                })
+                    console.log("Datos filtrados:", nd);
+                });
             })
             .catch(err => {
                 console.error("Error cargando datos:", err);
             });
     };
+
 
 
     render() {
@@ -96,8 +98,8 @@ export default class infovendedor extends Component {
                 <SHr height={80} />
 
                 <SView col={"xs-10"} flex>
-                    <TarjetaVendedor   />
-                    {/* <TarjetaVendedor data={data} /> */}
+                    {/* <TarjetaVendedor   /> */}
+                    <TarjetaVendedor data={data} />
                 </SView>
             </SPage >
         );

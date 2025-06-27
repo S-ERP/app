@@ -47,6 +47,12 @@ const metrics = [
 
 export default class TarjetaVendedor extends Component {
 
+
+
+
+
+
+
     renderCard(metric) {
         return (
             <SView
@@ -75,6 +81,9 @@ export default class TarjetaVendedor extends Component {
 
         const porcentaje = (80 / 100) * 100;
 
+        const precccioiosido = JSON.stringify(this.props.data);
+
+        console.log("mirada ",precccioiosido)
 
         return (
             <SView col={"xs-12"} row>
