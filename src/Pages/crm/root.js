@@ -27,7 +27,7 @@ export default class root extends Component {
    </Components.Container>
    <SHr height={32} /> */}
 
-            <SHr  h={32}/>
+            <SHr h={32} />
             <MenuPages
                 key_empresa={Model.empresa.Action.getKey()}
                 path={"/crm/"}
@@ -105,7 +105,7 @@ export default class root extends Component {
                     icon={<SIconApp name='crmllamada' fill={"#333"} />}
                 /> */}
 
-               
+
                 {/* <MenuButtom
                     label="Mensajes masivos"
                     url="/crm/masivo"
