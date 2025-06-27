@@ -182,7 +182,7 @@ export default class proyecto extends Component {
                             permiso: "new_campana",
                         })) {
                             options.push({
-                                label: "Campañas publicitarias",
+                                label: "Agregar Campañas publicitarias",
                                 onPress: () => {
                                     FormRegistroCampana.open({
                                         proyecto: e.row,
@@ -612,6 +612,7 @@ export default class proyecto extends Component {
                         key={"key_whatsapp_device"}
                         label="Dispositivo WhatsApp"
                         width={240}
+                        // height={180}
                         wrap={true}
                         data={(e) => {
                             return e.row.key_whatsapp_device;
@@ -626,7 +627,7 @@ export default class proyecto extends Component {
 
                             return <>   {
                                 (MDL.rolesPermisos.getPermiso({ url: URL, permiso: "delete", })) ?
-                                    <SView col={"xs-12"} center style={{ maxHeight: 155, overflow: "hidden" }} >
+                                    <SView col={"xs-12"} center style={{ minHeight: 100, overflow: "hidden" }} >
                                         <SView
                                             width={120}
                                             padding={4}
@@ -652,12 +653,9 @@ export default class proyecto extends Component {
                                         >
 
                                             <SView width={8} />
-
                                             <SIcon name="add1" fill={STheme.color.black} width={14} />
                                             <SView width={8} />
-                                            <SText center color={STheme.color.black}>
-                                                Add Device
-                                            </SText>
+                                            <SText center color={STheme.color.black}>Add Device</SText>
                                             <SView width={8} />
 
                                         </SView>
@@ -670,7 +668,7 @@ export default class proyecto extends Component {
                                             : ""}
                                     </SView>
                                     :
-                                    <SView col={"xs-12"} center style={{ maxHeight: 155, overflow: "hidden" }}>
+                                    <SView col={"xs-12"} center style={{ minHeight: 100, overflow: "hidden" }}>
                                         {device?.descripcion ?
                                             <SView center card col={"xs-8"} style={{ maxHeight: 155, overflow: "hidden" }}>
                                                 <SText>Dispositivo vinculado:</SText>
