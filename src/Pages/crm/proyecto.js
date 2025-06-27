@@ -606,6 +606,8 @@ export default class proyecto extends Component {
                             );
                         }}
                     />
+
+
                     <DinamicTable.Col
                         key={"key_whatsapp_device"}
                         label="Dispositivo WhatsApp"
@@ -622,59 +624,62 @@ export default class proyecto extends Component {
                                 (a) => a.key == ex?.row?.key_whatsapp_device
                             );
 
+                            return <>   {
+                                (MDL.rolesPermisos.getPermiso({ url: URL, permiso: "delete", })) ?
+                                    <SView col={"xs-12"} center style={{ maxHeight: 155, overflow: "hidden" }} >
+                                        <SView
+                                            width={120}
+                                            padding={4}
+                                            row
+                                            center
+                                            backgroundColor="white"
+                                            style={{ borderRadius: 12 }}
+                                            onPress={() => {
+                                                PopupDispositivo.open({
+                                                    key_whatsapp_device: ex?.row?.key_whatsapp_device,
+                                                    onRegister: (e) => {
+                                                        MDL.crm.proyecto
+                                                            .editar({
+                                                                key: ex.row.key,
+                                                                key_whatsapp_device: e.selectedOption.key,
+                                                            })
+                                                            .then((e) => {
+                                                                this.DinamicTable.loadData();
+                                                            });
+                                                    },
+                                                });
+                                            }}
+                                        >
 
+                                            <SView width={8} />
 
-                            return (
-                                <SView
-                                    col={"xs-12"} center
-                                    style={{ maxHeight: 155, overflow: "hidden" }}
-                                >
-                                    <SView
-                                        width={120}
-                                        padding={4}
-                                        row
-                                        center
-                                        backgroundColor="white"
-                                        style={{ borderRadius: 12 }}
-                                        onPress={() => {
-                                            PopupDispositivo.open({
-                                                key_whatsapp_device: ex?.row?.key_whatsapp_device,
-                                                onRegister: (e) => {
-                                                    MDL.crm.proyecto
-                                                        .editar({
-                                                            key: ex.row.key,
-                                                            key_whatsapp_device: e.selectedOption.key,
-                                                        })
-                                                        .then((e) => {
-                                                            this.DinamicTable.loadData();
-                                                        });
-                                                },
-                                            });
-                                        }}
-                                    >
+                                            <SIcon name="add1" fill={STheme.color.black} width={14} />
+                                            <SView width={8} />
+                                            <SText center color={STheme.color.black}>
+                                                Add Device
+                                            </SText>
+                                            <SView width={8} />
 
-                                        <SView width={8} />
-
-                                        <SIcon name="add1" fill={STheme.color.black} width={14} />
-                                        <SView width={8} />
-                                        <SText center color={STheme.color.black}>
-                                            Add Device
-                                        </SText>
-                                        <SView width={8} />
-
-                                    </SView>
-
-
-                                    {device?.descripcion ?
-
-                                        <SView center card col={"xs-8"} style={{ maxHeight: 155, overflow: "hidden", marginTop: 16 }}>
-                                            <SText>Dispositivo vinculado:</SText>
-                                            <SText> <SView width="80" backgroundColor="red" borderRadius={50} />   {device?.descripcion}</SText>
                                         </SView>
-                                        : ""}
 
-                                </SView>
-                            );
+                                        {device?.descripcion ?
+                                            <SView center card col={"xs-8"} style={{ maxHeight: 155, overflow: "hidden", marginTop: 16 }}>
+                                                <SText>Dispositivo vinculado:</SText>
+                                                <SText> <SView width="80" backgroundColor="red" borderRadius={50} />   {device?.descripcion}</SText>
+                                            </SView>
+                                            : ""}
+                                    </SView>
+                                    :
+                                    <SView col={"xs-12"} center style={{ maxHeight: 155, overflow: "hidden" }}>
+                                        {device?.descripcion ?
+                                            <SView center card col={"xs-8"} style={{ maxHeight: 155, overflow: "hidden" }}>
+                                                <SText>Dispositivo vinculado:</SText>
+                                                <SText> <SView width="80" backgroundColor="red" borderRadius={50} />   {device?.descripcion}</SText>
+                                            </SView>
+                                            : ""}
+                                    </SView>
+                            }
+                            </>
                         }}
                     />
 
@@ -715,12 +720,7 @@ export default class proyecto extends Component {
                                         </SView>} */}
                 </DinamicTable>
 
-                {
-                    MDL.rolesPermisos.getPermiso({
-                        url: URL,
-                        permiso: "new",
-                    }) &&
-
+                {MDL.rolesPermisos.getPermiso({ url: URL, permiso: "new", }) &&
                     <FloatButtom
                         onPress={() => {
                             FormRegistroProyecto.open({
