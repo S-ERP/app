@@ -102,7 +102,7 @@ export default class MenuPaginas extends Component {
 
         return <>
             <SView col={"xs-12"} height={120}  >
-                <SText bold fontSize={12}>{"Paginas mas vicitadas"}</SText>
+                <SText bold fontSize={12}>{"Paginas mas visitadas"}</SText>
                 {!this.state.data ? <SLoad /> : <SList
                     horizontal
                     data={this.state.data.sort((a, b) => a.order.count > b.order.count ? -1 : 1)}
