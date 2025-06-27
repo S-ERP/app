@@ -32,22 +32,16 @@ export default class reporteconfirmado extends Component {
 
         MDL.crm.reporte._get_confirmados_ranking(fecha_inicio + "T00:00:00", fecha_fin + "T23:59:59")
             .then(data => {
-
-
                 MDL.usuario.getByKeys(Object.keys(data)).then((usuarios) => {
                     const nd = {}
-                     Object.keys(data).map(k => {
+                    Object.keys(data).map(k => {
                         const obj = data[k]
                         const user = usuarios.find(a => a.key == k)
                         nd[user.Nombres] = obj
                     })
-
-                    this.setState({ data:nd });
+                    this.setState({ data: nd });
                     console.log("Datos recibidos:", nd);
-
-                 })
-                // // console.log(JSON.stringify(usuarios), JSON.stringify(data) )
-
+                })
             })
             .catch(err => {
                 console.error("Error cargando datos:", err);
@@ -57,40 +51,13 @@ export default class reporteconfirmado extends Component {
     handleFechaChange = (key, value) => {
         this.setState({ [key]: value }, this.cargar);
     };
-
-
-
-
-
     render() {
         const { data, fecha_inicio, fecha_fin } = this.state;
         if (!data) return <SLoad />;
-
-        // console.log("clientess ", JSON.stringify(data))
-
-        // try {
-        //     const usuarios: any  = await MDL.usuario.getByKeys(Object.keys(data));
-        //     // // console.log(JSON.stringify(usuarios), JSON.stringify(data) )
-        //     const arr = Object.keys(data).map(k => {
-        //         const obj = data[k]
-        //         obj.key_usuario = k
-        //         obj.usuario = usuarios.find(a => a.key == k)
-        //         console.log(obj)
-        //         return obj
-        //     })
-
-        //     console.log("clientess ", JSON.stringify(arr))
-        // } catch (e) {
-
-        // }
-
-
         return (
-            <SPage title="Confirmados"  >
+            <SPage title="Confirmados">
                 <SHr height={20} />
-
                 <SView col={"xs-12"} row center>
-
                     <SView col={"xs-11 md-5"} row backgroundColor='transparent'>
                         <SView col={"xs-12"} height={50} center row  >
                             <SView col={"xs-5"} backgroundColor='transparent'>
@@ -99,7 +66,6 @@ export default class reporteconfirmado extends Component {
                                     iconR={<SIcon name='Evento' width={28} fill='#666' />} defaultValue={fecha_inicio} onChangeText={(val) => this.handleFechaChange("fecha_inicio", val)}
                                 />
                             </SView>
-
                             <SView flex />
                             <SView col={"xs-5"} >
                                 <SInput
@@ -109,7 +75,6 @@ export default class reporteconfirmado extends Component {
                             </SView>
                         </SView>
                     </SView>
-
                     <SHr height={150} />
                     <SView col={"xs-12 md-5"} row center>
 
