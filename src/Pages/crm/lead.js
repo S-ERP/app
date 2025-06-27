@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SDate, SHr, SIcon, SImage, SNavigation, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SIcon, SImage, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import FormRegistroProyecto from './Components/FormRegistroProyecto';
 import MDL from '../../MDL';
 import { DinamicTable } from 'servisofts-table';
@@ -11,6 +11,8 @@ import FloatButtom from '../../Components/FloatButtom';
 import Etiqueta from './Components/Etiqueta';
 import Alert from 'servisofts-component/img/Alert';
 import Config from '../../Config';
+import FloatMenu from '../../Components/FloatMenu';
+import SIconApp from '../../Assets/SIconApp';
 
 const URL = "/crm/lead";
 export default class lead extends Component {
@@ -60,6 +62,20 @@ export default class lead extends Component {
     }
 
 
+    handleDelete(row) {
+        SPopup.confirm({
+            title: "Eliminar Lead",
+            message: "¿Estás seguro de eliminar este lead?",
+            onPress: () => {
+                MDL.crm.clienteProyecto.eliminar({ key: row.key }).then(() => {
+                    this.DinamicTable.loadData();
+                }).catch(e => {
+                    // SNotification.error("Error al eliminar el lead: " + e.error);
+                });
+            },
+            icon: <SIcon name='Delete' fill={STheme.color.danger} height={24} />,
+        })
+    }
 
     render() {
         return <SPage title={"Tipos leads registrados"} disableScroll>
@@ -73,7 +89,9 @@ export default class lead extends Component {
                 center
                 textStyle={Config.table.textStyle()}
                 language='es'
-                ref={ref => this.DinamicTable = ref} loadData={async () => { return await MDL.crm.clienteProyecto.getAll(); }} onSelect={(e) => { console.log("Selected project:", e.row); }}
+                ref={ref => this.DinamicTable = ref}
+                loadData={async () => { return await MDL.crm.clienteProyecto.getAll(); }}
+                // onSelect={(e) => { console.log("Selected project:", e.row); }}
                 loadInitialState={async () => {
                     return {
                         sorters: [
@@ -81,6 +99,25 @@ export default class lead extends Component {
                             { key: "fecha_edit", order: "desc", type: "date" }
                         ]
                     }
+                }}
+                onSelect={(e) => {
+                    const options = [];
+
+                    if (MDL.rolesPermisos.getPermiso({
+                        url: URL,
+                        permiso: "delete"
+                    })) {
+                        options.push({
+                            icon: <SIconApp name="Delete" fill={STheme.color.text} />,
+                            label: "Eliminar",
+                            onPress: this.handleDelete.bind(this, e.row),
+                        })
+                    }
+                    FloatMenu.open({
+                        e: e.evt,
+                        label: e.row.codigo,
+                        options: options
+                    });
                 }}
             >
                 <DinamicTable.Col key={"key"} label='ID' width={28} textStyle={{
@@ -111,7 +148,23 @@ export default class lead extends Component {
                     data={(e) => e.row.state}
                     customComponent={e => {
                         return <SView col={"xs-12"} row center>
-                            <Etiqueta size={10} tipo_leads={e.row.state} />
+                            <Etiqueta size={10} tipo_leads={e.row.state}
+                                onPress={() => {
+                                    const activeFilter = this.DinamicTable.filtros.findIndex(f => f.col === "state");
+
+                                    if (activeFilter !== -1) {
+                                        if (e.row.state == this.DinamicTable.filtros[activeFilter].value) {
+                                            return;
+                                        }
+                                        this.DinamicTable.filtros.splice(activeFilter, 1);
+                                    }
+                                    this.DinamicTable.filtros.push({
+                                        col: "state",
+                                        operator: "=",
+                                        value: e.row.state
+                                    });
+                                    this.DinamicTable.applyFilter()
+                                }} />
                         </SView>
                     }}
                 />
