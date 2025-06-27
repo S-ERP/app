@@ -78,7 +78,17 @@ export default class FormRegistroLead extends Component<FormRegistroType & { def
                         autoFocus: true,
                         defaultValue: defaultData?.telefono,
                         //   type: "phone",
-                        onSubmitEditing: () => this.form?.focus("nombres"),
+                        onSubmitEditing: () => {
+                            this.form?.focus("correo"),
+
+
+                                MDL.crm.cliente.buscar_telefono(this.form?.getValues().telefono).then(e => {
+                                    console.log(e)
+                                }).catch(e => {
+                                    console.log(e)
+                                })
+
+                        }
                     },
                     nombres: {
                         col: "xs-12",
