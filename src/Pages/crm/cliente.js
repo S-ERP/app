@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SIcon, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import FormRegistroProyecto from './Components/FormRegistroProyecto';
 import MDL from '../../MDL';
 import { DinamicTable } from 'servisofts-table';
@@ -11,10 +11,24 @@ import FloatButtom from '../../Components/FloatButtom';
 import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
 
+const URL = "/crm/cliente";
+
 
 export default class cliente extends Component {
 
     componentDidMount() {
+
+        MDL.rolesPermisos.getPermisoAsync({
+            url: URL, permiso: "ver"
+        }).then(e => {
+            if (!e) {
+                SNavigation.goBack();
+                return;
+            }
+            this.forceUpdate();
+
+        })
+
         MDL.crm.cliente.getAll().then(e => {
             console.log("Projects fetched successfully:", e);
         }).catch(e => {
@@ -23,7 +37,7 @@ export default class cliente extends Component {
     }
 
     render() {
-        return <SPage title={"Cliente"}>
+        return <SPage title={"Cliente sdddddd"}>
             {/* <SView width={140} height={26} center backgroundColor={STheme.color.card} style={{ borderRadius: 4 }}  >
     <SText fontSize={12} color={STheme.color.white} onPress={() => {
      FormRegistroCliente.open(({ onRegister: (e) => { this.DinamicTable.loadData(); } }))
@@ -42,67 +56,79 @@ export default class cliente extends Component {
                 onSelect={(e) => {
                     const { row, evt } = e;
                     const nombreCliente = "CLIENTE: " + (row?.nombres ?? "");
+                    const options = [];
+
+                    if (MDL.rolesPermisos.getPermiso({
+                        url: URL,
+                        permiso: "edit",
+                    })) {
+                        options.push({
+
+                            label: "Editar",
+                            icon: <SIcon name="Edit" fill={STheme.color.text} />,
+                            onPress: () => {
+                                FormRegistroCliente.open({
+                                    defaultData: row,
+                                    onActualizar: (nuevoDato) => {
+                                        this.DinamicTable.loadData();
+                                        console.log("Cliente actualizado:", nuevoDato);
+                                    }
+                                });
+                            }
+                        })
+                    }
+
+                    if (MDL.rolesPermisos.getPermiso({
+                        url: URL,
+                        permiso: "delete",
+                    })) {
+                        options.push({
+                            label: "Eliminar",
+                            icon: <SIcon name="Delete" fill={STheme.color.text} />,
+                            onPress: () => {
+                                SPopup.confirm({
+                                    title: "Eliminar cliente",
+                                    message: `¿Estás seguro de eliminar a ${nombreCliente}?`,
+                                    onPress: () => {
+                                        SSocket.sendPromise({
+                                            service: "crm",
+                                            component: "cliente",
+                                            type: "editar",
+                                            data: { ...row, estado: 0 }
+                                        })
+                                            .then(() => {
+                                                SNotification.send({
+                                                    key: "eliminar_ok",
+                                                    title: "Cliente eliminado",
+                                                    type: "success",
+                                                    time: 1500,
+                                                    body: `${nombreCliente} fue eliminado correctamente.`
+                                                });
+                                                this.DinamicTable.loadData();
+                                            })
+                                            .catch(err => {
+                                                console.error("❌ Error al eliminar cliente:", err);
+                                                SNotification.send({
+                                                    key: "eliminar_error",
+                                                    title: "Error al eliminar",
+                                                    type: "error",
+                                                    time: 3000,
+                                                    body: "❌ Ocurrió un error al eliminar. Intenta nuevamente.",
+                                                    color: STheme.color.error
+                                                });
+                                            });
+                                    }
+                                });
+                            }
+
+                        })
+                    }
+
                     // const nombreCliente = "CLIENTE: "+ row?.nombres ?? "El cliente";
                     FloatMenu.open({
                         e: evt,
                         label: nombreCliente,
-                        options: [
-                            // 🟩 Editar
-                            {
-                                label: "Editar",
-                                icon: <SIcon name="Edit" fill={STheme.color.text} />,
-                                onPress: () => {
-                                    FormRegistroCliente.open({
-                                        defaultData: row,
-                                        onActualizar: (nuevoDato) => {
-                                            this.DinamicTable.loadData();
-                                            console.log("Cliente actualizado:", nuevoDato);
-                                        }
-                                    });
-                                }
-                            },
-                            // 🟥 Eliminar
-                            {
-                                label: "Eliminar",
-                                icon: <SIcon name="Delete" fill={STheme.color.text} />,
-                                onPress: () => {
-                                    SPopup.confirm({
-                                        title: "Eliminar cliente",
-                                        message: `¿Estás seguro de eliminar a ${nombreCliente}?`,
-                                        onPress: () => {
-                                            SSocket.sendPromise({
-                                                service: "crm",
-                                                component: "cliente",
-                                                type: "editar",
-                                                data: { ...row, estado: 0 }
-                                            })
-                                                .then(() => {
-                                                    SNotification.send({
-                                                        key: "eliminar_ok",
-                                                        title: "Cliente eliminado",
-                                                        type: "success",
-                                                        time: 1500,
-                                                        body: `${nombreCliente} fue eliminado correctamente.`
-                                                    });
-                                                    this.DinamicTable.loadData();
-                                                })
-                                                .catch(err => {
-                                                    console.error("❌ Error al eliminar cliente:", err);
-                                                    SNotification.send({
-                                                        key: "eliminar_error",
-                                                        title: "Error al eliminar",
-                                                        type: "error",
-                                                        time: 3000,
-                                                        body: "❌ Ocurrió un error al eliminar. Intenta nuevamente.",
-                                                        color: STheme.color.error
-                                                    });
-                                                });
-                                        }
-                                    });
-                                }
-                            }
-
-                        ]
+                        options:  options
                     });
                 }}
 
@@ -137,9 +163,10 @@ export default class cliente extends Component {
 
 
             </DinamicTable>
+            {MDL.rolesPermisos.getPermiso({ url: URL, permiso: "new", }) &&
 
-            <FloatButtom onPress={() => { FormRegistroCliente.open(({ onRegister: (e) => { this.DinamicTable.loadData(); } })) }} />
-
+                <FloatButtom onPress={() => { FormRegistroCliente.open(({ onRegister: (e) => { this.DinamicTable.loadData(); } })) }} />
+            }
         </SPage >
     }
 }
