@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2, SHr, SNotification, SImage, SDate } from 'servisofts-component';
-import FileChooser from '../../Components/SUpload/FileChooser';
+import FileChooser from '../../../Components/SUpload/FileChooser';
 import * as XLSX from "xlsx";
 import SSocket from 'servisofts-socket';
-import Model from '../../Model';
-import MDL from '../../MDL';
+import Model from '../../../Model';
+import MDL from '../../../MDL';
 import { DinamicTable } from 'servisofts-table';
-import Config from '../../Config';
+import Config from '../../../Config';
 import SCharts from 'servisofts-charts';
 
 
