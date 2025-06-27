@@ -105,7 +105,7 @@ export default class root extends Component {
                     icon={<SIconApp name='crmllamada' fill={"#333"} />}
                 /> */}
 
-               
+
                 {/* <MenuButtom
                     label="Mensajes masivos"
                     url="/crm/masivo"
