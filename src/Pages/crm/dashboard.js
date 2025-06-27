@@ -1,6 +1,6 @@
 import React, { Component, createRef } from 'react';
 import { Dimensions, UIManager, findNodeHandle } from 'react-native';
-import { SDate, SHr, SImage, SInput, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SImage, SInput, SNavigation, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -112,6 +112,20 @@ export default class Dashboard extends Component {
         console.log("handleDrop", cardKey, gestureEnd);
 
         if (prevenChange) return;
+
+        if (!MDL.rolesPermisos.getPermiso({
+            url: URL,
+            permiso: "edit_state"
+        })) {
+            SNotification.send({
+                key: "error",
+                title: "Permiso denegado",
+                body: "No tienes permiso para editar el estado de los leads.",
+                color: STheme.color.danger,
+                time: 3000,
+            })
+            return;
+        }
         for (const stageKey in this.stageRefs) {
             const ref = this.stageRefs[stageKey];
             if (!ref?.current) continue;
@@ -256,13 +270,18 @@ export default class Dashboard extends Component {
     ];
 
     render() {
+
+
         console.log("DATAS", this.state.cards);
         return (
             <GestureHandlerRootView style={{ flex: 1, }}>
                 <SPage title={'Dashboard ' + this.dashboardType} disableScroll>
                     <SView col={"xs-12"} style={{ padding: 2, height: HEADER_HEIGHT, backgroundColor: STheme.color.background, alignItems: "center" }} row >
                         <SView width={8} />
-                        <SView row padding={6} card onPress={() => {
+                        {MDL.rolesPermisos.getPermiso({
+                            url: URL,
+                            permiso: "crear_lead"
+                        }) && <SView row padding={6} card onPress={() => {
                             console.log("Agregar Lead");
                             FormRegistroLead.open({
                                 state: this.startState,
@@ -272,10 +291,11 @@ export default class Dashboard extends Component {
                             })
 
                         }}>
-                            <SIconApp width={14} height={14} name='Add' fill='#fff' />
-                            <SView width={2} />
-                            <SText fontSize={12} bold>Agregar Lead</SText>
-                        </SView>
+                                <SIconApp width={14} height={14} name='Add' fill='#fff' />
+                                <SView width={2} />
+                                <SText fontSize={12} bold>Agregar Lead</SText>
+                            </SView>
+                        }
                         <SView width={8} />
                         <SView width={8} />
                         <SView width={8} />
