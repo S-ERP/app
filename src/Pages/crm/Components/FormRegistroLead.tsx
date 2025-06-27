@@ -3,8 +3,9 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import MDL from '../../../MDL';
 import { DinamicTable } from 'servisofts-table';
-import { SForm, SHr, SIcon, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SForm, SHr, SIcon, SNotification, SPopup, SText, STheme, SThread, SView } from 'servisofts-component';
 import PButtom from '../../../Components/PButtom';
+import SIconApp from '../../../Assets/SIconApp';
 
 
 type FormRegistroType = {
@@ -59,6 +60,21 @@ export default class FormRegistroLead extends Component<FormRegistroType & { def
 
 
     }
+
+    hanldeEditTelefono = () => {
+        MDL.crm.cliente.buscar_telefono(this.form?.getValues().telefono).then(e => {
+            this.form?.setValues({
+                nombres: e?.nombres || "",
+                departamento: e?.departamento || "",
+            })
+        }).catch(e => {
+            this.form?.setValues({
+                nombres: "",
+                departamento: "",
+            })
+            console.log(e)
+        })
+    }
     form: SForm | null = null;
     render() {
 
@@ -77,17 +93,20 @@ export default class FormRegistroLead extends Component<FormRegistroType & { def
                         required: true,
                         autoFocus: true,
                         defaultValue: defaultData?.telefono,
+                        iconR:<SView width={30} height={30} center onPress={()=>{
+                            this.hanldeEditTelefono();
+                        }}>
+                            <SIconApp name='Search' fill={STheme.color.lightGray}/>
+                        </SView>,
                         //   type: "phone",
+                        onChangeText: (text: string) => {
+                            new SThread(2000, "buscar_telefono", true).start(() => {
+                                this.hanldeEditTelefono();
+                            })
+                        },
                         onSubmitEditing: () => {
-                            this.form?.focus("correo"),
-
-
-                                MDL.crm.cliente.buscar_telefono(this.form?.getValues().telefono).then(e => {
-                                    console.log(e)
-                                }).catch(e => {
-                                    console.log(e)
-                                })
-
+                            this.hanldeEditTelefono();
+                            this.form?.focus("correo")
                         }
                     },
                     nombres: {
