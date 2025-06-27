@@ -34,7 +34,7 @@ export default class root extends Component {
                 permiso={"ver"}
             >
                 <SHr />
-                <SText fontSize={20}>Administración</SText>
+                <SText fontSize={20}>DashBoard</SText>
                 <SHr height={20} />
 
                 <MenuButtom
@@ -99,35 +99,13 @@ export default class root extends Component {
                     icon={<SIconApp name='crmdashboardgeneral' fill={"#333"} />}
                 />
 
-                <MenuButtom
+                {/* <MenuButtom
                     label="Llamadas"
                     url="/crm/llamar"
                     icon={<SIconApp name='crmllamada' fill={"#333"} />}
-                />
+                /> */}
 
-                <SHr height={20} />
-                <SText fontSize={20}>Modulo Reportes</SText>
-                <SHr height={20} />
-
-                <MenuButtom
-                    label="Usuarios - Leads Confirmados"
-                    url="/crm/reporteconfirmado"
-                    params={{ type: "whatsapp", startState: "enviando_whatsapp" }}
-                    icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
-                />
-
-                <MenuButtom
-                    label="Usuarios - states total"
-                    url="/crm/reporteusuariosstate"
-                    params={{ type: "whatsapp", startState: "enviando_whatsapp" }}
-                    icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
-                />
-
-                <MenuButtom
-                    label="Gráficos"
-                    url="/crm/graficos"
-                    icon={<SIconApp name='crmgraficos' fill={"#333"} />}
-                />
+               
                 {/* <MenuButtom
                     label="Mensajes masivos"
                     url="/crm/masivo"
