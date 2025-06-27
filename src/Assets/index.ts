@@ -174,6 +174,18 @@ import crmplay, { ReactComponent as crmplayW } from "./svg/crm/play.svg";
 import crmpause, { ReactComponent as crmpauseW } from "./svg/crm/pause.svg";
 
 import crmword, { ReactComponent as crmwordW } from "./svg/crm/archivoword.svg";
+
+
+import crmllamadacompletada, { ReactComponent as crmllamadacompletadaW } from "./svg/crm/crm_llamada_compleatas.svg";
+import crmllamadaconfirmada, { ReactComponent as crmllamadaconfirmadaW } from "./svg/crm/crm_llamada_confirmada.svg";
+import crmllamadafallida, {
+  ReactComponent as crmllamadafallidaW,
+} from "./svg/crm/crm_llamada_fallida.svg";
+import crmllamadatasaconversion, { ReactComponent as crmllamadatasaconversionW } from "./svg/crm/crm_llamada_tasa_conversion.svg";
+
+
+
+
 import crmexcel, {
   ReactComponent as crmexcelW,
 } from "./svg/crm/archivoexcel.svg";
@@ -267,6 +279,21 @@ export const svg = {
   tarea: { Native: tarea, Web: tareaW },
   adicional: { Native: adicional, Web: adicionalW },
   carritoproducto: { Native: carritoproducto, Web: carritoproductoW },
+
+  crmllamadacompletada: {
+    Native: crmllamadacompletada,
+    Web: crmllamadacompletadaW,
+  },
+  crmllamadaconfirmada: {
+    Native: crmllamadaconfirmada,
+    Web: crmllamadaconfirmadaW,
+  },
+    crmllamadafallida: { Native: crmllamadafallida, Web: crmllamadafallidaW },
+
+  crmllamadatasaconversion: {
+    Native: crmllamadatasaconversion,
+    Web: crmllamadatasaconversionW,
+  },
 
   emp1: { Native: emp1, Web: emp1W },
   emp2: { Native: emp2, Web: emp2W },
