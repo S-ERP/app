@@ -70,23 +70,24 @@ export default class FormRegistroLead extends Component<FormRegistroType & { def
             <SForm row ref={(ref: any) => this.form = ref}
                 style={{ justifyContent: "space-between" }}
                 inputs={{
-                    nombres: {
-                        col: "xs-12",
-                        label: "Nombre completo",
-                        //   required: true,
-                        defaultValue: defaultData?.nombres,
-                        autoFocus: true,
-                        onSubmitEditing: () => this.form?.focus("telefono"),
-                    },
                     telefono: {
                         col: "xs-12",
                         label: "Teléfono",
                         type: 'phone',
                         required: true,
+                        autoFocus: true,
                         defaultValue: defaultData?.telefono,
                         //   type: "phone",
-                        onSubmitEditing: () => this.form?.focus("correo"),
+                        onSubmitEditing: () => this.form?.focus("nombres"),
                     },
+                    nombres: {
+                        col: "xs-12",
+                        label: "Nombre completo",
+                        //   required: true,
+                        defaultValue: defaultData?.nombres,
+                        onSubmitEditing: () => this.form?.focus("departamento"),
+                    },
+
                     // correo: {
                     //     col: "xs-12",
                     //     label: "Correo",

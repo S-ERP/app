@@ -26,6 +26,7 @@ import FormRegistroLead from './Components/FormRegistroLead';
 const HEADER_HEIGHT = 30;// Altura del header
 
 
+const URL = "/crm/dashboard";
 export default class Dashboard extends Component {
     stageRefs = {};
     cardRefs = {};
@@ -61,13 +62,24 @@ export default class Dashboard extends Component {
 
 
     componentDidMount() {
-        MDL.crm.clienteProyecto.getAll().then(e => {
-            this.setState({
-                cards: e,
-            });
-        }).catch(e => {
-            console.error("Error fetching projects:", e);
+        MDL.rolesPermisos.getPermisoAsync({
+            url: URL, permiso: "ver"
+        }).then(e => {
+            if (!e) {
+                SNavigation.goBack();
+                return;
+            }
+            // this.forceUpdate();
+            MDL.crm.clienteProyecto.getAll().then(e => {
+                this.setState({
+                    cards: e,
+                });
+            }).catch(e => {
+                console.error("Error fetching projects:", e);
+            })
+
         })
+
     }
 
     stateCardChanged = (cardKey, newState) => {
