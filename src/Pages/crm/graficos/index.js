@@ -5,6 +5,7 @@ import MDL from '../../../MDL';
 import SCharts from 'servisofts-charts';
 import { Container } from '../../../Components';
 import Model from '../../../Model';
+import GraficoMapa from './GraficoMapa';
 
 export default class index extends Component {
     constructor(props) {
@@ -57,6 +58,11 @@ export default class index extends Component {
         if (!this.state.result) return <SPage><SView center><SText>Loading...</SText></SView></SPage>;
         return <SPage>
             {/* <SText>{JSON.stringify(this.state?.result, "\n", "\t")}</SText> */}
+            <SView style={{
+                width: 500, height: 500,
+            }}>
+                <GraficoMapa />
+            </SView>
             <SView style={{
                 width: 300, height: 300,
             }}>

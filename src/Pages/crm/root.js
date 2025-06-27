@@ -5,12 +5,18 @@ import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
 import Components from '../../Components';
 import Model from '../../Model';
 import SIconApp from '../../Assets/SIconApp';
+import MDL from '../../MDL';
 
 export default class root extends Component {
     constructor(props) {
         super(props);
         this.state = {
         };
+    }
+    componentDidMount(){
+        MDL.rolesPermisos.loadPermissions().then(() => {
+            this.forceUpdate();
+        })
     }
 
     render() {
