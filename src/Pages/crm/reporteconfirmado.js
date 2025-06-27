@@ -28,7 +28,7 @@ export default class reporteconfirmado extends Component {
         const { fecha_inicio, fecha_fin } = this.state;
         if (!fecha_inicio || !fecha_fin) return;
 
-        MDL.crm.reporte._get_confirmados_ranking(fecha_inicio, fecha_fin)
+        MDL.crm.reporte._get_confirmados_ranking(fecha_inicio + "T00:00:00", fecha_fin + "T23:59:59")
             .then(data => {
                 this.setState({ data });
                 console.log("Datos recibidos:", data);
@@ -45,6 +45,21 @@ export default class reporteconfirmado extends Component {
     render() {
         const { data, fecha_inicio, fecha_fin } = this.state;
         if (!data) return <SLoad />;
+
+        console.log("clientess ", JSON.stringify(data))
+
+        // const usuarios = MDL.usuario.getByKeys(Object.keys(data));
+        // // console.log(JSON.stringify(usuarios), JSON.stringify(data) )
+        // const arr = Object.keys(data).map(k => {
+        //     const obj = data[k]
+        //     obj.key_usuario = k
+        //     obj.usuario = usuarios.find(a => a.key == k)
+        //     console.log(obj)
+        //     return obj
+        // })
+
+        // console.log("clientess ", JSON.stringify(usuarios))
+
 
         return (
             <SPage title="Confirmados"  >
