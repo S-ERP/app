@@ -27,7 +27,7 @@ export default class root extends Component {
    </Components.Container>
    <SHr height={32} /> */}
 
-            <SHr />
+            <SHr  h={32}/>
             <MenuPages
                 key_empresa={Model.empresa.Action.getKey()}
                 path={"/crm/"}
