@@ -12,10 +12,20 @@ import Etiqueta from './Components/Etiqueta';
 import Alert from 'servisofts-component/img/Alert';
 import Config from '../../Config';
 
-
+const URL = "/crm/lead";
 export default class lead extends Component {
 
     componentDidMount() {
+        MDL.rolesPermisos.getPermisoAsync({
+            url: URL, permiso: "ver"
+        }).then(e => {
+            if (!e) {
+                SNavigation.goBack();
+                return;
+            }
+            this.forceUpdate();
+
+        })
         // MDL.crm.clienteProyecto.getAllPendientes().then(e => {
         //     console.log("ultimaaaa :", e);
         // }).catch(e => {
@@ -119,7 +129,7 @@ export default class lead extends Component {
 
                     customComponent={e => {
                         if (!e.data) return null;
-                        return <SView style={{ padding: 3, backgroundColor: STheme.colorFromText(e.data)+"66", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                        return <SView style={{ padding: 3, backgroundColor: STheme.colorFromText(e.data) + "66", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
                             <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} bold color={STheme.color.text}>{!e.data ? "" : e.data}</SText>
                         </SView>
                     }} />

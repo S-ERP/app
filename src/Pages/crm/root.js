@@ -13,7 +13,7 @@ export default class root extends Component {
         this.state = {
         };
     }
-    componentDidMount(){
+    componentDidMount() {
         MDL.rolesPermisos.loadPermissions().then(() => {
             this.forceUpdate();
         })
@@ -42,69 +42,67 @@ export default class root extends Component {
                     url="/crm/dashboard"
                     icon={<SIconApp name='crmdashboardgeneral' fill={"#333"} />}
                 />
-                <MenuButtom
+                {/* <MenuButtom
                     label="Tipo Movimiento Lead"
                     url="/crm/tipoMovimientoLead"
                     icon={<SIconApp name='crmmovimiento' fill={"#333"} />}
-                />
-                <MenuButtom
+                /> */}
+                {/* <MenuButtom
                     label="Proyecto"
                     url="/crm/proyecto"
                     icon={<SIcon name='crmdproyecto' fill={"#333"} />}
-                />
-                <MenuButtom
+                /> */}
+                {/* <MenuButtom
                     label="Cliente"
                     url="/crm/cliente"
                     icon={<SIcon name='crmcliente' fill={"#333"} />}
-                />
-                <MenuButtom
-                    label="Gráficos"
-                    url="/crm/graficos"
-                    icon={<SIconApp name='crmgraficos' fill={"#333"} />}
-                />
+                /> */}
 
-                <SHr height={20} />
+
+                {/* <SHr height={20} />
                 <SText fontSize={20}>Ventas</SText>
-                <SHr height={20} />
+                <SHr height={20} /> */}
 
                 <MenuButtom
                     label="Dashboard de Ventas"
                     url="/crm/dashboard"
                     params={{ type: "ventas" }}
-                    icon={<SIconApp name='crmdashboardventas' fill={"#333"} />}
+                    icon={<SIconApp name='crmdashboardgeneral' fill={"#333"} />}
                 />
-                <MenuButtom
+                {/* <MenuButtom
                     label="Leads"
                     url="/crm/lead"
                     icon={<SIcon name='crmllleads' fill={"#333"} />}
-                />
-                <MenuButtom
-                    label="Llamadas"
-                    url="/crm/llamar"
-                    icon={<SIconApp name='crmllamada' fill={"#333"} />}
-                />
+                /> */}
 
-                <SHr height={20} />
+
+                {/* <SHr height={20} />
                 <SText fontSize={20}>Delivery</SText>
-                <SHr height={20} />
+                <SHr height={20} /> */}
 
                 <MenuButtom
                     label="Dashboard de Delivery"
                     url="/crm/dashboard"
                     params={{ type: "delivery" }}
-                    icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
+                    icon={<SIconApp name='crmdashboardgeneral' fill={"#333"} />}
                 />
 
 
-                <SHr height={20} />
+                {/* <SHr height={20} />
                 <SText fontSize={20}>WhatsApp</SText>
-                <SHr height={20} />
+                <SHr height={20} /> */}
 
                 <MenuButtom
                     label="Dashboard de WhatsApp"
                     url="/crm/dashboard"
                     params={{ type: "whatsapp", startState: "enviando_whatsapp" }}
-                    icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
+                    icon={<SIconApp name='crmdashboardgeneral' fill={"#333"} />}
+                />
+
+                <MenuButtom
+                    label="Llamadas"
+                    url="/crm/llamar"
+                    icon={<SIconApp name='crmllamada' fill={"#333"} />}
                 />
 
                 <SHr height={20} />
@@ -125,6 +123,11 @@ export default class root extends Component {
                     icon={<SIconApp name='crmdashboarddelivery' fill={"#333"} />}
                 />
 
+                <MenuButtom
+                    label="Gráficos"
+                    url="/crm/graficos"
+                    icon={<SIconApp name='crmgraficos' fill={"#333"} />}
+                />
                 {/* <MenuButtom
                     label="Mensajes masivos"
                     url="/crm/masivo"
