@@ -596,9 +596,9 @@ export default class proyecto extends Component {
                             padding: 0,
                         }}
                         customComponent={(e) => {
-                            return (<SView col={"xs-12"} style={{ maxHeight: 155, overflow: "hidden" }} >
+                            return (<SView col={"xs-12"} style={{ maxHeight: 155, overflow: "hidden"}} >
                                 <ScrollView>
-                                    <SMD space={1} fontSize={9}>
+                                    <SMD space={1} fontSize={9} textColor={STheme.color.text} >
                                         {e.data}
                                     </SMD>
                                 </ScrollView>

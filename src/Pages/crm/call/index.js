@@ -143,7 +143,7 @@ export default class index extends Component {
                     </CardContent>
                     <CardContent>
                         <SView col={"xs-12"} padding={8}>
-                            <SMD padding={0} fontSize={12} space={0}>{proyecto?.guion}</SMD>
+                            <SMD padding={0} fontSize={12} space={0} textColor={STheme.color.text} >{proyecto?.guion}</SMD>
                         </SView>
 
                     </CardContent>
