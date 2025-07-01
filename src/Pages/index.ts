@@ -70,6 +70,7 @@ import factura from '../Components/PDF/factura';
 import ricky from './ricky';
 import crm from './crm';
 import plantilla from './crm/plantilla';
+import turno from './turno';
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -142,4 +143,5 @@ export default SPage.combinePages("/", {
   ...crm,
   "pdf/factura": factura,
   plantilla,
+  turno,
 });
