@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2, SHr, SNotification, SImage, SDate, SButtom } from 'servisofts-component';
+import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2, SHr, SNotification, SImage, SDate, SButtom, SScrollView2, SScrollView3 } from 'servisofts-component';
 import * as XLSX from "xlsx";
 import SSocket from 'servisofts-socket';
 import { DinamicTable } from 'servisofts-table';
@@ -11,7 +11,6 @@ import Config from '../Config';
 import Model from '../Model';
 import FloatButtom from '../Components/FloatButtom';
 
-const options = ["---", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"];
 
 export default class Turno extends Component {
     constructor(props) {
@@ -19,226 +18,141 @@ export default class Turno extends Component {
         this.state = {
         };
     }
-
     bolin() {
+        const dias = ["lunes", "martes", "domingo"];
         this.setState({
-            config: {
-                descripcion: this?.params?.input_descripcion ?? "",
-                dia: this?.params?.input_dia ?? options[0],
-                es24Horas: false,
-                esFeriado: false,
-                sinAtencion: false,
-            }
+            config: dias.reduce((acc, dia) => {
+                acc[dia] = {
+                    activo: true, // todos los días activos por defecto
+                    es24Horas: false,
+                    esFeriado: false,
+                    sinAtencion: false,
+                };
+                return acc;
+            }, {})
         });
 
         SPopup.open({
             key: "popup_config_horario",
             content: (
-                <SView
-                    col={"xs-11 sm-10 md-8"}
-                    backgroundColor={STheme.color.background}
-                    style={{ borderRadius: 8, maxWidth: 500 }}
-                    padding={16}
-                    withoutFeedback
-                >
+                <SView col={"xs-11 sm-10 md-8"} height={700} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 500 }} padding={16} withoutFeedback>
 
-                    <SView col={"xs-12"} row>
-                        <SView flex >
-                            <SText fontSize={18} bold>🕒 Configurar Nuevo Horario</SText>
-                        </SView>
-                        <SView col={"xs-1"} center >
-                            <SView col={"xs-12"} center onPress={() => {
-                                SPopup.close("popup_config_horario")
 
-                                this.forceUpdate();
-                            }}>
-                                <SIcon name="Cerrar" fill="white" width={14} />
-                            </SView>
-                        </SView>
-                    </SView>
+                    <SText fontSize={18} bold>🗓 Configurar Horarios Semanales</SText>
                     <SHr height={16} />
 
-                    <SInput
-                        label={"Descripción"}
-                        ref={ref => this.input_descripcion = ref}
-                        defaultValue={this?.state?.config?.descripcion}
-                    />
+                    <SScrollView2   >
 
-                    <SHr />
 
-                    <SInput
-                        label={"Seleccionar día de la semana"}
-                        ref={ref => this.input_dia = ref}
-                        type="select2"
-                        options={options}
-                        defaultValue={this?.state?.config?.dia}
-                    />
+                        {dias.map((dia, i) => {
+                            const configDia = this.state?.config?.[dia] ?? {};
+                            const isActivo = configDia.activo;
+                            const { es24Horas, esFeriado, sinAtencion } = configDia;
+                            const mostrarInputsTurno = isActivo && !es24Horas && !esFeriado && !sinAtencion;
 
-                    <SHr />
+                            return (
+                                <SView key={dia} col={"xs-12"} style={{ marginBottom: 24 }}>
+                                    <SText fontSize={16} bold>{dia.charAt(0).toUpperCase() + dia.slice(1)}</SText>
+                                    <SInput
+                                        type="checkBox"
+                                        label={`¿Activar ${dia}?`}
+                                        value={isActivo}
+                                        onChange={(val) => {
+                                            this.setState({
+                                                config: {
+                                                    ...this.state.config,
+                                                    [dia]: {
+                                                        ...this.state.config[dia],
+                                                        activo: val
+                                                    }
+                                                }
+                                            });
+                                        }}
+                                    />
+                                    {isActivo && (
+                                        <>
+                                            <SInput
+                                                label={"¿Atención 24 horas?"}
+                                                type="checkBox"
+                                                value={es24Horas}
+                                                onChange={(val) => {
+                                                    this.setState({
+                                                        config: {
+                                                            ...this.state.config,
+                                                            [dia]: {
+                                                                ...this.state.config[dia],
+                                                                es24Horas: val,
+                                                                esFeriado: false,
+                                                                sinAtencion: false,
+                                                            }
+                                                        }
+                                                    });
+                                                    this.forceUpdate();
+                                                }}
+                                            />
+                                            <SInput
+                                                label={"¿Día feriado?"}
+                                                type="checkBox"
+                                                value={esFeriado}
+                                                onChange={(val) => {
+                                                    this.setState({
+                                                        config: {
+                                                            ...this.state.config,
+                                                            [dia]: {
+                                                                ...this.state.config[dia],
+                                                                esFeriado: val,
+                                                                es24Horas: false,
+                                                                sinAtencion: false,
+                                                            }
+                                                        }
+                                                    });
+                                                    this.forceUpdate();
 
-                    <SInput
-                        label={"¿Atención 24 horas?"}
-                        type="checkBox"
-                        placeholder={"Servicio disponible las 24 horas"}
-                        value={this?.state?.config?.es24Horas}
-                        onChange={(val) => {
-                            this.setState({
-                                config: {
-                                    ...this?.state?.config,
-                                    es24Horas: val,
-                                    esFeriado: false,
-                                    sinAtencion: false,
-                                }
-                            });
-                        }}
-                    />
+                                                }}
+                                            />
+                                            <SInput
+                                                label={"¿Sin atención?"}
+                                                type="checkBox"
+                                                value={sinAtencion}
+                                                onChange={(val) => {
+                                                    this.setState({
+                                                        config: {
+                                                            ...this.state.config,
+                                                            [dia]: {
+                                                                ...this.state.config[dia],
+                                                                sinAtencion: val,
+                                                                es24Horas: false,
+                                                                esFeriado: false,
+                                                            }
+                                                        }
+                                                    });
 
-                    <SInput
-                        label={"¿Día feriado?"}
-                        placeholder={"Marcar como día feriado"}
+                                                    this.forceUpdate();
 
-                        type="checkBox"
-                        value={this?.state?.config?.esFeriado}
-                        onChange={(val) => {
-                            this.setState({
-                                config: {
-                                    ...this?.state?.config,
-                                    esFeriado: val,
-                                    es24Horas: false,
-                                    sinAtencion: false,
-                                }
-                            });
-                        }}
-                    />
+                                                }}
+                                            />
 
-                    <SInput
-                        label={"¿Sin atención?"}
-                        placeholder={"No hay horario de atención este día"}
-
-                        type="checkBox"
-                        value={this?.state?.config?.sinAtencion}
-                        onChange={(val) => {
-                            this.setState({
-                                config: {
-                                    ...this?.state?.config,
-                                    sinAtencion: val,
-                                    es24Horas: false,
-                                    esFeriado: false,
-                                }
-                            });
-                        }}
-                    />
-
-                    <SHr />
-
-                    {!this?.state?.config?.es24Horas && !this?.state?.config?.sinAtencion && !this?.state?.config?.esFeriado && (
-                        <>
-
-                            <SView col={"xs-12"} row center>
-                                <SView flex>
-                                    <SText fontSize={14} bold>Turnos de trabajo</SText>
+                                        </>
+                                    )}
+                                    <SHr />
                                 </SView>
+                            );
+                        })}
+                    </SScrollView2>
 
-
-                                <SView
-                                    center
-                                    row
-                                    style={{
-                                        backgroundColor: "#0f0e0e",
-                                        borderColor: STheme.color.card,
-                                        borderWidth: 1,
-                                        borderRadius: 25,
-                                        height: 28,
-                                        width: 120,
-                                    }} onPress={() => {
-                                        const descripcion = this.input_descripcion?.getValue()?.trim();
-                                        const dia = this.input_dia?.getValue();
-                                        const config = this?.state?.config;
-                                        const isTurnoVisible = !config?.es24Horas && !config?.sinAtencion && !config?.esFeriado;
-                                        const checkCount = [config?.es24Horas, config?.esFeriado, config?.sinAtencion].filter(Boolean).length;
-
-                                        if (!descripcion) {
-                                            SNotification.send({ title: "La descripción es obligatoria", type: "danger" });
-                                            return;
-                                        }
-
-                                        if (!dia || dia === "---") {
-                                            SNotification.send({ title: "Selecciona un día válido", type: "danger" });
-                                            return;
-                                        }
-
-                                        if (checkCount > 1) {
-                                            SNotification.send({ title: "Solo una opción entre 24h, feriado o sin atención debe estar activa", type: "danger" });
-                                            return;
-                                        }
-
-                                        if (isTurnoVisible) {
-                                            const nombreTurno = this.input_turno_nombre?.getValue()?.trim();
-                                            const horaInicio = this.input_hora_inicio?.getValue();
-                                            const horaFin = this.input_hora_fin?.getValue();
-
-                                            if (!nombreTurno || !horaInicio || !horaFin) {
-                                                SNotification.send({ title: "Completa los campos del turno", type: "danger" });
-                                                return;
-                                            }
-                                        }
-
-                                        const horario = {
-                                            dia,
-                                            descripcion,
-                                            es24Horas: config?.es24Horas,
-                                            esFeriado: config?.esFeriado,
-                                            sinAtencion: config?.sinAtencion,
-                                            turnos: isTurnoVisible ? [{
-                                                nombre: this.input_turno_nombre?.getValue(),
-                                                horaInicio: this.input_hora_inicio?.getValue(),
-                                                horaFin: this.input_hora_fin?.getValue()
-                                            }] : []
-                                        };
-
-                                        console.log("HORARIO GUARDADO", horario);
-                                        SPopup.close("popup_config_horario");
-                                    }}>
-
-
-
-                                    <SIcon name='adicional' width={8} />
-                                    <SText center color='white'> gregar turno</SText>
-
-                                </SView>
-                            </SView>
-
-
-
-
-                            <SHr height={8} />
-                            <SView col={"xs-11.5"} row center>
-                                <SView col={"xs-3"}>
-                                    <SInput label={"Nombre del turno"} ref={ref => this.input_turno_nombre = ref} />
-                                </SView>
-                                <SView flex />
-                                <SView col={"xs-3"}>
-                                    <SInput label={"Hora inicio"} type="hour" ref={ref => this.input_hora_inicio = ref} />
-                                </SView>
-                                <SView flex />
-                                <SView col={"xs-3"}>
-                                    <SInput label={"Hora fin"} type="hour" ref={ref => this.input_hora_fin = ref} />
-                                </SView>
-                                <SView flex />
-                                <SView col={"xs-1"} center border={"transparent"} onPress={() => alert("Cerrar turno")}>
-                                    <SIcon name="Close" fill="white" width={20} />
-                                </SView>
-                            </SView>
-                        </>
-                    )}
-
-                    <SHr height={80} />
-
+                    <SHr height={40} />
+                    <SView center>
+                        <SButtom type='outline' onPress={() => {
+                            console.log("CONFIG FINAL", this.state.config);
+                            SPopup.close("popup_config_horario");
+                        }}>Guardar horarios</SButtom>
+                    </SView>
 
                 </SView>
             )
         });
     }
+
 
 
     render() {
