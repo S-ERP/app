@@ -48,15 +48,21 @@ export default class Turno extends Component {
                     loadData={async () => {
                         const all = await MDL.empresa.getTurnosHorariosAtencion();
 
+                        // 🔁 OPCIONAL: si querés usar clientes en lugar de usuarios
+                        // const usuarios = await MDL.crm.cliente.getAll();
+                        const usuarios = await MDL.usuario.getByKeys(Object.keys(all));
+
                         const data = Object.entries(all).flatMap(([key_usuario, turnos]) => {
+                            const usuario = usuarios.find(u => u.key === key_usuario);
                             return turnos.map((item, index) => ({
                                 ...item,
                                 key_usuario,
+                                usuario, // ✅ Aquí sí incluimos el objeto completo
                                 index
                             }));
                         });
-                        // this.DinamicTable.loadData();
-                        console.log("fregado ",data)
+
+                        console.log("fregado", data);
                         return data;
                     }}
 
@@ -69,6 +75,7 @@ export default class Turno extends Component {
                     <DinamicTable.Col key="dia_semana" label="Día #" width={80} data={(e) => e.row?.dia_semana} />
                     <DinamicTable.Col key="registrado_el" label="Fecha Registro" width={120} data={(e) => e.row?.registrado_el} />
                     <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.key_usuario} />
+                    <DinamicTable.Col key="asdsad" label="Usuario" width={250} data={(e) => e.row?.usuario.Nombres} />
 
 
              </DinamicTable>
