@@ -35,13 +35,8 @@ export default class Turno extends Component {
                             <SView key={dia} col={"xs-12"} style={{ marginBottom: 24 }}>
                                 <SText fontSize={16} bold>{dia.charAt(0).toUpperCase() + dia.slice(1)}</SText>
 
-                                <SInput
-                                    type="checkBox"
-                                    role="switch"
-                                    label={`¿Activar ${dia}?`}
+                                <SInput type="checkBox" label={`¿Dia Activar ${dia}?`}
                                     defaultValue={this.state?.[dia]?.activo}
-
-
                                     onChangeText={() => {
                                         this.setState({
                                             [dia]: {
@@ -54,9 +49,137 @@ export default class Turno extends Component {
                                 />
 
 
-                                {this.state?.[dia]?.activo ?
-                                    <SText >dia {dia} esta {this.state?.[dia]?.activo}  </SText>
-                                    : null}
+                                {this.state?.[dia]?.activo ? <>
+                                    <SView col={"xs-12"}>
+
+                                        <SInput type="checkBox" label={`¿ feriado Activar ${dia}?`}
+                                            defaultValue={this.state?.[dia]?.feriado}
+                                            onChangeText={() => {
+                                                this.setState({
+                                                    [dia]: {
+                                                        ...this.state?.[dia],
+                                                        feriado: !this.state?.[dia]?.feriado
+                                                    }
+                                                });
+                                                this.forceUpdate()
+                                            }}
+                                        />
+
+                                        <SInput type="checkBox" label={`Registrar horario ${dia}?`}
+                                            defaultValue={this.state?.[dia]?.horario}
+                                            onChangeText={() => {
+                                                this.setState({
+                                                    [dia]: {
+                                                        ...this.state?.[dia],
+                                                        horario: !this.state?.[dia]?.horario
+                                                    }
+                                                });
+                                                this.forceUpdate()
+                                            }}
+                                        />
+                                    </SView>
+                                </> : null}
+
+
+                                {this.state?.[dia]?.horario ? <>
+
+                                    <SView col={"xs-12"} row center>
+                                        <SView flex>
+                                            <SText fontSize={14} bold>Turnos de trabajo</SText>
+                                        </SView>
+
+
+                                        <SView
+                                            center
+                                            row
+                                            style={{
+                                                backgroundColor: "#0f0e0e",
+                                                borderColor: STheme.color.card,
+                                                borderWidth: 1,
+                                                borderRadius: 25,
+                                                height: 28,
+                                                width: 120,
+                                            }} onPress={() => {
+                                                const descripcion = this.input_descripcion?.getValue()?.trim();
+                                                const dia = this.input_dia?.getValue();
+                                                const config = this?.state?.config;
+                                                const isTurnoVisible = !config?.es24Horas && !config?.sinAtencion && !config?.esFeriado;
+                                                const checkCount = [config?.es24Horas, config?.esFeriado, config?.sinAtencion].filter(Boolean).length;
+
+                                                if (!descripcion) {
+                                                    SNotification.send({ title: "La descripción es obligatoria", type: "danger" });
+                                                    return;
+                                                }
+
+                                                if (!dia || dia === "---") {
+                                                    SNotification.send({ title: "Selecciona un día válido", type: "danger" });
+                                                    return;
+                                                }
+
+                                                if (checkCount > 1) {
+                                                    SNotification.send({ title: "Solo una opción entre 24h, feriado o sin atención debe estar activa", type: "danger" });
+                                                    return;
+                                                }
+
+                                                if (isTurnoVisible) {
+                                                    const nombreTurno = this.input_turno_nombre?.getValue()?.trim();
+                                                    const horaInicio = this.input_hora_inicio?.getValue();
+                                                    const horaFin = this.input_hora_fin?.getValue();
+
+                                                    if (!nombreTurno || !horaInicio || !horaFin) {
+                                                        SNotification.send({ title: "Completa los campos del turno", type: "danger" });
+                                                        return;
+                                                    }
+                                                }
+
+                                                // const horario = {
+                                                //     dia,
+                                                //     descripcion,
+                                                //     es24Horas: config?.es24Horas,
+                                                //     esFeriado: config?.esFeriado,
+                                                //     sinAtencion: config?.sinAtencion,
+                                                //     turnos: isTurnoVisible ? [{
+                                                //         nombre: this.input_turno_nombre?.getValue(),
+                                                //         horaInicio: this.input_hora_inicio?.getValue(),
+                                                //         horaFin: this.input_hora_fin?.getValue()
+                                                //     }] : []
+                                                // };
+
+                                                console.log("HORARIO GUARDADO", horario);
+                                                SPopup.close("popup_config_horario");
+                                            }}>
+
+
+
+                                            <SIcon name='adicional' width={8} />
+                                            <SText center color='white'> gregar turno</SText>
+
+                                        </SView>
+                                    </SView>
+
+
+
+
+                                    <SHr height={8} />
+                                    <SView col={"xs-11.5"} row center>
+                                        <SView col={"xs-3"}>
+                                            <SInput label={"Nombre del turno"} ref={ref => this.input_turno_nombre = ref} />
+                                        </SView>
+                                        <SView flex />
+                                        <SView col={"xs-3"}>
+                                            <SInput label={"Hora inicio"} type="hour" ref={ref => this.input_hora_inicio = ref} />
+                                        </SView>
+                                        <SView flex />
+                                        <SView col={"xs-3"}>
+                                            <SInput label={"Hora fin"} type="hour" ref={ref => this.input_hora_fin = ref} />
+                                        </SView>
+                                        <SView flex />
+                                        <SView col={"xs-1"} center border={"transparent"} onPress={() => alert("Cerrar turno")}>
+                                            <SIcon name="Close" fill="white" width={20} />
+                                        </SView>
+                                    </SView>
+
+                                </> : null}
 
 
                                 <SHr />
@@ -66,12 +189,15 @@ export default class Turno extends Component {
 
                     <SView center>
                         <SButtom type='outline' onPress={() => {
+                            const resultado = {};
                             dias.forEach(dia => {
-                                console.log(`CONFIG ${dia}:`, this.state?.[dia]?.activo);
+                                resultado[dia] = this.state?.[dia] ?? {};
                             });
-                            this.forceUpdate(); // esto vuelve a renderizar
+
+                            console.log("📝 CONFIG HORARIOS:\n" + JSON.stringify(resultado, null, 2));
 
                             SPopup.close("popup_config_horario");
+
                         }}>
                             Guardar horarios
                         </SButtom>
