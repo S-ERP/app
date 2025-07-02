@@ -53,25 +53,25 @@ export default class DashboardCard extends Component {
                 {card?.cliente?.departamento && <SView style={{ padding: 3, backgroundColor:STheme.colorFromText(card.cliente.departamento)+"6b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
                     <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{card.cliente.departamento}</SText>
                 </SView>}
-                <SView style={{ padding: 3, backgroundColor: "#3840526b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                <SView style={{ padding: 3, backgroundColor: STheme.color.card, borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
                     <SIcon name="producto" width={12} height={14} fill={"#384052"} />
                     <SView width={4} />
                     <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{card?.proyecto?.nombre}</SText>
                 </SView>
-                <SView style={{ padding: 3, backgroundColor: "#3840526b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                <SView style={{ padding: 3, backgroundColor: STheme.color.card, borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
                     <SIcon name="tpIn" width={12} height={14} fill={"#384052"} />
                     <SView width={4} />
                     <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{card?.campana?.nombre}</SText>
                 </SView>
 
 
-                {card.state == "rellamada" && <SView style={{ padding: 3, backgroundColor: "#3840526b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                {card.state == "rellamada" && <SView style={{ padding: 3, backgroundColor: STheme.color.card, borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
                     <SIcon name="recall" width={12} height={14} fill={"#384052"} />
                     <SView width={4} />
                     <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{new SDate(card?.fecha_rellamada, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")}</SText>
                 </SView>}
 
-                <SView style={{ padding: 3, backgroundColor: "#3840526b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                <SView style={{ padding: 3, backgroundColor: STheme.color.card, borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
                     <SIcon name="history" width={12} height={14} fill={"#384052"} />
                     <SView width={4} />
                     <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
