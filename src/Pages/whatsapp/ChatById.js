@@ -268,7 +268,7 @@ export default class ChatById extends Component {
                     />
                 </SView>
                 <SView onPress={() => this.sendMessage(this.campos.getValue())}>
-                    <SIcon name="MessageSend" fill="white" width={18} />
+                    <SIcon name="MessageSend" fill={STheme.color.text} width={18} />
                 </SView>
             </SView>
         );

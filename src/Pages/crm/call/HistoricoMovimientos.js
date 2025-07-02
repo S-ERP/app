@@ -133,7 +133,7 @@ export default class HistoricoMovimientos extends Component {
 
         return (
             <View style={{ flex: 1 }}>
-                <Text>HistoricoMovimientos</Text>
+                <Text>Histórico de Movimientos</Text>
                 <SectionList
                     sections={this.state.sections}
                     keyExtractor={(item, index) => item.key + "_" + index}
