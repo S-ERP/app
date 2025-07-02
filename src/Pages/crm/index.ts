@@ -20,6 +20,7 @@ import productoRegistro from "./productoRegistro";
 import report from "./report";
 import reporteconfirmado from "./report/reporteconfirmado";
 import reporteusuariosstate from "./report/reporteusuariosstate";
+import infovendedor from "./report/infovendedor";
 export default SPage.combinePages("crm", {
   "": root,
   proyecto,
@@ -42,4 +43,5 @@ export default SPage.combinePages("crm", {
   productoRegistro,
   reporteconfirmado,
   reporteusuariosstate,
+  infovendedor
 });

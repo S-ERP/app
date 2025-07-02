@@ -43,6 +43,12 @@ export default class root extends Component {
                     url="/crm/graficos"
                     icon={<SIconApp name='crmgraficos' fill={"#333"} />}
                 />
+
+                <MenuButtom
+                    label="vendedor"
+                    url="/crm/infovendedor"
+                    icon={<SIconApp name='crmgraficos' fill={"#333"} />}
+                />
             </MenuPages>
         </SPage>
     }

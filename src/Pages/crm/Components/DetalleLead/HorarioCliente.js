@@ -136,7 +136,7 @@ export default class HorarioCliente extends Component {
                             onPress={() => this.setState({ activeFormTab: data.key })}
                             row
                         >
-                            <SIcon name={data.icono} width={12} height={12} fill={STheme.color.text} />
+                            <SIcon name={data.icono} width={12} height={12} fill={STheme.color.text} stroke={(data.icono != "addTarea") ? STheme.color.text : null} />
                             <SView width={8} />
                             <SText>{data.label}</SText>
                         </SView>

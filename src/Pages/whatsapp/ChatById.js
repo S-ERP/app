@@ -142,7 +142,7 @@ export default class ChatById extends Component {
                 <SView col="xs-8" row style={{ justifyContent: "flex-start" }} onPress={() => {
                     // console.log(data, this.state.data)
                 }}>
-                    <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden" }}>
+                    <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card }} center>
                         <SImage
                             enablePreview
                             src={MDL.whatsapp.device.getUrlImage(idDevice, idchat)}
@@ -150,13 +150,13 @@ export default class ChatById extends Component {
                         />
                     </SView>
                     <SView flex row style={{ marginLeft: 16 }} center>
-                        <SText col="xs-12" color="white" fontSize={14} bold>{data?.name || "Sin nombre"}</SText>
+                        <SText col="xs-12" color={STheme.color.text} fontSize={14} bold>{data?.name || "Sin nombre"}</SText>
                         {/* <SText col="xs-12" color="white" fontSize={12} bold>últ. vez {lastSeenText}</SText> */}
                         {/* <SText col="xs-12" color="white" fontSize={12} bold>En línea</SText> */}
                     </SView>
                 </SView>
                 <SView col="xs-4" row center style={{ justifyContent: "flex-end" }}>
-                    <SIcon name="drive-menu" fill="white" width={18} height={18} />
+                    <SIcon name="drive-menu" fill={STheme.color.text} width={18} height={18} />
                 </SView>
             </SView>
         );
@@ -247,16 +247,16 @@ export default class ChatById extends Component {
                         reader.readAsDataURL(files[0]);
                     })
                 }}>
-                    <SIcon name="add1" fill="white" width={18} />
+                    <SIcon name="add1" fill={STheme.color.text} width={18} />
                 </SView>
                 {/* <SView style={{ marginRight: 15 }}>
                     <SIcon name="addTarea" fill="white" width={18} />
                 </SView> */}
-                <SView flex style={{ marginRight: 15 }}>
+                <SView flex style={{ marginRight: 15 }} >
                     <SInput multiline={true} ref={(ref) => (this.campos = ref)} placeholder="Escribe un mensaje" placeholderTextColor="#8696a0"
                         style={{
                             height: 30,
-                            paddingTop: 4,
+                            paddingTop: 3,
                             backgroundColor: "#2a3942", borderRadius: 20, paddingHorizontal: 20, color: "white", borderWidth: 0,
                         }}
                         onKeyPress={(e) => {
@@ -268,7 +268,7 @@ export default class ChatById extends Component {
                     />
                 </SView>
                 <SView onPress={() => this.sendMessage(this.campos.getValue())}>
-                    <SIcon name="MessageSend" fill="white" width={18} />
+                    <SIcon name="MessageSend" fill={STheme.color.text} width={18} />
                 </SView>
             </SView>
         );
