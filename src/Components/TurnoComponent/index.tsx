@@ -72,11 +72,10 @@ export default class TurnoComponent extends Component {
                         }} />
                     <SText fontSize={9} color={STheme.color.lightGray}>Marcar como día feriado</SText>
                 </SView>
-
                 <SHr height={24} />
 
             </SView>
-            <SHr height={45} />
+            <SHr height={18} />
 
 
 
