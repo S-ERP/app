@@ -222,7 +222,7 @@ export default class list extends Component {
                     <SView width={140} height={26} center backgroundColor={STheme.color.card} style={{
                         borderRadius: 4
                     }} onPress={e => hanlePressCrear(e, this.key_restaurante)}>
-                        <SText fontSize={12} color={STheme.color.white}>+ Crear Nuevo</SText>
+                        <SText fontSize={12} color={STheme.color.text}>+ Crear Nuevo</SText>
                     </SView>
                 </SView>
                 <SHr h={16} />
@@ -266,7 +266,7 @@ export default class list extends Component {
                                     size={16}
                                     onChange={e => {
                                         SPopup.confirm({
-                                            title: habilitado ? "Se deshabilitaran todos los productos" : "Se habilitaran todos los pruductos",
+                                            title: habilitado ? "Se deshabilitarán todos los productos" : "Se habilitarán todos los productos",
                                             message: "",
                                             onPress: () => {
                                                 let dataToSend = [];
@@ -341,7 +341,7 @@ export default class list extends Component {
             <View style={styles.emptySection} />
         );
 
-        return <SPage title={"Poductos"} disableScroll>
+        return <SPage title={"Productos"} disableScroll>
             <Container flex>
                 <SView col={"xs-12"} flex>
                     <SectionList
