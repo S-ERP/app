@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SHr, SIcon, SInput, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SInput, SPopup, SText, STheme, SView } from 'servisofts-component';
 import ListaDeDias from './ListaDeDias';
 
 
@@ -38,6 +38,8 @@ export default class TurnoComponent extends Component {
                 <SView col={"xs-1"} center >
                     <SView col={"xs-12"} center onPress={() => {
                         // cerrar popu
+                        SPopup.close("popup_config_horario");
+
                     }}>
                         <SIcon name="Cerrar" fill="white" width={14} />
                     </SView>

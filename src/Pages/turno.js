@@ -113,6 +113,9 @@ export default class turnov2 extends Component {
 
         return (
             <SPage title="Turnos y Horarios" disableScroll>
+
+                {this.mostrarTabla()}
+
                 <SHr height={20} />
                 <FloatButtom onPress={() => { this.mostrarPopup() }} />
             </SPage>
