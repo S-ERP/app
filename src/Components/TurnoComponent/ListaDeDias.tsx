@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, FlatList } from 'react-native';
-import { SDate, SHr, SText, SView } from 'servisofts-component';
+import { SDate, SHr, SText, STheme, SView } from 'servisofts-component';
 import DiaItem from './DiaItem';
 import TurnoComponent from '.';
 
@@ -18,18 +18,48 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
         this.dias = dias;
     }
 
+
+    botonFooter() {
+        return <>
+            <SHr height={8} />
+            <SView col={"xs-12"} row center>
+                <SView flex />
+                <SView col={"xs-6"} row center border={"transparent"}>
+                    <SView center row style={{
+                        backgroundColor: "#fcfce9", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 42, width: 100,
+                    }} onPress={() => {
+                        // SPopup.close("popup_config_horario");
+                    }}>
+                        <SText center color='black' bold>Cancelar</SText>
+                    </SView>
+                    <SView flex />
+                    <SView center row style={{ backgroundColor: "#0f0e0e", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 42, width: 120 }} onPress={() => {
+                        console.log(this.props.turnoComponent.turno);
+                        // SPopup.close("popup_config_horario");
+                    }}>
+                        <SText center color='white'>Guardar Horario</SText>
+
+                    </SView>
+                </SView>
+            </SView>
+            <SHr height={8} />
+        </>
+    }
+
+
     render() {
         return <SView flex >
             <FlatList
                 data={this.dias}
-                ItemSeparatorComponent={a => <SHr h={20} />}
+                ItemSeparatorComponent={a => <SHr h={18} />}
                 renderItem={({ item }) => <DiaItem dia={item} {...this.props} />}
             />
-            <SHr h={20} />
-            <SText padding={8} card onPress={() => {
-                console.log(this.props.turnoComponent.turno);
-            }}>{"SAVE"}</SText>
+            <SHr h={8} />
+
+
+            {this.botonFooter()}
+
+
         </SView>
     }
 }
-
