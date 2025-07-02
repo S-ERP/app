@@ -31,7 +31,7 @@ export default class TurnoComponent extends Component {
 
             <SHr height={18} />
 
-            <SView col={"xs-12"} row>
+            <SView col={"xs-11.5"} row>
                 <SView flex >
                     <SText fontSize={18} bold>🕒 Configurar Nuevo Horario</SText>
                 </SView>
@@ -49,10 +49,11 @@ export default class TurnoComponent extends Component {
 
 
 
-            <SView col={"xs-11.7"} style={{ paddingHorizontal: 16, }} height={90} row center border={STheme.color.card}  >
+            <SView col={"xs-11.5"} style={{ paddingHorizontal: 16, }} height={80} row center border={STheme.color.card}  >
                 <SView flex >
                     <SInput
                         label={"Descripcion/Nombre del turno"}
+                        style={{ height: 34, fontSize: 13, }}
                         placeholder={"Ingrese la descripcion del turno"}
                         value={this.turno.descripcion}
                         onChangeText={e => {
@@ -61,7 +62,7 @@ export default class TurnoComponent extends Component {
                         }} />
                 </SView>
                 <SView width={20} />
-                <SView col={"xs-2.7"}>
+                <SView width={100}>
                     <SInput
                         label={"Día feriado ?"}
                         type='checkBox' height={24}

@@ -22,9 +22,9 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
     botonFooter() {
         return <>
             <SHr height={8} />
-            <SView col={"xs-12"} row center>
+            <SView col={"xs-11.5"} row center>
                 <SView flex />
-                <SView col={"xs-6"} row center border={"transparent"}>
+                <SView width={250} row center border={"transparent"}>
                     <SView center row style={{
                         backgroundColor: "#fcfce9", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 42, width: 100,
                     }} onPress={() => {
@@ -51,7 +51,7 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
         return <SView flex >
             <FlatList
                 data={this.dias}
-                ItemSeparatorComponent={a => <SHr h={18} />}
+                ItemSeparatorComponent={a => <SHr h={8} />}
                 renderItem={({ item }) => <DiaItem dia={item} {...this.props} />}
             />
             <SHr h={8} />

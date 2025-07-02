@@ -49,10 +49,10 @@ export default class DiaItem extends Component<DiaItemProps> {
         if (horariosDelDia.length === 1 && horariosDelDia[0].hora_inicio === "00:00" && horariosDelDia[0].hora_fin === "23:59") {
             active = true;
         }
-        return <SView col={"xs-12"} height={60} row center border={STheme.color.lightGray} style={{ marginBottom: 24, paddingHorizontal: 16 }}>
+        return <SView col={"xs-12"} height={50} row center border={STheme.color.lightGray} style={{ marginBottom: 10, paddingHorizontal: 16 }}>
             <SView flex>
-                <SText fontSize={16} bold>Atención 24 horas</SText>
-                <SText fontSize={12} color={STheme.color.lightGray}>Servicio disponible las 24 horas</SText>
+                <SText fontSize={14} bold>Atención 24 horas</SText>
+                <SText fontSize={10} color={STheme.color.lightGray}>Servicio disponible las 24 horas</SText>
             </SView>
             <SView width={30} center>
                 <SInput value={!active ? "" : active + ""} height={20} width={20} type='checkBox' onChangeText={e => {
@@ -108,12 +108,12 @@ export default class DiaItem extends Component<DiaItemProps> {
         }
         if (active) return null
         return <>
-            <SView col={"xs-12"} height={60} row center border="transparent" style={{ marginBottom: 18 }} >
-                <SView flex>
-                    <SText fontSize={20} bold>Turnos de trabajo</SText>
+            <SView col={"xs-12"} height={50} row center border="transparent" style={{ marginBottom: 4 }} >
+                <SView flex  >
+                    <SText fontSize={16} bold>Turnos de trabajo</SText>
                 </SView>
 
-                <SView center row style={{ backgroundColor: "#0f0e0e", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 42, width: 130 }} onPress={() => {
+                <SView center row style={{ backgroundColor: "#0f0e0e", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 38, width: 130 }} onPress={() => {
                     const horario = {
                         key: SUuid(),
                         dia: this.props.dia.key,
@@ -125,7 +125,7 @@ export default class DiaItem extends Component<DiaItemProps> {
                 }} >
 
                     <SIcon name='adicional' width={12} fill='white' />
-                    <SText color='white'>  Agregar Turno</SText>
+                    <SText color='white' fontSize={14} >  Agregar Turno</SText>
 
                 </SView>
             </SView>

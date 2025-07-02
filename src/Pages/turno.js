@@ -25,8 +25,8 @@ export default class turnov2 extends Component {
         SPopup.open({
             key: "popup_config_horario",
             content: (
-                <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 550 }} padding={16} withoutFeedback >
-                    <SView col={"xs-12"} height={650} center >
+                <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
+                    <SView col={"xs-12"} height={600} center >
                         <TurnoComponent></TurnoComponent>
                     </SView>
                 </SView>
