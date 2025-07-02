@@ -13,7 +13,7 @@ export default class PageTitle extends React.Component<PageTitlePropsType> {
 
             <SView col={"xs-12"} row>
                 <SView width={30} border={"transparent"}>
-                    <SIcon name="empresa" fill="blue" width={16} center />
+                    <SIcon name="empresa" fill={STheme.color.text} width={16} center />
                 </SView>
                 <SView flex  >
                     <SText col={"xs-12"} font={"Montserrat-SemiBold"} fontSize={14} color={STheme.color.text} > {empresa?.razon_social}</SText>

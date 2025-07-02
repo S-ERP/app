@@ -52,7 +52,7 @@ export default class Comentario extends Component {
                     <SInput
                         // label={"Comentario"}
                         type="textArea"
-                        placeholder={"Add your comment here..."}
+                        placeholder={"Adicionar tus comentarios aquí..."}
                         placeholderTextColor={STheme.color.gray}
                         value={this.props.data?.comentario}
 

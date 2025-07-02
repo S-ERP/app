@@ -52,7 +52,7 @@ export default class PButtom extends Component<PButtom_props> {
         switch (this.props.type) {
             case "primary":
                 bgColor = STheme.color.primary;
-                colorText = STheme.color.info;
+                colorText = STheme.color.text;
                 break;
             case "secondary":
                 bgColor = STheme.color.secondary;

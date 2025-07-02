@@ -244,7 +244,7 @@ class InputCantidad extends Component {
                 onPress={this.props.disabled ? null : () => {
                     this.setValue(this.state.value - 1);
                 }}>
-                <SText fontSize={22} color={STheme.color.background} >{"-"}</SText>
+                <SText fontSize={22} color={STheme.color.primary} >{"-"}</SText>
             </SView>
             <SView flex height={height}>
                 <SInput style={{
@@ -277,7 +277,7 @@ class InputCantidad extends Component {
             }} card center onPress={this.props.disabled ? null : () => {
                 this.setValue(this.state.value + 1);
             }}>
-                <SText fontSize={14} bold color={STheme.color.background}>{"+"}</SText>
+                <SText fontSize={14} bold color={STheme.color.primary}>{"+"}</SText>
             </SView>
 
         </SView>
