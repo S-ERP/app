@@ -21,7 +21,7 @@ export default class root extends Component {
 
             <MenuPages
                 key_empresa={Model.empresa.Action.getKey()}
-                path={"/crm/report"}
+                path={"/crm/report/"}
                 permiso={"ver"}
             >
                 <MenuButtom

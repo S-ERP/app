@@ -65,7 +65,7 @@ export default class DashboardCard extends Component {
                 </SView>
 
 
-                {card.state == "rellamada" && <SView style={{ padding: 3, backgroundColor: "#3840526b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                {(card.state == "rellamada" ||card.state == "delivery_rellamada")  && <SView style={{ padding: 3, backgroundColor: "#3840526b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
                     <SIcon name="recall" width={12} height={14} fill={"#384052"} />
                     <SView width={4} />
                     <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{new SDate(card?.fecha_rellamada, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")}</SText>

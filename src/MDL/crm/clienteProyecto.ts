@@ -1,7 +1,8 @@
 import SSocket from "servisofts-socket";
 import { Proyecto } from "./type";
 import Model from "../../Model";
-import { STheme } from "servisofts-component";
+import { SDate, STheme } from "servisofts-component";
+import { on } from "events";
 
 export default class clienteProyecto {
     async getAllPendientes() {
@@ -31,6 +32,17 @@ export default class clienteProyecto {
             component: "cliente_proyecto",
             type: "getFull",
             key: key,
+        });
+        return resp.data;
+    }
+
+    async get_en_proceso() {
+        const resp: any = await SSocket.sendPromise({
+            service: "crm",
+            component: "cliente_proyecto",
+            type: "get_en_proceso",
+            key_empresa: Model.empresa.Action.getKey(),
+            key_usuario: Model.usuario.Action.getKey(),
         });
         return resp.data;
     }
@@ -192,12 +204,42 @@ export default class clienteProyecto {
             name: "Por Llamar",
             color: STheme.color.lightGray,
             states: ["nuevo", "rellamada", "vencido", "llamada_fallida"],
+            filter: (data: any) => {
+                if (data.fecha_rellamada && data.state == "rellamada") {
+                    if (new SDate(data.fecha_rellamada, "yyyy-MM-ddThh:mm:ssTZD").date > new Date()) {
+                        return false; // Si la fecha de rellamada es futura, no mostrar
+                    }
+                }
+                return true;
+            }
         },
+
         {
             key: "en_llamada",
             name: "En proceso venta",
             color: STheme.color.warning,
             states: ["en_proceso"],
+        },
+        {
+            key: "rellamada",
+            name: "Llamar mas tarde",
+            color: "#2980b9",
+            states: ["rellamada"],
+            filter: (data: any) => {
+                if (data.fecha_rellamada && data.state == "rellamada") {
+                    if (new SDate(data.fecha_rellamada, "yyyy-MM-ddThh:mm:ssTZD").date < new Date()) {
+                        return false; // Si la fecha de rellamada es pasada, no mostrar
+                    }
+                }
+                if (!data.fecha_rellamada) return false;
+                return true;
+            },
+            onStateChange: (data: any) => {
+                return {
+                    ...data,
+                    fecha_rellamada: new SDate().addMinute(10).toString("yyyy-MM-ddThh:mm:ssTZD"),
+                }
+            }
         },
         {
             key: "confirmado",
@@ -250,12 +292,41 @@ export default class clienteProyecto {
                 "delivery_vencido",
                 "delivery_llamada_fallida",
             ],
+            filter: (data: any) => {
+                if (data.fecha_rellamada && data.state == "delivery_rellamada") {
+                    if (new SDate(data.fecha_rellamada, "yyyy-MM-ddThh:mm:ssTZD").date > new Date()) {
+                        return false; // Si la fecha de rellamada es futura, no mostrar
+                    }
+                }
+                return true;
+            }
         },
         {
             key: "en_llamada_delivery",
             name: "En proceso delivery",
             color: STheme.color.warning,
             states: ["delivery_en_proceso"],
+        },
+        {
+            key: "delivery_rellamada",
+            name: "Llamar mas tarde",
+            color: "#2980b9",
+            states: ["delivery_rellamada"],
+            filter: (data: any) => {
+                if (data.fecha_rellamada && data.state == "delivery_rellamada") {
+                    if (new SDate(data.fecha_rellamada, "yyyy-MM-ddThh:mm:ssTZD").date < new Date()) {
+                        return false; // Si la fecha de rellamada es pasada, no mostrar
+                    }
+                }
+                if (!data.fecha_rellamada) return false;
+                return true;
+            },
+            onStateChange: (data: any) => {
+                return {
+                    ...data,
+                    fecha_rellamada: new SDate().addMinute(10).toString("yyyy-MM-ddThh:mm:ssTZD"),
+                }
+            }
         },
         {
             key: "en_delivery",

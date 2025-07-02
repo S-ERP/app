@@ -6,6 +6,7 @@ import SCharts from 'servisofts-charts';
 import { Container } from '../../../Components';
 import Model from '../../../Model';
 import GraficoMapa from './GraficoMapa';
+import GraficoEstados from './GraficoEstados';
 
 export default class index extends Component {
     constructor(props) {
@@ -96,6 +97,7 @@ export default class index extends Component {
 
                 />
             </SView>
+            <GraficoEstados />
         </SPage>
     }
 }

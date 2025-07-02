@@ -82,15 +82,20 @@ export default class Dashboard extends Component {
 
     }
 
-    stateCardChanged = (cardKey, newState) => {
-        MDL.crm.clienteProyecto.editar({
-            key: cardKey,
-            state: newState,
+    stateCardChanged = (lead, stage) => {
+        let data = {
+            key: lead.key,
+            state: lead.state,
             key_usuario_atiende: Model.usuario.Action.getKey(),
-        }).then((e) => {
+        }
+        if (lead.state == "rellamada" || lead.state == "delivery_rellamada") {
+            data.fecha_rellamada = lead.fecha_rellamada;
+        }
+
+        MDL.crm.clienteProyecto.editar(data).then((e) => {
             this.setState(prevState => {
                 const updatedCards = prevState.cards.map(card => {
-                    if (card.key === cardKey) {
+                    if (card.key === lead.key) {
                         return { ...card, ...e };
                     }
                     return card;
@@ -185,7 +190,13 @@ export default class Dashboard extends Component {
                                 let newCards = prev.cards.filter(c => c.key !== cardKey);
                                 const editCard = prev.cards.find(c => c.key === cardKey);
 
-                                const currentStage = this.stages.find(s => s.states.includes(editCard.state));
+                                const currentStage = this.stages.find(s => {
+                                    if (!s.states.includes(editCard.state)) return false;
+                                    if (s.filter) {
+                                        return s.filter(editCard);
+                                    }
+                                    return true;
+                                });
 
                                 const insertIndex = closestCardKey
                                     ? newCards.findIndex(c => c.key === closestCardKey) + 0
@@ -194,8 +205,24 @@ export default class Dashboard extends Component {
 
                                 if (currentStage.key !== stage.key) {
                                     console.log("Soltaste el item con key:", editCard);
-                                    newCards.splice(insertIndex, 0, { ...editCard, state: stage.states[0] });
-                                    this.stateCardChanged(cardKey, stage.states[0]);
+
+                                    let newEditCard = {
+                                        ...editCard,
+                                        state: stage.states[0], // Cambiar el estado al primer estado del nuevo stage
+                                    }
+                                    if (stage.onStateChange) {
+                                        const response = stage.onStateChange(newEditCard);
+                                        if (response) {
+                                            newEditCard = { ...newEditCard, ...response };
+                                        }
+                                    }
+                                    if (editCard.state != newEditCard.state) {
+                                        newCards.splice(insertIndex, 0, newEditCard);
+                                        this.stateCardChanged(newEditCard, stage);
+                                    } else {
+                                        newCards.splice(insertIndex, 0, { ...editCard, });
+                                    }
+
                                 } else {
                                     newCards.splice(insertIndex, 0, { ...editCard, });
                                 }
@@ -220,7 +247,13 @@ export default class Dashboard extends Component {
 
             const card = this.state.cards.find(c => c.key === cardKey);
 
-            const stage = this.stages.find(s => s.states.includes(card.state));
+            const stage = this.stages.find(s => {
+                if (!s.states.includes(card.state)) return false;
+                if (s.filter) {
+                    return s.filter(card);
+                }
+                return true;
+            });
             const stageref = this.stageRefs[stage.key];
             const stageNode = findNodeHandle(stageref.current);
 
@@ -347,6 +380,9 @@ export default class Dashboard extends Component {
                                         draggingCard={this.state.draggingCard}
                                         cards={this.state.cards.filter((c) => {
                                             if (!stage.states.includes(c.state)) return false;
+                                            if (stage.filter) {
+                                                if (!stage.filter(c)) return false;
+                                            }
                                             if (this.state.dpto == "all") return true;
                                             if (this.state.dpto == "void") {
                                                 return !c?.cliente?.departamento;

@@ -90,7 +90,7 @@
     "rn-fetch-blob": "^0.12.0",
     "servisofts-background-location": "^2.0.3",
     "servisofts-canvas": "^1.0.4",
-    "servisofts-charts": "^1.0.4",
+    "servisofts-charts": "1.0.5",
     "servisofts-component": "3.0.67",
     "servisofts-db": "^1.0.7",
     "servisofts-model": "^1.0.7",

@@ -6,6 +6,7 @@ import Components from '../../Components';
 import Model from '../../Model';
 import SIconApp from '../../Assets/SIconApp';
 import MDL from '../../MDL';
+import GraficoEstados from './graficos/GraficoEstados';
 
 export default class root extends Component {
     constructor(props) {
@@ -15,6 +16,8 @@ export default class root extends Component {
     }
     componentDidMount() {
         MDL.rolesPermisos.loadPermissions().then(() => {
+            // MDL.crm.clienteProyecto.get_en_proceso()
+
             this.forceUpdate();
         })
     }
@@ -112,7 +115,7 @@ export default class root extends Component {
                     icon={<SIconApp name='whatsapp' fill={"#333"} />}
                 /> */}
             </MenuPages>
-
+            {/* <GraficoEstados /> */}
         </SPage>
     }
 }
