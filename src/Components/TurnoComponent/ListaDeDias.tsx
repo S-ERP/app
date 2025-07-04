@@ -39,14 +39,14 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
 
                         const data = this.props.turnoComponent.turno;
                         //   const prom = data?.key ? MDL.crm.cliente.editar(data) : MDL.crm.cliente.registrar(data);
-                        MDL.empresa.registroTurnosHorariosAtencion(data as any).then((res) => {
+                        // MDL.empresa.registroTurnosHorariosAtencion(data as any).then((res) => {
 
-                            console.log("mira ", res);
+                            // console.log("mira ", res);
                             console.log("ya ", data);
                             SPopup.close("popup_config_horario");
-                        }).catch((err) => {
+                        // }).catch((err) => {
                             // SNotification.send({ key: "registro", title: "Error", body: err, color: STheme.color.danger });
-                        });
+                        // });
 
 
                     }}>

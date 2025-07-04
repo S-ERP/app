@@ -21,13 +21,13 @@ export default class turnov2 extends Component {
         };
     }
 
-    mostrarPopup() {
+    mostrarPopup(aux_key: any) {
         SPopup.open({
             key: "popup_config_horario",
             content: (
                 <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
                     <SView col={"xs-12"} height={600} center >
-                        <TurnoComponent></TurnoComponent>
+                        <TurnoComponent key_turno={aux_key} ></TurnoComponent>
                     </SView>
                 </SView>
             )
@@ -56,7 +56,13 @@ export default class turnov2 extends Component {
             }}
 
             ref={ref => this.DinamicTable = ref}
-            keyExtractor={e => e.usuario}
+            onSelect={(e) => {
+                // <TurnoComponent></TurnoComponent>
+                this.mostrarPopup(e.row.key)
+                // console.log("Selected turno:", e.row.key);
+            }}
+
+
             loadData={async () => {
                 const all = await MDL.empresa.getTurnosHorariosAtencion();
 

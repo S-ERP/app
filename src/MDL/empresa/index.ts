@@ -138,19 +138,25 @@ export default class empresa extends MDLAbstract<EventListener> {
   }
 
   async registroTurnosHorariosAtencion(data: TurnoHorarioAtencion) {
-
-
     data.key_usuario = Model.usuario.Action.getKey();
     data.key_empresa = Model.empresa.Action.getKey();
-    // data.atiende_feriado = Model.empresa.Action.getKey();
     const resp: any = await SSocket.sendPromise({
       service: "empresa",
       component: "horario_atencion",
       type: "_registroTurnosHorariosAtencion",
       data: data,
-    //   key_empresa: Model.empresa.Action.getKey(),
-    //   key_usuario: Model.usuario.Action.getKey(),
     });
+    return resp.data;
+  }
+
+  async getByyKeyTurnosHorariosAtencion(parametro: any) {
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "horario_atencion",
+      type: "_getByKeyTurnosHorariosAtencion",
+      key_turno: parametro,
+    });
+      console.log("jajaj ",resp.data)
     return resp.data;
   }
 }

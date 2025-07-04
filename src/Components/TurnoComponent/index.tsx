@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { SHr, SIcon, SInput, SPopup, SText, STheme, SUuid, SView } from 'servisofts-component';
 import ListaDeDias from './ListaDeDias';
+import MDL from '../../MDL';
 
 
 export type HorarioItem = {
@@ -31,6 +32,18 @@ export default class TurnoComponent extends Component {
         horarios: []
     }
 
+    componentDidMount(): void {
+        if (!this.props.key_turno) return;
+        MDL.empresa.getByyKeyTurnosHorariosAtencion(this.props.key_turno).then((res: TurnoItem) => {
+            this.turno = res;
+            console.log("pinta ",res)
+            this.forceUpdate();
+            // this.setState({ turno: res });
+        }).catch((err) => {
+            console.log("Error al cargar turno:", err);
+        });
+    }
+
     render() {
         return <SView col={"xs-12"} flex>
 
@@ -38,7 +51,7 @@ export default class TurnoComponent extends Component {
 
             <SView col={"xs-11.5"} row>
                 <SView flex >
-                    <SText fontSize={18} bold>🕒 Configurar Nuevo Horario</SText>
+                    <SText fontSize={18} bold>🕒 Configurar Nuevo Horario{this.props.key_turno} </SText>
                 </SView>
                 <SView col={"xs-1"} center >
                     <SView col={"xs-12"} center onPress={() => {
