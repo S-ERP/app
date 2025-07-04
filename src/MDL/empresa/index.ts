@@ -1,6 +1,6 @@
 import SSocket from "servisofts-socket";
 import Model from "../../Model";
-import { Empresa, EventListener, Sucursal } from "./type";
+import { Empresa, EventListener, Sucursal, TurnoHorarioAtencion } from "./type";
 import { SStorage, STheme, SThread } from "servisofts-component";
 import { Platform } from "react-native";
 import packageInfo from "../../../package.json";
@@ -135,5 +135,22 @@ export default class empresa extends MDLAbstract<EventListener> {
       key_empresa: Model.empresa.Action.getKey(),
     });
     return resp.data as any[];
+  }
+
+  async registroTurnosHorariosAtencion(data: TurnoHorarioAtencion) {
+
+
+    data.key_usuario = Model.usuario.Action.getKey();
+    data.key_empresa = Model.empresa.Action.getKey();
+    // data.atiende_feriado = Model.empresa.Action.getKey();
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "horario_atencion",
+      type: "_registroTurnosHorariosAtencion",
+      data: data,
+    //   key_empresa: Model.empresa.Action.getKey(),
+    //   key_usuario: Model.usuario.Action.getKey(),
+    });
+    return resp.data;
   }
 }

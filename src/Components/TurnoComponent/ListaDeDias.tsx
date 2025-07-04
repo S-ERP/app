@@ -3,6 +3,7 @@ import { View, Text, FlatList } from 'react-native';
 import { SDate, SHr, SPopup, SText, STheme, SView } from 'servisofts-component';
 import DiaItem from './DiaItem';
 import TurnoComponent from '.';
+import MDL from '../../MDL';
 
 type ListaDeDiasProps = { turnoComponent: TurnoComponent };
 export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
@@ -24,7 +25,7 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
             <SHr height={8} />
             <SView col={"xs-11.5"} row center>
                 <SView flex />
-                <SView width={240} row center border={"transparent"}>
+                <SView width={240} row center border={"transparent" as any}>
                     <SView center row style={{
                         backgroundColor: "#fcfce9", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 42, width: 100,
                     }} onPress={() => {
@@ -34,8 +35,20 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                     </SView>
                     <SView flex />
                     <SView center row style={{ backgroundColor: "#0f0e0e", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 42, width: 120 }} onPress={() => {
-                        console.log(this.props.turnoComponent.turno);
-                        SPopup.close("popup_config_horario");
+
+
+                        const data = this.props.turnoComponent.turno;
+                        //   const prom = data?.key ? MDL.crm.cliente.editar(data) : MDL.crm.cliente.registrar(data);
+                        MDL.empresa.registroTurnosHorariosAtencion(data as any).then((res) => {
+
+                            console.log("mira ", res);
+                            console.log("ya ", data);
+                            SPopup.close("popup_config_horario");
+                        }).catch((err) => {
+                            // SNotification.send({ key: "registro", title: "Error", body: err, color: STheme.color.danger });
+                        });
+
+
                     }}>
                         <SText center color='white'>Guardar Horario</SText>
 

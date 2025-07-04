@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SHr, SIcon, SInput, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SInput, SPopup, SText, STheme, SUuid, SView } from 'servisofts-component';
 import ListaDeDias from './ListaDeDias';
 
 
@@ -11,8 +11,9 @@ export type HorarioItem = {
 
 }
 export type TurnoItem = {
-    descripcion: string;
-    atiende_feriado: boolean;
+    key: string,
+    nombre: string;
+    atiende_feriado: number;
     horarios: HorarioItem[];
 }
 
@@ -21,8 +22,12 @@ export type TurnoItem = {
 export default class TurnoComponent extends Component {
 
     turno: TurnoItem = {
-        descripcion: "",
-        atiende_feriado: false,
+        // key: "",
+
+        key: SUuid(),
+
+        nombre: "",
+        atiende_feriado: 0,
         horarios: []
     }
 
@@ -57,9 +62,9 @@ export default class TurnoComponent extends Component {
                         label={"Descripcion/Nombre del turno"}
                         style={{ height: 34, fontSize: 13, }}
                         placeholder={"Ingrese la descripcion del turno"}
-                        value={this.turno.descripcion}
+                        value={this.turno.nombre}
                         onChangeText={e => {
-                            this.turno.descripcion = e;
+                            this.turno.nombre = e;
                             this.forceUpdate();
                         }} />
                 </SView>
@@ -68,9 +73,13 @@ export default class TurnoComponent extends Component {
                     <SInput
                         label={"Día feriado ?"}
                         type='checkBox' height={24}
-                        value={!this.turno.atiende_feriado ? "" : "true"}
+                        value={this.turno.atiende_feriado === 1 ? "true" : ""}
+
+                        // value={!this.turno.atiende_feriado ? "" : "true"}
                         onChangeText={e => {
-                            this.turno.atiende_feriado = !!e;
+                            this.turno.atiende_feriado = e ? 1 : 0;
+
+                            // this.turno.atiende_feriado = !!e;
                             this.forceUpdate();
                         }} />
                     <SText fontSize={9} color={STheme.color.lightGray}>Marcar como día feriado</SText>

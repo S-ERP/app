@@ -1,5 +1,3 @@
-
-
 export type PuntoVenta = {
   key: string;
   key_usuario: string;
@@ -8,7 +6,6 @@ export type PuntoVenta = {
   descripcion: string;
   observacion: string;
   codigo_facturacion: string;
-
 };
 
 export type Sucursal = {
@@ -25,7 +22,7 @@ export type Sucursal = {
   correo?: string;
   lat?: number;
   lng?: number;
-  punto_venta?: PuntoVenta[]
+  punto_venta?: PuntoVenta[];
 };
 export type Empresa = {
   key: string;
@@ -38,8 +35,27 @@ export type Empresa = {
   theme?: any;
 };
 
-export type EventListener = {
-  type: "onChange",
-} | {
-  type: "onChangeEmpresaSelect",
-} 
+export type TurnoHorarioAtencion = {
+  key: string;
+  key_usuario: string;
+  estado: number;
+  key_empresa: string;
+  nombre: string;
+  atiende_feriado: number;
+  horarios: Horario[];
+};
+
+export type Horario = {
+  key: string;
+  dia: string; // "0" a "6"
+  hora_inicio: string; // formato "HH:mm"
+  hora_fin: string; // formato "HH:mm"
+};
+
+export type EventListener =
+  | {
+      type: "onChange";
+    }
+  | {
+      type: "onChangeEmpresaSelect";
+    };
