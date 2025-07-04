@@ -36,17 +36,22 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                     <SView flex />
                     <SView center row style={{ backgroundColor: "#0f0e0e", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 42, width: 120 }} onPress={() => {
 
-
-                        const data = this.props.turnoComponent.turno;
-                        //   const prom = data?.key ? MDL.crm.cliente.editar(data) : MDL.crm.cliente.registrar(data);
-                        // MDL.empresa.registroTurnosHorariosAtencion(data as any).then((res) => {
-
-                            // console.log("mira ", res);
-                            console.log("ya ", data);
+                        if (this.props.turnoComponent.props.key_turno) {
+                            console.log("actualizar");
                             SPopup.close("popup_config_horario");
-                        // }).catch((err) => {
-                            // SNotification.send({ key: "registro", title: "Error", body: err, color: STheme.color.danger });
-                        // });
+
+                        } else {
+                            const data = this.props.turnoComponent.turno;
+                            const prom = data?.key ? MDL.crm.cliente.editar(data) : MDL.crm.cliente.registrar(data);
+                            MDL.empresa.registroTurnosHorariosAtencion(data as any).then((res) => {
+                                console.log("nuevo");
+                                SPopup.close("popup_config_horario");
+                            }).catch((err) => {
+                                console.log("error " + err)
+                            });
+                        }
+
+
 
 
                     }}>
