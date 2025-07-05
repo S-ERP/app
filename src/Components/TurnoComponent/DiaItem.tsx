@@ -11,27 +11,57 @@ type DiaItemProps = {
 export default class DiaItem extends Component<DiaItemProps> {
 
     active: boolean = false;
+
+    /**
+     * Devuelve los horarios correspondientes al día actual, validando nulos
+     */
+
+    getHorariosDelDia = () => {
+        // return this.props.turnoComponent?.turno?.horarios?.filter?.((horario: any) => horario?.dia == this.props.dia?.key) || [];
+        return this.props.turnoComponent?.turno?.horarios?.filter?.((horario: any) => horario?.dia == this.props.dia?.key && (horario?.estado === undefined || horario.estado === 1)) || [];
+    };
+
+
+    /**
+     * Callback que alterna el horario entre activado y desactivado
+     */
+
     handleChangeAlvaro(e: any) {
-        const horariosDelDia = this.props.turnoComponent.turno.horarios.filter((horario: any) => horario.dia == this.props.dia.key);
+
+        const horariosDelDia = this.getHorariosDelDia();
         if (horariosDelDia.length > 0) {
-            // Si ya existe un horario para este dia, lo eliminamos
-            this.props.turnoComponent.turno.horarios = this.props.turnoComponent.turno.horarios.filter((horario: any) => horario.dia != this.props.dia.key);
+            // 🔁 Elimina horarios del día si ya existían
+            horariosDelDia.forEach(h => h.estado = 0);
+            this.props.turnoComponent.turno.horarios = this.props.turnoComponent.turno.horarios.map((horario: any) => horario.dia == this.props.dia.key ? horariosDelDia.find(h => h.key === horario.key) || horario : horario);
             this.forceUpdate();
             return e;
         }
+        // ➕ Agrega nuevo horario por defecto
         const horario = {
             key: SUuid(),
             dia: this.props.dia.key,
             hora_inicio: "00:00",
             hora_fin: "23:59",
+            estado: 1
         }
+
+        if (!Array.isArray(this.props.turnoComponent.turno.horarios)) {
+            this.props.turnoComponent.turno.horarios = [];
+            this.forceUpdate();
+
+        }
+
+
         this.props.turnoComponent.turno.horarios.push(horario);
         this.forceUpdate()
         return e;
     }
+
+    /**
+ * Encabezado del día con switch para activar/desactivar
+ */
     renderHeader() {
-        const horariosDelDia = this.props.turnoComponent.turno.horarios.filter((horario: any) => horario.dia == this.props.dia.key);
-        console.log(horariosDelDia)
+        const horariosDelDia = this.getHorariosDelDia();
         return <SView col={"xs-12"} height={50} card row center style={{ marginBottom: 18 }}>
             <SView flex style={{ paddingLeft: 18 }}>
                 <SText fontSize={16} bold>{this.props.dia.text}</SText>
@@ -42,14 +72,19 @@ export default class DiaItem extends Component<DiaItemProps> {
         </SView>
     }
 
+    /**
+ * Renderiza sección de atención 24 horas con checkbox editable
+ */
     render24Horas() {
-        const horariosDelDia = this.props.turnoComponent.turno.horarios.filter((horario: any) => horario.dia == this.props.dia.key);
+        const horariosDelDia = this.getHorariosDelDia();
         if (horariosDelDia.length === 0) return null;
         let active = false;
 
-        if (horariosDelDia.length === 1 && horariosDelDia[0].hora_inicio == "00:00" && horariosDelDia[0].hora_fin == "23:59") {
+        if (horariosDelDia.length == 1 && horariosDelDia[0].hora_inicio == "00:00" && horariosDelDia[0].hora_fin == "23:59") {
             active = true;
         }
+
+
         return <SView col={"xs-12"} height={50} row center border={STheme.color.lightGray} style={{ marginBottom: 10, paddingHorizontal: 16 }}>
             <SView flex>
                 <SText fontSize={14} bold>Atención 24 horas</SText>
@@ -58,16 +93,14 @@ export default class DiaItem extends Component<DiaItemProps> {
             <SView width={30} center>
                 <SInput value={!active ? "" : active + ""} height={20} width={20} type='checkBox' onChangeText={e => {
                     if (!e) {
-
-
-                        // horariosDelDia[0].hora_inicio = "00:00";
-                        // horariosDelDia[0].hora_fin = "00:00";
                         horariosDelDia[0].hora_inicio = "08:00";
                         horariosDelDia[0].hora_fin = "16:00";
+                        horariosDelDia[0].estado = 1;
                         this.forceUpdate();
                     } else {
                         horariosDelDia[0].hora_inicio = "00:00";
                         horariosDelDia[0].hora_fin = "23:59";
+                        horariosDelDia[0].estado = 1;
                         const guadado = { ...horariosDelDia[0] };
                         this.props.turnoComponent.turno.horarios = this.props.turnoComponent.turno.horarios.filter((horario: any) => horario.dia != this.props.dia.key);
                         this.props.turnoComponent.turno.horarios.push(guadado)
@@ -80,11 +113,16 @@ export default class DiaItem extends Component<DiaItemProps> {
 
 
     }
+
+    /**
+     * Renderiza todos los horarios del día (excepto si es 24 horas)
+     */
+
     renderHorarios() {
-        const horariosDelDia = this.props.turnoComponent.turno.horarios.filter((horario: any) => horario.dia == this.props.dia.key);
-        if (horariosDelDia.length == 0) return null;
+        const horariosDelDia = this.getHorariosDelDia();
+        if (horariosDelDia.length === 0) return null;
         let active = false;
-        if (horariosDelDia.length == 1 && horariosDelDia[0].hora_inicio === "00:00" && horariosDelDia[0].hora_fin == "23:59") {
+        if (horariosDelDia.length == 1 && horariosDelDia[0].hora_inicio == "00:00" && horariosDelDia[0].hora_fin == "23:59") {
             active = true;
         }
         if (active) return null
@@ -101,7 +139,7 @@ export default class DiaItem extends Component<DiaItemProps> {
         })
     }
     renderAgregrarHorario() {
-        const horariosDelDia = this.props.turnoComponent.turno.horarios.filter((horario: any) => horario.dia == this.props.dia.key);
+        const horariosDelDia = this.props.turnoComponent?.turno?.horarios?.filter?.((horario: any) => horario?.dia == this.props.dia?.key) || [];
         if (horariosDelDia.length == 0) return null;
         let active = false;
         if (horariosDelDia.length == 1 && horariosDelDia[0].hora_inicio == "00:00" && horariosDelDia[0].hora_fin == "23:59") {
@@ -120,6 +158,7 @@ export default class DiaItem extends Component<DiaItemProps> {
                         dia: this.props.dia.key,
                         hora_inicio: "08:00",
                         hora_fin: "16:00",
+                        estado: 1
                     }
                     this.props.turnoComponent.turno.horarios.push(horario);
                     this.forceUpdate()
@@ -130,17 +169,6 @@ export default class DiaItem extends Component<DiaItemProps> {
 
                 </SView>
             </SView>
-
-            {/* {horariosDelDia.length === 1 && horariosDelDia[0].hora_inicio === "00:00" ? <>
-                <SHr height={16} />
-                <SView col={"xs-12"} height={80} center border={STheme.color.lightGray} >
-                    <SText fontSize={16} bold color={STheme.color.lightGray} >No hay turnos configurados</SText>
-                    <SText fontSize={12} color={STheme.color.lightGray}>Haz clic en "Agregar Turno" para comenzar</SText>
-                </SView>
-            </>
-                : this.renderHorarios()
-            } */}
-
         </>
     }
     render() {
@@ -149,7 +177,6 @@ export default class DiaItem extends Component<DiaItemProps> {
             {this.render24Horas()}
             {this.renderAgregrarHorario()}
             {this.renderHorarios()}
-
         </SView>
     }
 }

@@ -36,24 +36,33 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                     <SView flex />
                     <SView center row style={{ backgroundColor: "#0f0e0e", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 42, width: 120 }} onPress={() => {
 
-                        if (this.props.turnoComponent.props.key_turno) {
-                            console.log("actualizar");
-                            SPopup.close("popup_config_horario");
+                        const data = this.props.turnoComponent.turno;
+                        // const prom = data?.key ? MDL.crm.cliente.editar(data) : MDL.crm.cliente.registrar(data);
 
-                        } else {
-                            const data = this.props.turnoComponent.turno;
-                            const prom = data?.key ? MDL.crm.cliente.editar(data) : MDL.crm.cliente.registrar(data);
-                            MDL.empresa.registroTurnosHorariosAtencion(data as any).then((res) => {
-                                console.log("nuevo");
+                        if (this.props.turnoComponent.props.key_turno) {
+
+                            data.horarios.forEach((h) => {
+                                if (h.estado === undefined || h.estado === null) {
+                                    h.estado = 1;
+                                }
+                            });
+
+                            // data.horarios.forEach((h) => (!h.estado ?? 1));
+
+                            MDL.empresa.editarTurnosHorariosAtencion(data as any).then((res) => {
+                                console.log("✅ Actualizado correctamente: " + res);
                                 SPopup.close("popup_config_horario");
                             }).catch((err) => {
-                                console.log("error " + err)
+                                console.log("❌ Error al actualizar: " + err);
+                            });
+                        } else {
+                            MDL.empresa.registroTurnosHorariosAtencion(data as any).then((res) => {
+                                console.log("🟢 Nuevo turno registrado: " + res);
+                                SPopup.close("popup_config_horario");
+                            }).catch((err) => {
+                                console.log("❌ Error al registrar: " + err);
                             });
                         }
-
-
-
-
                     }}>
                         <SText center color='white'>Guardar Horario</SText>
 

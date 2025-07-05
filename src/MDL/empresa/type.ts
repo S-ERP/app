@@ -38,8 +38,10 @@ export type Empresa = {
 export type TurnoHorarioAtencion = {
   key: string;
   key_usuario: string;
+  fecha_on: string;
   estado: number;
   key_empresa: string;
+
   nombre: string;
   atiende_feriado: number;
   horarios: Horario[];
@@ -47,6 +49,10 @@ export type TurnoHorarioAtencion = {
 
 export type Horario = {
   key: string;
+  key_usuario: string;
+  fecha_on: string;
+  estado: number;
+
   dia: string; // "0" a "6"
   hora_inicio: string; // formato "HH:mm"
   hora_fin: string; // formato "HH:mm"
