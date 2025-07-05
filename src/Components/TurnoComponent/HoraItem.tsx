@@ -3,6 +3,7 @@ import { View, Text, Switch } from 'react-native';
 import { SHr, SIcon, SInput, SText, STheme, SView } from 'servisofts-component';
 import TurnoComponent, { HorarioItem } from '.';
 import SIconApp from '../../Assets/SIconApp';
+import eliminados from '../../Pages/usuario/eliminados';
 
 type HoraItemProps = {
     // turnoComponent: TurnoComponent,
@@ -38,7 +39,7 @@ export default class HoraItem extends Component<HoraItemProps> {
                                 this.props.horario.hora_fin = e;
                                 this.forceUpdate();
                             }}
-                            iconR={<SIcon name='history' width={14} style={{paddingRight: 4,}} fill='#666' />}
+                            iconR={<SIcon name='history' width={14} style={{ paddingRight: 4, }} fill='#666' />}
 
                         />
                     </SView>
@@ -46,9 +47,15 @@ export default class HoraItem extends Component<HoraItemProps> {
                     <SView col={"xs-1"} center border={"transparent"} style={{ paddingTop: 28 }}  >
                         <SView width={40} height={40} center border={STheme.color.card}
                             onPress={() => {
+
+
                                 if (this.props.onDelete) {
                                     this.props.onDelete();
                                 }
+                                // this.props.horario.estado = 0;
+                                // console.log("eliminados " + this.props.horario.key + " - " + this.props.horario.estado)
+                                this.forceUpdate();
+
                             }}
                         >
                             <SIcon name="crmeliminar" stroke='red' width={20} />

@@ -9,16 +9,13 @@ export type HorarioItem = {
     dia: string;
     hora_inicio: string;
     hora_fin: string;
-
     estado: number;
-
 }
 export type TurnoItem = {
     key: string,
     nombre: string;
     atiende_feriado: number;
     horarios: HorarioItem[];
-
     key_usuario: string;
     estado: number;
 

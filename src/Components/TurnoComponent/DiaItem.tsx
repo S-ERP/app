@@ -132,7 +132,13 @@ export default class DiaItem extends Component<DiaItemProps> {
                 dia={this.props.dia}
                 horario={horario}
                 onDelete={() => {
-                    this.props.turnoComponent.turno.horarios = this.props.turnoComponent.turno.horarios.filter((h: any) => h.key != horario.key);
+                    horario.estado = 0;
+
+                    // this.props.turnoComponent.turno.horarios = this.props.turnoComponent.turno.horarios.filter((h: any) => h.key != horario.key);
+
+                    // horariosDelDia.forEach(h => h.estado = 0);
+                    // horario.estado = 0; // 🔁 marcar como eliminado
+                    // this.props.turnoComponent.turno.horarios.forEach(h => h.estado = 0);
                     this.forceUpdate();
                 }}
             />
