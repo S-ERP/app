@@ -65,19 +65,8 @@ export default class DiaItem extends Component<DiaItemProps> {
         if (horariosDelDia.length === 0) return null;
         let active = false;
         if (horariosDelDia.length == 1 && horariosDelDia[0].hora_inicio == "00:00" && horariosDelDia[0].hora_fin == "23:59") {
-
-            // console.log("tamaño ", horariosDelDia[0].key, " - ", horariosDelDia[0].estado);
-            // horariosDelDia.forEach(h => h.estado = 0);
-
             active = true;
-            // this.forceUpdate();
-
-            // horariosDelDia[0].estado = 0;
         }
-
-        // horariosDelDia.forEach(h => h.estado = 0);
-
-
         return <SView col={"xs-12"} height={50} row center border={STheme.color.lightGray} style={{ marginBottom: 10, paddingHorizontal: 16 }}>
             <SView flex>
                 <SText fontSize={14} bold>Atención 24 horas</SText>
