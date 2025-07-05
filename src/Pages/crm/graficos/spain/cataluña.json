@@ -1,0 +1,12 @@
+{
+    "key": "cataluña",
+    "color": "#FFD700",
+    "colors":["#007A33", "#FFD700"],
+    "name": "Cataluña",
+    "coordinates": [
+        {
+            "latitude": -14.7294,
+            "longitude": -63.9744
+        }
+    ]
+}

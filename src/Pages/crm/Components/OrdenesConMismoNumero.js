@@ -122,6 +122,6 @@ export default class OrdenesConMismoNumero extends Component {
                 </SView>
                 <SHr height={8} />
             </SView>
-        );
+        )
     }
 }
