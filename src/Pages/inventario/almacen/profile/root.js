@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from ".."
-import { SHr, SList, SLoad, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SList, SLoad, SText, STheme, SView, SIcon } from 'servisofts-component';
 import Model from '../../../../Model';
-import { MenuPages } from 'servisofts-rn-roles_permisos';
+import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
 import Item from "../item"
 import SCharts from 'servisofts-charts';
 import GraficoPorEstado from './Components/GraficoPorEstado';
 import GraficoPorTipos from './Components/GraficoPorTipos';
+
 class index extends DPA.profile {
     constructor(props) {
         super(props, {
@@ -44,10 +45,11 @@ class index extends DPA.profile {
 
             <SText fontSize={16} bold>Menu</SText>
             <SHr />
+
             <MenuPages path={"/inventario/almacen/profile/"} permiso={"ver"} params={{
                 pk: this.pk
             }}>
-                {/* <MenuButtom label={"Permisos"} url={Parent.path + "/profile/permisos"} params={{ pk: this.pk }} icon={<SIcon name={"Ajustes"} />} /> */}
+                {<MenuButtom label={"Importar Inventario"} url={"/profile/ImportarExcel"} icon={<SIcon name={"Excel"} />} />}
                 {/* <MenuButtom label={"Datos"} url={Parent.path + "/profile/datos"} params={{ pk: this.pk }} icon={<SIcon name={"Ajustes"} />} /> */}
                 {/* <MenuButtom label={"Datos"} url={Parent.path + "/profile/datos"} params={{ pk: this.pk }} icon={<SIcon name={"Ajustes"} />} /> */}
             </MenuPages>
