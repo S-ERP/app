@@ -39,8 +39,6 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                         const data = this.props.turnoComponent.turno;
 
                         if (!Array.isArray(data.horarios)) data.horarios = [];
-
-
                         // Asignar estado=1 a cualquier horario que no lo tenga definido
                         data.horarios.forEach((h) => {
                             if (h.estado === undefined || h.estado === null) {
@@ -59,12 +57,7 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                                 if (h.estado === undefined || h.estado === null) h.estado = 1;
                             });
 
-                            // data.horarios.forEach((h) => (!h.estado ?? 1));
-
                             MDL.empresa.editarTurnosHorariosAtencion(data as any).then((res) => {
-
-
-                                console.log("✅ Actualizado correctamente: " + JSON.stringify(res));
                                 SPopup.close("popup_config_horario");
                             }).catch((err) => {
                                 console.log("❌ Error al actualizar: " + err);

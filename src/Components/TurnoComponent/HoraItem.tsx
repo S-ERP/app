@@ -6,7 +6,6 @@ import SIconApp from '../../Assets/SIconApp';
 import eliminados from '../../Pages/usuario/eliminados';
 
 type HoraItemProps = {
-    // turnoComponent: TurnoComponent,
     horario: HorarioItem,
     dia: any,
     onDelete?: () => void
@@ -17,8 +16,6 @@ export default class HoraItem extends Component<HoraItemProps> {
         return <>
             <SView col={"xs-12"} height={70} center border={STheme.color.card}   >
                 <SView col={"xs-11.5"} center row >
-
-
                     <SView col={"xs-5"} center>
                         <SInput label={"Hora inicio"} style={{ height: 32, fontSize: 12, }}
                             type="hour" value={this.props.horario.hora_inicio}
@@ -29,9 +26,7 @@ export default class HoraItem extends Component<HoraItemProps> {
                             iconR={<SIcon name='history' width={14} style={{ paddingRight: 4, }} fill='#666' />}
                         />
                     </SView>
-
                     <SView flex />
-
                     <SView col={"xs-5"} center border={"transparent"} >
                         <SInput label={"Hora fin"} type="hour" style={{ height: 32, fontSize: 12, }}
                             value={this.props.horario.hora_fin}
@@ -40,7 +35,6 @@ export default class HoraItem extends Component<HoraItemProps> {
                                 this.forceUpdate();
                             }}
                             iconR={<SIcon name='history' width={14} style={{ paddingRight: 4, }} fill='#666' />}
-
                         />
                     </SView>
                     <SView flex />

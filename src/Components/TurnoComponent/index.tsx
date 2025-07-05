@@ -10,8 +10,8 @@ export type HorarioItem = {
     hora_inicio: string;
     hora_fin: string;
     estado: number;
-
 }
+
 export type TurnoItem = {
     key: string,
     nombre: string;
@@ -19,14 +19,9 @@ export type TurnoItem = {
     horarios: HorarioItem[];
     key_usuario: string;
     estado: number;
-
-
 }
 
-// hola
-
 export default class TurnoComponent extends Component {
-
     turno: TurnoItem = {
         key: SUuid(),
         nombre: "",
@@ -48,9 +43,7 @@ export default class TurnoComponent extends Component {
 
     render() {
         return <SView col={"xs-12"} flex>
-
             <SHr height={18} />
-
             <SView col={"xs-11.5"} row>
                 <SView flex >
                     <SText fontSize={18} bold>🕒 Configurar Nuevo Horario{this.props.key_turno} </SText>
@@ -64,10 +57,7 @@ export default class TurnoComponent extends Component {
                 </SView>
             </SView>
 
-
             <SHr height={14} />
-
-
 
             <SView col={"xs-11.5"} style={{ paddingHorizontal: 16, }} height={80} row center border={STheme.color.card}  >
                 <SView flex >
@@ -89,19 +79,13 @@ export default class TurnoComponent extends Component {
                         value={this.turno.atiende_feriado === 1 ? "true" : ""}
                         onChangeText={e => {
                             this.turno.atiende_feriado = e ? 1 : 0;
-                            // this.turno.atiende_feriado = !!e;
                             this.forceUpdate();
                         }} />
                     <SText fontSize={9} color={STheme.color.lightGray}>Marcar como día feriado</SText>
                 </SView>
                 <SHr height={24} />
-
             </SView>
             <SHr height={18} />
-
-
-
-
             <ListaDeDias turnoComponent={this} />
         </SView>
     }
