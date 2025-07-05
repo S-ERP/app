@@ -80,12 +80,13 @@ class index extends Component<PublicacionPropsType> {
             }} >
                 <SText bold>{user?.Nombres} {user?.Apellidos}</SText>
             </SView>
-            <SView width={30} center onPress={() => {
+            <SView width={30} height={30} center onPress={() => {
                 SPopup.open({ key: "menuLat", content: (key_usuario == this.props?.data?.key_usuario) ? <BoxMenuLat datas={this.props?.data} /> : <BoxMenuLatOtros datas={this.props.data} /> });
             }} >
-                <SIcon name={"MenuLat"} fill={STheme.color.text} width={24} height={24} />
-                <SView width={5} />
+                <SIcon name={"Ajustes"} fill={STheme.color.text} width={24} height={24} />
             </SView>
+            <SView width={5} />
+
         </SView>
     }
 
@@ -111,7 +112,7 @@ class index extends Component<PublicacionPropsType> {
     }
     renderImage() {
         // const image_src = Model.publicacion._get_image_download_path(SSocket.api, this.props.data.key ?? "");
-        const image_src = SSocket.api.repo + "publicacion/" + (this.props.data.key ?? "")+"?time="+new Date().getTime();
+        const image_src = SSocket.api.repo + "publicacion/" + (this.props.data.key ?? "") + "?time=" + new Date().getTime();
         return <SView col={"xs-12"} colSquare activeOpacity={1}
             style={{
                 backgroundColor: "#66666622",
@@ -166,7 +167,7 @@ class index extends Component<PublicacionPropsType> {
             </SView>
             <SView width={size / 2} />
             {/* <SText>{</SText> */}
-            <SView width={size} style={{top:1}} height onPress={() => {
+            <SView width={size} style={{ top: 1 }} height onPress={() => {
                 Model.usuario.Action.getKey() ? SNavigation.navigate("/publicacion/comments", { pk: this.props.data.key }) : SNavigation.navigate("/login")
             }}>
                 <SIcon name={'Comment'} height={21.71} fill={STheme.color.text} />

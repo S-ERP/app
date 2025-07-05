@@ -1,0 +1,12 @@
+{
+    "key": "paisvasco",
+    "color": "#FFD700",
+    "colors":["#007A33", "#FFD700"],
+    "name": "PaísVasco",
+    "coordinates": [
+        {
+            "latitude": -14.7294,
+            "longitude": -63.9744
+        }
+    ]
+}
