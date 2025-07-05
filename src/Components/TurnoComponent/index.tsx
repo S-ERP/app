@@ -10,12 +10,19 @@ export type HorarioItem = {
     hora_inicio: string;
     hora_fin: string;
 
+    estado: number;
+
 }
 export type TurnoItem = {
     key: string,
     nombre: string;
     atiende_feriado: number;
     horarios: HorarioItem[];
+
+    key_usuario: string;
+    estado: number;
+
+
 }
 
 // hola
@@ -23,10 +30,7 @@ export type TurnoItem = {
 export default class TurnoComponent extends Component {
 
     turno: TurnoItem = {
-        // key: "",
-
         key: SUuid(),
-
         nombre: "",
         atiende_feriado: 0,
         horarios: []
@@ -55,9 +59,7 @@ export default class TurnoComponent extends Component {
                 </SView>
                 <SView col={"xs-1"} center >
                     <SView col={"xs-12"} center onPress={() => {
-                        // cerrar popu
                         SPopup.close("popup_config_horario");
-
                     }}>
                         <SIcon name="Cerrar" fill="white" width={14} />
                     </SView>
@@ -87,11 +89,8 @@ export default class TurnoComponent extends Component {
                         label={"Día feriado ?"}
                         type='checkBox' height={24}
                         value={this.turno.atiende_feriado === 1 ? "true" : ""}
-
-                        // value={!this.turno.atiende_feriado ? "" : "true"}
                         onChangeText={e => {
                             this.turno.atiende_feriado = e ? 1 : 0;
-
                             // this.turno.atiende_feriado = !!e;
                             this.forceUpdate();
                         }} />
