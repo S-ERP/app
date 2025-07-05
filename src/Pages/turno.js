@@ -21,13 +21,13 @@ export default class turnov2 extends Component {
         };
     }
 
-    mostrarPopup() {
+    mostrarPopup(aux_key: any) {
         SPopup.open({
             key: "popup_config_horario",
             content: (
-                <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 550 }} padding={16} withoutFeedback >
-                    <SView col={"xs-12"} height={650} center >
-                        <TurnoComponent></TurnoComponent>
+                <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
+                    <SView col={"xs-12"} height={600} center >
+                        <TurnoComponent key_turno={aux_key} ></TurnoComponent>
                     </SView>
                 </SView>
             )
@@ -56,7 +56,13 @@ export default class turnov2 extends Component {
             }}
 
             ref={ref => this.DinamicTable = ref}
-            keyExtractor={e => e.usuario}
+            onSelect={(e) => {
+                // <TurnoComponent></TurnoComponent>
+                this.mostrarPopup(e.row.key)
+                // console.log("Selected turno:", e.row.key);
+            }}
+
+
             loadData={async () => {
                 const all = await MDL.empresa.getTurnosHorariosAtencion();
 
@@ -94,11 +100,11 @@ export default class turnov2 extends Component {
                         resizeMode: "cover",
                     }} />
                 </SView>} />
-            <DinamicTable.Col key="nombre_dia" label="Día" width={100} data={(e) => e.row?.nombre_dia} />
+            {/* <DinamicTable.Col key="nombre" label="Día" width={100} data={(e) => e.row?.nombre} /> */}
             <DinamicTable.Col key="horario" label="Horario" width={150} data={(e) => e.row?.horario} />
-            <DinamicTable.Col key="nombre_turno" label="Turno" width={150} data={(e) => e.row?.nombre_turno} />
+            <DinamicTable.Col key="nombre" label="Turno" width={150} data={(e) => e.row?.nombre} />
             <DinamicTable.Col key="atiende_feriado" label="¿Feriado?" width={100} data={(e) => e.row?.atiende_feriado} />
-            <DinamicTable.Col key="dia_semana" label="Día #" width={80} data={(e) => e.row?.dia_semana} />
+            <DinamicTable.Col key="dia" label="Día #" width={80} data={(e) => e.row?.dia} />
             <DinamicTable.Col key="registrado_el" label="Fecha Registro" width={120} data={(e) => e.row?.registrado_el} />
             <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.key_usuario} />
             <DinamicTable.Col key="asdsad" label="Usuario" width={250} data={(e) => e.row?.usuario.Nombres} />
@@ -112,7 +118,10 @@ export default class turnov2 extends Component {
 
 
         return (
-            <SPage title="Turnos y Horarios" disableScroll>
+            <SPage title="Turnos y Horarios dddddddddd" disableScroll>
+
+                {this.mostrarTabla()}
+
                 <SHr height={20} />
                 <FloatButtom onPress={() => { this.mostrarPopup() }} />
             </SPage>

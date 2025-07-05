@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { View, Text, FlatList } from 'react-native';
-import { SDate, SHr, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SPopup, SText, STheme, SView } from 'servisofts-component';
 import DiaItem from './DiaItem';
 import TurnoComponent from '.';
+import MDL from '../../MDL';
 
 type ListaDeDiasProps = { turnoComponent: TurnoComponent };
 export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
@@ -22,20 +23,59 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
     botonFooter() {
         return <>
             <SHr height={8} />
-            <SView col={"xs-12"} row center>
+            <SView col={"xs-11.5"} row center>
                 <SView flex />
-                <SView col={"xs-6"} row center border={"transparent"}>
+                <SView width={240} row center border={"transparent" as any}>
                     <SView center row style={{
                         backgroundColor: "#fcfce9", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 42, width: 100,
                     }} onPress={() => {
-                        // SPopup.close("popup_config_horario");
+                        SPopup.close("popup_config_horario");
                     }}>
                         <SText center color='black' bold>Cancelar</SText>
                     </SView>
                     <SView flex />
                     <SView center row style={{ backgroundColor: "#0f0e0e", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 42, width: 120 }} onPress={() => {
-                        console.log(this.props.turnoComponent.turno);
-                        // SPopup.close("popup_config_horario");
+
+                        const data = this.props.turnoComponent.turno;
+
+                        if (!Array.isArray(data.horarios)) data.horarios = [];
+                        // Asignar estado=1 a cualquier horario que no lo tenga definido
+                        data.horarios.forEach((h) => {
+                            if (h.estado === undefined || h.estado === null) {
+                                h.estado = 1;
+                            }
+                        });
+
+
+                        const isTurnoExistente = !!this.props.turnoComponent.props.key_turno;
+                        const tieneHorariosActivos = data.horarios.some(h => h.estado === 1);
+
+
+                        if (isTurnoExistente) {
+
+                            data.horarios.forEach((h) => {
+                                if (h.estado === undefined || h.estado === null) h.estado = 1;
+                            });
+
+                            MDL.empresa.editarTurnosHorariosAtencion(data as any).then((res) => {
+                                SPopup.close("popup_config_horario");
+                            }).catch((err) => {
+                                console.log("❌ Error al actualizar: " + err);
+                            });
+                        } else {
+
+                            if (!tieneHorariosActivos) {
+                                console.warn("⚠️ No se puede registrar un turno sin horarios activos.");
+                                return;
+                            }
+
+                            MDL.empresa.registroTurnosHorariosAtencion(data as any).then((res) => {
+                                console.log("🟢 Nuevo turno registrado: " + res);
+                                SPopup.close("popup_config_horario");
+                            }).catch((err) => {
+                                console.log("❌ Error al registrar: " + err);
+                            });
+                        }
                     }}>
                         <SText center color='white'>Guardar Horario</SText>
 
@@ -51,7 +91,7 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
         return <SView flex >
             <FlatList
                 data={this.dias}
-                ItemSeparatorComponent={a => <SHr h={18} />}
+                ItemSeparatorComponent={a => <SHr h={8} />}
                 renderItem={({ item }) => <DiaItem dia={item} {...this.props} />}
             />
             <SHr h={8} />
