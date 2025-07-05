@@ -76,6 +76,10 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                                 console.log("❌ Error al registrar: " + err);
                             });
                         }
+
+                        // this.
+                        this.forceUpdate();
+
                     }}>
                         <SText center color='white'>Guardar Horario</SText>
 
