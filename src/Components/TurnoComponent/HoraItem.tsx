@@ -47,15 +47,10 @@ export default class HoraItem extends Component<HoraItemProps> {
                     <SView col={"xs-1"} center border={"transparent"} style={{ paddingTop: 28 }}  >
                         <SView width={40} height={40} center border={STheme.color.card}
                             onPress={() => {
-
-
                                 if (this.props.onDelete) {
                                     this.props.onDelete();
                                 }
-                                // this.props.horario.estado = 0;
-                                // console.log("eliminados " + this.props.horario.key + " - " + this.props.horario.estado)
                                 this.forceUpdate();
-
                             }}
                         >
                             <SIcon name="crmeliminar" stroke='red' width={20} />

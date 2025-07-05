@@ -6,10 +6,11 @@ import MDL from '../../MDL';
 
 export type HorarioItem = {
     key: string,
-    dia: string;
+    dia: number;
     hora_inicio: string;
     hora_fin: string;
     estado: number;
+
 }
 export type TurnoItem = {
     key: string,

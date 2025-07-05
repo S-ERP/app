@@ -37,9 +37,9 @@ export default class DiaItem extends Component<DiaItemProps> {
             return e;
         }
         // ➕ Agrega nuevo horario por defecto
-        const horario = {
+        const nuevoHorario = {
             key: SUuid(),
-            dia: this.props.dia.key,
+            dia: Number(this.props.dia.key),
             hora_inicio: "00:00",
             hora_fin: "23:59",
             estado: 1
@@ -52,7 +52,7 @@ export default class DiaItem extends Component<DiaItemProps> {
         }
 
 
-        this.props.turnoComponent.turno.horarios.push(horario);
+        this.props.turnoComponent.turno.horarios.push(nuevoHorario);
         this.forceUpdate()
         return e;
     }
@@ -145,7 +145,11 @@ export default class DiaItem extends Component<DiaItemProps> {
         })
     }
     renderAgregrarHorario() {
-        const horariosDelDia = this.props.turnoComponent?.turno?.horarios?.filter?.((horario: any) => horario?.dia == this.props.dia?.key) || [];
+        // const horariosDelDia = this.props.turnoComponent?.turno?.horarios?.filter?.((horario: any) => horario?.dia == this.props.dia?.key) || [];
+        const horariosDelDia = this.getHorariosDelDia();
+
+
+
         if (horariosDelDia.length == 0) return null;
         let active = false;
         if (horariosDelDia.length == 1 && horariosDelDia[0].hora_inicio == "00:00" && horariosDelDia[0].hora_fin == "23:59") {
@@ -161,11 +165,12 @@ export default class DiaItem extends Component<DiaItemProps> {
                 <SView center row style={{ backgroundColor: "#0f0e0e", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 38, width: 130 }} onPress={() => {
                     const horario = {
                         key: SUuid(),
-                        dia: this.props.dia.key,
+                        dia: Number(this.props.dia.key),
                         hora_inicio: "08:00",
                         hora_fin: "16:00",
                         estado: 1
                     }
+                    console.log("todo ", horario)
                     this.props.turnoComponent.turno.horarios.push(horario);
                     this.forceUpdate()
                 }} >

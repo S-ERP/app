@@ -53,7 +53,7 @@ export type Horario = {
   fecha_on: string;
   estado: number;
 
-  dia: string; // "0" a "6"
+  dia: number; // "0" a "6"
   hora_inicio: string; // formato "HH:mm"
   hora_fin: string; // formato "HH:mm"
 };
