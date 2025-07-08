@@ -74,8 +74,12 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                             });
                         }
 
+                        const existeTurnoProyecto = this.props.turnoComponent.props.turno;
+                        const existeProyecto_key = this.props?.turnoComponent?.props?.key_proyecto;
+
+                        console.log("traendo todo " + existeTurnoProyecto, " - " + existeProyecto_key)
                         // Relación con proyecto (si aplica)
-                        if (this.props?.turnoComponent?.props?.key_proyecto) {
+                        if (existeTurnoProyecto) {
                             MDL.crm.proyecto.editar({ key: this.props?.turnoComponent?.props?.key_proyecto, key_turno: data?.key }).then((e) => {
                             });
                         }
