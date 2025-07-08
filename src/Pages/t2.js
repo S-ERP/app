@@ -2,10 +2,13 @@ import React, { Component, useState } from 'react';
 import { Dimensions, View } from 'react-native';
 import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { connect } from 'react-redux';
-import { SButtom, SIcon, SImage, SPage, SSPiner, SText, SView } from 'servisofts-component';
+import { SButtom, SHr, SIcon, SImage, SPage, SSPiner, SText, SView } from 'servisofts-component';
 import { Slider } from '../Components/RangeSlider';
 import { Svg } from 'react-native-svg';
 import SSocket from 'servisofts-socket';
+import MDL from '../MDL';
+import InputFoto from '../Components/InputFoto';
+// import BarcodeScanner from '../Components/BarcodeScanner';
 
 
 const calculateTransformationMatrix = (p1, p2, p3, p4) => {
@@ -110,10 +113,20 @@ class Test extends Component {
         };
     }
 
+    componentDidMount() {
+        // MDL.qr_reader.addEventListener("read", (e) => {
+        //     console.log("QR Code Read:", e);
+        // })
+    }
     render() {
         return (
-            <SPage title={'Test'} disableScroll>
-                
+            <SPage title={'Test'} center>
+                <InputFoto style={{
+                    width: 300,
+                    height: 300,
+                    borderWidth: 1,
+                    borderColor: "#f00",
+                }} />
             </SPage >
         );
     }

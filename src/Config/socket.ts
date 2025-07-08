@@ -3,12 +3,12 @@ export default {
     debug: true, //para que se vea los returns del server
     name: 'serp',
 
-    // ssl: true,
-    // host: 'serp.servisofts.com',
-      ssl: false,
-     host: '192.168.2.1',
-     //ssl: false,
-     //host: '192.168.2.1',
+    ssl: true,
+    host: 'serp.servisofts.com',
+    // ssl: false,
+    // host: '192.168.2.1',
+    //ssl: false,
+    //host: '192.168.2.1',
 
     port: {
         native: 10048,
@@ -20,8 +20,8 @@ export default {
         roles_permisos: 'https://rolespermisos.servisofts.com/http/',
         // roles_permisos: 'http://192.168.5.16:30016/',
 
-        // empresa: 'https://empresa.servisofts.com/http/',
-        empresa: 'http://192.168.2.1:30029/',
+        empresa: 'https://empresa.servisofts.com/http/',
+        // empresa: 'http://192.168.2.1:30029/',
 
         inventario: 'https://inventario.servisofts.com/http/',
         // inventario: 'http://192.168.2.1:30039/',

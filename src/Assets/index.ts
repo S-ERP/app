@@ -221,12 +221,12 @@ import crmmovimiento, {
 import crmdproyecto, {
   ReactComponent as crmdproyectoW,
 } from "./svg/crm/proyecto.svg";
+import barcode, { ReactComponent as barcodeW } from "./svg/barcode.svg";
 // import crmcliente, { ReactComponent as crmclienteW, } from "./svg/crm/cliente.svg";
 // import crmcliente, { ReactComponent as crmclienteW, } from "./svg/crm/cliente.svg";
 // import crmcliente, { ReactComponent as crmclienteW, } from "./svg/crm/cliente.svg";
 
 import blender from "./svg/blender";
-
 import drive from "./svg/drive";
 import crmmicrofono, {
   ReactComponent as crmmicrofonoW,
@@ -372,6 +372,7 @@ export const svg = {
     Web: crmpdescargararchivoW,
   },
   crmpdarchivo: { Native: crmpdarchivo, Web: crmpdarchivoW },
+  barcode: { Native: barcode, Web: barcodeW },
 
   clock: { Native: Clock, Web: ClockW },
 
