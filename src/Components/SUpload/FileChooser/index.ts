@@ -39,4 +39,4 @@ export default async (props: FileChooserProps) => {
 
         input.click();
     });
-};
+}

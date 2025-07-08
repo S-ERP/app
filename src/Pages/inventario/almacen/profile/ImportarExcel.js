@@ -1,75 +1,110 @@
-import React, { useState } from "react";
-import * as xlsx from "xlsx";
+import React, { Component } from 'react';
+import { SView, SText, STable2, SPage } from 'servisofts-component';
+import STable, { DinamicTable } from 'servisofts-table';
+import FileChooser from '../../../../Components/SUpload/FileChooser';
+import * as XLSX from "xlsx";
 
-import { SPage } from "servisofts-component";
+export default class ImportarExcel extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: [],
+            sucursales: []
+        };
+    }
 
-export default function ImportarExcel({ onDataParsed }) {
-    const [data, setData] = useState([]);
-    const [productos, setProductos] = useState([]);
+    procesarExcel = (rows) => {
+        const datosProcesados = [];
+        const allSucursales = new Set();
 
-    const cargarExcel = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const fileData = await file.arrayBuffer();
-        const workbook = xlsx.read(fileData);
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rows = xlsx.utils.sheet_to_json(worksheet, { defval: "" });
-
-        const productosImportados = rows.map((row, index) => ({
-            nombre: row["Nombre"] || "",
-            modelo: row["Modelo"] || "",
-            observacion: row["Observacion"] || "",
-            precio_compra: row["Precio Compra"] || 0,
-            precio_venta: row["Precio Venta"] || 0,
-        }));
-        setProductos(productosImportados);
-        setData(rows);
-        if (onDataParsed) onDataParsed(productosImportados);
-    };
-
-    const limpiarTabla = () => {
-        if (!data.length) {
-            if (window.SPopup) window.SPopup.alert("⚠️ No hay datos en la tabla");
-            return;
+        // Detectar y limpiar nombres de sucursales
+        for (const row of rows) {
+            const { nombre_producto, precio_compra, precio_venta, ...rest } = row;
+            Object.keys(rest).forEach(k => {
+                const clean = k.trim();
+                if (clean) allSucursales.add(clean);
+            });
         }
-        setData([]);
-        setProductos([]);
+
+        for (const row of rows) {
+            const {
+                nombre_producto,
+                precio_compra,
+                precio_venta,
+                ...rest
+            } = row;
+
+            if (!nombre_producto) continue;
+
+            const productoPlano = {
+                nombre_producto: nombre_producto.trim(),
+                precio_compra: parseFloat(precio_compra) || 0,
+                precio_venta: parseFloat(precio_venta) || 0,
+            };
+
+            for (const sucursal of allSucursales) {
+                // Buscar la clave real en el row (puede tener espacios)
+                let val = null;
+                for (const key in row) {
+                    if (key.trim() === sucursal) {
+                        val = row[key];
+                        break;
+                    }
+                }
+                if (val === "" || val === null || val === undefined) val = "0";
+                const cantidad = Number(val);
+                productoPlano[sucursal] = isNaN(cantidad) ? 0 : cantidad;
+            }
+
+            datosProcesados.push(productoPlano);
+        }
+
+        const sucursalesArr = Array.from(allSucursales).filter(s => s && s !== "");
+        console.log("Columnas para tabla:", sucursalesArr);
+        console.log("Datos para tabla:", JSON.stringify(datosProcesados, null, 2));
+        this.setState({
+            data: datosProcesados,
+            sucursales: sucursalesArr
+        });
     };
 
-    const enviarTablaServidor = () => {
-        // Implementar lógica para enviar los datos al servidor
-        // Por ejemplo: fetch('/api/endpoint', { method: 'POST', body: JSON.stringify(productos) })
-        if (window.SPopup) window.SPopup.alert("🚀 Enviando datos al servidor...");
+    importarDesdeExcel = () => {
+        FileChooser({ accept: ".xlsx, .xls" }).then((files) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const workbook = XLSX.read(new Uint8Array(e.target.result), { type: "array" });
+                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: "" });
+                this.procesarExcel(jsonData);
+            };
+            reader.readAsArrayBuffer(files[0]);
+        });
     };
 
-    return (
-        <SPage title="Importar Productos desde Excel" disableScroll>
-            <input type="file" accept=".xlsx, .xls" onChange={cargarExcel} />
-            <SHr height={20} />
-            <SView col="xs-12 md-9" row style={{ gap: 8 }}>
-                <SView width={140} height={32} center backgroundColor={STheme?.color?.card} borderRadius={4}>
-                    <SText fontSize={14} color={STheme?.color?.white}>{"+  Importar Excel"}</SText>
-                </SView>
-                <SView width={140} height={32} center row backgroundColor={STheme?.color?.card} borderRadius={4} onPress={limpiarTabla}>
-                    <SIcon name='crmeliminar' width={16} fill='white' />
-                    <SText fontSize={14}> Limpiar Tabla</SText>
-                </SView>
-                <SView flex />
-                <SView width={140} height={32} center row backgroundColor={STheme?.color?.card} borderRadius={4} onPress={enviarTablaServidor}>
-                    <SIcon name='MessageSend' width={14} fill='white' />
-                    <SText fontSize={14} color={STheme?.color?.white}> Enviar al servidor</SText>
-                </SView>
-            </SView>
+    render() {
+        const { data, sucursales } = this.state;
 
-            {(!data.length) ?
-                <SView center style={{ position: "absolute", top: 180, left: "25%", }} >
-                    <SText color={STheme?.color?.lightGray} fontSize={16}>📂 Aún no se ha importado ningún archivo</SText>
+        return (
+            <SPage title={"Importar Productos desde Excel"} disableScroll>
+                <SView col={"xs-12"} center>
+                    <SView width={180} height={40} center backgroundColor={"#2a2a2a"} borderRadius={8}
+                        onPress={this.importarDesdeExcel}>
+                        <SText color="white" bold>📥 Importar Excel</SText>
+                    </SView>
                 </SView>
-                : null}
+                {data.length > 0 && (
+
+                    <DinamicTable loadData={async () => {
+                        return data;
+                    }}>
+                        {Object.keys(data[0]).map(sucursal => (
+                            <DinamicTable.Col key={sucursal} label={sucursal} data={a => a.row[sucursal]} />
+                        ))}
+                    </DinamicTable>
 
 
 
-        </SPage>
-    );
+                )}
+            </SPage>
+        );
+    }
 }
