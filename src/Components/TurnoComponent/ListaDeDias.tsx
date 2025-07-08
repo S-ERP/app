@@ -26,6 +26,9 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
             <SView col={"xs-11.5"} row center>
                 <SView flex />
                 <SView width={240} row center border={"transparent" as any}>
+
+                    {/* Botón Cancelar */}
+
                     <SView center row style={{
                         backgroundColor: "#fcfce9", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 42, width: 100,
                     }} onPress={() => {
@@ -33,30 +36,27 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                     }}>
                         <SText center color='black' bold>Cancelar</SText>
                     </SView>
+
                     <SView flex />
+
+                    {/* Botón Guardar Horario */}
                     <SView center row style={{ backgroundColor: "#0f0e0e", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 42, width: 120 }} onPress={() => {
 
                         const data = this.props.turnoComponent.turno;
 
+                        // Asegurar que "horarios" siempre sea un arreglo
                         if (!Array.isArray(data.horarios)) data.horarios = [];
-                        // Asignar estado=1 a cualquier horario que no lo tenga definido
+
+                        // Normalizar estado en horarios sin definir
                         data.horarios.forEach((h) => {
-                            if (h.estado === undefined || h.estado === null) {
-                                h.estado = 1;
-                            }
+                            if (h.estado === undefined || h.estado === null) h.estado = 1;
                         });
 
-
                         const isTurnoExistente = !!this.props.turnoComponent.props.key_turno;
-                        const tieneHorariosActivos = data.horarios.some(h => h.estado === 1);
+                        // const tieneHorariosActivos = data.horarios.some(h => h.estado === 1);
 
-                        console.log("vemos " + isTurnoExistente)
-
+                        // Si el turno ya existe → editar
                         if (isTurnoExistente) {
-                            data.horarios.forEach((h) => {
-                                if (h.estado === undefined || h.estado === null) h.estado = 1;
-                            });
-
                             MDL.empresa.editarTurnosHorariosAtencion(data as any).then((res) => {
                                 SPopup.close("popup_config_horario");
                             }).catch((err) => {
@@ -64,6 +64,7 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                             });
                         }
 
+                        // Si el turno es nuevo → registrar
                         if (!isTurnoExistente) {
                             MDL.empresa.registroTurnosHorariosAtencion(data as any).then((res) => {
                                 console.log("🟢 Nuevo turno registrado: " + res);
@@ -73,33 +74,13 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                             });
                         }
 
-
-
-
+                        // Relación con proyecto (si aplica)
                         if (this.props?.turnoComponent?.props?.key_proyecto) {
-                            // console.log("con proiyecto ")
-
                             MDL.crm.proyecto.editar({ key: this.props?.turnoComponent?.props?.key_proyecto, key_turno: data?.key }).then((e) => {
-                                // this.props.turnoComponent.props.onReload();
-                                console.log("se guardo exitoso")
                             });
-                        } else {
-                            console.log("sin proyecto ")
                         }
 
-
-                        // console.log("key_proyecto " + this.props.turnoComponent.props.key_proyecto)
-                        // this.
-                        // tengo que verificar el turno
-
-                        // MDL.crm.proyecto.editar({ key: ex.row.key, key_whatsapp_device: e.selectedOption.key, }) .then((e) => {
-                        //     this.props.turnoComponent.props.onReload();
-                        // });
-                        // },
-
-                        // this.props.turnoComponent.turno.
-
-                        this.props.turnoComponent.props.key_turno;
+                        // Ejecutar callback de recarga si está definido
                         this.props.turnoComponent.props.onReload();
                         this.forceUpdate();
 

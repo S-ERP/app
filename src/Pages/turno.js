@@ -59,7 +59,7 @@ export default class turnov2 extends Component {
             }}
             textStyle={{
                 fontSize: 12,
-                color: "red",
+                color: "white",
 
             }}
 
@@ -88,12 +88,18 @@ export default class turnov2 extends Component {
                     }));
                 });
 
+
+
                 console.log("fregado", data);
                 return data;
             }}
 
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
+            {/* <DinamicTable.Col key="key_turno" label="key_turno" width={180}  /> */}
+            <DinamicTable.Col key="key_turno" label="key_turno" width={150} data={(e) => e.row?.key} />
+
+
             <DinamicTable.Col key={"foto"} label='User'
                 data={(e) => e.row?.key_usuario}
                 width={35}
