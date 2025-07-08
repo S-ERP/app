@@ -655,7 +655,8 @@ export default class proyecto extends Component {
                             // );
 
                             return <>   {
-                                (MDL.rolesPermisos.getPermiso({ url: URL, permiso: "delete", })) ?
+                                (!ex.row.key_turno) ?
+                                    // (MDL.rolesPermisos.getPermiso({ url: URL, permiso: "delete", })) ?
                                     <SView col={"xs-12"} center style={{ minHeight: 100, overflow: "hidden" }} >
                                         <SView width={120} padding={4} row center backgroundColor="white" style={{ borderRadius: 12 }}
                                             onPress={() => {
@@ -676,22 +677,6 @@ export default class proyecto extends Component {
                                                         </SView>
                                                     )
                                                 });
-
-                                                // sout
-                                                // console.log("todo bien")
-                                                // PopupDispositivo.open({
-                                                //     key_whatsapp_device: ex?.row?.key_whatsapp_device,
-                                                //     onRegister: (e) => {
-                                                //         MDL.crm.proyecto
-                                                //             .editar({
-                                                //                 key: ex.row.key,
-                                                //                 key_whatsapp_device: e.selectedOption.key,
-                                                //             })
-                                                //             .then((e) => {
-                                                //                 this.DinamicTable.loadData();
-                                                //             });
-                                                //     },
-                                                // });
                                             }}
                                         >
 
@@ -703,22 +688,42 @@ export default class proyecto extends Component {
 
                                         </SView>
 
-                                        {/* {device?.descripcion ?
+                                        {ex.row.key_turno ?
                                             <SView center card col={"xs-8"} style={{ maxHeight: 155, overflow: "hidden", marginTop: 16 }}>
-                                                <SText>Dispositivo vinculado:</SText>
-                                                <SText> <SView width="80" backgroundColor="red" borderRadius={50} />   {device?.descripcion}</SText>
+                                                <SText>Turno Registrado:</SText>
+                                                <SText> <SView width="80" backgroundColor="red" borderRadius={50} />   {ex.row.key_turno}</SText>
                                             </SView>
-                                            : ""} */}
+                                            : ""}
                                     </SView>
-                                    : null
-                                // <SView col={"xs-12"} center style={{ minHeight: 100, overflow: "hidden" }}>
-                                //     {device?.descripcion ?
-                                //         <SView center card col={"xs-8"} style={{ maxHeight: 155, overflow: "hidden" }}>
-                                //             <SText>Dispositivo vinculado:</SText>
-                                //             <SText> <SView width="80" backgroundColor="red" borderRadius={50} />   {device?.descripcion}</SText>
-                                //         </SView>
-                                //         : ""}
-                                // </SView>
+                                    :
+                                    <SView col={"xs-12"} center style={{ minHeight: 100, overflow: "hidden" }}>
+                                        {ex.row.key_turno ?
+                                            <SView center card col={"xs-8"} style={{ maxHeight: 155, overflow: "hidden" }}
+                                                onPress={() => {
+
+                                                    // console.log("proj " + JSON.stringify(ex.row.key_turno))
+                                                    SPopup.open({
+                                                        key: "popup_config_horario",
+                                                        content: (
+                                                            <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
+                                                                <SView col={"xs-12"} height={600} center >
+                                                                    <TurnoComponent key_proyecto={ex?.row?.key} key_turno={ex?.row?.key_turno} onReload={() => {
+                                                                        this.DinamicTable.loadData();
+                                                                        console.log("✅ Se guardó el turno y se ejecutó el callback");
+                                                                    }}
+
+                                                                    ></TurnoComponent>
+                                                                </SView>
+                                                            </SView>
+                                                        )
+                                                    });
+                                                }}
+                                            >
+                                                <SText>Turno Registrado:</SText>
+                                                <SText> <SView width="80" backgroundColor="red" borderRadius={50} />   {ex.row.key_turno}</SText>
+                                            </SView>
+                                            : ""}
+                                    </SView>
                             }
                             </>
                         }}

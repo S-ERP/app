@@ -53,7 +53,6 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                         console.log("vemos " + isTurnoExistente)
 
                         if (isTurnoExistente) {
-
                             data.horarios.forEach((h) => {
                                 if (h.estado === undefined || h.estado === null) h.estado = 1;
                             });
@@ -65,13 +64,7 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                             });
                         }
 
-                        if (!isTurnoExistente ){
-
-                            // if (!tieneHorariosActivos) {
-                            //     console.warn("⚠️ No se puede registrar un turno sin horarios activos.");
-                            //     return;
-                            // }
-
+                        if (!isTurnoExistente) {
                             MDL.empresa.registroTurnosHorariosAtencion(data as any).then((res) => {
                                 console.log("🟢 Nuevo turno registrado: " + res);
                                 SPopup.close("popup_config_horario");
@@ -83,15 +76,16 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
 
 
 
-                        // if (this.props?.turnoComponent?.props?.key_proyecto) {
-                        //     console.log("ya fue ")
+                        if (this.props?.turnoComponent?.props?.key_proyecto) {
+                            // console.log("con proiyecto ")
 
-                        //     // MDL.crm.proyecto.editar({ key: this.props?.turnoComponent?.props?.key_proyecto, key_turno: data?.key }).then((e) => {
-                        //     //     this.props.turnoComponent.props.onReload();
-                        //     // });
-                        // } else {
-                        //     console.log("ya fue ")
-                        // }
+                            MDL.crm.proyecto.editar({ key: this.props?.turnoComponent?.props?.key_proyecto, key_turno: data?.key }).then((e) => {
+                                // this.props.turnoComponent.props.onReload();
+                                console.log("se guardo exitoso")
+                            });
+                        } else {
+                            console.log("sin proyecto ")
+                        }
 
 
                         // console.log("key_proyecto " + this.props.turnoComponent.props.key_proyecto)
