@@ -23,4 +23,10 @@ export default class compra_venta extends MDLAbstract<EventListener> {
   }
 
 
+    // tengo que hacer el getByKey
+    // luego el register
+
+    // tengo que traer lo de empresa, trabajo
+    // async
+
 }
