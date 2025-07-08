@@ -54,7 +54,14 @@ export default class DiaItem extends Component<DiaItemProps> {
                 <SText fontSize={16} bold>{this.props.dia.text}</SText>
             </SView>
             <SView style={{ paddingRight: 18 }} >
-                <Switch value={horariosDelDia.length > 0} onValueChange={this.handleChangeAlvaro.bind(this)} />
+                <Switch value={horariosDelDia.length > 0} onValueChange={this.handleChangeAlvaro.bind(this)}
+
+                    // thumbColor={horariosDelDia.length > 0 ? "yellow" : "pink"}
+                    // trackColor={{
+                    //     false: "pink",
+                    //     true: "blue"
+                    //   }}
+              > </Switch>
             </SView>
         </SView>
     }
@@ -67,13 +74,13 @@ export default class DiaItem extends Component<DiaItemProps> {
         if (horariosDelDia.length == 1 && horariosDelDia[0].hora_inicio == "00:00" && horariosDelDia[0].hora_fin == "23:59") {
             active = true;
         }
-        return <SView col={"xs-12"} height={50} row center border={STheme.color.lightGray} style={{ marginBottom: 10, paddingHorizontal: 16 }}>
+        return <SView col={"xs-12"} height={50} row center border={STheme.color.card} style={{ marginBottom: 10, paddingHorizontal: 16 }}>
             <SView flex>
-                <SText fontSize={14} bold>Atención 24 horas</SText>
+                <SText fontSize={14} bold color={"#cecaca"}>Atención 24 horas</SText>
                 <SText fontSize={10} color={STheme.color.lightGray}>Servicio disponible las 24 horas</SText>
             </SView>
             <SView width={30} center>
-                <SInput value={!active ? "" : active + ""} height={20} width={20} type='checkBox' onChangeText={e => {
+                <SInput color={"#8c8c8c"} value={!active ? "" : active + ""} height={20} width={20} type='checkBox' onChangeText={e => {
                     if (!e) {
                         horariosDelDia[0].hora_inicio = "08:00";
                         horariosDelDia[0].hora_fin = "16:00";
@@ -125,7 +132,7 @@ export default class DiaItem extends Component<DiaItemProps> {
         return <>
             <SView col={"xs-12"} height={50} row center border="transparent" style={{ marginBottom: 4 }} >
                 <SView flex  >
-                    <SText fontSize={16} bold>Turnos de trabajo</SText>
+                    <SText fontSize={14} color='#8c8c8c' bold>Turnos de trabajo</SText>
                 </SView>
 
                 <SView center row style={{ backgroundColor: "#0f0e0e", borderColor: STheme.color.card, borderWidth: 1, borderRadius: 4, height: 38, width: 130 }} onPress={() => {

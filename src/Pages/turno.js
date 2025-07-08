@@ -19,6 +19,7 @@ export default class turnov2 extends Component {
         super(props);
         this.state = {
         };
+
     }
 
     mostrarPopup(aux_key: any) {
@@ -27,7 +28,13 @@ export default class turnov2 extends Component {
             content: (
                 <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
                     <SView col={"xs-12"} height={600} center >
-                        <TurnoComponent key_turno={aux_key} ></TurnoComponent>
+                        <TurnoComponent key_turno={aux_key} onReload={() => {
+                            this.DinamicTable.loadData();
+                            console.log("✅ Se guardó el turno y se ejecutó el callback");
+                            // Aquí puedes refrescar listas, volver a cargar datos, etc.
+                        }}
+
+                        ></TurnoComponent>
                     </SView>
                 </SView>
             )
@@ -38,11 +45,12 @@ export default class turnov2 extends Component {
     mostrarTabla() {
         return <DinamicTable
             key="tabla"
+            ref={ref => this.DinamicTable = ref}
             center
             language="es"
             selectType="single"
             colors={{
-                text: "red",
+                // text: "red",
                 background: STheme.color.background,
                 header: STheme.color.card,
             }}
@@ -80,12 +88,18 @@ export default class turnov2 extends Component {
                     }));
                 });
 
+
+
                 console.log("fregado", data);
                 return data;
             }}
 
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
+            {/* <DinamicTable.Col key="key_turno" label="key_turno" width={180}  /> */}
+            <DinamicTable.Col key="key_turno" label="key_turno" width={150} data={(e) => e.row?.key} />
+
+
             <DinamicTable.Col key={"foto"} label='User'
                 data={(e) => e.row?.key_usuario}
                 width={35}
@@ -118,7 +132,7 @@ export default class turnov2 extends Component {
 
 
         return (
-            <SPage title="Turnos y Horarios dddddddddd" disableScroll>
+            <SPage title="Turnos y Horarios" disableScroll>
 
                 {this.mostrarTabla()}
 

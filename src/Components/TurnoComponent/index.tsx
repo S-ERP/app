@@ -33,7 +33,7 @@ export default class TurnoComponent extends Component {
         if (!this.props.key_turno) return;
         MDL.empresa.getByyKeyTurnosHorariosAtencion(this.props.key_turno).then((res: TurnoItem) => {
             this.turno = res;
-            console.log("pinta ",res)
+            console.log("pinta ", res)
             this.forceUpdate();
             // this.setState({ turno: res });
         }).catch((err) => {
@@ -45,8 +45,9 @@ export default class TurnoComponent extends Component {
         return <SView col={"xs-12"} flex>
             <SHr height={18} />
             <SView col={"xs-11.5"} row>
-                <SView flex >
-                    <SText fontSize={18} bold>🕒 Configurar Nuevo Horario{this.props.key_turno} </SText>
+                <SView flex row ><SIcon name='clock' width={18} style={{ paddingRight: 8,  }} stroke='white' />
+                    <SText fontSize={18} bold>Configurar Nuevo Horario</SText>
+                    {/* <SText fontSize={18} bold><SIcon name='clock' width={18} style={{ paddingRight: 4, marginTop: 20, }} stroke='white' /> Configurar Nuevo Horario</SText> */}
                 </SView>
                 <SView col={"xs-1"} center >
                     <SView col={"xs-12"} center onPress={() => {
@@ -62,8 +63,8 @@ export default class TurnoComponent extends Component {
             <SView col={"xs-11.5"} style={{ paddingHorizontal: 16, }} height={80} row center border={STheme.color.card}  >
                 <SView flex >
                     <SInput
-                        label={"Descripcion/Nombre del turno"}
-                        style={{ height: 34, fontSize: 13, }}
+                        label={"Nombre del turno"}
+                        style={{ height: 34, fontSize: 13, backgroundColor: "#181717" }}
                         placeholder={"Ingrese la descripcion del turno"}
                         value={this.turno.nombre}
                         onChangeText={e => {
@@ -75,6 +76,7 @@ export default class TurnoComponent extends Component {
                 <SView width={100}>
                     <SInput
                         label={"Día feriado ?"}
+                        color={this.turno.atiende_feriado === 1 ? "white" : "#8c8c8c"}
                         type='checkBox' height={24}
                         value={this.turno.atiende_feriado === 1 ? "true" : ""}
                         onChangeText={e => {

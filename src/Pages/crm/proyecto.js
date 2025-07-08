@@ -19,6 +19,8 @@ import Config from "../../Config";
 import PopupDispositivo from "./Components/PopupDispositivo";
 import { any } from "three/examples/jsm/nodes/Nodes";
 import FileChooser from "../../Components/SUpload/FileChooser";
+import TurnoComponent from "../../Components/TurnoComponent";
+import SIconApp from "../../Assets/SIconApp";
 
 
 
@@ -32,10 +34,7 @@ export default class proyecto extends Component {
             descripcionesDispositivo: {}, // <--- clave: key_device, valor: descripción
         };
     }
-
     componentDidMount() {
-
-
         MDL.rolesPermisos.getPermisoAsync({
             url: URL, permiso: "ver"
         }).then(e => {
@@ -44,7 +43,6 @@ export default class proyecto extends Component {
                 return;
             }
             this.forceUpdate();
-
         })
 
 
@@ -82,7 +80,6 @@ export default class proyecto extends Component {
             }));
         }
     }
-
     render() {
         return (
             <SPage title={"Proyecto"} icon={<SIcon name="empresa" fill={STheme.color.text} />} disableScroll >
@@ -104,6 +101,9 @@ export default class proyecto extends Component {
                     loadData={async () => {
                         const proyectos = await MDL.crm.proyecto.getAll();
                         const campanas = await MDL.crm.campana.getAll();
+
+
+
                         proyectos.forEach((proyecto) => {
                             proyecto.campanas = [];
                             Object.keys(campanas).forEach((key) => {
@@ -124,6 +124,26 @@ export default class proyecto extends Component {
                             });
                         });
 
+
+                        const turnos = await MDL.empresa.getTurnosHorariosAtencion();
+
+                        // Aplanar los turnos en una sola lista
+                        const listaTurnos = Object.values(turnos).flat();
+
+                        // Crear un mapa de turnos por key
+                        const mapTurnos = {};
+                        listaTurnos.forEach(turno => {
+                            mapTurnos[turno.key] = turno;
+                        });
+
+                        // Asignar el turno al proyecto
+                        proyectos.forEach(proyecto => {
+                            const turno = mapTurnos[proyecto.key_turno];
+                            if (turno) {
+                                proyecto.turno = turno; // ahora proyecto.turno tendrá toda la info (incluye nombre)
+                            }
+                        });
+
                         return proyectos;
                     }}
                     colors={Config.table.colors()}
@@ -131,9 +151,7 @@ export default class proyecto extends Component {
                     textStyle={Config.table.textStyle()}
                     selectType="single"
                     language="es"
-                    onSelect={(e) => { console.log("Selected project:", e.row); }}
-
-
+                    // onSelect={(e) => { console.log("Selected project:", e.row); }}
                     onSelect={(e) => {
                         const { row, evt } = e;
                         const nombreProyecto = "LEAD: " + row?.titulo || "El tipo leads";
@@ -272,6 +290,7 @@ export default class proyecto extends Component {
                         width={30}
                         data={(e) => e.index + 1}
                     />
+
                     <DinamicTable.Col
                         key={"codigo"}
                         label="Código"
@@ -596,7 +615,7 @@ export default class proyecto extends Component {
                             padding: 0,
                         }}
                         customComponent={(e) => {
-                            return (<SView col={"xs-12"} style={{ maxHeight: 155, overflow: "hidden"}} >
+                            return (<SView col={"xs-12"} style={{ maxHeight: 155, overflow: "hidden" }} >
                                 <ScrollView>
                                     <SMD space={1} fontSize={9} textColor={STheme.color.text} >
                                         {e.data}
@@ -607,7 +626,84 @@ export default class proyecto extends Component {
                         }}
                     />
 
+                    <DinamicTable.Col
+                        key={"-key_turno"}
+                        label="Turno"
+                        width={180}
+                        wrap={true}
+                        data={(e) => {
+                            return e.row.key_turno;
+                        }}
+                        cellStyle={{
+                            padding: 0,
+                        }}
+                        customComponent={(ex) => {
+                            // const device = (this.state.devices ?? []).find(
+                            //     (a) => a.key == ex?.row?.key_turno
+                            // );
 
+                            return <>   {
+                                (!ex.row.key_turno) ?
+                                    // (MDL.rolesPermisos.getPermiso({ url: URL, permiso: "delete", })) ?
+                                    <SView col={"xs-12"} center style={{ minHeight: 100, overflow: "hidden" }} >
+                                        <SView width={120} padding={4} row center backgroundColor="white" style={{ borderRadius: 12 }}
+                                            onPress={() => {
+
+                                                console.log("proj " + JSON.stringify(ex.row.key_turno))
+                                                SPopup.open({
+                                                    key: "popup_config_horario",
+                                                    content: (
+                                                        <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
+                                                            <SView col={"xs-12"} height={600} center >
+                                                                <TurnoComponent key_proyecto={ex?.row?.key} key_turno={ex?.row?.key_turno} onReload={() => {
+                                                                    this.DinamicTable.loadData();
+                                                                    console.log("✅ Se guardó el turno y se ejecutó el callback");
+                                                                }}
+
+                                                                ></TurnoComponent>
+                                                            </SView>
+                                                        </SView>
+                                                    )
+                                                });
+                                            }}
+                                        >
+                                            <SView width={8} />
+                                            <SIcon name="add1" fill={STheme.color.black} width={14} />
+                                            <SView width={8} />
+                                            <SText center color={STheme.color.black}>Add Turno</SText>
+                                            <SView width={8} />
+                                        </SView>
+                                    </SView>
+                                    :
+                                    <SView col={"xs-12"} center style={{ minHeight: 100, overflow: "hidden" }}>
+                                        {ex.row.key_turno ?
+                                            <SView center card col={"xs-8"} style={{ maxHeight: 155, overflow: "hidden" }}
+                                                onPress={() => {
+                                                    SPopup.open({
+                                                        key: "popup_config_horario",
+                                                        content: (
+                                                            <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
+                                                                <SView col={"xs-12"} height={600} center >
+                                                                    <TurnoComponent key_proyecto={ex?.row?.key} key_turno={ex?.row?.key_turno} onReload={() => { this.DinamicTable.loadData(); }}></TurnoComponent>
+                                                                </SView>
+                                                            </SView>
+                                                        )
+                                                    });
+                                                }}
+                                            >
+
+                                                <SView col={"xs-11"} row padding={10} >
+                                                    <SIconApp name="clock" width={14} stroke="white" />
+                                                    <SText fontSize={14}>  {ex.row.turno.nombre}</SText>
+                                                </SView>
+                                                {/* <SText>{ex.row.turno.nombre}</SText> */}
+                                            </SView>
+                                            : ""}
+                                    </SView>
+                            }
+                            </>
+                        }}
+                    />
                     <DinamicTable.Col
                         key={"key_whatsapp_device"}
                         label="Dispositivo WhatsApp"
@@ -681,41 +777,7 @@ export default class proyecto extends Component {
                         }}
                     />
 
-                    {/* <DinamicTable.Col key={"editar"} label='Editar' width={100} data={(e) => ""}
-                                        customComponent={e => <SView row card padding={2} onPress={() => {
-                                                FormRegistroProyecto.open(({
-                                                        defaultData: e.row, onActualizar: (nuevoDato) => {
-                                                                this.DinamicTable.loadData();
-                                                                console.log("Proyecto actualizado:", nuevoDato);
-                                                        }
-                                                }))
-                                        }}>
-                                                <SIcon name='Edit' width={18} />
-                                                <SView width={4} />
-                                                <SText center color={STheme.color.green} >{"Actualizar"}</SText>
-                                        </SView>}
-                                />
-                                <DinamicTable.Col key={"eliminar"} label='Delete'
-                                        width={100}
-                                        data={(e) => ""}
-                                        customComponent={e => <SView row card padding={2} onPress={() => {
-                                                console.log("Delete project:", e.row);
-                                                SSocket.sendPromise({
-                                                        service: "crm",
-                                                        component: "proyecto",
-                                                        type: "editar",
-                                                        data: { ...e.row, estado: 0 }
-                                                }).then(e => {
-                                                        console.error("❌ Error al recargar proyectos:", e);
-                                                        SNotification.send({ key: "eliminar", title: "eliminado", type: "loading", time: 1000, body: e.error, color: STheme.color.error, })
-                                                        this.DinamicTable.loadData();
-                                                })
-                                                alert("✅ Eliminación exitosa del proyecto.");
-                                        }}>
-                                                <SIcon name='Delete' width={18} />
-                                                <SView width={4} />
-                                                <SText center color={STheme.color.danger} > {"Eliminar"}</SText>
-                                        </SView>} */}
+
                 </DinamicTable>
 
                 {MDL.rolesPermisos.getPermiso({ url: URL, permiso: "new", }) &&
