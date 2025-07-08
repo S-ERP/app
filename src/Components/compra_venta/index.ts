@@ -13,21 +13,24 @@ import StateTiqueta from "./StateTiqueta"
 import QRVenta from "./QRVenta"
 import QRCompra from "./QRCompra"
 import GenerarAsiento from "./GenerarAsiento"
-export default { 
-    TipoDePago,
-    Separador,
-    Estado,
-    Exportar,
-    Comentarios,
-    PopupDeleteParticipante,
-    Participantes,
-    Totales,
-    Conyuge,
-    Garante,
-    PlanDePagos,
-    StateTiqueta,
-    GenerarAsiento,
-    QRVenta,
-    QRCompra
-
-}
+import proveedores from "./proveedores"
+import proveedorFormulario from "./proveedorFormulario"
+export default {
+  TipoDePago,
+  Separador,
+  Estado,
+  Exportar,
+  Comentarios,
+  PopupDeleteParticipante,
+  Participantes,
+  Totales,
+  Conyuge,
+  Garante,
+  PlanDePagos,
+  StateTiqueta,
+  GenerarAsiento,
+  QRVenta,
+  QRCompra,
+  proveedores,
+//   proveedorFormulario,
+};
