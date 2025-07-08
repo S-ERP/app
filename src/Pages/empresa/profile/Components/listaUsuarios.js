@@ -1,6 +1,7 @@
 import DPA, { connect } from 'servisofts-page';
 import Model from '../../../../Model';
 import { SNavigation, SPopup } from 'servisofts-component';
+import SSocket from 'servisofts-socket';
 
 const Parent = {
     name: "empresa_usuario",
@@ -48,7 +49,22 @@ class index extends DPA.list {
         // super.onNew({ key_empresa: this.props.key_empresa })
     }
     $onSelect(data) {
-        SNavigation.navigate("/usuario/profile", { pk: data.key_usuario })
+        SPopup.confirm({
+            title: "ELiminar de la empresa",
+            onPress: () => {
+                console.log("data", data);
+                SSocket.sendPromise({
+                    service:"empresa",
+                    component: "empresa_usuario",
+                    type:"editar",
+                    data:{
+                        key:data.key,
+                        estado: 0,
+                    }
+                })
+            }
+        })
+        // SNavigation.navigate("/usuario/profile", { pk: data.key_usuario })
         return;
     }
     $getData() {

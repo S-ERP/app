@@ -19,9 +19,16 @@ class index extends DPA.edit {
         inp["tipo"].type = "select";
         inp["tipo"].isRequired = true;
         if (!inp["tipo"].defaultValue) {
-            inp["tipo"].defaultValue = "producto";
+            inp["tipo"].defaultValue = "activo_fijo";
         }
-        inp["tipo"].options = ["producto", "servicio"]
+
+        inp["tipo"].options = ["activo_fijo",
+            "gasto_administrativo",
+            "inventario",
+            "venta_servicio",
+            // "bancos"
+        ]
+        // inp["tipo"].options = ["producto", "servicio"]
 
         return inp;
     }

@@ -51,6 +51,7 @@ import mapa from './mapa';
 import uploadv2 from "./uploadv2"
 import drive from './drive';
 import drive2 from './drive2';
+import qr_reader from './qr_reader';
 // Three js
 // import three from './three';
 // import mesh from './mesh';
@@ -96,6 +97,7 @@ export default SPage.combinePages("/", {
   test: test,
   start: start,
   wiki: wiki,
+
   // upload,
   uploadv2,
   t2,
@@ -144,4 +146,5 @@ export default SPage.combinePages("/", {
   "pdf/factura": factura,
   plantilla,
   turno,
+  ...qr_reader,
 });

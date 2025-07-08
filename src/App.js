@@ -40,6 +40,8 @@ const App = (props) => {
             console.log(e);
         }
         MDL.empresa.init();
+        MDL.qr_reader.componentDidMount();
+        MDL.usuario.componentDidMount();
         Firebase.setBadgeCount(0);
         SNavigation.addOnChangeListener(e => {
             console.log("onChange", e);
