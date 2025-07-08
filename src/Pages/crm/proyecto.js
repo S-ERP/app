@@ -19,6 +19,7 @@ import Config from "../../Config";
 import PopupDispositivo from "./Components/PopupDispositivo";
 import { any } from "three/examples/jsm/nodes/Nodes";
 import FileChooser from "../../Components/SUpload/FileChooser";
+import TurnoComponent from "../../Components/TurnoComponent";
 
 
 
@@ -81,6 +82,323 @@ export default class proyecto extends Component {
                 },
             }));
         }
+    }
+
+    itemTabla() {
+        return <>
+            <DinamicTable.Col
+                key={"codigo"}
+                label="Código"
+                width={60}
+                cellStyle={{
+                    justifyContent: "flex-start",
+                }}
+                data={(e) => {
+                    return e.row.codigo;
+                }}
+            />
+            <DinamicTable.Col
+                key={"nombre"}
+                label="Nombre"
+                width={170}
+                cellStyle={{
+                    justifyContent: "flex-start",
+                }}
+                data={(e) => {
+                    return e.row.nombre;
+                }}
+            />
+            <DinamicTable.Col
+                key={"descripcion"}
+                label="Descripción"
+                width={200}
+                cellStyle={{
+                    justifyContent: "flex-start",
+                }}
+                data={(e) => {
+                    return e.row.descripcion;
+                }}
+                customComponent={(e) => {
+                    return (
+                        <SView
+                            col={"xs-12"}
+                            style={{ overflow: "hidden", paddingHorizontal: 8 }}
+                        >
+                            <ScrollView>
+                                <SText fontSize={12}>{e.row.descripcion} </SText>
+                            </ScrollView>
+                        </SView>
+                    );
+                }}
+            />
+            <DinamicTable.Col
+                key={"campanas"}
+                label="Campañas"
+                width={250}
+                data={(e) => {
+                    return e.row.campanas.map((c) => c.nombre).join(", ");
+                }}
+                cellStyle={{
+                    justifyContent: "flex-start",
+                }}
+                customComponent={(e) => {
+                    return (
+                        <SView col={"xs-12"} row>
+                            {e.row.campanas.map((campana, index) => {
+                                return (
+                                    <SView
+                                        key={index}
+                                        style={{ padding: 4 }}
+                                        onPress={(f) => {
+                                            const options = [];
+
+                                            if (MDL.rolesPermisos.getPermiso({
+                                                url: URL,
+                                                permiso: "edit_campana",
+                                            })) {
+                                                options.push({
+                                                    label: "Editar Campaña",
+                                                    onPress: () => {
+                                                        FormRegistroCampana.open({
+                                                            defaultData: campana,
+                                                            proyecto: e.row,
+                                                            onActualizar: (e) => {
+                                                                this.DinamicTable.loadData();
+                                                            },
+                                                        });
+                                                    },
+                                                    icon: (
+                                                        <SIcon name="Edit" fill={STheme.color.text} />
+                                                    ),
+
+
+                                                })
+                                            }
+                                            if (MDL.rolesPermisos.getPermiso({
+                                                url: URL,
+                                                permiso: "delete_campana",
+                                            })) {
+                                                options.push({
+                                                    label: "Eliminar Campaña",
+                                                    onPress: () => {
+                                                        SPopup.confirm({
+                                                            title: "Eliminar Campaña",
+                                                            message:
+                                                                "¿Estas seguro de eliminar la campaña?",
+                                                            onPress: () => {
+                                                                SSocket.sendPromise({
+                                                                    service: "crm",
+                                                                    component: "campana",
+                                                                    type: "editar",
+                                                                    data: { ...campana, estado: 0 },
+                                                                }).then((e) => {
+                                                                    console.error(
+                                                                        "❌ Error al recargar campañas:",
+                                                                        e
+                                                                    );
+                                                                    SNotification.send({
+                                                                        key: "eliminar",
+                                                                        title: "eliminado",
+                                                                        type: "loading",
+                                                                        time: 1000,
+                                                                        body: e.error,
+                                                                        color: STheme.color.error,
+                                                                    });
+                                                                    this.DinamicTable.loadData();
+                                                                });
+                                                            },
+                                                        });
+                                                    },
+                                                    icon: (
+                                                        <SIcon
+                                                            name="Delete"
+                                                            fill={STheme.color.text}
+                                                        />
+                                                    ),
+
+
+                                                })
+                                            }
+                                            if (MDL.rolesPermisos.getPermiso({
+                                                url: URL,
+                                                permiso: "import_lead",
+                                            })) {
+                                                options.push({
+                                                    label: "importar leads",
+                                                    onPress: () => {
+                                                        SNavigation.navigate("/crm/proyectoImportarExcel", {
+                                                            key_campana: campana.key, key_proyecto: e.row.key,
+                                                        });
+                                                    },
+                                                    icon: (
+                                                        <SIcon name="Edit" fill={STheme.color.text} />
+                                                    ),
+
+                                                })
+                                            }
+                                            if (MDL.rolesPermisos.getPermiso({
+                                                url: URL,
+                                                permiso: "import_whatsapp",
+                                            })) {
+                                                options.push({
+                                                    label: "subir wasap",
+                                                    onPress: () => {
+                                                        SNavigation.navigate("/crm/proyectoImportarWasap", {
+                                                            key_campana: campana.key, key_proyecto: e.row.key,
+                                                        });
+                                                    },
+                                                    icon: (
+                                                        <SIcon name="Edit" fill={STheme.color.text} />
+                                                    ),
+
+                                                })
+                                            }
+                                            FloatMenu.open({
+                                                e: f,
+                                                label: campana.nombre,
+                                                options: options,
+                                            });
+                                        }}
+                                    >
+                                        <SText
+                                            card
+                                            padding={4}
+                                            style={{ maxWidth: 200 }}
+                                            numberOfLines={1}
+                                        >
+                                            {campana.nombre}
+                                        </SText>
+                                    </SView>
+                                );
+                            })}
+                        </SView>
+                    );
+                }}
+            />
+            <DinamicTable.Col
+                key={"productos"}
+                label="Productos"
+                width={250}
+                data={(e) => {
+                    return e.row.productos.map((c) => c.key_producto).join(", ");
+                }}
+                cellStyle={{
+                    justifyContent: "flex-start",
+                }}
+                customComponent={(e) => {
+                    return (
+                        <SView col={"xs-12"} row>
+                            {e.row.productos.map((prd, index) => {
+                                return (
+                                    <SView
+                                        key={index}
+                                        style={{ padding: 4 }}
+                                        onPress={(f) => {
+                                            const options = [];
+                                            if (MDL.rolesPermisos.getPermiso({
+                                                url: URL,
+                                                permiso: "edit_producto",
+                                            })) {
+                                                options.push({
+                                                    label: "Editar Producto",
+                                                    onPress: () => {
+                                                        SNavigation.navigate(
+                                                            "/restaurante/producto/edit",
+                                                            { pk: prd?.producto?.key }
+                                                        );
+                                                    },
+                                                    icon: (
+                                                        <SIcon name="Edit" fill={STheme.color.text} />
+                                                    ),
+                                                })
+                                            }
+                                            if (MDL.rolesPermisos.getPermiso({
+                                                url: URL,
+                                                permiso: "delete_producto",
+                                            })) {
+                                                options.push({
+                                                    label: "Eliminar Producto",
+                                                    onPress: () => {
+                                                        console.log(
+                                                            "Eliminar Producto:",
+                                                            prd?.producto?.key
+                                                        );
+                                                        SPopup.confirm({
+                                                            title: "Eliminar Producto",
+                                                            message:
+                                                                "¿Estás seguro de eliminar el producto?",
+                                                            onPress: () => {
+                                                                MDL.crm.proyectoProducto
+                                                                    .eliminar({ ...prd, estado: 0 })
+                                                                    .then((e) => {
+                                                                        console.error(
+                                                                            "Producto eliminado:",
+                                                                            e
+                                                                        );
+                                                                        SNotification.send({
+                                                                            key: "eliminar",
+                                                                            title: "eliminado",
+                                                                            type: "loading",
+                                                                            time: 1000,
+                                                                            body: e.error,
+                                                                            color: STheme.color.error,
+                                                                        });
+                                                                        this.DinamicTable.loadData();
+                                                                    })
+                                                                    .catch((error) => {
+                                                                        console.error(
+                                                                            "Error al eliminar producto:",
+                                                                            error
+                                                                        );
+                                                                        SNotification.send({
+                                                                            key: "eliminar",
+                                                                            title: "error",
+                                                                            type: "danger",
+                                                                            time: 1000,
+                                                                            body: error.message,
+                                                                            color: STheme.color.error,
+                                                                        });
+                                                                    });
+                                                            },
+                                                        });
+                                                    },
+                                                    icon: (
+                                                        <SIcon
+                                                            name="Delete"
+                                                            fill={STheme.color.text}
+                                                        />
+                                                    ),
+                                                })
+                                            }
+                                            FloatMenu.open({
+                                                e: f,
+                                                label: prd?.producto?.nombre,
+                                                options: options,
+                                            });
+                                        }}
+                                        row
+                                        center
+                                    >
+                                        <SView width={20} height={20} style={{ borderRadius: 4, overflow: "hidden", overflow: "hidden" }} card>
+                                            <SImage src={SSocket.api.inventario + "producto/" + prd.key_producto} />
+                                        </SView>
+                                        <SText
+                                            card
+                                            padding={4}
+                                            style={{ maxWidth: 200 }}
+                                            numberOfLines={1}
+                                        >
+                                            {prd?.producto?.nombre}  Bs.
+                                            {prd?.producto?.precio ?? 0}
+                                        </SText>
+                                    </SView>
+                                );
+                            })}
+                        </SView>
+                    );
+                }}
+            />
+        </>
     }
 
     render() {
@@ -272,322 +590,34 @@ export default class proyecto extends Component {
                         width={30}
                         data={(e) => e.index + 1}
                     />
-                    <DinamicTable.Col
-                        key={"codigo"}
-                        label="Código"
-                        width={60}
-                        cellStyle={{
-                            justifyContent: "flex-start",
-                        }}
-                        data={(e) => {
-                            return e.row.codigo;
-                        }}
-                    />
-                    <DinamicTable.Col
-                        key={"nombre"}
-                        label="Nombre"
-                        width={170}
-                        cellStyle={{
-                            justifyContent: "flex-start",
-                        }}
-                        data={(e) => {
-                            return e.row.nombre;
-                        }}
-                    />
-                    <DinamicTable.Col
-                        key={"descripcion"}
-                        label="Descripción"
-                        width={200}
-                        cellStyle={{
-                            justifyContent: "flex-start",
-                        }}
-                        data={(e) => {
-                            return e.row.descripcion;
-                        }}
-                        customComponent={(e) => {
-                            return (
-                                <SView
-                                    col={"xs-12"}
-                                    style={{ overflow: "hidden", paddingHorizontal: 8 }}
-                                >
-                                    <ScrollView>
-                                        <SText fontSize={12}>{e.row.descripcion} </SText>
-                                    </ScrollView>
-                                </SView>
-                            );
-                        }}
-                    />
-                    <DinamicTable.Col
-                        key={"campanas"}
-                        label="Campañas"
-                        width={250}
-                        data={(e) => {
-                            return e.row.campanas.map((c) => c.nombre).join(", ");
-                        }}
-                        cellStyle={{
-                            justifyContent: "flex-start",
-                        }}
-                        customComponent={(e) => {
-                            return (
-                                <SView col={"xs-12"} row>
-                                    {e.row.campanas.map((campana, index) => {
-                                        return (
-                                            <SView
-                                                key={index}
-                                                style={{ padding: 4 }}
-                                                onPress={(f) => {
-                                                    const options = [];
-
-                                                    if (MDL.rolesPermisos.getPermiso({
-                                                        url: URL,
-                                                        permiso: "edit_campana",
-                                                    })) {
-                                                        options.push({
-                                                            label: "Editar Campaña",
-                                                            onPress: () => {
-                                                                FormRegistroCampana.open({
-                                                                    defaultData: campana,
-                                                                    proyecto: e.row,
-                                                                    onActualizar: (e) => {
-                                                                        this.DinamicTable.loadData();
-                                                                    },
-                                                                });
-                                                            },
-                                                            icon: (
-                                                                <SIcon name="Edit" fill={STheme.color.text} />
-                                                            ),
-
-
-                                                        })
-                                                    }
-                                                    if (MDL.rolesPermisos.getPermiso({
-                                                        url: URL,
-                                                        permiso: "delete_campana",
-                                                    })) {
-                                                        options.push({
-                                                            label: "Eliminar Campaña",
-                                                            onPress: () => {
-                                                                SPopup.confirm({
-                                                                    title: "Eliminar Campaña",
-                                                                    message:
-                                                                        "¿Estas seguro de eliminar la campaña?",
-                                                                    onPress: () => {
-                                                                        SSocket.sendPromise({
-                                                                            service: "crm",
-                                                                            component: "campana",
-                                                                            type: "editar",
-                                                                            data: { ...campana, estado: 0 },
-                                                                        }).then((e) => {
-                                                                            console.error(
-                                                                                "❌ Error al recargar campañas:",
-                                                                                e
-                                                                            );
-                                                                            SNotification.send({
-                                                                                key: "eliminar",
-                                                                                title: "eliminado",
-                                                                                type: "loading",
-                                                                                time: 1000,
-                                                                                body: e.error,
-                                                                                color: STheme.color.error,
-                                                                            });
-                                                                            this.DinamicTable.loadData();
-                                                                        });
-                                                                    },
-                                                                });
-                                                            },
-                                                            icon: (
-                                                                <SIcon
-                                                                    name="Delete"
-                                                                    fill={STheme.color.text}
-                                                                />
-                                                            ),
-
-
-                                                        })
-                                                    }
-                                                    if (MDL.rolesPermisos.getPermiso({
-                                                        url: URL,
-                                                        permiso: "import_lead",
-                                                    })) {
-                                                        options.push({
-                                                            label: "importar leads",
-                                                            onPress: () => {
-                                                                SNavigation.navigate("/crm/proyectoImportarExcel", {
-                                                                    key_campana: campana.key, key_proyecto: e.row.key,
-                                                                });
-                                                            },
-                                                            icon: (
-                                                                <SIcon name="Edit" fill={STheme.color.text} />
-                                                            ),
-
-                                                        })
-                                                    }
-                                                    if (MDL.rolesPermisos.getPermiso({
-                                                        url: URL,
-                                                        permiso: "import_whatsapp",
-                                                    })) {
-                                                        options.push({
-                                                            label: "subir wasap",
-                                                            onPress: () => {
-                                                                SNavigation.navigate("/crm/proyectoImportarWasap", {
-                                                                    key_campana: campana.key, key_proyecto: e.row.key,
-                                                                });
-                                                            },
-                                                            icon: (
-                                                                <SIcon name="Edit" fill={STheme.color.text} />
-                                                            ),
-
-                                                        })
-                                                    }
-                                                    FloatMenu.open({
-                                                        e: f,
-                                                        label: campana.nombre,
-                                                        options: options,
-                                                    });
-                                                }}
-                                            >
-                                                <SText
-                                                    card
-                                                    padding={4}
-                                                    style={{ maxWidth: 200 }}
-                                                    numberOfLines={1}
-                                                >
-                                                    {campana.nombre}
-                                                </SText>
-                                            </SView>
-                                        );
-                                    })}
-                                </SView>
-                            );
-                        }}
-                    />
-                    <DinamicTable.Col
-                        key={"productos"}
-                        label="Productos"
-                        width={250}
-                        data={(e) => {
-                            return e.row.productos.map((c) => c.key_producto).join(", ");
-                        }}
-                        cellStyle={{
-                            justifyContent: "flex-start",
-                        }}
-                        customComponent={(e) => {
-                            return (
-                                <SView col={"xs-12"} row>
-                                    {e.row.productos.map((prd, index) => {
-                                        return (
-                                            <SView
-                                                key={index}
-                                                style={{ padding: 4 }}
-                                                onPress={(f) => {
-                                                    const options = [];
-                                                    if (MDL.rolesPermisos.getPermiso({
-                                                        url: URL,
-                                                        permiso: "edit_producto",
-                                                    })) {
-                                                        options.push({
-                                                            label: "Editar Producto",
-                                                            onPress: () => {
-                                                                SNavigation.navigate(
-                                                                    "/restaurante/producto/edit",
-                                                                    { pk: prd?.producto?.key }
-                                                                );
-                                                            },
-                                                            icon: (
-                                                                <SIcon name="Edit" fill={STheme.color.text} />
-                                                            ),
-                                                        })
-                                                    }
-                                                    if (MDL.rolesPermisos.getPermiso({
-                                                        url: URL,
-                                                        permiso: "delete_producto",
-                                                    })) {
-                                                        options.push({
-                                                            label: "Eliminar Producto",
-                                                            onPress: () => {
-                                                                console.log(
-                                                                    "Eliminar Producto:",
-                                                                    prd?.producto?.key
-                                                                );
-                                                                SPopup.confirm({
-                                                                    title: "Eliminar Producto",
-                                                                    message:
-                                                                        "¿Estás seguro de eliminar el producto?",
-                                                                    onPress: () => {
-                                                                        MDL.crm.proyectoProducto
-                                                                            .eliminar({ ...prd, estado: 0 })
-                                                                            .then((e) => {
-                                                                                console.error(
-                                                                                    "Producto eliminado:",
-                                                                                    e
-                                                                                );
-                                                                                SNotification.send({
-                                                                                    key: "eliminar",
-                                                                                    title: "eliminado",
-                                                                                    type: "loading",
-                                                                                    time: 1000,
-                                                                                    body: e.error,
-                                                                                    color: STheme.color.error,
-                                                                                });
-                                                                                this.DinamicTable.loadData();
-                                                                            })
-                                                                            .catch((error) => {
-                                                                                console.error(
-                                                                                    "Error al eliminar producto:",
-                                                                                    error
-                                                                                );
-                                                                                SNotification.send({
-                                                                                    key: "eliminar",
-                                                                                    title: "error",
-                                                                                    type: "danger",
-                                                                                    time: 1000,
-                                                                                    body: error.message,
-                                                                                    color: STheme.color.error,
-                                                                                });
-                                                                            });
-                                                                    },
-                                                                });
-                                                            },
-                                                            icon: (
-                                                                <SIcon
-                                                                    name="Delete"
-                                                                    fill={STheme.color.text}
-                                                                />
-                                                            ),
-                                                        })
-                                                    }
-                                                    FloatMenu.open({
-                                                        e: f,
-                                                        label: prd?.producto?.nombre,
-                                                        options: options,
-                                                    });
-                                                }}
-                                                row
-                                                center
-                                            >
-                                                <SView width={20} height={20} style={{ borderRadius: 4, overflow: "hidden", overflow: "hidden" }} card>
-                                                    <SImage src={SSocket.api.inventario + "producto/" + prd.key_producto} />
-                                                </SView>
-                                                <SText
-                                                    card
-                                                    padding={4}
-                                                    style={{ maxWidth: 200 }}
-                                                    numberOfLines={1}
-                                                >
-                                                    {prd?.producto?.nombre}  Bs.
-                                                    {prd?.producto?.precio ?? 0}
-                                                </SText>
-                                            </SView>
-                                        );
-                                    })}
-                                </SView>
-                            );
-                        }}
-                    />
+                    {/* {this.itemTabla()} */}
                     <DinamicTable.Col
                         key={"guion"}
                         label="Guión"
                         width={350}
+                        wrap={true}
+                        data={(e) => {
+                            return e.row.guion;
+                        }}
+                        cellStyle={{
+                            padding: 0,
+                        }}
+                        customComponent={(e) => {
+                            return (<SView col={"xs-12"} style={{ maxHeight: 155, overflow: "hidden" }} >
+                                <ScrollView>
+                                    <SMD space={1} fontSize={9} textColor={STheme.color.text} >
+                                        {e.data}
+                                    </SMD>
+                                </ScrollView>
+                            </SView>
+                            );
+                        }}
+                    />
+
+                    {/* <DinamicTable.Col
+                        key={"turno"}
+                        label="Turno"
+                        width={150}
                         wrap={true}
                         data={(e) => {
                             return e.row.guion;
@@ -605,9 +635,94 @@ export default class proyecto extends Component {
                             </SView>
                             );
                         }}
+                    /> */}
+
+
+                    <DinamicTable.Col
+                        key={"-key_turno"}
+                        label="Turno"
+                        width={180}
+                        wrap={true}
+                        data={(e) => {
+                            return e.row.key_turno;
+                        }}
+                        cellStyle={{
+                            padding: 0,
+                        }}
+                        customComponent={(ex) => {
+                            // const device = (this.state.devices ?? []).find(
+                            //     (a) => a.key == ex?.row?.key_turno
+                            // );
+
+                            return <>   {
+                                (MDL.rolesPermisos.getPermiso({ url: URL, permiso: "delete", })) ?
+                                    <SView col={"xs-12"} center style={{ minHeight: 100, overflow: "hidden" }} >
+                                        <SView width={120} padding={4} row center backgroundColor="white" style={{ borderRadius: 12 }}
+                                            onPress={() => {
+
+                                                console.log("proj " + JSON.stringify(ex.row.key_turno))
+                                                SPopup.open({
+                                                    key: "popup_config_horario",
+                                                    content: (
+                                                        <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
+                                                            <SView col={"xs-12"} height={600} center >
+                                                                <TurnoComponent key_proyecto={ex?.row?.key} key_turno={ex?.row?.key_turno} onReload={() => {
+                                                                    this.DinamicTable.loadData();
+                                                                    console.log("✅ Se guardó el turno y se ejecutó el callback");
+                                                                }}
+
+                                                                ></TurnoComponent>
+                                                            </SView>
+                                                        </SView>
+                                                    )
+                                                });
+
+                                                // sout
+                                                // console.log("todo bien")
+                                                // PopupDispositivo.open({
+                                                //     key_whatsapp_device: ex?.row?.key_whatsapp_device,
+                                                //     onRegister: (e) => {
+                                                //         MDL.crm.proyecto
+                                                //             .editar({
+                                                //                 key: ex.row.key,
+                                                //                 key_whatsapp_device: e.selectedOption.key,
+                                                //             })
+                                                //             .then((e) => {
+                                                //                 this.DinamicTable.loadData();
+                                                //             });
+                                                //     },
+                                                // });
+                                            }}
+                                        >
+
+                                            <SView width={8} />
+                                            <SIcon name="add1" fill={STheme.color.black} width={14} />
+                                            <SView width={8} />
+                                            <SText center color={STheme.color.black}>Add Turno</SText>
+                                            <SView width={8} />
+
+                                        </SView>
+
+                                        {/* {device?.descripcion ?
+                                            <SView center card col={"xs-8"} style={{ maxHeight: 155, overflow: "hidden", marginTop: 16 }}>
+                                                <SText>Dispositivo vinculado:</SText>
+                                                <SText> <SView width="80" backgroundColor="red" borderRadius={50} />   {device?.descripcion}</SText>
+                                            </SView>
+                                            : ""} */}
+                                    </SView>
+                                    : null
+                                // <SView col={"xs-12"} center style={{ minHeight: 100, overflow: "hidden" }}>
+                                //     {device?.descripcion ?
+                                //         <SView center card col={"xs-8"} style={{ maxHeight: 155, overflow: "hidden" }}>
+                                //             <SText>Dispositivo vinculado:</SText>
+                                //             <SText> <SView width="80" backgroundColor="red" borderRadius={50} />   {device?.descripcion}</SText>
+                                //         </SView>
+                                //         : ""}
+                                // </SView>
+                            }
+                            </>
+                        }}
                     />
-
-
                     <DinamicTable.Col
                         key={"key_whatsapp_device"}
                         label="Dispositivo WhatsApp"
@@ -681,41 +796,7 @@ export default class proyecto extends Component {
                         }}
                     />
 
-                    {/* <DinamicTable.Col key={"editar"} label='Editar' width={100} data={(e) => ""}
-                                        customComponent={e => <SView row card padding={2} onPress={() => {
-                                                FormRegistroProyecto.open(({
-                                                        defaultData: e.row, onActualizar: (nuevoDato) => {
-                                                                this.DinamicTable.loadData();
-                                                                console.log("Proyecto actualizado:", nuevoDato);
-                                                        }
-                                                }))
-                                        }}>
-                                                <SIcon name='Edit' width={18} />
-                                                <SView width={4} />
-                                                <SText center color={STheme.color.green} >{"Actualizar"}</SText>
-                                        </SView>}
-                                />
-                                <DinamicTable.Col key={"eliminar"} label='Delete'
-                                        width={100}
-                                        data={(e) => ""}
-                                        customComponent={e => <SView row card padding={2} onPress={() => {
-                                                console.log("Delete project:", e.row);
-                                                SSocket.sendPromise({
-                                                        service: "crm",
-                                                        component: "proyecto",
-                                                        type: "editar",
-                                                        data: { ...e.row, estado: 0 }
-                                                }).then(e => {
-                                                        console.error("❌ Error al recargar proyectos:", e);
-                                                        SNotification.send({ key: "eliminar", title: "eliminado", type: "loading", time: 1000, body: e.error, color: STheme.color.error, })
-                                                        this.DinamicTable.loadData();
-                                                })
-                                                alert("✅ Eliminación exitosa del proyecto.");
-                                        }}>
-                                                <SIcon name='Delete' width={18} />
-                                                <SView width={4} />
-                                                <SText center color={STheme.color.danger} > {"Eliminar"}</SText>
-                                        </SView>} */}
+
                 </DinamicTable>
 
                 {MDL.rolesPermisos.getPermiso({ url: URL, permiso: "new", }) &&

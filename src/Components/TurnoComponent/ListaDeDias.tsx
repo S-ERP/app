@@ -50,6 +50,7 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                         const isTurnoExistente = !!this.props.turnoComponent.props.key_turno;
                         const tieneHorariosActivos = data.horarios.some(h => h.estado === 1);
 
+                        console.log("vemos " + isTurnoExistente)
 
                         if (isTurnoExistente) {
 
@@ -62,12 +63,14 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                             }).catch((err) => {
                                 console.log("❌ Error al actualizar: " + err);
                             });
-                        } else {
+                        }
 
-                            if (!tieneHorariosActivos) {
-                                console.warn("⚠️ No se puede registrar un turno sin horarios activos.");
-                                return;
-                            }
+                        if (!isTurnoExistente ){
+
+                            // if (!tieneHorariosActivos) {
+                            //     console.warn("⚠️ No se puede registrar un turno sin horarios activos.");
+                            //     return;
+                            // }
 
                             MDL.empresa.registroTurnosHorariosAtencion(data as any).then((res) => {
                                 console.log("🟢 Nuevo turno registrado: " + res);
@@ -77,7 +80,33 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                             });
                         }
 
+
+
+
+                        // if (this.props?.turnoComponent?.props?.key_proyecto) {
+                        //     console.log("ya fue ")
+
+                        //     // MDL.crm.proyecto.editar({ key: this.props?.turnoComponent?.props?.key_proyecto, key_turno: data?.key }).then((e) => {
+                        //     //     this.props.turnoComponent.props.onReload();
+                        //     // });
+                        // } else {
+                        //     console.log("ya fue ")
+                        // }
+
+
+                        // console.log("key_proyecto " + this.props.turnoComponent.props.key_proyecto)
                         // this.
+                        // tengo que verificar el turno
+
+                        // MDL.crm.proyecto.editar({ key: ex.row.key, key_whatsapp_device: e.selectedOption.key, }) .then((e) => {
+                        //     this.props.turnoComponent.props.onReload();
+                        // });
+                        // },
+
+                        // this.props.turnoComponent.turno.
+
+                        this.props.turnoComponent.props.key_turno;
+                        this.props.turnoComponent.props.onReload();
                         this.forceUpdate();
 
                     }}>
