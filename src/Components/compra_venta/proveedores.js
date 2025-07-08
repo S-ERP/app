@@ -80,20 +80,11 @@ export default class proveedores extends Component {
 
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
-            <DinamicTable.Col key="key_usuario" label="key_usuario" width={180} data={(e) => e.row?.key_usuario} />
-            <DinamicTable.Col key="asdsad" label="Usuario" width={250} data={(e) => e.row?.usuario.Nombres} />
 
-            <DinamicTable.Col key="razon_social" label="razon_social" width={180} data={(e) => e.row?.razon_social} />
-            <DinamicTable.Col key="nit" label="nit" width={180} data={(e) => e.row?.nit} />
-            <DinamicTable.Col key="nombre" label="nombre" width={180} data={(e) => e.row?.nombre} />
-            <DinamicTable.Col key="telefono" label="telefono" width={150} data={(e) => e.row?.telefono} />
-
-            <DinamicTable.Col key="key_cuenta_contable" label="key_cuenta_contable" width={150} data={(e) => e.row?.key_cuenta_contable} />
-            <DinamicTable.Col key="key_empresa" label="key_empresa" width={180} data={(e) => e.row?.key_empresa} />
 
             <DinamicTable.Col key={"foto"} label='User'
                 data={(e) => e.row?.key_usuario}
-                width={35}
+                width={45}
                 customComponent={e => <SView style={{
                     width: 24,
                     height: 24,
@@ -105,6 +96,17 @@ export default class proveedores extends Component {
                         resizeMode: "cover",
                     }} />
                 </SView>} />
+
+            <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.usuario.Nombres} />
+            <DinamicTable.Col key="razon_social" label="Razón Social" width={100} data={(e) => e.row?.razon_social} />
+            <DinamicTable.Col key="nit" label="NIT" width={100} data={(e) => e.row?.nit} />
+            <DinamicTable.Col key="nombre" label="Nombre de Contacto" width={150} data={(e) => e.row?.nombre} />
+            <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={(e) => e.row?.telefono} />
+            {/* <DinamicTable.Col key="key_usuario" label="key_usuario" width={180} data={(e) => e.row?.key_usuario} /> */}
+            {/* <DinamicTable.Col key="key_cuenta_contable" label="key_cuenta_contable" width={150} data={(e) => e.row?.key_cuenta_contable} /> */}
+            {/* <DinamicTable.Col key="key_empresa" label="key_empresa" width={180} data={(e) => e.row?.key_empresa} /> */}
+
+
         </DinamicTable>
     }
 
