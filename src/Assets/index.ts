@@ -51,6 +51,7 @@ import iback, { ReactComponent as ibackW } from "./svg/iback.svg";
 import itema, { ReactComponent as itemaW } from "./svg/itema.svg";
 
 import Heart, { ReactComponent as HeartW } from "./svg/social/Heart.svg";
+import Clock, { ReactComponent as ClockW } from "./svg/empresa/clock.svg";
 import Comment, { ReactComponent as CommentW } from "./svg/social/Comment.svg";
 import Comment2, {
   ReactComponent as Comment2W,
@@ -288,7 +289,7 @@ export const svg = {
     Native: crmllamadaconfirmada,
     Web: crmllamadaconfirmadaW,
   },
-    crmllamadafallida: { Native: crmllamadafallida, Web: crmllamadafallidaW },
+  crmllamadafallida: { Native: crmllamadafallida, Web: crmllamadafallidaW },
 
   crmllamadatasaconversion: {
     Native: crmllamadatasaconversion,
@@ -371,6 +372,8 @@ export const svg = {
     Web: crmpdescargararchivoW,
   },
   crmpdarchivo: { Native: crmpdarchivo, Web: crmpdarchivoW },
+
+  clock: { Native: Clock, Web: ClockW },
 
   ...blender,
 };

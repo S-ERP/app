@@ -21,6 +21,7 @@ import report from "./report";
 import reporteconfirmado from "./report/reporteconfirmado";
 import reporteusuariosstate from "./report/reporteusuariosstate";
 import infovendedor from "./report/infovendedor";
+import ImportadorGADM from "./graficos/ImportadorGADM";
 export default SPage.combinePages("crm", {
   "": root,
   proyecto,
@@ -36,6 +37,7 @@ export default SPage.combinePages("crm", {
   graficos,
   call,
   masivo,
+  "gadm": ImportadorGADM,
   ...report,
   proyectoImportarExcel,
   proyectoImportarWasap,

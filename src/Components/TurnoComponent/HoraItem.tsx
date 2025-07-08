@@ -3,9 +3,9 @@ import { View, Text, Switch } from 'react-native';
 import { SHr, SIcon, SInput, SText, STheme, SView } from 'servisofts-component';
 import TurnoComponent, { HorarioItem } from '.';
 import SIconApp from '../../Assets/SIconApp';
+import eliminados from '../../Pages/usuario/eliminados';
 
 type HoraItemProps = {
-    // turnoComponent: TurnoComponent,
     horario: HorarioItem,
     dia: any,
     onDelete?: () => void
@@ -16,30 +16,28 @@ export default class HoraItem extends Component<HoraItemProps> {
         return <>
             <SView col={"xs-12"} height={70} center border={STheme.color.card}   >
                 <SView col={"xs-11.5"} center row >
-
-
                     <SView col={"xs-5"} center>
-                        <SInput label={"Hora inicio"} style={{ height: 32, fontSize: 12, }}
+                        <SInput label={"Hora inicio"}
+
+                            style={{ height: 32, fontSize: 12, backgroundColor:"#181717" }}
                             type="hour" value={this.props.horario.hora_inicio}
+
                             onChangeText={e => {
                                 this.props.horario.hora_inicio = e;
                                 this.forceUpdate();
                             }}
-                            iconR={<SIcon name='history' width={14} style={{ paddingRight: 4, }} fill='#666' />}
+                            iconR={<SIcon name='clock' width={16} style={{ paddingRight: 8, }} stroke='white' fill='transparent' />}
                         />
                     </SView>
-
                     <SView flex />
-
                     <SView col={"xs-5"} center border={"transparent"} >
-                        <SInput label={"Hora fin"} type="hour" style={{ height: 32, fontSize: 12, }}
+                        <SInput label={"Hora fin"} type="hour" style={{ height: 32, fontSize: 12, backgroundColor: "#181717" }}
                             value={this.props.horario.hora_fin}
                             onChangeText={e => {
                                 this.props.horario.hora_fin = e;
                                 this.forceUpdate();
                             }}
-                            iconR={<SIcon name='history' width={14} style={{paddingRight: 4,}} fill='#666' />}
-
+                            iconR={<SIcon name='clock' width={16} style={{ paddingRight: 8, }} stroke='white' fill='transparent' />}
                         />
                     </SView>
                     <SView flex />
@@ -49,6 +47,7 @@ export default class HoraItem extends Component<HoraItemProps> {
                                 if (this.props.onDelete) {
                                     this.props.onDelete();
                                 }
+                                this.forceUpdate();
                             }}
                         >
                             <SIcon name="crmeliminar" stroke='red' width={20} />

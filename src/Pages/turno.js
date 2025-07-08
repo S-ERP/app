@@ -42,7 +42,7 @@ export default class turnov2 extends Component {
             language="es"
             selectType="single"
             colors={{
-                text: "red",
+                // text: "red",
                 background: STheme.color.background,
                 header: STheme.color.card,
             }}
@@ -118,7 +118,7 @@ export default class turnov2 extends Component {
 
 
         return (
-            <SPage title="Turnos y Horarios dddddddddd" disableScroll>
+            <SPage title="Turnos y Horarios" disableScroll>
 
                 {this.mostrarTabla()}
 
