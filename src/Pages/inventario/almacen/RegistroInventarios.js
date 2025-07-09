@@ -50,70 +50,92 @@ export default class RegistroInventarios extends Component {
 
 
     render() {
-        return <SPage title={"Modelos"} disableScroll >
-            <BarcodeIcon onChange={(barcode) => {
-                if (this.modelos) {
-                    const modelo = this.modelos.find(m => m.barcode === barcode);
-                    if (modelo) {
-                        const fil = this.table.filtros.find(f => f.col === "barcode");
-                        this.table.filtros.splice(this.table.filtros.indexOf(fil), 1);
-                        this.table.filtros.push({
-                            col: "barcode",
-                            value: modelo.barcode,
-                            operator: "=",
+        return <SPage title={"Gestion de Inventario"} disableScroll >
 
-                        })
-                        this.table.applyFilter();
-                        SNotification.send({
-                            title: modelo.descripcion,
-                            // body: `El modelo ${modelo.descripcion} ha sido encontrado.`,
-                            image: SSocket.api.inventario + "modelo/" + modelo.key + "?date=" + this.state.time,
-                            time: 5000,
-                        })
-                        // this.table.setSelect(modelo.key);
+            <SView row center>
+
+
+
+                <BarcodeIcon onChange={(barcode) => {
+                    if (this.modelos) {
+                        const modelo = this.modelos.find(m => m.barcode === barcode);
+                        if (modelo) {
+                            const fil = this.table.filtros.find(f => f.col === "barcode");
+                            this.table.filtros.splice(this.table.filtros.indexOf(fil), 1);
+                            this.table.filtros.push({
+                                col: "barcode",
+                                value: modelo.barcode,
+                                operator: "=",
+
+                            })
+                            this.table.applyFilter();
+                            SNotification.send({
+                                title: modelo.descripcion,
+                                // body: `El modelo ${modelo.descripcion} ha sido encontrado.`,
+                                image: SSocket.api.inventario + "modelo/" + modelo.key + "?date=" + this.state.time,
+                                time: 5000,
+                            })
+                            // this.table.setSelect(modelo.key);
+                        }
                     }
-                }
-                console.log("Barcode read:", barcode);
-            }} />
+                    console.log("Barcode read:", barcode);
+                }} />
 
 
-            <SView width={140} height={26} center backgroundColor={STheme.color.card} style={{ borderRadius: 4 }}  >
-                <SText fontSize={12} color={STheme.color.white} onPress={() => {
-                    const modelosCargados = this.modelos;
-                    const modeloConDatos = this.table?.data || [];
+                <SView width={20}/>
 
-                    console.log("🟦 Modelos cargados desde loadData:");
-                    console.log(modelosCargados); // OK: no circular
+                <SView width={140} height={26} center backgroundColor={STheme.color.card} style={{ borderRadius: 4 }}  >
+                    <SText fontSize={12} color={STheme.color.white} onPress={() => {
+                        const modelosCargados = this.modelos;
+                        const modeloConDatos = this.table?.data || [];
 
-                    const save_cache = {};
+                        // console.log("🟦 Modelos cargados desde loadData:");
+                        // console.log(modelosCargados); // OK: no circular
 
-                    (modeloConDatos || []).forEach((e, index )=> {
-                        if (!e.key) return; // ignorar si no hay key_modelo
-                        save_cache[index] = {
-                        // save_cache[e.key] = {
-                            key_modelo: e.key,
-                            stock: e.stock,
-                            cant_inventario: e.cant_inventario
-                        };
-                    });
+                        const save_cache = {};
 
-                    console.log("🧠 save_cache:");
-                    console.log(save_cache); // OK: no circular
+                        (modeloConDatos || []).forEach((e, index) => {
+                            if (!e.key) return; // ignorar si no hay key_modelo
+                            save_cache[index] = {
+                                // save_cache[e.key] = {
+                                key_modelo: e.key,
+                                 cant_inventario: e.cant_inventario
+                            };
+                        });
 
 
-                    SNotification.send({
-                        title: "Datos mostrados",
-                        body: "Revisá consola para ver los modelos.",
-                        color: STheme.color.info
-                    });
-                }}>
-                    {"Confirmar inventario"}
-                </SText>
 
+                        const save_cacheV2 = (this.table?.data || [])
+                            .filter(e => e.key)
+                            .map(e => [e.key, e.cant_inventario]);
+
+                        const save_cacheV3 = {};
+
+                        (this.table?.data || []).forEach(e => {
+                            if (!e.key) return;
+                            save_cacheV3[e.key] = e.cant_inventario ?? 0; // si viene null, lo pone en 0
+                        });
+
+
+
+
+                        console.log("🧠 save_cache:");
+                        console.log(JSON.stringify(save_cacheV3)); // OK: no circular
+
+
+
+                        // SNotification.send({
+                        //     title: "Datos mostrados",
+                        //     body: "Revisá consola para ver los modelos.",
+                        //     color: STheme.color.info
+                        // });
+                    }}>
+                        {"Confirmar inventario"}
+                    </SText>
+
+                </SView>
 
             </SView>
-            {/* <SHr height={10} /> */}
-
             <DinamicTable
                 ref={ref => this.table = ref}
                 colors={Config.table.colors()}
@@ -122,116 +144,6 @@ export default class RegistroInventarios extends Component {
                 selectType='single'
                 language='es'
                 loadData={this.loadData.bind(this)}
-                onSelect={e => {
-                    // FloatMenu.open({
-                    //     e: e.evt,
-                    //     label: e.row.descripcion,
-                    //     options: [
-                    //         {
-                    //             label: "Agregar inventario",
-                    //             icon: <SIconApp name='Add' fill={STheme.color.text} />,
-                    //             onPress: () => {
-                    //                 FormularioAgregarInventario.open({
-                    //                     editObject: e.row,
-                    //                     onSuccess: () => {
-                    //                         if (this.table) {
-                    //                             this.table.loadData();
-                    //                             // this.state.time = new Date().getTime();
-                    //                         }
-                    //                     }
-                    //                 })
-                    //                 // SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto });
-                    //             }
-                    //         },
-                    //         {
-                    //             label: "Editar",
-                    //             icon: <SIconApp name='Edit' />,
-                    //             onPress: () => {
-                    //                 FormularioModelo.open({
-                    //                     editObject: e.row,
-                    //                     onSuccess: () => {
-                    //                         if (this.table) {
-                    //                             this.table.loadData();
-                    //                             this.state.time = new Date().getTime();
-                    //                         }
-                    //                     }
-
-                    //                 })
-                    //             }
-                    //         },
-
-                    //         {
-                    //             label: "Eliminar",
-                    //             icon: <SIconApp name='Delete' />,
-                    //             onPress: () => {
-                    //                 SPopup.confirm({
-                    //                     title: "Eliminar Modelo",
-                    //                     message: "¿Está seguro de eliminar el modelo " + e.row.descripcion + "?",
-                    //                     onPress: () => {
-                    //                         MDL.inventario.saveModelo({
-                    //                             key: e.row.key,
-                    //                             estado: 0,
-                    //                         }).then(() => {
-                    //                             if (this.table) {
-                    //                                 this.table.loadData();
-                    //                             }
-                    //                         });
-                    //                     }
-                    //                 });
-                    //             }
-                    //         },
-                    //         {
-                    //             label: "Ver Marca",
-                    //             icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
-                    //             onPress: () => {
-                    //                 SNavigation.navigate("/productos/marca/edit", { pk: e.row.key_marca });
-                    //             }
-                    //         },
-                    //         {
-                    //             label: "Ver Tipo",
-                    //             icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
-                    //             onPress: () => {
-                    //                 SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto });
-                    //             }
-                    //         },
-
-                    //         {
-                    //             label: "Ver desglose",
-                    //             icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
-                    //             onPress: () => {
-
-
-
-                    //                 SPopup.open({
-                    //                     key: "popup_config_horario",
-                    //                     content: (
-                    //                         <SView col={"xs-11  "} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 700 }} padding={16} withoutFeedback >
-                    //                             <SView col={"xs-12"} height={470} center >
-                    //                                 <PopupDesglose key_modelo={e.row.key}  ></PopupDesglose>
-                    //                             </SView>
-                    //                         </SView>
-                    //                     )
-                    //                 });
-
-                    //                 // PopupDetalleModelo.open({
-                    //                 //     editObject: null,
-                    //                 //     onSuccess: () => {
-                    //                 //         if (this.table) {
-                    //                 //             this.table.loadData();
-                    //                 //             this.state.time = new Date().getTime();
-                    //                 //         }
-                    //                 //     }
-                    //                 // });
-
-                    //                 // SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto });
-                    //             }
-                    //         },
-
-                    //     ]
-                    // });
-
-
-                }}
             >
                 <DinamicTable.Col key="index" label="#" textStyle={{ color: STheme.color.lightGray }} width={40} data={(e) => e.index + 1} />
                 <DinamicTable.Col key={"tipo_producto"} label='Tipo' width={150} data={(e) => e.row?.tipo_producto?.descripcion}
@@ -255,11 +167,7 @@ export default class RegistroInventarios extends Component {
                 />
 
 
-                <DinamicTable.Col key={"stock"} label='Stock'
-                    dataType='number'
-
-                    // textStyle={{ color: STheme.color.success }}
-                    width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
+                <DinamicTable.Col key={"stock"} label='Stock' dataType='number' width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
 
                 <DinamicTable.Col
                     key={"cant_inventario"}
@@ -268,9 +176,7 @@ export default class RegistroInventarios extends Component {
                     width={120}
                     data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0}
                     customComponent={(e) => {
-                        // Color dinámico por fila
                         const color = this.colorStock(e.row.stock, e.row.cant_inventario);
-
                         return (
                             <SInput
                                 ref={(ref) => e.row.inputRef = ref} // guardamos ref si luego quieres acceder
@@ -278,7 +184,7 @@ export default class RegistroInventarios extends Component {
                                 maxLength={3}
                                 defaultValue={e.row.cant_inventario}
                                 style={{
-                                    borderWidth: 2,
+                                    borderWidth: 1.2,
                                     borderColor: color,
                                     backgroundColor: "transparent",
                                     textAlign: "center",
@@ -293,10 +199,6 @@ export default class RegistroInventarios extends Component {
                         );
                     }}
                 />
-
-
-
-
 
                 <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sd' width={150} data={(e) => e.row?.tipo_producto?.tipo} />
                 <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row?.barcode} />
