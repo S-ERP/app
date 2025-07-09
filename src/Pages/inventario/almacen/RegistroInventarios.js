@@ -26,7 +26,7 @@ export default class RegistroInventarios extends Component {
         this.state = {
             time: new Date().getTime()
         };
-        this.pintarColor = "gray";
+        this.pintarColor = STheme.color.card;
     }
 
     // listenerQr = null;
@@ -40,10 +40,14 @@ export default class RegistroInventarios extends Component {
 
 
     colorStock(cant_stock, cant_inv) {
+
+        if (cant_stock == null || cant_stock == "") return this.pintarColor = STheme.color.card;
+
+
         if (cant_stock > cant_inv) return this.pintarColor = "red";
         if (cant_stock < cant_inv) return this.pintarColor = "yellow";
         if (cant_stock == cant_inv) return this.pintarColor = "green";
-        return this.pintarColor = "gray"; // por si ocurre un caso inesperado
+        return this.pintarColor = STheme.color.card; // por si ocurre un caso inesperado
     }
 
 
@@ -184,7 +188,7 @@ export default class RegistroInventarios extends Component {
                                 maxLength={3}
                                 defaultValue={e.row.cant_inventario}
                                 style={{
-                                    borderWidth: 1.2,
+                                    borderWidth: 0.1,
                                     borderColor: color,
                                     backgroundColor: "transparent",
                                     textAlign: "center",
@@ -200,8 +204,8 @@ export default class RegistroInventarios extends Component {
                     }}
                 />
 
-                <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sd' width={150} data={(e) => e.row?.tipo_producto?.tipo} />
-                <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row?.barcode} />
+                {/* <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sd' width={150} data={(e) => e.row?.tipo_producto?.tipo} />
+                <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row?.barcode} /> */}
             </DinamicTable>
 
 
