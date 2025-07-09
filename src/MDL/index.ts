@@ -6,7 +6,8 @@ import usuario from "./usuario"
 import RolesPermisos from "./RolesPermisos";
 import qr_reader from "./qr_reader";
 import inventario from "./inventario";
-export default {
+import compra_venta from "./compra_venta";
+ export default {
   empresa: new empresa(),
   factura: new factura(),
   crm: new crm(),
@@ -15,4 +16,5 @@ export default {
   rolesPermisos: new RolesPermisos(),
   qr_reader: new qr_reader(),
   inventario: new inventario(),
+  compra_venta: new compra_venta(),
 };

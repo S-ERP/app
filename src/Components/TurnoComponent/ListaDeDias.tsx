@@ -58,6 +58,12 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                         // Si el turno ya existe → editar
                         if (isTurnoExistente) {
                             MDL.empresa.editarTurnosHorariosAtencion(data as any).then((res) => {
+
+                                const existeTurnoProyecto = this.props.turnoComponent.props.turno;
+                                const existeProyecto_key = this.props?.turnoComponent?.props?.key_proyecto;
+                                console.log("traendo todo " + existeTurnoProyecto, " - " + existeProyecto_key)
+                                this.props.turnoComponent.props.onReload();
+                                this.forceUpdate();
                                 SPopup.close("popup_config_horario");
                             }).catch((err) => {
                                 console.log("❌ Error al actualizar: " + err);
@@ -69,20 +75,20 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                             MDL.empresa.registroTurnosHorariosAtencion(data as any).then((res) => {
                                 console.log("🟢 Nuevo turno registrado: " + res);
                                 SPopup.close("popup_config_horario");
+                                MDL.crm.proyecto.editar({ key: this.props?.turnoComponent?.props?.key_proyecto, key_turno: res?.key }).then((e) => {
+
+                                    const existeTurnoProyecto = this.props.turnoComponent.props.turno;
+                                    const existeProyecto_key = this.props?.turnoComponent?.props?.key_proyecto;
+                                    console.log("traendo todo " + existeTurnoProyecto, " - " + existeProyecto_key)
+                                    this.props.turnoComponent.props.onReload();
+                                    this.forceUpdate();
+                                    console.log("🟢 Proyecto actualizado con nuevo turno: " + e);
+                                });
                             }).catch((err) => {
                                 console.log("❌ Error al registrar: " + err);
                             });
                         }
 
-                        // Relación con proyecto (si aplica)
-                        if (this.props?.turnoComponent?.props?.key_proyecto) {
-                            MDL.crm.proyecto.editar({ key: this.props?.turnoComponent?.props?.key_proyecto, key_turno: data?.key }).then((e) => {
-                            });
-                        }
-
-                        // Ejecutar callback de recarga si está definido
-                        this.props.turnoComponent.props.onReload();
-                        this.forceUpdate();
 
                     }}>
                         <SText center color='white'>Guardar Horario</SText>

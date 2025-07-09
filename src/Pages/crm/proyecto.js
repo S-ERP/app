@@ -677,7 +677,7 @@ export default class proyecto extends Component {
                                     :
                                     <SView col={"xs-12"} center style={{ minHeight: 100, overflow: "hidden" }}>
                                         {ex.row.key_turno ?
-                                            <SView center card col={"xs-8"} style={{ maxHeight: 155, overflow: "hidden" }}
+                                            <SView center card style={{ maxHeight: 155, overflow: "hidden" }}
                                                 onPress={() => {
                                                     SPopup.open({
                                                         key: "popup_config_horario",
@@ -692,9 +692,10 @@ export default class proyecto extends Component {
                                                 }}
                                             >
 
-                                                <SView col={"xs-11"} row padding={10} >
+                                                <SView row padding={10} style={{ alignItems: "center" }}>
                                                     <SIconApp name="clock" width={14} stroke="white" />
-                                                    <SText fontSize={14}>  {ex.row.turno.nombre}</SText>
+                                                    <SView width={8} />
+                                                    <SText flex fontSize={14}>{ex.row.turno.nombre}</SText>
                                                 </SView>
                                                 {/* <SText>{ex.row.turno.nombre}</SText> */}
                                             </SView>
