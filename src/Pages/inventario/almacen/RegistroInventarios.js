@@ -75,6 +75,45 @@ export default class RegistroInventarios extends Component {
                 }
                 console.log("Barcode read:", barcode);
             }} />
+
+
+            <SView width={140} height={26} center backgroundColor={STheme.color.card} style={{ borderRadius: 4 }}  >
+                <SText fontSize={12} color={STheme.color.white} onPress={() => {
+                    const modelosCargados = this.modelos;
+                    const modeloConDatos = this.table?.data || [];
+
+                    console.log("🟦 Modelos cargados desde loadData:");
+                    console.log(modelosCargados); // OK: no circular
+
+                    const save_cache = {};
+
+                    (modeloConDatos || []).forEach((e, index )=> {
+                        if (!e.key) return; // ignorar si no hay key_modelo
+                        save_cache[index] = {
+                        // save_cache[e.key] = {
+                            key_modelo: e.key,
+                            stock: e.stock,
+                            cant_inventario: e.cant_inventario
+                        };
+                    });
+
+                    console.log("🧠 save_cache:");
+                    console.log(save_cache); // OK: no circular
+
+
+                    SNotification.send({
+                        title: "Datos mostrados",
+                        body: "Revisá consola para ver los modelos.",
+                        color: STheme.color.info
+                    });
+                }}>
+                    {"Confirmar inventario"}
+                </SText>
+
+
+            </SView>
+            {/* <SHr height={10} /> */}
+
             <DinamicTable
                 ref={ref => this.table = ref}
                 colors={Config.table.colors()}
@@ -222,35 +261,37 @@ export default class RegistroInventarios extends Component {
                     // textStyle={{ color: STheme.color.success }}
                     width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
 
-
                 <DinamicTable.Col
                     key={"cant_inventario"}
                     label="Inventariar"
                     dataType="number"
                     width={120}
                     data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0}
-                    customComponent={e => (
-                        <SInput
-                            // ref={ }
-                            ref={(ref) => e.row.inputRef = ref} // guardamos ref si luego quieres acceder
-                            type="number"
-                            maxLength={3}
-                            defaultValue={e?.row?.cant_inventario}
-                            style={{
-                                borderColor : this?.pintarColor,
-                                borderWidth: 2,
-                                backgroundColor: "transparent",
-                                textAlign: "center",
-                                paddingStart: 0,
-                                paddingEnd: 0,
-                            }}
-                            onChangeText={(valll) => {
-                                this.colorStock(e.row.stock, valll);
-                                this.forceUpdate();
-                            }}
+                    customComponent={(e) => {
+                        // Color dinámico por fila
+                        const color = this.colorStock(e.row.stock, e.row.cant_inventario);
 
-                        />
-                    )}
+                        return (
+                            <SInput
+                                ref={(ref) => e.row.inputRef = ref} // guardamos ref si luego quieres acceder
+                                type="number"
+                                maxLength={3}
+                                defaultValue={e.row.cant_inventario}
+                                style={{
+                                    borderWidth: 2,
+                                    borderColor: color,
+                                    backgroundColor: "transparent",
+                                    textAlign: "center",
+                                    paddingStart: 0,
+                                    paddingEnd: 0,
+                                }}
+                                onChangeText={(value) => {
+                                    e.row.cant_inventario = Number(value); // actualiza el valor del row
+                                    this.forceUpdate(); // para que se repinte el color dinámico
+                                }}
+                            />
+                        );
+                    }}
                 />
 
 
@@ -260,6 +301,8 @@ export default class RegistroInventarios extends Component {
                 <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sd' width={150} data={(e) => e.row?.tipo_producto?.tipo} />
                 <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row?.barcode} />
             </DinamicTable>
+
+
             {/* <FloatButtom onPress={() => {
                 PopupDetalleModelo.open({
                     key_modelo: null,
