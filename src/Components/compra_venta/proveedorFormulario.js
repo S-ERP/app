@@ -67,7 +67,7 @@ export default class ProveedorFormulario extends Component {
                             col: "xs-12",
                             label: "Razón Social",
                             // required: true,
-                            defaultValue: this.props.data?.razon_social ,
+                            defaultValue: this.props.data?.razon_social,
                             onSubmitEditing: () => this.form?.focus("nit"),
 
                         },
@@ -96,7 +96,6 @@ export default class ProveedorFormulario extends Component {
                     onSubmit={(val) => {
                         const data = {
                             ...val,
-                            //   key_empresa: SNavigation.getState().empresa.key,
                             key_cuenta_contable: "1.0.1",
                         };
 
@@ -106,27 +105,20 @@ export default class ProveedorFormulario extends Component {
 
                             data.key = this.ProveedorItem?.key;
                             MDL.compra_venta.proveedor.editar(data).then((res) => {
-                                console.log("actualizacion exitosa  ")
+                                this.props.onReload();
                             }).catch(
-                                console.log("actualizacion erronea  ")
+                                console.log("Actualizae error")
                             )
                         } else {
-                            // console.log("save " + data)
-                            // data.key_empresa = Model.empresa.;
-
                             MDL.compra_venta.proveedor.registrar(data).then((res) => {
-                                console.log("actualizacion exitosa  ")
+                                this.props.onReload();
                             }).catch(
-                                console.log("actualizacion erronea  ")
+                                console.log("Registrar error")
                             )
                         }
 
                         this.forceUpdate();
-
-
                         SPopup.close("popup_config_horario");
-                        // Aquí haces tu registro:
-                        // MDL.compra_venta.registrarProveedor(data).then(...);
                     }}
                 />
             </SView>
@@ -134,16 +126,9 @@ export default class ProveedorFormulario extends Component {
             <SHr />
 
             <SView row col={"xs-12"}>
-                {/* {this.props.onCancel && <>
-                    <PButtom flex type='danger' onPress={() => {
-                        if (this.props.onCancel) this.props.onCancel()
-                    }}>CANCELAR</PButtom>
-                    <SView width={8} />
-                </>} */}
-
+                <PButtom flex type='danger' onPress={() => { SPopup.close("popup_config_horario"); }}>CANCELAR</PButtom>
+                <SView width={8} />
                 <PButtom flex type="primary" onPress={() => this.form?.submit()}>{this.ProveedorItem?.key ? "ACTUALIZAR" : "CREAR"}</PButtom>
-
-
             </SView>
 
 

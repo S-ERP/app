@@ -33,19 +33,7 @@ export default class Proveedor extends Component {
             content: (
                 <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
                     <SView col={"xs-12"} height={600} center >
-
-                        <SText> sasds </SText>
-
-                        <ProveedorFormulario key_proveedor={aux_key} data={data}  ></ProveedorFormulario>
-                        {/* <ProveedorFormulariossss></ProveedorFormulariossss> */}
-
-                        {/* <Proveedor key_turno={aux_key} onReload={() => {
-                            this.DinamicTable.loadData();
-                            console.log("✅ Se guardó el turno y se ejecutó el callback");
-                            // Aquí puedes refrescar listas, volver a cargar datos, etc.
-                        }}
-
-                        ></TurnoComponent> */}
+                        <ProveedorFormulario key_proveedor={aux_key} data={data} onReload={() => { this.DinamicTable.loadData(); }} ></ProveedorFormulario>
                     </SView>
                 </SView>
             )
@@ -84,23 +72,19 @@ export default class Proveedor extends Component {
 
                 FloatMenu.open({
                     e: e.evt,
-                    label: "Razon "+e.row.razon_social,
+                    label: "Razón Social: " + e.row.razon_social,
                     options: [
                         {
                             icon: <SIconApp name='Edit' />,
                             label: "Actualizar Proveedor",
                             onPress: () => {
-                                this.mostrarPopup(e.row.key, e.row)
-                                this.DinamicTable.loadData();
-                                this.forceUpdate();
+                                this.mostrarPopup(e.row.key, e.row);
                             }
                         },
                         {
                             icon: <SIconApp name='Delete' />,
                             label: "Eliminar Proveedor",
                             onPress: () => {
-
-
                                 SPopup.confirm({
                                     title: "desea elimin",
                                     message: "esta seguro",
@@ -109,25 +93,20 @@ export default class Proveedor extends Component {
                                         const data = e?.row;
                                         data.estado = 0;
                                         MDL.compra_venta.proveedor.editar(data).then((res) => {
+                                            this.DinamicTable.loadData();
                                             console.log("actualizacion exitosa  ");
                                         }).catch(
                                             console.log("actualizacion erronea  ")
                                         )
-                                        this.DinamicTable.loadData();
-                                        this.forceUpdate();
                                     }
-
-
                                 })
-
-                                this.DinamicTable.loadData();
-                                this.forceUpdate();
 
                             }
                         }
                     ]
                 })
-                //
+
+
             }}
 
             loadData={async () => {
