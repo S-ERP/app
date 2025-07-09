@@ -86,17 +86,16 @@ export default class Proveedor extends Component {
                             label: "Eliminar Proveedor",
                             onPress: () => {
                                 SPopup.confirm({
-                                    title: "desea elimin",
-                                    message: "esta seguro",
+                                    title: "Eliminar Proveedor",
+                                    message: "¿Estás seguro de eliminar este Proveedor?",
                                     onPress: () => {
-
                                         const data = e?.row;
                                         data.estado = 0;
                                         MDL.compra_venta.proveedor.editar(data).then((res) => {
                                             this.DinamicTable.loadData();
-                                            console.log("actualizacion exitosa  ");
+                                            console.log("Eliminar proveedor exitosa");
                                         }).catch(
-                                            console.log("actualizacion erronea  ")
+                                            console.log("Eliminar proveedor erronea")
                                         )
                                     }
                                 })
@@ -143,29 +142,10 @@ export default class Proveedor extends Component {
                 </SView>} /> */}
 
             {/* <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.usuario.Nombres} /> */}
-            <DinamicTable.Col key="razon_social" label="Razón Social" width={100} data={(e) => e.row?.razon_social} />
-            <DinamicTable.Col key="nit" label="NIT" width={100} data={(e) => e.row?.nit} />
+            <DinamicTable.Col key="razon_social" label="Razón Social" width={200} data={(e) => e.row?.razon_social} />
+            <DinamicTable.Col key="nit" label="NIT" width={150} data={(e) => e.row?.nit} />
             <DinamicTable.Col key="nombre" label="Nombre de Contacto" width={150} data={(e) => e.row?.nombre} />
             <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={(e) => e.row?.telefono} />
-            {/*
-            <DinamicTable.Col key={"eliminar"} label='eliminar' width={100} data={(e) => ""}
-                customComponent={e => <SView row card padding={2} onPress={() => {
-
-                    const data = e?.row;
-                    data.estado = 0;
-                    MDL.compra_venta.proveedor.editar(data).then((res) => {
-                        console.log("actualizacion exitosa  ")
-                    }).catch(
-                        console.log("actualizacion erronea  ")
-                    )
-                    this.DinamicTable.loadData();
-                }}>
-                    <SIcon name='Edit' width={18} />
-                    <SView width={4} />
-                    <SText center color={STheme.color.green} >{"eliminar"}</SText>
-                </SView>}
-            /> */}
-
         </DinamicTable>
     }
 
