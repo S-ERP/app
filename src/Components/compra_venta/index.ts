@@ -1,20 +1,22 @@
-import TipoDePago from "./TipoDePago"
-import Separador from "./Separador"
-import Estado from "./Estado"
-import Exportar from "./Exportar"
-import Comentarios from "./Comentarios"
-import PopupDeleteParticipante from "./PopupDeleteParticipante"
-import Participantes from "./Participantes"
-import Totales from "./Totales"
-import Conyuge from "./Conyuge"
-import Garante from "./Garante"
-import PlanDePagos from "./PlanDePagos"
-import StateTiqueta from "./StateTiqueta"
-import QRVenta from "./QRVenta"
-import QRCompra from "./QRCompra"
-import GenerarAsiento from "./GenerarAsiento"
-import proveedores from "./proveedores"
-import proveedorFormulario from "./proveedorFormulario"
+import TipoDePago from "./TipoDePago";
+import Separador from "./Separador";
+import Estado from "./Estado";
+import Exportar from "./Exportar";
+import Comentarios from "./Comentarios";
+import PopupDeleteParticipante from "./PopupDeleteParticipante";
+import Participantes from "./Participantes";
+import Totales from "./Totales";
+import Conyuge from "./Conyuge";
+import Garante from "./Garante";
+import PlanDePagos from "./PlanDePagos";
+import StateTiqueta from "./StateTiqueta";
+import QRVenta from "./QRVenta";
+import QRCompra from "./QRCompra";
+import GenerarAsiento from "./GenerarAsiento";
+import Proveedor from "./Proveedor";
+import ProveedorFormulario from "./ProveedorFormulario";
+
+
 export default {
   TipoDePago,
   Separador,
@@ -31,6 +33,6 @@ export default {
   GenerarAsiento,
   QRVenta,
   QRCompra,
-  proveedores,
-//   proveedorFormulario,
+  Proveedor,
+  ProveedorFormulario,
 };

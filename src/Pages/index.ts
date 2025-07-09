@@ -72,7 +72,8 @@ import ricky from "./ricky";
 import crm from "./crm";
 import plantilla from "./crm/plantilla";
 import turno from "./turno";
-import proveedores from "../Components/compra_venta/proveedores";
+import proveedores from "../Components/compra_venta/Proveedor";
+import Proveedor from "../Components/compra_venta/Proveedor";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -146,7 +147,7 @@ export default SPage.combinePages("/", {
   ...crm,
   "pdf/factura": factura,
   plantilla,
-  turno,
-  proveedor: proveedores,
+    turno,
+  proveedor : Proveedor,
   ...qr_reader,
 });
