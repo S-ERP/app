@@ -40,6 +40,7 @@ class index extends DPA.new {
         return inp;
     }
     $onSubmit(data) {
+        data.key_empresa = Model.empresa.Action.getKey();
         Parent.model.Action.registro({
             data: data,
             key_usuario: Model.usuario.Action.getKey()

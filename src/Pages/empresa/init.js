@@ -1,7 +1,7 @@
 //import liraries
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { SDate, SNavigation, SPage, SText, SThread, SLoad,SHr } from 'servisofts-component';
+import { SDate, SNavigation, SPage, SText, SThread, SLoad, SHr } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
 
@@ -139,6 +139,7 @@ export default class init extends Component {
             "type": "registro",
             "estado": "cargando",
             "data": {
+                "key_empresa": Model.empresa.Action.getKey(),
                 "key_sucursal": sucursal.key,
                 "descripcion": "Almacen 1"
             },
@@ -292,7 +293,7 @@ Se realizaron las siguientes tareas automáticamente:
 
     render() {
         return <SPage title={"init"} center>
-            <SLoad/> 
+            <SLoad />
             <SHr height={10} />
             <SText>Configurando la empresa...</SText>
         </SPage>
