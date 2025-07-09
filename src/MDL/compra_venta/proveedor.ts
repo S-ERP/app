@@ -7,6 +7,7 @@
 import SSocket from "servisofts-socket";
 // import { Proyecto } from "./type";
 import Model from "../../Model";
+import MDL from "..";
 // import MDL from "..";
 
 export default class proveedor {
@@ -51,7 +52,7 @@ export default class proveedor {
   }
 
   async registrar(data: any) {
-    data.key_empresa = "c9caa964-88f3-43db-88df-684ecf5c0a1b";
+    data.key_empresa = MDL.empresa.select?.key;
     data.nombre = "oruro";
     data.nit = "10";
     const resp: any = await SSocket.sendPromise({
