@@ -32,7 +32,7 @@ export default class Proveedor extends Component {
             key: "popup_config_horario",
             content: (
                 <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
-                    <SView col={"xs-12"} height={600} center >
+                    <SView col={"xs-12"} height={470} center >
                         <ProveedorFormulario key_proveedor={aux_key} data={data} onReload={() => { this.DinamicTable.loadData(); }} ></ProveedorFormulario>
                     </SView>
                 </SView>
