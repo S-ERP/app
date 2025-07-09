@@ -11,6 +11,7 @@ import FloatMenu from '../../../Components/FloatMenu';
 import SIconApp from '../../../Assets/SIconApp';
 import FormularioAgregarInventario from '../Components/FormularioAgregarInventario';
 import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
+import PopupDetalleModelo from '../Components/PopupDetalleModelo';
 
 export default class table extends Component {
     constructor(props) {
@@ -135,6 +136,25 @@ export default class table extends Component {
                                 }
                             },
 
+                            {
+                                label: "Ver desglose",
+                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                onPress: () => {
+
+                                    PopupDetalleModelo.open({
+                                        editObject: null,
+                                        onSuccess: () => {
+                                            if (this.table) {
+                                                this.table.loadData();
+                                                this.state.time = new Date().getTime();
+                                            }
+                                        }
+                                    });
+
+                                    // SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto });
+                                }
+                            },
+
                         ]
                     });
 
@@ -174,11 +194,12 @@ export default class table extends Component {
                     width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
 
 
-                <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable' width={150} data={(e) => e.row?.tipo_producto?.tipo} />
+                <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sd' width={150} data={(e) => e.row?.tipo_producto?.tipo} />
                 <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row?.barcode} />
             </DinamicTable>
             <FloatButtom onPress={() => {
-                FormularioModelo.open({
+                PopupDetalleModelo.open({
+                    key_modelo: null,
                     editObject: null,
                     onSuccess: () => {
                         if (this.table) {

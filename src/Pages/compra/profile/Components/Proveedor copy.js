@@ -13,15 +13,24 @@ export default class Proveedor extends Component {
 
     seleccionarProveedor() {
         console.log(this.roles)
-       // let rol_proveedor = Object.values(this.roles).find(a => a.tipo == "proveedor")
-        // if(!rol_proveedor?.key){
-        //     SPopup.alert("No se encontro el rol proveedor")
-        //     return null;
-        // }
-        SNavigation.navigate("/proveedor", {
-             onSelect: (obj) => {
-
-                this.data.proveedor = obj;
+        let rol_proveedor = Object.values(this.roles).find(a => a.tipo == "proveedor")
+        if(!rol_proveedor?.key){
+            SPopup.alert("No se encontro el rol proveedor")
+            return null;
+        }
+        SNavigation.navigate("/rol/profile/usuarios", {
+            pk: rol_proveedor?.key, onSelect: (obj) => {
+                var proveedor = {
+                    nit: obj.CI,
+                    razon_social: obj.Nombres + " " + obj.Apellidos,
+                    key_usuario: obj.key,
+                    telefono: obj.Telefono,
+                    correo: obj.Correo,
+                    direccion: "",
+                    key_usuario: obj.key,
+                    // sucursal: "SUCURSAL TODO",
+                }
+                this.data.proveedor = proveedor;
                 Model.compra_venta.Action.editar({
                     data: this.data,
                     key_usuario: Model.usuario.Action.getKey()
@@ -33,10 +42,10 @@ export default class Proveedor extends Component {
     }
     render() {
         this.data = this.props.data;
-        //this.roles = Model.rol.Action.getAll({ key_empresa: Model.empresa.Action.getKey() });
+        this.roles = Model.rol.Action.getAll({ key_empresa: Model.empresa.Action.getKey() });
 
         if (!this.data?.proveedor) {
-
+            if (!this.roles) return <SLoad />
             if (this.props.disabled) {
                 return <SView>
                     <SHr height={16} />

@@ -1,4 +1,4 @@
-import { SPage, SPageListProps } from 'servisofts-component';
+import { SPage, SPageListProps } from "servisofts-component";
 
 import Root from './root';
 import start from './start';
@@ -40,39 +40,41 @@ import chat from './chat';
 import { Example } from 'servisofts-charts'
 import publicacion from './publicacion'
 import invitation from "./invitation";
-import invitacion from './invitacion'
-import terminos from './terminos'
-import anim1 from "./anim1"
-import widget from './widget';
-import cafe from './cafe';
+import invitacion from "./invitacion";
+import terminos from "./terminos";
+import anim1 from "./anim1";
+import widget from "./widget";
+import cafe from "./cafe";
 // import upload from "./upload"
-import solicitud_qr from './solicitud_qr';
-import charts from './charts';
-import mapa from './mapa';
-import uploadv2 from "./uploadv2"
-import drive from './drive';
-import drive2 from './drive2';
-import qr_reader from './qr_reader';
+import solicitud_qr from "./solicitud_qr";
+import charts from "./charts";
+import mapa from "./mapa";
+import uploadv2 from "./uploadv2";
+import drive from "./drive";
+import drive2 from "./drive2";
+import qr_reader from "./qr_reader";
 // Three js
 // import three from './three';
 // import mesh from './mesh';
 // import scene from './scene';
 
-import lote from './lote';
+import lote from "./lote";
 
-import restaurante from './restaurante';
-import whatsapp from './whatsapp';
+import restaurante from "./restaurante";
+import whatsapp from "./whatsapp";
 
-import testTable from './testTable';
-import qr from './qr';
-import icons from './icons';
+import testTable from "./testTable";
+import qr from "./qr";
+import icons from "./icons";
 
-import factura from '../Components/PDF/factura';
+import factura from "../Components/PDF/factura";
 
-import ricky from './ricky';
-import crm from './crm';
-import plantilla from './crm/plantilla';
-import turno from './turno';
+import ricky from "./ricky";
+import crm from "./crm";
+import plantilla from "./crm/plantilla";
+import turno from "./turno";
+import proveedores from "../Components/compra_venta/Proveedor";
+import Proveedor from "../Components/compra_venta/Proveedor";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -147,6 +149,7 @@ export default SPage.combinePages("/", {
   ...crm,
   "pdf/factura": factura,
   plantilla,
-  turno,
+    turno,
+  proveedor : Proveedor,
   ...qr_reader,
 });
