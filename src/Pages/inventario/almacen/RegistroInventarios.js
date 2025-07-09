@@ -231,10 +231,13 @@ export default class RegistroInventarios extends Component {
                     data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0}
                     customComponent={e => (
                         <SInput
+                            // ref={ }
+                            ref={(ref) => e.row.inputRef = ref} // guardamos ref si luego quieres acceder
                             type="number"
                             maxLength={3}
-                            defaultValue={e.row.cant_inventario}
+                            defaultValue={e?.row?.cant_inventario}
                             style={{
+                                borderColor : this?.pintarColor,
                                 borderWidth: 2,
                                 backgroundColor: "transparent",
                                 textAlign: "center",
@@ -246,7 +249,6 @@ export default class RegistroInventarios extends Component {
                                 this.forceUpdate();
                             }}
 
-                            border={this?.pintarColor}
                         />
                     )}
                 />
