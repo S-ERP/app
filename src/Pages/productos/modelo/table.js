@@ -30,32 +30,34 @@ export default class table extends Component {
         this.modelos = modelos;
         return modelos;
     }
+
+    onChangeBarcode(barcode) {
+        if (this.modelos) {
+            const modelo = this.modelos.find(m => m.barcode === barcode);
+            if (modelo) {
+                const fil = this.table.filtros.find(f => f.col === "barcode");
+                this.table.filtros.splice(this.table.filtros.indexOf(fil), 1);
+                this.table.filtros.push({
+                    col: "barcode",
+                    value: modelo.barcode,
+                    operator: "=",
+
+                })
+                this.table.applyFilter();
+                SNotification.send({
+                    title: modelo.descripcion,
+                    // body: `El modelo ${modelo.descripcion} ha sido encontrado.`,
+                    image: SSocket.api.inventario + "modelo/" + modelo.key + "?date=" + this.state.time,
+                    time: 5000,
+                })
+                // this.table.setSelect(modelo.key);
+            }
+        }
+        console.log("Barcode read:", barcode);
+    }
     render() {
         return <SPage title={"Modelos"} disableScroll >
-            <BarcodeIcon onChange={(barcode) => {
-                if (this.modelos) {
-                    const modelo = this.modelos.find(m => m.barcode === barcode);
-                    if (modelo) {
-                        const fil = this.table.filtros.find(f => f.col === "barcode");
-                        this.table.filtros.splice(this.table.filtros.indexOf(fil), 1);
-                        this.table.filtros.push({
-                            col: "barcode",
-                            value: modelo.barcode,
-                            operator: "=",
-
-                        })
-                        this.table.applyFilter();
-                        SNotification.send({
-                            title: modelo.descripcion,
-                            // body: `El modelo ${modelo.descripcion} ha sido encontrado.`,
-                            image: SSocket.api.inventario + "modelo/" + modelo.key + "?date=" + this.state.time,
-                            time: 5000,
-                        })
-                        // this.table.setSelect(modelo.key);
-                    }
-                }
-                console.log("Barcode read:", barcode);
-            }} />
+            <BarcodeIcon onChange={this.onChangeBarcode.bind(this)} />
             <DinamicTable
                 ref={ref => this.table = ref}
                 colors={Config.table.colors()}
