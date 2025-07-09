@@ -34,6 +34,9 @@ export default class PopupDesglose extends Component {
             // loadData={this.loadData.bind(this)}
             loadData={async () => {
                 const produc = await MDL.inventario.getAllProductos(this.props.key_modelo);
+
+                // const produc = await MDL.inventario.getAllProductos(this.props.key_modelo);
+
                 //    const keysUsuarios = Object.values(proveedores).map(p => p.key_usuario).filter(Boolean);
 
                 //    // Obtener usuarios desde el backend
