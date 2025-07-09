@@ -98,7 +98,7 @@
     "servisofts-model": "^1.0.7",
     "servisofts-page": "^1.0.12",
     "servisofts-rn-chat": "1.0.12",
-    "servisofts-rn-contabilidad": "1.0.8",
+    "servisofts-rn-contabilidad": "file:../../contabilidad/library/dist",
     "servisofts-rn-geolocation": "^1.0.4",
     "servisofts-rn-roles_permisos": "^1.0.8",
     "servisofts-rn-spdf": "^1.0.5",

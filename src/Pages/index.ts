@@ -18,6 +18,7 @@ import productos from './productos';
 import test from './test';
 import wiki from './wiki';
 import compra from './compra';
+import compra2 from './compra2';
 import venta from './venta';
 import caja from './caja';
 import cobranza from './cobranza';
@@ -114,6 +115,7 @@ export default SPage.combinePages("/", {
   ...cliente,
   ...productos,
   ...compra,
+  ...compra2,
   ...venta,
   ...caja,
   ...cobranza,
