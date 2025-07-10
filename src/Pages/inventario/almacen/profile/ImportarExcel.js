@@ -173,10 +173,9 @@ export default class ImportarExcel extends Component {
                     >
                         {Object.keys(data[0]).map((key, i) => (
                             <DinamicTable.Col
-
                                 key={key}
                                 label={key}
-                                data={a => a.row[key]}
+                                data={a => (a.row[key] === undefined || a.row[key] === null || a.row[key] === "") ? "0" : a.row[key].toString()}
                                 style={a => ({
                                     backgroundColor: a.row.__color || "transparent"
                                 })}
