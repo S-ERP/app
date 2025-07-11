@@ -21,11 +21,16 @@ import PopupDesglose from '../../productos/Components/PopupDesglose';
 // import PopupDesglose from '../Components/PopupDesglose';
 
 export default class RegistroInventarios extends Component {
+
+
+
+
     constructor(props) {
         super(props);
         this.state = {
             time: new Date().getTime()
         };
+        this.key_almacen = SNavigation.getParam("pk");
         this.pintarColor = STheme.color.card;
     }
 
@@ -35,8 +40,18 @@ export default class RegistroInventarios extends Component {
     async loadData() {
         const modelos = await MDL.inventario.getAllModeloStock();
         this.modelos = modelos;
+        console.log("impresora " + this.modelos)
         return modelos;
     }
+
+
+    componentDidMount(): void {
+        MDL.inventario.getAllAlmacen().then((almacenes: any) => {
+            this.almacenes = Object.values(almacenes)
+         })
+    }
+
+
 
 
     colorStock(cant_stock, cant_inv) {
@@ -96,16 +111,16 @@ export default class RegistroInventarios extends Component {
                         // console.log("🟦 Modelos cargados desde loadData:");
                         // console.log(modelosCargados); // OK: no circular
 
-                        // const save_cacheV1 = {};
-                        // (modeloConDatos || []).forEach((e, index) => {
-                        //     if (!e.key) return;
-                        //     save_cacheV1[index] = {
-                        //         key_modelo: e.key,
-                        //         cantidad_real: e.cantidad_real,
-                        //         cantidad_baja: e.cantidad_baja,
-                        //         observacion: e.observacion
-                        //     };
-                        // });
+                        const save_cacheV1 = {};
+                        (modeloConDatos || []).forEach((e, index) => {
+                            if (!e.key) return;
+                            save_cacheV1[index] = {
+                                key_modelo: e.key,
+                                cantidad_real: e.cantidad_real,
+                                cantidad_baja: e.cantidad_baja,
+                                observacion: e.observacion
+                            };
+                        });
 
 
 
@@ -135,8 +150,45 @@ export default class RegistroInventarios extends Component {
                             });
 
 
+                        const save_cacheV5 = (this.table?.data || [])
+                            .filter(e => e.key)
+                            .map(e => ({
+                                key_modelo: e.key,
+                                cantidad_sistema: Number(e.stock) || 0,
+                                cantidad_real: Number(e.cantidad_real) || 0,
+                                cantidad_baja: Number(e.cantidad_baja) || 0,
+                                explicacion: e.explicacion?.toString().trim() || ""
+                            }));
+
+
+                        MDL.inventario.saveConteoManualInventario({
+                            key_almacen: this.key_almacen,
+                            data: save_cacheV5
+                        }).then((resp) => {
+                            this.forceUpdate();
+                            // SNotification.send({
+                            //     title: "Tipo de producto guardado",
+                            //     body: "El tipo de producto se ha guardado correctamente.",
+                            //     time: 3000,
+                            //     color: STheme.color.success,
+                            // });
+                        }).catch((e: any) => {
+                            console.error("Error al guardar el tipo de producto:", e);
+                            // SNotification.send({
+                            //     title: "Error",
+                            //     body: "No se pudo guardar el tipo de producto.",
+                            //     time: 3000,
+                            //     color: STheme.color.danger,
+                            // });
+                        })
+
+
+
+                        // ConteoManualInventario
                         console.log("🧠 save_cache:");
-                        console.log(JSON.stringify(save_cacheV4)); // OK: no circular
+                        console.log(JSON.stringify(save_cacheV5)); // OK: no circular
+
+
 
 
 
@@ -198,7 +250,7 @@ export default class RegistroInventarios extends Component {
                                 ref={(ref) => e.row.inputRef = ref} // guardamos ref si luego quieres acceder
                                 type="number"
                                 maxLength={3}
-                                defaultValue={Number(e.row.cantidad_real) || 0 }
+                                defaultValue={Number(e.row.cantidad_real) || 0}
                                 style={{
                                     borderWidth: 0.1,
                                     borderColor: color,
@@ -221,8 +273,6 @@ export default class RegistroInventarios extends Component {
                     label="Cant. Baja"
                     dataType="number"
                     width={120}
-
-
                     data={(e) => e.row.cantidad_baja ? parseFloat(e.row.cantidad_baja) : 0}
                     customComponent={(e) => {
                         // const color = this.colorStock(e.row.stock, e.row.cant_inventario);
@@ -231,15 +281,10 @@ export default class RegistroInventarios extends Component {
                                 ref={(ref) => e.row.inputRef = ref} // guardamos ref si luego quieres acceder
                                 type="number"
                                 maxLength={3}
-
                                 defaultValue={Number(e.row.cantidad_baja) || 0}
-
-
-                                // defaultValue={e.row.cantidad_baja}
                                 style={{
                                     borderWidth: 0.1,
                                     borderColor: STheme.color.card,
-                                    // borderColor: color,
                                     backgroundColor: "transparent",
                                     textAlign: "center",
                                     paddingStart: 0,
@@ -263,17 +308,10 @@ export default class RegistroInventarios extends Component {
                         return (
                             <SInput
                                 ref={(ref) => e.row.inputRef = ref} // guardamos ref si luego quieres acceder
-                                // type="number"
-                                // maxLength={3}
-
-                                // defaultValue={Number(e.row.cantidad_baja) || ""}
-
-
                                 defaultValue={e.row?.explicacion || ""}
                                 style={{
                                     borderWidth: 0.1,
                                     borderColor: STheme.color.card,
-                                    // borderColor: color,
                                     backgroundColor: "transparent",
                                     textAlign: "center",
                                     paddingStart: 0,
