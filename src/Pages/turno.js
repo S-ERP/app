@@ -22,6 +22,15 @@ export default class turnov2 extends Component {
 
     }
 
+
+
+        componentDidMount(): void {
+            MDL.inventario.getAllConteoManualInventario().then((almacenes: any) => {
+                this.almacenes = Object.values(almacenes)
+             })
+        }
+
+
     mostrarPopup(aux_key: any) {
         SPopup.open({
             key: "popup_config_horario",
@@ -66,38 +75,25 @@ export default class turnov2 extends Component {
             ref={ref => this.DinamicTable = ref}
             onSelect={(e) => {
                 // <TurnoComponent></TurnoComponent>
-                this.mostrarPopup(e.row.key)
+                // this.mostrarPopup(e.row.key)
                 // console.log("Selected turno:", e.row.key);
             }}
 
 
             loadData={async () => {
-                const all = await MDL.empresa.getTurnosHorariosAtencion();
+                const all = await MDL.inventario.getAll_reporte_conteo_inventario_detallado();
+                // const almacen = await MDL.almacenes.getAllAlmacen();
+                // all.forEach(e => {
+                //     e.key_almacen = almacen[e?.key_almacen] || null;
+                // });
 
-                // 🔁 OPCIONAL: si querés usar clientes en lugar de usuarios
-                // const usuarios = await MDL.crm.cliente.getAll();
-                const usuarios = await MDL.usuario.getByKeys(Object.keys(all));
+                console.log("📦 Reporte de inventario:", all);
 
-                const data = Object.entries(all).flatMap(([key_usuario, turnos]) => {
-                    const usuario = usuarios.find(u => u.key === key_usuario);
-                    return turnos.map((item, index) => ({
-                        ...item,
-                        key_usuario,
-                        usuario, // ✅ Aquí sí incluimos el objeto completo
-                        index
-                    }));
-                });
-
-
-
-                console.log("fregado", data);
-                return data;
+                return all;
             }}
 
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
-            {/* <DinamicTable.Col key="key_turno" label="key_turno" width={180}  /> */}
-            <DinamicTable.Col key="key_turno" label="key_turno" width={150} data={(e) => e.row?.key} />
 
 
             <DinamicTable.Col key={"foto"} label='User'
@@ -114,14 +110,13 @@ export default class turnov2 extends Component {
                         resizeMode: "cover",
                     }} />
                 </SView>} />
-            {/* <DinamicTable.Col key="nombre" label="Día" width={100} data={(e) => e.row?.nombre} /> */}
-            <DinamicTable.Col key="horario" label="Horario" width={150} data={(e) => e.row?.horario} />
-            <DinamicTable.Col key="nombre" label="Turno" width={150} data={(e) => e.row?.nombre} />
-            <DinamicTable.Col key="atiende_feriado" label="¿Feriado?" width={100} data={(e) => e.row?.atiende_feriado} />
-            <DinamicTable.Col key="dia" label="Día #" width={80} data={(e) => e.row?.dia} />
-            <DinamicTable.Col key="registrado_el" label="Fecha Registro" width={120} data={(e) => e.row?.registrado_el} />
+            <DinamicTable.Col key="key_almacen" label="Almacen" width={150} data={(e) => e.row?.key_almacen} />
             <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.key_usuario} />
-            <DinamicTable.Col key="asdsad" label="Usuario" width={250} data={(e) => e.row?.usuario.Nombres} />
+            <DinamicTable.Col key="fecha" label="fecha" width={100} data={(e) => e.row?.fecha} />
+            <DinamicTable.Col key="hora" label="hora" width={100} data={(e) => e.row?.hora} />
+            <DinamicTable.Col key="key_conteo" label="key_conteo" width={100} data={(e) => e.row?.key_conteo} />
+            <DinamicTable.Col key="total_baja" label="total_baja" width={100} data={(e) => e.row?.total_baja} />
+            <DinamicTable.Col key="total_perdida_no_registrada" label="total_perdida_no_registrada" width={100} data={(e) => e.row?.total_perdida_no_registrada} />
 
 
         </DinamicTable>
@@ -137,7 +132,6 @@ export default class turnov2 extends Component {
                 {this.mostrarTabla()}
 
                 <SHr height={20} />
-                <FloatButtom onPress={() => { this.mostrarPopup() }} />
             </SPage>
         );
     }

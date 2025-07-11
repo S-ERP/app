@@ -216,8 +216,8 @@ export default class inventario extends MDLAbstract<EventListener> {
       type: "getAll_reporte_conteo_inventario_detallado",
       // data: obj.data,
       key_empresa: MDL.empresa.select?.key,
-      key_usuario: MDL.usuario.session?.key,
-    });
+     });
+      console.log("nota " + JSON.stringify(resp.data));
     return resp.data;
   }
 }
