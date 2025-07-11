@@ -3,7 +3,6 @@ import MDLAbstract from "../MDLAbstract";
 import { EventListener } from "./types";
 import MDL from "..";
 
-
 export default class inventario extends MDLAbstract<EventListener> {
   async componentDidMount() {}
 
@@ -207,5 +206,18 @@ export default class inventario extends MDLAbstract<EventListener> {
       });
       return resp.data;
     }
+  }
+
+  async getAll_reporte_conteo_inventario_detallado() {
+    const resp: any = await SSocket.sendPromise({
+      // version: "1.0",
+      service: "inventario",
+      component: "conteo_manual_inventario",
+      type: "getAll_reporte_conteo_inventario_detallado",
+      // data: obj.data,
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
+    return resp.data;
   }
 }
