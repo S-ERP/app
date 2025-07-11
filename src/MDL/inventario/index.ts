@@ -171,7 +171,6 @@ export default class inventario extends MDLAbstract<EventListener> {
         service: "inventario",
         component: "modelo",
         type: "getAllProductos",
-        // data: modelo,
         key_modelo: key_modelo,
         key_empresa: MDL.empresa.select?.key,
         key_usuario: MDL.usuario.session?.key,
@@ -187,7 +186,6 @@ export default class inventario extends MDLAbstract<EventListener> {
       component: "conteo_manual_inventario",
       type: "getAll",
       key_almacen: MDL.empresa.select?.key,
-      //   key_usuario: MDL.usuario.session?.key,
     });
 
     return Object.values(resp.data || {});
@@ -196,7 +194,6 @@ export default class inventario extends MDLAbstract<EventListener> {
   async saveConteoManualInventario(obj: any) {
     if (!obj.key) {
       const resp: any = await SSocket.sendPromise({
-        // version: "1.0",
         service: "inventario",
         component: "conteo_manual_inventario",
         type: "registro",
@@ -210,14 +207,33 @@ export default class inventario extends MDLAbstract<EventListener> {
 
   async getAll_reporte_conteo_inventario_detallado() {
     const resp: any = await SSocket.sendPromise({
-      // version: "1.0",
       service: "inventario",
       component: "conteo_manual_inventario",
       type: "getAll_reporte_conteo_inventario_detallado",
-      // data: obj.data,
       key_empresa: MDL.empresa.select?.key,
-     });
-      console.log("nota " + JSON.stringify(resp.data));
+    });
     return resp.data;
   }
+
+  async getByKey_reporte_conteo_inventario_detallado(key_contador : any) {
+    const resp: any = await SSocket.sendPromise({
+      service: "inventario",
+      component: "conteo_manual_inventario",
+      type: "getByKey",
+      key_contador: key_contador,
+    });
+    return resp.data;
+  }
+
+  // async getAll_reporte_conteo_inventario_detallado() {
+  // const resp: any = await SSocket.sendPromise({
+  //   service: "inventario",
+  //   component: "conteo_manual_inventario",
+  //   type: "getAll_reporte_conteo_inventario_detallado",
+  //   key_empresa: MDL.empresa.select?.key,
+  //  });
+  // return resp.data;
+  // }
+
+  // {/* <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.key_usuario} /> */}
 }

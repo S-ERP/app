@@ -7,12 +7,7 @@ import SCharts from 'servisofts-charts';
 import Usuarios from 'servisofts-component/img/Usuarios';
 import { version } from 'process';
 import MDL from '../../../MDL';
-// import MDL from '../MDL';
-// import Config from '../Config';
-// import Model from '../Model';
-// import FloatButtom from '../Components/FloatButtom';
-// import TurnoComponent from '../Components/TurnoComponent';
-// import Container from '../Components/Container';
+
 
 
 export default class ReporteConteoInventario extends Component {
@@ -56,44 +51,24 @@ export default class ReporteConteoInventario extends Component {
             }}
 
             ref={ref => this.DinamicTable = ref}
-            onSelect={(e) => {
-                // <TurnoComponent></TurnoComponent>
-                // this.mostrarPopup(e.row.key)
-                // console.log("Selected turno:", e.row.key);
-            }}
+
 
 
             loadData={async () => {
                 const all = await MDL.inventario.getAll_reporte_conteo_inventario_detallado();
-                // const almacenes = await MDL.almacenes.getAllAlmacen();
-
-                // Extraer key_usuario únicos SIN usar Set
-                // const keys_usuarios = [];
-                // all.forEach(e => {
-                //     if (!keys_usuarios.includes(e.key_usuario)) {
-                //         keys_usuarios.push(e.key_usuario);
-                //     }
-                // });
-
-                // const usuarios = await MDL.usuario.getByKeys(keys_usuarios);
-
-                // Relacionar objetos
-                // all.forEach(e => {
-                // e.almacen = almacenes.find(a => a.key === e.key_almacen) || null;
-                // e.usuario = usuarios[e.key_usuario] || null;
-                // });
-
-                console.log("📦 Reporte de inventario:", all);
+                const keysUsuarios = Object.values(all).map(p => p.key_usuario).filter(Boolean);
+                const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
+                Object.values(all).forEach(proveedor => {
+                    proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario);
+                });
                 return all;
-
             }}
 
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
 
-
             <DinamicTable.Col key={"foto"} label='User'
-                data={(e) => e.row?.key_usuario}
+                data={(e) => e.row?.usuario}
                 width={35}
                 customComponent={e => <SView style={{
                     width: 24,
@@ -102,18 +77,40 @@ export default class ReporteConteoInventario extends Component {
                     overflow: "hidden",
                     backgroundColor: STheme.color.card + "66",
                 }}>
-                    <SImage src={SSocket.api.root + "usuario/" + e.data} style={{
+                    <SImage src={SSocket.api.root + "usuario/" + e.row?.usuario} style={{
                         resizeMode: "cover",
                     }} />
                 </SView>} />
-            <DinamicTable.Col key="key_almacen" label="Almacen" width={150} data={(e) => e.row?.key_almacen} />
-            <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.key_usuario} />
-            <DinamicTable.Col key="fecha" label="fecha" width={100} data={(e) => e.row?.fecha} />
-            <DinamicTable.Col key="hora" label="hora" width={100} data={(e) => e.row?.hora} />
-            <DinamicTable.Col key="key_conteo" label="key_conteo" width={100} data={(e) => e.row?.key_conteo} />
-            <DinamicTable.Col key="total_baja" label="total_baja" width={100} data={(e) => e.row?.total_baja} />
-            <DinamicTable.Col key="total_perdida_no_registrada" label="total_perdida_no_registrada" width={100} data={(e) => e.row?.total_perdida_no_registrada} />
 
+            <DinamicTable.Col key="nombre" label="Usuario" width={150} data={(e) => e.row?.usuario.Nombres} />
+
+            <DinamicTable.Col key="descripcion" label="Almacen" width={150} data={(e) => e.row?.descripcion} />
+            {/* <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.key_usuario} /> */}
+            <DinamicTable.Col key="fecha" label="Fecha" width={100} data={(e) => e.row?.fecha} />
+            <DinamicTable.Col key="hora" label="Hora" width={100} data={(e) => e.row?.hora} />
+            <DinamicTable.Col key="hora" label="Hora" width={100} data={(e) => e.row?.hora} />
+
+
+            <DinamicTable.Col key="key_conteo" label="key_conteo" width={100} data={(e) => e.row?.key_conteo}
+                customComponent={e => <SView style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: 100,
+                    overflow: "hidden",
+                    backgroundColor: STheme.color.card + "66",
+                }}
+                    onPress={() => {
+                        SNavigation.navigate("/inventario/almacen/profile/registro_inventario", { pk: e.row.key_almacen, key_conteo: e.row.key_conteo })
+
+                    }}
+                >
+
+                    <SText >detalles</SText>
+
+                </SView>} />
+
+            <DinamicTable.Col key="total_baja" label="T.Baja" width={100} data={(e) => e.row?.total_baja} />
+            <DinamicTable.Col key="total_perdida_no_registrada" label="T. Pérdidas" center width={100} data={(e) => e.row?.total_perdida_no_registrada} />
 
         </DinamicTable>
 
@@ -123,11 +120,10 @@ export default class ReporteConteoInventario extends Component {
 
 
         return (
-            <SPage title="Turnos y Horarios" disableScroll>
+            <SPage title="Reporte de Conteo de Inventario" disableScroll>
 
                 {this.mostrarTabla()}
 
-                <SHr height={20} />
             </SPage>
         );
     }

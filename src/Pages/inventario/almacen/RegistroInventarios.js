@@ -31,6 +31,7 @@ export default class RegistroInventarios extends Component {
             time: new Date().getTime()
         };
         this.key_almacen = SNavigation.getParam("pk");
+        this.key_conteoxxx = SNavigation.getParam("key_conteo");
         this.pintarColor = STheme.color.card;
     }
 
@@ -38,8 +39,20 @@ export default class RegistroInventarios extends Component {
     modelos = null;
 
     async loadData() {
+
         const modelos = await MDL.inventario.getAllModeloStock();
-        this.modelos = modelos;
+
+        if (this.key_conteoxxx){
+            this.modelos = this.inventariossss;
+            this.forceUpdate();
+        } else {
+
+            this.modelos = modelos;
+        }
+
+
+
+
         console.log("impresora " + this.modelos)
         return modelos;
     }
@@ -48,7 +61,15 @@ export default class RegistroInventarios extends Component {
     componentDidMount(): void {
         MDL.inventario.getAllAlmacen().then((almacenes: any) => {
             this.almacenes = Object.values(almacenes)
-         })
+
+
+        })
+
+        // MDL.inventario.getByKey_reporte_conteo_inventario_detallado(this.almacenes.key_conteo).then((almacenes: any) => {
+        //     this.inventariossss = Object.values(almacenes)
+        // })
+
+
     }
 
 
