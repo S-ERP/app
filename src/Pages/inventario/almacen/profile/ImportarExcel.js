@@ -23,6 +23,13 @@ export default class ImportarExcel extends Component {
 
     async componentDidMount() {
         const modelos = await MDL.inventario.getAllModeloStock();
+        const sucursales = await MDL.empresa.getAllSucursales();
+        this.sucursalesDescripcion = {};
+        sucursales.forEach(s => {
+            if (s.key && s.descripcion) {
+                this.sucursalesDescripcion[s.descripcion.trim()] = true;
+            }
+        });
         // Mapear barcode => descripcion
         modelos.forEach(m => {
             const barcode = (m.barcode + "").trim();
@@ -65,6 +72,7 @@ export default class ImportarExcel extends Component {
                 productosNoEncontrados.add(cod);
             }
 
+
             const productoPlano = {
                 codigo_producto: cod,
                 nombre_producto: nombre_producto.trim(),
@@ -88,7 +96,10 @@ export default class ImportarExcel extends Component {
             datosProcesados.push(productoPlano);
         }
 
-        const sucursalesArr = Array.from(allSucursales).filter(s => s && s !== "");
+        const sucursalesArr = Array.from(allSucursales).filter(s =>
+            s && s !== "" && !["precio_compra", "precio_venta"].includes(s.trim().toLowerCase())
+        );
+
 
         this.setState({
             data: datosProcesados,
@@ -108,6 +119,20 @@ export default class ImportarExcel extends Component {
             reader.readAsArrayBuffer(files[0]);
         });
     };
+    subirExcel = () => {
+        const { data, sucursales } = this.state;
+        // Verifica si hay modelos no encontrados
+        const tieneModeloNoEncontrado = data.some(d => d.modelo === "❌ NO ENCONTRADO");
+        // Verifica si hay sucursales con background rojo (no existen en this.sucursalesDescripcion)
+        const sucursalesInvalidas = sucursales.filter(s => !this.sucursalesDescripcion?.[s]);
+        if (tieneModeloNoEncontrado || sucursalesInvalidas.length > 0) {
+            SPopup.alert("No se puede subir datos erróneos. Verifique que todos los modelos existan y las sucursales sean válidas.");
+            return;
+        }
+        // Aquí iría la lógica para subir los datos si todo está correcto
+        SPopup.alert("Datos listos para subir.");
+    };
+
     eliminarFila = (key) => {
         this.setState({ data: this.state.data.filter(d => d.key !== key), sucursales: this.state.sucursales.filter(s => s !== key) });
     };
@@ -117,10 +142,14 @@ export default class ImportarExcel extends Component {
 
         return (
             <SPage title={"Importar Productos desde Excel"} disableScroll>
-                <SView col={"xs-12"} center>
+                <SView col={"xs-12"} row center style={{ padding: 10, gap: 10 }}>
                     <SView width={180} height={40} center backgroundColor={"#2a2a2a"} borderRadius={8}
                         onPress={this.importarDesdeExcel}>
                         <SText color="white" bold>📥 Importar Excel</SText>
+                    </SView>
+                    <SView width={180} height={40} center backgroundColor={"#2a2a2a"} borderRadius={8}
+                        onPress={this.subirExcel}>
+                        <SText color="white" bold>📥 Subir Excel</SText>
                     </SView>
                 </SView>
 
@@ -171,17 +200,22 @@ export default class ImportarExcel extends Component {
                             });
                         }}
                     >
-                        {Object.keys(data[0]).map((key, i) => (
-                            <DinamicTable.Col
+                        {Object.keys(data[0]).map((key, i) => {
+                            let style = {};
+                            // Asegura que this.state.sucursales esté definido y sea un array
+                            if (this.sucursalesDescripcion && Array.isArray(this.state.sucursales) && this.state.sucursales.includes(key) && !this.sucursalesDescripcion[key]) {
+                                style = { backgroundColor: STheme.color.danger };
+                            }
 
-                                key={key}
-                                label={key}
-                                data={a => a.row[key]}
-                                style={a => ({
-                                    backgroundColor: a.row.__color || "transparent"
-                                })}
-                            />
-                        ))}
+                            return (
+                                <DinamicTable.Col
+                                    key={key}
+                                    label={key}
+                                    data={a => (a.row[key] === undefined || a.row[key] === null || a.row[key] === "") ? "0" : a.row[key].toString()}
+                                    cellStyle={style}
+                                />
+                            )
+                        })}
                     </DinamicTable>
                 )}
             </SPage>

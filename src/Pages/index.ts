@@ -40,6 +40,9 @@ import nota from './nota';
 import chat from './chat';
 import { Example } from 'servisofts-charts'
 import publicacion from './publicacion'
+
+
+
 import invitation from "./invitation";
 import invitacion from "./invitacion";
 import terminos from "./terminos";
@@ -76,6 +79,8 @@ import plantilla from "./crm/plantilla";
 import turno from "./turno";
 import proveedores from "../Components/compra_venta/Proveedor";
 import Proveedor from "../Components/compra_venta/Proveedor";
+import RegistroInventario from "./inventario/almacen/RegistroInventarios";
+import ReporteConteoInventario from "./inventario/almacen/ReporteConteoInventario";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -151,7 +156,10 @@ export default SPage.combinePages("/", {
   ...crm,
   "pdf/factura": factura,
   plantilla,
-    turno,
-  proveedor : Proveedor,
+  turno,
+  proveedor: Proveedor,
   ...qr_reader,
+  //   inventariar :
+  "inventario/almacen/profile/registro_inventario": RegistroInventario,
+  "productos/reporte_conteo_inventario": ReporteConteoInventario,
 });
