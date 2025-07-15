@@ -28,7 +28,24 @@ export default class TypeFile extends Component<{ file: any, path: string }> {
         if (type.indexOf("pdf") > -1) {
             return <PDFViewer src={DiverPath} />
         }
+        if (type.indexOf("officedocument") > -1) {
+            return <>
+                {this.state.loaded ? null : <div>Cargando presentación...</div>}
+                <iframe
+                    src={"https://view.officeapps.live.com/op/embed.aspx?src=" + DiverPath}
+                    width="100%"
+                    height="100%"
+                    frameborder="0"
+                    onLoad={() => this.setState({ loaded: true })}
+                >
+                </iframe >
+            </>
+
+
+        }
         return <SView col={"xs-12"} center flex>
+
+            <SText>{type}</SText>
             <SView width={140} height={140} backgroundColor={STheme.color.warning} style={{
                 borderRadius: 100,
                 padding: 16

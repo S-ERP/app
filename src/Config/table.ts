@@ -1,15 +1,22 @@
 import { STheme } from "servisofts-component"
 
 export default {
+    applyTheme() {
+        return {
+            colors: this.colors(),
+            cellStyle: this.cellStyle(),
+            textStyle: this.textStyle(),
+        }
+    },
     colors: () => {
         const card = STheme.getTheme() == "dark" ? "#FFFFFF66" : "#00000066";
         return {
             text: STheme.color.text,
             border: STheme.color.card,
-            header: STheme.color.card,
+            header: STheme.color.primary,
             background: STheme.color.background,
             card: card,
-            accent: STheme.color.accent
+            // accent: STheme.color.accent
         }
     },
     cellStyle: () => {
@@ -23,7 +30,7 @@ export default {
     },
     textStyle: () => {
         return {
-            fontFamily: "Poppins",
+            // fontFamily: "Poppins",
             fontSize: 12,
         }
     }

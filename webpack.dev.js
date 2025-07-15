@@ -5,9 +5,12 @@ const webpack = require('webpack');
 
 module.exports = merge(common, {
     mode: 'development',
-    devtool: 'source-map',
+    // devtool: 'source-map',
+    devtool: 'cheap-module-source-map',
     // devtool: 'cheap-module-source-map',
-    // devtool: 'cheap-module-source-map',
+    cache: {
+        type: "filesystem"
+    },
     devServer: {
         port: 3010,
         // port: 3000,

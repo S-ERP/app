@@ -23,7 +23,6 @@ import test from "./test";
 import ajustes from "./ajustes";
 import init from "./init"
 import enviroment from "./enviroment";
-import cuentas2 from "./cuentas2";
 export const Parent = {
     title: "Contabilidad",
     name: "contabilidad",
@@ -42,7 +41,6 @@ export default SPage.combinePages(Parent.name,
         "sumas_saldos": sumas_saldos,
         "libro_diario": libro_diario,
         "mayores": mayores,
-        cuentas2,
         ajustes,
         init,
         ...cuenta_centro_costo,

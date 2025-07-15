@@ -13,6 +13,7 @@ import FormularioAgregarInventario from '../Components/FormularioAgregarInventar
 import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
 import PopupDetalleModelo from '../Components/PopupDetalleModelo';
 import PopupDesglose from '../Components/PopupDesglose';
+import PopupModeloCardex from '../Components/PopupModeloCardex';
 
 export default class table extends Component {
     constructor(props) {
@@ -144,30 +145,19 @@ export default class table extends Component {
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
 
+                                    PopupDesglose.open({
+                                        key_modelo: e.row.key
+                                    })
+                                }
+                            },
+                            {
+                                label: "Ver Cardex",
+                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                onPress: () => {
 
-
-                                     SPopup.open({
-                                                key: "popup_config_horario",
-                                                content: (
-                                                    <SView col={"xs-11  "} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 700 }} padding={16} withoutFeedback >
-                                                        <SView col={"xs-12"} height={470} center >
-                                                            <PopupDesglose key_modelo={e.row.key}  ></PopupDesglose>
-                                                        </SView>
-                                                    </SView>
-                                                )
-                                     });
-
-                                    // PopupDetalleModelo.open({
-                                    //     editObject: null,
-                                    //     onSuccess: () => {
-                                    //         if (this.table) {
-                                    //             this.table.loadData();
-                                    //             this.state.time = new Date().getTime();
-                                    //         }
-                                    //     }
-                                    // });
-
-                                    // SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto });
+                                    PopupModeloCardex.open({
+                                        key_modelo: e.row.key
+                                    })
                                 }
                             },
 

@@ -24,8 +24,8 @@ class index extends DPA.profile {
             // proveedor: {}
         }
     }
-    componentDidMount(){
-        if(!Model.usuario.Action.getKey()){
+    componentDidMount() {
+        if (!Model.usuario.Action.getKey()) {
             SNavigation.navigate("/login");
         }
     }
@@ -45,7 +45,9 @@ class index extends DPA.profile {
     }
     $getData() {
         this.empresa = Model.empresa.Action.getSelect();
-        var data = Parent.model.Action.getByKey(this.pk);
+        // var data = Parent.model.Action.getByKey(this.pk);
+        var data = Parent.model.Action.getAll()?.[this.pk]
+        console.log("data", data);
         this.compra_venta_detalle = Model.compra_venta_detalle.Action.getAll({
             key_compra_venta: this.pk
         })
@@ -57,6 +59,7 @@ class index extends DPA.profile {
         if (!this.compra_venta_detalle) return null;
         if (!t) return null;
         if (!data) return null;
+        console.log("data", data);
         // this.calcularTotal();
         if (this.state.totales.total_a_pagar != t.total_a_pagar) {
             this.state.totales = t;

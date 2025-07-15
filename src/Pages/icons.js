@@ -1,7 +1,7 @@
 //import liraries
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ScrollView, SectionList } from 'react-native';
-import { SBuscador, SGradient, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SBuscador, SGradient, SInput, SPage, SText, STheme, SView } from 'servisofts-component';
 import SIconApp from '../Assets/SIconApp';
 import { svg } from '../Assets';
 import OtherIcons from "servisofts-component/img/index"
@@ -35,7 +35,7 @@ class lookicons extends Component {
         <View style={{ width: 50, padding: 2 }}>
             <View style={{ justifyContent: "center", alignItems: "center" }}>
                 <SView col="xs-12" colSquare style={{ padding: 4 }}>
-                    <SIconApp name={item.key} fill={STheme.color.text} stroke={STheme.color.text} />
+                    <SIconApp name={item.key} fill={this.state.fill ?? STheme.color.text} stroke={this.state.stroke??STheme.color.text} />
                 </SView>
                 <SText col="xs-12" fontSize={8} center numberOfLines={1}>{item.key}</SText>
             </View>
@@ -59,11 +59,24 @@ class lookicons extends Component {
         const sections = this.getDataGrouped();
         return (
             <SPage disableScroll>
-                <SView col="xs-12" style={{ alignItems: "flex-end" }}>
+                <SView col="xs-12" style={{ alignItems: "flex-end" }} row>
+                    <SView padding={4}>
+                        <SInput label={"Fill"} type='color' defaultValue={STheme.color.text} onChangeText={e => {
+                            this.setState({ fill: e });
+                        }} />
+                    </SView>
+                    <SView padding={4}>
+                        <SInput label={"Stroke"} type='color' defaultValue={STheme.color.text} onChangeText={e => {
+                            this.setState({ stroke: e });
+                        }} />
+                    </SView>
+                    <SView flex />
+
                     <SView col="xs-12" style={{ maxWidth: 300, padding: 4 }}>
                         <SBuscador data={sections.flatMap(s => s.data.map(d => d.key))} onChange={e => this.setState({ search: e })} />
                     </SView>
                 </SView>
+
                 <SectionList
                     sections={sections}
                     keyExtractor={(item) => item.key}

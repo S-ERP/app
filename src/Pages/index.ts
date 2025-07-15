@@ -9,6 +9,7 @@ import usuario from './usuario';
 import empresa from './empresa';
 import rol from './rol';
 import contabilidad from './contabilidad';
+import conta from "./conta";
 import cliente from './cliente';
 import sucursal from './sucursal';
 import inventario from './inventario';
@@ -111,6 +112,7 @@ export default SPage.combinePages("/", {
   ...chat,
   ...sucursal,
   ...contabilidad,
+  ...conta,
   ...inventario,
   ...ajustes,
   ...banco,

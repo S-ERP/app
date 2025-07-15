@@ -27,6 +27,14 @@ export default class preview extends Component {
         if (type.indexOf("pdf") > -1) {
             return <SVideo paused={false} controls src={SSocket.api.drive + this.state.path} />
         }
+        if (type.indexOf("pptx") > -1) {
+            return <iframe
+                src={"https://view.officeapps.live.com/op/embed.aspx?src=" + SSocket.api.drive + this.state.path}
+                width="100%"
+                height="600px"
+                frameborder="0" >
+            </iframe >
+        }
         return <SView col={"xs-12"} center flex>
             <SView width={140} height={140} backgroundColor={STheme.color.warning} style={{
                 borderRadius: 100,

@@ -43,10 +43,10 @@ class index extends Component {
         </SExcel>
     }
     render_data() {
-        let usuarios = Model.usuario.Action.getAll();
-        if (!this.state.data || !usuarios) return <SList key={SUuid()} data={new Array(10).fill(1)} render={a => <SLoad type='skeleton' col={"xs-12"} height={50} />} />
+        // let usuarios = Model.usuario.Action.getAll();
+        if (!this.state.data) return <SList key={SUuid()} data={new Array(10).fill(1)} render={a => <SLoad type='skeleton' col={"xs-12"} height={50} />} />
         // if (!this.state.data) return <SLoad />
-        Object.values(this.state.data).map(a => a.usuario = usuarios[a.key_usuario])
+        // Object.values(this.state.data).map(a => a.usuario = usuarios[a.key_usuario])
         return <SList
             key={SUuid()}
             buscador
@@ -58,8 +58,8 @@ class index extends Component {
                     padding: 8
                 }} onPress={() => {
                     SNavigation.navigate("/cobranza/carrito_de_cuotas", {
-                        nit: obj.usuario?.CI,
-                        key_proveedor: obj.key_usuario,
+                        // nit: obj.usuario?.CI,
+                        key_proveedor: obj.key_proveedor,
                         onSelect: (obj) => {
                             if (this.onSelect) {
                                 SNavigation.goBack();
@@ -68,8 +68,8 @@ class index extends Component {
                         }
                     });
                 }}>
-                    <SText fontSize={12}>{obj?.key_usuario}</SText>
-                    <SText fontSize={18} bold>{obj?.usuario?.Nombres} {obj?.usuario?.Apellidos}</SText>
+                    <SText fontSize={12}>{obj?.key_proveedor}</SText>
+                    {/* <SText fontSize={18} bold>{obj?.usuario?.Nombres} {obj?.usuario?.Apellidos}</SText> */}
                     <SHr />
                     <SText fontSize={14} color={STheme.color.lightGray}>Monto de la deuda:{"\t"} Bs.{SMath.formatMoney(obj.monto, 2, ".")}</SText>
                     <SText fontSize={14} color={STheme.color.lightGray}># Cuotas pendientes{"\t"} {obj.cantidad}</SText>
@@ -134,7 +134,7 @@ class index extends Component {
     }
     render() {
         return (
-            <SPage title={'Cuentas por pagar'} onRefresh={()=>{
+            <SPage title={'Cuentas por pagar'} onRefresh={() => {
                 Model.usuario.Action.CLEAR();
                 this.componentDidMount();
             }}>

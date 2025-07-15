@@ -18,6 +18,7 @@ class index extends Component {
                     <MenuButtom label='Catalogo' url='/productos/catalogo' />
                     {/* <MenuButtom label='Carrito' url='/productos/carrito' /> */}
                     <MenuButtom label='Stock' url='/productos/modelo/table' />
+                    <MenuButtom label='Almacenes' url='/inventario' />
                 </MenuPages>
 
             </SPage>

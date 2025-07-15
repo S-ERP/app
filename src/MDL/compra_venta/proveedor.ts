@@ -22,7 +22,6 @@ export default class proveedor {
       key_empresa: Model.empresa.Action.getKey(),
     });
 
-    console.log("todo " + JSON.stringify(resp.data));
 
     return Object.values(resp.data || {});
     // return resp.data ;

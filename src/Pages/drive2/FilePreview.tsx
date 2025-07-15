@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { SHr, SImage, SNotification, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SImage, SLoad, SNotification, SText, STheme, SView } from 'servisofts-component';
 import { FileItemType } from './Action';
 import SSocket from 'servisofts-socket';
 import SVideo from '../../Components/SVideo';
@@ -16,11 +16,11 @@ const PreviewSound = ({ file }: { file: FileItemType }) => {
     return <SView col={"xs-12"} height onPress={() => {
         const audio = Sounds.play({
             src: url,
-            
+
         })
         audio.stop()
     }}>
-        <SText>{ "play"}</SText>
+        <SText>{"play"}</SText>
     </SView>
 }
 const PreviewPdf = ({ file }: { file: FileItemType }) => {
@@ -39,6 +39,24 @@ const PreviewImage = ({ file }: { file: FileItemType }) => {
     const url = SSocket.api.drive + "/" + file.path;
     return <SImage src={url} />
 }
+const PreviewDoc = ({ file }: { file: FileItemType }) => {
+
+    const [loaded, setLoaded] = React.useState(false);
+    // @ts-ignore
+    let url = SSocket.api.drive + "/" + file.path;
+    url = encodeURI(url).replace("#", "%23")
+    return <>
+        {loaded ? null : <SLoad />}
+        <iframe
+            src={"https://view.officeapps.live.com/op/embed.aspx?src=" + url}
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            onLoad={() => setLoaded(true)}
+        >
+        </iframe >
+    </>
+}
 const PreviewDefault = ({ file }: { file: FileItemType }) => {
     return <SText>{"Degault"}</SText>
 }
@@ -54,6 +72,7 @@ const ExtencionPreview: any = [
     [/\.(pdf)$/i, PreviewPdf],
     // Formatos de audio comunes
     [/\.(mp3|wav|ogg|flac|aac|m4a|wma|opus)$/i, PreviewSound],
+    [/\.(pptx|ppt|docx|doc|rtf|xlsx|xls)$/i, PreviewDoc],
     // Otros: por defecto
     [/.*/i, PreviewDefault]
 ]

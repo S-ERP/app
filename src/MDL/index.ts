@@ -7,6 +7,7 @@ import RolesPermisos from "./RolesPermisos";
 import qr_reader from "./qr_reader";
 import inventario from "./inventario";
 import compra_venta from "./compra_venta";
+import contabilidad from "./contabilidad"
  export default {
   empresa: new empresa(),
   factura: new factura(),
@@ -17,4 +18,5 @@ import compra_venta from "./compra_venta";
   qr_reader: new qr_reader(),
   inventario: new inventario(),
   compra_venta: new compra_venta(),
+  contabilidad: new contabilidad(),
 };

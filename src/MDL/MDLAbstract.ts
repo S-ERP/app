@@ -23,7 +23,7 @@ export default class MDLAbstract<MDLTypes extends { type: string }> {
         for (const type in listeners) {
             listeners[type] = listeners[type].filter(cb => cb !== callback);
         }
-        console.log("removeEventListener", listeners);
+        // console.log("removeEventListener", listeners);
     };
 
     dispatchEvent = <T extends MDLTypes>(event: T): void => {

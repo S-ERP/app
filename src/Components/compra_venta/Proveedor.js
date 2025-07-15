@@ -124,7 +124,7 @@ export default class Proveedor extends Component {
 
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
-
+            
 
             {/* <DinamicTable.Col key={"foto"} label='User'
                 data={(e) => e.row?.key_usuario}
