@@ -4,247 +4,309 @@ import { EventListener } from "./types";
 import MDL from "..";
 
 export default class inventario extends MDLAbstract<EventListener> {
-    async componentDidMount() { }
+  async componentDidMount() {}
 
-    async getAllModeloStock() {
-        const resp: any = await SSocket.sendPromise({
-            version: "1.0",
-            service: "inventario",
-            component: "modelo",
-            type: "getAllStock",
-            key_empresa: MDL.empresa.select?.key,
-            key_usuario: MDL.usuario.session?.key,
-        });
+  async getAllModeloStock() {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "modelo",
+      type: "getAllStock",
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
 
-        return Object.values(resp.data || {});
-    }
-    async getAllModelo() {
-        const resp: any = await SSocket.sendPromise({
-            version: "1.0",
-            service: "inventario",
-            component: "modelo",
-            type: "getAll",
-            key_empresa: MDL.empresa.select?.key,
-            key_usuario: MDL.usuario.session?.key,
-        });
+    return Object.values(resp.data || {});
+  }
+  async getAllModelo() {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "modelo",
+      type: "getAll",
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
 
-        return Object.values(resp.data || {});
+    return Object.values(resp.data || {});
+  }
+  async getAllMarca() {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "marca",
+      type: "getAll",
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
+    return Object.values(resp.data || {});
+  }
+  async getAllTipoProducto() {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "tipo_producto",
+      type: "getAll",
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
+    return Object.values(resp.data || {});
+  }
+  async getAllAlmacen() {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "almacen",
+      type: "getAll",
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
+    return Object.values(resp.data || {});
+  }
+  async saveModelo(modelo: any) {
+    if (modelo.key) {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "modelo",
+        type: "editar",
+        data: modelo,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    } else {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "modelo",
+        type: "registro",
+        data: modelo,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
     }
-    async getAllMarca() {
-        const resp: any = await SSocket.sendPromise({
-            version: "1.0",
-            service: "inventario",
-            component: "marca",
-            type: "getAll",
-            key_empresa: MDL.empresa.select?.key,
-            key_usuario: MDL.usuario.session?.key,
-        });
-        return Object.values(resp.data || {});
+  }
+  async saveMarca(marca: any) {
+    if (marca.key) {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "marca",
+        type: "editar",
+        data: marca,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    } else {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "marca",
+        type: "registro",
+        data: marca,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
     }
-    async getAllTipoProducto() {
-        const resp: any = await SSocket.sendPromise({
-            version: "1.0",
-            service: "inventario",
-            component: "tipo_producto",
-            type: "getAll",
-            key_empresa: MDL.empresa.select?.key,
-            key_usuario: MDL.usuario.session?.key,
-        });
-        return Object.values(resp.data || {});
+  }
+  async saveProducto(producto: any) {
+    if (producto.key) {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "producto",
+        type: "editar",
+        data: producto,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    } else {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "producto",
+        type: "registro",
+        data: producto,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
     }
-    async getAllAlmacen() {
-        const resp: any = await SSocket.sendPromise({
-            version: "1.0",
-            service: "inventario",
-            component: "almacen",
-            type: "getAll",
-            key_empresa: MDL.empresa.select?.key,
-            key_usuario: MDL.usuario.session?.key,
-        });
-        return Object.values(resp.data || {});
+  }
+  async saveTipoProducto(tipo_producto: any) {
+    if (tipo_producto.key) {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "tipo_producto",
+        type: "editar",
+        data: tipo_producto,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    } else {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "tipo_producto",
+        type: "registro",
+        data: tipo_producto,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
     }
-    async saveModelo(modelo: any) {
-        if (modelo.key) {
-            const resp: any = await SSocket.sendPromise({
-                version: "1.0",
-                service: "inventario",
-                component: "modelo",
-                type: "editar",
-                data: modelo,
-                key_empresa: MDL.empresa.select?.key,
-                key_usuario: MDL.usuario.session?.key,
-            });
-            return resp.data;
-        } else {
-            const resp: any = await SSocket.sendPromise({
-                version: "1.0",
-                service: "inventario",
-                component: "modelo",
-                type: "registro",
-                data: modelo,
-                key_empresa: MDL.empresa.select?.key,
-                key_usuario: MDL.usuario.session?.key,
-            });
-            return resp.data;
-        }
-    }
-    async saveMarca(marca: any) {
-        if (marca.key) {
-            const resp: any = await SSocket.sendPromise({
-                version: "1.0",
-                service: "inventario",
-                component: "marca",
-                type: "editar",
-                data: marca,
-                key_empresa: MDL.empresa.select?.key,
-                key_usuario: MDL.usuario.session?.key,
-            });
-            return resp.data;
-        } else {
-            const resp: any = await SSocket.sendPromise({
-                version: "1.0",
-                service: "inventario",
-                component: "marca",
-                type: "registro",
-                data: marca,
-                key_empresa: MDL.empresa.select?.key,
-                key_usuario: MDL.usuario.session?.key,
-            });
-            return resp.data;
-        }
-    }
-    async saveProducto(producto: any) {
-        if (producto.key) {
-            const resp: any = await SSocket.sendPromise({
-                version: "1.0",
-                service: "inventario",
-                component: "producto",
-                type: "editar",
-                data: producto,
-                key_empresa: MDL.empresa.select?.key,
-                key_usuario: MDL.usuario.session?.key,
-            });
-            return resp.data;
-        } else {
-            const resp: any = await SSocket.sendPromise({
-                version: "1.0",
-                service: "inventario",
-                component: "producto",
-                type: "registro",
-                data: producto,
-                key_empresa: MDL.empresa.select?.key,
-                key_usuario: MDL.usuario.session?.key,
-            });
-            return resp.data;
-        }
-    }
-    async saveTipoProducto(tipo_producto: any) {
-        if (tipo_producto.key) {
-            const resp: any = await SSocket.sendPromise({
-                version: "1.0",
-                service: "inventario",
-                component: "tipo_producto",
-                type: "editar",
-                data: tipo_producto,
-                key_empresa: MDL.empresa.select?.key,
-                key_usuario: MDL.usuario.session?.key,
-            });
-            return resp.data;
-        } else {
-            const resp: any = await SSocket.sendPromise({
-                version: "1.0",
-                service: "inventario",
-                component: "tipo_producto",
-                type: "registro",
-                data: tipo_producto,
-                key_empresa: MDL.empresa.select?.key,
-                key_usuario: MDL.usuario.session?.key,
-            });
-            return resp.data;
-        }
-    }
+  }
 
-    async getAllProductos(key_modelo: any) {
-        if (key_modelo) {
-            const resp: any = await SSocket.sendPromise({
-                version: "1.0",
-                service: "inventario",
-                component: "modelo",
-                type: "getAllProductos",
-                // data: modelo,
-                key_modelo: key_modelo,
-                key_empresa: MDL.empresa.select?.key,
-                key_usuario: MDL.usuario.session?.key,
-            });
-            console.log("print " + JSON.stringify(resp.data));
-            return resp.data;
-        }
+  async getAllProductos(key_modelo: any) {
+    if (key_modelo) {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "modelo",
+        type: "getAllProductos",
+        // data: modelo,
+        key_modelo: key_modelo,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      console.log("print " + JSON.stringify(resp.data));
+      return resp.data;
     }
-    async exec(query: string) {
-        const resp: any = await SSocket.sendPromise({
-            version: "1.0",
-            service: "inventario",
-            component: "db",
-            type: "exec",
-            query: query,
-        });
-        return resp.data;
+  }
+  async exec(query: string) {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "db",
+      type: "exec",
+      query: query,
+    });
+    return resp.data;
+  }
+
+  async getAllConteoManualInventario() {
+    const resp: any = await SSocket.sendPromise({
+      service: "inventario",
+      component: "conteo_manual_inventario",
+      type: "getAll",
+      key_almacen: MDL.empresa.select?.key,
+    });
+
+    return Object.values(resp.data || {});
+  }
+
+  //   async saveModelo(modelo: any) {
+  //     if (modelo.key) {
+  //       const resp: any = await SSocket.sendPromise({
+  //         version: "1.0",
+  //         service: "inventario",
+  //         component: "modelo",
+  //         type: "editar",
+  //         data: modelo,
+  //         key_empresa: MDL.empresa.select?.key,
+  //         key_usuario: MDL.usuario.session?.key,
+  //       });
+  //       return resp.data;
+  //     } else {
+  //       const resp: any = await SSocket.sendPromise({
+  //         version: "1.0",
+  //         service: "inventario",
+  //         component: "modelo",
+  //         type: "registro",
+  //         data: modelo,
+  //         key_empresa: MDL.empresa.select?.key,
+  //         key_usuario: MDL.usuario.session?.key,
+  //       });
+  //       return resp.data;
+  //     }
+  //   }
+
+  async saveConteoManualInventario(obj: any) {
+    if (!obj.key) {
+      const resp: any = await SSocket.sendPromise({
+        service: "inventario",
+        component: "conteo_manual_inventario",
+        type: "registro",
+        data: obj.data,
+        key_almacen: obj.key_almacen,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
     }
+  }
 
-    async getAllConteoManualInventario() {
-        const resp: any = await SSocket.sendPromise({
-            service: "inventario",
-            component: "conteo_manual_inventario",
-            type: "getAll",
-            key_almacen: MDL.empresa.select?.key,
-        });
+  //   async updateConteoManualInventario(
+  //     data: any[],
+  //     key_cliente_proyecto: string
+  //   ) {
+  //     // data.key_empresa = Model.empresa.Action.getKey();
+  //     const resp: any = await SSocket.sendPromise({
+  //       service: "crm",
+  //       component: "cliente_proyecto",
+  //       type: "editarCarrito",
+  //       key_cliente_proyecto: key_cliente_proyecto,
+  //       data: data,
+  //       key_usuario: Model.usuario.Action.getKey(),
+  //     });
+  //     return resp.data;
+  //   }
 
-        return Object.values(resp.data || {});
-    }
-
-    async saveConteoManualInventario(obj: any) {
-        if (!obj.key) {
-            const resp: any = await SSocket.sendPromise({
-                service: "inventario",
-                component: "conteo_manual_inventario",
-                type: "registro",
-                data: obj.data,
-                key_almacen: obj.key_almacen,
-                key_usuario: MDL.usuario.session?.key,
-            });
-            return resp.data;
-        }
-    }
-
-    async getAll_reporte_conteo_inventario_detallado() {
-        const resp: any = await SSocket.sendPromise({
-            service: "inventario",
-            component: "conteo_manual_inventario",
-            type: "getAll_reporte_conteo_inventario_detallado",
-            key_empresa: MDL.empresa.select?.key,
-        });
-        return resp.data;
-    }
-
-    async getByKey_reporte_conteo_inventario_detallado(key_contador: any) {
-        const resp: any = await SSocket.sendPromise({
-            service: "inventario",
-            component: "conteo_manual_inventario",
-            type: "getByKey",
-            key_contador: key_contador,
-        });
-        return resp.data;
-    }
-
-    // async getAll_reporte_conteo_inventario_detallado() {
-    // const resp: any = await SSocket.sendPromise({
-    //   service: "inventario",
-    //   component: "conteo_manual_inventario",
-    //   type: "getAll_reporte_conteo_inventario_detallado",
-    //   key_empresa: MDL.empresa.select?.key,
-    //  });
-    // return resp.data;
+  async updateConteoManualInventario(
+    data: any[],
+    key_almacen: string,
+    key_contador: string
+  ) {
+    // if (obj.key) {
+    const resp: any = await SSocket.sendPromise({
+      service: "inventario",
+      component: "conteo_manual_inventario",
+      type: "editar",
+      data: data,
+      key_almacen: key_almacen,
+      key_usuario: MDL.usuario.session?.key,
+      key: key_contador,
+    });
+    return resp.data;
     // }
+  }
 
-    // {/* <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.key_usuario} /> */}
+  async getAll_reporte_conteo_inventario_detallado() {
+    const resp: any = await SSocket.sendPromise({
+      service: "inventario",
+      component: "conteo_manual_inventario",
+      type: "getAll_reporte_conteo_inventario_detallado",
+      key_empresa: MDL.empresa.select?.key,
+    });
+    return resp.data;
+  }
+
+  async getByKey_reporte_conteo_inventario_detallado(key_contador: any) {
+    const resp: any = await SSocket.sendPromise({
+      service: "inventario",
+      component: "conteo_manual_inventario",
+      type: "getByKeyConteo",
+      key_contador: key_contador,
+    });
+    //    return Object.values(resp.data || {});
+    return resp.data;
+  }
+
+  // async getAll_reporte_conteo_inventario_detallado() {
+  // const resp: any = await SSocket.sendPromise({
+  //   service: "inventario",
+  //   component: "conteo_manual_inventario",
+  //   type: "getAll_reporte_conteo_inventario_detallado",
+  //   key_empresa: MDL.empresa.select?.key,
+  //  });
+  // return resp.data;
+  // }
+
+  // {/* <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.key_usuario} /> */}
 }

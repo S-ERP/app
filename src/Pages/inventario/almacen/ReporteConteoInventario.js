@@ -9,16 +9,11 @@ import { version } from 'process';
 import MDL from '../../../MDL';
 
 
-
 export default class ReporteConteoInventario extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-        };
-
+        this.state = {};
     }
-
-
 
     componentDidMount(): void {
         MDL.inventario.getAllConteoManualInventario().then((almacenes: any) => {
@@ -26,34 +21,13 @@ export default class ReporteConteoInventario extends Component {
         })
     }
 
-
-
-
     mostrarTabla() {
         return <DinamicTable
-            key="tabla"
+            key="tabla" ref={ref => this.DinamicTable = ref} center language="es" selectType="single"
+            colors={{ background: STheme.color.background, header: STheme.color.card }}
+            cellStyle={{ borderWidth: 0 }}
+            textStyle={{ fontSize: 12, color: "white" }}
             ref={ref => this.DinamicTable = ref}
-            center
-            language="es"
-            selectType="single"
-            colors={{
-                // text: "red",
-                background: STheme.color.background,
-                header: STheme.color.card,
-            }}
-            cellStyle={{
-                borderWidth: 0,
-            }}
-            textStyle={{
-                fontSize: 12,
-                color: "white",
-
-            }}
-
-            ref={ref => this.DinamicTable = ref}
-
-
-
             loadData={async () => {
                 const all = await MDL.inventario.getAll_reporte_conteo_inventario_detallado();
                 const keysUsuarios = Object.values(all).map(p => p.key_usuario).filter(Boolean);
@@ -66,38 +40,27 @@ export default class ReporteConteoInventario extends Component {
 
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
-
-            <DinamicTable.Col key={"foto"} label='User'
-                data={(e) => e.row?.usuario}
-                width={35}
-                customComponent={e => <SView style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: 100,
-                    overflow: "hidden",
-                    backgroundColor: STheme.color.card + "66",
-                }}>
-                    <SImage src={SSocket.api.root + "usuario/" + e.row?.usuario} style={{
-                        resizeMode: "cover",
-                    }} />
+            <DinamicTable.Col key={"foto"} label='User' data={(e) => e.row?.usuario} width={35}
+                customComponent={e => <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                    <SImage src={SSocket.api.root + "usuario/" + e.row?.usuario} style={{ resizeMode: "cover", }} />
                 </SView>} />
 
             <DinamicTable.Col key="nombre" label="Usuario" width={150} data={(e) => e.row?.usuario.Nombres} />
-
             <DinamicTable.Col key="descripcion" label="Almacen" width={150} data={(e) => e.row?.descripcion} />
-            {/* <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.key_usuario} /> */}
             <DinamicTable.Col key="fecha" label="Fecha" width={100} data={(e) => e.row?.fecha} />
             <DinamicTable.Col key="hora" label="Hora" width={100} data={(e) => e.row?.hora} />
             <DinamicTable.Col key="hora" label="Hora" width={100} data={(e) => e.row?.hora} />
 
 
-            <DinamicTable.Col key="key_conteo" label="key_conteo" width={100} data={(e) => e.row?.key_conteo}
-                customComponent={e => <SView style={{
-                    width: 24,
+            <DinamicTable.Col key="key_conteo" label="Ver" width={150} data={(e) => e.row?.key_conteo}
+                customComponent={e => <SView center style={{
+                    // width: 24,
                     height: 24,
                     borderRadius: 100,
                     overflow: "hidden",
                     backgroundColor: STheme.color.card + "66",
+                    borderWidth: 1,
+                    borderColor: STheme.color.secondary,
                 }}
                     onPress={() => {
                         SNavigation.navigate("/inventario/almacen/profile/registro_inventario", { pk: e.row.key_almacen, key_conteo: e.row.key_conteo })
@@ -105,7 +68,7 @@ export default class ReporteConteoInventario extends Component {
                     }}
                 >
 
-                    <SText >detalles</SText>
+                    <SText >Det.Inventario</SText>
 
                 </SView>} />
 

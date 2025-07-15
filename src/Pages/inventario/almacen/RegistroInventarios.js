@@ -15,15 +15,8 @@ import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
 import PopupDetalleModelo from '../../productos/Components/PopupDetalleModelo';
 import PopupDesglose from '../../productos/Components/PopupDesglose';
 
-// import FormularioAgregarInventario from '../Components/FormularioAgregarInventario';
-// import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
-// import PopupDetalleModelo from '../Components/PopupDetalleModelo';
-// import PopupDesglose from '../Components/PopupDesglose';
 
 export default class RegistroInventarios extends Component {
-
-
-
 
     constructor(props) {
         super(props);
@@ -35,39 +28,58 @@ export default class RegistroInventarios extends Component {
         this.pintarColor = STheme.color.card;
     }
 
-    // listenerQr = null;
     modelos = null;
 
     async loadData() {
 
-        const modelos = await MDL.inventario.getAllModeloStock();
 
-        if (this.key_conteoxxx){
-            this.modelos = this.inventariossss;
-            this.forceUpdate();
+        // const modelos = await MDL.inventario.getAllModeloStock();
+        // const modelosByContador = await MDL.inventario.getByKey_reporte_conteo_inventario_detallado(this.key_conteoxxx);
+
+
+        if (this.key_conteoxxx) {
+            const modelosByContador = await MDL.inventario.getByKey_reporte_conteo_inventario_detallado(this.key_conteoxxx);
+            this.modelos = modelosByContador;
+
         } else {
-
+            const modelos = await MDL.inventario.getAllModeloStock();
             this.modelos = modelos;
         }
+        // this.forceUpdate();
 
 
+        console.log("ddd", this.modelos);
 
-
-        console.log("impresora " + this.modelos)
-        return modelos;
+        // console.log("modelosByContador " + JSON.stringify(modelosByContador) )
+        return this.modelos;
     }
 
 
     componentDidMount(): void {
-        MDL.inventario.getAllAlmacen().then((almacenes: any) => {
-            this.almacenes = Object.values(almacenes)
 
 
-        })
+        // if (this.key_conteoxxx) {
 
-        // MDL.inventario.getByKey_reporte_conteo_inventario_detallado(this.almacenes.key_conteo).then((almacenes: any) => {
-        //     this.inventariossss = Object.values(almacenes)
+        // console.log("si  key_conteo", this.key_conteoxxx);
+        // MDL.inventario.getByKey_reporte_conteo_inventario_detallado(this.key_conteoxxx).then((resp: any) => {
+        //     this.modelos = Object.values(resp)
         // })
+
+        // console.log("si  key_conteo con data ", this.inventariossss);
+        // }
+        // else {
+
+        // MDL.inventario.getAllAlmacen().then((resp: any) => {
+        //     this.almacenes = Object.values(resp)
+
+        // })
+        // console.log(" no  key_conteo", this.almacenes);
+
+        // }
+
+
+
+
 
 
     }
@@ -96,7 +108,7 @@ export default class RegistroInventarios extends Component {
 
 
 
-                <BarcodeIcon onChange={(barcode) => {
+                {/* <BarcodeIcon onChange={(barcode) => {
                     if (this.modelos) {
                         const modelo = this.modelos.find(m => m.barcode === barcode);
                         if (modelo) {
@@ -111,15 +123,13 @@ export default class RegistroInventarios extends Component {
                             this.table.applyFilter();
                             SNotification.send({
                                 title: modelo.descripcion,
-                                // body: `El modelo ${modelo.descripcion} ha sido encontrado.`,
                                 image: SSocket.api.inventario + "modelo/" + modelo.key + "?date=" + this.state.time,
                                 time: 5000,
                             })
-                            // this.table.setSelect(modelo.key);
                         }
                     }
                     console.log("Barcode read:", barcode);
-                }} />
+                }} /> */}
 
 
                 <SView width={20} />
@@ -129,95 +139,48 @@ export default class RegistroInventarios extends Component {
                         const modelosCargados = this.modelos;
                         const modeloConDatos = this.table?.data || [];
 
-                        // console.log("🟦 Modelos cargados desde loadData:");
-                        // console.log(modelosCargados); // OK: no circular
-
-                        const save_cacheV1 = {};
-                        (modeloConDatos || []).forEach((e, index) => {
-                            if (!e.key) return;
-                            save_cacheV1[index] = {
-                                key_modelo: e.key,
-                                cantidad_real: e.cantidad_real,
-                                cantidad_baja: e.cantidad_baja,
-                                observacion: e.observacion
-                            };
-                        });
-
-
-
-
-                        const save_cacheV2 = (this.table?.data || [])
-                            .filter(e => e.key)
-                            .map(e => [e.key, e.cant_inventario]);
-
-                        const save_cacheV3 = {};
-
-                        (this.table?.data || []).forEach(e => {
-                            if (!e.key) return;
-                            save_cacheV3[e.key] = e.cantidad_real ?? 0; // si viene null, lo pone en 0
-                        });
-
-
-                        const save_cacheV4 = {};
-                        (this.table?.data || [])
-                            .filter(e => e.key)
-                            .forEach((e, index) => {
-                                save_cacheV4[index] = {
-                                    key_modelo: e.key,
-                                    cantidad_real: Number(e.cantidad_real) || 0,
-                                    cantidad_baja: Number(e.cantidad_baja) || 0,
-                                    explicacion: e.explicacion?.toString().trim() || ""
-                                };
-                            });
-
-
                         const save_cacheV5 = (this.table?.data || [])
-                            .filter(e => e.key)
+                            .filter(e => this.key_conteoxxx ? e.key_modelo: e.key)
                             .map(e => ({
-                                key_modelo: e.key,
-                                cantidad_sistema: Number(e.stock) || 0,
+                                key_modelo: this.key_conteoxxx ? e.key_modelo : e.key,
+                                stock: Number(e.stock) || 0,
                                 cantidad_real: Number(e.cantidad_real) || 0,
                                 cantidad_baja: Number(e.cantidad_baja) || 0,
                                 explicacion: e.explicacion?.toString().trim() || ""
                             }));
 
 
-                        MDL.inventario.saveConteoManualInventario({
-                            key_almacen: this.key_almacen,
-                            data: save_cacheV5
-                        }).then((resp) => {
-                            this.forceUpdate();
-                            // SNotification.send({
-                            //     title: "Tipo de producto guardado",
-                            //     body: "El tipo de producto se ha guardado correctamente.",
-                            //     time: 3000,
-                            //     color: STheme.color.success,
-                            // });
-                        }).catch((e: any) => {
-                            console.error("Error al guardar el tipo de producto:", e);
-                            // SNotification.send({
-                            //     title: "Error",
-                            //     body: "No se pudo guardar el tipo de producto.",
-                            //     time: 3000,
-                            //     color: STheme.color.danger,
-                            // });
-                        })
-
-
-
-                        // ConteoManualInventario
                         console.log("🧠 save_cache:");
                         console.log(JSON.stringify(save_cacheV5)); // OK: no circular
 
+                        // return;
+
+                        if (this.key_conteoxxx) {
+                            // return;
 
 
+                            MDL.inventario.updateConteoManualInventario(save_cacheV5, this.key_almacen, this.key_conteoxxx).then((resp) => {
+                                console.log("Conteo actualizado:", resp);
+                                this.forceUpdate();
+                            }).catch((e: any) => {
+                                console.error("Error al guardar el tipo de producto:", e);
+                            })
 
+                        } else {
 
-                        // SNotification.send({
-                        //     title: "Datos mostrados",
-                        //     body: "Revisá consola para ver los modelos.",
-                        //     color: STheme.color.info
-                        // });
+                            console.log("🧠 save_cache:");
+                            console.log(JSON.stringify(save_cacheV5)); // OK: no circular
+
+                            // return;
+                            MDL.inventario.saveConteoManualInventario({
+                                key_almacen: this.key_almacen,
+                                data: save_cacheV5
+                            }).then((resp) => {
+                                this.forceUpdate();
+                            }).catch((e: any) => {
+                                console.error("Error al guardar el tipo de producto:", e);
+                            })
+                        }
                     }}>
                         {"Confirmar inventario"}
                     </SText>
