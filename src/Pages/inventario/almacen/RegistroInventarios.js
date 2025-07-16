@@ -15,86 +15,41 @@ import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
 import PopupDetalleModelo from '../../productos/Components/PopupDetalleModelo';
 import PopupDesglose from '../../productos/Components/PopupDesglose';
 
-// import FormularioAgregarInventario from '../Components/FormularioAgregarInventario';
-// import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
-// import PopupDetalleModelo from '../Components/PopupDetalleModelo';
-// import PopupDesglose from '../Components/PopupDesglose';
 
 export default class RegistroInventarios extends Component {
 
-
-
-
     constructor(props) {
         super(props);
-        this.state = {
-            time: new Date().getTime()
-        };
+        this.state = { time: new Date().getTime() };
         this.key_almacen = SNavigation.getParam("pk");
         this.key_conteoxxx = SNavigation.getParam("key_conteo");
         this.pintarColor = STheme.color.card;
     }
 
-    // listenerQr = null;
     modelos = null;
 
     async loadData() {
-
-        const modelos = await MDL.inventario.getAllModeloStock();
-
-        if (this.key_conteoxxx){
-            this.modelos = this.inventariossss;
-            this.forceUpdate();
+        if (this.key_conteoxxx) {
+            const modelosByContador = await MDL.inventario.getByKey_reporte_conteo_inventario_detallado(this.key_conteoxxx);
+            this.modelos = modelosByContador;
         } else {
-
+            const modelos = await MDL.inventario.getAllModeloStock(this.key_almacen);
             this.modelos = modelos;
         }
-
-
-
-
-        console.log("impresora " + this.modelos)
-        return modelos;
+        return this.modelos;
     }
-
-
-    componentDidMount(): void {
-        MDL.inventario.getAllAlmacen().then((almacenes: any) => {
-            this.almacenes = Object.values(almacenes)
-
-
-        })
-
-        // MDL.inventario.getByKey_reporte_conteo_inventario_detallado(this.almacenes.key_conteo).then((almacenes: any) => {
-        //     this.inventariossss = Object.values(almacenes)
-        // })
-
-
-    }
-
-
-
 
     colorStock(cant_stock, cant_inv) {
-
         if (cant_stock == null || cant_stock == "") return this.pintarColor = STheme.color.card;
-
-
         if (cant_stock > cant_inv) return this.pintarColor = "red";
         if (cant_stock < cant_inv) return this.pintarColor = "yellow";
         if (cant_stock == cant_inv) return this.pintarColor = "green";
         return this.pintarColor = STheme.color.card; // por si ocurre un caso inesperado
     }
-
-
-
-
     render() {
         return <SPage title={"Gestion de Inventario"} disableScroll >
 
             <SView row center>
-
-
 
                 <BarcodeIcon onChange={(barcode) => {
                     if (this.modelos) {
@@ -111,113 +66,60 @@ export default class RegistroInventarios extends Component {
                             this.table.applyFilter();
                             SNotification.send({
                                 title: modelo.descripcion,
-                                // body: `El modelo ${modelo.descripcion} ha sido encontrado.`,
                                 image: SSocket.api.inventario + "modelo/" + modelo.key + "?date=" + this.state.time,
                                 time: 5000,
                             })
-                            // this.table.setSelect(modelo.key);
                         }
                     }
                     console.log("Barcode read:", barcode);
                 }} />
 
-
                 <SView width={20} />
-
                 <SView width={140} height={26} center backgroundColor={STheme.color.card} style={{ borderRadius: 4 }}  >
                     <SText fontSize={12} color={STheme.color.white} onPress={() => {
                         const modelosCargados = this.modelos;
                         const modeloConDatos = this.table?.data || [];
 
-                        // console.log("🟦 Modelos cargados desde loadData:");
-                        // console.log(modelosCargados); // OK: no circular
-
-                        const save_cacheV1 = {};
-                        (modeloConDatos || []).forEach((e, index) => {
-                            if (!e.key) return;
-                            save_cacheV1[index] = {
-                                key_modelo: e.key,
-                                cantidad_real: e.cantidad_real,
-                                cantidad_baja: e.cantidad_baja,
-                                observacion: e.observacion
-                            };
-                        });
-
-
-
-
-                        const save_cacheV2 = (this.table?.data || [])
-                            .filter(e => e.key)
-                            .map(e => [e.key, e.cant_inventario]);
-
-                        const save_cacheV3 = {};
-
-                        (this.table?.data || []).forEach(e => {
-                            if (!e.key) return;
-                            save_cacheV3[e.key] = e.cantidad_real ?? 0; // si viene null, lo pone en 0
-                        });
-
-
-                        const save_cacheV4 = {};
-                        (this.table?.data || [])
-                            .filter(e => e.key)
-                            .forEach((e, index) => {
-                                save_cacheV4[index] = {
-                                    key_modelo: e.key,
-                                    cantidad_real: Number(e.cantidad_real) || 0,
-                                    cantidad_baja: Number(e.cantidad_baja) || 0,
-                                    explicacion: e.explicacion?.toString().trim() || ""
-                                };
-                            });
-
-
                         const save_cacheV5 = (this.table?.data || [])
-                            .filter(e => e.key)
+                            .filter(e => {
+                                const real = Number(e.cantidad_real);
+                                const baja = Number(e.cantidad_baja);
+                                return !isNaN(real) || !isNaN(baja);
+                            }
+
+
+                            )
                             .map(e => ({
-                                key_modelo: e.key,
-                                cantidad_sistema: Number(e.stock) || 0,
+                                key_modelo: this.key_conteoxxx ? e.key_modelo : e.key,
+                                stock: Number(e.stock),
                                 cantidad_real: Number(e.cantidad_real) || 0,
                                 cantidad_baja: Number(e.cantidad_baja) || 0,
                                 explicacion: e.explicacion?.toString().trim() || ""
                             }));
 
-
-                        MDL.inventario.saveConteoManualInventario({
-                            key_almacen: this.key_almacen,
-                            data: save_cacheV5
-                        }).then((resp) => {
-                            this.forceUpdate();
-                            // SNotification.send({
-                            //     title: "Tipo de producto guardado",
-                            //     body: "El tipo de producto se ha guardado correctamente.",
-                            //     time: 3000,
-                            //     color: STheme.color.success,
-                            // });
-                        }).catch((e: any) => {
-                            console.error("Error al guardar el tipo de producto:", e);
-                            // SNotification.send({
-                            //     title: "Error",
-                            //     body: "No se pudo guardar el tipo de producto.",
-                            //     time: 3000,
-                            //     color: STheme.color.danger,
-                            // });
-                        })
-
-
-
-                        // ConteoManualInventario
                         console.log("🧠 save_cache:");
                         console.log(JSON.stringify(save_cacheV5)); // OK: no circular
 
+                        // return;
+                        if (this.key_conteoxxx) {
+                            MDL.inventario.updateConteoManualInventario(save_cacheV5, this.key_almacen, this.key_conteoxxx).then((resp) => {
+                                console.log("Conteo actualizado:", resp);
+                                this.forceUpdate();
+                            }).catch((e: any) => {
+                                console.error("Error al guardar el tipo de producto:", e);
+                            })
 
-
-
-
-                        // SNotification.send({
-                        //     title: "Datos mostrados",
-                        //     body: "Revisá consola para ver los modelos.",
-                        //     color: STheme.color.info
-                        // });
+                        } else {
+                            MDL.inventario.saveConteoManualInventario({
+                                key_almacen: this.key_almacen,
+                                data: save_cacheV5
+                            }).then((resp) => {
+                                this.forceUpdate();
+                            }).catch((e: any) => {
+                                console.error("Error al guardar el tipo de producto:", e);
+                            })
+                        }
+                        SNavigation.goBack();
                     }}>
                         {"Confirmar inventario"}
                     </SText>
@@ -250,20 +152,25 @@ export default class RegistroInventarios extends Component {
                 <DinamicTable.Col key={"nombre"} label='Nombre' width={200} data={(e) => e.row.descripcion}
                     textStyle={{ fontWeight: "bold" }}
                     customComponent={e => <ImageLabel {...e}
-                        src={SSocket.api.inventario + "modelo/.128_" + e.row.key + "?date=" + this.state.time}
-                        srcPreview={SSocket.api.inventario + "modelo/" + e.row.key + "?date=" + this.state.time}
+                        src={SSocket.api.inventario + "modelo/.128_" + e.row.key_modelo + "?date=" + this.state.time}
+                        srcPreview={SSocket.api.inventario + "modelo/" + e.row.key_modelo + "?date=" + this.state.time}
                     />}
                 />
 
+                <DinamicTable.Col key={"precio_compra"} label='Precio' dataType='number' width={120} center
+                    data={(e) => e.row.precio_compra ? parseFloat(e.row.precio_compra) : null}
+                    customComponent={(e) => {
+                        return (e.row.precio_compra ? <SText fontSize={14} > {"Bs " + SMath.formatMoney(e.row.precio_compra, 2, "Bs ", "bolivianos")}  </SText> : null);
+                    }}
 
-                <DinamicTable.Col key={"stock"} label='Stock' dataType='number' width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
-
+                />
+                <DinamicTable.Col key={"stock"} label='Stock' dataType='number' width={70} center data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
                 <DinamicTable.Col
                     key={"cantidad_real"}
                     label="Cant. Inventario"
                     dataType="number"
                     width={120}
-                    data={(e) => e.row.cantidad_real ? parseFloat(e.row.cantidad_real) : 0}
+                    data={(e) => e.row.cantidad_real ? parseFloat(e.row.cantidad_real) : null}
                     customComponent={(e) => {
                         const color = this.colorStock(e.row.stock, e.row.cantidad_real);
                         return (
@@ -271,7 +178,7 @@ export default class RegistroInventarios extends Component {
                                 ref={(ref) => e.row.inputRef = ref} // guardamos ref si luego quieres acceder
                                 type="number"
                                 maxLength={3}
-                                defaultValue={Number(e.row.cantidad_real) || 0}
+                                defaultValue={Number(e.row.cantidad_real) || null}
                                 style={{
                                     borderWidth: 0.1,
                                     borderColor: color,
@@ -294,7 +201,7 @@ export default class RegistroInventarios extends Component {
                     label="Cant. Baja"
                     dataType="number"
                     width={120}
-                    data={(e) => e.row.cantidad_baja ? parseFloat(e.row.cantidad_baja) : 0}
+                    data={(e) => e.row.cantidad_baja ? parseFloat(e.row.cantidad_baja) : null}
                     customComponent={(e) => {
                         // const color = this.colorStock(e.row.stock, e.row.cant_inventario);
                         return (
@@ -302,7 +209,7 @@ export default class RegistroInventarios extends Component {
                                 ref={(ref) => e.row.inputRef = ref} // guardamos ref si luego quieres acceder
                                 type="number"
                                 maxLength={3}
-                                defaultValue={Number(e.row.cantidad_baja) || 0}
+                                defaultValue={Number(e.row.cantidad_baja) || null}
                                 style={{
                                     borderWidth: 0.1,
                                     borderColor: STheme.color.card,
@@ -319,13 +226,36 @@ export default class RegistroInventarios extends Component {
                         );
                     }}
                 />
+
+                <DinamicTable.Col
+                    key={"cantidad_baja_"}
+                    label="SubTotal"
+                    dataType="number"
+                    width={80}
+                    data={(e) => e.row.cantidad_baja_ ? parseFloat(e.row.cantidad_baja) : null}
+                    customComponent={(e) => {
+                        // const color = this.colorStock(e.row.stock, e.row.cant_inventario);
+                        return (<SView flex center style={{
+                            borderWidth: 1,
+                            borderColor: STheme.color.card,
+                            backgroundColor: STheme.color.card,
+                        }}
+                            onChangeText={(value) => {
+                                e.row.cantidad_baja = Number(value); // actualiza el valor del row
+                                this.forceUpdate(); // para que se repinte el color dinámico
+                            }}
+                        >
+                            <SText fontSize={16}>{e?.row?.cantidad_real ? SMath.formatMoney((e?.row?.cantidad_real - e?.row?.cantidad_baja) || 0, 2, "Bs ", "bs") : ""}</SText>
+                        </SView>
+                        );
+                    }}
+                />
                 <DinamicTable.Col
                     key={"explicacion"}
                     label="Observación"
                     width={350}
                     data={(e) => e.row?.explicacion}
                     customComponent={(e) => {
-                        // const color = this.colorStock(e.row.stock, e.row.cant_inventario);
                         return (
                             <SInput
                                 ref={(ref) => e.row.inputRef = ref} // guardamos ref si luego quieres acceder

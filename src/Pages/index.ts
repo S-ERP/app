@@ -1,47 +1,45 @@
 import { SPage, SPageListProps } from "servisofts-component";
 
-import Root from './root';
-import start from './start';
-import login from './login/index';
-import registro from './registro';
-import profile from './profile';
-import usuario from './usuario';
-import empresa from './empresa';
-import rol from './rol';
-import contabilidad from './contabilidad';
+import Root from "./root";
+import start from "./start";
+import login from "./login/index";
+import registro from "./registro";
+import profile from "./profile";
+import usuario from "./usuario";
+import empresa from "./empresa";
+import rol from "./rol";
+import contabilidad from "./contabilidad";
 import conta from "./conta";
-import cliente from './cliente';
-import sucursal from './sucursal';
-import inventario from './inventario';
-import ajustes from './ajustes';
-import banco from './banco';
-import productos from './productos';
-import test from './test';
-import wiki from './wiki';
-import compra from './compra';
-import compra2 from './compra2';
-import venta from './venta';
-import caja from './caja';
-import cobranza from './cobranza';
-import notification from './notification';
-import reporte from './reporte';
-import bots from './bots';
-import t2 from './t2';
-import temp from './temp';
-import tarea from './tarea';
-import menu from './menu';
-import home from './home';
-import home2 from './home2';
-import home3 from './home3';
-import facturacion from './facturacion';
-import loby from './loby';
-import lobyRoot from './loby/root';
-import nota from './nota';
-import chat from './chat';
-import { Example } from 'servisofts-charts'
-import publicacion from './publicacion'
-
-
+import cliente from "./cliente";
+import sucursal from "./sucursal";
+import inventario from "./inventario";
+import ajustes from "./ajustes";
+import banco from "./banco";
+import productos from "./productos";
+import test from "./test";
+import wiki from "./wiki";
+import compra from "./compra";
+import compra2 from "./compra2";
+import venta from "./venta";
+import caja from "./caja";
+import cobranza from "./cobranza";
+import notification from "./notification";
+import reporte from "./reporte";
+import bots from "./bots";
+import t2 from "./t2";
+import temp from "./temp";
+import tarea from "./tarea";
+import menu from "./menu";
+import home from "./home";
+import home2 from "./home2";
+import home3 from "./home3";
+import facturacion from "./facturacion";
+import loby from "./loby";
+import lobyRoot from "./loby/root";
+import nota from "./nota";
+import chat from "./chat";
+import { Example } from "servisofts-charts";
+import publicacion from "./publicacion";
 
 import invitation from "./invitation";
 import invitacion from "./invitacion";
@@ -81,6 +79,7 @@ import proveedores from "../Components/compra_venta/Proveedor";
 import Proveedor from "../Components/compra_venta/Proveedor";
 import RegistroInventario from "./inventario/almacen/RegistroInventarios";
 import ReporteConteoInventario from "./inventario/almacen/ReporteConteoInventario";
+import testpuntoventa from "./testpuntoventa";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -162,4 +161,5 @@ export default SPage.combinePages("/", {
   //   inventariar :
   "inventario/almacen/profile/registro_inventario": RegistroInventario,
   "productos/reporte_conteo_inventario": ReporteConteoInventario,
+  puntoventa: testpuntoventa,
 });
