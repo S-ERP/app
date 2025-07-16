@@ -264,7 +264,8 @@ export default class testpuntoventa extends Component {
 
         return (
             <SView
-                col={"xs-12"}
+
+
                 backgroundColor={"#FFFFFF"}
                 style={{
                     borderRadius: 8,
@@ -277,7 +278,7 @@ export default class testpuntoventa extends Component {
                     elevation: 1,
                 }}
             >
-                <SText fontSize={14} bold color={"#374151"} style={{ marginBottom: 12 }}>
+                <SText fontSize={14} bold color={"#374151"} style={{ marginBottom: 8 }}>
                     Orden Actual
                 </SText>
 
@@ -287,7 +288,7 @@ export default class testpuntoventa extends Component {
                         col={"xs-12"}
                         row
                         style={{
-                            paddingVertical: 8,
+                            paddingVertical: 4,
                             borderBottomWidth: index < carrito.length - 1 ? 1 : 0,
                             borderBottomColor: "#F3F4F6",
                             alignItems: "center", // Centrar verticalmente los items
@@ -305,16 +306,7 @@ export default class testpuntoventa extends Component {
 
                         {/* Controles de Cantidad */}
                         <SView col={"xs-3"} row center>
-                            <SView
-                                center
-                                backgroundColor={"#E0F2F7"} // Color más suave
-                                style={{ width: 24, height: 24, borderRadius: 12, marginRight: 4 }}
-                                onPress={() => this.reducirCantidad(item.id)}
-                            >
-                                <SText fontSize={14} bold color={"#0284C7"}>
-                                    -
-                                </SText>
-                            </SView>
+
                             <SInput
                                 value={String(item.quantity)}
                                 onChangeText={(text) => this.editarCantidadDirecta(item.id, text)}
@@ -332,36 +324,32 @@ export default class testpuntoventa extends Component {
                                 }}
                             />
                             <SView
+                                center backgroundColor={"#E0F2F7"} // Color más suave
+                                style={{ width: 24, height: 24, borderRadius: 12, marginRight: 150, position: "absolute" }}
+                                onPress={() => this.reducirCantidad(item.id)}
+                            >
+                                <SText fontSize={14} bold color={"#0284C7"}>-</SText>
+                            </SView>
+                            <SView
                                 center
                                 backgroundColor={"#D1FAE5"} // Color más suave
-                                style={{ width: 24, height: 24, borderRadius: 12, marginLeft: 4 }}
+                                style={{ width: 24, height: 24, borderRadius: 12, marginLeft: 4, position: "absolute" }}
                                 onPress={() => this.aumentarCantidad(item.id)}
                             >
-                                <SText fontSize={14} bold color={"#059669"}>
-                                    +
-                                </SText>
+                                <SText fontSize={14} bold color={"#059669"}> + </SText>
                             </SView>
                         </SView>
 
                         <SView col={"xs-3"} center style={{ alignItems: "flex-end" }}>
                             <SText fontSize={13} bold color={"#111827"}>
-                                 {SMath.formatMoney(item.price * item.quantity, 2)}
+                                {SMath.formatMoney(item.price * item.quantity, 2)}
                             </SText>
                         </SView>
 
                         {/* Botón Eliminar */}
                         <SView col={"xs-1"} center>
-                            <SView
-                                center
-                                backgroundColor={"#FEE2E2"}
-                                style={{
-                                    width: 24,
-                                    height: 24,
-                                    borderRadius: 12,
-                                }}
-                                onPress={() => this.quitarDelCarrito(item.id)}
-                            >
-                                <SIconApp name="Delete" width={10} height={10} fill={"#DC2626"} />
+                            <SView center style={{ width: 24, height: 24, }} onPress={() => this.quitarDelCarrito(item.id)} >
+                                <SIconApp name="eliminarI" width={10} height={10} fill={"#DC2626"} />
                             </SView>
                         </SView>
                     </SView>
@@ -559,7 +547,7 @@ export default class testpuntoventa extends Component {
                         >
 
 
-                            <SView
+                            {/* <SView
                                 col={"xs-12"}
                                 // backgroundColor={"#FFFFFF"}
                                 style={{
@@ -569,32 +557,32 @@ export default class testpuntoventa extends Component {
                                     borderTopWidth: 1,
                                     // borderTopColor: "#E5E7EB",
                                 }}
-                            >
-                                <SView row center>
-                                    <SView
-                                        center
-                                        backgroundColor={"#ab05ddff"}
-                                        style={{
-                                            width: 28,
-                                            height: 28,
-                                            borderRadius: 18,
-                                            marginRight: 12,
-                                        }}
-                                    >
-                                        <SText fontSize={14} bold color={"white"}>AO</SText>
-                                    </SView>
-                                    <SView center>
-                                        <SText center fontSize={14} bold color={"#111827"}>
-                                            Anita Oliver
-                                        </SText>
-                                        <SText fontSize={11} color={"#6B7280"}>
-                                            Cliente Vip
-                                        </SText>
-                                    </SView>
+                            > */}
+                            <SView row center>
+                                <SView
+                                    center
+                                    backgroundColor={"#ab05ddff"}
+                                    style={{
+                                        width: 28,
+                                        height: 28,
+                                        borderRadius: 18,
+                                        marginRight: 12,
+                                    }}
+                                >
+                                    <SText fontSize={14} bold color={"white"}>AO</SText>
+                                </SView>
+                                <SView center>
+                                    <SText center fontSize={14} bold color={"#111827"}>
+                                        Anita Oliver
+                                    </SText>
+                                    <SText fontSize={11} color={"#6B7280"}>
+                                        Cliente Vip
+                                    </SText>
                                 </SView>
                             </SView>
-
                         </SView>
+
+                        {/* </SView> */}
 
                         {/* Botón pagar */}
                         <SView
@@ -954,6 +942,7 @@ export default class testpuntoventa extends Component {
                     {/* Sidebar */}
                     <SView
                         col={"xs-4"}
+                        flex
                         backgroundColor={"#F8F9FA"}
                         style={{
                             padding: 16,
@@ -964,6 +953,8 @@ export default class testpuntoventa extends Component {
                         {/* Carrito */}
                         {/* <SView style={{ flex: 1 }}> */}
                         {this.renderDetalleCarrito()}
+                        {/* <SView flex /> */}
+
                         {this.renderSubtotal()}
 
                         {/* <SView flex /> */}
