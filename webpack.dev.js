@@ -25,7 +25,7 @@ module.exports = merge(common, {
         rules: [
             {
                 test: /\.(js|jsx|tsx|ts)$/,
-                exclude: /node_modules/,
+                exclude: /node_modules\/(?!expo-gl)/,
                 use: [{
                     loader: 'babel-loader',
                     options: {

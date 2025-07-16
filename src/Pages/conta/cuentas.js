@@ -28,6 +28,7 @@ export default class cuentas extends React.Component {
             <DinamicTable {...Config.table.applyTheme()}
                 ref={ref => this.DinamicTable = ref}
                 selectType="multiple"
+                keyExtractor={(e) => e.key}
                 loadData={async () => {
                     const resp = await MDL.contabilidad.getCuentas();
                     const arr = Object.values(resp);
