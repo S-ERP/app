@@ -92,8 +92,8 @@ export default class RegistroInventarios extends Component {
                             .map(e => ({
                                 key_modelo: this.key_conteoxxx ? e.key_modelo : e.key,
                                 stock: Number(e.stock),
-                                cantidad_real: Number(e.cantidad_real) ||0,
-                                cantidad_baja: Number(e.cantidad_baja) ||0,
+                                cantidad_real: Number(e.cantidad_real) || 0,
+                                cantidad_baja: Number(e.cantidad_baja) || 0,
                                 explicacion: e.explicacion?.toString().trim() || ""
                             }));
 
@@ -223,6 +223,30 @@ export default class RegistroInventarios extends Component {
                                     this.forceUpdate(); // para que se repinte el color dinámico
                                 }}
                             />
+                        );
+                    }}
+                />
+
+                <DinamicTable.Col
+                    key={"cantidad_baja_"}
+                    label="SubTotal"
+                    dataType="number"
+                    width={80}
+                    data={(e) => e.row.cantidad_baja ? parseFloat(e.row.cantidad_baja) : null}
+                    customComponent={(e) => {
+                        // const color = this.colorStock(e.row.stock, e.row.cant_inventario);
+                        return (<SView flex center style={{
+                            borderWidth: 1,
+                            borderColor: STheme.color.card,
+                            backgroundColor: STheme.color.card,
+                        }}
+                            onChangeText={(value) => {
+                                e.row.cantidad_baja = Number(value); // actualiza el valor del row
+                                this.forceUpdate(); // para que se repinte el color dinámico
+                            }}
+                        >
+                            <SText fontSize={16}>{SMath.formatMoney((e.row.cantidad_real - e.row.cantidad_baja), 2, "Bs ", "bs")}</SText>
+                        </SView>
                         );
                     }}
                 />

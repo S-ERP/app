@@ -57,8 +57,8 @@ export default class ReporteConteoInventario extends Component {
                 customComponent={e => <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                     <SImage src={SSocket.api.root + "usuario/" + e.row?.usuario} style={{ resizeMode: "cover", }} />
                 </SView>} />
-            <DinamicTable.Col key="nombre" label="Usuario" width={100} data={(e) => e.row?.usuario.Nombres} />
-            <DinamicTable.Col key="descripcion" label="Almacen" width={90} data={(e) => e.row?.descripcion} />
+            <DinamicTable.Col key="nombre" label="Usuario" width={150} data={(e) => e.row?.usuario.Nombres} />
+            <DinamicTable.Col key="descripcion" label="Almacen" width={150} data={(e) => e.row?.descripcion} />
             <DinamicTable.Col key="fecha" label="Fecha" width={120} data={(e) => e.row?.fecha}
                 customComponent={e => <SView center row><SIconApp name='Evento' width={14} height={14} fill={STheme.color.text} />
                     <SText> {e.row?.fecha}</SText></SView>}
