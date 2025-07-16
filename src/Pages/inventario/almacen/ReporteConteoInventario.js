@@ -40,7 +40,7 @@ export default class ReporteConteoInventario extends Component {
             key="tabla" ref={ref => this.table = ref} center language="es" selectType="single"
             colors={{ background: STheme.color.background, header: STheme.color.card }}
             cellStyle={{ borderWidth: 0 }}
-            textStyle={{ fontSize: 12, color: "white" }}
+            textStyle={{ fontSize: 12, color: "white", textAlign: "center" }}
             loadData={async () => {
                 const all = await MDL.inventario.getAll_reporte_conteo_inventario_detallado();
                 const keysUsuarios = Object.values(all).map(p => p.key_usuario).filter(Boolean);
@@ -60,7 +60,6 @@ export default class ReporteConteoInventario extends Component {
             <DinamicTable.Col key="descripcion" label="Almacen" width={150} data={(e) => e.row?.descripcion} />
             <DinamicTable.Col key="fecha" label="Fecha" width={100} data={(e) => e.row?.fecha} />
             <DinamicTable.Col key="hora" label="Hora" width={100} data={(e) => e.row?.hora} />
-            <DinamicTable.Col key="hora" label="Hora" width={100} data={(e) => e.row?.hora} />
             <DinamicTable.Col key="key_conteo" label="Ver" width={150} data={(e) => e.row?.key_conteo}
                 customComponent={e => <SView center style={{
                     height: 24,
@@ -76,8 +75,25 @@ export default class ReporteConteoInventario extends Component {
                 >
                     <SText >Det.Inventario</SText>
                 </SView>} />
-            <DinamicTable.Col key="total_baja" label="T.Baja" width={100} data={(e) => e.row?.total_baja} />
-            <DinamicTable.Col key="total_perdida_no_registrada" label="T. Pérdidas" center width={100} data={(e) => e.row?.total_perdida_no_registrada} />
+            <DinamicTable.Col key="total_perdida_no_registrada" label="T. Pérdidas" center width={100} data={(e) => e.row?.total_perdida_no_registrada || "0"} />
+            <DinamicTable.Col key="total_baja" label="T.Baja" width={100} data={(e) => e.row?.total_baja || "0"} />
+
+
+            <DinamicTable.Col key="key_asiento" label="Contabilidad" width={150} data={(e) => e.row?.key_conteo}
+                customComponent={e => <SView center style={{ height: 24, borderRadius: 16, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
+                    onPress={() => { alert("Generar Asiento contable") }} >
+                    <SText >Generar Asiento</SText>
+                </SView>} />
+
+
+
+            <DinamicTable.Col key="key_cardex" label="Inv.Cardex" width={180} data={(e) => e.row?.key_conteo}
+                customComponent={e => <SView center style={{ height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
+                    onPress={() => { alert("Actualizar Cardex") }} >
+                    <SText >Registrar en Cardex</SText>
+                </SView>} />
+
+
         </DinamicTable>
     }
     render() {

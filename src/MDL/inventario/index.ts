@@ -6,7 +6,7 @@ import MDL from "..";
 export default class inventario extends MDLAbstract<EventListener> {
   async componentDidMount() {}
 
-  async getAllModeloStock() {
+  async getAllModeloStock(_key_almacen: string) {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
       service: "inventario",
@@ -14,7 +14,10 @@ export default class inventario extends MDLAbstract<EventListener> {
       type: "getAllStock",
       key_empresa: MDL.empresa.select?.key,
       key_usuario: MDL.usuario.session?.key,
+      key_almacen: _key_almacen,
     });
+
+    console.log("getAllModeloStock", resp.data);
 
     return Object.values(resp.data || {});
   }
@@ -239,9 +242,9 @@ export default class inventario extends MDLAbstract<EventListener> {
         key_usuario: MDL.usuario.session?.key,
       });
 
-        this.dispatchEvent({
-          type:"chavalEventos"
-      })
+      this.dispatchEvent({
+        type: "chavalEventos",
+      });
       return resp.data;
     }
   }
@@ -278,10 +281,9 @@ export default class inventario extends MDLAbstract<EventListener> {
       key: key_contador,
     });
 
-
-        this.dispatchEvent({
-          type: "chavalEventos",
-        });
+    this.dispatchEvent({
+      type: "chavalEventos",
+    });
     return resp.data;
     // }
   }

@@ -33,7 +33,7 @@ export default class RegistroInventarios extends Component {
             const modelosByContador = await MDL.inventario.getByKey_reporte_conteo_inventario_detallado(this.key_conteoxxx);
             this.modelos = modelosByContador;
         } else {
-            const modelos = await MDL.inventario.getAllModeloStock();
+            const modelos = await MDL.inventario.getAllModeloStock(this.key_almacen);
             this.modelos = modelos;
         }
         return this.modelos;
@@ -90,8 +90,8 @@ export default class RegistroInventarios extends Component {
                                 explicacion: e.explicacion?.toString().trim() || ""
                             }));
 
-                        console.log("🧠 save_cache:");
-                        console.log(JSON.stringify(save_cacheV5)); // OK: no circular
+                        // console.log("🧠 save_cache:");
+                        // console.log(JSON.stringify(save_cacheV5)); // OK: no circular
                         if (this.key_conteoxxx) {
                             MDL.inventario.updateConteoManualInventario(save_cacheV5, this.key_almacen, this.key_conteoxxx).then((resp) => {
                                 console.log("Conteo actualizado:", resp);
