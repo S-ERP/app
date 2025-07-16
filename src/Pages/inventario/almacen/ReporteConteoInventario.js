@@ -69,6 +69,14 @@ export default class ReporteConteoInventario extends Component {
                     <SText> {e.row?.hora}</SText></SView>}
 
             />
+            <DinamicTable.Col key="fecha_confirmacion" label="fecha_confirmacion" width={80} data={(e) => e.row?.fecha_confirmacion}
+            // customComponent={e => <SView center row><SIconApp name='history' width={14} height={14} fill={STheme.color.text} />
+
+            //     <SText> {e.row?.fecha_confirmacion}</SText></SView>}
+
+            />
+
+            {/* {e.row.fecha_confirmacion ? */}
             <DinamicTable.Col key="key_conteo4" label="Ver" width={120} data={(e) => e.row?.key_conteo}
                 customComponent={e => <SView center style={{
                     padding: 4,
@@ -86,6 +94,8 @@ export default class ReporteConteoInventario extends Component {
                 >
                     <SText >Det.Inventario</SText>
                 </SView>} />
+            {/* : null} */}
+
             <DinamicTable.Col key="total_perdida" label="T. Pérdidas" center width={70} data={(e) => e.row?.total_perdida || "0"}
 
                 customComponent={e => <SText color='red' style={{ textAlign: "center" }}>{e.row?.total_perdida}</SText>}
@@ -129,35 +139,52 @@ export default class ReporteConteoInventario extends Component {
 
 
             <DinamicTable.Col key="key_cardex" label="Inv.Cardex" width={180} data={(e) => e.row?.key_conteo}
-                customComponent={e => <SView center style={{ height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
-                    onPress={() => {
+                customComponent={e => {
 
-                        MDL.inventario.aplicar_cardex(e.row?.key_conteo).then((resp: any) => {
-                            console.log("aplicar_cardex", resp);
-                            // this.table.loadData();
-                        })
+                    return (e.row.fecha_confirmacion) ? <SView center style={{ height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
+                        onPress={() => {
+                            MDL.inventario.aplicar_cardex(e.row?.key_conteo).then((resp: any) => {
+                                console.log("aplicar_cardex", resp);
+                                // this.table.loadData();
+                            })
+                        }} >
+                        <SText >Registrar en Cardex</SText>
+                    </SView>
+                        : null;
+                }
+                }
+            // :null
 
-                    }} >
-                    <SText >Registrar en Cardex</SText>
-                </SView>} />
+
+            />
 
 
             <DinamicTable.Col key="key_cardex_anular" label="Inv." width={180} data={(e) => e.row?.key_conteo}
-                customComponent={e => <SView center style={{ height: 24, width: 150, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.danger + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
-                    onPress={() => {
-                        SPopup.confirm({
-                            title: "¿Seguro que quieres eliminar el inventario?",
-                            message: "El inventario Nro." + e.row?.key_conteo + " será eliminado, si alguien es miembro de la nota puede invitarlo nuevamente.",
-                            onPress: () => {
-                                MDL.inventario.anular_cardex(e.row?.key_conteo).then((resp: any) => {
-                                    console.log("anular_cardex", resp);
-                                    this.table.loadData();
+                customComponent={e => {
+
+
+                    return (e.row.fecha_confirmacion) ?
+
+                        <SView center style={{ height: 24, width: 150, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.danger + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
+                            onPress={() => {
+                                SPopup.confirm({
+                                    title: "¿Seguro que quieres eliminar el inventario?",
+                                    message: "El inventario Nro." + e.row?.key_conteo + " será eliminado, si alguien es miembro de la nota puede invitarlo nuevamente.",
+                                    onPress: () => {
+                                        MDL.inventario.anular_cardex(e.row?.key_conteo).then((resp: any) => {
+                                            console.log("anular_cardex", resp);
+                                            this.table.loadData();
+                                        })
+                                    }
                                 })
-                            }
-                        })
-                    }}>
-                    <SText >Anular Reg.Cardex</SText>
-                </SView>} />
+                            }}>
+                            <SText >Anular Reg.Cardex</SText>
+                        </SView>
+                        : null;
+                }
+                }
+
+            />
 
 
         </DinamicTable>

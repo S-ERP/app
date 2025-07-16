@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SButtom, SDate, SDatePicker, SHr, SInput, SLoad, SNavigation, SNotification, SPage, SSPiner, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
+import { SButtom, SDate, SDatePicker, SHr, SInput, SLoad, SMath, SNavigation, SNotification, SPage, SSPiner, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
 // import STextPlay from '../Components/STextPlay';
 // import Container from '../Components/Container';
 // import SMD from '../SMD';
@@ -144,27 +144,97 @@ export default class testpuntoventa extends Component {
 
 
     detalle() {
-        return <SView col={"xs-12"} center>
-            <SView col={"xs-11"} center>
-                <SText fontSize={20} color='white'>Detalle del producto</SText>
+        return (
+            <SView col={"xs-12"} center>
+                <SText fontSize={16} color='white'>Detalle del producto</SText>
                 <SHr />
                 <SView col={"xs-12"} row>
-                    {propductosComputacion.map((item, index) => {
-                        return <SView key={index} col={"xs-6"} center>
-                            <SView style={{ width: 100, height: 100, borderRadius: 50, overflow: "hidden" }}>
-                                {/* <img src={item.image} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> */}
-                            <SText fontSize={16} color='white'>{item.name}</SText>
-                            <SText fontSize={16} color='white'>{item.stock}.00 Units x {item.precio}/Units</SText>
+                    {propductosComputacion.slice(0, 4).map((item, index) => (
+                        <SView col={"xs-12"} row>
+
+                            <SView key={`prod-${index}`} col={"xs-10"} style={{ padding: 4 }}>
+                                <SText fontSize={10} color='white'>{item.name}</SText>
+                                <SText fontSize={8} color='white'>
+                                    {SMath.formatMoney(1, 2)} Und x ${SMath.formatMoney(item.price, 2)}/Unds
+                                </SText>
+
                             </SView>
 
+                            <SView flex center border='red' style={{ padding: 4 }}>
+                                <SText fontSize={9} color='blue'>$ {SMath.formatMoney((1 * item?.price), 2)}</SText>
+                            </SView>
+                        </SView>
 
-                            <SText fontSize={14} color='white'>{item.stock * item.precio}</SText>
-                        </SView>;
-                    })}
+                    ))}
                 </SView>
             </SView>
-        </SView>
+        );
     }
+
+    // subtotal() {
+    //     return <SView col={"xs-12"} center>
+    //         <SText fontSize={16} color='white'>Detalle del producto</SText>
+    //         <SHr />
+    //         <SView col={"xs-12"} row>
+    //             {/* solo qiero mostrar el detalle de 4 producto */}
+    //             {/* {propductosComputacion.map((item, index) => { */}
+    //             {/* return <> */}
+    //             <SView flex center />
+    //             <SView col={"xs-6"} style={{ justifyContent: "flex-end" }} border='red'>
+    //                 <SText fontSize={16} color='white'>TOTAL: $ {SMath.formatMoney((500), 2)}</SText>
+    //             </SView>
+    //             {/* </> */}
+    //             {/* })} */}
+    //         </SView>
+    //     </SView>
+    // }
+
+    subtotal() {
+        return (
+            <SView col={"xs-12"} center backgroundColor={STheme.color.card} >
+                <SView col={"xs-12"} row style={{ justifyContent: "flex-end", padding: 8 }}>
+                    <SText fontSize={14} bold color='white'>TOTAL: $ {SMath.formatMoney(500, 2)}</SText>
+                    <SHr />
+                    <SText fontSize={8} color='white'>Iva: $ {SMath.formatMoney(500, 2)}</SText>
+                    <SHr height={0.5} />
+                    <SText fontSize={8} color='white'>its: $ {SMath.formatMoney(500, 2)}</SText>
+                </SView>
+            </SView>
+        );
+    }
+
+    puntdd() {
+        return (<SView col={"xs-12"} center backgroundColor={STheme.color.gray} >
+            <SView col={"xs-11"} row style={{ justifyContent: "flex-end", padding: 8 }}>
+
+                {/* <SView col={"xs-12"} row center style={{ justifyContent: "flex-end", padding: 8 }}><SText fontSize={14} bold color='white'>Punto de Venta</SText> </SView> */}
+
+
+                <SView col={"xs-5"} height={42} row center style={{ borderColor: "red", borderRadius: 4, borderWidth: 1 }}>
+                    <SText fontSize={10} bold color='white'>Puntos ganado</SText>
+                    <SHr height={0.5} />
+
+                    <SText fontSize={8} bold color='green'>+113</SText>
+                </SView>
+
+                <SView flex />
+
+
+                <SView col={"xs-5"} height={42} row center style={{ borderColor: "red", borderRadius: 4, borderWidth: 1 }}>
+                    <SText fontSize={10} bold color='white'>nuevo total</SText>
+                    <SHr height={0.5} />
+
+                    <SText fontSize={8} bold color='green'>+3203</SText>
+                </SView>
+
+
+
+            </SView>
+        </SView>
+
+        );
+    }
+
 
     render() {
 
@@ -173,9 +243,12 @@ export default class testpuntoventa extends Component {
 
             <SView col={"xs-12"} center backgroundColor='transparent' row>
 
-                <SView col={"xs-4"} row center backgroundColor='yellow'>
-
+                <SView col={"xs-4"} row center backgroundColor='transparent'>
                     {this.detalle()}
+                    {this.subtotal()}
+                    {this.puntdd()}
+
+
                     {/* <SView flex center backgroundColor='yellow'>
                         <SText fontSize={20} color='white'>Punto de Venta</SText>
 
@@ -186,6 +259,7 @@ export default class testpuntoventa extends Component {
                     </SView> */}
                 </SView>
 
+                <SView width={20} />
 
                 <SView col={"xs-8"} center border='blue'>
                     <SText fontSize={20} color='white'>Subgrupos de platos</SText>
