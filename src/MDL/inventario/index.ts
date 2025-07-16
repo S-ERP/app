@@ -238,6 +238,10 @@ export default class inventario extends MDLAbstract<EventListener> {
         key_almacen: obj.key_almacen,
         key_usuario: MDL.usuario.session?.key,
       });
+
+        this.dispatchEvent({
+          type:"chavalEventos"
+      })
       return resp.data;
     }
   }
@@ -273,6 +277,11 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_usuario: MDL.usuario.session?.key,
       key: key_contador,
     });
+
+
+        this.dispatchEvent({
+          type: "chavalEventos",
+        });
     return resp.data;
     // }
   }

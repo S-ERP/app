@@ -31,26 +31,13 @@ export default class RegistroInventarios extends Component {
     modelos = null;
 
     async loadData() {
-
-
-        // const modelos = await MDL.inventario.getAllModeloStock();
-        // const modelosByContador = await MDL.inventario.getByKey_reporte_conteo_inventario_detallado(this.key_conteoxxx);
-
-
         if (this.key_conteoxxx) {
             const modelosByContador = await MDL.inventario.getByKey_reporte_conteo_inventario_detallado(this.key_conteoxxx);
             this.modelos = modelosByContador;
-
         } else {
             const modelos = await MDL.inventario.getAllModeloStock();
             this.modelos = modelos;
         }
-        // this.forceUpdate();
-
-
-        console.log("ddd", this.modelos);
-
-        // console.log("modelosByContador " + JSON.stringify(modelosByContador) )
         return this.modelos;
     }
 
@@ -140,7 +127,7 @@ export default class RegistroInventarios extends Component {
                         const modeloConDatos = this.table?.data || [];
 
                         const save_cacheV5 = (this.table?.data || [])
-                            .filter(e => this.key_conteoxxx ? e.key_modelo: e.key)
+                            .filter(e => this.key_conteoxxx ? e.key_modelo : e.key)
                             .map(e => ({
                                 key_modelo: this.key_conteoxxx ? e.key_modelo : e.key,
                                 stock: Number(e.stock) || 0,
@@ -181,6 +168,8 @@ export default class RegistroInventarios extends Component {
                                 console.error("Error al guardar el tipo de producto:", e);
                             })
                         }
+
+                        SNavigation.goBack();
                     }}>
                         {"Confirmar inventario"}
                     </SText>
@@ -213,13 +202,13 @@ export default class RegistroInventarios extends Component {
                 <DinamicTable.Col key={"nombre"} label='Nombre' width={200} data={(e) => e.row.descripcion}
                     textStyle={{ fontWeight: "bold" }}
                     customComponent={e => <ImageLabel {...e}
-                        src={SSocket.api.inventario + "modelo/.128_" + e.row.key + "?date=" + this.state.time}
-                        srcPreview={SSocket.api.inventario + "modelo/" + e.row.key + "?date=" + this.state.time}
+                        src={SSocket.api.inventario + "modelo/.128_" + e.row.key_modelo + "?date=" + this.state.time}
+                        srcPreview={SSocket.api.inventario + "modelo/" + e.row.key_modelo + "?date=" + this.state.time}
                     />}
                 />
 
 
-                <DinamicTable.Col key={"stock"} label='Stock' dataType='number' width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
+                <DinamicTable.Col key={"stock"} label='Stock' dataType='number' width={70} center data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
 
                 <DinamicTable.Col
                     key={"cantidad_real"}

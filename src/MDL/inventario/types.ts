@@ -7,4 +7,6 @@ export type Inventario = {
 
 export type EventListener = {
     type: "handleChange"
+} | {
+    type: "chavalEventos"
 }
