@@ -373,7 +373,7 @@ export default class testpuntoventa extends Component {
         return <SPage disableScroll hidden>
 
 
-            <SView col={"xs-12"} center backgroundColor={STheme.color.danger}  height={50} row>
+            <SView col={"xs-12"} center backgroundColor={STheme.color.card} style={{ padding: 8, borderRadius: 4 }}>
 
                 <SText fontSize={16} color='white'>Servisofts</SText>
             </SView>
