@@ -9,7 +9,6 @@ import { version } from 'process';
 import MDL from '../../../MDL';
 import FloatButtom from '../../../Components/FloatButtom';
 
-
 export default class ReporteConteoInventario extends Component {
     constructor(props) {
         super(props);
@@ -34,21 +33,14 @@ export default class ReporteConteoInventario extends Component {
             this.almacenes = Object.values(resp)
             this.table.loadData();
         })
-
     }
 
-
-
-
     mostrarTabla() {
-
-        console.log("🤶🤶🤶🤶🤶🤶🤶🤶🤶")
         return <DinamicTable
             key="tabla" ref={ref => this.table = ref} center language="es" selectType="single"
             colors={{ background: STheme.color.background, header: STheme.color.card }}
             cellStyle={{ borderWidth: 0 }}
             textStyle={{ fontSize: 12, color: "white" }}
-            // ref={ref => this.DinamicTable = ref}
             loadData={async () => {
                 const all = await MDL.inventario.getAll_reporte_conteo_inventario_detallado();
                 const keysUsuarios = Object.values(all).map(p => p.key_usuario).filter(Boolean);
@@ -58,7 +50,6 @@ export default class ReporteConteoInventario extends Component {
                 });
                 return all;
             }}
-
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
             <DinamicTable.Col key={"foto"} label='User' data={(e) => e.row?.usuario} width={35}
@@ -70,11 +61,8 @@ export default class ReporteConteoInventario extends Component {
             <DinamicTable.Col key="fecha" label="Fecha" width={100} data={(e) => e.row?.fecha} />
             <DinamicTable.Col key="hora" label="Hora" width={100} data={(e) => e.row?.hora} />
             <DinamicTable.Col key="hora" label="Hora" width={100} data={(e) => e.row?.hora} />
-
-
             <DinamicTable.Col key="key_conteo" label="Ver" width={150} data={(e) => e.row?.key_conteo}
                 customComponent={e => <SView center style={{
-                    // width: 24,
                     height: 24,
                     borderRadius: 100,
                     overflow: "hidden",
@@ -84,31 +72,19 @@ export default class ReporteConteoInventario extends Component {
                 }}
                     onPress={() => {
                         SNavigation.navigate("/inventario/almacen/profile/registro_inventario", { pk: e.row.key_almacen, key_conteo: e.row.key_conteo })
-                        // this.table.loadData();
                     }}
                 >
-
                     <SText >Det.Inventario</SText>
-
                 </SView>} />
-
             <DinamicTable.Col key="total_baja" label="T.Baja" width={100} data={(e) => e.row?.total_baja} />
             <DinamicTable.Col key="total_perdida_no_registrada" label="T. Pérdidas" center width={100} data={(e) => e.row?.total_perdida_no_registrada} />
-
         </DinamicTable>
-
     }
-
     render() {
-        // this.table.loadData();
-        console.log("🦸‍♂️🦸‍♂️🦸‍♂️🦸‍♂️🦸‍♂️🦸‍♂️🦸‍♂️🦸‍♂️🦸‍♂️");
         return (
             <SPage title="Reporte de Conteo de Inventario" disableScroll>
                 {this.mostrarTabla()}
-                <FloatButtom onPress={() => { this.table.loadData(); }} />
             </SPage>
         );
     }
-
-
 }

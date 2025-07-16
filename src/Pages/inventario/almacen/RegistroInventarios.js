@@ -20,9 +20,7 @@ export default class RegistroInventarios extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            time: new Date().getTime()
-        };
+        this.state = { time: new Date().getTime() };
         this.key_almacen = SNavigation.getParam("pk");
         this.key_conteoxxx = SNavigation.getParam("key_conteo");
         this.pintarColor = STheme.color.card;
@@ -41,61 +39,19 @@ export default class RegistroInventarios extends Component {
         return this.modelos;
     }
 
-
-    componentDidMount(): void {
-
-
-        // if (this.key_conteoxxx) {
-
-        // console.log("si  key_conteo", this.key_conteoxxx);
-        // MDL.inventario.getByKey_reporte_conteo_inventario_detallado(this.key_conteoxxx).then((resp: any) => {
-        //     this.modelos = Object.values(resp)
-        // })
-
-        // console.log("si  key_conteo con data ", this.inventariossss);
-        // }
-        // else {
-
-        // MDL.inventario.getAllAlmacen().then((resp: any) => {
-        //     this.almacenes = Object.values(resp)
-
-        // })
-        // console.log(" no  key_conteo", this.almacenes);
-
-        // }
-
-
-
-
-
-
-    }
-
-
-
-
     colorStock(cant_stock, cant_inv) {
-
         if (cant_stock == null || cant_stock == "") return this.pintarColor = STheme.color.card;
-
-
         if (cant_stock > cant_inv) return this.pintarColor = "red";
         if (cant_stock < cant_inv) return this.pintarColor = "yellow";
         if (cant_stock == cant_inv) return this.pintarColor = "green";
         return this.pintarColor = STheme.color.card; // por si ocurre un caso inesperado
     }
-
-
-
-
     render() {
         return <SPage title={"Gestion de Inventario"} disableScroll >
 
             <SView row center>
 
-
-
-                {/* <BarcodeIcon onChange={(barcode) => {
+                <BarcodeIcon onChange={(barcode) => {
                     if (this.modelos) {
                         const modelo = this.modelos.find(m => m.barcode === barcode);
                         if (modelo) {
@@ -116,11 +72,9 @@ export default class RegistroInventarios extends Component {
                         }
                     }
                     console.log("Barcode read:", barcode);
-                }} /> */}
-
+                }} />
 
                 <SView width={20} />
-
                 <SView width={140} height={26} center backgroundColor={STheme.color.card} style={{ borderRadius: 4 }}  >
                     <SText fontSize={12} color={STheme.color.white} onPress={() => {
                         const modelosCargados = this.modelos;
@@ -136,16 +90,9 @@ export default class RegistroInventarios extends Component {
                                 explicacion: e.explicacion?.toString().trim() || ""
                             }));
 
-
                         console.log("🧠 save_cache:");
                         console.log(JSON.stringify(save_cacheV5)); // OK: no circular
-
-                        // return;
-
                         if (this.key_conteoxxx) {
-                            // return;
-
-
                             MDL.inventario.updateConteoManualInventario(save_cacheV5, this.key_almacen, this.key_conteoxxx).then((resp) => {
                                 console.log("Conteo actualizado:", resp);
                                 this.forceUpdate();
@@ -154,11 +101,6 @@ export default class RegistroInventarios extends Component {
                             })
 
                         } else {
-
-                            console.log("🧠 save_cache:");
-                            console.log(JSON.stringify(save_cacheV5)); // OK: no circular
-
-                            // return;
                             MDL.inventario.saveConteoManualInventario({
                                 key_almacen: this.key_almacen,
                                 data: save_cacheV5
@@ -168,7 +110,6 @@ export default class RegistroInventarios extends Component {
                                 console.error("Error al guardar el tipo de producto:", e);
                             })
                         }
-
                         SNavigation.goBack();
                     }}>
                         {"Confirmar inventario"}
@@ -207,9 +148,7 @@ export default class RegistroInventarios extends Component {
                     />}
                 />
 
-
                 <DinamicTable.Col key={"stock"} label='Stock' dataType='number' width={70} center data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
-
                 <DinamicTable.Col
                     key={"cantidad_real"}
                     label="Cant. Inventario"
@@ -277,7 +216,6 @@ export default class RegistroInventarios extends Component {
                     width={350}
                     data={(e) => e.row?.explicacion}
                     customComponent={(e) => {
-                        // const color = this.colorStock(e.row.stock, e.row.cant_inventario);
                         return (
                             <SInput
                                 ref={(ref) => e.row.inputRef = ref} // guardamos ref si luego quieres acceder
