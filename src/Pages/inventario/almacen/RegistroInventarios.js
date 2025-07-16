@@ -232,7 +232,7 @@ export default class RegistroInventarios extends Component {
                     label="SubTotal"
                     dataType="number"
                     width={80}
-                    data={(e) => e.row.cantidad_baja ? parseFloat(e.row.cantidad_baja) : null}
+                    data={(e) => e.row.cantidad_baja_ ? parseFloat(e.row.cantidad_baja) : null}
                     customComponent={(e) => {
                         // const color = this.colorStock(e.row.stock, e.row.cant_inventario);
                         return (<SView flex center style={{
@@ -245,7 +245,7 @@ export default class RegistroInventarios extends Component {
                                 this.forceUpdate(); // para que se repinte el color dinámico
                             }}
                         >
-                            <SText fontSize={16}>{e?.row?.cantidad_real ? SMath.formatMoney((e?.row?.cantidad_real - e?.row?.cantidad_baja), 2, "Bs ", "bs") : ""}</SText>
+                            <SText fontSize={16}>{e?.row?.cantidad_real ? SMath.formatMoney((e?.row?.cantidad_real - e?.row?.cantidad_baja) || 0, 2, "Bs ", "bs") : ""}</SText>
                         </SView>
                         );
                     }}

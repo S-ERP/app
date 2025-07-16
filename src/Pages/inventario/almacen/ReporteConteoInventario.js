@@ -66,17 +66,9 @@ export default class ReporteConteoInventario extends Component {
             />
             <DinamicTable.Col key="hora" label="Hora" width={80} data={(e) => e.row?.hora}
                 customComponent={e => <SView center row><SIconApp name='history' width={14} height={14} fill={STheme.color.text} />
-                    <SText> {e.row?.hora}</SText></SView>}
+                    <SText> {e.row?.hora}</SText></SView>} />
 
-            />
-            <DinamicTable.Col key="fecha_confirmacion" label="fecha_confirmacion" width={80} data={(e) => e.row?.fecha_confirmacion}
-            // customComponent={e => <SView center row><SIconApp name='history' width={14} height={14} fill={STheme.color.text} />
-
-            //     <SText> {e.row?.fecha_confirmacion}</SText></SView>}
-
-            />
-
-            {/* {e.row.fecha_confirmacion ? */}
+            <DinamicTable.Col key="fecha_confirmacion" label="fecha_confirmacion" width={80} data={(e) => e.row?.fecha_confirmacion}/>
             <DinamicTable.Col key="key_conteo4" label="Ver" width={120} data={(e) => e.row?.key_conteo}
                 customComponent={e => <SView center style={{
                     padding: 4,
@@ -161,10 +153,7 @@ export default class ReporteConteoInventario extends Component {
 
             <DinamicTable.Col key="key_cardex_anular" label="Inv." width={180} data={(e) => e.row?.key_conteo}
                 customComponent={e => {
-
-
                     return (e.row.fecha_confirmacion) ?
-
                         <SView center style={{ height: 24, width: 150, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.danger + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
                             onPress={() => {
                                 SPopup.confirm({
