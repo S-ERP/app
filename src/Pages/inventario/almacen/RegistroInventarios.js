@@ -148,6 +148,13 @@ export default class RegistroInventarios extends Component {
                     />}
                 />
 
+                <DinamicTable.Col key={"precio_compra"} label='Precio' dataType='number' width={120} center
+                    data={(e) => e.row.precio_compra ? parseFloat(e.row.precio_compra) : 0}
+                    customComponent={(e) => {
+                        return (e.row.precio_compra ? <SText> {"Bs " + SMath.formatMoney(e.row.precio_compra, 2, "Bs ", "bolivianos")}  </SText> : null);
+                    }}
+
+                />
                 <DinamicTable.Col key={"stock"} label='Stock' dataType='number' width={70} center data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
                 <DinamicTable.Col
                     key={"cantidad_real"}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2, SHr, SNotification, SImage, SDate, SButtom } from 'servisofts-component';
+import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2, SHr, SNotification, SImage, SDate, SButtom, SMath } from 'servisofts-component';
 import * as XLSX from "xlsx";
 import SSocket from 'servisofts-socket';
 import { DinamicTable } from 'servisofts-table';
@@ -75,21 +75,58 @@ export default class ReporteConteoInventario extends Component {
                 >
                     <SText >Det.Inventario</SText>
                 </SView>} />
-            <DinamicTable.Col key="total_perdida_no_registrada" label="T. Pérdidas" center width={100} data={(e) => e.row?.total_perdida_no_registrada || "0"} />
-            <DinamicTable.Col key="total_baja" label="T.Baja" width={100} data={(e) => e.row?.total_baja || "0"} />
+            <DinamicTable.Col key="total_perdida" label="T. Pérdidas" center width={70} data={(e) => e.row?.total_perdida || "0"}
+
+                customComponent={e => <SText color='red' style={{ textAlign: "center" }}>{e.row?.total_perdida}</SText>}
+
+            />
+            <DinamicTable.Col key="total_perdida_costo" label="T.Pérdidas Costo" center width={100} data={(e) => e.row?.total_perdida_costo || "0"}
+                customComponent={(e) => {
+                    return (e.row.total_perdida_costo ? <SText style={{ textAlign: "center" }}> {"Bs " + SMath.formatMoney(e.row.total_perdida_costo, 2, "Bs ", "bolivianos")}  </SText> : null);
+                }}
+            />
+
+            <DinamicTable.Col key="total_baja" label="T.Baja" width={60} data={(e) => e.row?.total_baja || "0"}
+                customComponent={e => <SText color='orange' style={{ textAlign: "center" }}>{e.row?.total_baja}</SText>}
+            />
+            <DinamicTable.Col key="total_baja_costo" label="T.Baja Costo" width={90} data={(e) => e.row?.total_baja_costo || "0"}
+                customComponent={(e) => {
+                    return (e.row.total_baja_costo ? <SText style={{ textAlign: "center" }}> {"Bs " + SMath.formatMoney(e.row.total_baja_costo, 2, "Bs ", "bolivianos")}  </SText> : null);
+                }}
+
+            />
+
+            <DinamicTable.Col key="total_excedente" label="T.Excedente" width={90} data={(e) => e.row?.total_excedente || "0"}
+                customComponent={e => <SText color='green' bold style={{ textAlign: "center" }}>{e.row?.total_excedente}</SText>}
 
 
-            <DinamicTable.Col key="key_asiento" label="Contabilidad" width={150} data={(e) => e.row?.key_conteo}
+            />
+            <DinamicTable.Col key="total_excedente_costo" label="T.Excedente Costo" width={110} data={(e) => e.row?.total_excedente_costo || "0"}
+                customComponent={(e) => {
+                    return (e.row.total_excedente_costo ? <SText style={{ textAlign: "center" }}> {"Bs " + SMath.formatMoney(e.row.total_excedente_costo, 2, "Bs ", "bolivianos")}  </SText> : null);
+                }}
+            />
+
+
+
+            {/* <DinamicTable.Col key="key_asiento" label="Contabilidad" width={150} data={(e) => e.row?.key_conteo}
                 customComponent={e => <SView center style={{ height: 24, borderRadius: 16, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
                     onPress={() => { alert("Generar Asiento contable") }} >
                     <SText >Generar Asiento</SText>
-                </SView>} />
+                </SView>} /> */}
 
 
 
             <DinamicTable.Col key="key_cardex" label="Inv.Cardex" width={180} data={(e) => e.row?.key_conteo}
                 customComponent={e => <SView center style={{ height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
-                    onPress={() => { alert("Actualizar Cardex") }} >
+                    onPress={() => {
+
+                        MDL.inventario.aplicar_cardex(e.row?.key_conteo).then((resp: any) => {
+                            console.log("aplicar_cardex", resp);
+                            // this.table.loadData();
+                        })
+
+                    }} >
                     <SText >Registrar en Cardex</SText>
                 </SView>} />
 

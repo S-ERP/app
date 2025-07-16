@@ -205,6 +205,19 @@ export default class inventario extends MDLAbstract<EventListener> {
     return Object.values(resp.data || {});
   }
 
+  async aplicar_cardex(_key_conteo: string) {
+    const resp: any = await SSocket.sendPromise({
+      service: "inventario",
+      component: "conteo_manual_inventario",
+      type: "aplicar_cardex",
+      key_almacen: MDL.empresa.select?.key,
+      key_conteo: _key_conteo,
+    });
+
+      console.log("aplicar_cardex", resp.data);
+    return Object.values(resp.data || {});
+  }
+
   //   async saveModelo(modelo: any) {
   //     if (modelo.key) {
   //       const resp: any = await SSocket.sendPromise({
@@ -304,6 +317,7 @@ export default class inventario extends MDLAbstract<EventListener> {
       component: "conteo_manual_inventario",
       type: "getByKeyConteo",
       key_contador: key_contador,
+      //   key_almacen: key_contador,
     });
     //    return Object.values(resp.data || {});
     return resp.data;
