@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SButtom, SDate, SDatePicker, SHr, SInput, SLoad, SMath, SNavigation, SNotification, SPage, SSPiner, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
+import { SButtom, SDate, SDatePicker, SHr, SImage, SInput, SLoad, SMath, SNavigation, SNotification, SPage, SSPiner, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
 // import STextPlay from '../Components/STextPlay';
 // import Container from '../Components/Container';
 // import SMD from '../SMD';
@@ -15,6 +15,7 @@ import Model from '../Model';
 // import MultipageMenu from '../Components/MultipageMenu';
 import SSocket from 'servisofts-socket';
 import DataBase from '../DataBase';
+import SIconApp from '../Assets/SIconApp';
 // import { Trigger } from 'servisofts-db';
 // import { Image } from 'react-native';
 
@@ -171,23 +172,7 @@ export default class testpuntoventa extends Component {
         );
     }
 
-    // subtotal() {
-    //     return <SView col={"xs-12"} center>
-    //         <SText fontSize={16} color='white'>Detalle del producto</SText>
-    //         <SHr />
-    //         <SView col={"xs-12"} row>
-    //             {/* solo qiero mostrar el detalle de 4 producto */}
-    //             {/* {propductosComputacion.map((item, index) => { */}
-    //             {/* return <> */}
-    //             <SView flex center />
-    //             <SView col={"xs-6"} style={{ justifyContent: "flex-end" }} border='red'>
-    //                 <SText fontSize={16} color='white'>TOTAL: $ {SMath.formatMoney((500), 2)}</SText>
-    //             </SView>
-    //             {/* </> */}
-    //             {/* })} */}
-    //         </SView>
-    //     </SView>
-    // }
+
 
     subtotal() {
         return (
@@ -234,7 +219,154 @@ export default class testpuntoventa extends Component {
 
         );
     }
+    configurationPunto() {
+        return (<SView col={"xs-12"} center backgroundColor={STheme.color.card} >
+            <SView col={"xs-12"} row  >
 
+                {/* <SView col={"xs-12"} row center style={{ justifyContent: "flex-end", padding: 8 }}><SText fontSize={14} bold color='white'>Punto de Venta</SText> </SView> */}
+
+                <SView col={"xs-12"} row  >
+
+
+                    <SView flex border='red' center row height={50}  >
+                        <SIconApp name='Reload' width={18} height={18} stroke={STheme.color.barcode} />
+                        <SText fontSize={12} bold color={STheme.color.barcode}>  Reembolso</SText>
+                    </SView>
+                    <SView flex border='red' center row height={50}>
+                        <SIconApp name='menuAll' width={18} height={18} fill={STheme.color.barcode} />
+                        <SText fontSize={12} bold color={STheme.color.barcode} >  Nota del cliente</SText>
+                    </SView>
+                    <SView flex border='red' center row height={50}>
+
+                        <SIconApp name='barcode' width={18} height={18} fill={STheme.color.barcode} />
+                        <SText fontSize={12} bold color={STheme.color.barcode} >  Ingresar código</SText>
+                    </SView>
+                </SView>
+
+
+                <SView col={"xs-12"} row>
+                    <SView flex border='red' center row height={50}>
+                        <SIconApp name='campana' width={18} height={18} stroke={STheme.color.barcode} />
+                        <SText fontSize={12} bold color={STheme.color.barcode} >  Reiniciar programas</SText>
+                    </SView>
+                    <SView flex border='red' center row height={50}>
+                        <SIconApp name='tarealabel' width={18} height={18} fill={STheme.color.barcode} />
+                        <SText fontSize={12} bold color={STheme.color.barcode} >  Recompensa</SText>
+                    </SView>
+                    <SView flex border='red' center row height={50}>
+                        <SIconApp name='Engranaje' width={18} height={18} fill={STheme.color.barcode} />
+                        <SText fontSize={12} bold color={STheme.color.barcode} >  Cotización/Pedido</SText>
+                    </SView>
+                </SView>
+
+
+
+
+            </SView>
+        </SView>
+
+        );
+    }
+
+
+
+
+    tecladonumeral() {
+        const teclasFinal = [
+            "1", "2", "3", "QtY",
+            "4", "5", "6", "% Desc",
+            "7", "8", "9", "Precio",
+            "+", "0", ".", "Cancelar"
+        ];
+
+        return (
+            <SView col={"xs-12"} center backgroundColor={STheme.color.card}>
+                <SView col={"xs-12"} row>
+                    {/* Info lateral */}
+                    <SView col={"xs-4"}>
+                        <SView border="red" center row height={50}>
+                            <SText fontSize={12} bold color={STheme.color.barcode}>usuario ricky</SText>
+                        </SView>
+                        <SView flex border="red" center row>
+                            <SText fontSize={12} bold color={STheme.color.barcode}>Pago</SText>
+                        </SView>
+                    </SView>
+
+                    {/* Teclado numérico */}
+                    <SView col={"xs-8"}>
+                        {[0, 1, 2, 3].map((filaIdx) => (
+                            <SView key={filaIdx} col={"xs-12"} row>
+                                {[0, 1, 2, 3].map((colIdx) => {
+                                    const index = filaIdx * 4 + colIdx;
+                                    const valor = teclasFinal[index];
+                                    return (
+                                        <SView
+                                            key={index}
+                                            flex
+                                            center
+                                            row
+                                            height={50}
+                                            backgroundColor={STheme.color.card}
+                                            style={{ borderWidth: 1, borderColor: "red" }}
+                                            onPress={() => {
+                                                console.log("Presionado:", valor);
+                                                alert(`Presionado: ${valor}`);
+                                            }}
+                                        >
+                                            <SText fontSize={12} bold color={STheme.color.barcode}>
+                                                {valor}
+                                            </SText>
+                                        </SView>
+                                    );
+                                })}
+                            </SView>
+                        ))}
+                    </SView>
+                </SView>
+            </SView>
+        );
+    }
+
+
+
+
+
+
+    pintarProductos() {
+        return (
+            <SView col={"xs-12"} center>
+                <SText fontSize={16} color='white'>Detalle del producto</SText>
+                <SHr />
+                <SView col={"xs-12"} row>
+                    {propductosComputacion.slice(0, 4).map((item, index) => (
+                        <SView col={"xs-2.3"} row center border='red' style={{ padding: 4 }}
+
+                            onPress={() => {
+                                alert("Producto seleccionado: " + item.name);
+                            }}
+
+
+                        >
+
+                            <SView col={"xs-12"} center >
+                                <SImage
+                                    key={`prod-${index}`}
+                                    src={"https://pcihnd.com/cdn/shop/files/706070.png?v=1740761042&width=1946"}
+                                    // src={item.image}
+                                    style={{ width: 150, height: 150, borderRadius: 4 }}
+                                    resizeMode='cover'
+                                />
+                            </SView>
+                            <SView key={`prod-${index}`} col={"xs-10"}  >
+                                <SText fontSize={16} color='white'>{item.name}</SText>
+                                <SText fontSize={14} color='white'>$ {SMath.formatMoney(item.price, 2)} bs</SText>
+                            </SView>
+                        </SView>
+                    ))}
+                </SView>
+            </SView>
+        );
+    }
 
     render() {
 
@@ -243,26 +375,27 @@ export default class testpuntoventa extends Component {
 
             <SView col={"xs-12"} center backgroundColor='transparent' row>
 
-                <SView col={"xs-4"} row center backgroundColor='transparent'>
+                <SView flex row center backgroundColor='transparent'>
                     {this.detalle()}
                     {this.subtotal()}
+
+
                     {this.puntdd()}
 
+                    <SHr />
 
-                    {/* <SView flex center backgroundColor='yellow'>
-                        <SText fontSize={20} color='white'>Punto de Venta</SText>
 
-                    </SView>
-                    <SView col={"xs-4"} center backgroundColor='yellow'>
-                        <SText fontSize={20} color='white'>Punto de Venta</SText>
-                        <SText fontSize={20} color='white'>Punto de Venta</SText>
-                    </SView> */}
+                    {this.configurationPunto()}
+
+                    {this.tecladonumeral()}
+
                 </SView>
 
                 <SView width={20} />
 
                 <SView col={"xs-8"} center border='blue'>
-                    <SText fontSize={20} color='white'>Subgrupos de platos</SText>
+                    {/* <SText fontSize={20} color='white'>Subgrupos de platos</SText> */}
+                    {this.pintarProductos()}
 
                 </SView>
             </SView>
