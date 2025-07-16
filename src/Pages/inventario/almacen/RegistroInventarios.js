@@ -81,17 +81,26 @@ export default class RegistroInventarios extends Component {
                         const modeloConDatos = this.table?.data || [];
 
                         const save_cacheV5 = (this.table?.data || [])
-                            .filter(e => this.key_conteoxxx ? e.key_modelo : e.key)
+                            .filter(e => {
+                                const real = Number(e.cantidad_real);
+                                const baja = Number(e.cantidad_baja);
+                                return !isNaN(real) || !isNaN(baja);
+                            }
+
+
+                            )
                             .map(e => ({
                                 key_modelo: this.key_conteoxxx ? e.key_modelo : e.key,
-                                stock: Number(e.stock) || 0,
-                                cantidad_real: Number(e.cantidad_real) || 0,
-                                cantidad_baja: Number(e.cantidad_baja) || 0,
+                                stock: Number(e.stock),
+                                cantidad_real: Number(e.cantidad_real) ||0,
+                                cantidad_baja: Number(e.cantidad_baja) ||0,
                                 explicacion: e.explicacion?.toString().trim() || ""
                             }));
 
-                        // console.log("🧠 save_cache:");
-                        // console.log(JSON.stringify(save_cacheV5)); // OK: no circular
+                        console.log("🧠 save_cache:");
+                        console.log(JSON.stringify(save_cacheV5)); // OK: no circular
+
+                        // return;
                         if (this.key_conteoxxx) {
                             MDL.inventario.updateConteoManualInventario(save_cacheV5, this.key_almacen, this.key_conteoxxx).then((resp) => {
                                 console.log("Conteo actualizado:", resp);
@@ -149,9 +158,9 @@ export default class RegistroInventarios extends Component {
                 />
 
                 <DinamicTable.Col key={"precio_compra"} label='Precio' dataType='number' width={120} center
-                    data={(e) => e.row.precio_compra ? parseFloat(e.row.precio_compra) : 0}
+                    data={(e) => e.row.precio_compra ? parseFloat(e.row.precio_compra) : null}
                     customComponent={(e) => {
-                        return (e.row.precio_compra ? <SText> {"Bs " + SMath.formatMoney(e.row.precio_compra, 2, "Bs ", "bolivianos")}  </SText> : null);
+                        return (e.row.precio_compra ? <SText fontSize={14} > {"Bs " + SMath.formatMoney(e.row.precio_compra, 2, "Bs ", "bolivianos")}  </SText> : null);
                     }}
 
                 />
@@ -161,7 +170,7 @@ export default class RegistroInventarios extends Component {
                     label="Cant. Inventario"
                     dataType="number"
                     width={120}
-                    data={(e) => e.row.cantidad_real ? parseFloat(e.row.cantidad_real) : 0}
+                    data={(e) => e.row.cantidad_real ? parseFloat(e.row.cantidad_real) : null}
                     customComponent={(e) => {
                         const color = this.colorStock(e.row.stock, e.row.cantidad_real);
                         return (
@@ -169,7 +178,7 @@ export default class RegistroInventarios extends Component {
                                 ref={(ref) => e.row.inputRef = ref} // guardamos ref si luego quieres acceder
                                 type="number"
                                 maxLength={3}
-                                defaultValue={Number(e.row.cantidad_real) || 0}
+                                defaultValue={Number(e.row.cantidad_real) || null}
                                 style={{
                                     borderWidth: 0.1,
                                     borderColor: color,
@@ -192,7 +201,7 @@ export default class RegistroInventarios extends Component {
                     label="Cant. Baja"
                     dataType="number"
                     width={120}
-                    data={(e) => e.row.cantidad_baja ? parseFloat(e.row.cantidad_baja) : 0}
+                    data={(e) => e.row.cantidad_baja ? parseFloat(e.row.cantidad_baja) : null}
                     customComponent={(e) => {
                         // const color = this.colorStock(e.row.stock, e.row.cant_inventario);
                         return (
@@ -200,7 +209,7 @@ export default class RegistroInventarios extends Component {
                                 ref={(ref) => e.row.inputRef = ref} // guardamos ref si luego quieres acceder
                                 type="number"
                                 maxLength={3}
-                                defaultValue={Number(e.row.cantidad_baja) || 0}
+                                defaultValue={Number(e.row.cantidad_baja) || null}
                                 style={{
                                     borderWidth: 0.1,
                                     borderColor: STheme.color.card,
