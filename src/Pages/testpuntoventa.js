@@ -338,7 +338,7 @@ export default class testpuntoventa extends Component {
                 <SText fontSize={16} color='white'>Detalle del producto</SText>
                 <SHr />
                 <SView col={"xs-12"} row>
-                    {propductosComputacion.slice(0, 4).map((item, index) => (
+                    {propductosComputacion.map((item, index) => (
                         <SView col={"xs-2.3"} row center border='red' style={{ padding: 4 }}
 
                             onPress={() => {
@@ -373,30 +373,35 @@ export default class testpuntoventa extends Component {
         return <SPage disableScroll hidden>
 
 
-            <SView col={"xs-12"} center backgroundColor='transparent' row>
+            <SView col={"xs-12"} center backgroundColor={STheme.color.danger}  height={50} row>
 
-                <SView flex row center backgroundColor='transparent'>
-                    {this.detalle()}
-                    {this.subtotal()}
+                <SText fontSize={16} color='white'>Servisofts</SText>
+            </SView>
+
+            <SView flex backgroundColor='transparent' row>
+
+                <SView col={"xs-4"} backgroundColor='transparent'>
+
+                    <SView col={"xs-12"} center backgroundColor={STheme.color.card} style={{ padding: 8, borderRadius: 4 }}>
+                        {this.detalle()}
+                    </SView>
+
+                    <SView flex />
+
+                    <SView col={"xs-12"} center backgroundColor={STheme.color.card} style={{ padding: 8, borderRadius: 4 }}>
 
 
-                    {this.puntdd()}
-
-                    <SHr />
-
-
-                    {this.configurationPunto()}
-
-                    {this.tecladonumeral()}
-
+                        {this.subtotal()}
+                        {this.puntdd()}
+                        {this.configurationPunto()}
+                        {this.tecladonumeral()}
+                    </SView>
                 </SView>
 
-                <SView width={20} />
 
-                <SView col={"xs-8"} center border='blue'>
-                    {/* <SText fontSize={20} color='white'>Subgrupos de platos</SText> */}
+
+                <SView col={"xs-8"} border='blue'>
                     {this.pintarProductos()}
-
                 </SView>
             </SView>
 
