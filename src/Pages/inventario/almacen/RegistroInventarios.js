@@ -245,7 +245,7 @@ export default class RegistroInventarios extends Component {
                                 this.forceUpdate(); // para que se repinte el color dinámico
                             }}
                         >
-                            <SText fontSize={16}>{SMath.formatMoney((e.row.cantidad_real - e.row.cantidad_baja), 2, "Bs ", "bs")}</SText>
+                            <SText fontSize={16}>{e?.row?.cantidad_real ? SMath.formatMoney((e?.row?.cantidad_real - e?.row?.cantidad_baja), 2, "Bs ", "bs") : ""}</SText>
                         </SView>
                         );
                     }}

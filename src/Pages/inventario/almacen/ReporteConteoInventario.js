@@ -97,16 +97,6 @@ export default class ReporteConteoInventario extends Component {
                 }}
             />
 
-            <DinamicTable.Col key="total_baja" label="T.Baja" width={60} data={(e) => e.row?.total_baja || "0"}
-                customComponent={e => <SText color='orange' style={{ textAlign: "center" }}>{e.row?.total_baja}</SText>}
-            />
-            <DinamicTable.Col key="total_baja_costo" label="T.Baja Costo" width={90} data={(e) => e.row?.total_baja_costo || "0"}
-                customComponent={(e) => {
-                    return (e.row.total_baja_costo ? <SText style={{ textAlign: "center" }}> {"Bs " + SMath.formatMoney(e.row.total_baja_costo, 2, "Bs ", "bolivianos")}  </SText> : null);
-                }}
-
-            />
-
             <DinamicTable.Col key="total_excedente" label="T.Excedente" width={90} data={(e) => e.row?.total_excedente || "0"}
                 customComponent={e => <SText color='green' bold style={{ textAlign: "center" }}>{e.row?.total_excedente}</SText>}
 
@@ -116,6 +106,16 @@ export default class ReporteConteoInventario extends Component {
                 customComponent={(e) => {
                     return (e.row.total_excedente_costo ? <SText style={{ textAlign: "center" }}> {"Bs " + SMath.formatMoney(e.row.total_excedente_costo, 2, "Bs ", "bolivianos")}  </SText> : null);
                 }}
+            />
+
+            <DinamicTable.Col key="total_baja" label="T.Baja" width={60} data={(e) => e.row?.total_baja || "0"}
+                customComponent={e => <SText color='orange' style={{ textAlign: "center" }}>{e.row?.total_baja}</SText>}
+            />
+            <DinamicTable.Col key="total_baja_costo" label="T.Baja Costo" width={90} data={(e) => e.row?.total_baja_costo || "0"}
+                customComponent={(e) => {
+                    return (e.row.total_baja_costo ? <SText style={{ textAlign: "center" }}> {"Bs " + SMath.formatMoney(e.row.total_baja_costo, 2, "Bs ", "bolivianos")}  </SText> : null);
+                }}
+
             />
 
 
@@ -139,6 +139,24 @@ export default class ReporteConteoInventario extends Component {
 
                     }} >
                     <SText >Registrar en Cardex</SText>
+                </SView>} />
+
+
+            <DinamicTable.Col key="key_cardex_anular" label="Inv." width={180} data={(e) => e.row?.key_conteo}
+                customComponent={e => <SView center style={{ height: 24, width: 150, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.danger + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
+                    onPress={() => {
+                        SPopup.confirm({
+                            title: "¿Seguro que quieres eliminar el inventario?",
+                            message: "El inventario Nro." + e.row?.key_conteo + " será eliminado, si alguien es miembro de la nota puede invitarlo nuevamente.",
+                            onPress: () => {
+                                MDL.inventario.anular_cardex(e.row?.key_conteo).then((resp: any) => {
+                                    console.log("anular_cardex", resp);
+                                    this.table.loadData();
+                                })
+                            }
+                        })
+                    }}>
+                    <SText >Anular Reg.Cardex</SText>
                 </SView>} />
 
 
