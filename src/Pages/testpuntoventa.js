@@ -196,18 +196,12 @@ export default class testpuntoventa extends Component {
             >
                 {/* Logo */}
                 <SView col={"xs-2"} center>
-                    <SText fontSize={24} bold color={"#714B67"} style={{ letterSpacing: -0.5 }}>
-                        odoo
+                    <SText fontSize={24} bold color={"#1a1719ff"} style={{ letterSpacing: -0.5 }}>
+                        servisofts
                     </SText>
                 </SView>
 
-                {/* Breadcrumb */}
-                <SView col={"xs-3"} row center>
-                    <SIconApp name="home" width={16} height={16} fill={"#6B7280"} />
-                    <SText fontSize={12} color={"#6B7280"} style={{ marginHorizontal: 8 }}>
-                        {">"} Desks
-                    </SText>
-                </SView>
+                <SView flex />
 
                 {/* Search */}
                 <SView col={"xs-4"} center>
@@ -241,7 +235,7 @@ export default class testpuntoventa extends Component {
                 <SView col={"xs-3"} row center style={{ justifyContent: "flex-end" }}>
                     <SView
                         center
-                        backgroundColor={"#714B67"}
+                        backgroundColor={"blue"}
                         style={{
                             width: 32,
                             height: 32,
@@ -250,11 +244,11 @@ export default class testpuntoventa extends Component {
                         }}
                     >
                         <SText fontSize={12} bold color={"white"}>
-                            MA
+                            AS
                         </SText>
                     </SView>
                     <SText fontSize={14} color={"#374151"}>
-                        Mitchell Admin
+                        Alvaro Siles
                     </SText>
                     <SView style={{ marginLeft: 16 }}>
                         <SIconApp name="wifi" width={20} height={20} fill={"#6B7280"} />
@@ -334,7 +328,7 @@ export default class testpuntoventa extends Component {
                                     borderWidth: 1,
                                     borderColor: "#D1D5DB",
                                     borderRadius: 4,
-                                    color: STheme.color.text,
+                                    color: "black",
                                 }}
                             />
                             <SView
@@ -351,7 +345,7 @@ export default class testpuntoventa extends Component {
 
                         <SView col={"xs-3"} center style={{ alignItems: "flex-end" }}>
                             <SText fontSize={13} bold color={"#111827"}>
-                                $ {SMath.formatMoney(item.price * item.quantity, 2)}
+                                 {SMath.formatMoney(item.price * item.quantity, 2)}
                             </SText>
                         </SView>
 
@@ -367,7 +361,7 @@ export default class testpuntoventa extends Component {
                                 }}
                                 onPress={() => this.quitarDelCarrito(item.id)}
                             >
-                                <SIconApp name="close" width={10} height={10} fill={"#DC2626"} />
+                                <SIconApp name="Delete" width={10} height={10} fill={"#DC2626"} />
                             </SView>
                         </SView>
                     </SView>
@@ -523,47 +517,7 @@ export default class testpuntoventa extends Component {
         )
     }
 
-    // Usuario actual mejorado
-    renderUsuarioActual() {
-        return (
-            <SView
-                col={"xs-12"}
-                backgroundColor={"#FFFFFF"}
-                style={{
-                    borderRadius: 8,
-                    padding: 16,
-                    marginBottom: 8,
-                    borderTopWidth: 1,
-                    borderTopColor: "#E5E7EB",
-                }}
-            >
-                <SView row center>
-                    <SView
-                        center
-                        backgroundColor={"#10B981"}
-                        style={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 18,
-                            marginRight: 12,
-                        }}
-                    >
-                        <SText fontSize={14} bold color={"white"}>
-                            AO
-                        </SText>
-                    </SView>
-                    <SView>
-                        <SText fontSize={14} bold color={"#111827"}>
-                            Anita Oliver
-                        </SText>
-                        <SText fontSize={11} color={"#6B7280"}>
-                            Cliente Premium
-                        </SText>
-                    </SView>
-                </SView>
-            </SView>
-        )
-    }
+
 
     // Teclado numérico mejorado
     renderTecladoNumerico() {
@@ -577,46 +531,122 @@ export default class testpuntoventa extends Component {
         return (
             <SView
                 col={"xs-12"}
-                backgroundColor={"#714B67"}
+                backgroundColor={"black"}
                 style={{
                     borderRadius: 8,
                     padding: 16,
                 }}
+                row
             >
-                <SText fontSize={14} bold color={"white"} center style={{ marginBottom: 12 }}>
-                    {this.state.calculatorDisplay} {/* Muestra el valor del teclado */}
-                </SText>
+                {/* <SText fontSize={14} bold color={"white"} center style={{ marginBottom: 12 }}>
+                    {this.state.calculatorDisplay}
+                </SText> */}
+                <SView col={"xs-12"} row>
+                    {/* Columna izquierda */}
+                    <SView col={"xs-4"}>
+                        {/* Botón usuario */}
+                        <SView
+                            center
+                            backgroundColor={"rgba(255,255,255,0.1)"}
+                            style={{
+                                height: 44,
+                                borderRadius: 6,
+                                margin: 4,
+                                borderWidth: 1,
+                                borderColor: "rgba(255,255,255,0.2)",
+                            }}
+                            onPress={() => console.log("usuario")}
+                        >
 
-                {teclas.map((fila, filaIndex) => (
-                    <SView key={filaIndex} col={"xs-12"} row style={{ marginBottom: 8 }}>
-                        {fila.map((tecla, teclaIndex) => (
+
                             <SView
-                                key={teclaIndex}
-                                flex
-                                center
-                                backgroundColor={"rgba(255,255,255,0.1)"}
+                                col={"xs-12"}
+                                // backgroundColor={"#FFFFFF"}
                                 style={{
-                                    height: 44,
-                                    borderRadius: 6,
-                                    marginHorizontal: 2,
-                                    borderWidth: 1,
-                                    borderColor: "rgba(255,255,255,0.2)",
-                                }}
-                                onPress={() => {
-                                    if (tecla === "Payment") {
-                                        this.setState({ showPaymentModal: true })
-                                    } else {
-                                        this.handleCalculatorPress(tecla)
-                                    }
+                                    borderRadius: 8,
+                                    padding: 16,
+                                    marginBottom: 8,
+                                    borderTopWidth: 1,
+                                    // borderTopColor: "#E5E7EB",
                                 }}
                             >
-                                <SText fontSize={12} bold color={"white"}>
-                                    {tecla}
-                                </SText>
+                                <SView row center>
+                                    <SView
+                                        center
+                                        backgroundColor={"#ab05ddff"}
+                                        style={{
+                                            width: 28,
+                                            height: 28,
+                                            borderRadius: 18,
+                                            marginRight: 12,
+                                        }}
+                                    >
+                                        <SText fontSize={14} bold color={"white"}>AO</SText>
+                                    </SView>
+                                    <SView center>
+                                        <SText center fontSize={14} bold color={"#111827"}>
+                                            Anita Oliver
+                                        </SText>
+                                        <SText fontSize={11} color={"#6B7280"}>
+                                            Cliente Vip
+                                        </SText>
+                                    </SView>
+                                </SView>
+                            </SView>
+
+                        </SView>
+
+                        {/* Botón pagar */}
+                        <SView
+                            center
+                            flex
+                            backgroundColor={"rgba(255,255,255,0.1)"}
+                            style={{
+                                // height: 44,
+                                borderRadius: 6,
+                                margin: 4,
+                                borderWidth: 1,
+                                borderColor: "rgba(255,255,255,0.2)",
+                            }}
+                            onPress={() => console.log("pagar")}
+                        >
+                            <SText fontSize={12} bold color={"white"}>pagar</SText>
+                        </SView>
+                    </SView>
+
+                    {/* Columna derecha con el teclado */}
+                    <SView col={"xs-8"}>
+                        {teclas.map((fila, filaIndex) => (
+                            <SView key={filaIndex} row style={{ marginBottom: 8 }}>
+                                {fila.map((tecla, teclaIndex) => (
+                                    <SView
+                                        key={teclaIndex}
+                                        flex
+                                        center
+                                        backgroundColor={"rgba(255,255,255,0.1)"}
+                                        style={{
+                                            height: 44,
+                                            borderRadius: 6,
+                                            marginHorizontal: 2,
+                                            borderWidth: 1,
+                                            borderColor: "rgba(255,255,255,0.2)",
+                                        }}
+                                        onPress={() => {
+                                            if (tecla === "Payment") {
+                                                this.setState({ showPaymentModal: true });
+                                            } else {
+                                                this.handleCalculatorPress(tecla);
+                                            }
+                                        }}
+                                    >
+                                        <SText fontSize={12} bold color={"white"}>{tecla}</SText>
+                                    </SView>
+                                ))}
                             </SView>
                         ))}
                     </SView>
-                ))}
+                </SView>
+
             </SView>
         )
     }
@@ -650,7 +680,7 @@ export default class testpuntoventa extends Component {
                             }}
                             onPress={() => this.setState({ selectedCategory: cat.key })}
                         >
-                            <SText fontSize={12} color={selectedCategory === cat.key ? STheme.color.white : STheme.color.text}>
+                            <SText fontSize={12} color={selectedCategory === cat.key ? STheme.color.white : "black"}>
                                 {cat.label}
                             </SText>
                         </SView>
@@ -932,13 +962,15 @@ export default class testpuntoventa extends Component {
                         }}
                     >
                         {/* Carrito */}
-                        <SView style={{ flex: 1 }}>
-                            {this.renderDetalleCarrito()}
-                            {this.renderSubtotal()}
-                            {this.renderPuntosLealtad()}
-                            {this.renderBotonesConfiguracion()}
-                            {this.renderUsuarioActual()}
-                        </SView>
+                        {/* <SView style={{ flex: 1 }}> */}
+                        {this.renderDetalleCarrito()}
+                        {this.renderSubtotal()}
+
+                        {/* <SView flex /> */}
+                        {/* {this.renderPuntosLealtad()} */}
+                        {/* {this.renderBotonesConfiguracion()} */}
+                        {/* {this.renderUsuarioActual()} */}
+                        {/* </SView> */}
 
                         {/* Teclado */}
                         {this.renderTecladoNumerico()}
