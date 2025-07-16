@@ -4,7 +4,7 @@ import cubo from "./cubo"
 import mesh from "./mesh";
 import fp from "./fp";
 import world from "./world"
-import human from "./human"
+// import human from "./human"
 // import AmmoExample from "./AmmoExample";
 import PrimeraPersona from "./primeraPersona"
 // import Ammo2 from "./Ammo2";
@@ -19,7 +19,7 @@ export default SPage.combinePages("three", {
     cubo,
     mesh,
     fp,
-    human,
+    // human,
     // AmmoExample,
     PrimeraPersona,
     // Ammo2,
