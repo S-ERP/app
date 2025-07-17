@@ -152,8 +152,8 @@ export default class RegistroInventarios extends Component {
                 <DinamicTable.Col key={"nombre"} label='Nombre' width={200} data={(e) => e.row.descripcion}
                     textStyle={{ fontWeight: "bold" }}
                     customComponent={e => <ImageLabel {...e}
-                        src={SSocket.api.inventario + "modelo/.128_" + e.row.key_modelo + "?date=" + this.state.time}
-                        srcPreview={SSocket.api.inventario + "modelo/" + e.row.key_modelo + "?date=" + this.state.time}
+                        src={SSocket.api.inventario + "modelo/.128_" + e.row.key + "?date=" + this.state.time}
+                        srcPreview={SSocket.api.inventario + "modelo/" + e.row.key + "?date=" + this.state.time}
                     />}
                 />
 

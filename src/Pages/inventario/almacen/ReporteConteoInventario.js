@@ -133,7 +133,7 @@ export default class ReporteConteoInventario extends Component {
             <DinamicTable.Col key="key_cardex" label="Inv.Cardex" width={180} data={(e) => e.row?.key_conteo}
                 customComponent={e => {
 
-                    return (e.row.fecha_confirmacion) ? <SView center style={{ height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
+                    return !(e.row.fecha_confirmacion) ? <SView center style={{ height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
                         onPress={() => {
                             MDL.inventario.aplicar_cardex(e.row?.key_conteo).then((resp: any) => {
                                 console.log("aplicar_cardex", resp);

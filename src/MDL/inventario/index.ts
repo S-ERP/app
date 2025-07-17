@@ -4,7 +4,7 @@ import { EventListener } from "./types";
 import MDL from "..";
 
 export default class inventario extends MDLAbstract<EventListener> {
-  async componentDidMount() {}
+  async componentDidMount() { }
 
   async getAllModeloStock(_key_almacen: string) {
     const resp: any = await SSocket.sendPromise({
@@ -210,7 +210,8 @@ export default class inventario extends MDLAbstract<EventListener> {
       service: "inventario",
       component: "conteo_manual_inventario",
       type: "aplicar_cardex",
-      key_almacen: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+      key_empresa: MDL.empresa.select?.key,
       key_conteo: _key_conteo,
     });
 
@@ -218,19 +219,19 @@ export default class inventario extends MDLAbstract<EventListener> {
     return Object.values(resp.data || {});
   }
 
-    async anular_cardex(_key_conteo: string) {
+  async anular_cardex(_key_conteo: string) {
 
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
       component: "conteo_manual_inventario",
       type: "anular_cardex",
-      key_almacen: MDL.empresa.select?.key,
+      key_empresa: MDL.empresa.select?.key,
       key_conteo: _key_conteo,
     });
 
     console.log("aplicar_cardex", resp.data);
     return Object.values(resp.data || {});
-    }
+  }
 
 
   //   async saveModelo(modelo: any) {
