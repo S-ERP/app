@@ -184,10 +184,14 @@ export default class testpuntoventa extends Component {
             item.key === productoId ? { ...item, stock: item.stock + 1 } : item,
         )
         this.setState({ carrito: nuevoCarrito })
+
+        console.log(" aumentarCantidad " + nuevoCarrito)
     }
 
     // Para editar la cantidad directamente (requiere un SInput en el render)
     editarCantidadDirecta = (productoId, newQuantity) => {
+
+
         const stock = Number.parseInt(newQuantity)
         if (isNaN(stock) || stock < 0) return // Validar entrada
 
@@ -198,6 +202,8 @@ export default class testpuntoventa extends Component {
         } else {
             nuevoCarrito = carrito.map((item) => (item.key === productoId ? { ...item, stock: stock } : item))
         }
+        console.log(" editarCantidadDirecta " + nuevoCarrito)
+
         this.setState({ carrito: nuevoCarrito })
     }
 
@@ -415,16 +421,16 @@ export default class testpuntoventa extends Component {
                         Total:
                     </SText>
                     <SText fontSize={16} bold color={"#111827"}>
-                        $ {SMath.formatMoney(total, 2)}
+                        Bs {SMath.formatMoney(total, 2)}
                     </SText>
                 </SView>
 
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                     <SText fontSize={11} color={"#6B7280"}>
-                        Taxes:
+                        Impuesto:
                     </SText>
                     <SText fontSize={11} color={"#6B7280"}>
-                        $ {SMath.formatMoney(taxes, 2)}
+                      Sumar Iva13%  Bs {SMath.formatMoney(taxes, 2)}
                     </SText>
                 </SView>
             </SView>
@@ -468,6 +474,12 @@ export default class testpuntoventa extends Component {
                 </SView>
             </SView>
         )
+    }
+
+    getStockDisponible(producto) {
+        const itemEnCarrito = this.state.carrito.find(i => i.key === producto.key);
+        const cantidadEnCarrito = itemEnCarrito?.stock || 0;
+        return producto.stock - cantidadEnCarrito;
     }
 
     // Botones de configuración mejorados
@@ -766,9 +778,23 @@ export default class testpuntoventa extends Component {
 
                                     <SText fontSize={14} bold color={"#714B67"} center> Bs {SMath.formatMoney(producto.precio_venta, 2)} </SText>
 
-                                    <SText fontSize={10} color={"#10B981"} center style={{ marginTop: 4 }}>
-                                        Stock: {producto.stock}
+
+                                    <SText
+                                        fontSize={10}
+                                        color={this.getStockDisponible(producto) > 0 ? "#10B981" : "#EF4444"}
+                                        center
+                                        style={{ marginTop: 4 }}
+                                    >
+                                        Disponible: {this.getStockDisponible(producto)} und
                                     </SText>
+                                    {/* <SText fontSize={10} color={this.state.carrito.stock > 0 ? "#10B981" : "red"} center style={{ marginTop: 4 }}>
+                                        Stock: {producto.stock - (this.state.carrito.find(i => i.key === producto.key)?.stock || 0)}
+                                    </SText> */}
+
+
+                                    {/* <SText fontSize={10} color={"#10B981"} center style={{ marginTop: 4 }}>
+                                        Stock: {producto.stock}
+                                    </SText> */}
                                 </SView>
                             </SView>
                         ))
@@ -785,19 +811,31 @@ export default class testpuntoventa extends Component {
     }
 
     // Funciones auxiliares
-    agregarAlCarrito = (producto) => {
-        this.setState({ loading: true })
 
-        // Simular una operación asíncrona
+    agregarAlCarrito = (producto) => {
+        this.setState({ loading: true });
+
         setTimeout(() => {
-            const { carrito } = this.state
-            const productoExistente = carrito.find((item) => item.key === producto.key)
+            const stockDisponible = this.getStockDisponible(producto);
+
+            if (stockDisponible <= 0) {
+                SNotification.send({
+                    title: "Sin stock disponible",
+                    body: "No puedes agregar más unidades de este producto.",
+                    type: "warning",
+                });
+                this.setState({ loading: false });
+                return;
+            }
+
+            const { carrito } = this.state;
+            const productoExistente = carrito.find((item) => item.key === producto.key);
 
             if (productoExistente) {
                 const nuevoCarrito = carrito.map((item) =>
-                    item.key === producto.key ? { ...item, stock: item.stock + 1 } : item,
-                )
-                this.setState({ carrito: nuevoCarrito })
+                    item.key === producto.key ? { ...item, stock: item.stock + 1 } : item
+                );
+                this.setState({ carrito: nuevoCarrito });
             } else {
                 const nuevoCarrito = [
                     ...carrito,
@@ -807,18 +845,20 @@ export default class testpuntoventa extends Component {
                         precio_venta: producto.precio_venta,
                         stock: 1,
                     },
-                ]
-                this.setState({ carrito: nuevoCarrito })
+                ];
+                this.setState({ carrito: nuevoCarrito });
             }
 
             SNotification.send({
                 title: "Producto agregado",
                 body: `${producto.descripcion} agregado al carrito`,
                 type: "success",
-            })
-            this.setState({ loading: false })
-        }, 300)
-    }
+            });
+
+            this.setState({ loading: false });
+        }, 300);
+    };
+
 
     handleCalculatorPress = (tecla) => {
         const { calculatorDisplay } = this.state
@@ -851,53 +891,205 @@ export default class testpuntoventa extends Component {
         this.setState({ calculatorDisplay: nuevoDisplay })
     }
 
-    renderPaymentModal() {
-        const { carrito, amountReceived } = this.state
-        const subtotal = carrito.reduce((sum, item) => sum + item.precio_venta * item.stock, 0)
-        const taxes = subtotal * 0.13
-        const total = subtotal + taxes
-        const change = Number.parseFloat(amountReceived) - total
+    // renderPaymentModal() {
+    //     const { carrito, amountReceived } = this.state
+    //     const subtotal = carrito.reduce((sum, item) => sum + item.precio_venta * item.stock, 0)
+    //     const taxes = subtotal * 0.13
+    //     const total = subtotal + taxes
+    //     const change = Number.parseFloat(amountReceived) - total
 
-        if (!this.state.showPaymentModal) return null
+    //     if (!this.state.showPaymentModal) return null
+
+    //     return (
+    //         <SView
+    //             col={"xs-12"}
+    //             height={"100%"}
+    //             style={{
+    //                 position: "absolute",
+    //                 backgroundColor: "rgba(209, 6, 6, 0.6)",
+    //                 zIndex: 1000,
+    //             }}
+    //             center
+    //         >
+    //             <SView
+    //                 width={400}
+    //                 height={450}
+    //                 backgroundColor={STheme.color.background}
+    //                 style={{ borderRadius: 12, padding: 24 }}
+    //             >
+    //                 <SText fontSize={20} bold center style={{ marginBottom: 20 }}>
+    //                     Realizar Pago
+    //                 </SText>
+
+    //                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 12 }}>
+    //                     <SText fontSize={16} color={STheme.color.text}>
+    //                         Total a Pagar:
+    //                     </SText>
+    //                     <SText fontSize={18} bold color={STheme.color.warning}>
+    //                         Bs {SMath.formatMoney(total, 2)}
+    //                     </SText>
+    //                 </SView>
+
+    //                 <SView col={"xs-12"} style={{ marginBottom: 20 }}>
+    //                     <SText fontSize={14} color={STheme.color.text}>
+    //                         Monto Recibido:
+    //                     </SText>
+    //                     <SInput
+    //                         value={amountReceived}
+    //                         onChangeText={(text) => this.setState({ amountReceived: text })}
+    //                         keyboardType="numeric"
+    //                         style={{
+    //                             height: 48,
+    //                             fontSize: 20,
+    //                             textAlign: "center",
+    //                             borderWidth: 1,
+    //                             borderColor: STheme.color.card,
+    //                             borderRadius: 8,
+    //                             marginTop: 8,
+    //                             color: STheme.color.text,
+    //                         }}
+    //                     />
+    //                 </SView>
+
+    //                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 20 }}>
+    //                     <SText fontSize={16} color={STheme.color.text}>
+    //                         Cambio:
+    //                     </SText>
+    //                     <SText fontSize={18} bold color={change >= 0 ? STheme.color.success : STheme.color.danger}>
+    //                         Bs {SMath.formatMoney(change, 2)}
+    //                     </SText>
+    //                 </SView>
+
+    //                 <SView col={"xs-12"} row style={{ justifyContent: "space-around", marginTop: "auto" }}>
+    //                     <SButtom
+    //                         onPress={() => this.setState({ showPaymentModal: false, amountReceived: "" })}
+    //                         style={{
+    //                             backgroundColor: STheme.color.gray,
+    //                             paddingVertical: 12,
+    //                             paddingHorizontal: 24,
+    //                             borderRadius: 8,
+    //                         }}
+    //                     >
+    //                         <SText color={STheme.color.text}>Cancelar</SText>
+    //                     </SButtom>
+    //                     <SButtom
+    //                         onPress={() => {
+    //                             if (change >= 0) {
+    //                                 SNotification.send({
+    //                                     title: "Pago Exitoso",
+    //                                     body: `Cambio: $${SMath.formatMoney(change, 2)}`,
+    //                                     type: "success",
+    //                                 })
+    //                                 this.setState({ carrito: [], showPaymentModal: false, amountReceived: "" })
+    //                             } else {
+    //                                 SNotification.send({
+    //                                     title: "Monto Insuficiente",
+    //                                     body: "El monto recibido es menor al total.",
+    //                                     type: "danger",
+    //                                 })
+    //                             }
+
+    //                             console.log("todo pagado detalle completo " + s)
+    //                             console.log("todo carrito guardato " + s)
+
+
+    //                         }}
+    //                         style={{
+    //                             backgroundColor: STheme.color.primary,
+    //                             paddingVertical: 12,
+    //                             paddingHorizontal: 24,
+    //                             borderRadius: 8,
+    //                         }}
+    //                     >
+    //                         <SText color={STheme.color.white}>Confirmar Pago</SText>
+    //                     </SButtom>
+    //                 </SView>
+    //             </SView>
+    //         </SView>
+    //     )
+    // }
+
+    renderPaymentModal() {
+        const { carrito, amountReceived, showPaymentModal } = this.state;
+
+        if (!showPaymentModal) return null;
+
+        const subtotal = carrito.reduce((sum, item) => sum + item.precio_venta * item.stock, 0);
+        const taxRate = 0.13;
+        const taxes = subtotal * taxRate;
+        const total = subtotal + taxes;
+
+        const montoRecibido = parseFloat(amountReceived);
+        const change = isNaN(montoRecibido) ? 0 : montoRecibido - total;
+
+        const handleConfirmarPago = () => {
+            if (change >= 0) {
+                SNotification.send({
+                    title: "Pago Exitoso",
+                    body: `Cambio: Bs ${SMath.formatMoney(change, 2)}`,
+                    type: "success",
+                });
+
+                console.log("🧾 Pago confirmado. Total:", total);
+                console.log("🛒 Carrito guardado:", JSON.stringify(carrito, null, 2));
+
+                this.setState({
+                    carrito: [],
+                    showPaymentModal: false,
+                    amountReceived: "",
+                });
+            } else {
+                SNotification.send({
+                    title: "Monto insuficiente",
+                    body: "El monto recibido es menor al total a pagar.",
+                    type: "danger",
+                });
+            }
+        };
 
         return (
             <SView
                 col={"xs-12"}
                 height={"100%"}
+                center
                 style={{
                     position: "absolute",
                     backgroundColor: "rgba(0,0,0,0.6)",
                     zIndex: 1000,
                 }}
-                center
             >
                 <SView
                     width={400}
-                    height={450}
+                    height={460}
                     backgroundColor={STheme.color.background}
-                    style={{ borderRadius: 12, padding: 24 }}
+                    style={{
+                        borderRadius: 12,
+                        padding: 24,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 8,
+                        elevation: 6,
+                    }}
                 >
-                    <SText fontSize={20} bold center style={{ marginBottom: 20 }}>
-                        Realizar Pago
+                    <SText fontSize={20} bold center style={{ marginBottom: 24 }}>
+                        💰 Confirmar Pago
                     </SText>
 
+                    {/* Total a pagar */}
                     <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 12 }}>
-                        <SText fontSize={16} color={STheme.color.text}>
-                            Total a Pagar:
-                        </SText>
-                        <SText fontSize={18} bold color={STheme.color.primary}>
-                            $ {SMath.formatMoney(total, 2)}
-                        </SText>
+                        <SText fontSize={16} color={STheme.color.text}>Total a Pagar:</SText>
+                        <SText fontSize={18} bold color={STheme.color.warning}>Bs {SMath.formatMoney(total, 2)}</SText>
                     </SView>
 
+                    {/* Monto recibido */}
                     <SView col={"xs-12"} style={{ marginBottom: 20 }}>
-                        <SText fontSize={14} color={STheme.color.text}>
-                            Monto Recibido:
-                        </SText>
+                        <SText fontSize={14} color={STheme.color.text}>Monto Recibido:</SText>
                         <SInput
                             value={amountReceived}
                             onChangeText={(text) => this.setState({ amountReceived: text })}
                             keyboardType="numeric"
+                            placeholder="Ej. 100.00"
                             style={{
                                 height: 48,
                                 fontSize: 20,
@@ -911,16 +1103,16 @@ export default class testpuntoventa extends Component {
                         />
                     </SView>
 
+                    {/* Cambio */}
                     <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 20 }}>
-                        <SText fontSize={16} color={STheme.color.text}>
-                            Cambio:
-                        </SText>
+                        <SText fontSize={16} color={STheme.color.text}>Cambio:</SText>
                         <SText fontSize={18} bold color={change >= 0 ? STheme.color.success : STheme.color.danger}>
-                            $ {SMath.formatMoney(change, 2)}
+                            Bs {SMath.formatMoney(change, 2)}
                         </SText>
                     </SView>
 
-                    <SView col={"xs-12"} row style={{ justifyContent: "space-around", marginTop: "auto" }}>
+                    {/* Botones */}
+                    <SView col={"xs-12"} row style={{ justifyContent: "space-around" }}>
                         <SButtom
                             onPress={() => this.setState({ showPaymentModal: false, amountReceived: "" })}
                             style={{
@@ -932,23 +1124,9 @@ export default class testpuntoventa extends Component {
                         >
                             <SText color={STheme.color.text}>Cancelar</SText>
                         </SButtom>
+
                         <SButtom
-                            onPress={() => {
-                                if (change >= 0) {
-                                    SNotification.send({
-                                        title: "Pago Exitoso",
-                                        body: `Cambio: $${SMath.formatMoney(change, 2)}`,
-                                        type: "success",
-                                    })
-                                    this.setState({ carrito: [], showPaymentModal: false, amountReceived: "" })
-                                } else {
-                                    SNotification.send({
-                                        title: "Monto Insuficiente",
-                                        body: "El monto recibido es menor al total.",
-                                        type: "danger",
-                                    })
-                                }
-                            }}
+                            onPress={handleConfirmarPago}
                             style={{
                                 backgroundColor: STheme.color.primary,
                                 paddingVertical: 12,
@@ -961,8 +1139,9 @@ export default class testpuntoventa extends Component {
                     </SView>
                 </SView>
             </SView>
-        )
+        );
     }
+
 
     render() {
         return (
@@ -978,8 +1157,8 @@ export default class testpuntoventa extends Component {
                         }}
                     >
                         {this.renderDetalleCarrito()}
-                        {/* {this.renderSubtotal()} */}
-                        {/* {this.renderTecladoNumerico()} */}
+                        {this.renderSubtotal()}
+                        {this.renderTecladoNumerico()}
                     </SView>
 
                     {/* Área de productos */}
@@ -988,8 +1167,8 @@ export default class testpuntoventa extends Component {
                     </SView>
                 </SView>
 
-                {/* {this.renderPaymentModal()}
-                {this.state.loading && <SLoad />} */}
+                {this.renderPaymentModal()}
+                {this.state.loading && <SLoad />}
             </SPage>
         )
     }
@@ -1005,6 +1184,9 @@ export default class testpuntoventa extends Component {
         const nuevoCarrito = carrito.map((item) =>
             item.key === productoId ? { ...item, stock: Math.max(1, item.stock - 1) } : item,
         ) // Evita cantidades negativas
+
+        console.log(" reducirCantidad " + JSON.stringify(nuevoCarrito))
+
         this.setState({ carrito: nuevoCarrito })
     }
 }
