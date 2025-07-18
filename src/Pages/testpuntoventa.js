@@ -24,104 +24,184 @@ import MDL from '../MDL';
 
 const productosComputacion = [
     {
-        id: 1,
-        name: "Corner Desk Left Sit",
+        key: 1,
+        descripcion: "Corner Desk Left Sit",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
         precio_venta: 97.75,
         currency: "$",
         category: "desks",
         stock: 15,
-        description: "Escritorio esquinero izquierdo ergonómico",
+        otrooo: "Escritorio esquinero izquierdo ergonómico",
     },
     {
-        id: 2,
-        name: "Corner Desk Right Sit",
+        key: 2,
+        descripcion: "Corner Desk Right Sit",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
         precio_venta: 169.05,
         currency: "$",
         category: "desks",
         stock: 12,
-        description: "Escritorio esquinero derecho ergonómico",
+        otrooo: "Escritorio esquinero derecho ergonómico",
     },
     {
-        id: 3,
-        name: "Customizable Desk (Custom, White)",
+        key: 3,
+        descripcion: "Customizable Desk (Custom, White)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
         precio_venta: 920.46,
         currency: "$",
         category: "desks",
         stock: 8,
-        description: "Escritorio personalizable blanco",
+        otrooo: "Escritorio personalizable blanco",
     },
     {
-        id: 4,
-        name: "Customizable Desk (Custom, Black)",
+        key: 4,
+        descripcion: "Customizable Desk (Custom, Black)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
         precio_venta: 862.5,
         currency: "$",
         category: "desks",
         stock: 10,
-        description: "Escritorio personalizable negro",
+        otrooo: "Escritorio personalizable negro",
     },
     {
-        id: 5,
-        name: "Customizable Desk (Custom, Wood)",
+        key: 5,
+        descripcion: "Customizable Desk (Custom, Wood)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
         precio_venta: 862.5,
         currency: "$",
         category: "desks",
         stock: 6,
-        description: "Escritorio personalizable madera",
+        otrooo: "Escritorio personalizable madera",
     },
     {
-        id: 6,
-        name: "Customizable Desk (Steel, Black)",
+        key: 6,
+        descripcion: "Customizable Desk (Steel, Black)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
         precio_venta: 862.5,
         currency: "$",
         category: "desks",
         stock: 14,
-        description: "Escritorio acero negro",
+        otrooo: "Escritorio acero negro",
     },
     {
-        id: 7,
-        name: "Customizable Desk (Steel, White)",
+        key: 7,
+        descripcion: "Customizable Desk (Steel, White)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
         precio_venta: 862.5,
         currency: "$",
         category: "desks",
         stock: 9,
-        description: "Escritorio acero blanco",
+        otrooo: "Escritorio acero blanco",
     },
     {
-        id: 8,
-        name: "Desk Combination",
+        key: 8,
+        descripcion: "Desk Combination",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
         precio_venta: 517.5,
         currency: "$",
         category: "desks",
         stock: 11,
-        description: "Combinación de escritorio modular",
+        otrooo: "Combinación de escritorio modular",
     },
     {
-        id: 9,
-        name: "Four Person Desk",
+        key: 9,
+        descripcion: "Four Person Desk",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
         precio_venta: 2702.5,
         currency: "$",
         category: "desks",
         stock: 3,
-        description: "Escritorio para cuatro personas",
+        otrooo: "Escritorio para cuatro personas",
     },
     {
-        id: 10,
-        name: "Large Desk",
+        key: 10,
+        descripcion: "Large Desk",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
         precio_venta: 2068.85,
         currency: "$",
         category: "desks",
         stock: 5,
-        description: "Escritorio grande ejecutivo",
+        otrooo: "Escritorio grande ejecutivo",
+    },
+    {
+        key: 11,
+        descripcion: "Large Desk",
+        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
+        precio_venta: 2068.85,
+        currency: "$",
+        category: "desks",
+        stock: 5,
+        otrooo: "Escritorio grande ejecutivo",
+    },
+    {
+        key: 12,
+        descripcion: "Large Desk",
+        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
+        precio_venta: 2068.85,
+        currency: "$",
+        category: "desks",
+        stock: 5,
+        otrooo: "Escritorio grande ejecutivo",
+    },
+    {
+        key: 13,
+        descripcion: "Large Desk",
+        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
+        precio_venta: 2068.85,
+        currency: "$",
+        category: "desks",
+        stock: 5,
+        otrooo: "Escritorio grande ejecutivo",
+    },
+    {
+        key: 14,
+        descripcion: "Large Desk",
+        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
+        precio_venta: 2068.85,
+        currency: "$",
+        category: "desks",
+        stock: 5,
+        otrooo: "Escritorio grande ejecutivo",
+    },
+    {
+        key: 15,
+        descripcion: "Large Desk",
+        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
+        precio_venta: 2068.85,
+        currency: "$",
+        category: "desks",
+        stock: 5,
+        otrooo: "Escritorio grande ejecutivo",
+    },
+    {
+        key: 16,
+        descripcion: "Large Desk",
+        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
+        precio_venta: 2068.85,
+        currency: "$",
+        category: "desks",
+        stock: 5,
+        otrooo: "Escritorio grande ejecutivo",
+    },
+    {
+        key: 17,
+        descripcion: "Large Desk",
+        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
+        precio_venta: 2068.85,
+        currency: "$",
+        category: "desks",
+        stock: 5,
+        otrooo: "Escritorio grande ejecutivo",
+    },
+    {
+        key: 18,
+        descripcion: "Large Desk",
+        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
+        precio_venta: 2068.85,
+        currency: "$",
+        category: "desks",
+        stock: 5,
+        otrooo: "Escritorio grande ejecutivo",
     },
 ]
 
@@ -685,11 +765,14 @@ export default class testpuntoventa extends Component {
 
         const { searchText, selectedCategory } = this.state
 
-        const productosFiltrados = modelos.filter((item) => {
+        const productosFiltrados = productosComputacion.filter((item) => {
+        // const productosFiltrados = modelos.filter((item) => {
             const matchesSearch = item.descripcion.toLowerCase().includes(searchText.toLowerCase())
             const matchesCategory = selectedCategory === "all" || item.key_tipo_producto === selectedCategory
             return matchesSearch && matchesCategory
         })
+        const columnas = 5;
+        const colSize = parseFloat((12 / (columnas+1)).toFixed(2)); // por ejemplo: 12 / 6 = 2.0
 
         return (
             <SView col={"xs-12"} style={{ padding: 20 }}>
@@ -726,7 +809,7 @@ export default class testpuntoventa extends Component {
                         productosFiltrados.map((producto, index) => (
                             <SView
                                 key={index}
-                                col={"xs-2.4"}
+                                col={`xs-${colSize}`} // 👈 dinámico
                                 backgroundColor={"#FFFFFF"}
                                 style={{
                                     margin: 4,
@@ -745,12 +828,9 @@ export default class testpuntoventa extends Component {
                                 }}
                             >
                                 <SView center style={{ marginBottom: 12 }}>
-
-
-
-
                                     <SImage
-                                        src={SSocket.api.inventario + "modelo/.128_" + producto.key + "?date=" + this.state.time}
+                                        src={producto.image}
+                                        // src={SSocket.api.inventario + "modelo/.128_" + producto.key + "?date=" + this.state.time}
                                         style={{
                                             width: 120,
                                             height: 120,
