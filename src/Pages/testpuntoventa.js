@@ -1,26 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { SButtom, SDate, SDatePicker, SHr, SImage, SInput, SLoad, SMath, SNavigation, SNotification, SPage, SSPiner, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
-// import STextPlay from '../Components/STextPlay';
-// import Container from '../Components/Container';
-// import SMD from '../SMD';
 import MDtest1 from '../SMD/MDtest1';
-// import MDtest2 from '../SMD/MDtest2';
-// import SwipeableView from '../Components/SwipeableView';
-// import Loby from "./loby/root"
-// import Publicaciones from "./publicacion/root"
-// import Menu from './menu';
 import MenuDragable from '../Components/MenuDragable';
 import Model from '../Model';
-// import MultipageMenu from '../Components/MultipageMenu';
 import SSocket from 'servisofts-socket';
 import DataBase from '../DataBase';
 import SIconApp from '../Assets/SIconApp';
 import MDL from '../MDL';
-// import { Trigger } from 'servisofts-db';
-// import { Image } from 'react-native';
-
-
+import { FlatList } from 'react-native';
 
 const productosComputacion = [
     {
@@ -219,12 +207,25 @@ export default class testpuntoventa extends Component {
         super(props)
         this.state = {
             text: MDtest1,
-            // carrito: [
-            //     { id: 1, name: "Large Cabinet", precio_venta: 368.0, stock: 1 },
-            //     { id: 2, name: "Storage Box", precio_venta: 18.17, stock: 1 },
-            //     { id: 3, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-            // ],
-            carrito: [],
+            carrito: [
+                { key: 1, name: "Large Cabinet", precio_venta: 368.0, stock: 1 },
+                { key: 2, name: "Storage Box", precio_venta: 18.17, stock: 1 },
+                { key: 3, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                { key: 4, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                { key: 5, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                { key: 6, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                { key: 7, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                { key: 8, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                { key: 9, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                { key: 10, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                { key: 11, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                { key: 12, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                { key: 13, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                { key: 14, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                { key: 15, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+            ],
+
+            // carrito: [],
             searchText: "",
             selectedCategory: "all",
             calculatorDisplay: "0",
@@ -370,14 +371,112 @@ export default class testpuntoventa extends Component {
         )
     }
 
+
     // Detalle del carrito mejorado
+
+    renderItemCarrito = (item) => {
+        const carrito = this.state.carrito;
+        const index = carrito.findIndex(i => i.key === item.key);
+        const total = carrito.length;
+
+        return (
+            <SView
+                key={item.key || index}
+                col={"xs-12"}
+                row
+                style={{
+                    paddingVertical: 4,
+                    borderBottomWidth: index < total - 1 ? 1 : 0,
+                    borderBottomColor: "#F3F4F6",
+                    alignItems: "center",
+                }}
+            >
+                {/* Nombre y precio */}
+                <SView col={"xs-5"}>
+                    <SText fontSize={13} bold color={"#111827"}>
+                        {item.descripcion}
+                    </SText>
+                    <SText fontSize={11} color={"#6B7280"}>
+                        Bs {SMath.formatMoney(item.precio_venta, 2)} / Und
+                    </SText>
+                </SView>
+
+                {/* Controles de cantidad */}
+                <SView col={"xs-3"} row center>
+                    <SInput
+                        value={String(item.stock)}
+                        onChangeText={(text) => this.editarCantidadDirecta(item.key, text)}
+                        keyboardType="numeric"
+                        style={{
+                            width: 40,
+                            height: 24,
+                            padding: 0,
+                            textAlign: "center",
+                            fontSize: 12,
+                            borderWidth: 1,
+                            borderColor: "#D1D5DB",
+                            borderRadius: 4,
+                            color: "black",
+                        }}
+                    />
+                    <SView
+                        center
+                        backgroundColor={"#E0F2F7"}
+                        style={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: 12,
+                            position: "absolute",
+                            left: -32,
+                        }}
+                        onPress={() => this.reducirCantidad(item.key)}
+                    >
+                        <SText fontSize={14} bold color={"#0284C7"}>-</SText>
+                    </SView>
+                    <SView
+                        center
+                        backgroundColor={"#D1FAE5"}
+                        style={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: 12,
+                            position: "absolute",
+                            right: -32,
+                        }}
+                        onPress={() => this.aumentarCantidad(item.key)}
+                    >
+                        <SText fontSize={14} bold color={"#059669"}>+</SText>
+                    </SView>
+                </SView>
+
+                {/* Subtotal */}
+                <SView col={"xs-3"} center style={{ alignItems: "flex-end" }}>
+                    <SText fontSize={13} bold color={"#111827"}>
+                        Bs {SMath.formatMoney(item.precio_venta * item.stock, 2)}
+                    </SText>
+                </SView>
+
+                {/* Eliminar */}
+                <SView col={"xs-1"} center>
+                    <SView
+                        center
+                        style={{ width: 24, height: 24 }}
+                        onPress={() => this.quitarDelCarrito(item.key)}
+                    >
+                        <SIconApp name="eliminarI" width={10} height={10} fill={"#DC2626"} />
+                    </SView>
+                </SView>
+            </SView>
+        );
+    };
+
+
+
     renderDetalleCarrito() {
         const { carrito } = this.state
 
         return (
             <SView
-
-
                 backgroundColor={"#FFFFFF"}
                 style={{
                     borderRadius: 8,
@@ -394,78 +493,22 @@ export default class testpuntoventa extends Component {
                     Orden Actual
                 </SText>
 
-                {carrito.map((item, index) => (
-                    <SView
-                        key={index}
-                        col={"xs-12"}
-                        row
-                        style={{
-                            paddingVertical: 4,
-                            borderBottomWidth: index < carrito.length - 1 ? 1 : 0,
-                            borderBottomColor: "#F3F4F6",
-                            alignItems: "center", // Centrar verticalmente los items
-                        }}
-                    >
-                        <SView col={"xs-5"}>
-                            {/* Reducir ancho para hacer espacio a los controles */}
-                            <SText fontSize={13} bold color={"#111827"}>
-                                {item.descripcion}
-                            </SText>
-                            <SText fontSize={11} color={"#6B7280"}>
-                                ${SMath.formatMoney(item.precio_venta, 2)} / Und
-                            </SText>
-                        </SView>
 
-                        {/* Controles de Cantidad */}
-                        <SView col={"xs-3"} row center>
 
-                            <SInput
-                                value={String(item.stock)}
-                                onChangeText={(text) => this.editarCantidadDirecta(item.key, text)}
-                                keyboardType="numeric"
-                                style={{
-                                    width: 40,
-                                    height: 24,
-                                    padding: 0,
-                                    textAlign: "center",
-                                    fontSize: 12,
-                                    borderWidth: 1,
-                                    borderColor: "#D1D5DB",
-                                    borderRadius: 4,
-                                    color: "black",
-                                }}
-                            />
-                            <SView
-                                center backgroundColor={"#E0F2F7"} // Color más suave
-                                style={{ width: 24, height: 24, borderRadius: 12, marginRight: 150, position: "absolute" }}
-                                onPress={() => this.reducirCantidad(item.key)}
-                            >
-                                <SText fontSize={14} bold color={"#0284C7"}>-</SText>
-                            </SView>
-                            <SView
-                                center
-                                backgroundColor={"#D1FAE5"} // Color más suave
-                                style={{ width: 24, height: 24, borderRadius: 12, marginLeft: 4, position: "absolute" }}
-                                onPress={() => this.aumentarCantidad(item.key)}
-                            >
-                                <SText fontSize={14} bold color={"#059669"}> + </SText>
-                            </SView>
-                        </SView>
+                <FlatList
+                    style={{
+                        width: "100%",
+                        height: 400
+                    }}
+                    scrollEnabled={true}
+                    data={this.state.carrito}
+                    renderItem={({ item, index }) => this.renderItemCarrito(item)
+                    }
+                />
 
-                        <SView col={"xs-3"} center style={{ alignItems: "flex-end" }}>
-                            <SText fontSize={13} bold color={"#111827"}>
-                                {SMath.formatMoney(item.precio_venta * item.stock, 2)}
-                            </SText>
-                        </SView>
-
-                        {/* Botón Eliminar */}
-                        <SView col={"xs-1"} center>
-                            <SView center style={{ width: 24, height: 24, }} onPress={() => this.quitarDelCarrito(item.key)} >
-                                <SIconApp name="eliminarI" width={10} height={10} fill={"#DC2626"} />
-                            </SView>
-                        </SView>
-                    </SView>
-                ))}
+                {/* {carrito.map((item, index) => (
+                    this.renderItemCarrito(item)
+                ))} */}
 
                 {/* Mensaje cuando el carrito está vacío */}
                 {carrito.length === 0 && (
@@ -510,7 +553,7 @@ export default class testpuntoventa extends Component {
                         Impuesto:
                     </SText>
                     <SText fontSize={11} color={"#6B7280"}>
-                      Sumar Iva13%  Bs {SMath.formatMoney(taxes, 2)}
+                        Sumar Iva13%  Bs {SMath.formatMoney(taxes, 2)}
                     </SText>
                 </SView>
             </SView>
@@ -714,7 +757,11 @@ export default class testpuntoventa extends Component {
                                 borderWidth: 1,
                                 borderColor: "rgba(255,255,255,0.2)",
                             }}
-                            onPress={() => console.log("pagar")}
+                            onPress={() =>
+                                this.setState({ showPaymentModal: true })
+
+
+                            }
                         >
                             <SText fontSize={12} bold color={"white"}>pagar</SText>
                         </SView>
@@ -766,16 +813,17 @@ export default class testpuntoventa extends Component {
         const { searchText, selectedCategory } = this.state
 
         const productosFiltrados = productosComputacion.filter((item) => {
-        // const productosFiltrados = modelos.filter((item) => {
+            // const productosFiltrados = modelos.filter((item) => {
             const matchesSearch = item.descripcion.toLowerCase().includes(searchText.toLowerCase())
             const matchesCategory = selectedCategory === "all" || item.key_tipo_producto === selectedCategory
             return matchesSearch && matchesCategory
         })
         const columnas = 5;
-        const colSize = parseFloat((12 / (columnas+1)).toFixed(2)); // por ejemplo: 12 / 6 = 2.0
+        const colSize = parseFloat((12 / (columnas + 1)).toFixed(2)); // por ejemplo: 12 / 6 = 2.0
 
         return (
             <SView col={"xs-12"} style={{ padding: 20 }}>
+
                 {/* Selector de Categorías */}
                 <SView col={"xs-12"} row style={{ marginBottom: 20, justifyContent: "center" }}>
                     {categorias.map((cat) => (
@@ -971,123 +1019,7 @@ export default class testpuntoventa extends Component {
         this.setState({ calculatorDisplay: nuevoDisplay })
     }
 
-    // renderPaymentModal() {
-    //     const { carrito, amountReceived } = this.state
-    //     const subtotal = carrito.reduce((sum, item) => sum + item.precio_venta * item.stock, 0)
-    //     const taxes = subtotal * 0.13
-    //     const total = subtotal + taxes
-    //     const change = Number.parseFloat(amountReceived) - total
 
-    //     if (!this.state.showPaymentModal) return null
-
-    //     return (
-    //         <SView
-    //             col={"xs-12"}
-    //             height={"100%"}
-    //             style={{
-    //                 position: "absolute",
-    //                 backgroundColor: "rgba(209, 6, 6, 0.6)",
-    //                 zIndex: 1000,
-    //             }}
-    //             center
-    //         >
-    //             <SView
-    //                 width={400}
-    //                 height={450}
-    //                 backgroundColor={STheme.color.background}
-    //                 style={{ borderRadius: 12, padding: 24 }}
-    //             >
-    //                 <SText fontSize={20} bold center style={{ marginBottom: 20 }}>
-    //                     Realizar Pago
-    //                 </SText>
-
-    //                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 12 }}>
-    //                     <SText fontSize={16} color={STheme.color.text}>
-    //                         Total a Pagar:
-    //                     </SText>
-    //                     <SText fontSize={18} bold color={STheme.color.warning}>
-    //                         Bs {SMath.formatMoney(total, 2)}
-    //                     </SText>
-    //                 </SView>
-
-    //                 <SView col={"xs-12"} style={{ marginBottom: 20 }}>
-    //                     <SText fontSize={14} color={STheme.color.text}>
-    //                         Monto Recibido:
-    //                     </SText>
-    //                     <SInput
-    //                         value={amountReceived}
-    //                         onChangeText={(text) => this.setState({ amountReceived: text })}
-    //                         keyboardType="numeric"
-    //                         style={{
-    //                             height: 48,
-    //                             fontSize: 20,
-    //                             textAlign: "center",
-    //                             borderWidth: 1,
-    //                             borderColor: STheme.color.card,
-    //                             borderRadius: 8,
-    //                             marginTop: 8,
-    //                             color: STheme.color.text,
-    //                         }}
-    //                     />
-    //                 </SView>
-
-    //                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 20 }}>
-    //                     <SText fontSize={16} color={STheme.color.text}>
-    //                         Cambio:
-    //                     </SText>
-    //                     <SText fontSize={18} bold color={change >= 0 ? STheme.color.success : STheme.color.danger}>
-    //                         Bs {SMath.formatMoney(change, 2)}
-    //                     </SText>
-    //                 </SView>
-
-    //                 <SView col={"xs-12"} row style={{ justifyContent: "space-around", marginTop: "auto" }}>
-    //                     <SButtom
-    //                         onPress={() => this.setState({ showPaymentModal: false, amountReceived: "" })}
-    //                         style={{
-    //                             backgroundColor: STheme.color.gray,
-    //                             paddingVertical: 12,
-    //                             paddingHorizontal: 24,
-    //                             borderRadius: 8,
-    //                         }}
-    //                     >
-    //                         <SText color={STheme.color.text}>Cancelar</SText>
-    //                     </SButtom>
-    //                     <SButtom
-    //                         onPress={() => {
-    //                             if (change >= 0) {
-    //                                 SNotification.send({
-    //                                     title: "Pago Exitoso",
-    //                                     body: `Cambio: $${SMath.formatMoney(change, 2)}`,
-    //                                     type: "success",
-    //                                 })
-    //                                 this.setState({ carrito: [], showPaymentModal: false, amountReceived: "" })
-    //                             } else {
-    //                                 SNotification.send({
-    //                                     title: "Monto Insuficiente",
-    //                                     body: "El monto recibido es menor al total.",
-    //                                     type: "danger",
-    //                                 })
-    //                             }
-
-    //                             console.log("todo pagado detalle completo " + s)
-    //                             console.log("todo carrito guardato " + s)
-
-
-    //                         }}
-    //                         style={{
-    //                             backgroundColor: STheme.color.primary,
-    //                             paddingVertical: 12,
-    //                             paddingHorizontal: 24,
-    //                             borderRadius: 8,
-    //                         }}
-    //                     >
-    //                         <SText color={STheme.color.white}>Confirmar Pago</SText>
-    //                     </SButtom>
-    //                 </SView>
-    //             </SView>
-    //         </SView>
-    //     )
-    // }
 
     renderPaymentModal() {
         const { carrito, amountReceived, showPaymentModal } = this.state;
@@ -1243,7 +1175,8 @@ export default class testpuntoventa extends Component {
 
                     {/* Área de productos */}
                     <SView col={"xs-8"} backgroundColor={"#F8F9FA"}>
-                        <SView style={{ flex: 1, overflow: "scroll" }}>{this.renderProductos()}</SView>
+                        {this.renderProductos()}
+                        {/* <SView style={{ flex: 1, overflow: "scroll" }}>{this.renderProductos()}</SView> */}
                     </SView>
                 </SView>
 
