@@ -9,6 +9,7 @@ import DataBase from '../DataBase';
 import SIconApp from '../Assets/SIconApp';
 import MDL from '../MDL';
 import { FlatList } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const productosComputacion = [
     {
@@ -208,21 +209,21 @@ export default class testpuntoventa extends Component {
         this.state = {
             text: MDtest1,
             carrito: [
-                { key: 1, name: "Large Cabinet", precio_venta: 368.0, stock: 1 },
-                { key: 2, name: "Storage Box", precio_venta: 18.17, stock: 1 },
-                { key: 3, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                { key: 4, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                { key: 5, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                { key: 6, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                { key: 7, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                { key: 8, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                { key: 9, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                { key: 10, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                { key: 11, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                { key: 12, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                { key: 13, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                { key: 14, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                { key: 15, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                // { key: 1, name: "Large Cabinet", precio_venta: 368.0, stock: 1 },
+                // { key: 2, name: "Storage Box", precio_venta: 18.17, stock: 1 },
+                // { key: 3, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                // { key: 4, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                // { key: 5, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                // { key: 6, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                // { key: 7, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                // { key: 8, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                // { key: 9, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                // { key: 10, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                // { key: 11, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                // { key: 12, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                // { key: 13, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                // { key: 14, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                // { key: 15, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
             ],
 
             // carrito: [],
@@ -478,6 +479,7 @@ export default class testpuntoventa extends Component {
         return (
             <SView
                 backgroundColor={"#FFFFFF"}
+                height={"30%"}
                 style={{
                     borderRadius: 8,
                     padding: 16,
@@ -498,7 +500,6 @@ export default class testpuntoventa extends Component {
                 <FlatList
                     style={{
                         width: "100%",
-                        height: 400
                     }}
                     scrollEnabled={true}
                     data={this.state.carrito}
@@ -538,6 +539,7 @@ export default class testpuntoventa extends Component {
                     padding: 16,
                     marginBottom: 8,
                 }}
+                height={80}
             >
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
                     <SText fontSize={13} color={"#6B7280"}>
@@ -812,8 +814,8 @@ export default class testpuntoventa extends Component {
 
         const { searchText, selectedCategory } = this.state
 
-        const productosFiltrados = productosComputacion.filter((item) => {
-            // const productosFiltrados = modelos.filter((item) => {
+        // const productosFiltrados = productosComputacion.filter((item) => {
+            const productosFiltrados = modelos.filter((item) => {
             const matchesSearch = item.descripcion.toLowerCase().includes(searchText.toLowerCase())
             const matchesCategory = selectedCategory === "all" || item.key_tipo_producto === selectedCategory
             return matchesSearch && matchesCategory
@@ -854,7 +856,9 @@ export default class testpuntoventa extends Component {
 
                 <SView col={"xs-12"} row style={{ flexWrap: "wrap" }}>
                     {productosFiltrados.length > 0 ? (
+
                         productosFiltrados.map((producto, index) => (
+
                             <SView
                                 key={index}
                                 col={`xs-${colSize}`} // 👈 dinámico
@@ -877,8 +881,8 @@ export default class testpuntoventa extends Component {
                             >
                                 <SView center style={{ marginBottom: 12 }}>
                                     <SImage
-                                        src={producto.image}
-                                        // src={SSocket.api.inventario + "modelo/.128_" + producto.key + "?date=" + this.state.time}
+                                        // src={producto.image}
+                                        src={SSocket.api.inventario + "modelo/.128_" + producto.key + "?date=" + this.state.time}
                                         style={{
                                             width: 120,
                                             height: 120,
@@ -925,7 +929,9 @@ export default class testpuntoventa extends Component {
                                     </SText> */}
                                 </SView>
                             </SView>
+
                         ))
+
                     ) : (
                         <SView col={"xs-12"} center style={{ paddingVertical: 50 }}>
                             <SText fontSize={16} color={STheme.color.gray}>
@@ -1175,8 +1181,8 @@ export default class testpuntoventa extends Component {
 
                     {/* Área de productos */}
                     <SView col={"xs-8"} backgroundColor={"#F8F9FA"}>
-                        {this.renderProductos()}
-                        {/* <SView style={{ flex: 1, overflow: "scroll" }}>{this.renderProductos()}</SView> */}
+                        {/* {this.renderProductos()} */}
+                        <SView style={{ flex: 1, overflow: "scroll" }}>{this.renderProductos()}</SView>
                     </SView>
                 </SView>
 
