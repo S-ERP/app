@@ -16,7 +16,6 @@ import Model from '../Model';
 import SSocket from 'servisofts-socket';
 import DataBase from '../DataBase';
 import SIconApp from '../Assets/SIconApp';
-import MDL from '../MDL';
 // import { Trigger } from 'servisofts-db';
 // import { Image } from 'react-native';
 
@@ -27,7 +26,7 @@ const productosComputacion = [
         id: 1,
         name: "Corner Desk Left Sit",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 97.75,
+        price: 97.75,
         currency: "$",
         category: "desks",
         stock: 15,
@@ -37,7 +36,7 @@ const productosComputacion = [
         id: 2,
         name: "Corner Desk Right Sit",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 169.05,
+        price: 169.05,
         currency: "$",
         category: "desks",
         stock: 12,
@@ -47,7 +46,7 @@ const productosComputacion = [
         id: 3,
         name: "Customizable Desk (Custom, White)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 920.46,
+        price: 920.46,
         currency: "$",
         category: "desks",
         stock: 8,
@@ -57,7 +56,7 @@ const productosComputacion = [
         id: 4,
         name: "Customizable Desk (Custom, Black)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 862.5,
+        price: 862.5,
         currency: "$",
         category: "desks",
         stock: 10,
@@ -67,7 +66,7 @@ const productosComputacion = [
         id: 5,
         name: "Customizable Desk (Custom, Wood)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 862.5,
+        price: 862.5,
         currency: "$",
         category: "desks",
         stock: 6,
@@ -77,7 +76,7 @@ const productosComputacion = [
         id: 6,
         name: "Customizable Desk (Steel, Black)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 862.5,
+        price: 862.5,
         currency: "$",
         category: "desks",
         stock: 14,
@@ -87,7 +86,7 @@ const productosComputacion = [
         id: 7,
         name: "Customizable Desk (Steel, White)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 862.5,
+        price: 862.5,
         currency: "$",
         category: "desks",
         stock: 9,
@@ -97,7 +96,7 @@ const productosComputacion = [
         id: 8,
         name: "Desk Combination",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 517.5,
+        price: 517.5,
         currency: "$",
         category: "desks",
         stock: 11,
@@ -107,7 +106,7 @@ const productosComputacion = [
         id: 9,
         name: "Four Person Desk",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 2702.5,
+        price: 2702.5,
         currency: "$",
         category: "desks",
         stock: 3,
@@ -117,7 +116,7 @@ const productosComputacion = [
         id: 10,
         name: "Large Desk",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 2068.85,
+        price: 2068.85,
         currency: "$",
         category: "desks",
         stock: 5,
@@ -134,17 +133,16 @@ const categorias = [
     // Agrega más categorías según tus productos
 ]
 
-export default class testpuntoventa extends Component {
+export default class testpuntoventaV4 extends Component {
     constructor(props) {
         super(props)
         this.state = {
             text: MDtest1,
-            // carrito: [
-            //     { id: 1, name: "Large Cabinet", precio_venta: 368.0, stock: 1 },
-            //     { id: 2, name: "Storage Box", precio_venta: 18.17, stock: 1 },
-            //     { id: 3, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-            // ],
-            carrito: [],
+            carrito: [
+                { id: 1, name: "Large Cabinet", price: 368.0, quantity: 1 },
+                { id: 2, name: "Storage Box", price: 18.17, quantity: 1 },
+                { id: 3, name: "Letter Tray", price: 5.52, quantity: 1 },
+            ],
             searchText: "",
             selectedCategory: "all",
             calculatorDisplay: "0",
@@ -154,49 +152,25 @@ export default class testpuntoventa extends Component {
         }
     }
 
-    componentDidMount() {
-        this.loadApis();
-    }
-
-    async loadApis() {
-        const modelos = await MDL.inventario.getAllModeloStock();
-        this.modelos = modelos;
-
-        const tipos = await MDL.inventario.getAllTipoProducto();
-        const json_tipos = [
-            { key: "all", label: "Todos" },
-            ...tipos.map((tipo) => ({
-                key: tipo.key,
-                label: tipo.descripcion,
-            })),
-        ];
-        this.tipomodelos = json_tipos;
-
-        console.log("Api Modelo:", modelos);
-        console.log("Api Tipos Modelo:", json_tipos);
-        this.forceUpdate()
-    }
-
-
     aumentarCantidad = (productoId) => {
         const { carrito } = this.state
         const nuevoCarrito = carrito.map((item) =>
-            item.key === productoId ? { ...item, stock: item.stock + 1 } : item,
+            item.id === productoId ? { ...item, quantity: item.quantity + 1 } : item,
         )
         this.setState({ carrito: nuevoCarrito })
     }
 
     // Para editar la cantidad directamente (requiere un SInput en el render)
     editarCantidadDirecta = (productoId, newQuantity) => {
-        const stock = Number.parseInt(newQuantity)
-        if (isNaN(stock) || stock < 0) return // Validar entrada
+        const quantity = Number.parseInt(newQuantity)
+        if (isNaN(quantity) || quantity < 0) return // Validar entrada
 
         const { carrito } = this.state
         let nuevoCarrito
-        if (stock === 0) {
-            nuevoCarrito = carrito.filter((item) => item.key !== productoId)
+        if (quantity === 0) {
+            nuevoCarrito = carrito.filter((item) => item.id !== productoId)
         } else {
-            nuevoCarrito = carrito.map((item) => (item.key === productoId ? { ...item, stock: stock } : item))
+            nuevoCarrito = carrito.map((item) => (item.id === productoId ? { ...item, quantity: quantity } : item))
         }
         this.setState({ carrito: nuevoCarrito })
     }
@@ -323,10 +297,10 @@ export default class testpuntoventa extends Component {
                         <SView col={"xs-5"}>
                             {/* Reducir ancho para hacer espacio a los controles */}
                             <SText fontSize={13} bold color={"#111827"}>
-                                {item.descripcion}
+                                {item.name}
                             </SText>
                             <SText fontSize={11} color={"#6B7280"}>
-                                ${SMath.formatMoney(item.precio_venta, 2)} / Und
+                                ${SMath.formatMoney(item.price, 2)} / Und
                             </SText>
                         </SView>
 
@@ -334,8 +308,8 @@ export default class testpuntoventa extends Component {
                         <SView col={"xs-3"} row center>
 
                             <SInput
-                                value={String(item.stock)}
-                                onChangeText={(text) => this.editarCantidadDirecta(item.key, text)}
+                                value={String(item.quantity)}
+                                onChangeText={(text) => this.editarCantidadDirecta(item.id, text)}
                                 keyboardType="numeric"
                                 style={{
                                     width: 40,
@@ -352,7 +326,7 @@ export default class testpuntoventa extends Component {
                             <SView
                                 center backgroundColor={"#E0F2F7"} // Color más suave
                                 style={{ width: 24, height: 24, borderRadius: 12, marginRight: 150, position: "absolute" }}
-                                onPress={() => this.reducirCantidad(item.key)}
+                                onPress={() => this.reducirCantidad(item.id)}
                             >
                                 <SText fontSize={14} bold color={"#0284C7"}>-</SText>
                             </SView>
@@ -360,7 +334,7 @@ export default class testpuntoventa extends Component {
                                 center
                                 backgroundColor={"#D1FAE5"} // Color más suave
                                 style={{ width: 24, height: 24, borderRadius: 12, marginLeft: 4, position: "absolute" }}
-                                onPress={() => this.aumentarCantidad(item.key)}
+                                onPress={() => this.aumentarCantidad(item.id)}
                             >
                                 <SText fontSize={14} bold color={"#059669"}> + </SText>
                             </SView>
@@ -368,13 +342,13 @@ export default class testpuntoventa extends Component {
 
                         <SView col={"xs-3"} center style={{ alignItems: "flex-end" }}>
                             <SText fontSize={13} bold color={"#111827"}>
-                                {SMath.formatMoney(item.precio_venta * item.stock, 2)}
+                                {SMath.formatMoney(item.price * item.quantity, 2)}
                             </SText>
                         </SView>
 
                         {/* Botón Eliminar */}
                         <SView col={"xs-1"} center>
-                            <SView center style={{ width: 24, height: 24, }} onPress={() => this.quitarDelCarrito(item.key)} >
+                            <SView center style={{ width: 24, height: 24, }} onPress={() => this.quitarDelCarrito(item.id)} >
                                 <SIconApp name="eliminarI" width={10} height={10} fill={"#DC2626"} />
                             </SView>
                         </SView>
@@ -396,7 +370,7 @@ export default class testpuntoventa extends Component {
     // Subtotal mejorado
     renderSubtotal() {
         const { carrito } = this.state
-        const subtotal = carrito.reduce((sum, item) => sum + item.precio_venta * item.stock, 0)
+        const subtotal = carrito.reduce((sum, item) => sum + item.price * item.quantity, 0)
         const taxes = subtotal * 0.13 // 13% de impuestos
         const total = subtotal + taxes
 
@@ -667,15 +641,11 @@ export default class testpuntoventa extends Component {
 
     // Productos mejorados
     renderProductos() {
-
-        const categorias = this.tipomodelos || [];
-        const modelos = this.modelos || [];
-
         const { searchText, selectedCategory } = this.state
 
-        const productosFiltrados = modelos.filter((item) => {
-            const matchesSearch = item.descripcion.toLowerCase().includes(searchText.toLowerCase())
-            const matchesCategory = selectedCategory === "all" || item.key_tipo_producto === selectedCategory
+        const productosFiltrados = productosComputacion.filter((producto) => {
+            const matchesSearch = producto.name.toLowerCase().includes(searchText.toLowerCase())
+            const matchesCategory = selectedCategory === "all" || producto.category === selectedCategory
             return matchesSearch && matchesCategory
         })
 
@@ -733,18 +703,13 @@ export default class testpuntoventa extends Component {
                                 }}
                             >
                                 <SView center style={{ marginBottom: 12 }}>
-
-
-
-
                                     <SImage
-                                        src={SSocket.api.inventario + "modelo/.128_" + producto.key + "?date=" + this.state.time}
+                                        src={producto.image}
                                         style={{
                                             width: 120,
                                             height: 120,
                                             borderRadius: 8,
                                             backgroundColor: "#F9FAFB",
-                                            // overflow: "hidden",
                                         }}
                                         resizeMode="cover"
                                     />
@@ -761,10 +726,12 @@ export default class testpuntoventa extends Component {
                                             textAlign: "center",
                                         }}
                                     >
-                                        {producto.descripcion}
+                                        {producto.name}
                                     </SText>
 
-                                    <SText fontSize={14} bold color={"#714B67"} center> Bs {SMath.formatMoney(producto.precio_venta, 2)} </SText>
+                                    <SText fontSize={14} bold color={"#714B67"} center>
+                                        $ {SMath.formatMoney(producto.price, 2)}
+                                    </SText>
 
                                     <SText fontSize={10} color={"#10B981"} center style={{ marginTop: 4 }}>
                                         Stock: {producto.stock}
@@ -791,21 +758,21 @@ export default class testpuntoventa extends Component {
         // Simular una operación asíncrona
         setTimeout(() => {
             const { carrito } = this.state
-            const productoExistente = carrito.find((item) => item.key === producto.key)
+            const productoExistente = carrito.find((item) => item.id === producto.id)
 
             if (productoExistente) {
                 const nuevoCarrito = carrito.map((item) =>
-                    item.key === producto.key ? { ...item, stock: item.stock + 1 } : item,
+                    item.id === producto.id ? { ...item, quantity: item.quantity + 1 } : item,
                 )
                 this.setState({ carrito: nuevoCarrito })
             } else {
                 const nuevoCarrito = [
                     ...carrito,
                     {
-                        key: producto.key,
-                        descripcion: producto.descripcion,
-                        precio_venta: producto.precio_venta,
-                        stock: 1,
+                        id: producto.id,
+                        name: producto.name,
+                        price: producto.price,
+                        quantity: 1,
                     },
                 ]
                 this.setState({ carrito: nuevoCarrito })
@@ -813,7 +780,7 @@ export default class testpuntoventa extends Component {
 
             SNotification.send({
                 title: "Producto agregado",
-                body: `${producto.descripcion} agregado al carrito`,
+                body: `${producto.name} agregado al carrito`,
                 type: "success",
             })
             this.setState({ loading: false })
@@ -853,7 +820,7 @@ export default class testpuntoventa extends Component {
 
     renderPaymentModal() {
         const { carrito, amountReceived } = this.state
-        const subtotal = carrito.reduce((sum, item) => sum + item.precio_venta * item.stock, 0)
+        const subtotal = carrito.reduce((sum, item) => sum + item.price * item.quantity, 0)
         const taxes = subtotal * 0.13
         const total = subtotal + taxes
         const change = Number.parseFloat(amountReceived) - total
@@ -967,19 +934,37 @@ export default class testpuntoventa extends Component {
     render() {
         return (
             <SPage disableScroll>
+                {/* Header */}
                 {this.renderHeader()}
+
+                {/* Main Content */}
                 <SView flex row backgroundColor={"#F8F9FA"}>
                     {/* Sidebar */}
-                    <SView col={"xs-4"} flex backgroundColor={"#F8F9FA"}
+                    <SView
+                        col={"xs-4"}
+                        flex
+                        backgroundColor={"#F8F9FA"}
                         style={{
                             padding: 16,
                             borderRightWidth: 1,
                             borderRightColor: "#E5E7EB",
                         }}
                     >
+                        {/* Carrito */}
+                        {/* <SView style={{ flex: 1 }}> */}
                         {this.renderDetalleCarrito()}
-                        {/* {this.renderSubtotal()} */}
-                        {/* {this.renderTecladoNumerico()} */}
+                        {/* <SView flex /> */}
+
+                        {this.renderSubtotal()}
+
+                        {/* <SView flex /> */}
+                        {/* {this.renderPuntosLealtad()} */}
+                        {/* {this.renderBotonesConfiguracion()} */}
+                        {/* {this.renderUsuarioActual()} */}
+                        {/* </SView> */}
+
+                        {/* Teclado */}
+                        {this.renderTecladoNumerico()}
                     </SView>
 
                     {/* Área de productos */}
@@ -988,22 +973,25 @@ export default class testpuntoventa extends Component {
                     </SView>
                 </SView>
 
-                {/* {this.renderPaymentModal()}
-                {this.state.loading && <SLoad />} */}
+                {/* Modal de Pago */}
+                {this.renderPaymentModal()}
+
+                {/* Indicador de Carga */}
+                {this.state.loading && <SLoad />}
             </SPage>
         )
     }
 
     quitarDelCarrito = (productoId) => {
         const { carrito } = this.state
-        const nuevoCarrito = carrito.filter((item) => item.key !== productoId)
+        const nuevoCarrito = carrito.filter((item) => item.id !== productoId)
         this.setState({ carrito: nuevoCarrito })
     }
 
     reducirCantidad = (productoId) => {
         const { carrito } = this.state
         const nuevoCarrito = carrito.map((item) =>
-            item.key === productoId ? { ...item, stock: Math.max(1, item.stock - 1) } : item,
+            item.id === productoId ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item,
         ) // Evita cantidades negativas
         this.setState({ carrito: nuevoCarrito })
     }
