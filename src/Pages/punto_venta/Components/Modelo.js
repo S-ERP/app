@@ -75,7 +75,7 @@ export default class Modelo extends Component {
                                             margin: 4,
                                             borderRadius: 12,
                                             padding: 12,
-                                            backgroundColor: "#FFF",
+                                            backgroundColor: STheme.color.card + "−0.2112",
                                             shadowColor: "#000",
                                             shadowOffset: { width: 0, height: 2 },
                                             shadowOpacity: 0.1,
@@ -105,16 +105,16 @@ export default class Modelo extends Component {
                                                     width: 120,
                                                     height: 120,
                                                     borderRadius: 8,
-                                                    backgroundColor: "#F9FAFB",
+                                                    backgroundColor: STheme.color.card,
                                                 }}
                                                 resizeMode="cover"
                                             />
                                         </SView>
 
-                                        <SText center fontSize={12} bold color={"#111827"}>
+                                        <SText center fontSize={12} bold color={STheme.color.text}>
                                             {producto.descripcion}
                                         </SText>
-                                        <SText center fontSize={14} bold color={"#714B67"}>
+                                        <SText center fontSize={14} bold color={STheme.color.text}>
                                             Bs {SMath.formatMoney(producto.precio_venta, 2)}
                                         </SText>
                                         <SText center fontSize={10} color={producto?.stock > 0 ? "#10B981" : "#EF4444"}>

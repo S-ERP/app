@@ -57,18 +57,18 @@ export default class TipoModelo extends Component {
                                 borderRadius: 20,
                                 marginRight: 16,
                                 // marginHorizontal: 4,
-                                backgroundColor: this.selectedCategory === cat.key ? STheme.color.primary : STheme.color.card,
+                                backgroundColor: this.selectedCategory === cat.key ? STheme.color.text : STheme.color.card,
                                 borderWidth: 1,
-                                borderColor: this.selectedCategory === cat.key ? STheme.color.primary : STheme.color.gray,
+                                borderColor: this.selectedCategory === cat.key ? STheme.color.text : STheme.color.gray,
                             }}
                         >
-                            <SText fontSize={12} color={this.selectedCategory === cat.key ? STheme.color.white : "black"}>
+                            <SText fontSize={12} color={this.selectedCategory === cat.key ? STheme.color.primary : STheme.color.text}>
                                 {cat.label}
                             </SText>
                         </SView>
                     ))}
                 </SView>
-                <SText fontSize={20} bold color={"#111827"}  >
+                <SText fontSize={20} bold color={STheme.color.text}  >
                     {categorias.find((c) => c.key === this.selectedCategory)?.label || "Productos"}
                 </SText>
             </SView>
