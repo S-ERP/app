@@ -80,6 +80,8 @@ import Proveedor from "../Components/compra_venta/Proveedor";
 import RegistroInventario from "./inventario/almacen/RegistroInventarios";
 import ReporteConteoInventario from "./inventario/almacen/ReporteConteoInventario";
 import testpuntoventa from "./testpuntoventa";
+import punto_venta from "./punto_venta";
+import Main from "./punto_venta/Main";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -161,5 +163,6 @@ export default SPage.combinePages("/", {
   //   inventariar :
   "inventario/almacen/profile/registro_inventario": RegistroInventario,
   "productos/reporte_conteo_inventario": ReporteConteoInventario,
-  puntoventa: testpuntoventa,
+  puntoventa11111: testpuntoventa,
+  puntoventa: Main,
 });

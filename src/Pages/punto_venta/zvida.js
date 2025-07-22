@@ -2,14 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { SButtom, SDate, SDatePicker, SHr, SImage, SInput, SLoad, SMath, SNavigation, SNotification, SPage, SSPiner, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
 import MDtest1 from '../SMD/MDtest1';
-import MenuDragable from '../Components/MenuDragable';
-// import Model from '../Model';
 import SSocket from 'servisofts-socket';
-import DataBase from '../DataBase';
-import SIconApp from '../Assets/SIconApp';
-import MDL from '../MDL';
 import { FlatList } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import MDL from '../../MDL';
+import SIconApp from '../../Assets/SIconApp';
 
 const productosComputacion = [
     {
@@ -203,7 +200,7 @@ const categorias = [
     // Agrega más categorías según tus productos
 ]
 
-export default class testpuntoventa extends Component {
+export default class zvida extends Component {
     constructor(props) {
         super(props)
         this.state = {
