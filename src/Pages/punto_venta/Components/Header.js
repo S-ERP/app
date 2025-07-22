@@ -6,8 +6,7 @@ import SIconApp from '../../../Assets/SIconApp';
 class Header extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-        };
+        this.state = {};
     }
 
     render() {
@@ -58,8 +57,8 @@ class Header extends Component {
                                 fontSize: 14,
                                 color: "#374151",
                             }}
-                            value={this.state.searchText}
-                            onChangeText={(text) => this.setState({ searchText: text })}
+                            value={this.props.value}
+                            onChangeText={this.props.onChangeText}
                         />
                         <SIconApp name="search" width={16} height={16} fill={"#6B7280"} />
                     </SView>
