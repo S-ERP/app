@@ -1,121 +1,112 @@
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
-import { SText, SView } from 'servisofts-component';
+import { SImage, SText, SView } from 'servisofts-component';
+import SSocket from 'servisofts-socket';
 
-
+const sinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 
 export default class Carrito extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            carrito: []
-        };
+        this.carrito = [];
     }
 
-    /**
-     * Agrega un producto al carrito. Si ya existe, incrementa cantidad.
-     */
     addProducto = (producto) => {
-        const carrito = [...this.state.carrito];
-        const index = carrito.findIndex(p => p.key === producto.key);
+        const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
-            carrito[index].cantidad += 1;
+            this.carrito[index].cantidad += 1;
         } else {
-            carrito.push({ ...producto, cantidad: 1 });
+            this.carrito.push({ ...producto, cantidad: 1 });
         }
-        this.setState({ carrito });
+        this.forceUpdate();
     };
 
-
-
     aumentarCantidad = (producto) => {
-        const carrito = [...this.state.carrito];
-        const index = carrito.findIndex(p => p.key === producto.key);
+        const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
-            const success = this.props.onModificarStock?.(producto.key, -1); // ✅ Verifica stock antes de incrementar
+            const success = this.props.onModificarStock?.(producto.key, -1);
             if (success === false) {
                 alert("No hay más stock disponible");
                 return;
             }
-            carrito[index].cantidad += 1;
-            this.setState({ carrito });
+            this.carrito[index].cantidad += 1;
+            this.forceUpdate();
         }
     };
-
 
     disminuirCantidad = (producto) => {
-        const carrito = [...this.state.carrito];
-        const index = carrito.findIndex(p => p.key === producto.key);
+        const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
-            carrito[index].cantidad -= 1;
-            this.props.onModificarStock?.(producto.key, +1); // ⬅️ suma en modelo
+            this.carrito[index].cantidad -= 1;
+            this.props.onModificarStock?.(producto.key, +1);
 
-            if (carrito[index].cantidad <= 0) {
-                carrito.splice(index, 1); // elimina del carrito
+            if (this.carrito[index].cantidad <= 0) {
+                this.carrito.splice(index, 1);
             }
-
-            this.setState({ carrito });
+            this.forceUpdate();
         }
     };
 
+    eliminarItem = (producto) => {
+        const index = this.carrito.findIndex(p => p.key === producto.key);
+        if (index >= 0) {
+            this.props.onModificarStock?.(producto.key, +this.carrito[index].cantidad);
+            this.carrito.splice(index, 1);
+            this.forceUpdate();
+        }
+    };
+
+    vaciarCarrito = () => {
+        this.carrito.forEach(item => {
+            this.props.onModificarStock?.(item.key, +item.cantidad);
+        });
+        this.carrito = [];
+        this.forceUpdate();
+    };
 
     renderItemCarrito = (item) => {
+        const src = item.key ? `${SSocket.api.inventario}modelo/.128_${item.key}` : sinFoto;
+
         return (
-            <SView key={item.key} row style={{ justifyContent: "space-between", alignItems: "center", paddingVertical: 4 }}>
-                <SText fontSize={12} color={"#374151"} flex>{item.descripcion}</SText>
+            <SView key={item.key} row style={{ paddingVertical: 4, alignItems: "center" }}>
+                <SImage src={src} style={{ width: 40, height: 40, borderRadius: 4, marginRight: 8 }} />
+
+                <SText fontSize={12} flex color={"#374151"}>{item.descripcion}</SText>
 
                 <SView row center>
-                    <SText
-                        onPress={() => this.disminuirCantidad(item)}
-                        style={{ paddingHorizontal: 8, fontSize: 16, color: "#EF4444", fontWeight: "bold" }}>
-                        -
-                    </SText>
-                    <SText fontSize={12} bold color={"#111827"} style={{ paddingHorizontal: 4 }}>
-                        x{item.cantidad}
-                    </SText>
-                    <SText
-                        onPress={() => this.aumentarCantidad(item)}
-                        style={{ paddingHorizontal: 8, fontSize: 16, color: "#10B981", fontWeight: "bold" }}>
-                        +
-                    </SText>
+                    <SText onPress={() => this.disminuirCantidad(item)} style={{ paddingHorizontal: 8, fontSize: 16, color: "#EF4444", fontWeight: "bold" }}>-</SText>
+                    <SText fontSize={12} color='blue' bold style={{ paddingHorizontal: 4 }}>x{item.cantidad}</SText>
+                    <SText onPress={() => this.aumentarCantidad(item)} style={{ paddingHorizontal: 8, fontSize: 16, color: "#10B981", fontWeight: "bold" }}>+</SText>
+                    <SText onPress={() => this.eliminarItem(item)} style={{ paddingHorizontal: 8, fontSize: 14, color: "#9CA3AF" }}>🗑</SText>
                 </SView>
             </SView>
-
         );
     };
 
     renderCarrito() {
-        const { carrito } = this.state;
-
         return (
-            <SView
-                backgroundColor={"#FFFFFF"}
-                height={"30%"}
-                style={{
-                    borderRadius: 8,
-                    padding: 16,
-                    marginBottom: 8,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 2,
-                    elevation: 1,
-                }}
-            >
-                <SText fontSize={14} bold color={"#374151"} style={{ marginBottom: 8 }}>
-                    Orden Actual
-                </SText>
+            <SView backgroundColor={"#FFFFFF"} height={"30%"} style={{
+                borderRadius: 8,
+                padding: 16,
+                marginBottom: 8,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.05,
+                shadowRadius: 2,
+                elevation: 1,
+            }}>
+                <SView row justifyContent='space-between' alignItems='center' style={{ marginBottom: 8 }}>
+                    <SText fontSize={14} bold color={"#374151"}>Orden Actual</SText>
+                    <SText onPress={this.vaciarCarrito} fontSize={12} color={"#EF4444"}>Vaciar 🧹</SText>
+                </SView>
 
                 <FlatList
-                    style={{ width: "100%" }}
-                    data={carrito}
+                    data={this.carrito}
                     keyExtractor={(item) => item.key.toString()}
                     renderItem={({ item }) => this.renderItemCarrito(item)}
                     ListEmptyComponent={
                         <SView center style={{ paddingVertical: 20 }}>
-                            <SText fontSize={12} color={"#9CA3AF"}>
-                                No hay productos en el carrito
-                            </SText>
+                            <SText fontSize={12} color={"#9CA3AF"}>No hay productos en el carrito</SText>
                         </SView>
                     }
                 />
