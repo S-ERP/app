@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
-import { SImage, SText, SView } from 'servisofts-component';
+import { SHr, SImage, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 
 const sinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
@@ -79,24 +79,30 @@ export default class Carrito extends Component {
                     <SText onPress={() => this.aumentarCantidad(item)} style={{ paddingHorizontal: 8, fontSize: 16, color: "#10B981", fontWeight: "bold" }}>+</SText>
                     <SText onPress={() => this.eliminarItem(item)} style={{ paddingHorizontal: 8, fontSize: 14, color: "#9CA3AF" }}>🗑</SText>
                 </SView>
+
+                <SHr />
+                <SHr />
+                <SHr color={STheme.color.card} height={0.2} />
             </SView>
         );
     };
 
     renderCarrito() {
         return (
-            <SView backgroundColor={"#FFFFFF"} height={"30%"} style={{
-                borderRadius: 8,
-                padding: 16,
-                marginBottom: 8,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.05,
-                shadowRadius: 2,
-                elevation: 1,
-            }}>
+            <SView
+                border={STheme.color.card}
+                backgroundColor={STheme.color.background} height={"30%"} style={{
+                    borderRadius: 8,
+                    padding: 16,
+                    marginBottom: 8,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.05,
+                    shadowRadius: 2,
+                    elevation: 1,
+                }}>
                 <SView row justifyContent='space-between' alignItems='center' style={{ marginBottom: 8 }}>
-                    <SText fontSize={14} bold color={"#374151"}>Orden Actual</SText>
+                    <SText fontSize={14} bold color={STheme.color.text + "99"}>Orden Actual</SText>
                     <SText onPress={this.vaciarCarrito} fontSize={12} color={"#EF4444"}>Vaciar 🧹</SText>
                 </SView>
 
@@ -106,7 +112,7 @@ export default class Carrito extends Component {
                     renderItem={({ item }) => this.renderItemCarrito(item)}
                     ListEmptyComponent={
                         <SView center style={{ paddingVertical: 20 }}>
-                            <SText fontSize={12} color={"#9CA3AF"}>No hay productos en el carrito</SText>
+                            <SText fontSize={12} color={STheme.color.text + "99"}>No hay productos en el carrito</SText>
                         </SView>
                     }
                 />

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SInput, SText, SView } from 'servisofts-component';
+import { SInput, SText, STheme, SView } from 'servisofts-component';
 import SIconApp from '../../../Assets/SIconApp';
 
 class Header extends Component {
@@ -16,7 +16,7 @@ class Header extends Component {
                 row
                 center
                 height={60}
-                backgroundColor={"#FFFFFF"}
+                backgroundColor={STheme.color.card}
                 style={{
                     borderBottomWidth: 1,
                     borderBottomColor: "#E5E7EB",
@@ -29,7 +29,7 @@ class Header extends Component {
             >
                 {/* Logo */}
                 <SView col={"xs-2"} center>
-                    <SText fontSize={24} bold color={"#1a1719ff"} style={{ letterSpacing: -0.5 }}>
+                    <SText fontSize={24} bold color={STheme.color.text} style={{ letterSpacing: -0.5 }}>
                         servisofts
                     </SText>
                 </SView>
@@ -80,7 +80,7 @@ class Header extends Component {
                             AS
                         </SText>
                     </SView>
-                    <SText fontSize={14} color={"#374151"}>
+                    <SText fontSize={14} color={STheme.color.text}>
                         Alvaro Siles
                     </SText>
                     <SView style={{ marginLeft: 16 }}>

@@ -30,18 +30,10 @@ export default class Main extends Component {
             {/* <Header></Header> */}
             <Header value={this.searchText} onChangeText={this.setSearchText} />
 
-            <SView col={"xs-12"} row flex backgroundColor={STheme.color.secondary}>
-                <SView col={"xs-4"} style={{ padding: 16, borderRightWidth: 1, borderRightColor: STheme.color.card + "99" }} >
-                    {/* <Carrito></Carrito> */}
-
-
-
-
-                    {/* <Carrito ref={ref => this.carritoRef = ref} /> */}
+            <SView col={"xs-12"} row flex backgroundColor={STheme.color.background}>
+                <SView col={"xs-4"} style={{ padding: 16, borderRightWidth: 1, borderRightColor: STheme.color.card }} >
                     <Carrito
                         ref={(ref) => { if (ref) this.carritoRef = ref; }}
-
-                        // ref={(ref) => this.carritoRef = ref}
                         onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
                     />
 
