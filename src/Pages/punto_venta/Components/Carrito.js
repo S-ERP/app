@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { FlatList } from 'react-native';
 import { SText, SView } from 'servisofts-component';
 
+
+
 export default class Carrito extends Component {
     constructor(props) {
         super(props);
@@ -24,21 +26,61 @@ export default class Carrito extends Component {
         this.setState({ carrito });
     };
 
+
+
+    aumentarCantidad = (producto) => {
+        const carrito = [...this.state.carrito];
+        const index = carrito.findIndex(p => p.key === producto.key);
+        if (index >= 0) {
+            const success = this.props.onModificarStock?.(producto.key, -1); // ✅ Verifica stock antes de incrementar
+            if (success === false) {
+                alert("No hay más stock disponible");
+                return;
+            }
+            carrito[index].cantidad += 1;
+            this.setState({ carrito });
+        }
+    };
+
+
+    disminuirCantidad = (producto) => {
+        const carrito = [...this.state.carrito];
+        const index = carrito.findIndex(p => p.key === producto.key);
+        if (index >= 0) {
+            carrito[index].cantidad -= 1;
+            this.props.onModificarStock?.(producto.key, +1); // ⬅️ suma en modelo
+
+            if (carrito[index].cantidad <= 0) {
+                carrito.splice(index, 1); // elimina del carrito
+            }
+
+            this.setState({ carrito });
+        }
+    };
+
+
     renderItemCarrito = (item) => {
         return (
-            <SView
-                key={item.key}
-                row
-                style={{
-                    justifyContent: "space-between",
-                    paddingVertical: 4,
-                    borderBottomWidth: 1,
-                    borderColor: "#E5E7EB",
-                }}
-            >
-                <SText fontSize={12} color={"#374151"}>{item.descripcion}</SText>
-                <SText fontSize={12} bold color={"#111827"}>x{item.cantidad}</SText>
+            <SView key={item.key} row style={{ justifyContent: "space-between", alignItems: "center", paddingVertical: 4 }}>
+                <SText fontSize={12} color={"#374151"} flex>{item.descripcion}</SText>
+
+                <SView row center>
+                    <SText
+                        onPress={() => this.disminuirCantidad(item)}
+                        style={{ paddingHorizontal: 8, fontSize: 16, color: "#EF4444", fontWeight: "bold" }}>
+                        -
+                    </SText>
+                    <SText fontSize={12} bold color={"#111827"} style={{ paddingHorizontal: 4 }}>
+                        x{item.cantidad}
+                    </SText>
+                    <SText
+                        onPress={() => this.aumentarCantidad(item)}
+                        style={{ paddingHorizontal: 8, fontSize: 16, color: "#10B981", fontWeight: "bold" }}>
+                        +
+                    </SText>
+                </SView>
             </SView>
+
         );
     };
 

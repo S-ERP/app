@@ -34,8 +34,16 @@ export default class Main extends Component {
                 <SView col={"xs-4"} style={{ padding: 16, borderRightWidth: 1, borderRightColor: STheme.color.card + "99" }} >
                     {/* <Carrito></Carrito> */}
 
-                    <Carrito ref={ref => this.carritoRef = ref} />
 
+
+
+                    {/* <Carrito ref={ref => this.carritoRef = ref} /> */}
+                    <Carrito
+                        ref={(ref) => { if (ref) this.carritoRef = ref; }}
+
+                        // ref={(ref) => this.carritoRef = ref}
+                        onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
+                    />
 
 
                 </SView>
@@ -43,7 +51,18 @@ export default class Main extends Component {
                 <SView col={"xs-8"}   >
 
                     <TipoModelo onSelect={this.setTipoKey} selected={this.selectedTipoKey} />
-                    <Modelo tipoKey={this.selectedTipoKey} searchText={this.searchText} onPressProducto={(producto) => this.carritoRef?.addProducto(producto)} />
+                    {/* <Modelo tipoKey={this.selectedTipoKey} searchText={this.searchText} onPressProducto={(producto) => this.carritoRef?.addProducto(producto)} /> */}
+
+                    {/* <Modelo tipoKey={this.selectedTipoKey} searchText={this.searchText} onPressProducto={(producto) => this.carritoRef?.addProducto(producto)} /> */}
+
+
+                    <Modelo
+                        ref={(ref) => { if (ref) this.modeloRef = ref; }}  // ✅ ESTA LÍNEA ES CLAVE
+                        tipoKey={this.selectedTipoKey}
+                        searchText={this.searchText}
+                        onPressProducto={(producto) => this.carritoRef?.addProducto(producto)}
+                    />
+
                 </SView>
             </SView>
         </SPage>

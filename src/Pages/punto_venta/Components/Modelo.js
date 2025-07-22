@@ -24,6 +24,19 @@ export default class Modelo extends Component {
         this.forceUpdate();
     }
 
+    modificarStock = (key, delta) => {
+        const index = this.modelos.findIndex(m => m.key === key);
+        if (index >= 0) {
+            const nuevoStock = this.modelos[index].stock + delta;
+            if (nuevoStock < 0) return false;
+            this.modelos[index].stock = nuevoStock;
+            this.forceUpdate();
+            return true;
+        }
+        return false;
+    };
+
+
     renderModelos() {
         const modelos = this.modelos || [];
         const tipoKey = this.props.tipoKey;
@@ -71,9 +84,19 @@ export default class Modelo extends Component {
                                             borderWidth: 1,
                                             borderColor: "#F3F4F6",
                                         }}
-                                        // onPress={() => alert("mirador")}
-                                        onPress={() => this.props.onPressProducto?.(producto)}
+                                        // onPress={() => {
+                                        //     if (producto.stock <= 0) return alert("No hay más stock disponible");
+                                        //     this.props.onPressProducto?.(producto);
+                                        // }}
 
+                                         onPress={() => {
+                                             if (producto.stock <= 0) return alert("No hay más stock disponible");
+                                             producto.stock -= 1; // ⬅️ Resta stock localmente
+                                             this.forceUpdate();  // ⬅️ Fuerza render para reflejar el cambio
+                                             this.props.onPressProducto?.(producto); // ⬅️ Lo pasa al carrito
+
+
+                                        }}
                                     >
                                         <SView center style={{ marginBottom: 12 }}>
                                             <SImage
