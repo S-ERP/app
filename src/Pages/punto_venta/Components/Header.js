@@ -16,10 +16,15 @@ class Header extends Component {
                 row
                 center
                 height={60}
-                backgroundColor={STheme.color.card}
+                backgroundColor={STheme.color.background}
                 style={{
                     borderBottomWidth: 1,
-                    borderBottomColor: "#E5E7EB",
+                    // borderBottomColor: STheme.color.card,
+                    // borderTopColor: STheme.color.card,
+
+
+                    borderColor:STheme.color.card,
+
                     shadowColor: "#000",
                     shadowOffset: { width: 0, height: 2 },
                     shadowOpacity: 0.1,
@@ -41,26 +46,39 @@ class Header extends Component {
                     <SView
                         row
                         center
-                        backgroundColor={"#F9FAFB"}
+                        // backgroundColor={"red"}
                         style={{
                             borderRadius: 8,
                             borderWidth: 1,
-                            borderColor: "#D1D5DB",
+                            borderColor: STheme.color.card,
                             paddingHorizontal: 12,
                             height: 36,
                         }}
                     >
                         <SInput
                             placeholder="Search product"
+                            backgroundColor='red'
                             style={{
                                 flex: 1,
                                 fontSize: 14,
-                                color: "#374151",
+                                backgroundColor:"transparent"
+                                // color: STheme.color.text
                             }}
                             value={this.props.value}
                             onChangeText={this.props.onChangeText}
                         />
-                        <SIconApp name="search" width={16} height={16} fill={"#6B7280"} />
+                        {/* <SInput
+                            placeholder="Search product"
+                            backgroundColor='red'
+                            style={{
+                                flex: 1,
+                                fontSize: 14,
+                                // color: STheme.color.text
+                            }}
+                            value={this.props.value}
+                            onChangeText={this.props.onChangeText}
+                        /> */}
+                        <SIconApp name="Search" width={16} height={16} fill={"#6B7280"} />
                     </SView>
                 </SView>
 

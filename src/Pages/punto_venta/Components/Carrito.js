@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { FlatList } from 'react-native';
 import { SHr, SImage, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
+import Subtotal from './Subtotal';
 
 const sinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 
@@ -116,6 +117,9 @@ export default class Carrito extends Component {
                         </SView>
                     }
                 />
+
+                {this.carrito.length > 0 && <Subtotal carrito={this.carrito} />}
+
             </SView>
         );
     }
