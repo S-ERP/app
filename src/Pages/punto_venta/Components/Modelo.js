@@ -71,6 +71,9 @@ export default class Modelo extends Component {
                                             borderWidth: 1,
                                             borderColor: "#F3F4F6",
                                         }}
+                                        // onPress={() => alert("mirador")}
+                                        onPress={() => this.props.onPressProducto?.(producto)}
+
                                     >
                                         <SView center style={{ marginBottom: 12 }}>
                                             <SImage

@@ -32,13 +32,18 @@ export default class Main extends Component {
 
             <SView col={"xs-12"} row flex backgroundColor={STheme.color.secondary}>
                 <SView col={"xs-4"} style={{ padding: 16, borderRightWidth: 1, borderRightColor: STheme.color.card + "99" }} >
-                    <Carrito></Carrito>
+                    {/* <Carrito></Carrito> */}
+
+                    <Carrito ref={ref => this.carritoRef = ref} />
+
+
+
                 </SView>
 
                 <SView col={"xs-8"}   >
 
                     <TipoModelo onSelect={this.setTipoKey} selected={this.selectedTipoKey} />
-                    <Modelo tipoKey={this.selectedTipoKey} searchText={this.searchText} />
+                    <Modelo tipoKey={this.selectedTipoKey} searchText={this.searchText} onPressProducto={(producto) => this.carritoRef?.addProducto(producto)} />
                 </SView>
             </SView>
         </SPage>
