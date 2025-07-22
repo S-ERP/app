@@ -24,6 +24,17 @@ export default class Main extends Component {
         this.searchText = text;
         this.forceUpdate();
     };
+    // opacity: "0.0588",
+    // opacity: "0.0588",
+    // opacity: "0.0588",
+    // opacity: "0.0588",
+    // opacity: "0.0588",
+    // opacity: "0.0588",
+    // opacity: "0.0588",
+    // opacity: "0.0588",
+    // opacity: "0.0588",
+    // opacity: "0.0588",
+    // opacity: "0.0588",
 
     render() {
         return (<SPage disableScroll>
