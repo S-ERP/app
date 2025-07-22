@@ -92,7 +92,7 @@ export default class Carrito extends Component {
         return (
             <SView
                 border={STheme.color.card}
-                backgroundColor={STheme.color.background} height={"30%"} style={{
+                backgroundColor={STheme.color.background} height={500} style={{
                     borderRadius: 8,
                     padding: 16,
                     marginBottom: 8,
@@ -117,6 +117,8 @@ export default class Carrito extends Component {
                         </SView>
                     }
                 />
+
+                <SHr height={50} ></SHr>
 
                 {this.carrito.length > 0 && <Subtotal carrito={this.carrito} />}
 
