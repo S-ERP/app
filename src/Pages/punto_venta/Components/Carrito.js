@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
-import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath } from 'servisofts-component';
+import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath, SButtom, SNotification } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import { color } from 'three/examples/jsm/nodes/Nodes';
 import SIconApp from '../../../Assets/SIconApp';
@@ -9,7 +9,8 @@ const sinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imag
 
 export default class Carrito extends Component {
     carrito = [];
-    descuentoManual = "0";
+    descuentoManual = "";
+    showPaymentModal = false;
 
     addProducto = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
@@ -74,6 +75,141 @@ export default class Carrito extends Component {
         this.forceUpdate();
     };
 
+    renderPaymentModal = () => {
+        if (!this.showPaymentModal) return null;
+
+        const subtotal = this.calcularSubtotal();
+        const totalConIVA = this.calcularTotalConIVA(subtotal);
+        const totalFinal = this.calcularTotalConDescuento(totalConIVA);
+
+        const montoRecibido = parseFloat(this.amountReceived || 0);
+        const change = isNaN(montoRecibido) ? 0 : montoRecibido - totalFinal;
+
+        const handleConfirmarPago = () => {
+            if (change >= 0) {
+                SNotification.send({
+                    title: "Pago Exitoso",
+                    body: `Cambio: Bs ${SMath.formatMoney(change, 2)}`,
+                    type: "success",
+                });
+
+                console.log("🧾 Pago confirmado. Total:", totalFinal);
+                console.log("🛒 Carrito guardado:", JSON.stringify(this.carrito, null, 2));
+
+                this.carrito = [];
+                this.showPaymentModal = false;
+                this.amountReceived = "";
+                this.forceUpdate();
+            } else {
+                SNotification.send({
+                    title: "Monto insuficiente",
+                    body: "El monto recibido es menor al total a pagar.",
+                    type: "danger",
+                });
+            }
+        };
+
+        return (
+            <SView
+                col={"xs-12"}
+                height={"100%"}
+                center
+                style={{
+                    position: "absolute",
+                    backgroundColor: "rgba(0,0,0,0.6)",
+                    zIndex: 1000,
+                }}
+            >
+                <SView
+                    width={400}
+                    height={460}
+                    backgroundColor={STheme.color.background}
+                    style={{
+                        borderRadius: 12,
+                        padding: 24,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 8,
+                        elevation: 6,
+                    }}
+                >
+                    <SText fontSize={20} bold center style={{ marginBottom: 24 }}>
+                        💰 Confirmar Pago
+                    </SText>
+
+                    <SView row style={{ justifyContent: "space-between", marginBottom: 12 }}>
+                        <SText fontSize={16} color={STheme.color.text}>Total a Pagar:</SText>
+                        <SText fontSize={18} bold color={STheme.color.warning}>
+                            Bs {SMath.formatMoney(totalFinal, 2)}
+                        </SText>
+                    </SView>
+
+                    <SView style={{ marginBottom: 20 }}>
+                        <SText fontSize={14} color={STheme.color.text}>Monto Recibido:</SText>
+                        <SInput
+                            value={this.amountReceived}
+                            onChangeText={(text) => {
+                                this.amountReceived = text;
+                                this.forceUpdate();
+                            }}
+                            keyboardType="numeric"
+                            placeholder="Ej. 100.00"
+                            style={{
+                                height: 48,
+                                fontSize: 20,
+                                textAlign: "center",
+                                borderWidth: 1,
+                                borderColor: STheme.color.card,
+                                borderRadius: 8,
+                                marginTop: 8,
+                                color: STheme.color.text,
+                            }}
+                        />
+                    </SView>
+
+                    <SView row style={{ justifyContent: "space-between", marginBottom: 20 }}>
+                        <SText fontSize={16} color={STheme.color.text}>Cambio:</SText>
+                        <SText fontSize={18} bold color={change >= 0 ? STheme.color.success : STheme.color.danger}>
+                            Bs {SMath.formatMoney(change, 2)}
+                        </SText>
+                    </SView>
+
+                    <SView row style={{ justifyContent: "space-around" }}>
+                        <SButtom
+                            onPress={() => {
+                                this.showPaymentModal = false;
+                                this.amountReceived = "";
+                                this.forceUpdate();
+                            }}
+                            style={{
+                                backgroundColor: STheme.color.gray,
+                                paddingVertical: 12,
+                                paddingHorizontal: 24,
+                                borderRadius: 8,
+                            }}
+                        >
+                            <SText color={STheme.color.text}>Cancelar</SText>
+                        </SButtom>
+
+                        <SButtom
+                            onPress={handleConfirmarPago}
+                            style={{
+                                backgroundColor: STheme.color.primary,
+                                paddingVertical: 12,
+                                paddingHorizontal: 24,
+                                borderRadius: 8,
+                            }}
+                        >
+                            <SText color={STheme.color.white}>Confirmar Pago</SText>
+                        </SButtom>
+                    </SView>
+                </SView>
+            </SView>
+        );
+    };
+
+
     renderItemCarrito = (item) => {
         const src = item.key ? `${SSocket.api.inventario}modelo/.128_${item.key}` : sinFoto;
         return (
@@ -92,25 +228,6 @@ export default class Carrito extends Component {
 
 
                     <SView flex row  >
-
-                        {/* <SInput
-                        value={String(item.stock)}
-                        // onChangeText={(text) => this.editarCantidadDirecta(item.key, text)}
-                        keyboardType="numeric"
-                        style={{
-                            width: 40,
-                            height: 24,
-                            padding: 0,
-                            textAlign: "center",
-                            fontSize: 12,
-                            borderWidth: 1,
-                            // borderColor: "#D1D5DB",
-                            borderRadius: 4,
-                            color: "black",
-                        }}
-                    /> */}
-
-
                         <SView center border={STheme.color.text} style={{ width: 24, height: 24, borderRadius: 12 }} onPress={() => this.disminuirCantidad(item)}>
                             <SText fontSize={24} color={"#EF4444"}>-</SText>
                         </SView>
@@ -123,7 +240,6 @@ export default class Carrito extends Component {
                             <SText fontSize={24} color={"#10B981"}>+</SText>
                         </SView>
                     </SView>
-
                     <SView col={"xs-2"} row center onPress={() => this.eliminarItem(item)} >
                         <SIconApp name='Close' width={24} height={24} fill='red' />
                     </SView>
@@ -141,16 +257,16 @@ export default class Carrito extends Component {
         return (
             <SView col={"xs-12"} border={STheme.color.card} style={{ borderRadius: 2, padding: 16, marginBottom: 8, }} height={80}>
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
-                    <SText fontSize={13} color={STheme.color.lightGray}>Subtotal:</SText>
-                    <SText fontSize={14} bold color={STheme.color.lightGray}>Bs {SMath.formatMoney(subtotal, 2)}</SText>
+                    <SText fontSize={13} color={STheme.color.darkGray}>Subtotal:</SText>
+                    <SText fontSize={14} bold color={STheme.color.darkGray}>Bs {SMath.formatMoney(subtotal, 2)}</SText>
                 </SView>
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
-                    <SText fontSize={12} color={STheme.color.lightGray}>Impuesto:</SText>
-                    <SText fontSize={13} color={STheme.color.lightGray}>Sumar Iva13%  Bs {SMath.formatMoney(totalConIVA, 2)}</SText>
+                    <SText fontSize={12} color={STheme.color.darkGray}>Impuesto:</SText>
+                    <SText fontSize={13} color={STheme.color.darkGray}>Sumar Iva13%  Bs {SMath.formatMoney(totalConIVA, 2)}</SText>
                 </SView>
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
-                    <SText fontSize={13} color={STheme.color.lightGray}>Total:</SText>
-                    <SText fontSize={16} bold color={STheme.color.lightGray}>Bs {SMath.formatMoney(totalFinal, 2)}</SText>
+                    <SText fontSize={13} color={STheme.color.darkGray}>Total:</SText>
+                    <SText fontSize={16} bold color={STheme.color.darkGray}>Bs {SMath.formatMoney(totalFinal, 2)}</SText>
                 </SView>
             </SView>
         )
@@ -184,7 +300,10 @@ export default class Carrito extends Component {
                     </SView>
 
 
-                    <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2, }}   >
+                    <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2, }} onPress={() => {
+                        this.showPaymentModal = true;
+                        this.forceUpdate();
+                    }}  >
                         <SText style={style_text} >pagar</SText>
                     </SView>
                 </SView>
@@ -213,61 +332,84 @@ export default class Carrito extends Component {
 
         return (
             <>
-                <SView
-                    backgroundColor={STheme.color.background}
-                    flex
-                    style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
-                >
-                    <SView col={"xs-12"} row style={{ marginBottom: 8 }} >
-                        <SView flex row  >
-                            <SText fontSize={16} bold color={STheme.color.text}>Orden Actual</SText>
+
+
+
+                {!subtotal > 0 ?
+                    <SView backgroundColor={STheme.color.background} flex center style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
+                    >
+
+
+                        {/* <SView col={"xs-12"} row center center backgroundColor='transparent'> */}
+                        <SView row center backgroundColor='transparent' >
+                            <SIconApp name='carritoproducto' height={50} fill={STheme.color.card} />
+                            <SText fontSize={12} color={STheme.color.card}>Comience a agregar productos</SText>
                         </SView>
+                    </SView>
 
-                        <SView col={"xs-1"} row center onPress={() => this.vaciarCarrito()} >
-                            {/* <SIconApp name='deleteAll' width={24} height={24} /> */}
-
-                            <SView backgroundColor="purple" style={{ borderRadius: 8, padding: 5, height: 24 }}>
-                                <SText fontSize={12} color={STheme.color.text}>Vaciar</SText>
+                    :
+                    <SView
+                        backgroundColor={STheme.color.background}
+                        flex
+                        style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
+                    >
+                        <SView col={"xs-12"} row style={{ marginBottom: 8 }} >
+                            <SView flex row  >
+                                <SText fontSize={16} bold color={STheme.color.text}>Orden Actual</SText>
                             </SView>
 
+                            <SView col={"xs-1"} row center onPress={() => this.vaciarCarrito()} >
+                                {/* <SIconApp name='deleteAll' width={24} height={24} /> */}
+
+                                <SView backgroundColor="purple" style={{ borderRadius: 8, padding: 5, height: 24 }}>
+                                    <SText fontSize={12} color={STheme.color.text}>Vaciar</SText>
+                                </SView>
+
+                            </SView>
                         </SView>
-                    </SView>
 
-                    <SView col={"xs-12"} flex center backgroundColor='transparent'>
-                        <SScrollView2 disableHorizontal>
+                        <SView col={"xs-12"} flex center backgroundColor='transparent'>
+                            <SScrollView2 disableHorizontal>
 
-                            <FlatList
-                                data={this.carrito}
-                                keyExtractor={(item) => item.key.toString()}
-                                renderItem={({ item }) => this.renderItemCarrito(item)}
-                                ListEmptyComponent={
-                                    <SView center style={{ paddingVertical: 20 }}>
-                                        <SText fontSize={12} color={STheme.color.text + "99"}>No hay productos en el carrito</SText>
-                                    </SView>
-                                }
+                                <FlatList
+                                    data={this.carrito}
+                                    keyExtractor={(item) => item.key.toString()}
+                                    renderItem={({ item }) => this.renderItemCarrito(item)}
+                                // ListEmptyComponent={
+                                //     <SView col={"xs-12"} row center center backgroundColor='transparent'>
+                                //         <SView row center backgroundColor='transparent' >
+                                //             <SIconApp name='carritoproducto' height={50} fill={STheme.color.card} />
+                                //             <SText fontSize={12} color={STheme.color.card}>Comience a agregar productos</SText>
+                                //         </SView>
+                                //     </SView>
+                                // }
+                                />
+                            </SScrollView2>
+
+
+                        </SView>
+
+                        <SHr height={20} />
+                        {this.renderSubtotal()}
+
+                        <SView col={"xs-12"} style={{ marginTop: 8 }}>
+                            <SText>Descuento VIP (Bs):</SText>
+                            <SInput
+                                placeholder={"0"}
+                                value={this.descuentoManual ?? null}
+                                onChangeText={(text) => {
+                                    this.descuentoManual = text;
+                                    this.forceUpdate();
+                                }}
+                                type='number'
+                                border={STheme.color.card}
+                                style={{ backgroundColor: "transparent", }}
                             />
-                        </SScrollView2>
-
+                        </SView>
 
                     </SView>
 
-                    <SHr height={20} />
-                    {subtotal < 0 ? this.renderSubtotal() : null}
-
-
-                    {/* <SView col={"xs-12"} style={{ marginTop: 8 }}>
-                        <SText>Descuento VIP (Bs):</SText>
-                        <SInput
-                            value={this.descuentoManual}
-                            onChangeText={(text) => {
-                                this.descuentoManual = text;
-                                this.forceUpdate();
-                            }}
-                            keyboardType="numeric"
-                        />
-                    </SView> */}
-
-                </SView>
+                }
                 {this.renderTecladoNumerico()}
 
             </>
@@ -276,6 +418,10 @@ export default class Carrito extends Component {
     };
 
     render() {
-        return this.renderCarrito();
+        return <>
+            {this.renderCarrito()}
+            {this.renderPaymentModal()}
+
+        </>
     }
 }

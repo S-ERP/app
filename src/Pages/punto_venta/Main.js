@@ -45,20 +45,8 @@ export default class Main extends Component {
         this.searchText = text;
         this.forceUpdate();
     };
-    // opacity: "0.0588",
-    // opacity: "0.0588",
-    // opacity: "0.0588",
-    // opacity: "0.0588",
-    // opacity: "0.0588",
-    // opacity: "0.0588",
-    // opacity: "0.0588",
-    // opacity: "0.0588",
-    // opacity: "0.0588",
-    // opacity: "0.0588",
-    // opacity: "0.0588",
-
     render() {
-        return (<SPage disableScroll>
+        return (<SPage disableScroll hidden>
             <Header value={this.searchText} onChangeText={this.setSearchText} />
 
             <SView col={"xs-12"} row flex backgroundColor={STheme.color.background}>
@@ -67,8 +55,7 @@ export default class Main extends Component {
                 </SView>
 
                 <SView col={"xs-8"}   >
-                    {/* <TipoModelo onSelect={this.setTipoKey} selected={this.selectedTipoKey} value={this.searchText} onChangeText={this.setSearchText} /> */}
-                    <Categoria onSelect={this.setTipoKey} selected={this.selectedTipoKey} value={this.searchText} onChangeText={this.setSearchText} />
+                     <Categoria onSelect={this.setTipoKey} selected={this.selectedTipoKey} value={this.searchText} onChangeText={this.setSearchText} />
                     <Modelo ref={(ref) => { if (ref) this.modeloRef = ref; }} tipoKey={this.selectedTipoKey} searchText={this.searchText} onPressProducto={(producto) => this.carritoRef?.addProducto(producto)} />
                 </SView>
             </SView>
