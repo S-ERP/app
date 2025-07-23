@@ -4,6 +4,7 @@ import { SImage, SMath, SScrollView2, SText, STheme, SView } from 'servisofts-co
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
 
+// const productSinFoto = 'https://batabolivia.vtexassets.com/arquivos/ids/197509-800-auto?v=638309092795330000&width=800&height=auto&aspect=true';
 const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 const listaProductoTest =
     [
@@ -61,17 +62,14 @@ export default class Modelo extends Component {
 
 
     renderModelos() {
-        const modelos = this.modelos || [];
-        // const modelos = listaProductoTest;
+        // const modelos = this.modelos || [];
+        const modelos = listaProductoTest;
         const tipoKey = this.props.tipoKey;
 
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
 
-            productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search));
-        }
+        if (this.props.searchText) { const search = this.props.searchText.toLowerCase(); productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search)); }
 
-        const columnas = 8;
-        const colSize = parseFloat((12 / (columnas + 1)).toFixed(2));
         const colSize = parseFloat((12 / 8).toFixed(2));
 
         return (
@@ -85,14 +83,15 @@ export default class Modelo extends Component {
                                 return (
                                     <SView
                                         key={index}
-                                        backgroundColor='blue'
                                         col={`xs-${colSize}`}
                                         margin={2}
                                         style={{
-                                            // shadowColor: "#000",
-                                            // shadowOffset: { width: 0, height: 2 },
-                                            // shadowRadius: 8,
-                                            // elevation: 3,
+                                            borderRadius: 8,
+                                            shadowColor: "#000",
+                                            shadowOffset: { width: 0, height: 2 },
+                                            shadowOpacity: 0.1,
+                                            shadowRadius: 8,
+                                            elevation: 3,
                                             borderWidth: 1,
                                             borderColor: STheme.color.lightGray,
                                         }}

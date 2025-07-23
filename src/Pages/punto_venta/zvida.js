@@ -670,10 +670,10 @@ export default class zvida extends Component {
     // Teclado numérico mejorado
     renderTecladoNumerico() {
         const teclas = [
-            ["1", "2", "3", "Qty"],
-            ["4", "5", "6", "% Disc"],
-            ["7", "8", "9", "Price"],
-            ["+/-", "0", ".", "Payment"], // Cambiado "👁" a "Payment" para abrir el modal
+            ["1", "2", "3", "Cant"],
+            ["4", "5", "6", "% de desc."],
+            ["7", "8", "9", "Precio"],
+            ["+/-", "0", ".", "pagar"], // Cambiado "👁" a "Payment" para abrir el modal
         ]
 
         return (
