@@ -1,19 +1,15 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SText, STheme, SView } from 'servisofts-component';
+import { SInput, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
+import SIconApp from '../../../Assets/SIconApp';
 
 
 
 export default class TipoModelo extends Component {
     constructor(props) {
         super(props);
-
-        // Atributos internos (sin state)
-
         this.selectedCategory = this.props.selected || "all";
-
-        // this.selectedCategory = "all";
         this.tipomodelos = [];
     }
 
@@ -45,21 +41,20 @@ export default class TipoModelo extends Component {
 
         return (
             <SView col={"xs-12"} style={{ padding: 20 }} backgroundColor='transparent'>
-                <SView col={"xs-12"} row style={{ justifyContent: "center", marginRight: 50 }}>
+                <SView col={"xs-12"} row center>
                     {categorias.map(cat => (
                         <SView
                             key={cat.key}
-                            center
                             onPress={() => this.handlePress(cat.key)}
                             style={{
                                 paddingVertical: 8,
                                 paddingHorizontal: 16,
                                 borderRadius: 20,
                                 marginRight: 16,
-                                // marginHorizontal: 4,
                                 backgroundColor: this.selectedCategory === cat.key ? STheme.color.text : STheme.color.card,
+                                opacity: this.selectedCategory === cat.key ? null : 0.6,
                                 borderWidth: 1,
-                                borderColor: this.selectedCategory === cat.key ? STheme.color.text : STheme.color.gray,
+                                borderColor: this.selectedCategory === cat.key ? STheme.color.text : STheme.color.lightGray,
                             }}
                         >
                             <SText fontSize={12} color={this.selectedCategory === cat.key ? STheme.color.primary : STheme.color.text}>
@@ -68,9 +63,36 @@ export default class TipoModelo extends Component {
                         </SView>
                     ))}
                 </SView>
-                <SText fontSize={20} bold color={STheme.color.text}  >
-                    {categorias.find((c) => c.key === this.selectedCategory)?.label || "Productos"}
-                </SText>
+
+                <SView col={"xs-12"} row  >
+
+                    <SView flex row  >
+                        <SText fontSize={20} bold color={STheme.color.text}  >
+                            {categorias.find((c) => c.key === this.selectedCategory)?.label || "Productos"}
+                        </SText>
+                    </SView>
+
+                    <SView col={"xs-3"} center  >
+                        <SView row center style={{ borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, paddingHorizontal: 12 }}>
+                            <SInput placeholder="Buscar Producto" center style={{ flex: 1, fontSize: 14, backgroundColor: "transparent" }}
+                                value={this.props.value}
+                                onChangeText={this.props.onChangeText}
+
+                                onKeyPress={(e) => {
+                                    if (e.nativeEvent.key === "Escape") {
+                                        this.props.onChangeText?.("");
+                                    }
+                                }
+                                }
+
+
+                            />
+
+                            <SIconApp name="Search" width={16} height={16} fill={"#6B7280"} />
+                        </SView>
+                    </SView>
+                </SView>
+
             </SView>
         );
     }

@@ -23,7 +23,7 @@ class Header extends Component {
                     // borderTopColor: STheme.color.card,
 
 
-                    borderColor:STheme.color.card,
+                    borderColor: STheme.color.card,
 
                     shadowColor: "#000",
                     shadowOffset: { width: 0, height: 2 },
@@ -52,32 +52,19 @@ class Header extends Component {
                             borderWidth: 1,
                             borderColor: STheme.color.card,
                             paddingHorizontal: 12,
-                            height: 36,
                         }}
                     >
                         <SInput
                             placeholder="Search product"
-                            backgroundColor='red'
                             style={{
                                 flex: 1,
                                 fontSize: 14,
-                                backgroundColor:"transparent"
+                                backgroundColor: "transparent"
                                 // color: STheme.color.text
                             }}
                             value={this.props.value}
                             onChangeText={this.props.onChangeText}
                         />
-                        {/* <SInput
-                            placeholder="Search product"
-                            backgroundColor='red'
-                            style={{
-                                flex: 1,
-                                fontSize: 14,
-                                // color: STheme.color.text
-                            }}
-                            value={this.props.value}
-                            onChangeText={this.props.onChangeText}
-                        /> */}
                         <SIconApp name="Search" width={16} height={16} fill={"#6B7280"} />
                     </SView>
                 </SView>
@@ -94,8 +81,7 @@ class Header extends Component {
                             marginRight: 8,
                         }}
                     >
-                        <SText fontSize={12} bold color={"white"}>
-                            AS
+                        <SText fontSize={12} bold color={"white"}> AS
                         </SText>
                     </SView>
                     <SText fontSize={14} color={STheme.color.text}>

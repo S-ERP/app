@@ -16,6 +16,26 @@ export default class Main extends Component {
 
     }
 
+
+    componentDidMount() {
+        if (typeof window !== "undefined") {
+            window.addEventListener("keydown", this.handleKeyDown);
+        }
+    }
+
+    componentWillUnmount() {
+        if (typeof window !== "undefined") {
+            window.removeEventListener("keydown", this.handleKeyDown);
+        }
+    }
+
+
+    handleKeyDown = (e) => {
+        if (e.key === "Escape") {
+            this.searchText = "";
+            this.forceUpdate();
+        }
+    };
     setTipoKey = (key) => {
         this.selectedTipoKey = key;
         this.forceUpdate(); // fuerza re-render de Modelo
@@ -38,34 +58,16 @@ export default class Main extends Component {
 
     render() {
         return (<SPage disableScroll>
-            {/* <Header></Header> */}
             <Header value={this.searchText} onChangeText={this.setSearchText} />
 
             <SView col={"xs-12"} row flex backgroundColor={STheme.color.background}>
                 <SView col={"xs-4"} style={{ padding: 16, borderRightWidth: 1, borderRightColor: STheme.color.card }} >
-                    <Carrito
-                        ref={(ref) => { if (ref) this.carritoRef = ref; }}
-                        onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
-                    />
-
-
+                    <Carrito ref={(ref) => { if (ref) this.carritoRef = ref; }} onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)} />
                 </SView>
 
                 <SView col={"xs-8"}   >
-
-                    <TipoModelo onSelect={this.setTipoKey} selected={this.selectedTipoKey} />
-                    {/* <Modelo tipoKey={this.selectedTipoKey} searchText={this.searchText} onPressProducto={(producto) => this.carritoRef?.addProducto(producto)} /> */}
-
-                    {/* <Modelo tipoKey={this.selectedTipoKey} searchText={this.searchText} onPressProducto={(producto) => this.carritoRef?.addProducto(producto)} /> */}
-
-
-                    <Modelo
-                        ref={(ref) => { if (ref) this.modeloRef = ref; }}  // ✅ ESTA LÍNEA ES CLAVE
-                        tipoKey={this.selectedTipoKey}
-                        searchText={this.searchText}
-                        onPressProducto={(producto) => this.carritoRef?.addProducto(producto)}
-                    />
-
+                    <TipoModelo onSelect={this.setTipoKey} selected={this.selectedTipoKey} value={this.searchText} onChangeText={this.setSearchText} />
+                    <Modelo ref={(ref) => { if (ref) this.modeloRef = ref; }} tipoKey={this.selectedTipoKey} searchText={this.searchText} onPressProducto={(producto) => this.carritoRef?.addProducto(producto)} />
                 </SView>
             </SView>
         </SPage>

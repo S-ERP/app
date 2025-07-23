@@ -42,16 +42,12 @@ export default class Modelo extends Component {
         const tipoKey = this.props.tipoKey;
 
         // ✅ Usamos let para poder modificar después
-        let productosFiltrados = tipoKey === "all"
-            ? modelos
-            : modelos.filter(m => m.key_tipo_producto === tipoKey);
+        let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
 
         // ✅ Filtro por texto
         if (this.props.searchText) {
             const search = this.props.searchText.toLowerCase();
-            productosFiltrados = productosFiltrados.filter(p =>
-                p.descripcion?.toLowerCase().includes(search)
-            );
+            productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search) );
         }
 
         const columnas = 5;
@@ -63,9 +59,7 @@ export default class Modelo extends Component {
                     <SView col={"xs-12"} style={{ padding: 20 }}>
                         <SView col={"xs-12"} row style={{ flexWrap: "wrap" }}>
                             {productosFiltrados.map((producto, index) => {
-                                const src = producto.key
-                                    ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}`
-                                    : productSinFoto;
+                                const src = producto.key ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}` : productSinFoto;
 
                                 return (
                                     <SView
@@ -75,27 +69,21 @@ export default class Modelo extends Component {
                                             margin: 4,
                                             borderRadius: 12,
                                             padding: 12,
-                                            backgroundColor: STheme.color.card + "−0.2112",
+                                            backgroundColor: STheme.color.card ,
+                                            // opacity:100,
                                             shadowColor: "#000",
                                             shadowOffset: { width: 0, height: 2 },
                                             shadowOpacity: 0.1,
                                             shadowRadius: 8,
                                             elevation: 3,
                                             borderWidth: 1,
-                                            borderColor: "#F3F4F6",
+                                            borderColor: STheme.color.lightGray,
                                         }}
-                                        // onPress={() => {
-                                        //     if (producto.stock <= 0) return alert("No hay más stock disponible");
-                                        //     this.props.onPressProducto?.(producto);
-                                        // }}
-
                                          onPress={() => {
                                              if (producto.stock <= 0) return alert("No hay más stock disponible");
                                              producto.stock -= 1; // ⬅️ Resta stock localmente
                                              this.forceUpdate();  // ⬅️ Fuerza render para reflejar el cambio
                                              this.props.onPressProducto?.(producto); // ⬅️ Lo pasa al carrito
-
-
                                         }}
                                     >
                                         <SView center style={{ marginBottom: 12 }}>
