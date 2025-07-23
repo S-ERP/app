@@ -40,7 +40,7 @@ export default class Categoria extends Component {
         const categorias = this.tipomodelos || [];
 
         return (
-            <SView col={"xs-12"} style={{ padding: 14 }} backgroundColor='yellow'>
+            <SView col={"xs-12"} style={{ padding: 14 }}  >
                 <SView col={"xs-12"} row center>
                     <SView flex row>
 
