@@ -2,7 +2,7 @@ import { SPage } from "servisofts-component";
 import Carrito from "./Components/Carrito";
 import Header from "./Components/Header";
 import Modelo from "./Components/Modelo";
-import TipoModelo from "./Components/TipoModelo";
+import TipoModelo from "./Components/Categoria";
 import Main from "./Main";
 
 

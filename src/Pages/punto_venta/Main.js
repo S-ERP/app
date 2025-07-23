@@ -4,7 +4,8 @@ import { SPage, SText, STheme, SView } from 'servisofts-component';
 import Header from './Components/Header';
 import Carrito from './Components/Carrito';
 import Modelo from './Components/Modelo';
-import TipoModelo from './Components/TipoModelo';
+import TipoModelo from './Components/Categoria';
+import Categoria from './Components/Categoria';
 
 
 export default class Main extends Component {
@@ -66,7 +67,8 @@ export default class Main extends Component {
                 </SView>
 
                 <SView col={"xs-8"}   >
-                    <TipoModelo onSelect={this.setTipoKey} selected={this.selectedTipoKey} value={this.searchText} onChangeText={this.setSearchText} />
+                    {/* <TipoModelo onSelect={this.setTipoKey} selected={this.selectedTipoKey} value={this.searchText} onChangeText={this.setSearchText} /> */}
+                    <Categoria onSelect={this.setTipoKey} selected={this.selectedTipoKey} value={this.searchText} onChangeText={this.setSearchText} />
                     <Modelo ref={(ref) => { if (ref) this.modeloRef = ref; }} tipoKey={this.selectedTipoKey} searchText={this.searchText} onPressProducto={(producto) => this.carritoRef?.addProducto(producto)} />
                 </SView>
             </SView>
