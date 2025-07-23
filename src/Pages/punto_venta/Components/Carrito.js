@@ -133,7 +133,28 @@ export default class Carrito extends Component {
         );
     };
 
+    renderSubtotal() {
 
+        const subtotal = this.calcularSubtotal();
+        const totalConIVA = this.calcularTotalConIVA(subtotal);
+        const totalFinal = this.calcularTotalConDescuento(totalConIVA);
+        return (
+            <SView col={"xs-12"} border={STheme.color.card} style={{ borderRadius: 2, padding: 16, marginBottom: 8, }} height={80}>
+                <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
+                    <SText fontSize={13} color={STheme.color.lightGray}>Subtotal:</SText>
+                    <SText fontSize={14} bold color={STheme.color.lightGray}>Bs {SMath.formatMoney(subtotal, 2)}</SText>
+                </SView>
+                <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
+                    <SText fontSize={12} color={STheme.color.lightGray}>Impuesto:</SText>
+                    <SText fontSize={13} color={STheme.color.lightGray}>Sumar Iva13%  Bs {SMath.formatMoney(totalConIVA, 2)}</SText>
+                </SView>
+                <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
+                    <SText fontSize={13} color={STheme.color.lightGray}>Total:</SText>
+                    <SText fontSize={16} bold color={STheme.color.lightGray}>Bs {SMath.formatMoney(totalFinal, 2)}</SText>
+                </SView>
+            </SView>
+        )
+    }
 
     renderTecladoNumerico = () => {
         const style_text = {
@@ -206,7 +227,7 @@ export default class Carrito extends Component {
                             {/* <SIconApp name='deleteAll' width={24} height={24} /> */}
 
                             <SView backgroundColor="purple" style={{ borderRadius: 8, padding: 5, height: 24 }}>
-                                <SText fontSize={12} color={STheme.color.background}>Vaciar</SText>
+                                <SText fontSize={12} color={STheme.color.text}>Vaciar</SText>
                             </SView>
 
                         </SView>
@@ -227,11 +248,12 @@ export default class Carrito extends Component {
                             />
                         </SScrollView2>
 
+
                     </SView>
 
                     <SHr height={20} />
-                    <SText bold>Subtotal: Bs {subtotal.toFixed(2)}</SText>
-                    <SText bold>IVA 15%: Bs {(totalConIVA - subtotal).toFixed(2)}</SText>
+                    {subtotal < 0 ? this.renderSubtotal() : null}
+
 
                     {/* <SView col={"xs-12"} style={{ marginTop: 8 }}>
                         <SText>Descuento VIP (Bs):</SText>
@@ -244,8 +266,6 @@ export default class Carrito extends Component {
                             keyboardType="numeric"
                         />
                     </SView> */}
-
-                    <SText bold>Total con descuento: Bs {totalFinal.toFixed(2)}</SText>
 
                 </SView>
                 {this.renderTecladoNumerico()}
