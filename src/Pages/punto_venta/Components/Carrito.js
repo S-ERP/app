@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
-import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2 } from 'servisofts-component';
+import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import { color } from 'three/examples/jsm/nodes/Nodes';
+import SIconApp from '../../../Assets/SIconApp';
 
 const sinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 
@@ -76,15 +77,58 @@ export default class Carrito extends Component {
     renderItemCarrito = (item) => {
         const src = item.key ? `${SSocket.api.inventario}modelo/.128_${item.key}` : sinFoto;
         return (
-            <SView key={item.key} row style={{ paddingVertical: 4, alignItems: "center" }}>
-                <SImage src={src} style={{ width: 40, height: 40, borderRadius: 4, marginRight: 8 }} />
-                <SText fontSize={12} flex color={"#374151"}>{item.descripcion}</SText>
-                <SView row center>
-                    <SText onPress={() => this.disminuirCantidad(item)} style={{ paddingHorizontal: 8, fontSize: 16, color: "#EF4444" }}>-</SText>
-                    <SText fontSize={12} bold color='blue' style={{ paddingHorizontal: 4 }}>x{item.cantidad}</SText>
-                    <SText onPress={() => this.aumentarCantidad(item)} style={{ paddingHorizontal: 8, fontSize: 16, color: "#10B981" }}>+</SText>
-                    <SText onPress={() => this.eliminarItem(item)} style={{ paddingHorizontal: 8, fontSize: 14, color: "#9CA3AF" }}>🗑</SText>
+            <SView key={item.key} col={"xs-12"} row style={{ paddingVertical: 4, borderBottomWidth: 0.2, borderBottomColor: STheme.color.text }} >
+
+
+                <SView col={"xs-12"} row center>
+                    <SView col={"xs-1"}  >
+                        <SImage src={sinFoto} style={{ width: 32, height: 32, borderRadius: 4, marginRight: 8 }} />
+                    </SView>
+                    <SView col={"xs-4.5"}  >
+                        <SText fontSize={12} flex color={STheme.color.text}>{item.descripcion}</SText>
+                        <SText fontSize={12} flex color={STheme.color.text}>Bs {SMath.formatMoney(item.precio_venta, 2)} / Und</SText>
+                    </SView>
+
+
+
+                    <SView flex row  >
+
+                        {/* <SInput
+                        value={String(item.stock)}
+                        // onChangeText={(text) => this.editarCantidadDirecta(item.key, text)}
+                        keyboardType="numeric"
+                        style={{
+                            width: 40,
+                            height: 24,
+                            padding: 0,
+                            textAlign: "center",
+                            fontSize: 12,
+                            borderWidth: 1,
+                            // borderColor: "#D1D5DB",
+                            borderRadius: 4,
+                            color: "black",
+                        }}
+                    /> */}
+
+
+                        <SView center border={STheme.color.text} style={{ width: 24, height: 24, borderRadius: 12 }} onPress={() => this.disminuirCantidad(item)}>
+                            <SText fontSize={24} color={"#EF4444"}>-</SText>
+                        </SView>
+                        <SView row center style={{ marginHorizontal: 10 }}>
+                            <SInput color={STheme.color.text} value={item.cantidad} border={STheme.color.card} type='number' style={{ width: 40, height: 24, padding: 0, textAlign: "center", fontSize: 12, borderRadius: 4 }}
+                            // onChangeText={(text) => this.editarCantidadDirecta(item.key, text)}
+                            />
+                        </SView>
+                        <SView center border={STheme.color.text} style={{ width: 24, height: 24, borderRadius: 12 }} onPress={() => this.aumentarCantidad(item)}>
+                            <SText fontSize={24} color={"#10B981"}>+</SText>
+                        </SView>
+                    </SView>
+
+                    <SView col={"xs-2"} row center onPress={() => this.eliminarItem(item)} >
+                        <SIconApp name='Close' width={24} height={24} fill='red' />
+                    </SView>
                 </SView>
+
             </SView>
         );
     };
@@ -155,12 +199,20 @@ export default class Carrito extends Component {
                     flex
                     style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
                 >
-                    <SView row justifyContent='space-between' alignItems='center' style={{ marginBottom: 8 }}>
-                        <SText fontSize={14} bold color={STheme.color.text + "99"}>Orden Actual</SText>
-                        <SText onPress={this.vaciarCarrito} fontSize={12} color={"#EF4444"}>Vaciar 🧹</SText>
-                    </SView>
+                    <SView col={"xs-12"} row style={{ marginBottom: 8 }} >
+                        <SView flex row  >
+                            <SText fontSize={14} bold color={STheme.color.text + "99"}>Orden Actual</SText>
+                        </SView>
 
-                    {/* <SView flex> */}
+                        <SView col={"xs-1"} row center onPress={() => this.vaciarCarrito()} >
+                            <SIconApp name='deleteAll' width={24} height={24} />
+
+                            {/* <SView backgroundColor="purple" style={{ borderRadius: 8, padding: 5, height: 24 }}>
+                                <SText fontSize={12} color={STheme.color.background}>Vaciar</SText>
+                            </SView> */}
+
+                        </SView>
+                    </SView>
 
                     <SView col={"xs-12"} flex center backgroundColor='transparent'>
                         <SScrollView2 disableHorizontal>
