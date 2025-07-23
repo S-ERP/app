@@ -193,23 +193,21 @@ export default class Carrito extends Component {
         return (
             <>
                 <SView
-                    // border={STheme.color.card}
                     backgroundColor={STheme.color.background}
-                    // height={500}
                     flex
                     style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
                 >
                     <SView col={"xs-12"} row style={{ marginBottom: 8 }} >
                         <SView flex row  >
-                            <SText fontSize={14} bold color={STheme.color.text + "99"}>Orden Actual</SText>
+                            <SText fontSize={16} bold color={STheme.color.text}>Orden Actual</SText>
                         </SView>
 
                         <SView col={"xs-1"} row center onPress={() => this.vaciarCarrito()} >
-                            <SIconApp name='deleteAll' width={24} height={24} />
+                            {/* <SIconApp name='deleteAll' width={24} height={24} /> */}
 
-                            {/* <SView backgroundColor="purple" style={{ borderRadius: 8, padding: 5, height: 24 }}>
+                            <SView backgroundColor="purple" style={{ borderRadius: 8, padding: 5, height: 24 }}>
                                 <SText fontSize={12} color={STheme.color.background}>Vaciar</SText>
-                            </SView> */}
+                            </SView>
 
                         </SView>
                     </SView>
@@ -235,7 +233,7 @@ export default class Carrito extends Component {
                     <SText bold>Subtotal: Bs {subtotal.toFixed(2)}</SText>
                     <SText bold>IVA 15%: Bs {(totalConIVA - subtotal).toFixed(2)}</SText>
 
-                    <SView col={"xs-12"} style={{ marginTop: 8 }}>
+                    {/* <SView col={"xs-12"} style={{ marginTop: 8 }}>
                         <SText>Descuento VIP (Bs):</SText>
                         <SInput
                             value={this.descuentoManual}
@@ -245,7 +243,7 @@ export default class Carrito extends Component {
                             }}
                             keyboardType="numeric"
                         />
-                    </SView>
+                    </SView> */}
 
                     <SText bold>Total con descuento: Bs {totalFinal.toFixed(2)}</SText>
 
