@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { FlatList } from 'react-native';
 import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath, SButtom, SNotification, SNavigation } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
-import { color } from 'three/examples/jsm/nodes/Nodes';
 import SIconApp from '../../../Assets/SIconApp';
 import Model from '../../../Model';
 import FotoCliente from './Foto/FotoCliente';
@@ -16,10 +15,20 @@ export default class Carrito extends Component {
     showPaymentModal = false;
     data = {};
     amountReceived = "";
+
+
+
     addProducto = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
-        if (index >= 0) this.carrito[index].cantidad += 1;
+
+        if (index >= 0) {
+            this.carrito[index].cantidad += 1;
+            this.carrito[index].stock = producto.stock;
+
+            }
         else this.carrito.push({ ...producto, cantidad: 1 });
+
+
         this.forceUpdate();
     };
 
@@ -29,6 +38,9 @@ export default class Carrito extends Component {
             const success = this.props.onModificarStock?.(producto.key, -1);
             if (success === false) return alert("No hay más stock disponible");
             this.carrito[index].cantidad += 1;
+
+            this.carrito[index].stock -= 1;
+
             this.forceUpdate();
         }
     };
@@ -37,10 +49,14 @@ export default class Carrito extends Component {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
             this.carrito[index].cantidad -= 1;
+            this.carrito[index].stock += 1;
+
             this.props.onModificarStock?.(producto.key, +1);
             if (this.carrito[index].cantidad <= 0) this.carrito.splice(index, 1);
             this.forceUpdate();
         }
+
+
     };
 
     eliminarItem = (producto) => {
@@ -76,6 +92,10 @@ export default class Carrito extends Component {
         this.descuentoManual = val;
         this.forceUpdate();
     };
+
+    getProductoActualizado = (key) => {
+        return this.props.modelos?.find(p => p.key === key) ?? {};
+    }
 
     renderPaymentModal = () => {
         if (!this.showPaymentModal) return null;
@@ -220,6 +240,9 @@ export default class Carrito extends Component {
 
     renderItemCarrito = (item) => {
         const src = item.key ? `${SSocket.api.inventario}modelo/.128_${item.key}` : sinFoto;
+
+
+
         return (
             <SView key={item.key} col={"xs-12"} row style={{ paddingVertical: 4, borderBottomWidth: 0.2, borderBottomColor: STheme.color.text }} >
 
@@ -233,6 +256,8 @@ export default class Carrito extends Component {
                     <SView col={"xs-4.5"}  >
                         <SText fontSize={12} flex color={STheme.color.text}>{item.descripcion}</SText>
                         <SText fontSize={12} flex color={STheme.color.text}>Bs {SMath.formatMoney(item.precio_venta, 2)} / Und</SText>
+                         <SText fontSize={12}>Stock actual: {item.stock}</SText>
+
                     </SView>
 
 
@@ -367,14 +392,8 @@ export default class Carrito extends Component {
                 <SView col={"xs-4"}>
                     <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2, }} >
                         <SView row center onPress={() => { this.seleccionarCliente() }}     >
-
                             <SView center backgroundColor={STheme.color.background} style={{ width: 30, height: 30, borderRadius: 18, margin: 4, marginRight: (key_cliente ? 6 : 14), overflow: "hidden", }}>
-
-
                                 <FotoCliente data={cliente} ></FotoCliente>
-
-
-
                             </SView>
                             <SView>
                                 <SText style={{ ...style_text, fontSize: 12 }}>{nombres || "Cliente"}</SText>
@@ -389,18 +408,14 @@ export default class Carrito extends Component {
                         // this.forceUpdate();
 
 
-                        const datos = this.dataFormateada({
-                            carrito: this.carrito,
-                            cliente: this.data?.cliente,
-                            vendedor: Model.usuario.Action.getUsuarioLog(),
-                        });
-
+                        const datos = this.dataFormateada({ carrito: this.carrito, cliente: this.data?.cliente, vendedor: Model.usuario.Action.getUsuarioLog() });
                         console.log("🧾 Venta Formateada:");
                         console.log(JSON.stringify(datos, null, 2));
 
                     }}  >
-                        <SText bold style={style_text, { textTransform: 'uppercase' }} >pagar</SText>
-                    </SView>
+                        <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagar</SText>
+
+                     </SView>
                 </SView>
 
                 <SView col={"xs-8"}>
@@ -430,7 +445,7 @@ export default class Carrito extends Component {
 
 
 
-                {!subtotal > 0 ?
+                {subtotal <= 0 ?
                     <SView backgroundColor={STheme.color.background} flex center style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
                     >
 
