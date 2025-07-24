@@ -6,6 +6,7 @@ import SIconApp from '../../../Assets/SIconApp';
 import Model from '../../../Model';
 import FotoCliente from './Foto/FotoCliente';
 import FotoModelo from './Foto/FotoModelo';
+import CarritoItem from './Carrito/CarritoItem';
 
 const sinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 
@@ -25,7 +26,7 @@ export default class Carrito extends Component {
             this.carrito[index].cantidad += 1;
             this.carrito[index].stock = producto.stock;
 
-            }
+        }
         else this.carrito.push({ ...producto, cantidad: 1 });
 
 
@@ -237,8 +238,17 @@ export default class Carrito extends Component {
         );
     };
 
+    renderItemCarrito = ({ item }) => (
+        <CarritoItem
+            item={item}
+            onAumentar={() => this.aumentarCantidad(item)}
+            onDisminuir={() => this.disminuirCantidad(item)}
+            onEliminar={() => this.eliminarItem(item)}
+        />
+    );
 
-    renderItemCarrito = (item) => {
+
+    renderItemCarrito2222222 = (item) => {
         const src = item.key ? `${SSocket.api.inventario}modelo/.128_${item.key}` : sinFoto;
 
 
@@ -256,7 +266,7 @@ export default class Carrito extends Component {
                     <SView col={"xs-4.5"}  >
                         <SText fontSize={12} flex color={STheme.color.text}>{item.descripcion}</SText>
                         <SText fontSize={12} flex color={STheme.color.text}>Bs {SMath.formatMoney(item.precio_venta, 2)} / Und</SText>
-                         <SText fontSize={12}>Stock actual: {item.stock}</SText>
+                        <SText fontSize={12}>Stock actual: {item.stock}</SText>
 
                     </SView>
 
@@ -415,7 +425,7 @@ export default class Carrito extends Component {
                     }}  >
                         <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagar</SText>
 
-                     </SView>
+                    </SView>
                 </SView>
 
                 <SView col={"xs-8"}>
@@ -481,19 +491,19 @@ export default class Carrito extends Component {
                         <SView col={"xs-12"} flex center backgroundColor='transparent'>
                             <SScrollView2 disableHorizontal>
 
+
                                 <FlatList
                                     data={this.carrito}
                                     keyExtractor={(item) => item.key.toString()}
-                                    renderItem={({ item }) => this.renderItemCarrito(item)}
-                                // ListEmptyComponent={
-                                //     <SView col={"xs-12"} row center center backgroundColor='transparent'>
-                                //         <SView row center backgroundColor='transparent' >
-                                //             <SIconApp name='carritoproducto' height={50} fill={STheme.color.card} />
-                                //             <SText fontSize={12} color={STheme.color.card}>Comience a agregar productos</SText>
-                                //         </SView>
-                                //     </SView>
-                                // }
+                                    renderItem={this.renderItemCarrito}
                                 />
+
+
+                                {/* <FlatList
+                                    data={this.carrito}
+                                    keyExtractor={(item) => item.key.toString()}
+                                    renderItem={({ item }) => this.renderItemCarrito(item)}
+                                /> */}
                             </SScrollView2>
 
 
