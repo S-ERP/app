@@ -122,7 +122,7 @@ export default class Carrito extends Component {
             >
                 <SView
                     width={400}
-                    height={460}
+                    height={320}
                     backgroundColor={STheme.color.background}
                     style={{
                         borderRadius: 12,
@@ -134,9 +134,8 @@ export default class Carrito extends Component {
                         elevation: 6,
                     }}
                 >
-                    <SText fontSize={20} bold center style={{ marginBottom: 24 }}>
-                        💰 Confirmar Pago
-                    </SText>
+                    <SText fontSize={20} bold center  >  Confirmar Pago    </SText>
+                    <SView height={20} />
 
                     <SView row style={{ justifyContent: "space-between", marginBottom: 12 }}>
                         <SText fontSize={16} color={STheme.color.text}>Total a Pagar:</SText>
@@ -145,7 +144,7 @@ export default class Carrito extends Component {
                         </SText>
                     </SView>
 
-                    <SView style={{ marginBottom: 20 }}>
+                    <SView row borderColor={"transparent"} >
                         <SText fontSize={14} color={STheme.color.text}>Monto Recibido:</SText>
                         <SInput
                             value={this.amountReceived}
@@ -153,7 +152,8 @@ export default class Carrito extends Component {
                                 this.amountReceived = text;
                                 this.forceUpdate();
                             }}
-                            keyboardType="numeric"
+                            type='number'
+                            // keyboardType="numeric"
                             placeholder="Ej. 100.00"
                             style={{
                                 height: 48,
@@ -161,14 +161,17 @@ export default class Carrito extends Component {
                                 textAlign: "center",
                                 borderWidth: 1,
                                 borderColor: STheme.color.card,
-                                borderRadius: 8,
+                                borderRadius: 4,
                                 marginTop: 8,
                                 color: STheme.color.text,
+                                backgroundColor: "transparent"
                             }}
                         />
                     </SView>
+                    <SView height={20} />
 
-                    <SView row style={{ justifyContent: "space-between", marginBottom: 20 }}>
+
+                    <SView row style={{ justifyContent: "space-between", marginBottom: 40 }}>
                         <SText fontSize={16} color={STheme.color.text}>Cambio:</SText>
                         <SText fontSize={18} bold color={change >= 0 ? STheme.color.success : STheme.color.danger}>
                             Bs {SMath.formatMoney(change, 2)}
@@ -177,16 +180,18 @@ export default class Carrito extends Component {
 
                     <SView row style={{ justifyContent: "space-around" }}>
                         <SButtom
+                            // width={70}
                             onPress={() => {
                                 this.showPaymentModal = false;
                                 this.amountReceived = "";
                                 this.forceUpdate();
                             }}
                             style={{
-                                backgroundColor: STheme.color.gray,
+                                backgroundColor: STheme.color.lightGray,
                                 paddingVertical: 12,
                                 paddingHorizontal: 24,
-                                borderRadius: 8,
+                                borderRadius: 4,
+                                width: 150
                             }}
                         >
                             <SText color={STheme.color.text}>Cancelar</SText>
@@ -195,10 +200,11 @@ export default class Carrito extends Component {
                         <SButtom
                             onPress={handleConfirmarPago}
                             style={{
-                                backgroundColor: STheme.color.primary,
+                                backgroundColor: STheme.color.text,
                                 paddingVertical: 12,
                                 paddingHorizontal: 24,
-                                borderRadius: 8,
+                                borderRadius: 4,
+                                width: 150
                             }}
                         >
                             <SText color={STheme.color.white}>Confirmar Pago</SText>
