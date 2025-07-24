@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SInput, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SImage, SInput, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import SIconApp from '../../../Assets/SIconApp';
+import SSocket from 'servisofts-socket';
+import Model from '../../../Model';
 
 class Header extends Component {
     constructor(props) {
@@ -10,6 +12,10 @@ class Header extends Component {
     }
 
     render() {
+        let usuario = Model.usuario.Action.getUsuarioLog();
+        let empresa = Model.empresa.Action.getSelect();
+
+        // console.log("usuario " + JSON.stringify(empresa))
         return (
             <SView col={"xs-12"} row center height={60} backgroundColor={STheme.color.background} style={{ borderBottomWidth: 1, borderColor: STheme.color.card, }}  >
 
@@ -28,17 +34,30 @@ class Header extends Component {
                 </SView>
 
 
-                <SView col={"xs-2"}  ><SText fontSize={24} bold color={STheme.color.text} style={{ letterSpacing: -0.5 }}>Servisofts</SText> </SView>
+                <SView col={"xs-2"} row >
+                    <SIconApp name="empresa" width={24} height={24} fill={STheme.color.text} />
+                    <SText fontSize={24} bold color={STheme.color.text} style={{ letterSpacing: -0.5, textTransform: "uppercase" }}> {empresa.razon_social}</SText></SView>
 
                 <SView flex />
 
                 <SView col={"xs-4"} row center style={{ justifyContent: "flex-end" }}  >
-                    <SView style={{ marginRight: 26 }}> <SIconApp name="Wifi" width={20} height={20} fill={"#6B7280"} /> </SView>
+                    <SView style={{ marginRight: 26 }}> <SIconApp name="Wifi" width={20} height={20} fill={"#19b121ff"} /> </SView>
+
+
                     <SView style={{ marginRight: 16 }} row center>
-                        <SView center backgroundColor={"blue"} style={{ width: 32, height: 32, borderRadius: 16, marginRight: 8 }} ><SText fontSize={12} bold color={"white"}> AS </SText> </SView>
-                        <SText fontSize={14} color={STheme.color.text}> Alvaro Siles </SText>
+
+
+                        <SView center backgroundColor={"blue"} style={{ width: 32, height: 32, borderRadius: 16, marginRight: 8, overflow: "hidden", }} >
+                            <SImage src={SSocket.api.root + "usuario/" + usuario.key} style={{ resizeMode: "cover" }} />
+                        </SView>
+
+
+                        <SText fontSize={14} color={STheme.color.text}> {usuario.Nombres + " " + usuario.Apellidos} </SText>
                     </SView>
-                    <SView style={{ marginRight: 16, top: 6 }} row center > <SIconApp name="Menu2"   width={24} height={24} stroke={STheme.color.text} fill={STheme.color.text} /> </SView>
+
+
+
+                    <SView style={{ marginRight: 16, top: 6 }} row center > <SIconApp name="Menu2" width={24} height={24} stroke={STheme.color.text} fill={STheme.color.text} /> </SView>
                 </SView>
             </SView>
         );
