@@ -291,15 +291,13 @@ export default class Carrito extends Component {
                     nombres: obj.nombres
                 }
                 this.data.cliente = cliente;
-                this.forceUpdate(); // 👈 Asegura el re-render
+                this.forceUpdate();
 
             }
         })
     }
 
     renderTecladoNumerico = () => {
-
-        // const { key_cliente, nombre_completo, telefono } = this.data.cliente ?? {};
         const { nombre_completo, key_cliente, nombres } = this.data.cliente ?? {};
 
         const style_text = {
