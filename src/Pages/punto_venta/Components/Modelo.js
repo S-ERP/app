@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { SImage, SMath, SScrollView2, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
+import FotoModelo from './FotoModelo';
 
 // const productSinFoto = 'https://batabolivia.vtexassets.com/arquivos/ids/197509-800-auto?v=638309092795330000&width=800&height=auto&aspect=true';
 const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
@@ -62,8 +63,8 @@ export default class Modelo extends Component {
 
 
     renderModelos() {
-        // const modelos = this.modelos || [];
-        const modelos = listaProductoTest;
+        const modelos = this.modelos || [];
+        // const modelos = listaProductoTest;
         const tipoKey = this.props.tipoKey;
 
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
@@ -79,6 +80,8 @@ export default class Modelo extends Component {
                         <SView col={"xs-12"} row backgroundColor="transparent" padding={5}>
                             {productosFiltrados.map((producto, index) => {
                                 const src = producto.key ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}` : productSinFoto;
+
+                                console.log("puta " + src)
 
                                 return (
                                     <SView
@@ -102,16 +105,8 @@ export default class Modelo extends Component {
                                             this.props.onPressProducto?.(producto); // ⬅️ Lo pasa al carrito
                                         }}
                                     >
-                                        <SView center style={{ marginBottom: 12 }}   >
-                                            <SImage
-                                                // src={productSinFoto}
-                                                src={src || productSinFoto}
-                                                style={{
-                                                    // width: 120,
-                                                    height: 120,
-                                                }}
-                                                resizeMode="cover"
-                                            />
+                                        <SView center style={{ marginBottom: 12, height: 120}}>
+                                            <FotoModelo data={producto} ></FotoModelo>
                                         </SView>
 
 

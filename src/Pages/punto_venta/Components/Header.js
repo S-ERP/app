@@ -4,6 +4,7 @@ import { SImage, SInput, SNavigation, SText, STheme, SView } from 'servisofts-co
 import SIconApp from '../../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
+import FotoUsuario from './FotoUsuario';
 
 export default class Header extends Component {
     constructor(props) {
@@ -39,7 +40,11 @@ export default class Header extends Component {
                     <SView style={{ marginRight: 26 }}> <SIconApp name="Wifi" width={20} height={20} fill={"#19b121ff"} /> </SView>
                     <SView style={{ marginRight: 16 }} row center>
                         <SView center backgroundColor={"blue"} style={{ width: 32, height: 32, borderRadius: 16, marginRight: 8, overflow: "hidden", }} >
-                            <SImage src={SSocket.api.root + "usuario/" + usuario.key} style={{ resizeMode: "cover" }} />
+
+                            <FotoUsuario data={usuario} />
+
+                            {/* <SImage src={SSocket.api.root + "usuario/" + usuario.key} style={{ resizeMode: "cover" }} /> */}
+                            {/* <SImage src={SSocket.api.root + "usuario/" + usuario.key} style={{ resizeMode: "cover" }} /> */}
                         </SView>
                         <SText fontSize={14} color={STheme.color.text}> {usuario.Nombres + " " + usuario.Apellidos}</SText>
                     </SView>

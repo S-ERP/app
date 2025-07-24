@@ -5,6 +5,8 @@ import SSocket from 'servisofts-socket';
 import { color } from 'three/examples/jsm/nodes/Nodes';
 import SIconApp from '../../../Assets/SIconApp';
 import Model from '../../../Model';
+import FotoCliente from './FotoCliente';
+import FotoModelo from './FotoModelo';
 
 const sinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 
@@ -12,8 +14,8 @@ export default class Carrito extends Component {
     carrito = [];
     descuentoManual = "";
     showPaymentModal = false;
-    data = {}
-
+    data = {};
+    amountReceived = "";
     addProducto = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) this.carrito[index].cantidad += 1;
@@ -64,7 +66,6 @@ export default class Carrito extends Component {
 
     handleCalculatorPress = (tecla) => {
         let val = this.descuentoManual || "";
-
         switch (tecla) {
             case "<": val = val.slice(0, -1); break;
             case "+/-": val = val.startsWith("-") ? val.slice(1) : "-" + val; break;
@@ -72,7 +73,6 @@ export default class Carrito extends Component {
             case "Cant": case "% de desc.": case "Precio": return;
             default: if (/^\d$/.test(tecla)) val += tecla;
         }
-
         this.descuentoManual = val;
         this.forceUpdate();
     };
@@ -225,8 +225,10 @@ export default class Carrito extends Component {
 
 
                 <SView col={"xs-12"} row center>
-                    <SView col={"xs-1"}  >
-                        <SImage src={sinFoto} style={{ width: 32, height: 32, borderRadius: 4, marginRight: 8 }} />
+                    <SView col={"xs-1"}>
+                        <SView center backgroundColor={STheme.color.background} style={{ width: 30, height: 30, borderRadius: 18, margin: 4, marginRight: (8), overflow: "hidden", }}>
+                            <FotoModelo data={item} ></FotoModelo>
+                        </SView>
                     </SView>
                     <SView col={"xs-4.5"}  >
                         <SText fontSize={12} flex color={STheme.color.text}>{item.descripcion}</SText>
@@ -283,12 +285,12 @@ export default class Carrito extends Component {
     seleccionarCliente() {
         SNavigation.navigate("/cliente", {
             onSelect: (obj) => {
-
                 var cliente = {
                     nombre_completo: obj.nombres + " " + obj.apellidos,
                     telefono: obj.telefono,
                     key_cliente: obj.key,
-                    nombres: obj.nombres
+                    nombres: obj.nombres,
+                    key: obj.key,
                 }
                 this.data.cliente = cliente;
                 this.forceUpdate();
@@ -298,7 +300,10 @@ export default class Carrito extends Component {
     }
 
     renderTecladoNumerico = () => {
-        const { nombre_completo, key_cliente, nombres } = this.data.cliente ?? {};
+
+        const cliente = this.data.cliente ?? {};
+        const { nombre_completo, key_cliente, nombres } = cliente;
+
 
         const style_text = {
             color: STheme.color.text,
@@ -314,24 +319,23 @@ export default class Carrito extends Component {
             ["+/-", "0", ".", "<"]
         ];
 
-        const imagennn = JSON.stringify(SSocket.api)  + "/cliente/" + key_cliente;
-
-
-        console.log("mirame " + imagennn)
-        // console.log("mirame " + JSON.stringify(this.data.cliente))
         return (
             <SView col={"xs-12"} row color={STheme.color.danger}>
                 <SView col={"xs-4"}>
                     <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2, }} >
                         <SView row center onPress={() => { this.seleccionarCliente() }}     >
+
                             <SView center backgroundColor={STheme.color.background} style={{ width: 30, height: 30, borderRadius: 18, margin: 4, marginRight: (key_cliente ? 6 : 14), overflow: "hidden", }}>
-                                {/* {key_cliente ? <SImage src={"https://https://crm.servisofts.com/http/cliente.servisofts.com/http/cliente/" + key_cliente} style={{ resizeMode: "cover" }} /> : <SIconApp name='profile2' width={20} fill={STheme.color.text} />} */}
-                                {key_cliente ? <SImage src={SSocket.api.crm + "/cliente/" + key_cliente} style={{ resizeMode: "cover" }} /> :<SIconApp name='profile2' width={20} fill={STheme.color.text}/>}
+
+
+                                <FotoCliente data={cliente} ></FotoCliente>
+
+
 
                             </SView>
                             <SView>
                                 <SText style={{ ...style_text, fontSize: 12 }}>{nombres || "Cliente"}</SText>
-                                {key_cliente ? <SText style={style_text, { fontSize: 12, color: "#26e9aeff" }}>Cliente Vip</SText> : null}
+                                {key_cliente ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente Vip</SText> : null}
                             </SView>
                         </SView>
                     </SView>
