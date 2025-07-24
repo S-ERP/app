@@ -5,8 +5,8 @@ import SSocket from 'servisofts-socket';
 import { color } from 'three/examples/jsm/nodes/Nodes';
 import SIconApp from '../../../Assets/SIconApp';
 import Model from '../../../Model';
-import FotoCliente from './FotoCliente';
-import FotoModelo from './FotoModelo';
+import FotoCliente from './Foto/FotoCliente';
+import FotoModelo from './Foto/FotoModelo';
 
 const sinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 
@@ -286,11 +286,11 @@ export default class Carrito extends Component {
         SNavigation.navigate("/cliente", {
             onSelect: (obj) => {
                 var cliente = {
-                    nombre_completo: obj.nombres + " " + obj.apellidos,
-                    telefono: obj.telefono,
-                    key_cliente: obj.key,
-                    nombres: obj.nombres,
                     key: obj.key,
+                    nombres: obj.nombres ?? "",
+                    apellidos: obj.apellidos ?? "",
+                    telefono: obj.telefono ?? "",
+                    nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
                 }
                 this.data.cliente = cliente;
                 this.forceUpdate();
@@ -298,6 +298,49 @@ export default class Carrito extends Component {
             }
         })
     }
+
+    dataFormateada({ carrito = [], cliente = null, vendedor = null }) {
+        const carritoFormateado = carrito.map(item => ({
+            key: item.key,
+            descripcion: item.descripcion,
+            precio_compra: item.precio_compra ?? 0,
+            precio_venta: item.precio_venta ?? 0,
+            stock: item.stock ?? 0,
+            cantidad: item.cantidad ?? 0,
+            key_marca: item.key_marca ?? null,
+            marca_descripcion: item.marca?.descripcion ?? null,
+            key_tipo_producto: item.key_tipo_producto ?? null,
+            tipo_producto: item.tipo_producto?.descripcion ?? null,
+        }));
+
+        const clienteFormateado = cliente ? {
+            key: cliente.key ?? null,
+            nombre_completo: cliente.nombre_completo ?? `${cliente.nombres ?? ""} ${cliente.apellidos ?? ""}`.trim(),
+            telefono: cliente.telefono ?? null,
+        } : null;
+
+        const vendedorFormateado = vendedor ? {
+            key: vendedor.key ?? null,
+            nombre_completo: `${vendedor.Nombres ?? ""} ${vendedor.Apellidos ?? ""}`.trim(),
+            correo: vendedor.Correo ?? null,
+            telefono: vendedor.Telefono ?? null,
+        } : null;
+
+        return {
+            carrito: carritoFormateado,
+            cliente: clienteFormateado,
+            vendedor: vendedorFormateado,
+        };
+    }
+
+    dataSinFormateada({ carrito = [], cliente = null, vendedor = null }) {
+        return {
+            carrito,
+            cliente,
+            vendedor,
+        };
+    }
+
 
     renderTecladoNumerico = () => {
 
@@ -342,8 +385,19 @@ export default class Carrito extends Component {
 
 
                     <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2, }} onPress={() => {
-                        this.showPaymentModal = true;
-                        this.forceUpdate();
+                        // this.showPaymentModal = true;
+                        // this.forceUpdate();
+
+
+                        const datos = this.dataFormateada({
+                            carrito: this.carrito,
+                            cliente: this.data?.cliente,
+                            vendedor: Model.usuario.Action.getUsuarioLog(),
+                        });
+
+                        console.log("🧾 Venta Formateada:");
+                        console.log(JSON.stringify(datos, null, 2));
+
                     }}  >
                         <SText bold style={style_text, { textTransform: 'uppercase' }} >pagar</SText>
                     </SView>

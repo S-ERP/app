@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 import { SImage, SMath, SScrollView2, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
-import FotoModelo from './FotoModelo';
+import FotoModelo from './Foto/FotoModelo';
 
 // const productSinFoto = 'https://batabolivia.vtexassets.com/arquivos/ids/197509-800-auto?v=638309092795330000&width=800&height=auto&aspect=true';
 const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';

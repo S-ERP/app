@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { SImage, STheme } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
-import SIconApp from '../../../Assets/SIconApp';
+import SIconApp from '../../../../Assets/SIconApp';
 const sinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 
 export default class FotoModelo extends Component {
