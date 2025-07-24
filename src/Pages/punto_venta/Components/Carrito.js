@@ -4,6 +4,7 @@ import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath, SButtom
 import SSocket from 'servisofts-socket';
 import { color } from 'three/examples/jsm/nodes/Nodes';
 import SIconApp from '../../../Assets/SIconApp';
+import Model from '../../../Model';
 
 const sinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 
@@ -279,6 +280,11 @@ export default class Carrito extends Component {
     }
 
     renderTecladoNumerico = () => {
+
+        let usuario = Model.usuario.Action.getUsuarioLog();
+
+        console.log("ssa " + JSON.stringify(usuario))
+
         const style_text = {
             color: STheme.color.text,
             fontSize: 12,
@@ -298,10 +304,13 @@ export default class Carrito extends Component {
                 <SView col={"xs-4"}>
                     <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2, }} >
                         <SView row center  >
-                            <SView center backgroundColor={"#ab05ddff"} style={{ width: 28, height: 28, borderRadius: 18, margin: 12 }}>
-                                <SText fontSize={14} bold  >AO</SText>
+                            <SView center backgroundColor={"#ab05ddff"} style={{ width: 28, height: 28, borderRadius: 18, margin: 12, overflow: "hidden", }}>
+                                <SImage src={SSocket.api.root + "usuario/" + usuario.key} style={{ resizeMode: "cover" }} />
                             </SView>
-                            <SView> <SText style={style_text}  >Anita Oliver</SText> <SText style={style_text}  >Cliente Vip</SText> </SView>
+                            <SView>
+                                <SText style={style_text}>{usuario.Nombres + " " + usuario.Apellidos}</SText>
+                                <SText style={style_text, { fontSize: 12, color: "#26e9aeff" }}   >Cliente Vip</SText>
+                            </SView>
                         </SView>
                     </SView>
 
@@ -310,7 +319,7 @@ export default class Carrito extends Component {
                         this.showPaymentModal = true;
                         this.forceUpdate();
                     }}  >
-                        <SText style={style_text} >pagar</SText>
+                        <SText bold style={style_text, { textTransform: 'uppercase' }} >pagar</SText>
                     </SView>
                 </SView>
 
