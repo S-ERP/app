@@ -55,7 +55,7 @@ export default class Main extends Component {
                 </SView>
 
                 <SView col={"xs-8"}   >
-                     <Categoria onSelect={this.setTipoKey} selected={this.selectedTipoKey} value={this.searchText} onChangeText={this.setSearchText} />
+                    <Categoria onSelect={this.setTipoKey} selected={this.selectedTipoKey} value={this.searchText} onChangeText={this.setSearchText} />
                     <Modelo ref={(ref) => { if (ref) this.modeloRef = ref; }} tipoKey={this.selectedTipoKey} searchText={this.searchText} onPressProducto={(producto) => this.carritoRef?.addProducto(producto)} />
                 </SView>
             </SView>

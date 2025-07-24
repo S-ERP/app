@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
-import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath, SButtom, SNotification } from 'servisofts-component';
+import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath, SButtom, SNotification, SNavigation } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import { color } from 'three/examples/jsm/nodes/Nodes';
 import SIconApp from '../../../Assets/SIconApp';
@@ -12,6 +12,7 @@ export default class Carrito extends Component {
     carrito = [];
     descuentoManual = "";
     showPaymentModal = false;
+    data = {}
 
     addProducto = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
@@ -279,11 +280,27 @@ export default class Carrito extends Component {
         )
     }
 
+    seleccionarCliente() {
+        SNavigation.navigate("/cliente", {
+            onSelect: (obj) => {
+
+                var cliente = {
+                    nombre_completo: obj.nombres + " " + obj.apellidos,
+                    telefono: obj.telefono,
+                    key_cliente: obj.key,
+                    nombres: obj.nombres
+                }
+                this.data.cliente = cliente;
+                this.forceUpdate(); // 👈 Asegura el re-render
+
+            }
+        })
+    }
+
     renderTecladoNumerico = () => {
 
-        let usuario = Model.usuario.Action.getUsuarioLog();
-
-        console.log("ssa " + JSON.stringify(usuario))
+        // const { key_cliente, nombre_completo, telefono } = this.data.cliente ?? {};
+        const { nombre_completo, key_cliente, nombres } = this.data.cliente ?? {};
 
         const style_text = {
             color: STheme.color.text,
@@ -299,17 +316,25 @@ export default class Carrito extends Component {
             ["+/-", "0", ".", "<"]
         ];
 
+
+
+        // console.log("mirame " + JSON.stringify(this.data.cliente))
         return (
             <SView col={"xs-12"} row color={STheme.color.danger}>
                 <SView col={"xs-4"}>
                     <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2, }} >
-                        <SView row center  >
-                            <SView center backgroundColor={"#ab05ddff"} style={{ width: 28, height: 28, borderRadius: 18, margin: 12, overflow: "hidden", }}>
-                                <SImage src={SSocket.api.root + "usuario/" + usuario.key} style={{ resizeMode: "cover" }} />
+                        <SView row center onPress={() => { this.seleccionarCliente() }}     >
+                            <SView center backgroundColor={STheme.color.background} style={{ width: 30, height: 30, borderRadius: 18, margin: 4, marginRight: (key_cliente ? 6: 14), overflow: "hidden", }}>
+
+                                {key_cliente ?
+                                    <SImage src={SSocket.api.root + "usuario/" + key_cliente} style={{ width: 30, height: 30, borderRadius: 15, resizeMode: "cover" }} /> : <SIconApp name='profile2' width={20} fill={STheme.color.text} />
+                                }
+
+                                {/* {key_cliente ? <SImage src={SSocket.api.root + "usuario/" + key_cliente} style={{ resizeMode: "cover" }} /> : <SIconApp name='profile2' width={20} fill={STheme.color.text} />} */}
                             </SView>
                             <SView>
-                                <SText style={style_text}>{usuario.Nombres + " " + usuario.Apellidos}</SText>
-                                <SText style={style_text, { fontSize: 12, color: "#26e9aeff" }}   >Cliente Vip</SText>
+                                <SText style={{ ...style_text, fontSize: 12 }}>{nombres || "Cliente"}</SText>
+                                {key_cliente ? <SText style={style_text, { fontSize: 12, color: "#26e9aeff" }}>Cliente Vip</SText> : null}
                             </SView>
                         </SView>
                     </SView>
