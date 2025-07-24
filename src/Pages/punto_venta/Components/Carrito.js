@@ -316,8 +316,10 @@ export default class Carrito extends Component {
             ["+/-", "0", ".", "<"]
         ];
 
+        const imagennn = JSON.stringify(SSocket.api)  + "/cliente/" + key_cliente;
 
 
+        console.log("mirame " + imagennn)
         // console.log("mirame " + JSON.stringify(this.data.cliente))
         return (
             <SView col={"xs-12"} row color={STheme.color.danger}>
@@ -325,8 +327,8 @@ export default class Carrito extends Component {
                     <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2, }} >
                         <SView row center onPress={() => { this.seleccionarCliente() }}     >
                             <SView center backgroundColor={STheme.color.background} style={{ width: 30, height: 30, borderRadius: 18, margin: 4, marginRight: (key_cliente ? 6 : 14), overflow: "hidden", }}>
-                                {key_cliente ?<SImage src={"https://crm.servisofts.com/http/cliente/" + key_cliente} style={{ resizeMode: "cover" }} />:<SIconApp name='profile2' width={20} fill={STheme.color.text}/>}
-                                {/* {key_cliente ? <SImage src={SSocket.api.root + "cliente/" + key_cliente} style={{ resizeMode: "cover" }} /> :<SIconApp name='profile2' width={20} fill={STheme.color.text}/>} */}
+                                {/* {key_cliente ? <SImage src={"https://https://crm.servisofts.com/http/cliente.servisofts.com/http/cliente/" + key_cliente} style={{ resizeMode: "cover" }} /> : <SIconApp name='profile2' width={20} fill={STheme.color.text} />} */}
+                                {key_cliente ? <SImage src={SSocket.api.crm + "/cliente/" + key_cliente} style={{ resizeMode: "cover" }} /> :<SIconApp name='profile2' width={20} fill={STheme.color.text}/>}
 
                             </SView>
                             <SView>
