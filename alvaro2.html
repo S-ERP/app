@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo de Productos</title>
+    <title>RickyPazd - Sistema Empresarial de Ventas</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,104 +14,771 @@
             box-sizing: border-box;
         }
 
+        :root {
+            /* Dark Theme Professional Colors */
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --secondary-color: #6b7280;
+            --accent-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            /* Dark Backgrounds */
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --bg-quaternary: #475569;
+            --bg-surface: #1e293b;
+            --bg-elevated: #334155;
+            /* Dark Text Colors */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --text-disabled: #64748b;
+            /* Border Colors */
+            --border-primary: #334155;
+            --border-secondary: #475569;
+            --border-accent: #3b82f6;
+            /* Shadows for Dark Theme */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6), 0 10px 10px -5px rgb(0 0 0 / 0.3);
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            /* Spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            padding: 20px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #0c1220 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-weight: 400;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            height: 100vh;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-lg);
         }
 
+        /* Header */
         .header {
-            text-align: center;
-            margin-bottom: 30px;
+            grid-column: 1 / -1;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            backdrop-filter: blur(10px);
         }
 
-        .header h1 {
-            color: #333;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.025em;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-secondary);
+        }
+
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Left Panel - Order Management */
+        .order-panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .panel-header {
+            padding: var(--spacing-xl);
+            border-bottom: 1px solid var(--border-primary);
+            background: var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 1.375rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.025em;
+        }
+
+        .clear-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .clear-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .order-items {
+            flex: 1;
+            padding: var(--spacing-lg);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-secondary) transparent;
+        }
+
+        .order-items::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .order-items::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .order-items::-webkit-scrollbar-thumb {
+            background: var(--border-secondary);
+            border-radius: 3px;
+        }
+
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-md);
+            background: var(--bg-secondary);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .order-item:hover {
+            border-color: var(--border-accent);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .item-image {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-lg);
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            border: 1px solid var(--border-secondary);
+        }
+
+        .item-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+            font-size: 0.9375rem;
+            line-height: 1.4;
+        }
+
+        .item-price {
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .item-stock {
+            color: var(--accent-color);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xs);
+            border: 1px solid var(--border-secondary);
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--bg-quaternary);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .qty-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .qty-input {
+            width: 48px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            padding: var(--spacing-sm);
+        }
+
+        .qty-input:focus {
+            outline: none;
+        }
+
+        .remove-btn {
+            color: var(--danger-color);
+            cursor: pointer;
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+            background: transparent;
+            border: none;
+        }
+
+        .remove-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            transform: scale(1.1);
+        }
+
+        /* Order Summary */
+        .order-summary {
+            padding: var(--spacing-xl);
+            border-top: 1px solid var(--border-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+            font-size: 0.9375rem;
+            font-weight: 500;
+        }
+
+        .summary-label {
+            color: var(--text-secondary);
+        }
+
+        .summary-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .summary-row.total {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-light);
+            border-top: 1px solid var(--border-primary);
+            padding-top: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .discount-section {
+            margin: var(--spacing-lg) 0;
+        }
+
+        .discount-label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .discount-input {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .discount-input:focus {
+            outline: none;
+            border-color: var(--border-accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Payment Section */
+        .payment-section {
+            padding: var(--spacing-lg);
+            border-top: 1px solid var(--border-primary);
+            background: var(--bg-secondary);
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .key-btn {
+            aspect-ratio: 1;
+            border: 1px solid var(--border-secondary);
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+        }
+
+        .key-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .key-btn.primary {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .key-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .pay-btn {
+            width: 100%;
+            padding: var(--spacing-lg);
+            background: linear-gradient(135deg, var(--accent-color), #059669);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+            font-size: 1.0625rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-md);
+        }
+
+        .pay-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Right Panel - Products */
+        .products-panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .products-header {
+            padding: var(--spacing-xl);
+            border-bottom: 1px solid var(--border-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 3rem;
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--border-accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-bar::placeholder {
+            color: var(--text-muted);
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: 1px solid var(--border-secondary);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: var(--bg-tertiary);
+            border-color: var(--border-accent);
+            color: var(--text-primary);
         }
 
         .products-grid {
+            flex: 1;
+            padding: var(--spacing-xl);
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: var(--spacing-lg);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-secondary) transparent;
+        }
+
+        .products-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .products-grid::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .products-grid::-webkit-scrollbar-thumb {
+            background: var(--border-secondary);
+            border-radius: 3px;
         }
 
         .product-card {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-align: center;
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-secondary);
+            position: relative;
         }
 
         .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            border-color: var(--border-accent);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .product-card:hover::before {
+            opacity: 1;
         }
 
         .product-image {
             width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 6px;
-            margin-bottom: 10px;
-        }
-
-        .product-name {
-            font-size: 0.9rem;
-            color: #333;
-            margin-bottom: 8px;
-            font-weight: 600;
-            line-height: 1.3;
-            min-height: 40px;
+            height: 140px;
+            background: var(--bg-tertiary);
             display: flex;
             align-items: center;
             justify-content: center;
+            color: var(--text-muted);
+            font-size: 2.5rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .product-info {
+            padding: var(--spacing-lg);
+        }
+
+        .product-name {
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            line-height: 1.4;
         }
 
         .product-price {
-            font-size: 1.1rem;
-            color: #e74c3c;
-            font-weight: bold;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-light);
+            margin-bottom: var(--spacing-sm);
         }
 
-        .product-original-price {
-            font-size: 0.8rem;
-            color: #999;
-            text-decoration: line-through;
-            margin-left: 5px;
+        .product-stock {
+            font-size: 0.75rem;
+            color: var(--accent-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
         }
 
         /* Responsive Design */
         @media (max-width: 1200px) {
-            .products-grid {
-                grid-template-columns: repeat(6, 1fr);
+            .container {
+                grid-template-columns: 380px 1fr;
             }
         }
 
-        @media (max-width: 900px) {
-            .products-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .products-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 400px) {
-            .products-grid {
+        @media (max-width: 1024px) {
+            .container {
                 grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr;
+                gap: var(--spacing-md);
+            }
+
+            .order-panel {
+                order: 2;
+                max-height: 50vh;
+            }
+
+            .products-panel {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-md);
+                gap: var(--spacing-md);
+            }
+
+            .header {
+                padding: var(--spacing-md);
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: var(--spacing-md);
+                padding: var(--spacing-md);
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .panel-title {
+                font-size: 1.125rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid var(--primary-color);
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
             }
         }
 
@@ -118,290 +787,456 @@
 
 <body>
     <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <span>RickyPazd</span>
+            </div>
+            <div class="user-section">
+                <div class="system-status">
+                    <div class="status-indicator"></div>
+                    <span>Sistema Activo</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">AS</div>
+                    <div class="user-details">
+                        <div class="user-name">Ing. Álvaro Siles</div>
+                        <div class="user-role">Administrador</div>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-
-        <div class="products-grid">
-            <!-- Producto 1 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Smartphone" class="product-image">
-                <div class="product-name">Smartphone Galaxy</div>
-                <div class="product-price">$299.99</div>
+        <!-- Left Panel - Current Order -->
+        <div class="order-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Orden Actual</h2>
+                <button class="clear-btn">
+                    <i class="fas fa-trash-alt"></i>
+                    Limpiar
+                </button>
             </div>
 
-            <!-- Producto 2 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Laptop" class="product-image">
-                <div class="product-name">Laptop Pro 15"</div>
-                <div class="product-price">$899.99</div>
+            <div class="order-items">
+                <div class="order-item">
+                    <div class="item-image">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">Proteína Iso Tarro 120Mg</div>
+                        <div class="item-price">Bs 20.00 por unidad</div>
+                        <div class="item-stock">Stock disponible: 8</div>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="qty-btn">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" class="qty-input" value="2" min="1">
+                        <button class="qty-btn">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <button class="remove-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="order-item">
+                    <div class="item-image">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">Agua Mineral 500 ML</div>
+                        <div class="item-price">Bs 6.00 por unidad</div>
+                        <div class="item-stock">Stock disponible: 18</div>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="qty-btn">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" class="qty-input" value="1" min="1">
+                        <button class="qty-btn">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <button class="remove-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
 
-            <!-- Producto 3 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Auriculares" class="product-image">
-                <div class="product-name">Auriculares Bluetooth</div>
-                <div class="product-price">$79.99</div>
+            <div class="order-summary">
+                <div class="summary-row">
+                    <span class="summary-label">Subtotal:</span>
+                    <span class="summary-value">Bs 46.00</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Impuesto IVA (13%):</span>
+                    <span class="summary-value">Bs 5.98</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total a Pagar:</span>
+                    <span>Bs 51.98</span>
+                </div>
+
+                <div class="discount-section">
+                    <label class="discount-label">Descuento VIP</label>
+                    <input type="number" class="discount-input" placeholder="Ingrese descuento en Bs" value="0">
+                </div>
             </div>
 
-            <!-- Producto 4 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Reloj" class="product-image">
-                <div class="product-name">Smartwatch Sport</div>
-                <div class="product-price">$199.99</div>
+            <div class="payment-section">
+                <div class="keypad">
+                    <button class="key-btn primary">
+                        <i class="fas fa-user-tie"></i>
+                    </button>
+                    <button class="key-btn">1</button>
+                    <button class="key-btn">2</button>
+                    <button class="key-btn">3</button>
+                    <button class="key-btn">4</button>
+                    <button class="key-btn">5</button>
+                    <button class="key-btn">6</button>
+                    <button class="key-btn">CANT</button>
+                    <button class="key-btn">7</button>
+                    <button class="key-btn">8</button>
+                    <button class="key-btn">9</button>
+                    <button class="key-btn">PRECIO</button>
+                    <button class="key-btn">+/-</button>
+                    <button class="key-btn">0</button>
+                    <button class="key-btn">.</button>
+                    <button class="key-btn">
+                        <i class="fas fa-backspace"></i>
+                    </button>
+                </div>
+                <button class="pay-btn">
+                    <i class="fas fa-credit-card"></i>
+                    Procesar Pago
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Panel - Products -->
+        <div class="products-panel">
+            <div class="products-header">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-bar" placeholder="Buscar productos por nombre o código...">
+                </div>
+                <div class="category-tabs">
+                    <button class="tab-btn active">Todos</button>
+                    <button class="tab-btn">Proteínas</button>
+                    <button class="tab-btn">Bebidas</button>
+                    <button class="tab-btn">Suplementos</button>
+                    <button class="tab-btn">Accesorios</button>
+                </div>
             </div>
 
-            <!-- Producto 5 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Cámara" class="product-image">
-                <div class="product-name">Cámara Digital 4K</div>
-                <div class="product-price">$549.99</div>
-            </div>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">Agua Mineral Premium 500 ML</div>
+                        <div class="product-price">Bs 6.00</div>
+                        <div class="product-stock">Disponible: 18 unidades</div>
+                    </div>
+                </div>
 
-            <!-- Producto 6 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Tablet" class="product-image">
-                <div class="product-name">Tablet 10" HD</div>
-                <div class="product-price">$249.99</div>
-            </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">Proteína Iso Tarro 120Mg</div>
+                        <div class="product-price">Bs 20.00</div>
+                        <div class="product-stock">Disponible: 8 unidades</div>
+                    </div>
+                </div>
 
-            <!-- Producto 7 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Altavoz" class="product-image">
-                <div class="product-name">Altavoz Portátil</div>
-                <div class="product-price">$59.99</div>
-            </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">Creatina Monohidrato Premium</div>
+                        <div class="product-price">Bs 35.00</div>
+                        <div class="product-stock">Disponible: 12 unidades</div>
+                    </div>
+                </div>
 
-            <!-- Producto 8 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Teclado" class="product-image">
-                <div class="product-name">Teclado Mecánico</div>
-                <div class="product-price">$129.99</div>
-            </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">BCAA Natural Complex</div>
+                        <div class="product-price">Bs 28.00</div>
+                        <div class="product-stock">Disponible: 15 unidades</div>
+                    </div>
+                </div>
 
-            <!-- Producto 9 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Ratón" class="product-image">
-                <div class="product-name">Ratón Gaming RGB</div>
-                <div class="product-price">$49.99</div>
-            </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">Pre-Workout Energía Max</div>
+                        <div class="product-price">Bs 42.00</div>
+                        <div class="product-stock">Disponible: 6 unidades</div>
+                    </div>
+                </div>
 
-            <!-- Producto 10 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Monitor" class="product-image">
-                <div class="product-name">Monitor 24" Full HD</div>
-                <div class="product-price">$179.99</div>
-            </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        <i class="fas fa-glass-whiskey"></i>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">Shaker Profesional 600ml</div>
+                        <div class="product-price">Bs 15.00</div>
+                        <div class="product-stock">Disponible: 25 unidades</div>
+                    </div>
+                </div>
 
-            <!-- Producto 11 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Impresora" class="product-image">
-                <div class="product-name">Impresora Multifunción</div>
-                <div class="product-price">$89.99</div>
-            </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        <i class="fas fa-capsules"></i>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">Multivitamínico Completo</div>
+                        <div class="product-price">Bs 32.00</div>
+                        <div class="product-stock">Disponible: 20 unidades</div>
+                    </div>
+                </div>
 
-            <!-- Producto 12 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Router" class="product-image">
-                <div class="product-name">Router WiFi 6</div>
-                <div class="product-price">$119.99</div>
-            </div>
-
-            <!-- Producto 13 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Disco Duro" class="product-image">
-                <div class="product-name">Disco Duro 1TB</div>
-                <div class="product-price">$69.99</div>
-            </div>
-
-            <!-- Producto 14 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Power Bank" class="product-image">
-                <div class="product-name">Power Bank 20000mAh</div>
-                <div class="product-price">$39.99</div>
-            </div>
-
-            <!-- Producto 15 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Webcam" class="product-image">
-                <div class="product-name">Webcam HD 1080p</div>
-                <div class="product-price">$79.99</div>
-            </div>
-
-            <!-- Producto 16 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Micrófono" class="product-image">
-                <div class="product-name">Micrófono USB</div>
-                <div class="product-price">$99.99</div>
-            </div>
-
-            <!-- Producto 17 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Silla Gaming" class="product-image">
-                <div class="product-name">Silla Gaming Pro</div>
-                <div class="product-price">$299.99</div>
-            </div>
-
-            <!-- Producto 18 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Lámpara" class="product-image">
-                <div class="product-name">Lámpara LED Escritorio</div>
-                <div class="product-price">$34.99</div>
-            </div>
-
-            <!-- Producto 19 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Cable USB" class="product-image">
-                <div class="product-name">Cable USB-C 2m</div>
-                <div class="product-price">$14.99</div>
-            </div>
-
-            <!-- Producto 20 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Funda Móvil" class="product-image">
-                <div class="product-name">Funda Protectora</div>
-                <div class="product-price">$19.99</div>
-            </div>
-
-            <!-- Producto 21 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Protector Pantalla" class="product-image">
-                <div class="product-name">Protector de Pantalla</div>
-                <div class="product-price">$9.99</div>
-            </div>
-
-            <!-- Producto 22 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Cargador Coche" class="product-image">
-                <div class="product-name">Cargador para Coche</div>
-                <div class="product-price">$24.99</div>
-            </div>
-
-            <!-- Producto 23 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Auriculares Inalámbricos" class="product-image">
-                <div class="product-name">Auriculares TWS</div>
-                <div class="product-price">$89.99</div>
-            </div>
-
-            <!-- Producto 24 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Pulsera Fitness" class="product-image">
-                <div class="product-name">Pulsera de Actividad</div>
-                <div class="product-price">$59.99</div>
-            </div>
-
-            <!-- Producto 25 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Dispositivo Smart" class="product-image">
-                <div class="product-name">Asistente Inteligente</div>
-                <div class="product-price">$79.99</div>
-            </div>
-
-            <!-- Producto 26 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Cámara Seguridad" class="product-image">
-                <div class="product-name">Cámara de Seguridad</div>
-                <div class="product-price">$129.99</div>
-            </div>
-
-            <!-- Producto 27 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Bombilla Inteligente" class="product-image">
-                <div class="product-name">Bombilla Smart LED</div>
-                <div class="product-price">$19.99</div>
-            </div>
-
-            <!-- Producto 28 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Cargador Inalámbrico" class="product-image">
-                <div class="product-name">Cargador Inalámbrico</div>
-                <div class="product-price">$29.99</div>
-            </div>
-
-            <!-- Producto 29 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Hub USB" class="product-image">
-                <div class="product-name">Hub USB 3.0</div>
-                <div class="product-price">$24.99</div>
-            </div>
-
-            <!-- Producto 30 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Soporte Laptop" class="product-image">
-                <div class="product-name">Soporte para Laptop</div>
-                <div class="product-price">$39.99</div>
-            </div>
-
-            <!-- Producto 31 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Soporte Móvil" class="product-image">
-                <div class="product-name">Soporte para Móvil</div>
-                <div class="product-price">$12.99</div>
-            </div>
-
-            <!-- Producto 32 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Kit Limpieza" class="product-image">
-                <div class="product-name">Kit de Limpieza</div>
-                <div class="product-price">$16.99</div>
-            </div>
-
-            <!-- Producto 33 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Alfombrilla Ratón" class="product-image">
-                <div class="product-name">Alfombrilla Gaming</div>
-                <div class="product-price">$19.99</div>
-            </div>
-
-            <!-- Producto 34 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Organizador Cables" class="product-image">
-                <div class="product-name">Organizador de Cables</div>
-                <div class="product-price">$8.99</div>
-            </div>
-
-            <!-- Producto 35 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Altavoz Portátil" class="product-image">
-                <div class="product-name">Mini Altavoz Bluetooth</div>
-                <div class="product-price">$34.99</div>
-            </div>
-
-            <!-- Producto 36 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Tarjeta Memoria" class="product-image">
-                <div class="product-name">Tarjeta MicroSD 64GB</div>
-                <div class="product-price">$22.99</div>
-            </div>
-
-            <!-- Producto 37 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Adaptador" class="product-image">
-                <div class="product-name">Adaptador USB-C</div>
-                <div class="product-price">$18.99</div>
-            </div>
-
-            <!-- Producto 38 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Trípode" class="product-image">
-                <div class="product-name">Trípode Flexible</div>
-                <div class="product-price">$29.99</div>
-            </div>
-
-            <!-- Producto 39 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Lente" class="product-image">
-                <div class="product-name">Lente Macro para Móvil</div>
-                <div class="product-price">$15.99</div>
-            </div>
-
-            <!-- Producto 40 -->
-            <div class="product-card">
-                <img src="/placeholder.svg?height=120&width=150" alt="Stylus" class="product-image">
-                <div class="product-name">Stylus Digital</div>
-                <div class="product-price">$45.99</div>
+                <div class="product-card">
+                    <div class="product-image">
+                        <i class="fas fa-weight-hanging"></i>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">Ganador de Peso 2kg</div>
+                        <div class="product-price">Bs 85.00</div>
+                        <div class="product-stock">Disponible: 4 unidades</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <script>
+        // Sistema de gestión profesional
+        class SalesSystem {
+            constructor() {
+                this.cart = [];
+                this.products = [];
+                this.currentCategory = 'Todos';
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.updateDisplay();
+            }
+
+            bindEvents() {
+                // Manejo de tabs de categorías
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.switchCategory(e.target.textContent);
+                    });
+                });
+
+                // Manejo de productos
+                document.querySelectorAll('.product-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        this.addToCart(card);
+                    });
+                });
+
+                // Controles de cantidad
+                document.querySelectorAll('.qty-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.updateQuantity(btn);
+                    });
+                });
+
+                // Búsqueda de productos
+                document.querySelector('.search-bar').addEventListener('input', (e) => {
+                    this.searchProducts(e.target.value);
+                });
+
+                // Teclado numérico
+                document.querySelectorAll('.key-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.handleKeypadInput(btn);
+                    });
+                });
+
+                // Botón de pago
+                document.querySelector('.pay-btn').addEventListener('click', () => {
+                    this.processPayment();
+                });
+
+                // Botón limpiar
+                document.querySelector('.clear-btn').addEventListener('click', () => {
+                    this.clearCart();
+                });
+            }
+
+            switchCategory(category) {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                this.currentCategory = category;
+                this.filterProducts();
+            }
+
+            addToCart(productCard) {
+                // Animación de selección
+                productCard.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    productCard.style.transform = 'translateY(-4px)';
+                }, 150);
+
+                // Efecto de éxito
+                this.showNotification('Producto agregado al carrito', 'success');
+            }
+
+            updateQuantity(btn) {
+                const input = btn.parentNode.querySelector('.qty-input');
+                const isPlus = btn.querySelector('.fa-plus');
+                const currentValue = parseInt(input.value);
+
+                if (isPlus) {
+                    input.value = currentValue + 1;
+                } else if (currentValue > 1) {
+                    input.value = currentValue - 1;
+                }
+
+                this.updateTotals();
+            }
+
+            searchProducts(searchTerm) {
+                const products = document.querySelectorAll('.product-card');
+                const term = searchTerm.toLowerCase();
+
+                products.forEach(product => {
+                    const productName = product.querySelector('.product-name').textContent.toLowerCase();
+                    if (productName.includes(term)) {
+                        product.style.display = 'block';
+                        product.style.animation = 'fadeIn 0.3s ease';
+                    } else {
+                        product.style.display = 'none';
+                    }
+                });
+            }
+
+            handleKeypadInput(btn) {
+                // Efecto visual profesional
+                btn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    btn.style.transform = 'scale(1)';
+                }, 100);
+
+                // Lógica del teclado
+                const value = btn.textContent;
+                console.log('Tecla presionada:', value);
+            }
+
+            processPayment() {
+                const payBtn = document.querySelector('.pay-btn');
+                payBtn.classList.add('loading');
+                payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+
+                // Simular procesamiento
+                setTimeout(() => {
+                    payBtn.classList.remove('loading');
+                    payBtn.innerHTML = '<i class="fas fa-check"></i> Pago Completado';
+                    payBtn.style.background = 'linear-gradient(135deg, var(--accent-color), #059669)';
+
+                    this.showNotification('Pago procesado exitosamente', 'success');
+
+                    setTimeout(() => {
+                        payBtn.innerHTML = '<i class="fas fa-credit-card"></i> Procesar Pago';
+                        payBtn.style.background = 'linear-gradient(135deg, var(--accent-color), #059669)';
+                    }, 2000);
+                }, 2000);
+            }
+
+            clearCart() {
+                const orderItems = document.querySelector('.order-items');
+                orderItems.style.opacity = '0.5';
+
+                setTimeout(() => {
+                    orderItems.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">No hay productos en el carrito</div>';
+                    orderItems.style.opacity = '1';
+                    this.updateTotals();
+                }, 300);
+            }
+
+            updateTotals() {
+                // Lógica para actualizar totales
+                console.log('Actualizando totales...');
+            }
+
+            filterProducts() {
+                // Lógica para filtrar productos por categoría
+                console.log('Filtrando por categoría:', this.currentCategory);
+            }
+
+            showNotification(message, type) {
+                // Crear notificación temporal
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? 'var(--accent-color)' : 'var(--danger-color)'};
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: var(--radius-lg);
+                    box-shadow: var(--shadow-lg);
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                `;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+
+            updateDisplay() {
+                // Actualizar interfaz
+                console.log('Sistema inicializado correctamente');
+            }
+        }
+
+        // Inicializar sistema al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            new SalesSystem();
+        });
+
+        // Animaciones CSS adicionales
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 
 </html>

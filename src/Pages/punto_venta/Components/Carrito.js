@@ -7,8 +7,10 @@ import Model from '../../../Model';
 import FotoCliente from './Foto/FotoCliente';
 import FotoModelo from './Foto/FotoModelo';
 import CarritoItem from './Carrito/CarritoItem';
+import ModalPago from './Carrito/ModalPago';
+import ResumenTotales from './Carrito/ResumenTotales';
+import TecladoNumerico from './Carrito/TecladoNumerico';
 
-const sinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 
 export default class Carrito extends Component {
     carrito = [];
@@ -21,45 +23,33 @@ export default class Carrito extends Component {
 
     addProducto = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
-
         if (index >= 0) {
             this.carrito[index].cantidad += 1;
             this.carrito[index].stock = producto.stock;
-
         }
         else this.carrito.push({ ...producto, cantidad: 1 });
-
-
         this.forceUpdate();
     };
-
     aumentarCantidad = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
             const success = this.props.onModificarStock?.(producto.key, -1);
             if (success === false) return alert("No hay más stock disponible");
             this.carrito[index].cantidad += 1;
-
             this.carrito[index].stock -= 1;
-
             this.forceUpdate();
         }
     };
-
     disminuirCantidad = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
             this.carrito[index].cantidad -= 1;
             this.carrito[index].stock += 1;
-
             this.props.onModificarStock?.(producto.key, +1);
             if (this.carrito[index].cantidad <= 0) this.carrito.splice(index, 1);
             this.forceUpdate();
         }
-
-
     };
-
     eliminarItem = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
@@ -68,7 +58,6 @@ export default class Carrito extends Component {
             this.forceUpdate();
         }
     };
-
     vaciarCarrito = () => {
         this.carrito.forEach(item => {
             this.props.onModificarStock?.(item.key, +item.cantidad);
@@ -94,11 +83,10 @@ export default class Carrito extends Component {
         this.forceUpdate();
     };
 
-    getProductoActualizado = (key) => {
-        return this.props.modelos?.find(p => p.key === key) ?? {};
-    }
+
 
     renderPaymentModal = () => {
+
         if (!this.showPaymentModal) return null;
 
         const subtotal = this.calcularSubtotal();
@@ -248,52 +236,6 @@ export default class Carrito extends Component {
     );
 
 
-    renderItemCarrito2222222 = (item) => {
-        const src = item.key ? `${SSocket.api.inventario}modelo/.128_${item.key}` : sinFoto;
-
-
-
-        return (
-            <SView key={item.key} col={"xs-12"} row style={{ paddingVertical: 4, borderBottomWidth: 0.2, borderBottomColor: STheme.color.text }} >
-
-
-                <SView col={"xs-12"} row center>
-                    <SView col={"xs-1"}>
-                        <SView center backgroundColor={STheme.color.background} style={{ width: 30, height: 30, borderRadius: 18, margin: 4, marginRight: (8), overflow: "hidden", }}>
-                            <FotoModelo data={item} ></FotoModelo>
-                        </SView>
-                    </SView>
-                    <SView col={"xs-4.5"}  >
-                        <SText fontSize={12} flex color={STheme.color.text}>{item.descripcion}</SText>
-                        <SText fontSize={12} flex color={STheme.color.text}>Bs {SMath.formatMoney(item.precio_venta, 2)} / Und</SText>
-                        <SText fontSize={12}>Stock actual: {item.stock}</SText>
-
-                    </SView>
-
-
-
-                    <SView flex row  >
-                        <SView center border={STheme.color.text} style={{ width: 24, height: 24, borderRadius: 12 }} onPress={() => this.disminuirCantidad(item)}>
-                            <SText fontSize={24} color={"#EF4444"}>-</SText>
-                        </SView>
-                        <SView row center style={{ marginHorizontal: 10 }}>
-                            <SInput color={STheme.color.text} value={item.cantidad} border={STheme.color.card} type='number' style={{ width: 40, height: 24, padding: 0, textAlign: "center", fontSize: 12, borderRadius: 4 }}
-                            // onChangeText={(text) => this.editarCantidadDirecta(item.key, text)}
-                            />
-                        </SView>
-                        <SView center border={STheme.color.text} style={{ width: 24, height: 24, borderRadius: 12 }} onPress={() => this.aumentarCantidad(item)}>
-                            <SText fontSize={24} color={"#10B981"}>+</SText>
-                        </SView>
-                    </SView>
-                    <SView col={"xs-2"} row center onPress={() => this.eliminarItem(item)} >
-                        <SIconApp name='Close' width={24} height={24} fill='red' />
-                    </SView>
-                </SView>
-
-            </SView>
-        );
-    };
-
     renderSubtotal() {
 
         const subtotal = this.calcularSubtotal();
@@ -401,6 +343,7 @@ export default class Carrito extends Component {
             <SView col={"xs-12"} row color={STheme.color.danger}>
                 <SView col={"xs-4"}>
                     <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2, }} >
+
                         <SView row center onPress={() => { this.seleccionarCliente() }}     >
                             <SView center backgroundColor={STheme.color.background} style={{ width: 30, height: 30, borderRadius: 18, margin: 4, marginRight: (key_cliente ? 6 : 14), overflow: "hidden", }}>
                                 <FotoCliente data={cliente} ></FotoCliente>
@@ -410,6 +353,8 @@ export default class Carrito extends Component {
                                 {key_cliente ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente Vip</SText> : null}
                             </SView>
                         </SView>
+
+
                     </SView>
 
 
@@ -458,9 +403,6 @@ export default class Carrito extends Component {
                 {subtotal <= 0 ?
                     <SView backgroundColor={STheme.color.background} flex center style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
                     >
-
-
-                        {/* <SView col={"xs-12"} row center center backgroundColor='transparent'> */}
                         <SView row center backgroundColor='transparent' >
                             <SIconApp name='carritoproducto' height={50} fill={STheme.color.card} />
                             <SText fontSize={12} color={STheme.color.card}>Comience a agregar productos</SText>
@@ -468,72 +410,42 @@ export default class Carrito extends Component {
                     </SView>
 
                     :
-                    <SView
-                        backgroundColor={STheme.color.background}
-                        flex
-                        style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
-                    >
+                    <SView backgroundColor={STheme.color.background} flex style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }} >
                         <SView col={"xs-12"} row style={{ marginBottom: 8 }} >
                             <SView flex row  >
                                 <SText fontSize={16} bold color={STheme.color.text}>Orden Actual</SText>
                             </SView>
 
                             <SView col={"xs-1"} row center onPress={() => this.vaciarCarrito()} >
-                                {/* <SIconApp name='deleteAll' width={24} height={24} /> */}
-
                                 <SView backgroundColor="purple" style={{ borderRadius: 8, padding: 5, height: 24 }}>
                                     <SText fontSize={12} color={STheme.color.text}>Vaciar</SText>
                                 </SView>
-
                             </SView>
                         </SView>
 
                         <SView col={"xs-12"} flex center backgroundColor='transparent'>
                             <SScrollView2 disableHorizontal>
-
-
-                                <FlatList
-                                    data={this.carrito}
-                                    keyExtractor={(item) => item.key.toString()}
-                                    renderItem={this.renderItemCarrito}
-                                />
-
-
-                                {/* <FlatList
-                                    data={this.carrito}
-                                    keyExtractor={(item) => item.key.toString()}
-                                    renderItem={({ item }) => this.renderItemCarrito(item)}
-                                /> */}
+                                <FlatList data={this.carrito} keyExtractor={(item) => item.key.toString()} renderItem={this.renderItemCarrito} />
                             </SScrollView2>
-
-
                         </SView>
-
                         <SHr height={20} />
-                        {this.renderSubtotal()}
-
+                        <ResumenTotales subtotal={subtotal} totalConIVA={totalConIVA} totalFinal={totalFinal}  ></ResumenTotales>
                         <SView col={"xs-12"} style={{ marginTop: 8 }}>
                             <SText>Descuento VIP (Bs):</SText>
-                            <SInput
-                                placeholder={"0"}
-                                value={this.descuentoManual ?? null}
+                            <SInput placeholder={"0"} value={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", }}
                                 onChangeText={(text) => {
                                     this.descuentoManual = text;
                                     this.forceUpdate();
                                 }}
-                                type='number'
-                                border={STheme.color.card}
-                                style={{ backgroundColor: "transparent", }}
                             />
                         </SView>
-
                     </SView>
-
                 }
-                {this.renderTecladoNumerico()}
 
+
+                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.carrito}   />
+                {/* {this.renderTecladoNumerico()} */}
             </>
-
         );
     };
 
