@@ -38,7 +38,7 @@ export default class Header extends Component {
                 <SView col={"xs-7 md-4"} row center border="transparent"  style={{ justifyContent: "flex-end" }}  >
                     <SView style={{ marginRight: 26 }}> <SIconApp name="Wifi" width={20} height={20} fill={"#19b121ff"} /> </SView>
                     <SView style={{ marginRight: 16 }} row center>
-                        <SView center backgroundColor={"blue"} style={{ width: 32, height: 32, borderRadius: 16, marginRight: 8, overflow: "hidden", }} >
+                        <SView center backgroundColor={"transparent"} style={{ width: 32, height: 32, borderRadius: 16, marginRight: 8, overflow: "hidden", }} >
                             <FotoUsuario data={usuario} />
                         </SView>
                         <SText fontSize={14} color={STheme.color.text}> {usuario.Nombres + " " + usuario.Apellidos}</SText>

@@ -249,8 +249,8 @@ export default class Carrito extends Component {
                                 <SText fontSize={16} bold color={STheme.color.text}>Orden Actual</SText>
                             </SView>
 
-                            <SView col={"xs-2 md-2"} backgroundColor='green' row center onPress={() => this.vaciarCarrito()} >
-                                <SView backgroundColor="purple" style={{ borderRadius: 8, padding: 5, height: 24 }}>
+                            <SView col={"xs-2 md-2"} backgroundColor='transparent' row center onPress={() => this.vaciarCarrito()} >
+                                <SView backgroundColor={STheme.color.darkGray} style={{ borderRadius: 8, padding: 5, height: 24 }}>
                                     <SText fontSize={12} color={STheme.color.text}>Vaciar</SText>
                                 </SView>
                             </SView>

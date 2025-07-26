@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SInput, SText, STheme, SView } from 'servisofts-component';
+import { SInput, SScrollView2, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
 
@@ -40,12 +40,13 @@ export default class Categoria extends Component {
         const categorias = this.tipomodelos || [];
 
         return (
-            <SView col={"xs-12"} style={{ padding: 14 }}  >
-                <SView col={"xs-12"} row center>
-
-                    <SView flex row>
+            // <SView col={"xs-12"}   >
+                <SView col={"xs-12 md-12"} row center >
+                    <SView col={"xs-12 md-12 lg-9"} row style={{ padding: 14 }}>
 
                         {categorias.map(cat => (
+                            // <SScrollView2>
+
                             <SView key={cat.key} onPress={() => this.handlePress(cat.key)}
                                 style={{
                                     paddingVertical: 8,
@@ -59,13 +60,16 @@ export default class Categoria extends Component {
                                 }} >
                                 <SText fontSize={12} color={this.selectedCategory === cat.key ? STheme.color.primary : STheme.color.text}> {cat.label} </SText>
                             </SView>
+                            // </SScrollView2>
                         ))}
+
+
                     </SView>
 
 
 
-                    <SView col={"xs-3 md-3"} center  >
-                        <SView row center style={{ borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, paddingHorizontal: 12 }}>
+                    <SView col={"xs-12 md-12 lg-3"} center backgroundColor='transparent' style={{ padding: 14 }}>
+                        <SView col={"xs-12  "} row center style={{ borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, paddingHorizontal: 12 }}>
                             <SInput placeholder="Buscar Producto" center style={{ flex: 1, fontSize: 14, backgroundColor: "transparent" }}
                                 value={this.props.value}
                                 onChangeText={this.props.onChangeText}
@@ -75,7 +79,7 @@ export default class Categoria extends Component {
                     </SView>
                 </SView>
 
-            </SView>
+            // </SView>
         );
     }
 

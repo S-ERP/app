@@ -60,11 +60,11 @@ export default class Main extends Component {
 
             <SView col={"xs-12"} row flex backgroundColor={STheme.color.background}>
 
-                <SView col={"xs-12 sm-12 md-4.5 lg-4"} backgroundColor='red' style={{ padding: paddingCarrito, borderRightWidth: 1, borderRightColor: STheme.color.card }} >
+                <SView col={"xs-12 sm-12 md-4.5 lg-3"} backgroundColor='transparent' style={{ padding: paddingCarrito, borderRightWidth: 1, borderRightColor: STheme.color.card }} >
                     <Carrito ref={(ref) => { if (ref) this.carritoRef = ref; }} onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)} />
                 </SView>
 
-                <SView col={"xs-12 sm-12 md-7.5 lg-8"}   >
+                <SView col={"xs-12 sm-12 md-7.5 lg-9"}   >
                     <Categoria onSelect={this.setTipoKey} selected={this.selectedTipoKey} value={this.searchText} onChangeText={this.setSearchText} />
                     <Modelo ref={(ref) => { if (ref) this.modeloRef = ref; }} tipoKey={this.selectedTipoKey} searchText={this.searchText} onPressProducto={(producto) => this.carritoRef?.addProducto(producto)} />
                 </SView>

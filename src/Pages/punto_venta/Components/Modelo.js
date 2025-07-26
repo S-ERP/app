@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Dimensions } from 'react-native';
 import { SImage, SMath, SScrollView2, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
@@ -62,7 +62,13 @@ export default class Modelo extends Component {
     };
 
 
+    getColSize() {
+        const width = Dimensions.get('window').width;
 
+        if (width >= 1200) return parseFloat((12 / 8).toFixed(2)); // laptop grande
+        if (width >= 768) return parseFloat((12 / 4).toFixed(2)); // tablet
+        return parseFloat((12 / 3).toFixed(2)); // móvil
+    }
     renderModelos() {
         const modelos = this.modelos || [];
         // const modelos = listaProductoTest;
@@ -72,7 +78,8 @@ export default class Modelo extends Component {
 
         if (this.props.searchText) { const search = this.props.searchText.toLowerCase(); productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search)); }
 
-        const colSize = parseFloat((12 / 8).toFixed(2));
+        const colSize = this.getColSize();
+        // const colSize = parseFloat((12 / 8).toFixed(2));
 
         return (
             <SView col={"xs-12"} flex center backgroundColor='transparent'>
@@ -82,7 +89,7 @@ export default class Modelo extends Component {
                             {productosFiltrados.map((producto, index) => {
                                 const src = producto.key ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}` : productSinFoto;
 
-                                console.log("puta " + src)
+                                // console.log("puta " + src)
 
                                 return (
                                     <SView

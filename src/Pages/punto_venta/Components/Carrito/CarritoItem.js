@@ -8,13 +8,13 @@ export default class CarritoItem extends Component {
         const { item, onAumentar, onDisminuir, onEliminar } = this.props;
         return (
             <SView col={"xs-12"} row style={{ paddingVertical: 4, borderBottomWidth: 0.2, borderBottomColor: STheme.color.text }}>
-                <SView col={"xs-1 md-1"} center>
+                <SView col={"xs-1 sm-1.2 md-1.5 "} center>
                     <SView center row style={{ width: 30, height: 30, borderRadius: 18, marginRight: (8), overflow: "hidden", }}>
                         <FotoModelo data={item} />
                     </SView>
                 </SView>
 
-                <SView col={"xs-4 md-4.5"} backgroundColor='yellow'>
+                <SView col={"xs-4 sm-4.5 md-4.5"} backgroundColor='transparent'>
                     <SText fontSize={12}>{item.descripcion}</SText>
                     <SText fontSize={12}>Bs {item.precio_venta.toFixed(2)} / Und</SText>
                     <SText fontSize={12}>stock actual: {item.stock}</SText>
@@ -32,7 +32,7 @@ export default class CarritoItem extends Component {
                     </SView>
                 </SView>
 
-                <SView col={"xs-1 md-1 lg-2"} backgroundColor='blue' center onPress={onEliminar}>
+                <SView col={"xs-1 md-1 lg-2"} backgroundColor='transparent' center onPress={onEliminar}>
                     <SIconApp name="Close" width={24} height={24} fill="red" />
                 </SView>
             </SView>

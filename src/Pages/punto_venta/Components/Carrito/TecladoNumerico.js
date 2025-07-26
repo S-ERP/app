@@ -272,7 +272,7 @@ export default class TecladoNumerico extends Component {
 
         const teclas = [
             ["1", "2", "3", "Cant"],
-            ["4", "5", "6", "% de desc."],
+            ["4", "5", "6", "% desc."],
             ["7", "8", "9", "Precio"],
             ["+/-", "0", ".", "<"]
         ];
@@ -283,18 +283,18 @@ export default class TecladoNumerico extends Component {
             <SView col={"xs-12"} row color={STheme.color.danger}>
                 <SView col={"xs-4"}>
                     <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
-                        <SView col={"xs-12 md-11"} backgroundColor="pink" row center onPress={() => this.seleccionarCliente()}>
-                            <SView col={"xs-5 md-6"} backgroundColor="green"   >
+                        <SView col={"xs-12 md-12"} backgroundColor="transparent" row center onPress={() => this.seleccionarCliente()}>
+                            <SView col={"xs-5 md-5"} backgroundColor="transparent"   >
                                 <SView center backgroundColor={STheme.color.background} style={{
-                                    width: 30, height: 30, borderRadius: 18, margin: 4,
+                                    minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
                                     marginRight: (key ? 6 : 14), overflow: "hidden",
                                 }}>
                                     <FotoCliente data={cliente} />
                                 </SView>
                             </SView>
-                            <SView flex center>
+                            <SView flex  >
                                 <SText style={{ ...style_text, fontSize: 12 }}>{nombres || "Cliente"}</SText>
-                                {key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente Vip</SText> : null}
+                                {key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente</SText> : null}
                             </SView>
                         </SView>
                     </SView>
