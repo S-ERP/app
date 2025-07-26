@@ -1,19 +1,30 @@
-// TecladoNumerico.js
 import React, { Component } from 'react';
 import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification } from 'servisofts-component';
 import FotoCliente from '../Foto/FotoCliente';
 import Model from '../../../../Model';
+import MDL from '../../../../MDL';
 
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
-
         this.data = props.data;
         this.carrito = props.carrito;
         this.showPaymentModal = false;
-        this.amountReceived = 0;
+        this._recibido = "";
+        this._devolvido = "";
         this.descuentoManual = "";
+    }
 
+
+    componentDidMount() {
+
+        this.alvaroEventos = MDL.punto_venta.addEventListener("alvaroEventos", (e) => {
+            console.log("alvaroEventos", e);
+        })
+    }
+
+    componentWillUnmount() {
+        MDL.punto_venta.removeEventListener(this.alvaroEventos)
     }
 
     handleCalculatorPress = (tecla) => {
@@ -42,7 +53,6 @@ export default class TecladoNumerico extends Component {
                 }
                 this.data.cliente = cliente;
                 this.forceUpdate();
-
             }
         })
     }
@@ -90,23 +100,18 @@ export default class TecladoNumerico extends Component {
         };
     }
 
-    // import FotoCliente from './FotoCliente'; // Asegúrate de que este componente exista e importe correctamente
 
     renderPopudPago() {
         const { subtotal, totalConIVA, totalFinal } = this.props;
-
-        const montoRecibido = parseFloat(this.amountReceived || 0);
-        // this.amountReceived = "";
-
-        const change = isNaN(montoRecibido) ? 0 : montoRecibido - totalFinal;
+        let monto_recibido_number = parseFloat(this._recibido);
+        if (isNaN(monto_recibido_number)) monto_recibido_number = 0;
+        this._devolvido = monto_recibido_number - parseFloat(totalFinal);
 
         return SPopup.open({
             key: "PopupCrearMoneda",
             content: <SView style={{
                 maxWidth: "100%",
                 maxHeight: "100%",
-                width: 500,
-                // height: 500,
                 borderRadius: 8,
                 borderColor: STheme.color.card,
                 borderWidth: 1,
@@ -142,11 +147,15 @@ export default class TecladoNumerico extends Component {
 
 
                         <SInput
-                            // value={this.amountReceived}
+                            // value={this._recibido || 0}
+                            // value={this._recibido}
+                            // onChange={}
                             onChangeText={(text) => {
-                                this.amountReceived = text;
-                                this.forceUpdate();
+                                this._recibido = text;
+                                console.log("nada " + this._recibido)
+                                // this.forceUpdate();
                             }}
+
                             type='number'
                             // keyboardType="numeric"
                             placeholder="Ej. 100.00"
@@ -168,21 +177,17 @@ export default class TecladoNumerico extends Component {
 
                     <SView row style={{ justifyContent: "space-between", marginBottom: 40 }}>
                         <SText fontSize={16} color={STheme.color.text}>Cambio:</SText>
-                        <SText fontSize={18} bold
-
-                            color={change >= 0 ? STheme.color.success : STheme.color.danger}
-
-                        >
-                            Bs {SMath.formatMoney(change, 2)}
+                        <SText fontSize={18} bold color={this._recibido > 100 ? "green" : "red"}    >
+                            Bs {SMath.formatMoney(this._recibido, 2)}
+                            {/* Bs {SMath.formatMoney(this._devolvido, 2)} */}
                         </SText>
                     </SView>
 
                     <SView row style={{ justifyContent: "space-around" }}>
                         <SView
-                            // width={70}
                             onPress={() => {
                                 this.showPaymentModal = false;
-                                this.amountReceived = "";
+                                this._recibido = "";
                                 this.forceUpdate();
                             }}
                             style={{
@@ -192,6 +197,8 @@ export default class TecladoNumerico extends Component {
                                 borderRadius: 4,
                                 width: 150
                             }}
+
+
                         >
                             <SText color={STheme.color.text}>Cancelar</SText>
                         </SView>
@@ -200,10 +207,9 @@ export default class TecladoNumerico extends Component {
 
                         <SView
 
-                            border={"red"}
                             style={{
                                 backgroundColor: STheme.color.background,
-                                borderColor:STheme.color.text,
+                                borderColor: STheme.color.text,
                                 paddingVertical: 12,
                                 paddingHorizontal: 24,
                                 borderRadius: 4,
@@ -212,23 +218,54 @@ export default class TecladoNumerico extends Component {
 
                             onPress={() => {
 
-                                const cajero = {
-                                    montoRecibido: this.amountReceived
 
-                                };
+                                if (!this.data?.cliente) {
+
+                                    SNotification.send({
+                                        title: "Error",
+                                        body: `Debe seleccionar un cliente`,
+                                        type: "error",
+                                    });
 
 
+                                    // SNotification.show({ title: "Error", message: "Debe seleccionar un cliente." });
+                                    return;
+                                }
 
+                                if (!this._recibido || parseFloat(this._recibido) < totalFinal) {
+
+                                    SNotification.send({
+                                        title: "Error",
+                                        body: `Debe seleccionar un cliente`,
+                                        type: "error",
+                                    });
+
+
+                                    // SNotification.show({ title: "Error", message: "Monto insuficiente para pagar." });
+                                    return;
+                                }
 
                                 const datos = this.dataFormateada({
-                                    caja: cajero,
+                                    caja: {
+                                        subtotal: SMath.formatMoney(subtotal, 2),
+                                        totalConIVA: SMath.formatMoney(totalConIVA, 2),
+                                        totalFinal: SMath.formatMoney(totalFinal, 2),
+                                        montoRecibido: SMath.formatMoney(this._recibido, 2),
+                                        cambio: SMath.formatMoney(this._devolvido, 2)
+                                    },
                                     carrito: this.carrito,
                                     cliente: this.data?.cliente,
                                     vendedor: Model.usuario.Action.getUsuarioLog()
                                 });
+
                                 console.log("🧾 Venta Formateada:");
                                 console.log(JSON.stringify(datos, null, 2));
-                                this.amountReceived = "";
+
+                                this.showPaymentModal = false;
+                                this._recibido = "";
+                                this.forceUpdate();
+
+
                                 SPopup.close("PopupCrearMoneda");
                             }}
 
@@ -247,7 +284,9 @@ export default class TecladoNumerico extends Component {
 
     renderTecladoNumerico = () => {
         const cliente = this.data.cliente ?? {};
-        const { nombre_completo, key_cliente, nombres } = cliente;
+        const { key, nombres, apellidos, telefono, nombre_completo } = cliente;
+
+
 
         const style_text = {
             color: STheme.color.text,
@@ -262,12 +301,7 @@ export default class TecladoNumerico extends Component {
             ["+/-", "0", ".", "<"]
         ];
 
-        const { subtotal, totalConIVA, totalFinal } = this.props;
 
-        const montoRecibido = parseFloat(this.amountReceived || 0);
-        // this.amountReceived = "";
-
-        const change = isNaN(montoRecibido) ? 0 : montoRecibido - totalFinal;
 
         return (
             <SView col={"xs-12"} row color={STheme.color.danger}>
@@ -276,30 +310,23 @@ export default class TecladoNumerico extends Component {
                         <SView row center onPress={() => this.seleccionarCliente()}>
                             <SView center backgroundColor={STheme.color.background} style={{
                                 width: 30, height: 30, borderRadius: 18, margin: 4,
-                                marginRight: (key_cliente ? 6 : 14), overflow: "hidden",
+                                marginRight: (key ? 6 : 14), overflow: "hidden",
                             }}>
                                 <FotoCliente data={cliente} />
                             </SView>
                             <SView>
                                 <SText style={{ ...style_text, fontSize: 12 }}>{nombres || "Cliente"}</SText>
-                                {key_cliente ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente Vip</SText> : null}
+                                {key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente Vip</SText> : null}
                             </SView>
                         </SView>
                     </SView>
 
                     <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
 
-                        // this.renderPaymentModal()
-                        // this.showPaymentModal = true; // <-- Cambia flag a true para mostrar popup
 
 
                         this.renderPopudPago()
 
-                        // const datos = this.dataFormateada({
-                        //     carrito: this.carrito, cliente: this.data?.cliente, vendedor: Model.usuario.Action.getUsuarioLog()
-                        // });
-                        // console.log("🧾 Venta Formateada:");
-                        // console.log(JSON.stringify(datos, null, 2));
                     }}>
                         <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagar</SText>
                     </SView>
@@ -323,6 +350,9 @@ export default class TecladoNumerico extends Component {
     };
 
     render() {
-        return this.renderTecladoNumerico();
+        return <>
+            {this.renderTecladoNumerico()}
+            {/* {this.renderPopudPago()} */}
+        </>
     }
 }
