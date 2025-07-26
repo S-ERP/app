@@ -245,16 +245,18 @@ export default class Carrito extends Component {
                     :
                     <SView backgroundColor={STheme.color.background} flex style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }} >
                         <SView col={"xs-12"} row style={{ marginBottom: 8 }} >
-                            <SView flex row  >
+                            <SView col={"xs-10 md-10"} row  >
                                 <SText fontSize={16} bold color={STheme.color.text}>Orden Actual</SText>
                             </SView>
 
-                            <SView col={"xs-1"} row center onPress={() => this.vaciarCarrito()} >
+                            <SView col={"xs-2 md-2"} backgroundColor='green' row center onPress={() => this.vaciarCarrito()} >
                                 <SView backgroundColor="purple" style={{ borderRadius: 8, padding: 5, height: 24 }}>
                                     <SText fontSize={12} color={STheme.color.text}>Vaciar</SText>
                                 </SView>
                             </SView>
                         </SView>
+
+
 
                         <SView col={"xs-12"} flex center backgroundColor='transparent'>
                             <SScrollView2 disableHorizontal>
@@ -285,7 +287,6 @@ export default class Carrito extends Component {
     render() {
         return <>
             {this.renderCarrito()}
-            {/* {this.renderPaymentModal()} */}
 
         </>
     }

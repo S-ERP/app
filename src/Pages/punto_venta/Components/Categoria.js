@@ -42,6 +42,7 @@ export default class Categoria extends Component {
         return (
             <SView col={"xs-12"} style={{ padding: 14 }}  >
                 <SView col={"xs-12"} row center>
+
                     <SView flex row>
 
                         {categorias.map(cat => (
@@ -63,7 +64,7 @@ export default class Categoria extends Component {
 
 
 
-                    <SView col={"xs-3"} center  >
+                    <SView col={"xs-3 md-3"} center  >
                         <SView row center style={{ borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, paddingHorizontal: 12 }}>
                             <SInput placeholder="Buscar Producto" center style={{ flex: 1, fontSize: 14, backgroundColor: "transparent" }}
                                 value={this.props.value}

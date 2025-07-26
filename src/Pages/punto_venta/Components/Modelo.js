@@ -61,16 +61,6 @@ export default class Modelo extends Component {
         return false;
     };
 
-    // modificarStock = (key, delta) => {
-    //     const index = this.modelos.findIndex(m => m.key === key);
-    //     if (index < 0) return false;
-    //     const actual = this.modelos[index];
-    //     const nuevo = actual.stock + delta;
-    //     if (nuevo < 0) return false;
-    //     this.modelos[index] = { ...actual, stock: nuevo };
-    //     this.forceUpdate();
-    //     return true;
-    // };
 
 
     renderModelos() {

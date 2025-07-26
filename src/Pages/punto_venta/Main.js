@@ -46,15 +46,25 @@ export default class Main extends Component {
         this.forceUpdate();
     };
     render() {
+
+        let paddingCarrito = 16;
+        if (typeof window !== "undefined") {
+            const width = window.innerWidth;
+            if (width < 600) paddingCarrito = 4; // móvil
+            else if (width < 1024) paddingCarrito = 8; // tablet
+            else paddingCarrito = 16; // laptop o mayor
+        }
+
         return (<SPage disableScroll hidden>
             <Header value={this.searchText} onChangeText={this.setSearchText} />
 
             <SView col={"xs-12"} row flex backgroundColor={STheme.color.background}>
-                <SView col={"xs-4"} style={{ padding: 16, borderRightWidth: 1, borderRightColor: STheme.color.card }} >
+
+                <SView col={"xs-12 sm-12 md-4.5 lg-4"} backgroundColor='red' style={{ padding: paddingCarrito, borderRightWidth: 1, borderRightColor: STheme.color.card }} >
                     <Carrito ref={(ref) => { if (ref) this.carritoRef = ref; }} onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)} />
                 </SView>
 
-                <SView col={"xs-8"}   >
+                <SView col={"xs-12 sm-12 md-7.5 lg-8"}   >
                     <Categoria onSelect={this.setTipoKey} selected={this.selectedTipoKey} value={this.searchText} onChangeText={this.setSearchText} />
                     <Modelo ref={(ref) => { if (ref) this.modeloRef = ref; }} tipoKey={this.selectedTipoKey} searchText={this.searchText} onPressProducto={(producto) => this.carritoRef?.addProducto(producto)} />
                 </SView>

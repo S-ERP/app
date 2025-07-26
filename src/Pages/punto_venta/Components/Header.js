@@ -17,7 +17,7 @@ export default class Header extends Component {
         let empresa = Model.empresa.Action.getSelect();
         return (
             <SView col={"xs-12"} row center height={60} backgroundColor={STheme.color.background} style={{ borderBottomWidth: 1, borderColor: STheme.color.card, }}  >
-                <SView col={"xs-0.5"} style={{ paddingBottom: 4 }} center height
+                <SView col={"xs-1 md-0.5"} style={{ paddingBottom: 4 }} center height
                     onPress={() => {
                         if (this.props.onBack) {
                             var prevent_default = this.props.onBack();
@@ -30,21 +30,16 @@ export default class Header extends Component {
                 >   <SIconApp height={20} name={"Arrow"} fill={STheme.color.text} />
                 </SView>
 
-                <SView col={"xs-2"} row >
-                    {/* <SIconApp name="empresa" width={24} height={24} fill={STheme.color.text} /> */}
+                <SView col={"xs-4 md-2"} row border="transparent" >
                     <SText fontSize={24} bold color={STheme.color.text} style={{ letterSpacing: -0.5, textTransform: "uppercase" }}> {empresa.razon_social}</SText></SView>
 
                 <SView flex />
 
-                <SView col={"xs-4"} row center style={{ justifyContent: "flex-end" }}  >
+                <SView col={"xs-7 md-4"} row center border="transparent"  style={{ justifyContent: "flex-end" }}  >
                     <SView style={{ marginRight: 26 }}> <SIconApp name="Wifi" width={20} height={20} fill={"#19b121ff"} /> </SView>
                     <SView style={{ marginRight: 16 }} row center>
                         <SView center backgroundColor={"blue"} style={{ width: 32, height: 32, borderRadius: 16, marginRight: 8, overflow: "hidden", }} >
-
                             <FotoUsuario data={usuario} />
-
-                            {/* <SImage src={SSocket.api.root + "usuario/" + usuario.key} style={{ resizeMode: "cover" }} /> */}
-                            {/* <SImage src={SSocket.api.root + "usuario/" + usuario.key} style={{ resizeMode: "cover" }} /> */}
                         </SView>
                         <SText fontSize={14} color={STheme.color.text}> {usuario.Nombres + " " + usuario.Apellidos}</SText>
                     </SView>
