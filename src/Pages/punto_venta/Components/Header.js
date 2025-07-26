@@ -27,11 +27,11 @@ export default class Header extends Component {
                         }
                         SNavigation.goBack();
                     }}
-                >   <SIconApp height={24} name={"Arrow"} fill={STheme.color.text} />
+                >   <SIconApp height={20} name={"Arrow"} fill={STheme.color.text} />
                 </SView>
 
                 <SView col={"xs-2"} row >
-                    <SIconApp name="empresa" width={24} height={24} fill={STheme.color.text} />
+                    {/* <SIconApp name="empresa" width={24} height={24} fill={STheme.color.text} /> */}
                     <SText fontSize={24} bold color={STheme.color.text} style={{ letterSpacing: -0.5, textTransform: "uppercase" }}> {empresa.razon_social}</SText></SView>
 
                 <SView flex />

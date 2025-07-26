@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { SButtom, SDate, SDatePicker, SHr, SImage, SInput, SLoad, SMath, SNavigation, SNotification, SPage, SSPiner, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
-import MDtest1 from '../SMD/MDtest1';
+// import MDtest1 from '../SMD/MDtest1';
 import SSocket from 'servisofts-socket';
 import { FlatList } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -204,7 +204,7 @@ export default class zvida extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            text: MDtest1,
+            text: "",
             carrito: [
                 // { key: 1, name: "Large Cabinet", precio_venta: 368.0, stock: 1 },
                 // { key: 2, name: "Storage Box", precio_venta: 18.17, stock: 1 },
