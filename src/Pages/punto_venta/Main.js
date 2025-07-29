@@ -61,7 +61,7 @@ export default class Main extends Component {
             <>
                 <SView col="xs-12 sm-0 md-0" style={{ padding: 16, borderLeftWidth: 1, borderLeftColor: STheme.color.card }}> {this.renderCarrito()} </SView>
 
-                <SView col="xs-0 sm-12 md-12" backgroundColor="transparent"
+                <SView col="xs-0 sm-12 md-12"
                     style={{ padding: 16, borderLeftWidth: 1, borderLeftColor: STheme.color.card }}
                     onPress={() => { this.tamañoMovil = false; this.forceUpdate(); }}
                 >

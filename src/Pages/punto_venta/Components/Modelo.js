@@ -4,8 +4,6 @@ import { SImage, SMath, SScrollView2, SText, STheme, SView } from 'servisofts-co
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
 import FotoModelo from './Foto/FotoModelo';
-
-// const productSinFoto = 'https://batabolivia.vtexassets.com/arquivos/ids/197509-800-auto?v=638309092795330000&width=800&height=auto&aspect=true';
 const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 const listaProductoTest =
     [
@@ -71,7 +69,6 @@ export default class Modelo extends Component {
     }
     renderModelos() {
         const modelos = this.modelos || [];
-        // const modelos = listaProductoTest;
         const tipoKey = this.props.tipoKey;
 
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
@@ -79,25 +76,19 @@ export default class Modelo extends Component {
         if (this.props.searchText) { const search = this.props.searchText.toLowerCase(); productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search)); }
 
         const colSize = this.getColSize();
-        // const colSize = parseFloat((12 / 8).toFixed(2));
 
         return (
             <SView col={"xs-12"} flex center backgroundColor='transparent'>
                 <SScrollView2 disableHorizontal>
                     <SView col={"xs-12"} style={{ padding: 2 }}>
-                        <SView col={"xs-12"} row backgroundColor="transparent" padding={5}>
+                        <SView col={"xs-12"} row  padding={5}>
                             {productosFiltrados.map((producto, index) => {
                                 const src = producto.key ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}` : productSinFoto;
-
-                                // console.log("puta " + src)
 
                                 return (
                                     <SView
                                         key={index}
                                         col={`xs-6 md-4 lg-3 xl-1.5`}
-                                        // col={`xs-6 sm-4 md-3 lg-2 xl-1.5`}
-                                        // col={`xs-6 sm-4 md-2 lg-1`}
-                                        // col={`xs-${colSize}`}
                                         margin={2}
                                         style={{
                                             borderRadius: 8,
@@ -113,8 +104,6 @@ export default class Modelo extends Component {
                                             if (producto.stock <= 0) return alert("No hay más stock disponible");
                                             producto.stock -= 1; // ⬅️ Resta stock localmente
                                             this.props.onPressProducto?.({ ...producto }); // enviar copia actualizada
-
-                                            // this.props.onPressProducto?.(producto); // ⬅️ Lo pasa al carrito
                                             this.forceUpdate();  // ⬅️ Fuerza render para reflejar el cambio
                                         }}
                                     >

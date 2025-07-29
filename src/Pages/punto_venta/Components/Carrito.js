@@ -155,7 +155,6 @@ export default class Carrito extends Component {
                                 this.forceUpdate();
                             }}
                             type='number'
-                            // keyboardType="numeric"
                             placeholder="Ej. 100.00"
                             style={{
                                 height: 48,
@@ -182,7 +181,6 @@ export default class Carrito extends Component {
 
                     <SView row style={{ justifyContent: "space-around" }}>
                         <SButtom
-                            // width={70}
                             onPress={() => {
                                 this.showPaymentModal = false;
                                 this.amountReceived = "";
@@ -287,7 +285,6 @@ export default class Carrito extends Component {
 
 
                 <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.carrito} subtotal={subtotal} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal}
-                    // onPress()
                     onReload={() => { this.vaciarCarrito(); }}
                 />
 

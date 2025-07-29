@@ -37,7 +37,6 @@ export default class Categoria extends Component {
 
     async loadApis() {
         const tipos = await MDL.inventario.getAllTipoProducto();
-        // const tipos = categoriasEjemplo;
         this.tipomodelos = [
             { key: "all", label: "Todos" },
             ...tipos.map(tipo => ({
