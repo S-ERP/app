@@ -59,15 +59,19 @@ export default class Main extends Component {
             <Header value={this.searchText} onChangeText={this.setSearchText} />
 
             <SView col={"xs-12"} row flex backgroundColor={STheme.color.background}>
-
-                <SView col={"xs-12 sm-12 md-4.5 lg-3"} backgroundColor='transparent' style={{ padding: paddingCarrito, borderRightWidth: 1, borderRightColor: STheme.color.card }} >
-                    <Carrito ref={(ref) => { if (ref) this.carritoRef = ref; }} onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)} />
-                </SView>
-
-                <SView col={"xs-12 sm-12 md-7.5 lg-9"}   >
+                <SView col={"xs-12 sm-12 md-7.5 lg-9"} style={{ borderRightWidth: 2 }} >
                     <Categoria onSelect={this.setTipoKey} selected={this.selectedTipoKey} value={this.searchText} onChangeText={this.setSearchText} />
                     <Modelo ref={(ref) => { if (ref) this.modeloRef = ref; }} tipoKey={this.selectedTipoKey} searchText={this.searchText} onPressProducto={(producto) => this.carritoRef?.addProducto(producto)} />
                 </SView>
+                <SView col={"xs-12 sm-12 md-4.5 lg-3"} backgroundColor='transparent' style={{
+                    padding: paddingCarrito,
+                    borderRightWidth: 1, borderRightColor: STheme.color.card,
+                    borderLeftWidth: 1, borderLeftColor: STheme.color.card
+                }} >
+                    <Carrito ref={(ref) => { if (ref) this.carritoRef = ref; }} onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)} />
+                </SView>
+
+
             </SView>
         </SPage>
         );

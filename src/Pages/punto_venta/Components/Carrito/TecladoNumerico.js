@@ -280,50 +280,65 @@ export default class TecladoNumerico extends Component {
 
 
         return (
-            <SView col={"xs-12"} row color={STheme.color.danger}>
-                <SView col={"xs-4"}>
-                    <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
-                        <SView col={"xs-12 md-12"} backgroundColor="transparent" row center onPress={() => this.seleccionarCliente()}>
-                            <SView col={"xs-5 md-5"} backgroundColor="transparent"   >
-                                <SView center backgroundColor={STheme.color.background} style={{
-                                    minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
-                                    marginRight: (key ? 6 : 14), overflow: "hidden",
-                                }}>
-                                    <FotoCliente data={cliente} />
+            <>
+                <SView col={"xs-0 sm-12"} row color={STheme.color.danger}>
+                    <SView col={"xs-4"}>
+                        <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
+                            <SView col={"xs-12 md-12"} backgroundColor="transparent" row center onPress={() => this.seleccionarCliente()}>
+                                <SView col={"xs-5 md-5"} backgroundColor="transparent"   >
+                                    <SView center backgroundColor={STheme.color.background} style={{
+                                        minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
+                                        marginRight: (key ? 6 : 14), overflow: "hidden",
+                                    }}>
+                                        <FotoCliente data={cliente} />
+                                    </SView>
+                                </SView>
+                                <SView flex  >
+                                    <SText style={{ ...style_text, fontSize: 12 }}>{nombres || "Cliente"}</SText>
+                                    {key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente</SText> : null}
                                 </SView>
                             </SView>
-                            <SView flex  >
-                                <SText style={{ ...style_text, fontSize: 12 }}>{nombres || "Cliente"}</SText>
-                                {key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente</SText> : null}
-                            </SView>
+                        </SView>
+
+                        <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
+
+
+
+                            this.renderPopudPago()
+
+                        }}>
+                            <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagar</SText>
                         </SView>
                     </SView>
 
-                    <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-
-
-
-                        this.renderPopudPago()
-
-                    }}>
-                        <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagar</SText>
+                    <SView col={"xs-8"}>
+                        {teclas.map((fila, i) => (
+                            <SView key={i} row>
+                                {fila.map((t, j) => (
+                                    <SView key={j} flex center backgroundColor={STheme.color.darkGray} border={STheme.color.card}
+                                        style={{ height: 44, borderRadius: 2, margin: 2 }}
+                                        onPress={() => this.handleCalculatorPress(t)} >
+                                        <SText style={style_text}>{t}</SText>
+                                    </SView>
+                                ))}
+                            </SView>
+                        ))}
                     </SView>
                 </SView>
 
-                <SView col={"xs-8"}>
-                    {teclas.map((fila, i) => (
-                        <SView key={i} row>
-                            {fila.map((t, j) => (
-                                <SView key={j} flex center backgroundColor={STheme.color.darkGray} border={STheme.color.card}
-                                    style={{ height: 44, borderRadius: 2, margin: 2 }}
-                                    onPress={() => this.handleCalculatorPress(t)} >
-                                    <SText style={style_text}>{t}</SText>
-                                </SView>
-                            ))}
-                        </SView>
-                    ))}
+
+
+                <SView col={"xs-12"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
+
+
+
+                    this.renderPopudPago()
+
+                }}>
+                    <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagar</SText>
                 </SView>
-            </SView>
+            </>
+
         );
     };
 

@@ -94,7 +94,10 @@ export default class Modelo extends Component {
                                 return (
                                     <SView
                                         key={index}
-                                        col={`xs-${colSize}`}
+                                        col={`xs-6 md-4 lg-3 xl-1.5`}
+                                        // col={`xs-6 sm-4 md-3 lg-2 xl-1.5`}
+                                        // col={`xs-6 sm-4 md-2 lg-1`}
+                                        // col={`xs-${colSize}`}
                                         margin={2}
                                         style={{
                                             borderRadius: 8,
@@ -115,7 +118,7 @@ export default class Modelo extends Component {
                                             this.forceUpdate();  // ⬅️ Fuerza render para reflejar el cambio
                                         }}
                                     >
-                                        <SView center style={{ marginBottom: 12, height: 120}}>
+                                        <SView center style={{ marginBottom: 12, height: 120 }}>
                                             <FotoModelo data={producto} ></FotoModelo>
                                         </SView>
 
