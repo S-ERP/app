@@ -61,12 +61,15 @@ export default class Carrito extends Component {
         this.carrito.forEach(item => {
             this.props.onModificarStock?.(item.key, +item.cantidad);
         });
+        this.descuentoManual = 0;
         this.carrito = [];
         this.forceUpdate();
     };
 
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
     calcularTotalConIVA = (subtotal) => subtotal * 1.15;
+    calcularIVA = (subtotal) => subtotal * 0.15;
+
     calcularTotalConDescuento = (total) => total - parseFloat(this.descuentoManual || "0");
 
 
@@ -78,6 +81,7 @@ export default class Carrito extends Component {
 
         const subtotal = this.calcularSubtotal();
         const totalConIVA = this.calcularTotalConIVA(subtotal);
+        const totalImpueso = this.calcularIVA(subtotal);
         const totalFinal = this.calcularTotalConDescuento(totalConIVA);
 
         const montoRecibido = parseFloat(this.amountReceived || 0);
@@ -226,6 +230,8 @@ export default class Carrito extends Component {
     renderCarrito = () => {
         const subtotal = this.calcularSubtotal();
         const totalConIVA = this.calcularTotalConIVA(subtotal);
+        const totalImpuesto = this.calcularIVA(subtotal);
+        const totalDescuento = this.descuentoManual || 0;
         const totalFinal = this.calcularTotalConDescuento(totalConIVA);
 
         return (
@@ -246,12 +252,12 @@ export default class Carrito extends Component {
                     <SView backgroundColor={STheme.color.background} flex style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }} >
                         <SView col={"xs-12"} row style={{ marginBottom: 8 }} >
                             <SView col={"xs-10 md-10"} row  >
-                                <SText fontSize={16} bold color={STheme.color.text}>Orden Actual</SText>
+                                <SText fontSize={16} bold color={STheme.color.text}>Detalle venta</SText>
                             </SView>
 
                             <SView col={"xs-2 md-2"} backgroundColor='transparent' row center onPress={() => this.vaciarCarrito()} >
-                                <SView backgroundColor={STheme.color.darkGray} style={{ borderRadius: 8, padding: 5, height: 24 }}>
-                                    <SText fontSize={12} color={STheme.color.text}>Vaciar</SText>
+                                <SView backgroundColor={STheme.color.card} border={STheme.color.text} style={{ borderRadius: 2, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4, height: 24, opacity: 0.6 }}>
+                                    <SText fontSize={12} center color={STheme.color.text}>Vaciar</SText>
                                 </SView>
                             </SView>
                         </SView>
@@ -264,7 +270,9 @@ export default class Carrito extends Component {
                             </SScrollView2>
                         </SView>
                         <SHr height={20} />
-                        <ResumenTotales subtotal={subtotal} totalConIVA={totalConIVA} totalFinal={totalFinal}  ></ResumenTotales>
+
+                        <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
+
                         <SView col={"xs-12"} style={{ marginTop: 8 }}>
                             <SText>Descuento VIP (Bs):</SText>
                             <SInput placeholder={"0"} value={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", }}
@@ -278,13 +286,12 @@ export default class Carrito extends Component {
                 }
 
 
-                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.carrito} subtotal={subtotal} totalConIVA={totalConIVA} totalFinal={totalFinal} />
+                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.carrito} subtotal={subtotal} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal}
+                    // onPress()
+                    onReload={() => { this.vaciarCarrito(); }}
+                />
 
-                <SView style={{ marginRight: 15 }}>
-                    <SIcon name="addTarea" fill="white" width={18} />
-                </SView>
 
-                {/* {this.renderTecladoNumerico()} */}
             </>
         );
     };

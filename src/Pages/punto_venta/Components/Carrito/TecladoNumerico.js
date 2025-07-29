@@ -110,13 +110,14 @@ export default class TecladoNumerico extends Component {
     // }
 
     renderPopudPago() {
-        const { subtotal, totalConIVA, totalFinal } = this.props;
+        const { subtotal, totalImpuesto, totalDescuento, totalFinal } = this.props;
         let monto_recibido_number = parseFloat(this._recibido);
         if (isNaN(monto_recibido_number)) monto_recibido_number = 0;
         this._devolvido = monto_recibido_number - parseFloat(totalFinal);
 
         return SPopup.open({
             key: "PopupCrearMoneda",
+            type: 2,
             content: <SView style={{
                 maxWidth: "100%",
                 maxHeight: "100%",
@@ -205,16 +206,16 @@ export default class TecladoNumerico extends Component {
 
                         <SView center border={STheme.color.text} style={{ backgroundColor: STheme.color.background, paddingVertical: 12, paddingHorizontal: 24, borderRadius: 4, width: 150 }}
                             onPress={() => {
-                                if (!this.data?.cliente) {
-                                    SNotification.send({
-                                        title: "Error",
-                                        body: "Debe seleccionar un cliente",
-                                        type: "error",
-                                        color: STheme.color.error,
-                                        time: 5000,
-                                    });
-                                    return;
-                                }
+                                // if (!this.data?.cliente) {
+                                //     SNotification.send({
+                                //         title: "Error",
+                                //         body: "Debe seleccionar un cliente",
+                                //         type: "error",
+                                //         color: STheme.color.error,
+                                //         time: 5000,
+                                //     });
+                                //     return;
+                                // }
 
                                 if (!this._recibido || parseFloat(this._recibido) < totalFinal) {
                                     SNotification.send({
@@ -230,10 +231,11 @@ export default class TecladoNumerico extends Component {
                                 const datos = this.dataFormateada({
                                     caja: {
                                         subtotal: SMath.formatMoney(subtotal, 2),
-                                        totalConIVA: SMath.formatMoney(totalConIVA, 2),
+                                        IVA: SMath.formatMoney(totalImpuesto, 2),
+                                        Descuento: SMath.formatMoney(totalDescuento, 2),
                                         totalFinal: SMath.formatMoney(totalFinal, 2),
                                         montoRecibido: SMath.formatMoney(this._recibido, 2),
-                                        cambio: SMath.formatMoney(this._devolvido, 2)
+                                        cambio: SMath.formatMoney((this._recibido - totalFinal), 2),
                                     },
                                     carrito: this.carrito,
                                     cliente: this.data?.cliente,
@@ -245,11 +247,15 @@ export default class TecladoNumerico extends Component {
 
                                 this.showPaymentModal = false;
                                 this._recibido = "";
+                                // this.carrito.vac
+
+                                this.props.onReload();
+
                                 this.forceUpdate();
                                 SPopup.close("PopupCrearMoneda");
                             }}
                         >
-                            <SText color={STheme.color.white}>Confirmar Pago</SText>
+                            <SText color={STheme.color.text}>Confirmar Pago</SText>
                         </SView>
                     </SView>
                 </SView>

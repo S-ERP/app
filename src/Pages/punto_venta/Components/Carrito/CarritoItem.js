@@ -37,7 +37,7 @@ export default class CarritoItem extends Component {
                 </SView>
 
                 <SView col={"xs-1 md-1 lg-1"} backgroundColor='transparent' center onPress={onEliminar}>
-                    <SIconApp name="Close" width={24} height={24} fill="red" />
+                    <SIconApp name="Close" width={24} height={24} fill="#EF4444" />
                 </SView>
             </SView >
         );

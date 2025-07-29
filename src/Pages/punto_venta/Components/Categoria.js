@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SInput, SScrollView2, SScrollView3, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SInput, SScrollView2, SScrollView3, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
 import { Container } from '../../../Components';
@@ -31,19 +31,13 @@ export default class Categoria extends Component {
         this.selectedCategory = this.props.selected || "all";
         this.tipomodelos = [];
     }
-
-
-
-
     componentDidMount() {
         this.loadApis();
     }
 
     async loadApis() {
         const tipos = await MDL.inventario.getAllTipoProducto();
-
         // const tipos = categoriasEjemplo;
-
         this.tipomodelos = [
             { key: "all", label: "Todos" },
             ...tipos.map(tipo => ({
@@ -64,8 +58,8 @@ export default class Categoria extends Component {
         const categorias = this.tipomodelos || [];
 
         return (
-            <SView col={"xs-12 md-12"} row center >
-                <SView col={"xs-12 md-12 lg-9"} row style={{ padding: 14 }}>
+            <SView col={"xs-12 md-12"} backgroundColor={"transparent"} row center style={{ paddingHorizontal: 8, paddingVertical: 12 }} >
+                <SView col={"xs-12 md-12 lg-8.8"} backgroundColor='transparent' row style={{ marginTop: 10, }} >
                     <ScrollView horizontal scroll={true} style={{ flex: 1, }} contentContainerStyle={{ minWidth: "100%" }}  >
                         {categorias.map(cat => (
                             <SView key={cat.key} onPress={() => this.handlePress(cat.key)}
@@ -84,10 +78,8 @@ export default class Categoria extends Component {
                         ))}
                     </ScrollView>
                 </SView>
-
-
-
-                <SView col={"xs-12 md-12 lg-3"} center backgroundColor='transparent' style={{ padding: 14 }}>
+                <SView col={"xs-12 md-12 lg-0.2"} height={14} />
+                <SView col={"xs-12 md-12 lg-3"} center backgroundColor='transparent'  >
                     <SView col={"xs-12  "} row center style={{ borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, paddingHorizontal: 12 }}>
                         <SInput placeholder="Buscar Producto" center style={{ flex: 1, fontSize: 14, backgroundColor: "transparent" }}
                             value={this.props.value}
@@ -97,8 +89,6 @@ export default class Categoria extends Component {
                     </SView>
                 </SView>
             </SView>
-
-            // </SView>
         );
     }
 
