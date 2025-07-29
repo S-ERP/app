@@ -328,14 +328,11 @@ export default class TecladoNumerico extends Component {
 
 
 
-                <SView col={"xs-12"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-
-
-
+                <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                     this.renderPopudPago()
 
                 }}>
-                    <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagar</SText>
+                    <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pago</SText>
                 </SView>
             </>
 

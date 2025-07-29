@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
-import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath, SButtom, SNotification, SNavigation } from 'servisofts-component';
+import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath, SButtom, SNotification, SNavigation, SIcon } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import SIconApp from '../../../Assets/SIconApp';
 import Model from '../../../Model';
@@ -279,6 +279,11 @@ export default class Carrito extends Component {
 
 
                 <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.carrito} subtotal={subtotal} totalConIVA={totalConIVA} totalFinal={totalFinal} />
+
+                <SView style={{ marginRight: 15 }}>
+                    <SIcon name="addTarea" fill="white" width={18} />
+                </SView>
+
                 {/* {this.renderTecladoNumerico()} */}
             </>
         );

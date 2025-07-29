@@ -31,19 +31,27 @@ export default class Header extends Component {
                 </SView>
 
                 <SView col={"xs-4 md-2"} row border="transparent" >
-                    <SText fontSize={24} bold color={STheme.color.text} style={{ letterSpacing: -0.5, textTransform: "uppercase" }}> {empresa.razon_social}</SText></SView>
+                    <SText fontSize={18} bold color={STheme.color.text} style={{ letterSpacing: -0.5, textTransform: "uppercase" }}> {empresa.razon_social}</SText>
+                </SView>
 
                 <SView flex />
 
-                <SView col={"xs-7 md-4"} row center border="transparent"  style={{ justifyContent: "flex-end" }}  >
-                    <SView style={{ marginRight: 26 }}> <SIconApp name="Wifi" width={20} height={20} fill={"#19b121ff"} /> </SView>
-                    <SView style={{ marginRight: 16 }} row center>
+                <SView col={"xs-7 md-5 lg-3"} height row center border="transparent" style={{ justifyContent: "flex-end" }}  >
+
+                    <SView col={"xs-0 md-1 "} backgroundColor='transparent'> <SIconApp name="Wifi" width={20} height={20} fill={"#19b121ff"} /> </SView>
+
+                    <SView flex />
+
+                    <SView col={"xs-10 md-8"} row center backgroundColor='transparent'>
                         <SView center backgroundColor={"transparent"} style={{ width: 32, height: 32, borderRadius: 16, marginRight: 8, overflow: "hidden", }} >
                             <FotoUsuario data={usuario} />
                         </SView>
                         <SText fontSize={14} color={STheme.color.text}> {usuario.Nombres + " " + usuario.Apellidos}</SText>
                     </SView>
-                    <SView style={{ marginRight: 16, top: 6 }} row center > <SIconApp name="Menu2" width={24} height={24} stroke={STheme.color.text} fill={STheme.color.text} /> </SView>
+
+                    <SView flex />
+                    <SView col={"xs-1.5 md-1"} height style={{ paddingTop: 15 }} row center  > <SIconApp name="Menu2" width={28} stroke={STheme.color.text} fill={STheme.color.text} /> </SView>
+                    <SView flex />
                 </SView>
             </SView>
         );
