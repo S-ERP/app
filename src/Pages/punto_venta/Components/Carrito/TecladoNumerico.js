@@ -100,20 +100,15 @@ export default class TecladoNumerico extends Component {
         };
     }
 
-    // updateCambio() {
-    //     return <SView center row style={{ justifyContent: "space-between", marginBottom: 40 }}>
-    //         <SText fontSize={16} color={STheme.color.text}>Cambio:</SText>
-    //         <SText fontSize={18} bold color={this.props.totalFinal < this._recibido ? "green" : "red"}    >
-    //             Bs {SMath.formatMoney(this._devolvido, 2)}
-    //         </SText>
-    //     </SView>
-    // }
 
     renderPopudPago() {
         const { subtotal, totalImpuesto, totalDescuento, totalFinal } = this.props;
         let monto_recibido_number = parseFloat(this._recibido);
         if (isNaN(monto_recibido_number)) monto_recibido_number = 0;
-        this._devolvido = monto_recibido_number - parseFloat(totalFinal);
+        if (!this._recibido) this._recibido = "";
+
+        if (!this._devolvido) this._devolvido = 0;
+
 
         return SPopup.open({
             key: "PopupCrearMoneda",
@@ -156,13 +151,24 @@ export default class TecladoNumerico extends Component {
 
 
                         <SInput
+                            ref={(ref) => (this._olvidado = ref)}
+                            // ref={this._olvidado = ref}
                             defaultValue={this._recibido}
                             onChangeText={(text) => {
                                 this._recibido = text;
-                                console.log("nada " + this._recibido)
-                                // this.updateCambio();
+
+                                const recibido = parseFloat(text);
+                                const total = parseFloat(totalFinal);
+
+                                if (!isNaN(recibido) && !isNaN(total)) {
+                                    this._devolvido = recibido - total;
+                                } else {
+                                    this._devolvido = 0;
+                                }
+
                                 this.forceUpdate();
                             }}
+
                             border={STheme.color.card}
                             type='number'
                             placeholder="Ej. 100.00"
@@ -180,11 +186,11 @@ export default class TecladoNumerico extends Component {
 
                     <SView height={20} />
 
-                    {/* {this.updateCambio()} */}
 
                     <SView center row style={{ justifyContent: "space-between", marginBottom: 40 }}>
                         <SText fontSize={16} color={STheme.color.text}>Cambio:</SText>
                         <SText fontSize={18} bold color={totalFinal < this._recibido ? "green" : "red"}    >
+
                             Bs {SMath.formatMoney(this._devolvido, 2)}
                         </SText>
                     </SView>
@@ -206,16 +212,16 @@ export default class TecladoNumerico extends Component {
 
                         <SView center border={STheme.color.text} style={{ backgroundColor: STheme.color.background, paddingVertical: 12, paddingHorizontal: 24, borderRadius: 4, width: 150 }}
                             onPress={() => {
-                                // if (!this.data?.cliente) {
-                                //     SNotification.send({
-                                //         title: "Error",
-                                //         body: "Debe seleccionar un cliente",
-                                //         type: "error",
-                                //         color: STheme.color.error,
-                                //         time: 5000,
-                                //     });
-                                //     return;
-                                // }
+                                if (!this.data?.cliente) {
+                                    SNotification.send({
+                                        title: "Error",
+                                        body: "Debe seleccionar un cliente",
+                                        type: "error",
+                                        color: STheme.color.error,
+                                        time: 5000,
+                                    });
+                                    return;
+                                }
 
                                 if (!this._recibido || parseFloat(this._recibido) < totalFinal) {
                                     SNotification.send({
@@ -247,7 +253,6 @@ export default class TecladoNumerico extends Component {
 
                                 this.showPaymentModal = false;
                                 this._recibido = "";
-                                // this.carrito.vac
 
                                 this.props.onReload();
 

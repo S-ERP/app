@@ -11,10 +11,8 @@ export default class CarritoItem extends Component {
 
                 <SView col={"xs-2 md-1.5 lg-1.8 "} row center backgroundColor='transparent'>
 
-                    {/* <SView flex height card style={{ overflow: 'hidden', borderRadius: 40, resizeMode: "cover" }}> */}
                     <SView style={{ width: 30, minWidth: 18, height: 30, minHeight: 18, borderRadius: 18, overflow: "hidden", justifyContent: "flex-start" }}>
                         <FotoModelo data={item} />
-                        {/* </SView> */}
                     </SView>
                 </SView>
 

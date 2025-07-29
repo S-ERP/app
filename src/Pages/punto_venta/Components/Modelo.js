@@ -70,8 +70,8 @@ export default class Modelo extends Component {
         return parseFloat((12 / 3).toFixed(2)); // móvil
     }
     renderModelos() {
-        // const modelos = this.modelos || [];
-        const modelos = listaProductoTest;
+        const modelos = this.modelos || [];
+        // const modelos = listaProductoTest;
         const tipoKey = this.props.tipoKey;
 
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
