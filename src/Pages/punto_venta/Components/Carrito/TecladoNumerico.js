@@ -212,16 +212,16 @@ export default class TecladoNumerico extends Component {
 
                         <SView center border={STheme.color.text} style={{ backgroundColor: STheme.color.background, paddingVertical: 12, paddingHorizontal: 24, borderRadius: 4, width: 150 }}
                             onPress={() => {
-                                if (!this.data?.cliente) {
-                                    SNotification.send({
-                                        title: "Error",
-                                        body: "Debe seleccionar un cliente",
-                                        type: "error",
-                                        color: STheme.color.error,
-                                        time: 5000,
-                                    });
-                                    return;
-                                }
+                                // if (!this.data?.cliente) {
+                                //     SNotification.send({
+                                //         title: "Error",
+                                //         body: "Debe seleccionar un cliente",
+                                //         type: "error",
+                                //         color: STheme.color.error,
+                                //         time: 5000,
+                                //     });
+                                //     return;
+                                // }
 
                                 if (!this._recibido || parseFloat(this._recibido) < totalFinal) {
                                     SNotification.send({
