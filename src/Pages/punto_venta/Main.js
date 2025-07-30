@@ -14,6 +14,8 @@ export default class Main extends Component {
         this.tamañoMovil = false;
         this.state = {
             showCarritoModal: false,
+            carritoModalData: [], // <-- aquí guardamos el carrito para el modal
+
         };
     }
 
@@ -26,6 +28,12 @@ export default class Main extends Component {
         this.searchText = text;
         this.forceUpdate();
     };
+
+    getCarritoData = () => {
+        return this.carritoRef?.getCarrito() || [];
+    };
+
+
 
     renderCarrito() {
         return (
@@ -57,7 +65,20 @@ export default class Main extends Component {
 
                         console.log("prin "+JSON.stringify(this.carritoRef.carrito))
 
-                        // this.setState({ showCarritoModal: true });
+
+                        this.setState({ showCarritoModal: true }, () => {
+
+                            // const productos = this.carritoRef?.getCarrito?.();
+                            // if (productos && this.carritoRefModal?.setCarrito) {
+                            //     this.carritoRefModal.setCarrito(productos);
+                            // }
+
+                            const productos = this.carritoRef?.getCarrito();
+                            console.log("Productos a pasar al modal:", productos);
+                            this.carritoRefModal.setCarrito(productos);
+                            this.forceUpdate();
+                        });
+
                     }}
                 >
                     <SIconApp name="carritoproducto" width={28} height={28} fill={STheme.color.text} />
@@ -65,6 +86,8 @@ export default class Main extends Component {
             </SView>
         );
     }
+
+
 
     renderCarritoModal() {
         if (!this.state.showCarritoModal) return null;
@@ -106,7 +129,10 @@ export default class Main extends Component {
                         Carrito de Compras
                     </SText>
 
-                    {this.renderCarrito()}
+                    <Carrito
+                        ref={(ref) => (this.carritoRefModal = ref)}
+                        onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta) }
+                    />
 
                     <SView
                         style={{
@@ -155,7 +181,7 @@ export default class Main extends Component {
                     <SView
                         col="xs-12 sm-12 md-4.5 lg-3"
                         style={{
-                            display: !this.state.showCarritoModal ? "none" : "flex",
+                            display: this.state.showCarritoModal ? "none" : "flex",
                             padding: 16,
                             borderLeftWidth: 1,
                             borderLeftColor: STheme.color.card,

@@ -18,7 +18,21 @@ export default class Carrito extends Component {
     data = {};
     amountReceived = "";
 
+    constructor(props) {
+        super(props);
+        this.carrito = []; // debe ser array, no objeto
+    }
 
+
+
+    getCarrito() {
+        return this.carrito;
+    }
+
+    setCarrito(nuevoCarrito) {
+        this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
+        this.forceUpdate();
+    }
 
     addProducto = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
@@ -102,6 +116,10 @@ export default class Carrito extends Component {
                 this.showPaymentModal = false;
                 this.amountReceived = "";
                 this.forceUpdate();
+
+                this.props.onVaciar?.();
+
+
             } else {
                 SNotification.send({
                     title: "Monto insuficiente",
