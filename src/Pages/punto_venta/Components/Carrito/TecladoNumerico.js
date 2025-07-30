@@ -9,6 +9,7 @@ export default class TecladoNumerico extends Component {
         super(props);
         this.data = props.data;
         this.carrito = props.carrito;
+        this.carritonuevo = props.carritonuevo;
         this.showPaymentModal = false;
         this._recibido = "";
         this._devolvido = "";
@@ -18,14 +19,16 @@ export default class TecladoNumerico extends Component {
 
     componentDidMount() {
 
-        this.alvaroEventos = MDL.punto_venta.addEventListener("alvaroEventos", (e) => {
-            console.log("alvaroEventos", e);
-        })
+        // console.log("mirala")
+        // console.log("ultimo "+this.carrito)
+        // this.alvaroEventos = MDL.punto_venta.addEventListener("alvaroEventos", (e) => {
+        //     console.log("alvaroEventos", e);
+        // })
     }
 
-    componentWillUnmount() {
-        MDL.punto_venta.removeEventListener(this.alvaroEventos)
-    }
+    // componentWillUnmount() {
+    //     MDL.punto_venta.removeEventListener(this.alvaroEventos)
+    // }
 
     handleCalculatorPress = (tecla) => {
 

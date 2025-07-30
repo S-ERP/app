@@ -18,21 +18,16 @@ export default class Carrito extends Component {
     data = {};
     amountReceived = "";
 
-    constructor(props) {
-        super(props);
-        this.carrito = []; // debe ser array, no objeto
-    }
 
-
-
-    getCarrito() {
-        return this.carrito;
-    }
 
     setCarrito(nuevoCarrito) {
         this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
+        // console.log("vemossssssssssssssssssssss " + JSON.stringify(this.carrito))
         this.forceUpdate();
     }
+
+
+
 
     addProducto = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
@@ -43,6 +38,8 @@ export default class Carrito extends Component {
         else this.carrito.push({ ...producto, cantidad: 1 });
         this.forceUpdate();
     };
+
+
     aumentarCantidad = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
@@ -83,9 +80,8 @@ export default class Carrito extends Component {
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
     calcularTotalConIVA = (subtotal) => subtotal * 1.15;
     calcularIVA = (subtotal) => subtotal * 0.15;
-
     calcularTotalConDescuento = (total) => total - parseFloat(this.descuentoManual || "0");
-
+    getCarrito = () => this.carrito;
 
 
 
@@ -97,7 +93,6 @@ export default class Carrito extends Component {
         const totalConIVA = this.calcularTotalConIVA(subtotal);
         const totalImpueso = this.calcularIVA(subtotal);
         const totalFinal = this.calcularTotalConDescuento(totalConIVA);
-
         const montoRecibido = parseFloat(this.amountReceived || 0);
         const change = isNaN(montoRecibido) ? 0 : montoRecibido - totalFinal;
 
@@ -112,12 +107,12 @@ export default class Carrito extends Component {
                 console.log("🧾 Pago confirmado. Total:", totalFinal);
                 console.log("🛒 Carrito guardado:", JSON.stringify(this.carrito, null, 2));
 
-                this.carrito = [];
+                // this.carrito = [];
                 this.showPaymentModal = false;
                 this.amountReceived = "";
                 this.forceUpdate();
 
-                this.props.onVaciar?.();
+                // this.props.onVaciar?.();
 
 
             } else {
@@ -244,11 +239,31 @@ export default class Carrito extends Component {
 
 
     renderCarrito = () => {
+
+        // if (!this.carrito) return;
         const subtotal = this.calcularSubtotal();
         const totalConIVA = this.calcularTotalConIVA(subtotal);
         const totalImpuesto = this.calcularIVA(subtotal);
         const totalDescuento = this.descuentoManual || 0;
         const totalFinal = this.calcularTotalConDescuento(totalConIVA);
+        // const Carro = [
+        //     {
+        //         "key": "e8e45fa2-1649-4be9-809e-724bc6ebeb6a",
+        //         "descripcion": "Proteina Iso Tarro 120Mg",
+        //         "precio_compra": 9,
+        //         "precio_venta": 20,
+        //         "stock": 9,
+        //         "cantidad": 1,
+        //         "key_marca": "13fcff97-edda-4fb1-b251-4629feefa5d9",
+        //         "marca_descripcion": "IsoProtein",
+        //         "key_tipo_producto": "e12f1afc-dd80-46c4-b385-088455d6ecf3",
+        //         "tipo_producto": "Proteinas"
+        //     }
+        // ];
+        const carro = this.getCarrito();
+        // this.carrito = Array.isArray(this.nuevoCarrito) ? [...nuevoCarrito] : [];
+
+        // console.log("puta " + JSON.stringify(carro))
 
         return (
             <>
@@ -302,7 +317,7 @@ export default class Carrito extends Component {
                 }
 
 
-                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.carrito} subtotal={subtotal} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal}
+                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={carro} carritonuevo={this.carritonuevo} subtotal={subtotal} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal}
                     onReload={() => { this.vaciarCarrito(); }}
                 />
 

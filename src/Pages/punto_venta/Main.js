@@ -29,9 +29,6 @@ export default class Main extends Component {
         this.forceUpdate();
     };
 
-    getCarritoData = () => {
-        return this.carritoRef?.getCarrito() || [];
-    };
 
 
 
@@ -39,6 +36,15 @@ export default class Main extends Component {
         return (
             <Carrito
                 ref={(ref) => (this.carritoRef = ref)}
+                onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
+            />
+        );
+    }
+
+    renderCarrito2() {
+        return (
+            <Carrito
+                ref={(ref) => (this.carritoRefModal = ref)}
                 onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
             />
         );
@@ -63,19 +69,13 @@ export default class Main extends Component {
                     }}
                     onPress={() => {
 
-                        console.log("prin "+JSON.stringify(this.carritoRef.carrito))
+                        console.log("prin " + JSON.stringify(this.carritoRef.carrito))
 
+                        const productos = this.carritoRef?.getCarrito();
 
                         this.setState({ showCarritoModal: true }, () => {
 
-                            // const productos = this.carritoRef?.getCarrito?.();
-                            // if (productos && this.carritoRefModal?.setCarrito) {
-                            //     this.carritoRefModal.setCarrito(productos);
-                            // }
-
-                            const productos = this.carritoRef?.getCarrito();
-                            console.log("Productos a pasar al modal:", productos);
-                            this.carritoRefModal.setCarrito(productos);
+                             this.carritoRefModal.setCarrito(productos);
                             this.forceUpdate();
                         });
 
@@ -129,10 +129,13 @@ export default class Main extends Component {
                         Carrito de Compras
                     </SText>
 
-                    <Carrito
+                    {/* <Carrito
                         ref={(ref) => (this.carritoRefModal = ref)}
-                        onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta) }
-                    />
+                        onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
+                    /> */}
+
+                    {this.renderCarrito2()}
+
 
                     <SView
                         style={{
@@ -173,7 +176,10 @@ export default class Main extends Component {
                             ref={(ref) => (this.modeloRef = ref)}
                             tipoKey={this.selectedTipoKey}
                             searchText={this.searchText}
-                            onPressProducto={(producto) => this.carritoRef?.addProducto(producto)}
+                            onPressProducto={(producto) => {
+                                this.carritoRef?.addProducto(producto);
+                                this.carritoRefModal?.addProducto?.(producto);
+                            }}
                         />
                     </SView>
 
