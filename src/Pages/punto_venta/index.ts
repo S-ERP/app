@@ -4,8 +4,6 @@ import Header from "./Components/Header";
 import Modelo from "./Components/Modelo";
 import TipoModelo from "./Components/Categoria";
 import Main from "./Main";
-
-
 export default SPage.combinePages("punto_venta", {
   "": Main,
   carrito: Carrito,

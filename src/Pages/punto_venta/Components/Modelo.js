@@ -28,25 +28,20 @@ const listaProductoTest =
         { "key": "p19", "descripcion": "Bolso Deportivo", "precio_venta": 160, "stock": 7, "key_tipo_producto": "accesorio" },
         { "key": "p20", "descripcion": "Guantes Invierno", "precio_venta": 40, "stock": 10, "key_tipo_producto": "accesorio" }
     ];
-
-
 export default class Modelo extends Component {
     constructor(props) {
         super(props);
         this.modelos = [];
         this.time = Date.now();
     }
-
     componentDidMount() {
         this.loadApis();
     }
-
     async loadApis() {
         const modelos = await MDL.inventario.getAllModeloStock();
         this.modelos = modelos;
         this.forceUpdate();
     }
-
     modificarStock = (key, delta) => {
         const index = this.modelos.findIndex(m => m.key === key);
         if (index >= 0) {
@@ -58,11 +53,8 @@ export default class Modelo extends Component {
         }
         return false;
     };
-
-
     getColSize() {
         const width = Dimensions.get('window').width;
-
         if (width >= 1200) return parseFloat((12 / 8).toFixed(2)); // laptop grande
         if (width >= 768) return parseFloat((12 / 4).toFixed(2)); // tablet
         return parseFloat((12 / 3).toFixed(2)); // móvil
@@ -70,13 +62,9 @@ export default class Modelo extends Component {
     renderModelos() {
         const modelos = this.modelos || [];
         const tipoKey = this.props.tipoKey;
-
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
-
         if (this.props.searchText) { const search = this.props.searchText.toLowerCase(); productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search)); }
-
         const colSize = this.getColSize();
-
         return (
             <SView col={"xs-12"} flex center backgroundColor='transparent'>
                 <SScrollView2 disableHorizontal>
@@ -84,7 +72,6 @@ export default class Modelo extends Component {
                         <SView col={"xs-12"} row  padding={5}>
                             {productosFiltrados.map((producto, index) => {
                                 const src = producto.key ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}` : productSinFoto;
-
                                 return (
                                     <SView
                                         key={index}
@@ -110,8 +97,6 @@ export default class Modelo extends Component {
                                         <SView center style={{ marginBottom: 12, height: 120 }}>
                                             <FotoModelo data={producto} ></FotoModelo>
                                         </SView>
-
-
                                         <SView col={"xs-12"} padding={4}>
                                             <SView col={"xs-12"} height={40}><SText fontSize={14} bold color={STheme.color.text}>{producto.descripcion} </SText></SView>
                                             <SView col={"xs-12"} row>
@@ -128,7 +113,6 @@ export default class Modelo extends Component {
             </SView>
         );
     }
-
     render() {
         return this.renderModelos();
     }

@@ -5,8 +5,6 @@ import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
 import { Container } from '../../../Components';
 import { ScrollView } from 'react-native-gesture-handler';
-
-
 const categoriasEjemplo = [
     { key: "frutas", descripcion: "Frutas" },
     { key: "verduras", descripcion: "Verduras" },
@@ -24,7 +22,6 @@ const categoriasEjemplo = [
     { key: "ropa", descripcion: "Ropa" },
     { key: "papeleria", descripcion: "Papelería" },
 ];
-
 export default class Categoria extends Component {
     constructor(props) {
         super(props);
@@ -34,7 +31,6 @@ export default class Categoria extends Component {
     componentDidMount() {
         this.loadApis();
     }
-
     async loadApis() {
         const tipos = await MDL.inventario.getAllTipoProducto();
         this.tipomodelos = [
@@ -46,16 +42,13 @@ export default class Categoria extends Component {
         ];
         this.forceUpdate();
     }
-
     handlePress = (key) => {
         this.selectedCategory = key;
         this.props.onSelect?.(key); // notifica al padre
         this.forceUpdate(); // re-render por estilo visual
     }
-
     renderCategorias() {
         const categorias = this.tipomodelos || [];
-
         return (
             <SView col={"xs-12 md-12"} backgroundColor={"transparent"} row center style={{ paddingHorizontal: 8, paddingVertical: 12 }} >
                 <SView col={"xs-12 md-12 lg-8.8"} backgroundColor='transparent' row style={{ marginTop: 10, }} >
@@ -90,7 +83,6 @@ export default class Categoria extends Component {
             </SView>
         );
     }
-
     render() {
         return this.renderCategorias();
     }
