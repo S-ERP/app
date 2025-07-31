@@ -35,7 +35,7 @@ export default class TecladoNumerico extends Component {
         this.forceUpdate();
     };
 
-    // seleccionarCliente() {
+    // seleccionarCliente2() {
     //     SNavigation.navigate("/cliente", {
     //         onSelect: (obj) => {
     //             var cliente = {
@@ -54,24 +54,24 @@ export default class TecladoNumerico extends Component {
 
 
     hanldeEditTelefono = () => {
-        MDL.crm.cliente.buscar_telefono(this.form?.getValues().telefono).then(e => {
+        MDL.crm.cliente.buscar_nit(this.form?.getValues().nit).then(e => {
+
+            this.clienteDataCompleto = e;
             this.form?.setValues({
-                nombres: e?.nombres || "",
-                nit: e?.nit || "",
                 razon_social: e?.razon_social || "",
                 correo: e?.correo || "",
-                // departamento: e?.departamento || "",
+                nombres: e?.nombres || "",
             })
+            this.forceUpdate()
         }).catch(e => {
             this.form?.setValues({
-                nombres: "",
-                nit: "",
                 razon_social: "",
                 correo: "",
-                // departamento: "",
+                nombres: "",
             })
             console.log(e)
         })
+
     }
 
 
@@ -106,73 +106,49 @@ export default class TecladoNumerico extends Component {
                     <SForm row ref={(ref: any) => this.form = ref}
                         style={{ justifyContent: "space-between" }}
                         inputs={{
-                            telefono: {
+                            nit: {
                                 col: "xs-12",
-                                label: "Teléfono",
+                                label: "Nit",
                                 type: 'number',
                                 required: true,
                                 autoFocus: true,
-                                defaultValue: defaultData?.telefono,
+                                defaultValue: defaultData?.nit,
                                 iconR: <SView width={30} height={30} center onPress={() => {
                                     this.hanldeEditTelefono();
                                 }}>
                                     <SIconApp name='Search' fill={STheme.color.lightGray} />
                                 </SView>,
-                                //   type: "phone",
                                 onChangeText: (text: string) => {
-                                    new SThread(2000, "buscar_telefono", true).start(() => {
+                                    new SThread(2000, "buscar_nit", true).start(() => {
                                         this.hanldeEditTelefono();
                                     })
                                 },
                                 onSubmitEditing: () => {
                                     this.hanldeEditTelefono();
-                                    this.form?.focus("correo")
+                                    this.form?.focus("razon_social")
                                 }
-                            },
-                            nombres: {
-                                col: "xs-12",
-                                label: "Nombre completo",
-                                //   required: true,
-                                defaultValue: defaultData?.nombres,
-                                onSubmitEditing: () => this.form?.focus("departamento"),
-                            },
-
-                            correo: {
-                                col: "xs-12",
-                                label: "Correo",
-                                type: "email",
-                                //   required: true,
-                                defaultValue: defaultData?.correo,
-                                onSubmitEditing: () => this.form?.focus("departamento"),
                             },
 
                             razon_social: {
                                 col: "xs-12",
                                 label: "razon_social",
-                                //   required: true,
                                 defaultValue: defaultData?.razon_social,
-                                onSubmitEditing: () => this.form?.focus("departamento"),
+                                onSubmitEditing: () => this.form?.focus("correo"),
                             },
 
-
-                            nit: {
+                            correo: {
                                 col: "xs-12",
-                                label: "nit",
-                                //   required: true,
-                                defaultValue: defaultData?.nit,
-                                onSubmitEditing: () => this.form?.focus("departamento"),
+                                label: "Correo",
+                                defaultValue: defaultData?.correo,
+                                onSubmitEditing: () => this.form?.focus("nombres"),
+                            },
+                            nombres: {
+                                col: "xs-12",
+                                label: "Nombre completo",
+                                defaultValue: defaultData?.nombres,
                             },
 
 
-                            //   key_campana: {
-                            //       col: "xs-12",
-                            //       label: "Proyecto / Campaña",
-                            //       type: "select",
-                            //       options: this.state.campanas || [],
-                            //       required: true,
-                            //       defaultValue: defaultData?.departamento,
-                            //       onSubmitEditing: () => this.form?.focus("nit"),
-                            //   },
 
                         }}
                         onSubmit={(e: any) => {
@@ -209,28 +185,22 @@ export default class TecladoNumerico extends Component {
                                 borderRadius: 6,
                             }}
                             onPress={() => {
-                                const data = this.form?.getValues();
+                                const data = this.clienteDataCompleto;
+                                // const data = this.form?.getValues();
                                 if (!data) return;
 
                                 const cliente = {
-
-                                    //                 key: obj.key,
-                                    //                 nombres: obj.nombres ?? "",
-                                    //                 apellidos: obj.apellidos ?? "",
-                                    //                 telefono: obj.telefono ?? "",
-                                    //                 nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
-
-                                    // key: data.nit ?? "", // Puedes usar otro identificador si lo tienes
+                                    key: data.key ?? "",
                                     nombres: data.nombres ?? "",
-                                    apellidos: "", // No estás capturando apellidos, así que dejamos vacío
                                     telefono: data.telefono ?? "",
-                                    nombre_completo: `${data.nombres ?? ""}`.trim(), // O puedes usar razon_social
                                     correo: data.correo ?? "",
                                     nit: data.nit ?? "",
                                     razon_social: data.razon_social ?? "",
                                 };
 
-                                this.data.cliente = cliente;
+                                // this.data.cliente = cliente;
+                                this.data.cliente = this.clienteDataCompleto;
+                                console.log("indstal " + JSON.stringify(cliente))
                                 this.forceUpdate();
                                 SPopup.close("PopupClienteManual");
                             }}
@@ -257,17 +227,25 @@ export default class TecladoNumerico extends Component {
             key_tipo_producto: item.key_tipo_producto ?? null,
             tipo_producto: item.tipo_producto?.descripcion ?? null,
         }));
-        const clienteFormateado = cliente ? {
-            key: cliente.key ?? null,
-            nombre_completo: cliente.nombre_completo ?? `${cliente.nombres ?? ""} ${cliente.apellidos ?? ""}`.trim(),
-            telefono: cliente.telefono ?? null,
-        } : null;
-        const vendedorFormateado = vendedor ? {
-            key: vendedor.key ?? null,
-            nombre_completo: `${vendedor.Nombres ?? ""} ${vendedor.Apellidos ?? ""}`.trim(),
-            correo: vendedor.Correo ?? null,
-            telefono: vendedor.Telefono ?? null,
-        } : null;
+
+        const clienteFormateado = cliente;
+        // const clienteFormateado = cliente ? {
+        //     key: cliente.key ?? null,
+        //     nombre_completo: cliente.nombre_completo ?? `${cliente.nombres ?? ""} ${cliente.apellidos ?? ""}`.trim(),
+        //     telefono: cliente.telefono ?? null,
+        // } : null;
+
+
+        const vendedorFormateado = vendedor;
+
+        // const vendedorFormateado = vendedor ? {
+        //     key: vendedor.key ?? null,
+        //     nombre_completo: `${vendedor.Nombres ?? ""} ${vendedor.Apellidos ?? ""}`.trim(),
+        //     correo: vendedor.Correo ?? null,
+        //     telefono: vendedor.Telefono ?? null,
+        // } : null;
+
+
         return {
             carrito: carritoFormateado,
             cliente: clienteFormateado,
@@ -403,6 +381,7 @@ export default class TecladoNumerico extends Component {
                                         totalFinal: SMath.formatMoney(totalFinal, 2),
                                         montoRecibido: SMath.formatMoney(this._recibido, 2),
                                         cambio: SMath.formatMoney((this._recibido - totalFinal), 2),
+                                        conFactura: totalImpuesto?true:false ,
                                     },
                                     carrito: this.props.carrito,
                                     cliente: this.data?.cliente,
