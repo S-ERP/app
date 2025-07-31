@@ -19,12 +19,11 @@ export default class Carrito extends Component {
     componentDidMount() {
         this.loadData()
     }
-
     async loadData() {
         const enviroments = await MDL.contabilidad.getEnviroment();
         this._enviromentsIva = parseFloat(enviroments?.IVA?.observacion) / 100;
         this._numeroIva = parseInt(enviroments?.IVA?.observacion);
-        this.forceUpdate(); // Si necesitas que el componente se re-renderice al tener el IVA
+        this.forceUpdate();
     }
     setCarrito(nuevoCarrito) {
         this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
@@ -76,39 +75,25 @@ export default class Carrito extends Component {
         this.forceUpdate();
     };
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
-
-    // calcularTotalConIVA = (subtotal) => {
-    //     if (!this._enviromentsIva) return subtotal;
-    //     return subtotal * (1 + this._enviromentsIva);
-    // };
-
     calcularTotalConIVA = (subtotal) => {
         if (!this._enviromentsIva) return subtotal;
         if (this.conFactura) {
             return subtotal * (1 + this._enviromentsIva);
         } else {
-            return subtotal; // sin factura, no se suma el IVA
+            return subtotal;
         }
         this.forceUpdate()
     };
-
     calcularIVA = (subtotal) => {
         if (!this._enviromentsIva) return 0;
         return subtotal * this._enviromentsIva;
     };
-    // calcularTotalConIVA = (subtotal) => subtotal * (parseFloat("1." + parseInt(this._enviromentsIva)));
-
-    // calcularIVA = (subtotal) => subtotal * (parseFloat("0." + parseInt(this._enviromentsIva)));
     calcularTotalConDescuento = (total) => total - parseFloat(this.descuentoManual || "0");
     getCarrito = () => this.carrito;
     getCarritoimprimir() {
         return this.carrito;
-        // console.log("sakura " + JSON.stringify(this.carrito))
     }
-    showwwwwwwwwwwwwwww() {
 
-        console.log("sakura " + JSON.stringify(this.getCarritoimprimir()))
-    }
     renderPaymentModal = () => {
         if (!this.showPaymentModal) return null;
         const subtotal = this.calcularSubtotal();
@@ -124,8 +109,6 @@ export default class Carrito extends Component {
                     body: `Cambio: Bs ${SMath.formatMoney(change, 2)}`,
                     type: "success",
                 });
-
-
                 this.showPaymentModal = false;
                 this.amountReceived = "";
                 this.carrito = [];
@@ -190,8 +173,7 @@ export default class Carrito extends Component {
                                 borderRadius: 4,
                                 marginTop: 8,
                                 color: STheme.color.text,
-                                backgroundColor: "transparent"
-                            }}
+                                                            }}
                         />
                     </SView>
                     <SView height={20} />
@@ -250,7 +232,6 @@ export default class Carrito extends Component {
         const totalDescuento = this.descuentoManual || 0;
         const totalFinal = this.calcularTotalConDescuento(totalConIVA);
         const carro = this.getCarrito();
-
         return (
             <>
                 {subtotal <= 0 ?
@@ -289,16 +270,14 @@ export default class Carrito extends Component {
                                 }}
                             />
                         </SView>
-
-                        <SView col={"xs-12"} style={{ marginTop: 8 }}>
-                            <SInput label={"Con factura ?"} height={24} type='checkBox' border={STheme.color.card} style={{ backgroundColor: "transparent", }} defaultValue={false}
+                        <SView col={"xs-12"}  >
+                            <SInput label={"Con factura ?"} height={24} type='checkBox' border={STheme.color.card} style={{ backgroundColor: "red", }} defaultValue={false}
                                 onChangeText={(text) => {
                                     this.conFactura = text;
                                     this.forceUpdate();
                                 }}
                             />
                         </SView>
-
                     </SView>
                 }
                 <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} subtotal={subtotal} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal} conFactura={this.conFactura}

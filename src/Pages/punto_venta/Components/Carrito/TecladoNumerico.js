@@ -20,9 +20,8 @@ export default class TecladoNumerico extends Component {
     componentDidMount() {
         setTimeout(() => {
             this.hanldeEditTelefono();
-        }, 100); // o usar await, si el form carga datos antes
+        }, 100);
     }
-
     handleCalculatorPress = (tecla) => {
         let val = this.descuentoManual || "";
         switch (tecla) {
@@ -35,25 +34,23 @@ export default class TecladoNumerico extends Component {
         this.descuentoManual = val;
         this.forceUpdate();
     };
-
-    // seleccionarCliente2() {
-    //     SNavigation.navigate("/cliente", {
-    //         onSelect: (obj) => {
-    //             var cliente = {
-    //                 key: obj.key,
-    //                 nombres: obj.nombres ?? "",
-    //                 apellidos: obj.apellidos ?? "",
-    //                 telefono: obj.telefono ?? "",
-    //                 nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
-    //             }
-    //             this.data.cliente = cliente;
-    //             this.forceUpdate();
-    //         }
-    //     })
-    // }
+    seleccionarCliente2() {
+        SNavigation.navigate("/cliente", {
+            onSelect: (obj) => {
+                var cliente = {
+                    key: obj.key,
+                    nombres: obj.nombres ?? "",
+                    apellidos: obj.apellidos ?? "",
+                    telefono: obj.telefono ?? "",
+                    nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
+                }
+                this.data.cliente = cliente;
+                this.forceUpdate();
+            }
+        })
+    }
     hanldeEditTelefono = () => {
         MDL.crm.cliente.buscar_nit(this.form?.getValues().nit).then(e => {
-
             this.clienteDataCompleto = e;
             this.form?.setValues({
                 razon_social: e?.razon_social || "",
@@ -69,14 +66,11 @@ export default class TecladoNumerico extends Component {
             })
             console.log(e)
         })
-
     }
     form: SForm | null = null;
     seleccionarCliente() {
         let formRef;
         const defaultData = this.data?.cliente ?? {};
-        // const { defaultData } = this.props;
-
         SPopup.open({
             key: "PopupClienteManual",
             type: 1,
@@ -86,7 +80,6 @@ export default class TecladoNumerico extends Component {
                     withoutFeedback
                     padding={24}
                     backgroundColor={STheme.color.background}
-
                     style={{
                         maxWidth: 320,
                         borderRadius: 12,
@@ -98,8 +91,7 @@ export default class TecladoNumerico extends Component {
                     }}
                 >
                     <SText fontSize={18} bold center>Datos del Cliente</SText>
-                    {}
-
+                    { }
                     <SForm row ref={(ref: any) => this.form = ref}
                         style={{ justifyContent: "space-between" }}
                         inputs={{
@@ -109,7 +101,7 @@ export default class TecladoNumerico extends Component {
                                 type: 'number',
                                 backgroundColor: "red",
                                 background: "blue",
-                                borderColor:"red",
+                                borderColor: "red",
                                 required: true,
                                 autoFocus: true,
                                 defaultValue: defaultData?.nit,
@@ -128,7 +120,6 @@ export default class TecladoNumerico extends Component {
                                     this.form?.focus("razon_social")
                                 }
                             },
-
                             razon_social: {
                                 col: "xs-12",
                                 disabled: true,
@@ -136,11 +127,10 @@ export default class TecladoNumerico extends Component {
                                 defaultValue: defaultData?.razon_social,
                                 onSubmitEditing: () => this.form?.focus("correo"),
                             },
-
                             correo: {
                                 col: "xs-12",
                                 label: "Correo",
-                                disabled:true,
+                                disabled: true,
                                 defaultValue: defaultData?.correo,
                                 onSubmitEditing: () => this.form?.focus("nombres"),
                             },
@@ -151,17 +141,13 @@ export default class TecladoNumerico extends Component {
                                 defaultValue: defaultData?.nombres,
                             },
                         }} />
-
                     <SHr />
                     <SView row col={"xs-12"}>
-
                         <SView flex />
                         <SView center style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }} >
                             <SText color={STheme.color.text}>Cancelar</SText>
                         </SView>
-
                         <SView width={8} />
-
                         <SView center style={{ backgroundColor: "#18181b", borderColor: STheme.color.gray, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }}
                             onPress={() => {
                                 const data = this.clienteDataCompleto;
@@ -175,9 +161,7 @@ export default class TecladoNumerico extends Component {
                             <SText color={STheme.color.background}>Aceptar</SText>
                         </SView>
                     </SView>
-
-                    {}
-
+                    { }
                     {/* <SView row center>
                         <SView
                             style={{
@@ -193,7 +177,6 @@ export default class TecladoNumerico extends Component {
                         >
                             <SText color={STheme.color.text}>Cancelar</SText>
                         </SView>
-
                         <SView
                             style={{
                                 paddingVertical: 12,
@@ -203,9 +186,7 @@ export default class TecladoNumerico extends Component {
                             }}
                             onPress={() => {
                                 const data = this.clienteDataCompleto;
-                                // const data = this.form?.getValues();
                                 if (!data) return;
-
                                 const cliente = {
                                     key: data.key ?? "",
                                     nombres: data.nombres ?? "",
@@ -214,8 +195,6 @@ export default class TecladoNumerico extends Component {
                                     nit: data.nit ?? "",
                                     razon_social: data.razon_social ?? "",
                                 };
-
-                                // this.data.cliente = cliente;
                                 this.data.cliente = this.clienteDataCompleto;
                                 console.log("indstal " + JSON.stringify(cliente))
                                 this.forceUpdate();
@@ -242,21 +221,8 @@ export default class TecladoNumerico extends Component {
             key_tipo_producto: item.key_tipo_producto ?? null,
             tipo_producto: item.tipo_producto?.descripcion ?? null,
         }));
-
         const clienteFormateado = cliente;
-        // const clienteFormateado = cliente ? {
-        //     key: cliente.key ?? null,
-        //     nombre_completo: cliente.nombre_completo ?? `${cliente.nombres ?? ""} ${cliente.apellidos ?? ""}`.trim(),
-        //     telefono: cliente.telefono ?? null,
-        // } : null;
         const vendedorFormateado = vendedor;
-
-        // const vendedorFormateado = vendedor ? {
-        //     key: vendedor.key ?? null,
-        //     nombre_completo: `${vendedor.Nombres ?? ""} ${vendedor.Apellidos ?? ""}`.trim(),
-        //     correo: vendedor.Correo ?? null,
-        //     telefono: vendedor.Telefono ?? null,
-        // } : null;
         return {
             carrito: carritoFormateado,
             cliente: clienteFormateado,
@@ -335,7 +301,6 @@ export default class TecladoNumerico extends Component {
                                 textAlign: "center",
                                 borderRadius: 4,
                                 color: STheme.color.text,
-                                backgroundColor: "transparent"
                             }}
                         />
                     </SView>
@@ -369,7 +334,6 @@ export default class TecladoNumerico extends Component {
                                     });
                                     return;
                                 }
-
                                 const carritoFormateado = this.carrito.map(item => ({
                                     key: item.key,
                                     descripcion: item.descripcion,
@@ -382,8 +346,6 @@ export default class TecladoNumerico extends Component {
                                     key_tipo_producto: item.key_tipo_producto ?? null,
                                     tipo_producto: item.tipo_producto?.descripcion ?? null,
                                 }));
-
-                                // console.log("pinta " + JSON.stringify(this.props.carrito))
                                 const datos = this.dataFormateada({
                                     caja: {
                                         subtotal: SMath.formatMoney(subtotal, 2),
@@ -478,9 +440,8 @@ export default class TecladoNumerico extends Component {
         );
     };
     render() {
-
         return <>
-            {}
+            { }
             {this.renderTecladoNumerico()}
             { }
         </>

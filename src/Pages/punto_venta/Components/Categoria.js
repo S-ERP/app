@@ -44,8 +44,8 @@ export default class Categoria extends Component {
     }
     handlePress = (key) => {
         this.selectedCategory = key;
-        this.props.onSelect?.(key); // notifica al padre
-        this.forceUpdate(); // re-render por estilo visual
+        this.props.onSelect?.(key);
+        this.forceUpdate();
     }
     renderCategorias() {
         const categorias = this.tipomodelos || [];
