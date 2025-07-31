@@ -72,6 +72,9 @@ export default class Carrito extends Component {
         });
         this.descuentoManual = 0;
         this.carrito = [];
+
+        this.data.cliente = [];
+
         this.forceUpdate();
     };
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
