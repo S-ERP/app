@@ -22,8 +22,8 @@ export default class Carrito extends Component {
 
     async loadData() {
         const enviroments = await MDL.contabilidad.getEnviroment();
-        this._enviromentsIva = parseFloat(enviroments.IVA.observacion) / 100;
-        this._numeroIva = parseInt(enviroments.IVA.observacion);
+        this._enviromentsIva = parseFloat(enviroments?.IVA?.observacion) / 100;
+        this._numeroIva = parseInt(enviroments?.IVA?.observacion);
         this.forceUpdate(); // Si necesitas que el componente se re-renderice al tener el IVA
     }
 
@@ -79,9 +79,19 @@ export default class Carrito extends Component {
     };
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
 
+    // calcularTotalConIVA = (subtotal) => {
+    //     if (!this._enviromentsIva) return subtotal;
+    //     return subtotal * (1 + this._enviromentsIva);
+    // };
+
     calcularTotalConIVA = (subtotal) => {
         if (!this._enviromentsIva) return subtotal;
-        return subtotal * (1 + this._enviromentsIva);
+        if (this.conFactura) {
+            return subtotal * (1 + this._enviromentsIva);
+        } else {
+            return subtotal; // sin factura, no se suma el IVA
+        }
+        this.forceUpdate()
     };
 
     calcularIVA = (subtotal) => {
@@ -285,6 +295,17 @@ export default class Carrito extends Component {
                                 }}
                             />
                         </SView>
+
+                        <SView col={"xs-12"} style={{ marginTop: 8 }}>
+                            <SText>Con factura:</SText>
+                            <SInput type='checkBox' border={STheme.color.card} style={{ backgroundColor: "transparent", }}
+                                onChangeText={(text) => {
+                                    this.conFactura = text;
+                                    this.forceUpdate();
+                                }}
+                            />
+                        </SView>
+
                     </SView>
                 }
                 <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} subtotal={subtotal} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal}
