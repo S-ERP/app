@@ -9,12 +9,25 @@ import FotoModelo from './Foto/FotoModelo';
 import CarritoItem from './Carrito/CarritoItem';
 import ResumenTotales from './Carrito/ResumenTotales';
 import TecladoNumerico from './Carrito/TecladoNumerico';
+import MDL from '../../../MDL';
 export default class Carrito extends Component {
     carrito = [];
     descuentoManual = "";
     showPaymentModal = false;
     data = {};
     amountReceived = "";
+    componentDidMount() {
+        this.loadData()
+    }
+
+    async loadData() {
+        const enviroments = await MDL.contabilidad.getEnviroment();
+        this._enviromentsIva = parseFloat(enviroments.IVA.observacion) / 100;
+        this._numeroIva = parseInt(enviroments.IVA.observacion);
+        this.forceUpdate(); // Si necesitas que el componente se re-renderice al tener el IVA
+    }
+
+
     setCarrito(nuevoCarrito) {
         this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
         this.forceUpdate();
@@ -65,8 +78,21 @@ export default class Carrito extends Component {
         this.forceUpdate();
     };
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
-    calcularTotalConIVA = (subtotal) => subtotal * 1.15;
-    calcularIVA = (subtotal) => subtotal * 0.15;
+
+    calcularTotalConIVA = (subtotal) => {
+        if (!this._enviromentsIva) return subtotal;
+        return subtotal * (1 + this._enviromentsIva);
+    };
+
+    calcularIVA = (subtotal) => {
+        if (!this._enviromentsIva) return 0;
+        return subtotal * this._enviromentsIva;
+    };
+
+
+    // calcularTotalConIVA = (subtotal) => subtotal * (parseFloat("1." + parseInt(this._enviromentsIva)));
+
+    // calcularIVA = (subtotal) => subtotal * (parseFloat("0." + parseInt(this._enviromentsIva)));
     calcularTotalConDescuento = (total) => total - parseFloat(this.descuentoManual || "0");
     getCarrito = () => this.carrito;
 
@@ -249,7 +275,7 @@ export default class Carrito extends Component {
                             </SScrollView2>
                         </SView>
                         <SHr height={20} />
-                        <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
+                        <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
                         <SView col={"xs-12"} style={{ marginTop: 8 }}>
                             <SText>Descuento VIP (Bs):</SText>
                             <SInput placeholder={"0"} value={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", }}
