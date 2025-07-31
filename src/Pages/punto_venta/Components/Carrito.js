@@ -173,7 +173,7 @@ export default class Carrito extends Component {
                                 borderRadius: 4,
                                 marginTop: 8,
                                 color: STheme.color.text,
-                                                            }}
+                            }}
                         />
                     </SView>
                     <SView height={20} />
@@ -235,7 +235,7 @@ export default class Carrito extends Component {
         return (
             <>
                 {subtotal <= 0 ?
-                    <SView backgroundColor={STheme.color.background} flex center style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
+                    <SView backgroundColor={STheme.color.background} flex center style={{ borderRadius: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
                     >
                         <SView row center backgroundColor='transparent' >
                             <SIconApp name='carritoproducto' height={50} fill={STheme.color.card} />
@@ -243,8 +243,11 @@ export default class Carrito extends Component {
                         </SView>
                     </SView>
                     :
-                    <SView backgroundColor={STheme.color.background} flex style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }} >
-                        <SView col={"xs-12"} row style={{ marginBottom: 8 }} >
+                    <SView backgroundColor={STheme.color.background} flex style={{ borderRadius: 8, shadowColor: "#000", shadowOffset: { width: 0, }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }} >
+
+
+
+                        <SView col={"xs-12"} row   >
                             <SView col={"xs-10 md-10"} row  >
                                 <SText fontSize={16} bold color={STheme.color.text}>Detalle venta</SText>
                             </SView>
@@ -254,30 +257,52 @@ export default class Carrito extends Component {
                                 </SView>
                             </SView>
                         </SView>
-                        <SView col={"xs-12"} flex center backgroundColor='transparent'>
+                        <SHr height={4} />
+
+                        {/* <SView flex /> */}
+
+                        <SView col={"xs-12"} flex center backgroundColor='transparent'
+
+                            style={{
+                                shadowColor: "#000",
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: 0.1,
+                                shadowRadius: 8,
+                                // elevation: 3,
+                                borderWidth: 1,
+                                borderColor: "#F3F4F6",
+                        }}
+                        >
                             <SScrollView2 disableHorizontal>
                                 <FlatList data={this.carrito} keyExtractor={(item) => item.key.toString()} renderItem={this.renderItemCarrito} />
                             </SScrollView2>
                         </SView>
-                        <SHr height={20} />
+
+                        <SHr height={8} />
                         <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
-                        <SView col={"xs-12"} style={{ marginTop: 8 }}>
-                            <SText>Descuento VIP (Bs):</SText>
-                            <SInput placeholder={"0"} value={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", }}
+                        {/* <SHr height={8} /> */}
+
+                        <SView col={"xs-12"} height={70} center >
+                            <SInput label={"Descuento VIP (Bs):"} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", }}
                                 onChangeText={(text) => {
                                     this.descuentoManual = text;
                                     this.forceUpdate();
                                 }}
                             />
+
                         </SView>
-                        <SView col={"xs-12"}  >
-                            <SInput label={"Con factura ?"} height={24} type='checkBox' border={STheme.color.card} style={{ backgroundColor: "red", }} defaultValue={false}
+                        {/* <SHr height={8} /> */}
+
+                        <SView col={"xs-12"} height={50} center  >
+                            <SInput label={"Con factura ?"} type='checkBox' defaultValue={false}
                                 onChangeText={(text) => {
                                     this.conFactura = text;
                                     this.forceUpdate();
                                 }}
                             />
                         </SView>
+                        <SHr height={8} />
+
                     </SView>
                 }
                 <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} subtotal={subtotal} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal} conFactura={this.conFactura}

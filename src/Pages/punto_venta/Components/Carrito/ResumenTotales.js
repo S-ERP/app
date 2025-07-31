@@ -9,7 +9,7 @@ export default class ResumenTotales extends Component {
             <SView
                 col={"xs-12"}
                 border={STheme.color.card}
-                style={{ borderRadius: 2, padding: 14, marginBottom: 8 }}
+                style={{ borderRadius: 2, padding: 14,   }}
                 height={95}
             >
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>

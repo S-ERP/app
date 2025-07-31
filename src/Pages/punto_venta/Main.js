@@ -86,6 +86,9 @@ export default class Main extends Component {
     renderCarritoModal() {
         if (!this.state.showCarritoModal) return null;
         let valor = this.carritoRef?.carrito.length ?? 0;
+
+
+
         return (
             <SView
                 col="xs-12"
@@ -148,8 +151,7 @@ export default class Main extends Component {
             <SPage disableScroll hidden>
                 <Header />
                 <SView col="xs-12" row flex backgroundColor={STheme.color.background}>
-                    { }
-                    <SView
+                     <SView
                         col="xs-12 sm-12 md-7.5 lg-9"
                         style={{
                             display: this.state.showCarritoModal ? "none" : "flex",
@@ -173,7 +175,7 @@ export default class Main extends Component {
                             }}
                         />
                     </SView>
-                    <SView
+                    <SView flex
                         col="xs-12 sm-12 md-4.5 lg-3"
                         style={{
                             display: this.getColSize() === 4 ? "none" : "flex",
