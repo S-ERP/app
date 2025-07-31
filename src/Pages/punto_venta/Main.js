@@ -90,7 +90,7 @@ export default class Main extends Component {
     renderCarritoModal() {
         if (!this.state.showCarritoModal) return null;
         let valor = this.carritoRef?.carrito.length ?? 0;
-        console.log("mirada " + valor);
+
         // if (valor < 1) {
         //     alert("carro vacio")
         //  };

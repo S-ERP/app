@@ -7,7 +7,7 @@ export default class FotoUsuario extends Component {
         const data = this.props.data;
         if (!data) return null;
         const url = SSocket.api.root + "usuario/" + data?.key;
-        console.log("print url " + JSON.stringify(url));
+
         return !data?.key ? <SIconApp name='profile2' width={20} fill={STheme.color.text} /> : <SImage src={url} style={{ resizeMode: "cover" }} />;
     }
 }

@@ -26,8 +26,6 @@ export default class Carrito extends Component {
         this._numeroIva = parseInt(enviroments?.IVA?.observacion);
         this.forceUpdate(); // Si necesitas que el componente se re-renderice al tener el IVA
     }
-
-
     setCarrito(nuevoCarrito) {
         this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
         this.forceUpdate();
@@ -98,15 +96,11 @@ export default class Carrito extends Component {
         if (!this._enviromentsIva) return 0;
         return subtotal * this._enviromentsIva;
     };
-
-
     // calcularTotalConIVA = (subtotal) => subtotal * (parseFloat("1." + parseInt(this._enviromentsIva)));
 
     // calcularIVA = (subtotal) => subtotal * (parseFloat("0." + parseInt(this._enviromentsIva)));
     calcularTotalConDescuento = (total) => total - parseFloat(this.descuentoManual || "0");
     getCarrito = () => this.carrito;
-
-
     getCarritoimprimir() {
         return this.carrito;
         // console.log("sakura " + JSON.stringify(this.carrito))
@@ -130,8 +124,8 @@ export default class Carrito extends Component {
                     body: `Cambio: Bs ${SMath.formatMoney(change, 2)}`,
                     type: "success",
                 });
-                console.log("🧾 Pago confirmado. Total:", totalFinal);
-                console.log("🛒 Carrito guardado:", JSON.stringify(this.carrito, null, 2));
+
+
                 this.showPaymentModal = false;
                 this.amountReceived = "";
                 this.carrito = [];
@@ -307,7 +301,7 @@ export default class Carrito extends Component {
 
                     </SView>
                 }
-                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} subtotal={subtotal} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal}
+                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} subtotal={subtotal} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal} conFactura={this.conFactura}
                     onReload={() => { this.vaciarCarrito(); }}
                 />
             </>
