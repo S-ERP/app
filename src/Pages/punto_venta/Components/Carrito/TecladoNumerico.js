@@ -272,6 +272,31 @@ export default class TecladoNumerico extends Component {
                     </SText>
                 </SView>
 
+                {/* <SText fontSize={16} color={STheme.color.text}>detalle venta:</SText> */}
+
+
+                {/* Totales */}
+                {/* <SView row justifyContent='space-between'>
+                    <SText fontSize={14}>Subtotal:</SText>
+                    <SText fontSize={14}>Bs {SMath.formatMoney(subtotal, 2)}</SText>
+                </SView>
+                <SView row justifyContent='space-between'>
+                    <SText fontSize={14}>IVA ({this._numeroIva}%):</SText>
+                    <SText fontSize={14}>+ Bs {SMath.formatMoney(totalImpuesto, 2)}</SText>
+                </SView>
+                <SView row justifyContent='space-between'>
+                    <SText fontSize={14}>Descuento:</SText>
+                    <SText fontSize={14}>- Bs {SMath.formatMoney(totalDescuento, 2)}</SText>
+                </SView>
+                <SView row justifyContent='space-between' marginBottom={12}>
+                    <SText fontSize={16} bold>Total a Pagar:</SText>
+                    <SText fontSize={16} bold color={STheme.color.warning}>Bs {SMath.formatMoney(totalFinal, 2)}</SText>
+                </SView> */}
+
+                {/* <ResumenTotales data={this.data} descuentoManual={this.descuentoManual} /> */}
+                {/* aqui luego lo veo */}
+
+
                 <SView row    >
 
 
@@ -447,6 +472,34 @@ export default class TecladoNumerico extends Component {
                         </SText>
                     </SView>
                     <SView row    >
+
+                        <SText fontSize={16} color={STheme.color.text}>detalle venta:</SText>
+
+
+                        {/* Totales */}
+                        <SView row justifyContent='space-between'>
+                            <SText fontSize={14}>Subtotal:</SText>
+                            <SText fontSize={14}>Bs {SMath.formatMoney(subtotal, 2)}</SText>
+                        </SView>
+                        <SView row justifyContent='space-between'>
+                            <SText fontSize={14}>IVA ({this._numeroIva}%):</SText>
+                            <SText fontSize={14}>+ Bs {SMath.formatMoney(totalImpuesto, 2)}</SText>
+                        </SView>
+                        <SView row justifyContent='space-between'>
+                            <SText fontSize={14}>Descuento:</SText>
+                            <SText fontSize={14}>- Bs {SMath.formatMoney(totalDescuento, 2)}</SText>
+                        </SView>
+                        <SView row justifyContent='space-between' marginBottom={12}>
+                            <SText fontSize={16} bold>Total a Pagar:</SText>
+                            <SText fontSize={16} bold color={STheme.color.warning}>Bs {SMath.formatMoney(totalFinal, 2)}</SText>
+                        </SView>
+
+
+
+
+
+
+
                         <SText fontSize={18} color={STheme.color.text}>Monto Recibido:</SText>
                         <SInput
                             ref={(ref) => (this._olvidado = ref)}
