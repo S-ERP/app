@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification } from 'servisofts-component';
+import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification, SForm, SHr, SThread } from 'servisofts-component';
 import FotoCliente from '../Foto/FotoCliente';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
+import SIconApp from '../../../../Assets/SIconApp';
+import PButtom from '../../../../Components/PButtom';
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
@@ -15,7 +17,11 @@ export default class TecladoNumerico extends Component {
         this.descuentoManual = "";
     }
     componentDidMount() {
+        setTimeout(() => {
+            this.hanldeEditTelefono();
+        }, 100); // o usar await, si el form carga datos antes
     }
+
     handleCalculatorPress = (tecla) => {
         let val = this.descuentoManual || "";
         switch (tecla) {
@@ -28,21 +34,216 @@ export default class TecladoNumerico extends Component {
         this.descuentoManual = val;
         this.forceUpdate();
     };
-    seleccionarCliente() {
-        SNavigation.navigate("/cliente", {
-            onSelect: (obj) => {
-                var cliente = {
-                    key: obj.key,
-                    nombres: obj.nombres ?? "",
-                    apellidos: obj.apellidos ?? "",
-                    telefono: obj.telefono ?? "",
-                    nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
-                }
-                this.data.cliente = cliente;
-                this.forceUpdate();
-            }
+
+    // seleccionarCliente() {
+    //     SNavigation.navigate("/cliente", {
+    //         onSelect: (obj) => {
+    //             var cliente = {
+    //                 key: obj.key,
+    //                 nombres: obj.nombres ?? "",
+    //                 apellidos: obj.apellidos ?? "",
+    //                 telefono: obj.telefono ?? "",
+    //                 nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
+    //             }
+    //             this.data.cliente = cliente;
+    //             this.forceUpdate();
+    //         }
+    //     })
+    // }
+
+
+
+    hanldeEditTelefono = () => {
+        MDL.crm.cliente.buscar_telefono(this.form?.getValues().telefono).then(e => {
+            this.form?.setValues({
+                nombres: e?.nombres || "",
+                nit: e?.nit || "",
+                razon_social: e?.razon_social || "",
+                correo: e?.correo || "",
+                // departamento: e?.departamento || "",
+            })
+        }).catch(e => {
+            this.form?.setValues({
+                nombres: "",
+                nit: "",
+                razon_social: "",
+                correo: "",
+                // departamento: "",
+            })
+            console.log(e)
         })
     }
+
+
+    form: SForm | null = null;
+
+
+    seleccionarCliente() {
+        let formRef;
+        const defaultData = this.data?.cliente ?? {};
+        // const { defaultData } = this.props;
+
+        SPopup.open({
+            key: "PopupClienteManual",
+            type: 2,
+            content: (
+                <SView
+                    width={400} withoutFeedback
+                    padding={24}
+                    backgroundColor={STheme.color.background}
+                    style={{
+                        borderRadius: 12,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 8,
+                        elevation: 6,
+                    }}
+                >
+                    <SText fontSize={18} bold center>Datos del Cliente</SText>
+                    <SHr height={16} />
+
+                    <SForm row ref={(ref: any) => this.form = ref}
+                        style={{ justifyContent: "space-between" }}
+                        inputs={{
+                            telefono: {
+                                col: "xs-12",
+                                label: "Teléfono",
+                                type: 'number',
+                                required: true,
+                                autoFocus: true,
+                                defaultValue: defaultData?.telefono,
+                                iconR: <SView width={30} height={30} center onPress={() => {
+                                    this.hanldeEditTelefono();
+                                }}>
+                                    <SIconApp name='Search' fill={STheme.color.lightGray} />
+                                </SView>,
+                                //   type: "phone",
+                                onChangeText: (text: string) => {
+                                    new SThread(2000, "buscar_telefono", true).start(() => {
+                                        this.hanldeEditTelefono();
+                                    })
+                                },
+                                onSubmitEditing: () => {
+                                    this.hanldeEditTelefono();
+                                    this.form?.focus("correo")
+                                }
+                            },
+                            nombres: {
+                                col: "xs-12",
+                                label: "Nombre completo",
+                                //   required: true,
+                                defaultValue: defaultData?.nombres,
+                                onSubmitEditing: () => this.form?.focus("departamento"),
+                            },
+
+                            correo: {
+                                col: "xs-12",
+                                label: "Correo",
+                                type: "email",
+                                //   required: true,
+                                defaultValue: defaultData?.correo,
+                                onSubmitEditing: () => this.form?.focus("departamento"),
+                            },
+
+                            razon_social: {
+                                col: "xs-12",
+                                label: "razon_social",
+                                //   required: true,
+                                defaultValue: defaultData?.razon_social,
+                                onSubmitEditing: () => this.form?.focus("departamento"),
+                            },
+
+
+                            nit: {
+                                col: "xs-12",
+                                label: "nit",
+                                //   required: true,
+                                defaultValue: defaultData?.nit,
+                                onSubmitEditing: () => this.form?.focus("departamento"),
+                            },
+
+
+                            //   key_campana: {
+                            //       col: "xs-12",
+                            //       label: "Proyecto / Campaña",
+                            //       type: "select",
+                            //       options: this.state.campanas || [],
+                            //       required: true,
+                            //       defaultValue: defaultData?.departamento,
+                            //       onSubmitEditing: () => this.form?.focus("nit"),
+                            //   },
+
+                        }}
+                        onSubmit={(e: any) => {
+
+
+
+
+                        }}
+                    />
+
+                    <SHr height={24} />
+
+                    <SView row center>
+                        <SView
+                            style={{
+                                paddingVertical: 12,
+                                paddingHorizontal: 24,
+                                backgroundColor: STheme.color.gray,
+                                borderRadius: 6,
+                                marginRight: 12,
+                            }}
+                            onPress={() => {
+                                SPopup.close("PopupClienteManual");
+                            }}
+                        >
+                            <SText color={STheme.color.text}>Cancelar</SText>
+                        </SView>
+
+                        <SView
+                            style={{
+                                paddingVertical: 12,
+                                paddingHorizontal: 24,
+                                backgroundColor: STheme.color.success,
+                                borderRadius: 6,
+                            }}
+                            onPress={() => {
+                                const data = this.form?.getValues();
+                                if (!data) return;
+
+                                const cliente = {
+
+                                    //                 key: obj.key,
+                                    //                 nombres: obj.nombres ?? "",
+                                    //                 apellidos: obj.apellidos ?? "",
+                                    //                 telefono: obj.telefono ?? "",
+                                    //                 nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
+
+                                    // key: data.nit ?? "", // Puedes usar otro identificador si lo tienes
+                                    nombres: data.nombres ?? "",
+                                    apellidos: "", // No estás capturando apellidos, así que dejamos vacío
+                                    telefono: data.telefono ?? "",
+                                    nombre_completo: `${data.nombres ?? ""}`.trim(), // O puedes usar razon_social
+                                    correo: data.correo ?? "",
+                                    nit: data.nit ?? "",
+                                    razon_social: data.razon_social ?? "",
+                                };
+
+                                this.data.cliente = cliente;
+                                this.forceUpdate();
+                                SPopup.close("PopupClienteManual");
+                            }}
+                        >
+                            <SText color={STheme.color.text}>Guardar</SText>
+                        </SView>
+                    </SView>
+                </SView>
+            )
+        });
+    }
+
+
     dataFormateada({ carrito = [], cliente = null, caja = null, vendedor = null }) {
         const carritoFormateado = carrito.map(item => ({
             key: item.key,

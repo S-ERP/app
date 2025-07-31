@@ -297,8 +297,7 @@ export default class Carrito extends Component {
                         </SView>
 
                         <SView col={"xs-12"} style={{ marginTop: 8 }}>
-                            <SText>Con factura:</SText>
-                            <SInput type='checkBox' border={STheme.color.card} style={{ backgroundColor: "transparent", }}
+                            <SInput label={"Con factura ?"} height={24} type='checkBox' border={STheme.color.card} style={{ backgroundColor: "transparent", }} defaultValue={false}
                                 onChangeText={(text) => {
                                     this.conFactura = text;
                                     this.forceUpdate();

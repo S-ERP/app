@@ -23,7 +23,19 @@ export default class cliente {
     });
     return resp.data;
   }
-  async registrar(data: Cliente) {
+
+    async buscar_nit(valor: string) {
+    const resp: any = await SSocket.sendPromise({
+      service: "crm",
+      component: "cliente",
+      type: "buscar_telefono",
+      key_empresa: Model.empresa.Action.getKey(),
+      nit: valor,
+    });
+    return resp.data;
+  }
+
+    async registrar(data: Cliente) {
     data.key_empresa = Model.empresa.Action.getKey();
     const resp: any = await SSocket.sendPromise({
       service: "crm",
