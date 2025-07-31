@@ -262,10 +262,10 @@ export default class clienteProyecto {
             states: ["enviando_whatsapp"],
         },
         {
-            key: "rellamada_whatsapp",
+            key: "rellamada",
             name: "Rellamada WhatsApp",
             color: STheme.color.blue,
-            states: ["rellamada_whatsapp"],
+            states: ["rellamada"],
         },
         {
             key: "en_whatsapp",
@@ -280,7 +280,7 @@ export default class clienteProyecto {
             states: ["confirmado"],
         },
         {
-            key: "no_llamar",
+            key: "spam",
             name: "No llamar",
             color: STheme.color.danger,
             states: ["spam", "double", "cancelado"],
