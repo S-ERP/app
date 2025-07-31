@@ -5,6 +5,7 @@ import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 import SIconApp from '../../../../Assets/SIconApp';
 import PButtom from '../../../../Components/PButtom';
+import PButtom3 from '../../../../Components/PButtom3';
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
@@ -19,9 +20,8 @@ export default class TecladoNumerico extends Component {
     componentDidMount() {
         setTimeout(() => {
             this.hanldeEditTelefono();
-        }, 100); // o usar await, si el form carga datos antes
+        }, 100);
     }
-
     handleCalculatorPress = (tecla) => {
         let val = this.descuentoManual || "";
         switch (tecla) {
@@ -34,28 +34,22 @@ export default class TecladoNumerico extends Component {
         this.descuentoManual = val;
         this.forceUpdate();
     };
-
-    // seleccionarCliente2() {
-    //     SNavigation.navigate("/cliente", {
-    //         onSelect: (obj) => {
-    //             var cliente = {
-    //                 key: obj.key,
-    //                 nombres: obj.nombres ?? "",
-    //                 apellidos: obj.apellidos ?? "",
-    //                 telefono: obj.telefono ?? "",
-    //                 nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
-    //             }
-    //             this.data.cliente = cliente;
-    //             this.forceUpdate();
-    //         }
-    //     })
-    // }
-
-
-
+    seleccionarCliente2() {
+        SNavigation.navigate("/cliente", {
+            onSelect: (obj) => {
+                var cliente = {
+                    key: obj.key,
+                    nombres: obj.nombres ?? "",
+                    apellidos: obj.apellidos ?? "",
+                    telefono: obj.telefono ?? "",
+                    nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
+                }
+                this.forceUpdate();
+            }
+        })
+    }
     hanldeEditTelefono = () => {
         MDL.crm.cliente.buscar_nit(this.form?.getValues().nit).then(e => {
-
             this.clienteDataCompleto = e;
             this.form?.setValues({
                 razon_social: e?.razon_social || "",
@@ -71,38 +65,32 @@ export default class TecladoNumerico extends Component {
             })
             console.log(e)
         })
-
     }
-
-
     form: SForm | null = null;
-
-
     seleccionarCliente() {
         let formRef;
         const defaultData = this.data?.cliente ?? {};
-        // const { defaultData } = this.props;
-
         SPopup.open({
             key: "PopupClienteManual",
-            type: 2,
+            type: 1,
             content: (
                 <SView
-                    width={400} withoutFeedback
+                    col="xs-11"
+                    withoutFeedback
                     padding={24}
                     backgroundColor={STheme.color.background}
                     style={{
+                        maxWidth: 320,
                         borderRadius: 12,
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 4 },
+                        shadowColor: "#18181b",
+                        shadowOffset: { width: 5, height: 4 },
                         shadowOpacity: 0.2,
-                        shadowRadius: 8,
-                        elevation: 6,
+                        shadowRadius: 4,
+                        elevation: 60,
                     }}
                 >
                     <SText fontSize={18} bold center>Datos del Cliente</SText>
-                    <SHr height={16} />
-
+                    { }
                     <SForm row ref={(ref: any) => this.form = ref}
                         style={{ justifyContent: "space-between" }}
                         inputs={{
@@ -110,6 +98,9 @@ export default class TecladoNumerico extends Component {
                                 col: "xs-12",
                                 label: "Nit",
                                 type: 'number',
+                                backgroundColor: "red",
+                                background: "blue",
+                                borderColor: "red",
                                 required: true,
                                 autoFocus: true,
                                 defaultValue: defaultData?.nit,
@@ -128,40 +119,51 @@ export default class TecladoNumerico extends Component {
                                     this.form?.focus("razon_social")
                                 }
                             },
-
                             razon_social: {
                                 col: "xs-12",
-                                label: "razon_social",
+                                disabled: true,
+                                label: "razon social",
                                 defaultValue: defaultData?.razon_social,
                                 onSubmitEditing: () => this.form?.focus("correo"),
                             },
-
                             correo: {
                                 col: "xs-12",
                                 label: "Correo",
+                                disabled: true,
                                 defaultValue: defaultData?.correo,
                                 onSubmitEditing: () => this.form?.focus("nombres"),
                             },
                             nombres: {
                                 col: "xs-12",
+                                disabled: true,
                                 label: "Nombre completo",
                                 defaultValue: defaultData?.nombres,
                             },
+                        }} />
+                    <SHr />
+                    <SView row col={"xs-12"}>
+                        <SView flex />
+                        <SView center style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }} >
+                            <SText color={STheme.color.text}>Cancelar</SText>
+                        </SView>
+                        <SView width={8} />
+                        <SView center style={{ backgroundColor: "#18181b", borderColor: STheme.color.gray, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }}
+                            onPress={() => {
+                                const data = this.clienteDataCompleto;
+                                if (!data) return;
+                                this.data.cliente = data;
+                                this.clienteDataCompleto = null;
 
 
-
-                        }}
-                        onSubmit={(e: any) => {
-
-
-
-
-                        }}
-                    />
-
-                    <SHr height={24} />
-
-                    <SView row center>
+                                this.forceUpdate();
+                                SPopup.close("PopupClienteManual");
+                            }}
+                        >
+                            <SText color={STheme.color.background}>Aceptar</SText>
+                        </SView>
+                    </SView>
+                    { }
+                    {/* <SView row center>
                         <SView
                             style={{
                                 paddingVertical: 12,
@@ -176,7 +178,6 @@ export default class TecladoNumerico extends Component {
                         >
                             <SText color={STheme.color.text}>Cancelar</SText>
                         </SView>
-
                         <SView
                             style={{
                                 paddingVertical: 12,
@@ -186,9 +187,7 @@ export default class TecladoNumerico extends Component {
                             }}
                             onPress={() => {
                                 const data = this.clienteDataCompleto;
-                                // const data = this.form?.getValues();
                                 if (!data) return;
-
                                 const cliente = {
                                     key: data.key ?? "",
                                     nombres: data.nombres ?? "",
@@ -197,8 +196,6 @@ export default class TecladoNumerico extends Component {
                                     nit: data.nit ?? "",
                                     razon_social: data.razon_social ?? "",
                                 };
-
-                                // this.data.cliente = cliente;
                                 this.data.cliente = this.clienteDataCompleto;
                                 console.log("indstal " + JSON.stringify(cliente))
                                 this.forceUpdate();
@@ -207,13 +204,11 @@ export default class TecladoNumerico extends Component {
                         >
                             <SText color={STheme.color.text}>Guardar</SText>
                         </SView>
-                    </SView>
+                    </SView> */}
                 </SView>
             )
         });
     }
-
-
     dataFormateada({ carrito = [], cliente = null, caja = null, vendedor = null }) {
         const carritoFormateado = carrito.map(item => ({
             key: item.key,
@@ -227,25 +222,8 @@ export default class TecladoNumerico extends Component {
             key_tipo_producto: item.key_tipo_producto ?? null,
             tipo_producto: item.tipo_producto?.descripcion ?? null,
         }));
-
         const clienteFormateado = cliente;
-        // const clienteFormateado = cliente ? {
-        //     key: cliente.key ?? null,
-        //     nombre_completo: cliente.nombre_completo ?? `${cliente.nombres ?? ""} ${cliente.apellidos ?? ""}`.trim(),
-        //     telefono: cliente.telefono ?? null,
-        // } : null;
-
-
         const vendedorFormateado = vendedor;
-
-        // const vendedorFormateado = vendedor ? {
-        //     key: vendedor.key ?? null,
-        //     nombre_completo: `${vendedor.Nombres ?? ""} ${vendedor.Apellidos ?? ""}`.trim(),
-        //     correo: vendedor.Correo ?? null,
-        //     telefono: vendedor.Telefono ?? null,
-        // } : null;
-
-
         return {
             carrito: carritoFormateado,
             cliente: clienteFormateado,
@@ -261,14 +239,208 @@ export default class TecladoNumerico extends Component {
         };
     }
     renderPopudPago() {
-        const { subtotal, totalImpuesto, totalDescuento, totalFinal } = this.props;
+        const { subtotal, totalImpuesto, totalDescuento, totalFinal, conFactura } = this.props;
+        let monto_recibido_number = parseFloat(this._recibido);
+        if (isNaN(monto_recibido_number)) monto_recibido_number = 0;
+        if (!this._recibido) this._recibido = "";
+        if (!this._devolvido) this._devolvido = 0;
+        return SPopup.open({
+            key: "PopupPago",
+            type: 1,
+            content: <SView
+                col="xs-11"
+                withoutFeedback
+                padding={24}
+                backgroundColor={STheme.color.background}
+                style={{
+                    maxWidth: 320,
+                    borderRadius: 12,
+                    shadowColor: "#18181b",
+                    shadowOffset: { width: 5, height: 4 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 4,
+                    elevation: 60,
+                }}>
+
+
+                <SText fontSize={18} bold center>Confirmar Pago</SText>
+                <SView height={20} />
+                <SView row style={{ justifyContent: "space-between", marginBottom: 12 }}>
+                    <SText fontSize={16} color={STheme.color.text}>Total a Pagar:</SText>
+                    <SText fontSize={18} bold color={STheme.color.warning}>
+                        Bs {SMath.formatMoney(totalFinal, 2)}
+                    </SText>
+                </SView>
+
+                {/* <SText fontSize={16} color={STheme.color.text}>detalle venta:</SText> */}
+
+
+                {/* Totales */}
+                {/* <SView row justifyContent='space-between'>
+                    <SText fontSize={14}>Subtotal:</SText>
+                    <SText fontSize={14}>Bs {SMath.formatMoney(subtotal, 2)}</SText>
+                </SView>
+                <SView row justifyContent='space-between'>
+                    <SText fontSize={14}>IVA ({this._numeroIva}%):</SText>
+                    <SText fontSize={14}>+ Bs {SMath.formatMoney(totalImpuesto, 2)}</SText>
+                </SView>
+                <SView row justifyContent='space-between'>
+                    <SText fontSize={14}>Descuento:</SText>
+                    <SText fontSize={14}>- Bs {SMath.formatMoney(totalDescuento, 2)}</SText>
+                </SView>
+                <SView row justifyContent='space-between' marginBottom={12}>
+                    <SText fontSize={16} bold>Total a Pagar:</SText>
+                    <SText fontSize={16} bold color={STheme.color.warning}>Bs {SMath.formatMoney(totalFinal, 2)}</SText>
+                </SView> */}
+
+                {/* <ResumenTotales data={this.data} descuentoManual={this.descuentoManual} /> */}
+                {/* aqui luego lo veo */}
+
+
+                <SView row    >
+
+
+
+                    {/* <SText fontSize={18} color={STheme.color.text}>Monto Recibido:</SText> */}
+                    <SInput
+                        ref={(ref) => (this._olvidado = ref)}
+                        label={"Monto Recibido:"}
+                        defaultValue={this._recibido}
+                        onChangeText={(text) => {
+                            this._recibido = text;
+                            const recibido = parseFloat(text);
+                            const total = parseFloat(totalFinal);
+                            if (!isNaN(recibido) && !isNaN(total)) {
+                                this._devolvido = recibido - total;
+                            } else {
+                                this._devolvido = 0;
+                            }
+                            this.forceUpdate();
+                        }}
+                        border={STheme.color.card}
+                        type='number'
+                        placeholder="Ej. 100.00"
+                        style={{
+                            height: 48,
+                            fontSize: 18,
+                            textAlign: "center",
+                            borderRadius: 4,
+                            color: STheme.color.text,
+                        }}
+                    />
+                </SView>
+                <SView height={20} />
+                <SView center row style={{ justifyContent: "space-between", marginBottom: 40 }}>
+                    <SText fontSize={16} color={STheme.color.text}>Cambio:</SText>
+                    <SText fontSize={18} bold color={totalFinal < this._recibido ? "green" : "red"}    >
+                        Bs {SMath.formatMoney(this._devolvido, 2)}
+                    </SText>
+                </SView>
+                <SView center row >
+
+                    <SView center flex style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4, height: 40 }}
+                        onPress={() => {
+                            this.showPaymentModal = false;
+                            this._recibido = "";
+                            this._devolvido = "";
+                            this.data.cliente = "";
+                            this.props.onReload();
+                            this.forceUpdate();
+                            SPopup.close("PopupPago");
+
+                        }}
+                    >
+                        <SText color={STheme.color.text}>Cancelar</SText>
+                    </SView>
+                    <SView width={8} />
+
+
+                    <SView center flex style={{ backgroundColor: "#18181b", borderColor: STheme.color.gray, borderWidth: 2, borderRadius: 4, height: 40 }}
+                        onPress={() => {
+                            if (!this._recibido || parseFloat(this._recibido) < totalFinal) {
+                                SNotification.send({
+                                    title: "Error",
+                                    body: `Monto insuficiente para pagar`,
+                                    type: "error",
+                                    color: STheme.color.error,
+                                    time: 5000,
+                                });
+                                return;
+                            }
+                            const carritoFormateado = this.carrito.map(item => ({
+                                key: item.key,
+                                descripcion: item.descripcion,
+                                precio_compra: item.precio_compra ?? 0,
+                                precio_venta: item.precio_venta ?? 0,
+                                stock: item.stock ?? 0,
+                                cantidad: item.cantidad ?? 0,
+                                key_marca: item.key_marca ?? null,
+                                marca_descripcion: item.marca?.descripcion ?? null,
+                                key_tipo_producto: item.key_tipo_producto ?? null,
+                                tipo_producto: item.tipo_producto?.descripcion ?? null,
+                            }));
+                            const datos = this.dataFormateada({
+                                caja: {
+                                    subtotal: SMath.formatMoney(subtotal, 2),
+                                    IVA: SMath.formatMoney(totalImpuesto, 2),
+                                    Descuento: SMath.formatMoney(totalDescuento, 2),
+                                    totalFinal: SMath.formatMoney(totalFinal, 2),
+                                    montoRecibido: SMath.formatMoney(this._recibido, 2),
+                                    cambio: SMath.formatMoney((this._recibido - totalFinal), 2),
+                                    conFactura: conFactura ? "si" : "no",
+                                },
+                                carrito: this.props.carrito,
+                                cliente: this.data?.cliente,
+                                vendedor: Model.usuario.Action.getUsuarioLog()
+                            });
+
+
+                            console.log("🧾 Venta Formateada:");
+                            console.log(JSON.stringify(datos, null, 2));
+
+
+                            {/* <SView flex /> */ }
+                            this.showPaymentModal = false;
+                            this._recibido = "";
+                            this._devolvido = "";
+                            this.data.cliente = "";
+                            this.props.onReload();
+                            this.forceUpdate();
+                            SPopup.close("PopupPago");
+
+
+
+                        }}
+                    >
+                        <SText color={STheme.color.background}>Confirmar Pago</SText>
+                    </SView>
+
+
+                    {/* <SView center style={{ backgroundColor: STheme.color.gray, paddingVertical: 12, paddingHorizontal: 24, borderRadius: 4, width: 150 }}
+                        onPress={() => {
+                            this.showPaymentModal = false;
+                            this._recibido = "";
+                            this.forceUpdate();
+                        }}
+                    >
+                        <SText color={STheme.color.text}>Cancelar</SText>
+                    </SView> */}
+
+                </SView>
+
+            </SView>
+            // </SView>
+        })
+    }
+    renderPopudPago2() {
+        const { subtotal, totalImpuesto, totalDescuento, totalFinal, conFactura } = this.props;
         let monto_recibido_number = parseFloat(this._recibido);
         if (isNaN(monto_recibido_number)) monto_recibido_number = 0;
         if (!this._recibido) this._recibido = "";
         if (!this._devolvido) this._devolvido = 0;
         return SPopup.open({
             key: "PopupCrearMoneda",
-            type: 2,
+            type: 1,
             content: <SView style={{
                 maxWidth: "100%",
                 maxHeight: "100%",
@@ -300,6 +472,34 @@ export default class TecladoNumerico extends Component {
                         </SText>
                     </SView>
                     <SView row    >
+
+                        <SText fontSize={16} color={STheme.color.text}>detalle venta:</SText>
+
+
+                        {/* Totales */}
+                        <SView row justifyContent='space-between'>
+                            <SText fontSize={14}>Subtotal:</SText>
+                            <SText fontSize={14}>Bs {SMath.formatMoney(subtotal, 2)}</SText>
+                        </SView>
+                        <SView row justifyContent='space-between'>
+                            <SText fontSize={14}>IVA ({this._numeroIva}%):</SText>
+                            <SText fontSize={14}>+ Bs {SMath.formatMoney(totalImpuesto, 2)}</SText>
+                        </SView>
+                        <SView row justifyContent='space-between'>
+                            <SText fontSize={14}>Descuento:</SText>
+                            <SText fontSize={14}>- Bs {SMath.formatMoney(totalDescuento, 2)}</SText>
+                        </SView>
+                        <SView row justifyContent='space-between' marginBottom={12}>
+                            <SText fontSize={16} bold>Total a Pagar:</SText>
+                            <SText fontSize={16} bold color={STheme.color.warning}>Bs {SMath.formatMoney(totalFinal, 2)}</SText>
+                        </SView>
+
+
+
+
+
+
+
                         <SText fontSize={18} color={STheme.color.text}>Monto Recibido:</SText>
                         <SInput
                             ref={(ref) => (this._olvidado = ref)}
@@ -324,7 +524,6 @@ export default class TecladoNumerico extends Component {
                                 textAlign: "center",
                                 borderRadius: 4,
                                 color: STheme.color.text,
-                                backgroundColor: "transparent"
                             }}
                         />
                     </SView>
@@ -358,7 +557,6 @@ export default class TecladoNumerico extends Component {
                                     });
                                     return;
                                 }
-
                                 const carritoFormateado = this.carrito.map(item => ({
                                     key: item.key,
                                     descripcion: item.descripcion,
@@ -371,8 +569,6 @@ export default class TecladoNumerico extends Component {
                                     key_tipo_producto: item.key_tipo_producto ?? null,
                                     tipo_producto: item.tipo_producto?.descripcion ?? null,
                                 }));
-
-                                // console.log("pinta " + JSON.stringify(this.props.carrito))
                                 const datos = this.dataFormateada({
                                     caja: {
                                         subtotal: SMath.formatMoney(subtotal, 2),
@@ -381,7 +577,7 @@ export default class TecladoNumerico extends Component {
                                         totalFinal: SMath.formatMoney(totalFinal, 2),
                                         montoRecibido: SMath.formatMoney(this._recibido, 2),
                                         cambio: SMath.formatMoney((this._recibido - totalFinal), 2),
-                                        conFactura: totalImpuesto?true:false ,
+                                        conFactura: conFactura ? "si" : "no",
                                     },
                                     carrito: this.props.carrito,
                                     cliente: this.data?.cliente,
@@ -467,9 +663,8 @@ export default class TecladoNumerico extends Component {
         );
     };
     render() {
-
         return <>
-            {/* <SText>{JSON.stringify(this.props.carrito)}</SText> */}
+            { }
             {this.renderTecladoNumerico()}
             { }
         </>

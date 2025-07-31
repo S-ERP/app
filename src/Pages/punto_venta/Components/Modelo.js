@@ -61,6 +61,7 @@ export default class Modelo extends Component {
     }
     renderModelos() {
         const modelos = this.modelos || [];
+        // const modelos = listaProductoTest;
         const tipoKey = this.props.tipoKey;
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
         if (this.props.searchText) { const search = this.props.searchText.toLowerCase(); productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search)); }

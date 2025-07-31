@@ -15,7 +15,7 @@ export default class Main extends Component {
         this.bandera = false;
         this.state = {
             showCarritoModal: false,
-            carritoModalData: [], // <-- aquí guardamos el carrito para el modal
+            carritoModalData: [],
         };
     }
     setTipoKey = (key) => {
@@ -26,20 +26,16 @@ export default class Main extends Component {
         this.searchText = text;
         this.forceUpdate();
     };
-
     componentDidMount() {
         this.renderCarrito();
         Dimensions.addEventListener("change", this.onChangeDimensions);
-
     }
     onChangeDimensions = () => {
-        this.forceUpdate(); // fuerza el render para que this.getColSize() se recalcule
+        this.forceUpdate();
     };
-
     componentWillUnmount() {
         Dimensions.removeEventListener("change", this.onChangeDimensions);
     }
-
     renderCarrito() {
         return (
             <Carrito
@@ -90,10 +86,9 @@ export default class Main extends Component {
     renderCarritoModal() {
         if (!this.state.showCarritoModal) return null;
         let valor = this.carritoRef?.carrito.length ?? 0;
-        console.log("mirada " + valor);
-        // if (valor < 1) {
-        //     alert("carro vacio")
-        //  };
+
+
+
         return (
             <SView
                 col="xs-12"
@@ -147,18 +142,16 @@ export default class Main extends Component {
     }
     getColSize() {
         const width = Dimensions.get('window').width;
-        if (width >= 1200) return parseFloat((12 / 8).toFixed(2)); // laptop grande
-        if (width >= 768) return parseFloat((12 / 4).toFixed(2)); // tablet
-        return parseFloat((12 / 3).toFixed(2)); // móvil
+        if (width >= 1200) return parseFloat((12 / 8).toFixed(2));
+        if (width >= 768) return parseFloat((12 / 4).toFixed(2));
+        return parseFloat((12 / 3).toFixed(2));
     }
-
     render() {
         return (
             <SPage disableScroll hidden>
                 <Header />
                 <SView col="xs-12" row flex backgroundColor={STheme.color.background}>
-                    { }
-                    <SView
+                     <SView
                         col="xs-12 sm-12 md-7.5 lg-9"
                         style={{
                             display: this.state.showCarritoModal ? "none" : "flex",
@@ -182,8 +175,7 @@ export default class Main extends Component {
                             }}
                         />
                     </SView>
-                    <SView
-
+                    <SView flex
                         col="xs-12 sm-12 md-4.5 lg-3"
                         style={{
                             display: this.getColSize() === 4 ? "none" : "flex",
@@ -194,7 +186,6 @@ export default class Main extends Component {
                     >
                         {this.renderCarrito()}
                     </SView>
-
                 </SView>
                 {this.btnFlotante()}
                 {this.renderCarritoModal()}

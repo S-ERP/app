@@ -19,15 +19,12 @@ export default class Carrito extends Component {
     componentDidMount() {
         this.loadData()
     }
-
     async loadData() {
         const enviroments = await MDL.contabilidad.getEnviroment();
         this._enviromentsIva = parseFloat(enviroments?.IVA?.observacion) / 100;
         this._numeroIva = parseInt(enviroments?.IVA?.observacion);
-        this.forceUpdate(); // Si necesitas que el componente se re-renderice al tener el IVA
+        this.forceUpdate();
     }
-
-
     setCarrito(nuevoCarrito) {
         this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
         this.forceUpdate();
@@ -75,46 +72,31 @@ export default class Carrito extends Component {
         });
         this.descuentoManual = 0;
         this.carrito = [];
+
+        this.data.cliente = [];
+
         this.forceUpdate();
     };
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
-
-    // calcularTotalConIVA = (subtotal) => {
-    //     if (!this._enviromentsIva) return subtotal;
-    //     return subtotal * (1 + this._enviromentsIva);
-    // };
-
     calcularTotalConIVA = (subtotal) => {
         if (!this._enviromentsIva) return subtotal;
         if (this.conFactura) {
             return subtotal * (1 + this._enviromentsIva);
         } else {
-            return subtotal; // sin factura, no se suma el IVA
+            return subtotal;
         }
         this.forceUpdate()
     };
-
     calcularIVA = (subtotal) => {
         if (!this._enviromentsIva) return 0;
         return subtotal * this._enviromentsIva;
     };
-
-
-    // calcularTotalConIVA = (subtotal) => subtotal * (parseFloat("1." + parseInt(this._enviromentsIva)));
-
-    // calcularIVA = (subtotal) => subtotal * (parseFloat("0." + parseInt(this._enviromentsIva)));
     calcularTotalConDescuento = (total) => total - parseFloat(this.descuentoManual || "0");
     getCarrito = () => this.carrito;
-
-
     getCarritoimprimir() {
         return this.carrito;
-        // console.log("sakura " + JSON.stringify(this.carrito))
     }
-    showwwwwwwwwwwwwwww() {
 
-        console.log("sakura " + JSON.stringify(this.getCarritoimprimir()))
-    }
     renderPaymentModal = () => {
         if (!this.showPaymentModal) return null;
         const subtotal = this.calcularSubtotal();
@@ -130,8 +112,6 @@ export default class Carrito extends Component {
                     body: `Cambio: Bs ${SMath.formatMoney(change, 2)}`,
                     type: "success",
                 });
-                console.log("🧾 Pago confirmado. Total:", totalFinal);
-                console.log("🛒 Carrito guardado:", JSON.stringify(this.carrito, null, 2));
                 this.showPaymentModal = false;
                 this.amountReceived = "";
                 this.carrito = [];
@@ -196,7 +176,6 @@ export default class Carrito extends Component {
                                 borderRadius: 4,
                                 marginTop: 8,
                                 color: STheme.color.text,
-                                backgroundColor: "transparent"
                             }}
                         />
                     </SView>
@@ -256,11 +235,10 @@ export default class Carrito extends Component {
         const totalDescuento = this.descuentoManual || 0;
         const totalFinal = this.calcularTotalConDescuento(totalConIVA);
         const carro = this.getCarrito();
-
         return (
             <>
                 {subtotal <= 0 ?
-                    <SView backgroundColor={STheme.color.background} flex center style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
+                    <SView backgroundColor={STheme.color.background} flex center style={{ borderRadius: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
                     >
                         <SView row center backgroundColor='transparent' >
                             <SIconApp name='carritoproducto' height={50} fill={STheme.color.card} />
@@ -268,8 +246,11 @@ export default class Carrito extends Component {
                         </SView>
                     </SView>
                     :
-                    <SView backgroundColor={STheme.color.background} flex style={{ borderRadius: 8, marginBottom: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }} >
-                        <SView col={"xs-12"} row style={{ marginBottom: 8 }} >
+                    <SView backgroundColor={STheme.color.background} flex style={{ borderRadius: 8, shadowColor: "#000", shadowOffset: { width: 0, }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }} >
+
+
+
+                        <SView col={"xs-12"} row   >
                             <SView col={"xs-10 md-10"} row  >
                                 <SText fontSize={16} bold color={STheme.color.text}>Detalle venta</SText>
                             </SView>
@@ -279,35 +260,55 @@ export default class Carrito extends Component {
                                 </SView>
                             </SView>
                         </SView>
-                        <SView col={"xs-12"} flex center backgroundColor='transparent'>
+                        <SHr height={4} />
+
+                        {/* <SView flex /> */}
+
+                        <SView col={"xs-12"} flex center backgroundColor='transparent'
+
+                            style={{
+                                shadowColor: "#000",
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: 0.1,
+                                shadowRadius: 8,
+                                // elevation: 3,
+                                borderWidth: 1,
+                                borderColor: "#F3F4F6",
+                        }}
+                        >
                             <SScrollView2 disableHorizontal>
                                 <FlatList data={this.carrito} keyExtractor={(item) => item.key.toString()} renderItem={this.renderItemCarrito} />
                             </SScrollView2>
                         </SView>
-                        <SHr height={20} />
+
+                        <SHr height={8} />
                         <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
-                        <SView col={"xs-12"} style={{ marginTop: 8 }}>
-                            <SText>Descuento VIP (Bs):</SText>
-                            <SInput placeholder={"0"} value={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", }}
+                        {/* <SHr height={8} /> */}
+
+                        <SView col={"xs-12"} height={70} center >
+                            <SInput label={"Descuento VIP (Bs):"} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", }}
                                 onChangeText={(text) => {
                                     this.descuentoManual = text;
                                     this.forceUpdate();
                                 }}
                             />
-                        </SView>
 
-                        <SView col={"xs-12"} style={{ marginTop: 8 }}>
-                            <SInput label={"Con factura ?"} height={24} type='checkBox' border={STheme.color.card} style={{ backgroundColor: "transparent", }} defaultValue={false}
+                        </SView>
+                        {/* <SHr height={8} /> */}
+
+                        <SView col={"xs-12"} height={50} center  >
+                            <SInput label={"Con factura ?"} type='checkBox' defaultValue={false}
                                 onChangeText={(text) => {
                                     this.conFactura = text;
                                     this.forceUpdate();
                                 }}
                             />
                         </SView>
+                        <SHr height={8} />
 
                     </SView>
                 }
-                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} subtotal={subtotal} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal}
+                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} subtotal={subtotal} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal} conFactura={this.conFactura}
                     onReload={() => { this.vaciarCarrito(); }}
                 />
             </>
