@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification } from 'servisofts-component';
+import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification, SForm, SHr, SThread } from 'servisofts-component';
 import FotoCliente from '../Foto/FotoCliente';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
+import SIconApp from '../../../../Assets/SIconApp';
+import PButtom from '../../../../Components/PButtom';
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
@@ -15,7 +17,11 @@ export default class TecladoNumerico extends Component {
         this.descuentoManual = "";
     }
     componentDidMount() {
+        setTimeout(() => {
+            this.hanldeEditTelefono();
+        }, 100); // o usar await, si el form carga datos antes
     }
+
     handleCalculatorPress = (tecla) => {
         let val = this.descuentoManual || "";
         switch (tecla) {
@@ -28,21 +34,186 @@ export default class TecladoNumerico extends Component {
         this.descuentoManual = val;
         this.forceUpdate();
     };
-    seleccionarCliente() {
-        SNavigation.navigate("/cliente", {
-            onSelect: (obj) => {
-                var cliente = {
-                    key: obj.key,
-                    nombres: obj.nombres ?? "",
-                    apellidos: obj.apellidos ?? "",
-                    telefono: obj.telefono ?? "",
-                    nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
-                }
-                this.data.cliente = cliente;
-                this.forceUpdate();
-            }
+
+    // seleccionarCliente2() {
+    //     SNavigation.navigate("/cliente", {
+    //         onSelect: (obj) => {
+    //             var cliente = {
+    //                 key: obj.key,
+    //                 nombres: obj.nombres ?? "",
+    //                 apellidos: obj.apellidos ?? "",
+    //                 telefono: obj.telefono ?? "",
+    //                 nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
+    //             }
+    //             this.data.cliente = cliente;
+    //             this.forceUpdate();
+    //         }
+    //     })
+    // }
+
+
+
+    hanldeEditTelefono = () => {
+        MDL.crm.cliente.buscar_nit(this.form?.getValues().nit).then(e => {
+
+            this.clienteDataCompleto = e;
+            this.form?.setValues({
+                razon_social: e?.razon_social || "",
+                correo: e?.correo || "",
+                nombres: e?.nombres || "",
+            })
+            this.forceUpdate()
+        }).catch(e => {
+            this.form?.setValues({
+                razon_social: "",
+                correo: "",
+                nombres: "",
+            })
+            console.log(e)
         })
+
     }
+
+
+    form: SForm | null = null;
+
+
+    seleccionarCliente() {
+        let formRef;
+        const defaultData = this.data?.cliente ?? {};
+        // const { defaultData } = this.props;
+
+        SPopup.open({
+            key: "PopupClienteManual",
+            type: 2,
+            content: (
+                <SView
+                    width={400} withoutFeedback
+                    padding={24}
+                    backgroundColor={STheme.color.background}
+                    style={{
+                        borderRadius: 12,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 8,
+                        elevation: 6,
+                    }}
+                >
+                    <SText fontSize={18} bold center>Datos del Cliente</SText>
+                    <SHr height={16} />
+
+                    <SForm row ref={(ref: any) => this.form = ref}
+                        style={{ justifyContent: "space-between" }}
+                        inputs={{
+                            nit: {
+                                col: "xs-12",
+                                label: "Nit",
+                                type: 'number',
+                                required: true,
+                                autoFocus: true,
+                                defaultValue: defaultData?.nit,
+                                iconR: <SView width={30} height={30} center onPress={() => {
+                                    this.hanldeEditTelefono();
+                                }}>
+                                    <SIconApp name='Search' fill={STheme.color.lightGray} />
+                                </SView>,
+                                onChangeText: (text: string) => {
+                                    new SThread(2000, "buscar_nit", true).start(() => {
+                                        this.hanldeEditTelefono();
+                                    })
+                                },
+                                onSubmitEditing: () => {
+                                    this.hanldeEditTelefono();
+                                    this.form?.focus("razon_social")
+                                }
+                            },
+
+                            razon_social: {
+                                col: "xs-12",
+                                label: "razon_social",
+                                defaultValue: defaultData?.razon_social,
+                                onSubmitEditing: () => this.form?.focus("correo"),
+                            },
+
+                            correo: {
+                                col: "xs-12",
+                                label: "Correo",
+                                defaultValue: defaultData?.correo,
+                                onSubmitEditing: () => this.form?.focus("nombres"),
+                            },
+                            nombres: {
+                                col: "xs-12",
+                                label: "Nombre completo",
+                                defaultValue: defaultData?.nombres,
+                            },
+
+
+
+                        }}
+                        onSubmit={(e: any) => {
+
+
+
+
+                        }}
+                    />
+
+                    <SHr height={24} />
+
+                    <SView row center>
+                        <SView
+                            style={{
+                                paddingVertical: 12,
+                                paddingHorizontal: 24,
+                                backgroundColor: STheme.color.gray,
+                                borderRadius: 6,
+                                marginRight: 12,
+                            }}
+                            onPress={() => {
+                                SPopup.close("PopupClienteManual");
+                            }}
+                        >
+                            <SText color={STheme.color.text}>Cancelar</SText>
+                        </SView>
+
+                        <SView
+                            style={{
+                                paddingVertical: 12,
+                                paddingHorizontal: 24,
+                                backgroundColor: STheme.color.success,
+                                borderRadius: 6,
+                            }}
+                            onPress={() => {
+                                const data = this.clienteDataCompleto;
+                                // const data = this.form?.getValues();
+                                if (!data) return;
+
+                                const cliente = {
+                                    key: data.key ?? "",
+                                    nombres: data.nombres ?? "",
+                                    telefono: data.telefono ?? "",
+                                    correo: data.correo ?? "",
+                                    nit: data.nit ?? "",
+                                    razon_social: data.razon_social ?? "",
+                                };
+
+                                // this.data.cliente = cliente;
+                                this.data.cliente = this.clienteDataCompleto;
+                                console.log("indstal " + JSON.stringify(cliente))
+                                this.forceUpdate();
+                                SPopup.close("PopupClienteManual");
+                            }}
+                        >
+                            <SText color={STheme.color.text}>Guardar</SText>
+                        </SView>
+                    </SView>
+                </SView>
+            )
+        });
+    }
+
+
     dataFormateada({ carrito = [], cliente = null, caja = null, vendedor = null }) {
         const carritoFormateado = carrito.map(item => ({
             key: item.key,
@@ -56,17 +227,25 @@ export default class TecladoNumerico extends Component {
             key_tipo_producto: item.key_tipo_producto ?? null,
             tipo_producto: item.tipo_producto?.descripcion ?? null,
         }));
-        const clienteFormateado = cliente ? {
-            key: cliente.key ?? null,
-            nombre_completo: cliente.nombre_completo ?? `${cliente.nombres ?? ""} ${cliente.apellidos ?? ""}`.trim(),
-            telefono: cliente.telefono ?? null,
-        } : null;
-        const vendedorFormateado = vendedor ? {
-            key: vendedor.key ?? null,
-            nombre_completo: `${vendedor.Nombres ?? ""} ${vendedor.Apellidos ?? ""}`.trim(),
-            correo: vendedor.Correo ?? null,
-            telefono: vendedor.Telefono ?? null,
-        } : null;
+
+        const clienteFormateado = cliente;
+        // const clienteFormateado = cliente ? {
+        //     key: cliente.key ?? null,
+        //     nombre_completo: cliente.nombre_completo ?? `${cliente.nombres ?? ""} ${cliente.apellidos ?? ""}`.trim(),
+        //     telefono: cliente.telefono ?? null,
+        // } : null;
+
+
+        const vendedorFormateado = vendedor;
+
+        // const vendedorFormateado = vendedor ? {
+        //     key: vendedor.key ?? null,
+        //     nombre_completo: `${vendedor.Nombres ?? ""} ${vendedor.Apellidos ?? ""}`.trim(),
+        //     correo: vendedor.Correo ?? null,
+        //     telefono: vendedor.Telefono ?? null,
+        // } : null;
+
+
         return {
             carrito: carritoFormateado,
             cliente: clienteFormateado,
@@ -202,6 +381,7 @@ export default class TecladoNumerico extends Component {
                                         totalFinal: SMath.formatMoney(totalFinal, 2),
                                         montoRecibido: SMath.formatMoney(this._recibido, 2),
                                         cambio: SMath.formatMoney((this._recibido - totalFinal), 2),
+                                        conFactura: totalImpuesto?true:false ,
                                     },
                                     carrito: this.props.carrito,
                                     cliente: this.data?.cliente,
