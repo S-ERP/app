@@ -262,6 +262,12 @@ export default class clienteProyecto {
             states: ["enviando_whatsapp"],
         },
         {
+            key: "rellamada",
+            name: "Rellamada WhatsApp",
+            color: STheme.color.blue,
+            states: ["rellamada"],
+        },
+        {
             key: "en_whatsapp",
             name: "En proceso Whatsapp",
             color: STheme.color.warning,
@@ -274,11 +280,12 @@ export default class clienteProyecto {
             states: ["confirmado"],
         },
         {
-            key: "no_llamar",
+            key: "spam",
             name: "No llamar",
             color: STheme.color.danger,
             states: ["spam", "double", "cancelado"],
         },
+
     ];
     stagesDelivery = [
         {
