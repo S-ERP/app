@@ -82,6 +82,7 @@ import ReporteConteoInventario from "./inventario/almacen/ReporteConteoInventari
 import testpuntoventa from "./testpuntoventa";
 import punto_venta from "./punto_venta";
 import Main from "./punto_venta/Main";
+import Galaxia from "./punto_venta/Galaxia";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -165,4 +166,5 @@ export default SPage.combinePages("/", {
   "productos/reporte_conteo_inventario": ReporteConteoInventario,
   puntoventa11111: testpuntoventa,
   puntoventa: Main,
+//   puntoventa: Galaxia,
 });

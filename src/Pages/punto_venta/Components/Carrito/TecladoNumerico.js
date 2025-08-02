@@ -8,6 +8,8 @@ import PButtom from '../../../../Components/PButtom';
 import PButtom3 from '../../../../Components/PButtom3';
 import ResumenTotales from './ResumenTotales';
 import ConfirmarPago from './ConfirmarPago';
+import Galaxia from '../../Galaxia';
+import FotoCliente2 from '../Foto/FotoCliente2';
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
@@ -332,7 +334,9 @@ export default class TecladoNumerico extends Component {
                                 },
 
                                 carrito: this.props.carrito,
-                                cliente: this.data?.cliente,
+                                cliente: this.data.cliente,
+                                // cliente: this.props.data ? this.props.data?.cliente : this.data.cliente,
+                                // cliente: this.data?.cliente,
                                 vendedor: Model.usuario.Action.getUsuarioLog()
                             });
 
@@ -382,8 +386,18 @@ export default class TecladoNumerico extends Component {
             <>
                 <SView col={"xs-0 sm-12"} row color={STheme.color.danger}>
                     <SView col={"xs-4"}>
+                        onReload={() => { this.vaciarCarrito(); }}
+
+
                         <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
-                            <SView col={"xs-12 md-12"} row center onPress={() => this.seleccionarCliente()}>
+                            <FotoCliente2 onReload2={(cliente) => {
+
+                                this.data.cliente = cliente;
+                                this.forceUpdate();
+
+                                console.log("mira " + JSON.stringify(cliente))
+                            }}  ></FotoCliente2>
+                            {/* <SView col={"xs-12 md-12"} row center onPress={() => this.seleccionarCliente()}>
                                 <SView col={"xs-5 md-5"}    >
                                     <SView center backgroundColor={STheme.color.background} style={{
                                         minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
@@ -396,8 +410,10 @@ export default class TecladoNumerico extends Component {
                                     <SText style={{ ...style_text, fontSize: 12 }}>{nombres || "Cliente"}</SText>
                                     {key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente</SText> : null}
                                 </SView>
-                            </SView>
+                            </SView> */}
                         </SView>
+
+
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                             this.renderPopudPago()
 
@@ -421,7 +437,7 @@ export default class TecladoNumerico extends Component {
                     </SView>
                 </SView>
                 {this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-                    // this.renderPopudPago()
+                    this.renderPopudPago()
                     // < ConfirmarPago ></ConfirmarPago >
 
                 }}>

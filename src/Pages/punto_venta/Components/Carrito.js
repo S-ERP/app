@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
-import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath, SButtom, SNotification, SNavigation, SIcon } from 'servisofts-component';
+import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath, SButtom, SNotification, SNavigation, SIcon, SPopup, SForm, SThread } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import SIconApp from '../../../Assets/SIconApp';
 import Model from '../../../Model';
@@ -18,7 +18,12 @@ export default class Carrito extends Component {
     amountReceived = "";
     componentDidMount() {
         this.loadData()
+        setTimeout(() => {
+            this.hanldeEditTelefono();
+        }, 100);
     }
+
+
     async loadData() {
         const enviroments = await MDL.contabilidad.getEnviroment();
         this._enviromentsIva = parseFloat(enviroments?.IVA?.observacion) / 100;
@@ -228,6 +233,131 @@ export default class Carrito extends Component {
             onEliminar={() => this.eliminarItem(item)}
         />
     );
+
+        hanldeEditTelefono = () => {
+            MDL.crm.cliente.buscar_nit(this.form?.getValues().nit).then(e => {
+                this.clienteDataCompleto = e;
+
+                // this.data?.cliente = e;
+                this.form?.setValues({
+                    razon_social: e?.razon_social || "",
+                    correo: e?.correo || "",
+                    nombres: e?.nombres || "",
+                })
+                this.forceUpdate()
+            }).catch(e => {
+                this.form?.setValues({
+                    razon_social: "",
+                    correo: "",
+                    nombres: "",
+                })
+                console.log(e)
+            })
+    }
+
+
+      form: SForm | null = null;
+        seleccionarCliente() {
+            let formRef;
+            const defaultData = this.data?.cliente ?? {};
+            SPopup.open({
+                key: "PopupClienteManual",
+                type: 1,
+                content: (
+                    <SView
+                        col="xs-11"
+                        withoutFeedback
+                        padding={24}
+                        backgroundColor={STheme.color.background}
+                        style={{
+                            maxWidth: 320,
+                            borderRadius: 12,
+                            shadowColor: "#18181b",
+                            shadowOffset: { width: 5, height: 4 },
+                            shadowOpacity: 0.2,
+                            shadowRadius: 4,
+                            elevation: 60,
+                        }}
+                    >
+                        <SText fontSize={18} bold center>Datos del Cliente</SText>
+                        { }
+                        <SForm row ref={(ref: any) => this.form = ref}
+                            style={{ justifyContent: "space-between" }}
+                            inputs={{
+                                nit: {
+                                    col: "xs-12",
+                                    label: "Nit",
+                                    type: 'number',
+                                    backgroundColor: "red",
+                                    background: "blue",
+                                    borderColor: "red",
+                                    required: true,
+                                    autoFocus: true,
+                                    defaultValue: defaultData?.nit,
+                                    iconR: <SView width={30} height={30} center onPress={() => {
+                                        this.hanldeEditTelefono();
+                                    }}>
+                                        <SIconApp name='Search' fill={STheme.color.lightGray} />
+                                    </SView>,
+                                    onChangeText: (text: string) => {
+                                        new SThread(2000, "buscar_nit", true).start(() => {
+                                            this.hanldeEditTelefono();
+                                        })
+                                    },
+                                    onSubmitEditing: () => {
+                                        this.hanldeEditTelefono();
+                                        this.form?.focus("razon_social")
+                                    }
+                                },
+                                razon_social: {
+                                    col: "xs-12",
+                                    disabled: true,
+                                    label: "razon social",
+                                    defaultValue: defaultData?.razon_social,
+                                    onSubmitEditing: () => this.form?.focus("correo"),
+                                },
+                                correo: {
+                                    col: "xs-12",
+                                    label: "Correo",
+                                    disabled: true,
+                                    defaultValue: defaultData?.correo,
+                                    onSubmitEditing: () => this.form?.focus("nombres"),
+                                },
+                                nombres: {
+                                    col: "xs-12",
+                                    disabled: true,
+                                    label: "Nombre completo",
+                                    defaultValue: defaultData?.nombres,
+                                },
+                            }} />
+                        <SHr />
+                        <SView row col={"xs-12"}>
+                            <SView flex />
+                            <SView center style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }} >
+                                <SText color={STheme.color.text}>Cancelar</SText>
+                            </SView>
+                            <SView width={8} />
+                            <SView center style={{ backgroundColor: "#18181b", borderColor: STheme.color.gray, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }}
+                                onPress={() => {
+                                    const data = this.clienteDataCompleto;
+                                    if (!data) return;
+                                    this.data.cliente = data;
+                                    this.clienteDataCompleto = null;
+
+
+                                    this.forceUpdate();
+                                    SPopup.close("PopupClienteManual");
+                                }}
+                            >
+                                <SText color={STheme.color.background}>Aceptar</SText>
+                            </SView>
+                        </SView>
+                    </SView>
+                )
+            });
+        }
+
+
     renderCarrito = () => {
         const subtotal = this.calcularSubtotal();
         const totalConIVA = this.calcularTotalConIVA(subtotal);
@@ -274,7 +404,7 @@ export default class Carrito extends Component {
                                 // elevation: 3,
                                 borderWidth: 1,
                                 borderColor: "#F3F4F6",
-                        }}
+                            }}
                         >
                             <SScrollView2 disableHorizontal>
                                 <FlatList data={this.carrito} keyExtractor={(item) => item.key.toString()} renderItem={this.renderItemCarrito} />
@@ -306,9 +436,44 @@ export default class Carrito extends Component {
                         </SView>
                         <SHr height={8} />
 
+                        {/* <FotoCliente data={this.data.cliente} /> */}
+
+
+
+                        <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
+                            <SView col={"xs-12 md-12"} row center
+                            onPress={() => this.seleccionarCliente()}
+                            >
+                                <SView col={"xs-5 md-5"}    >
+                                    <SView center backgroundColor={STheme.color.background} style={{
+                                        minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
+                                        marginRight: (this.data.cliente?.key ? 6 : 14), overflow: "hidden",
+                                    }}>
+                                        <FotoCliente data={this.data.cliente} />
+                                    </SView>
+                                </SView>
+                                <SView flex  >
+                                    <SText style={{
+                                        color: STheme.color.text,
+                                        fontSize: 12,
+                                        fontWeight: "bold", fontSize: 12
+                                    }}>{this.data.cliente?.nombres || "Clientesss"}</SText>
+
+                                    {/* {this.data.clientes?.key ? <SText style={{
+                                        color: STheme.color.text,
+                                        fontSize: 12,
+                                        fontWeight: "bold", fontSize: 12, color: "#26e9aeff"
+                                    }}>Clie55555555555555555nte</SText> : null} */}
+
+
+                                </SView>
+                            </SView>
+                        </SView>
+
+
                     </SView>
                 }
-                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} subtotal={subtotal} numeroIva={this._numeroIva}  totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal} conFactura={this.conFactura}
+                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} subtotal={subtotal} numeroIva={this._numeroIva} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal} conFactura={this.conFactura}
                     onReload={() => { this.vaciarCarrito(); }}
                 />
             </>
