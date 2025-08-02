@@ -43,19 +43,19 @@ export default class FotoCliente2 extends Component {
         })
     }
 
-      seleccionarCliente2() {
-            SNavigation.navigate("/cliente", {
-                onSelect: (obj) => {
-                    var cliente = {
-                        key: obj.key,
-                        nombres: obj.nombres ?? "",
-                        apellidos: obj.apellidos ?? "",
-                        telefono: obj.telefono ?? "",
-                        nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
-                    }
-                    this.forceUpdate();
+    seleccionarCliente2() {
+        SNavigation.navigate("/cliente", {
+            onSelect: (obj) => {
+                var cliente = {
+                    key: obj.key,
+                    nombres: obj.nombres ?? "",
+                    apellidos: obj.apellidos ?? "",
+                    telefono: obj.telefono ?? "",
+                    nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
                 }
-            })
+                this.forceUpdate();
+            }
+        })
     }
 
     form: SForm | null = null;
@@ -181,30 +181,27 @@ export default class FotoCliente2 extends Component {
 
         return (
             <>
-                <SView col={"xs-0 sm-12"} row color={STheme.color.danger}>
-                    <SView col={"xs-4"}>
+
+                <SView center row backgroundColor={STheme.color.darkGray} style={{ height: 44, borderRadius: 2, margin: 2 }}>
+                    <SView col={"xs-12  "} row center onPress={() => this.seleccionarCliente()}>
 
 
-                        <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
-                            <SView col={"xs-12 md-12"} row center onPress={() => this.seleccionarCliente()}>
-                                <SView col={"xs-5 md-5"}    >
-                                    <SView center backgroundColor={STheme.color.background} style={{
-                                        minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
-                                        marginRight: (key ? 6 : 14), overflow: "hidden",
-                                    }}>
+                        <SView center col={"xs-5  "}>
+                            <SView center backgroundColor={STheme.color.background} style={{
+                                minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4, marginRight: (key ? 6 : 14), overflow: "hidden",
+                            }}>
 
-                                        {!key ? <SIconApp name='profile2' width={20} fill={STheme.color.text} /> : <SImage src={url} style={{ resizeMode: "cover" }} />}
-                                        {/* <FotoCliente data={cliente} /> */}
-                                    </SView>
-                                </SView>
-                                <SView flex  >
-                                    <SText style={{ ...style_text, fontSize: 12 }}>{nombres || "Cliente"}</SText>
-                                    {key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente</SText> : null}
-                                </SView>
+                                {!key ? <SIconApp name='profile2' width={20} fill={STheme.color.text} /> : <SImage src={url} style={{ resizeMode: "cover" }} />}
                             </SView>
+                        </SView>
+
+                        <SView flex center >
+                            <SText style={{ ...style_text, fontSize: 12 }}>{nombres || "Cliente"}</SText>
+                            {key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente</SText> : null}
                         </SView>
                     </SView>
                 </SView>
+
 
 
             </>

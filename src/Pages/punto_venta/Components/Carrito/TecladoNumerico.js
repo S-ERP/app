@@ -22,16 +22,6 @@ export default class TecladoNumerico extends Component {
         this.descuentoManual = "";
     }
 
-    componentDidMount() {
-        this.inventarioChavalEventos = MDL.punto_venta.addEventListener("alvaroEventos", (e) => {
-            this.cargarTabla();
-            console.log("alvaroEventos", e);
-        })
-
-        setTimeout(() => {
-            this.hanldeEditTelefono();
-        }, 100);
-    }
 
 
 
@@ -47,138 +37,9 @@ export default class TecladoNumerico extends Component {
         this.descuentoManual = val;
         this.forceUpdate();
     };
-    seleccionarCliente2() {
-        SNavigation.navigate("/cliente", {
-            onSelect: (obj) => {
-                var cliente = {
-                    key: obj.key,
-                    nombres: obj.nombres ?? "",
-                    apellidos: obj.apellidos ?? "",
-                    telefono: obj.telefono ?? "",
-                    nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
-                }
-                this.forceUpdate();
-            }
-        })
-    }
-    hanldeEditTelefono = () => {
-        MDL.crm.cliente.buscar_nit(this.form?.getValues().nit).then(e => {
-            this.clienteDataCompleto = e;
-            this.form?.setValues({
-                razon_social: e?.razon_social || "",
-                correo: e?.correo || "",
-                nombres: e?.nombres || "",
-            })
-            this.forceUpdate()
-        }).catch(e => {
-            this.form?.setValues({
-                razon_social: "",
-                correo: "",
-                nombres: "",
-            })
-            console.log(e)
-        })
-    }
-    form: SForm | null = null;
-    seleccionarCliente() {
-        let formRef;
-        const defaultData = this.data?.cliente ?? {};
-        SPopup.open({
-            key: "PopupClienteManual",
-            type: 1,
-            content: (
-                <SView
-                    col="xs-11"
-                    withoutFeedback
-                    padding={24}
-                    backgroundColor={STheme.color.background}
-                    style={{
-                        maxWidth: 320,
-                        borderRadius: 12,
-                        shadowColor: "#18181b",
-                        shadowOffset: { width: 5, height: 4 },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 4,
-                        elevation: 60,
-                    }}
-                >
-                    <SText fontSize={18} bold center>Datos del Cliente</SText>
-                    { }
-                    <SForm row ref={(ref: any) => this.form = ref}
-                        style={{ justifyContent: "space-between" }}
-                        inputs={{
-                            nit: {
-                                col: "xs-12",
-                                label: "Nit",
-                                type: 'number',
-                                backgroundColor: "red",
-                                background: "blue",
-                                borderColor: "red",
-                                required: true,
-                                autoFocus: true,
-                                defaultValue: defaultData?.nit,
-                                iconR: <SView width={30} height={30} center onPress={() => {
-                                    this.hanldeEditTelefono();
-                                }}>
-                                    <SIconApp name='Search' fill={STheme.color.lightGray} />
-                                </SView>,
-                                onChangeText: (text: string) => {
-                                    new SThread(2000, "buscar_nit", true).start(() => {
-                                        this.hanldeEditTelefono();
-                                    })
-                                },
-                                onSubmitEditing: () => {
-                                    this.hanldeEditTelefono();
-                                    this.form?.focus("razon_social")
-                                }
-                            },
-                            razon_social: {
-                                col: "xs-12",
-                                disabled: true,
-                                label: "razon social",
-                                defaultValue: defaultData?.razon_social,
-                                onSubmitEditing: () => this.form?.focus("correo"),
-                            },
-                            correo: {
-                                col: "xs-12",
-                                label: "Correo",
-                                disabled: true,
-                                defaultValue: defaultData?.correo,
-                                onSubmitEditing: () => this.form?.focus("nombres"),
-                            },
-                            nombres: {
-                                col: "xs-12",
-                                disabled: true,
-                                label: "Nombre completo",
-                                defaultValue: defaultData?.nombres,
-                            },
-                        }} />
-                    <SHr />
-                    <SView row col={"xs-12"}>
-                        <SView flex />
-                        <SView center style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }} >
-                            <SText color={STheme.color.text}>Cancelar</SText>
-                        </SView>
-                        <SView width={8} />
-                        <SView center style={{ backgroundColor: "#18181b", borderColor: STheme.color.gray, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }}
-                            onPress={() => {
-                                const data = this.clienteDataCompleto;
-                                if (!data) return;
-                                this.data.cliente = data;
-                                this.clienteDataCompleto = null;
 
 
-                                this.forceUpdate();
-                                SPopup.close("PopupClienteManual");
-                            }}
-                        >
-                            <SText color={STheme.color.background}>Aceptar</SText>
-                        </SView>
-                    </SView>
-                </SView>
-            )
-        });
-    }
+
     dataFormateada({ carrito = [], cliente = null, caja = null, vendedor = null }) {
         const carritoFormateado = carrito.map(item => ({
             key: item.key,
@@ -386,7 +247,6 @@ export default class TecladoNumerico extends Component {
             <>
                 <SView col={"xs-0 sm-12"} row color={STheme.color.danger}>
                     <SView col={"xs-4"}>
-                        onReload={() => { this.vaciarCarrito(); }}
 
 
                         <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
@@ -395,22 +255,9 @@ export default class TecladoNumerico extends Component {
                                 this.data.cliente = cliente;
                                 this.forceUpdate();
 
-                                console.log("mira " + JSON.stringify(cliente))
+                                // console.log("mira " + JSON.stringify(cliente))
                             }}  ></FotoCliente2>
-                            {/* <SView col={"xs-12 md-12"} row center onPress={() => this.seleccionarCliente()}>
-                                <SView col={"xs-5 md-5"}    >
-                                    <SView center backgroundColor={STheme.color.background} style={{
-                                        minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
-                                        marginRight: (key ? 6 : 14), overflow: "hidden",
-                                    }}>
-                                        <FotoCliente data={cliente} />
-                                    </SView>
-                                </SView>
-                                <SView flex  >
-                                    <SText style={{ ...style_text, fontSize: 12 }}>{nombres || "Cliente"}</SText>
-                                    {key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente</SText> : null}
-                                </SView>
-                            </SView> */}
+
                         </SView>
 
 
@@ -419,7 +266,7 @@ export default class TecladoNumerico extends Component {
 
                             // <ConfirmarPago />
                         }}>
-                            <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagaraaaa</SText>
+                            <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagar</SText>
                         </SView>
                     </SView>
                     <SView col={"xs-8"}>
