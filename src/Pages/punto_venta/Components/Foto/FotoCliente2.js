@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification, SForm, SHr, SThread, SImage } from 'servisofts-component';
 import MDL from '../../../../MDL';
-import FotoCliente from './FotoCliente';
+// import FotoCliente from './FotoCliente';
 import SIconApp from '../../../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
 

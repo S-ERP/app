@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification, SForm, SHr, SThread } from 'servisofts-component';
-import FotoCliente from '../Foto/FotoCliente';
+// import FotoCliente from '../Foto/FotoCliente';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 import SIconApp from '../../../../Assets/SIconApp';
@@ -10,6 +10,7 @@ import ResumenTotales from './ResumenTotales';
 import ConfirmarPago from './ConfirmarPago';
 import Galaxia from '../../Galaxia';
 import FotoCliente2 from '../Foto/FotoCliente2';
+import PopupConfirmaPago from '../Foto/PopupConfirmaPago';
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
@@ -89,7 +90,7 @@ export default class TecladoNumerico extends Component {
                 style={{
                     maxWidth: 320,
                     borderRadius: 12,
-                    shadowColor: "#18181b",
+                    shadowColor: STheme.color.gray,
                     shadowOffset: { width: 5, height: 4 },
                     shadowOpacity: 0.2,
                     shadowRadius: 4,
@@ -194,7 +195,7 @@ export default class TecladoNumerico extends Component {
                                     conFactura: conFactura ? "si" : "no",
                                 },
 
-                                carrito: this.props.carrito,
+                                carrito: this.props?.carrito,
                                 cliente: this.data.cliente,
                                 // cliente: this.props.data ? this.props.data?.cliente : this.data.cliente,
                                 // cliente: this.data?.cliente,
@@ -232,6 +233,11 @@ export default class TecladoNumerico extends Component {
     renderTecladoNumerico = () => {
         const cliente = this.data.cliente ?? {};
         const { key, nombres, apellidos, telefono, nombre_completo } = cliente;
+
+
+        const { subtotal, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
+
+
         const style_text = {
             color: STheme.color.text,
             fontSize: 12,
@@ -254,19 +260,28 @@ export default class TecladoNumerico extends Component {
 
                                 this.data.cliente = cliente;
                                 this.forceUpdate();
-
-                                // console.log("mira " + JSON.stringify(cliente))
                             }}  ></FotoCliente2>
 
                         </SView>
 
 
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-                            this.renderPopudPago()
 
+                            let carro = this.props?.carrito || {};
+
+                            PopupConfirmaPago.open({
+                                subtotal: subtotal,
+                                totalImpuesto: totalImpuesto,
+                                totalDescuento: totalDescuento,
+                                totalFinal: totalFinal,
+                                numeroIva: numeroIva,
+                                conFactura: conFactura,
+                                carrito: this.props?.carrito || {},
+                                cliente: this.data.cliente
+                            })
                             // <ConfirmarPago />
                         }}>
-                            <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagar</SText>
+                            <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagare</SText>
                         </SView>
                     </SView>
                     <SView col={"xs-8"}>
@@ -282,15 +297,28 @@ export default class TecladoNumerico extends Component {
                             </SView>
                         ))}
                     </SView>
-                </SView>
-                {this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-                    this.renderPopudPago()
-                    // < ConfirmarPago ></ConfirmarPago >
+                </SView >
+                {
+                    this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
+                        // this.renderPopudPago()
 
-                }}>
-                    <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pagosss</SText>
-                </SView>
-                    : null}
+
+                        PopupConfirmaPago.open({
+                            subtotal: subtotal,
+                            totalImpuesto: totalImpuesto,
+                            totalDescuento: totalDescuento,
+                            totalFinal: totalFinal,
+                            numeroIva: numeroIva,
+                            conFactura: conFactura,
+                            carrito: this.props?.carrito || {},
+                            cliente: this.data.cliente
+                        })
+
+                    }}>
+                        <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pagosss</SText>
+                    </SView>
+                        : null
+                }
             </>
         );
     };

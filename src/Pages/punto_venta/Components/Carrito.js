@@ -4,7 +4,7 @@ import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath, SButtom
 import SSocket from 'servisofts-socket';
 import SIconApp from '../../../Assets/SIconApp';
 import Model from '../../../Model';
-import FotoCliente from './Foto/FotoCliente';
+// import FotoCliente from './Foto/FotoCliente';
 import FotoModelo from './Foto/FotoModelo';
 import CarritoItem from './Carrito/CarritoItem';
 import ResumenTotales from './Carrito/ResumenTotales';
@@ -147,7 +147,7 @@ export default class Carrito extends Component {
                     style={{
                         borderRadius: 12,
                         padding: 24,
-                        shadowColor: "#000",
+                        shadowColor: STheme.color.card,
                         shadowOffset: { width: 0, height: 4 },
                         shadowOpacity: 0.2,
                         shadowRadius: 8,
@@ -234,128 +234,128 @@ export default class Carrito extends Component {
         />
     );
 
-        hanldeEditTelefono = () => {
-            MDL.crm.cliente.buscar_nit(this.form?.getValues().nit).then(e => {
-                this.clienteDataCompleto = e;
+    hanldeEditTelefono = () => {
+        MDL.crm.cliente.buscar_nit(this.form?.getValues().nit).then(e => {
+            this.clienteDataCompleto = e;
 
-                // this.data?.cliente = e;
-                this.form?.setValues({
-                    razon_social: e?.razon_social || "",
-                    correo: e?.correo || "",
-                    nombres: e?.nombres || "",
-                })
-                this.forceUpdate()
-            }).catch(e => {
-                this.form?.setValues({
-                    razon_social: "",
-                    correo: "",
-                    nombres: "",
-                })
-                console.log(e)
+            // this.data?.cliente = e;
+            this.form?.setValues({
+                razon_social: e?.razon_social || "",
+                correo: e?.correo || "",
+                nombres: e?.nombres || "",
             })
+            this.forceUpdate()
+        }).catch(e => {
+            this.form?.setValues({
+                razon_social: "",
+                correo: "",
+                nombres: "",
+            })
+            console.log(e)
+        })
     }
 
 
-      form: SForm | null = null;
-        seleccionarCliente() {
-            let formRef;
-            const defaultData = this.data?.cliente ?? {};
-            SPopup.open({
-                key: "PopupClienteManual",
-                type: 1,
-                content: (
-                    <SView
-                        col="xs-11"
-                        withoutFeedback
-                        padding={24}
-                        backgroundColor={STheme.color.background}
-                        style={{
-                            maxWidth: 320,
-                            borderRadius: 12,
-                            shadowColor: "#18181b",
-                            shadowOffset: { width: 5, height: 4 },
-                            shadowOpacity: 0.2,
-                            shadowRadius: 4,
-                            elevation: 60,
-                        }}
-                    >
-                        <SText fontSize={18} bold center>Datos del Cliente</SText>
-                        { }
-                        <SForm row ref={(ref: any) => this.form = ref}
-                            style={{ justifyContent: "space-between" }}
-                            inputs={{
-                                nit: {
-                                    col: "xs-12",
-                                    label: "Nit",
-                                    type: 'number',
-                                    backgroundColor: "red",
-                                    background: "blue",
-                                    borderColor: "red",
-                                    required: true,
-                                    autoFocus: true,
-                                    defaultValue: defaultData?.nit,
-                                    iconR: <SView width={30} height={30} center onPress={() => {
+    form: SForm | null = null;
+    seleccionarCliente() {
+        let formRef;
+        const defaultData = this.data?.cliente ?? {};
+        SPopup.open({
+            key: "PopupClienteManual",
+            type: 1,
+            content: (
+                <SView
+                    col="xs-11"
+                    withoutFeedback
+                    padding={24}
+                    backgroundColor={STheme.color.background}
+                    style={{
+                        maxWidth: 320,
+                        borderRadius: 12,
+                        shadowColor: "#18181b",
+                        shadowOffset: { width: 5, height: 4 },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 4,
+                        elevation: 60,
+                    }}
+                >
+                    <SText fontSize={18} bold center>Datos del Cliente</SText>
+                    { }
+                    <SForm row ref={(ref: any) => this.form = ref}
+                        style={{ justifyContent: "space-between" }}
+                        inputs={{
+                            nit: {
+                                col: "xs-12",
+                                label: "Nit",
+                                type: 'number',
+                                backgroundColor: "red",
+                                background: "blue",
+                                borderColor: "red",
+                                required: true,
+                                autoFocus: true,
+                                defaultValue: defaultData?.nit,
+                                iconR: <SView width={30} height={30} center onPress={() => {
+                                    this.hanldeEditTelefono();
+                                }}>
+                                    <SIconApp name='Search' fill={STheme.color.lightGray} />
+                                </SView>,
+                                onChangeText: (text: string) => {
+                                    new SThread(2000, "buscar_nit", true).start(() => {
                                         this.hanldeEditTelefono();
-                                    }}>
-                                        <SIconApp name='Search' fill={STheme.color.lightGray} />
-                                    </SView>,
-                                    onChangeText: (text: string) => {
-                                        new SThread(2000, "buscar_nit", true).start(() => {
-                                            this.hanldeEditTelefono();
-                                        })
-                                    },
-                                    onSubmitEditing: () => {
-                                        this.hanldeEditTelefono();
-                                        this.form?.focus("razon_social")
-                                    }
+                                    })
                                 },
-                                razon_social: {
-                                    col: "xs-12",
-                                    disabled: true,
-                                    label: "razon social",
-                                    defaultValue: defaultData?.razon_social,
-                                    onSubmitEditing: () => this.form?.focus("correo"),
-                                },
-                                correo: {
-                                    col: "xs-12",
-                                    label: "Correo",
-                                    disabled: true,
-                                    defaultValue: defaultData?.correo,
-                                    onSubmitEditing: () => this.form?.focus("nombres"),
-                                },
-                                nombres: {
-                                    col: "xs-12",
-                                    disabled: true,
-                                    label: "Nombre completo",
-                                    defaultValue: defaultData?.nombres,
-                                },
-                            }} />
-                        <SHr />
-                        <SView row col={"xs-12"}>
-                            <SView flex />
-                            <SView center style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }} >
-                                <SText color={STheme.color.text}>Cancelar</SText>
-                            </SView>
-                            <SView width={8} />
-                            <SView center style={{ backgroundColor: "#18181b", borderColor: STheme.color.gray, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }}
-                                onPress={() => {
-                                    const data = this.clienteDataCompleto;
-                                    if (!data) return;
-                                    this.data.cliente = data;
-                                    this.clienteDataCompleto = null;
+                                onSubmitEditing: () => {
+                                    this.hanldeEditTelefono();
+                                    this.form?.focus("razon_social")
+                                }
+                            },
+                            razon_social: {
+                                col: "xs-12",
+                                disabled: true,
+                                label: "razon social",
+                                defaultValue: defaultData?.razon_social,
+                                onSubmitEditing: () => this.form?.focus("correo"),
+                            },
+                            correo: {
+                                col: "xs-12",
+                                label: "Correo",
+                                disabled: true,
+                                defaultValue: defaultData?.correo,
+                                onSubmitEditing: () => this.form?.focus("nombres"),
+                            },
+                            nombres: {
+                                col: "xs-12",
+                                disabled: true,
+                                label: "Nombre completo",
+                                defaultValue: defaultData?.nombres,
+                            },
+                        }} />
+                    <SHr />
+                    <SView row col={"xs-12"}>
+                        <SView flex />
+                        <SView center style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }} >
+                            <SText color={STheme.color.text}>Cancelar</SText>
+                        </SView>
+                        <SView width={8} />
+                        <SView center style={{ backgroundColor: "#18181b", borderColor: STheme.color.gray, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }}
+                            onPress={() => {
+                                const data = this.clienteDataCompleto;
+                                if (!data) return;
+                                this.data.cliente = data;
+                                this.clienteDataCompleto = null;
 
 
-                                    this.forceUpdate();
-                                    SPopup.close("PopupClienteManual");
-                                }}
-                            >
-                                <SText color={STheme.color.background}>Aceptar</SText>
-                            </SView>
+                                this.forceUpdate();
+                                SPopup.close("PopupClienteManual");
+                            }}
+                        >
+                            <SText color={STheme.color.background}>Aceptar</SText>
                         </SView>
                     </SView>
-                )
-            });
-        }
+                </SView>
+            )
+        });
+    }
 
 
     renderCarrito = () => {
@@ -368,7 +368,7 @@ export default class Carrito extends Component {
         return (
             <>
                 {subtotal <= 0 ?
-                    <SView backgroundColor={STheme.color.background} flex center style={{ borderRadius: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
+                    <SView backgroundColor={STheme.color.background} flex center style={{ borderRadius: 8, shadowColor: STheme.color.card, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
                     >
                         <SView row center backgroundColor='transparent' >
                             <SIconApp name='carritoproducto' height={50} fill={STheme.color.card} />
@@ -440,16 +440,16 @@ export default class Carrito extends Component {
 
 
 
-                        <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
-                            <SView col={"xs-12 md-12"} row center
-                            onPress={() => this.seleccionarCliente()}
+                        <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
+                            <SView col={"xs-12  "} row center
+                                onPress={() => this.seleccionarCliente()}
                             >
                                 <SView col={"xs-5 md-5"}    >
                                     <SView center backgroundColor={STheme.color.background} style={{
                                         minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
                                         marginRight: (this.data.cliente?.key ? 6 : 14), overflow: "hidden",
                                     }}>
-                                        <FotoCliente data={this.data.cliente} />
+                                        {/* <FotoCliente data={this.data.cliente} /> */}
                                     </SView>
                                 </SView>
                                 <SView flex  >
@@ -458,12 +458,6 @@ export default class Carrito extends Component {
                                         fontSize: 12,
                                         fontWeight: "bold", fontSize: 12
                                     }}>{this.data.cliente?.nombres || "Clientesss"}</SText>
-
-                                    {/* {this.data.clientes?.key ? <SText style={{
-                                        color: STheme.color.text,
-                                        fontSize: 12,
-                                        fontWeight: "bold", fontSize: 12, color: "#26e9aeff"
-                                    }}>Clie55555555555555555nte</SText> : null} */}
 
 
                                 </SView>

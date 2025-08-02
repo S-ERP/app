@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification, SForm, SHr, SThread } from 'servisofts-component';
-import FotoCliente from '../Foto/FotoCliente';
+// import FotoCliente from '../Foto/FotoCliente';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 import SIconApp from '../../../../Assets/SIconApp';

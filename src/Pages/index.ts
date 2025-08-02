@@ -165,6 +165,6 @@ export default SPage.combinePages("/", {
   "inventario/almacen/profile/registro_inventario": RegistroInventario,
   "productos/reporte_conteo_inventario": ReporteConteoInventario,
   puntoventa11111: testpuntoventa,
-//   puntoventa: Main,
-  puntoventa: Galaxia,
+  puntoventa: Main,
+//   puntoventa: Galaxia,
 });
