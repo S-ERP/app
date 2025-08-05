@@ -5,6 +5,13 @@ import MDL from '../../../../MDL';
 import SIconApp from '../../../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
 export default class FotoCliente2 extends Component {
+
+
+    // static limpiarCliente() {
+    //     this.data.cliente = null;
+    //     this.forceUpdate();
+
+    // }
     constructor(props) {
         super(props);
         // this.data = props.data;
@@ -147,6 +154,10 @@ export default class FotoCliente2 extends Component {
             )
         });
     }
+
+
+
+
     renderTecladoNumerico = () => {
         const cliente = this.data?.cliente ?? {};
         const { key, nombres, apellidos, telefono, nombre_completo } = cliente;

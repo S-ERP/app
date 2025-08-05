@@ -186,7 +186,7 @@ export default class Galaxia extends Component {
                                 // cliente: this.data?.cliente,
                                 // vendedor: Model.usuario.Action.getUsuarioLog()
                             });
-                            console.log("🧾 Venta Formateada:");
+                            console.log("🧾 Venta Formateadasssssssss:");
                             console.log(JSON.stringify(datos, null, 2));
                             this.showPaymentModal = false;
                             this._recibido = "";

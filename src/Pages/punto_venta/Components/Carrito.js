@@ -69,13 +69,18 @@ export default class Carrito extends Component {
             this.forceUpdate();
         }
     };
-    vaciarCarrito = () => {
+    vaciarCarrito() {
         this.carrito.forEach(item => {
             this.props.onModificarStock?.(item.key, +item.cantidad);
         });
         this.descuentoManual = 0;
         this.carrito = [];
-        this.data.cliente = [];
+        this.data = null;
+
+        // this.showPaymentModal = false;
+        // this._recibido = "";
+        // this._devolvido = "";
+
         this.forceUpdate();
     };
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
@@ -375,7 +380,7 @@ export default class Carrito extends Component {
                             </SView>
                         </SView>
                         <SHr height={4} />
-                        {}
+                        { }
                         <SView col={"xs-12"} flex center backgroundColor='transparent'
                             style={{
                                 shadowColor: "#000",
@@ -393,7 +398,7 @@ export default class Carrito extends Component {
                         </SView>
                         <SHr height={8} />
                         <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
-                        {}
+                        { }
                         <SView col={"xs-12"} height={70} center >
                             <SInput label={"Descuento VIP (Bs):"} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", }}
                                 onChangeText={(text) => {
@@ -402,7 +407,7 @@ export default class Carrito extends Component {
                                 }}
                             />
                         </SView>
-                        {}
+                        { }
                         <SView col={"xs-12"} height={50} center  >
                             <SInput label={"Con factura ?"} type='checkBox' defaultValue={false}
                                 onChangeText={(text) => {
@@ -412,7 +417,7 @@ export default class Carrito extends Component {
                             />
                         </SView>
                         <SHr height={8} />
-                        {}
+                        { }
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-12  "} row center
                                 onPress={() => this.seleccionarCliente()}
@@ -422,7 +427,7 @@ export default class Carrito extends Component {
                                         minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
                                         marginRight: (this.data.cliente?.key ? 6 : 14), overflow: "hidden",
                                     }}>
-                                        {}
+                                        { }
                                     </SView>
                                 </SView>
                                 <SView flex  >

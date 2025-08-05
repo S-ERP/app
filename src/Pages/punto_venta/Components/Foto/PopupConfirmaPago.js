@@ -4,6 +4,7 @@ import SIconApp from '../../../../Assets/SIconApp';
 import ResumenTotales from '../Carrito/ResumenTotales';
 import carrito from '../../../../Model/inventario/carrito';
 import Model from '../../../../Model';
+import MDL from '../../../../MDL';
 export default class PopupConfirmaPago extends Component {
     static open(props) {
         SPopup.open({
@@ -27,7 +28,8 @@ export default class PopupConfirmaPago extends Component {
     totalDescuento = 0;
     dataFormateada({ carrito = null, cliente = null, caja = null, vendedor = null }) {
         return {
-            carrito: carrito.map(item => ({
+            // detalle: carrito.map(item => ({
+            productos: carrito.map(item => ({
                 key: item.key,
                 descripcion: item.descripcion,
                 precio_compra: item.precio_compra ?? 0,
@@ -45,9 +47,9 @@ export default class PopupConfirmaPago extends Component {
         };
     }
     render() {
-        const { subtotal, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura, carrito , cliente } = this.props;
+        const { subtotal, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura, carrito, cliente } = this.props;
         return (
-             <SView col="xs-12" center>
+            <SView col="xs-12" center>
                 <SView height={8} />
                 <SText fontSize={18} bold center>Confirmar Pago</SText>
                 <SView height={8} />
@@ -128,8 +130,15 @@ export default class PopupConfirmaPago extends Component {
                                 vendedor,
                                 caja
                             });
-                            console.log("🧾 Venta Formateada:", JSON.stringify(datos, null, 2));
-                            this.props?.onReload?.();
+                            console.log("🧾 Venta Formateadasppppp:", JSON.stringify(datos, null, 2));
+
+                            MDL.compra_venta.registrar(datos).then((res) => {
+                                console.log("compra_venta registrado exitosa " + res)
+                            }).catch(
+                                console.log("compra_venta registrado error ")
+                            )
+                             this.forceUpdate();
+                            this.props?.onReload();
                             SPopup.close("popup_config_horario");
                         }}
                     >
@@ -137,7 +146,7 @@ export default class PopupConfirmaPago extends Component {
                     </SView>
                 </SView>
                 <SView width={8} />
-            </SView>
+            </SView >
         );
     }
 }

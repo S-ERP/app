@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification, SForm, SHr, SThread } from 'servisofts-component';
-// import FotoCliente from '../Foto/FotoCliente';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 import SIconApp from '../../../../Assets/SIconApp';
@@ -178,12 +177,12 @@ export default class TecladoNumerico extends Component {
                                 // cliente: this.data?.cliente,
                                 vendedor: Model.usuario.Action.getUsuarioLog()
                             });
-                            console.log("🧾 Venta Formateada:");
+                            console.log("🧾 Venta Formateadaaaaaaaaaaaa:");
                             console.log(JSON.stringify(datos, null, 2));
                             this.showPaymentModal = false;
                             this._recibido = "";
                             this._devolvido = "";
-                            this.data.cliente = "";
+                            this.data.cliente = {};
                             this.props.onReload();
                             this.forceUpdate();
                             SPopup.close("PopupPago");
@@ -195,6 +194,8 @@ export default class TecladoNumerico extends Component {
             </SView>
         })
     }
+
+
     renderTecladoNumerico = () => {
         const cliente = this.data.cliente ?? {};
         const { key, nombres, apellidos, telefono, nombre_completo } = cliente;
@@ -222,6 +223,16 @@ export default class TecladoNumerico extends Component {
                         </SView>
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                             let carro = this.props?.carrito || {};
+                            console.log("mirala1 " + JSON.stringify(this.data.cliente))
+
+                            // aqui es
+                            // this.data.cliente = null;
+                            // FotoCliente2.limpiarCliente();
+                            // FotoCliente2.onReload2({});
+                            // this.data.cliente = {};
+                            // this.forceUpdate();
+                            // console.log("mirala " + JSON.stringify(this.data.cliente))
+                            // return;
                             PopupConfirmaPago.open({
                                 subtotal: subtotal,
                                 totalImpuesto: totalImpuesto,
@@ -230,8 +241,14 @@ export default class TecladoNumerico extends Component {
                                 numeroIva: numeroIva,
                                 conFactura: conFactura,
                                 carrito: this.props?.carrito || {},
-                                cliente: this.data.cliente
-                            })
+                                cliente: this.data.cliente,
+                                onReload: () => {
+                                    // Aquí ejecutás lo que querés que pase al confirmar
+                                    this.props?.onReload?.(); // o cualquier otra función de recarga
+                                }
+                            }
+
+                            )
                             // <ConfirmarPago />
                         }}>
                             <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagare</SText>
@@ -254,6 +271,9 @@ export default class TecladoNumerico extends Component {
                 {
                     this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                         // this.renderPopudPago()
+
+                        this.data.cliente = null;
+                        return;
                         PopupConfirmaPago.open({
                             subtotal: subtotal,
                             totalImpuesto: totalImpuesto,
