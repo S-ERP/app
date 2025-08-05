@@ -7,10 +7,7 @@ import SIconApp from '../../../../Assets/SIconApp';
 import PButtom from '../../../../Components/PButtom';
 import PButtom3 from '../../../../Components/PButtom3';
 import ResumenTotales from './ResumenTotales';
-
-{/* <ConfirmarPago subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal} conFactura()  conFactura = { totalFinal } ></ConfirmarPago > */ }
-
-
+{ }
 export default class ConfirmarPago extends Component {
     constructor(props) {
         super(props);
@@ -22,10 +19,7 @@ export default class ConfirmarPago extends Component {
         // this.descuentoManual = "";
         // this.showPaymentModal = false;
     }
-
-
     render() {
-
         alert("siiiiiiii")
         // const {
         //     subtotal,
@@ -35,12 +29,10 @@ export default class ConfirmarPago extends Component {
         //     numeroIva,
         //     conFactura
         // } = this.props;
-
         // let monto_recibido_number = parseFloat(this._recibido);
         // if (isNaN(monto_recibido_number)) monto_recibido_number = 0;
         // if (!this._recibido) this._recibido = "";
         // if (!this._devolvido) this._devolvido = 0;
-
         return SPopup.open({
             key: "PopupPago",
             type: 1,
@@ -58,10 +50,8 @@ export default class ConfirmarPago extends Component {
                     shadowRadius: 4,
                     elevation: 60,
                 }}>
-
                 <SText fontSize={18} bold center>Confirmar Pago</SText>
                 <SView height={8} />
-
                 {/* <ResumenTotales
                     subtotal={subtotal}
                     totalImpuesto={totalImpuesto}
@@ -69,7 +59,6 @@ export default class ConfirmarPago extends Component {
                     totalDescuento={totalDescuento}
                     totalFinal={totalFinal}
                 /> */}
-
                 <SView row>
                     <SInput
                         label={"Monto Recibido:"}
@@ -97,16 +86,13 @@ export default class ConfirmarPago extends Component {
                         }}
                     />
                 </SView>
-
                 <SView height={20} />
-
                 <SView center row style={{ justifyContent: "space-between", marginBottom: 40 }}>
                     <SText fontSize={16} color={STheme.color.text}>Cambio:</SText>
-                    {/* <SText fontSize={18} bold color={totalFinal < parseFloat(this._recibido) ? "green" : "red"}> */}
-                    {/* Bs {SMath.formatMoney(this._devolvido, 2)} */}
-                    {/* </SText> */}
+                    {}
+                    {}
+                    {}
                 </SView>
-
                 <SView center row>
                     <SView
                         center
@@ -129,9 +115,7 @@ export default class ConfirmarPago extends Component {
                     >
                         <SText color={STheme.color.text}>Cancelar</SText>
                     </SView>
-
                     <SView width={8} />
-
                     <SView
                         center
                         flex
@@ -153,7 +137,6 @@ export default class ConfirmarPago extends Component {
                     //         });
                     //         return;
                     //     }
-
                     //     const carritoFormateado = this.carrito.map(item => ({
                     //         key: item.key,
                     //         descripcion: item.descripcion,
@@ -166,7 +149,6 @@ export default class ConfirmarPago extends Component {
                     //         key_tipo_producto: item.key_tipo_producto ?? null,
                     //         tipo_producto: item.tipo_producto?.descripcion ?? null,
                     //     }));
-
                     //     const datos = this.dataFormateada({
                     //         caja: {
                     //             subtotal: SMath.formatMoney(subtotal, 2),
@@ -181,10 +163,8 @@ export default class ConfirmarPago extends Component {
                     //         cliente: this.data?.cliente,
                     //         vendedor: Model.usuario.Action.getUsuarioLog()
                     //     });
-
                     //     console.log("🧾 Venta Formateada:");
                     //     console.log(JSON.stringify(datos, null, 2));
-
                     //     this.showPaymentModal = false;
                     //     this._recibido = "";
                     //     this._devolvido = "";

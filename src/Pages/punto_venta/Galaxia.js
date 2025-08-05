@@ -3,10 +3,7 @@ import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNot
 import SIconApp from '../../Assets/SIconApp';
 import PopupTotal from './Components/Foto/PopupConfirmaPago';
 import PopupConfirmaPago from './Components/Foto/PopupConfirmaPago';
-
-
 const variableGlobal = 0;
-
 export default class Galaxia extends Component {
     constructor(props) {
         super(props);
@@ -18,13 +15,6 @@ export default class Galaxia extends Component {
         this._devolvido = "";
         this.descuentoManual = "";
     }
-
-
-
-
-
-
-
     dataFormateada({ carrito = [], cliente = null, caja = null, vendedor = null }) {
         const carritoFormateado = carrito.map(item => ({
             key: item.key,
@@ -47,17 +37,14 @@ export default class Galaxia extends Component {
             caja: caja,
         };
     }
-
     renderPopudPago() {
         const { subtotal, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
         let monto_recibido_number = parseFloat(this._recibido);
         if (isNaN(monto_recibido_number)) monto_recibido_number = 0;
         if (!this._recibido) this._recibido = "";
         if (!this._devolvido) this._devolvido = 0;
-
         // totalFinal = 100;
         const defaultData = this.data?.cliente ?? {};
-
         return SPopup.open({
             key: "PopupPago",
             type: 1,
@@ -75,16 +62,9 @@ export default class Galaxia extends Component {
                     shadowRadius: 4,
                     elevation: 60,
                 }}>
-
-
                 <SText fontSize={18} bold center>Confirmar Pago</SText>
                 <SView height={8} />
-
-
-
                 <SView row    >
-
-
                     <SForm row ref={(ref: any) => this.form = ref}
                         style={{ justifyContent: "space-between" }}
                         inputs={{
@@ -104,13 +84,11 @@ export default class Galaxia extends Component {
                                     <SIconApp name='Search' fill={STheme.color.lightGray} />
                                 </SView>,
                                 onChangeText: (text: string) => {
-
                                     // variableGlobal =text
                                     // this.form.setValues({ "cambio": text });
                                     // this._devolvido = text;
                                     this.forceUpdate();
                                 },
-
                             },
                             cambio: {
                                 col: "xs-12",
@@ -119,7 +97,6 @@ export default class Galaxia extends Component {
                                 defaultValue: defaultData?.cambio,
                             }
                         }} />
-
                     <SInput
                         label={"Monto Recibido:"}
                         defaultValue={this._recibido}
@@ -145,22 +122,16 @@ export default class Galaxia extends Component {
                             color: STheme.color.text,
                         }}
                     />
-
-
-
                 </SView>
                 <SView height={20} />
                 <SView center row style={{ justifyContent: "space-between", marginBottom: 40 }}>
                     <SText fontSize={16} color={STheme.color.text}>Cambio:</SText>
                     <SText fontSize={18} bold color={100 < this._recibido ? "green" : "red"}    >
-
                         {this.form?.getValues().cambio + " ape"}
-
                         Bs {SMath.formatMoney(this._devolvido, 2)}
                     </SText>
                 </SView>
                 <SView center row >
-
                     <SView center flex style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4, height: 40 }}
                         onPress={() => {
                             this.showPaymentModal = false;
@@ -170,18 +141,13 @@ export default class Galaxia extends Component {
                             this.props.onReload();
                             this.forceUpdate();
                             SPopup.close("PopupPago");
-
                         }}
                     >
                         <SText color={STheme.color.text}>Cancelar</SText>
                     </SView>
                     <SView width={8} />
-
-
                     <SView center flex style={{ backgroundColor: "#18181b", borderColor: STheme.color.gray, borderWidth: 2, borderRadius: 4, height: 40 }}
                         onPress={() => {
-
-
                             if (!this._recibido || parseFloat(this._recibido) < 100) {
                                 SNotification.send({
                                     title: "Error",
@@ -214,19 +180,14 @@ export default class Galaxia extends Component {
                                     cambio: SMath.formatMoney((this._recibido - 100), 2),
                                     conFactura: conFactura ? "si" : "no",
                                 },
-
                                 carrito: this.props.carrito,
                                 // cliente: this.data.cliente,
                                 // cliente: this.props.data ? this.props.data?.cliente : this.data.cliente,
                                 // cliente: this.data?.cliente,
                                 // vendedor: Model.usuario.Action.getUsuarioLog()
                             });
-
-
                             console.log("🧾 Venta Formateada:");
                             console.log(JSON.stringify(datos, null, 2));
-
-
                             this.showPaymentModal = false;
                             this._recibido = "";
                             this._devolvido = "";
@@ -234,22 +195,14 @@ export default class Galaxia extends Component {
                             this.props.onReload();
                             this.forceUpdate();
                             SPopup.close("PopupPago");
-
-
-
                         }}
                     >
                         <SText color={STheme.color.background}>Confirmar Pago</SText>
                     </SView>
-
-
-
                 </SView>
-
             </SView>
         })
     }
-
     renderTecladoNumerico = () => {
         const cliente = this.data?.cliente ?? {};
         const { key, nombres, apellidos, telefono, nombre_completo } = cliente;
@@ -264,24 +217,17 @@ export default class Galaxia extends Component {
             ["7", "8", "9", "Precio"],
             ["+/-", "0", ".", "<"]
         ];
-
-
         const subtotal = 100;
         const totalConIVA = 150;
         const totalImpuesto = 545;
         const totalDescuento = 0;
         const totalFinal = 10;
         const carro = [];
-
         return (
             <>
                 <SView col={"xs-0 sm-12"} row color={STheme.color.danger}>
                     <SView col={"xs-4"}>
-
-
-
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-
                             PopupConfirmaPago.open({
                                 total: 100,
                                 descuento: 5,
@@ -291,22 +237,15 @@ export default class Galaxia extends Component {
                                 totalDescuento: totalDescuento,
                                 totalFinal: totalFinal,
                                 carro: carro,
-
                             })
-
                         }}>
                             <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagar</SText>
                         </SView>
                     </SView>
                     <SView flex />
-
-
-
                 </SView>
                 {this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                     this.renderPopudPago()
-
-
                     // variableGlobal
                 }}>
                     <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pagosss</SText>

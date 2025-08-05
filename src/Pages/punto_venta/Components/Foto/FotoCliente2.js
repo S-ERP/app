@@ -4,30 +4,19 @@ import MDL from '../../../../MDL';
 // import FotoCliente from './FotoCliente';
 import SIconApp from '../../../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
-
 export default class FotoCliente2 extends Component {
     constructor(props) {
         super(props);
         // this.data = props.data;
-
-
     }
-
     componentDidMount() {
-
-
         setTimeout(() => {
             this.hanldeEditTelefono();
         }, 100);
     }
-
-
-
     hanldeEditTelefono = () => {
         MDL.crm.cliente.buscar_nit(this.form?.getValues().nit).then(e => {
             this.clienteDataCompleto = e;
-
-
             this.form?.setValues({
                 razon_social: e?.razon_social || "",
                 correo: e?.correo || "",
@@ -42,7 +31,6 @@ export default class FotoCliente2 extends Component {
             })
         })
     }
-
     seleccionarCliente2() {
         SNavigation.navigate("/cliente", {
             onSelect: (obj) => {
@@ -57,7 +45,6 @@ export default class FotoCliente2 extends Component {
             }
         })
     }
-
     form: SForm | null = null;
     seleccionarCliente() {
         let formRef;
@@ -145,15 +132,10 @@ export default class FotoCliente2 extends Component {
                             onPress={() => {
                                 const data = this.clienteDataCompleto;
                                 if (!data) return;
-
                                 if (!this.data) this.data = {}; // 🛡️ Protección contra undefined
-
                                 this.data.cliente = data;
-
                                 this.props.onReload2?.(this.data.cliente);
-
                                 this.clienteDataCompleto = null;
-
                                 this.forceUpdate();
                                 SPopup.close("PopupClienteManual");
                             }}
@@ -165,12 +147,8 @@ export default class FotoCliente2 extends Component {
             )
         });
     }
-
-
     renderTecladoNumerico = () => {
         const cliente = this.data?.cliente ?? {};
-
-
         const { key, nombres, apellidos, telefono, nombre_completo } = cliente;
         const style_text = {
             color: STheme.color.text,
@@ -178,32 +156,23 @@ export default class FotoCliente2 extends Component {
             fontWeight: "bold",
         };
         const url = SSocket.api.crm + "cliente/" + key;
-
         return (
             <>
-
                 <SView center row backgroundColor={STheme.color.darkGray} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                     <SView col={"xs-12  "} row center onPress={() => this.seleccionarCliente()}>
-
-
                         <SView center col={"xs-5  "}>
                             <SView center backgroundColor={STheme.color.background} style={{
                                 minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4, marginRight: (key ? 6 : 14), overflow: "hidden",
                             }}>
-
                                 {!key ? <SIconApp name='profile2' width={20} fill={STheme.color.text} /> : <SImage src={url} style={{ resizeMode: "cover" }} />}
                             </SView>
                         </SView>
-
                         <SView flex center >
                             <SText style={{ ...style_text, fontSize: 12 }}>{nombres || "Cliente"}</SText>
                             {key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente</SText> : null}
                         </SView>
                     </SView>
                 </SView>
-
-
-
             </>
         );
     };

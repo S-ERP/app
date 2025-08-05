@@ -86,9 +86,6 @@ export default class Main extends Component {
     renderCarritoModal() {
         if (!this.state.showCarritoModal) return null;
         let valor = this.carritoRef?.carrito.length ?? 0;
-
-
-
         return (
             <SView
                 col="xs-12"

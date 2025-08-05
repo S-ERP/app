@@ -4,9 +4,6 @@ import SIconApp from '../../../../Assets/SIconApp';
 import ResumenTotales from '../Carrito/ResumenTotales';
 import carrito from '../../../../Model/inventario/carrito';
 import Model from '../../../../Model';
-
-
-
 export default class PopupConfirmaPago extends Component {
     static open(props) {
         SPopup.open({
@@ -26,10 +23,8 @@ export default class PopupConfirmaPago extends Component {
             )
         });
     }
-
     variableGlobal = "";
     totalDescuento = 0;
-
     dataFormateada({ carrito = null, cliente = null, caja = null, vendedor = null }) {
         return {
             carrito: carrito.map(item => ({
@@ -49,16 +44,13 @@ export default class PopupConfirmaPago extends Component {
             caja: caja,
         };
     }
-
     render() {
         const { subtotal, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura, carrito , cliente } = this.props;
-
         return (
              <SView col="xs-12" center>
                 <SView height={8} />
                 <SText fontSize={18} bold center>Confirmar Pago</SText>
                 <SView height={8} />
-
                 <ResumenTotales
                     subtotal={subtotal}
                     totalImpuesto={totalImpuesto}
@@ -66,7 +58,6 @@ export default class PopupConfirmaPago extends Component {
                     totalDescuento={totalDescuento}
                     totalFinal={totalFinal}
                 />
-
                 <SView col="xs-12" row>
                     <SInput
                         label="Monto Recibido:"
@@ -91,7 +82,6 @@ export default class PopupConfirmaPago extends Component {
                         }}
                     /> */}
                 </SView>
-
                 <SView height={20} />
                 <SView col="xs-12" row style={{ justifyContent: "space-between", }}>
                     <SText fontSize={16}>Cambio:</SText>
@@ -100,9 +90,7 @@ export default class PopupConfirmaPago extends Component {
                     </SText>
                 </SView>
                 <SView height={20} />
-
                 <SView col="xs-12" flex row style={{ height: 150 }}>
-
                     <SView center flex height={40} style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4 }}
                         onPress={() => {
                             this.props?.onReload?.();
@@ -111,9 +99,7 @@ export default class PopupConfirmaPago extends Component {
                     >
                         <SText>Cancelar</SText>
                     </SView>
-
                     <SView width={8} />
-
                     <SView center flex height={40} style={{ backgroundColor: "#18181b", borderColor: STheme.color.gray, borderWidth: 1, borderRadius: 4 }}
                         onPress={() => {
                             if (!this.variableGlobal || this.variableGlobal < totalFinal) {
@@ -126,10 +112,7 @@ export default class PopupConfirmaPago extends Component {
                                 });
                                 return;
                             }
-
                             const vendedor = Model.usuario.Action.getUsuarioLog();
-
-
                             const caja = {
                                 subtotal: SMath.formatMoney(subtotal, 2),
                                 IVA: SMath.formatMoney(totalImpuesto, 2),
@@ -139,16 +122,13 @@ export default class PopupConfirmaPago extends Component {
                                 cambio: SMath.formatMoney((this.variableGlobal - totalFinal), 2),
                                 conFactura: conFactura ? "si" : "no",
                             };
-
                             const datos = this.dataFormateada({
                                 carrito,
                                 cliente,
                                 vendedor,
                                 caja
                             });
-
                             console.log("🧾 Venta Formateada:", JSON.stringify(datos, null, 2));
-
                             this.props?.onReload?.();
                             SPopup.close("popup_config_horario");
                         }}
@@ -156,7 +136,6 @@ export default class PopupConfirmaPago extends Component {
                         <SText color={STheme.color.background}>Confirmar Pago</SText>
                     </SView>
                 </SView>
-
                 <SView width={8} />
             </SView>
         );

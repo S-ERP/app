@@ -22,10 +22,6 @@ export default class TecladoNumerico extends Component {
         this._devolvido = "";
         this.descuentoManual = "";
     }
-
-
-
-
     handleCalculatorPress = (tecla) => {
         let val = this.descuentoManual || "";
         switch (tecla) {
@@ -38,9 +34,6 @@ export default class TecladoNumerico extends Component {
         this.descuentoManual = val;
         this.forceUpdate();
     };
-
-
-
     dataFormateada({ carrito = [], cliente = null, caja = null, vendedor = null }) {
         const carritoFormateado = carrito.map(item => ({
             key: item.key,
@@ -76,9 +69,6 @@ export default class TecladoNumerico extends Component {
         if (isNaN(monto_recibido_number)) monto_recibido_number = 0;
         if (!this._recibido) this._recibido = "";
         if (!this._devolvido) this._devolvido = 0;
-
-
-
         return SPopup.open({
             key: "PopupPago",
             type: 1,
@@ -96,16 +86,10 @@ export default class TecladoNumerico extends Component {
                     shadowRadius: 4,
                     elevation: 60,
                 }}>
-
-
                 <SText fontSize={18} bold center>Confirmar Pago</SText>
                 <SView height={8} />
-
                 <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
-
-
                 <SView row    >
-
                     <SInput
                         label={"Monto Recibido:"}
                         defaultValue={this._recibido}
@@ -140,7 +124,6 @@ export default class TecladoNumerico extends Component {
                     </SText>
                 </SView>
                 <SView center row >
-
                     <SView center flex style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4, height: 40 }}
                         onPress={() => {
                             this.showPaymentModal = false;
@@ -150,18 +133,13 @@ export default class TecladoNumerico extends Component {
                             this.props.onReload();
                             this.forceUpdate();
                             SPopup.close("PopupPago");
-
                         }}
                     >
                         <SText color={STheme.color.text}>Cancelar</SText>
                     </SView>
                     <SView width={8} />
-
-
                     <SView center flex style={{ backgroundColor: "#18181b", borderColor: STheme.color.gray, borderWidth: 2, borderRadius: 4, height: 40 }}
                         onPress={() => {
-
-
                             if (!this._recibido || parseFloat(this._recibido) < totalFinal) {
                                 SNotification.send({
                                     title: "Error",
@@ -194,19 +172,14 @@ export default class TecladoNumerico extends Component {
                                     cambio: SMath.formatMoney((this._recibido - totalFinal), 2),
                                     conFactura: conFactura ? "si" : "no",
                                 },
-
                                 carrito: this.props?.carrito,
                                 cliente: this.data.cliente,
                                 // cliente: this.props.data ? this.props.data?.cliente : this.data.cliente,
                                 // cliente: this.data?.cliente,
                                 vendedor: Model.usuario.Action.getUsuarioLog()
                             });
-
-
                             console.log("🧾 Venta Formateada:");
                             console.log(JSON.stringify(datos, null, 2));
-
-
                             this.showPaymentModal = false;
                             this._recibido = "";
                             this._devolvido = "";
@@ -214,30 +187,18 @@ export default class TecladoNumerico extends Component {
                             this.props.onReload();
                             this.forceUpdate();
                             SPopup.close("PopupPago");
-
-
-
                         }}
                     >
                         <SText color={STheme.color.background}>Confirmar Pago</SText>
                     </SView>
-
-
-
                 </SView>
-
             </SView>
         })
     }
-
     renderTecladoNumerico = () => {
         const cliente = this.data.cliente ?? {};
         const { key, nombres, apellidos, telefono, nombre_completo } = cliente;
-
-
         const { subtotal, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
-
-
         const style_text = {
             color: STheme.color.text,
             fontSize: 12,
@@ -253,22 +214,14 @@ export default class TecladoNumerico extends Component {
             <>
                 <SView col={"xs-0 sm-12"} row color={STheme.color.danger}>
                     <SView col={"xs-4"}>
-
-
                         <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <FotoCliente2 onReload2={(cliente) => {
-
                                 this.data.cliente = cliente;
                                 this.forceUpdate();
                             }}  ></FotoCliente2>
-
                         </SView>
-
-
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-
                             let carro = this.props?.carrito || {};
-
                             PopupConfirmaPago.open({
                                 subtotal: subtotal,
                                 totalImpuesto: totalImpuesto,
@@ -301,8 +254,6 @@ export default class TecladoNumerico extends Component {
                 {
                     this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                         // this.renderPopudPago()
-
-
                         PopupConfirmaPago.open({
                             subtotal: subtotal,
                             totalImpuesto: totalImpuesto,
@@ -313,7 +264,6 @@ export default class TecladoNumerico extends Component {
                             carrito: this.props?.carrito || {},
                             cliente: this.data.cliente
                         })
-
                     }}>
                         <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pagosss</SText>
                     </SView>

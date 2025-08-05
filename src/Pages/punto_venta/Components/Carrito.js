@@ -22,8 +22,6 @@ export default class Carrito extends Component {
             this.hanldeEditTelefono();
         }, 100);
     }
-
-
     async loadData() {
         const enviroments = await MDL.contabilidad.getEnviroment();
         this._enviromentsIva = parseFloat(enviroments?.IVA?.observacion) / 100;
@@ -77,9 +75,7 @@ export default class Carrito extends Component {
         });
         this.descuentoManual = 0;
         this.carrito = [];
-
         this.data.cliente = [];
-
         this.forceUpdate();
     };
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
@@ -101,7 +97,6 @@ export default class Carrito extends Component {
     getCarritoimprimir() {
         return this.carrito;
     }
-
     renderPaymentModal = () => {
         if (!this.showPaymentModal) return null;
         const subtotal = this.calcularSubtotal();
@@ -233,11 +228,9 @@ export default class Carrito extends Component {
             onEliminar={() => this.eliminarItem(item)}
         />
     );
-
     hanldeEditTelefono = () => {
         MDL.crm.cliente.buscar_nit(this.form?.getValues().nit).then(e => {
             this.clienteDataCompleto = e;
-
             // this.data?.cliente = e;
             this.form?.setValues({
                 razon_social: e?.razon_social || "",
@@ -254,8 +247,6 @@ export default class Carrito extends Component {
             console.log(e)
         })
     }
-
-
     form: SForm | null = null;
     seleccionarCliente() {
         let formRef;
@@ -343,8 +334,6 @@ export default class Carrito extends Component {
                                 if (!data) return;
                                 this.data.cliente = data;
                                 this.clienteDataCompleto = null;
-
-
                                 this.forceUpdate();
                                 SPopup.close("PopupClienteManual");
                             }}
@@ -356,8 +345,6 @@ export default class Carrito extends Component {
             )
         });
     }
-
-
     renderCarrito = () => {
         const subtotal = this.calcularSubtotal();
         const totalConIVA = this.calcularTotalConIVA(subtotal);
@@ -377,9 +364,6 @@ export default class Carrito extends Component {
                     </SView>
                     :
                     <SView backgroundColor={STheme.color.background} flex style={{ borderRadius: 8, shadowColor: "#000", shadowOffset: { width: 0, }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }} >
-
-
-
                         <SView col={"xs-12"} row   >
                             <SView col={"xs-10 md-10"} row  >
                                 <SText fontSize={16} bold color={STheme.color.text}>Detalle venta</SText>
@@ -391,11 +375,8 @@ export default class Carrito extends Component {
                             </SView>
                         </SView>
                         <SHr height={4} />
-
-                        {/* <SView flex /> */}
-
+                        {}
                         <SView col={"xs-12"} flex center backgroundColor='transparent'
-
                             style={{
                                 shadowColor: "#000",
                                 shadowOffset: { width: 0, height: 2 },
@@ -410,11 +391,9 @@ export default class Carrito extends Component {
                                 <FlatList data={this.carrito} keyExtractor={(item) => item.key.toString()} renderItem={this.renderItemCarrito} />
                             </SScrollView2>
                         </SView>
-
                         <SHr height={8} />
                         <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
-                        {/* <SHr height={8} /> */}
-
+                        {}
                         <SView col={"xs-12"} height={70} center >
                             <SInput label={"Descuento VIP (Bs):"} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", }}
                                 onChangeText={(text) => {
@@ -422,10 +401,8 @@ export default class Carrito extends Component {
                                     this.forceUpdate();
                                 }}
                             />
-
                         </SView>
-                        {/* <SHr height={8} /> */}
-
+                        {}
                         <SView col={"xs-12"} height={50} center  >
                             <SInput label={"Con factura ?"} type='checkBox' defaultValue={false}
                                 onChangeText={(text) => {
@@ -435,11 +412,7 @@ export default class Carrito extends Component {
                             />
                         </SView>
                         <SHr height={8} />
-
-                        {/* <FotoCliente data={this.data.cliente} /> */}
-
-
-
+                        {}
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-12  "} row center
                                 onPress={() => this.seleccionarCliente()}
@@ -449,7 +422,7 @@ export default class Carrito extends Component {
                                         minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
                                         marginRight: (this.data.cliente?.key ? 6 : 14), overflow: "hidden",
                                     }}>
-                                        {/* <FotoCliente data={this.data.cliente} /> */}
+                                        {}
                                     </SView>
                                 </SView>
                                 <SView flex  >
@@ -458,13 +431,9 @@ export default class Carrito extends Component {
                                         fontSize: 12,
                                         fontWeight: "bold", fontSize: 12
                                     }}>{this.data.cliente?.nombres || "Clientesss"}</SText>
-
-
                                 </SView>
                             </SView>
                         </SView>
-
-
                     </SView>
                 }
                 <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} subtotal={subtotal} numeroIva={this._numeroIva} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal} conFactura={this.conFactura}
