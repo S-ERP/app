@@ -4,7 +4,6 @@ import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath, SButtom
 import SSocket from 'servisofts-socket';
 import SIconApp from '../../../Assets/SIconApp';
 import Model from '../../../Model';
-// import FotoCliente from './Foto/FotoCliente';
 import FotoModelo from './Foto/FotoModelo';
 import CarritoItem from './Carrito/CarritoItem';
 import ResumenTotales from './Carrito/ResumenTotales';
@@ -76,11 +75,6 @@ export default class Carrito extends Component {
         this.descuentoManual = 0;
         this.carrito = [];
         this.data = null;
-
-        // this.showPaymentModal = false;
-        // this._recibido = "";
-        // this._devolvido = "";
-
         this.forceUpdate();
     };
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
@@ -236,7 +230,6 @@ export default class Carrito extends Component {
     hanldeEditTelefono = () => {
         MDL.crm.cliente.buscar_nit(this.form?.getValues().nit).then(e => {
             this.clienteDataCompleto = e;
-            // this.data?.cliente = e;
             this.form?.setValues({
                 razon_social: e?.razon_social || "",
                 correo: e?.correo || "",
@@ -343,7 +336,7 @@ export default class Carrito extends Component {
                                 SPopup.close("PopupClienteManual");
                             }}
                         >
-                            <SText color={STheme.color.background}>Aceptar</SText>
+                            <SText color={STheme.color.background}>Aceptarsss</SText>
                         </SView>
                     </SView>
                 </SView>
@@ -387,7 +380,6 @@ export default class Carrito extends Component {
                                 shadowOffset: { width: 0, height: 2 },
                                 shadowOpacity: 0.1,
                                 shadowRadius: 8,
-                                // elevation: 3,
                                 borderWidth: 1,
                                 borderColor: "#F3F4F6",
                             }}
@@ -425,7 +417,7 @@ export default class Carrito extends Component {
                                 <SView col={"xs-5 md-5"}    >
                                     <SView center backgroundColor={STheme.color.background} style={{
                                         minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
-                                        marginRight: (this.data.cliente?.key ? 6 : 14), overflow: "hidden",
+                                        marginRight: (this.data?.cliente?.key ? 6 : 14), overflow: "hidden",
                                     }}>
                                         { }
                                     </SView>
@@ -435,16 +427,14 @@ export default class Carrito extends Component {
                                         color: STheme.color.text,
                                         fontSize: 12,
                                         fontWeight: "bold", fontSize: 12
-                                    }}>{this.data.cliente?.nombres || "Clientesss"}</SText>
+                                    }}>{this.data?.cliente?.nombres || "Clientes"}</SText>
                                 </SView>
                             </SView>
                         </SView>
                     </SView>
                 }
-                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} numeroIva={this._numeroIva} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal} conFactura={this.conFactura}
-                    subtotal={subtotal}
-                    descuento={this.descuentoManual}
-
+                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} numeroIva={this._numeroIva} totalImpuesto={totalImpuesto}
+                    descuento={totalDescuento} totalFinal={totalFinal} conFactura={this.conFactura} subtotal={subtotal}
                     onReload={() => { this.vaciarCarrito(); }}
                 />
             </>

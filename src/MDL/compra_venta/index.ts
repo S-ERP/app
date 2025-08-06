@@ -14,14 +14,14 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     const formar = {
       key_usuario: Model.usuario.Action.getKey(),
       key_empresa: MDL.empresa.select?.key,
-      descuento: data.caja.descuento,
-      monto_total: data.caja.monto_total,
-      monto_factura: data.caja.monto_factura,
+      descuento: parseFloat(data.caja.descuento),
+      monto_total: parseFloat(data.caja.monto_total),
+      monto_factura: parseFloat(data.caja.monto_factura),
       detalle: data.detalle,
     };
-    // console.log("aqui " + JSON.stringify(formar));
+    console.log("aqui " + JSON.stringify(formar));
 
-    // return;
+    return;
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
       component: "compra_venta",

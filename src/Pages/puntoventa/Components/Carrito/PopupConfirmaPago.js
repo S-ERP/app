@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { SView, SText, STheme, SForm, SPopup, SInput, SMath, SNotification } from 'servisofts-component';
 import SIconApp from '../../../../Assets/SIconApp';
-import ResumenTotales from '../Carrito/ResumenTotales';
+import ResumenTotales from './ResumenTotales';
 import carrito from '../../../../Model/inventario/carrito';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
@@ -28,24 +28,14 @@ export default class PopupConfirmaPago extends Component {
     totalDescuento = 0;
     dataFormateada({ carrito = null, cliente = null, caja = null, vendedor = null }) {
         return {
-            // detalle: carrito.map(item => ({
             detalle: carrito.map(item => ({
                 key_modelo: item.key,
                 descripcion: item.descripcion,
                 precio_unitario: item.precio_venta ?? 0,
                 cantidad: item.cantidad ?? 0,
-
-                // precio_compra: item.precio_compra ?? 0,
-                // precio_venta: item.precio_venta ?? 0,
-                // stock: item.stock ?? 0,
-                // cantidad: item.cantidad ?? 0,
-                // key_marca: item.key_marca ?? null,
-                // marca_descripcion: item.marca?.descripcion ?? null,
-                // key_tipo_producto: item.key_tipo_producto ?? null,
-                // tipo_producto: item.tipo_producto?.descripcion ?? null,
             })),
-            key_cliente: cliente?.key ?? null,
-            key_vendedor: vendedor?.key ?? null,
+            key_cliente: cliente?.key,
+            key_vendedor: vendedor?.key,
             caja: caja,
         };
     }
@@ -121,13 +111,12 @@ export default class PopupConfirmaPago extends Component {
                             const caja = {
                                 subtotal: SMath.formatMoney(subtotal, 2),
                                 iva: SMath.formatMoney(descuento, 2),
-                                descuento: SMath.formatMoney(this.totalDescuento, 2),
-                                monto_total: SMath.formatMoney(subtotal, 2),
-                                // monto_total: SMath.formatMoney(totalFinal, 2),
+                                descuento: SMath.formatMoney(descuento, 2),
+                                monto_total: SMath.formatMoney((subtotal - descuento), 2),
                                 montoRecibido: SMath.formatMoney(this.variableGlobal, 2),
                                 cambio: SMath.formatMoney((this.variableGlobal - totalFinal), 2),
                                 conFactura: conFactura ? "si" : "no",
-                                monto_factura: conFactura ? SMath.formatMoney(subtotal, 2) : 0,
+                                monto_factura: conFactura ? SMath.formatMoney((subtotal - descuento), 2) : SMath.formatMoney(0, 2),
                             };
                             const datos = this.dataFormateada({
                                 carrito,
@@ -136,7 +125,6 @@ export default class PopupConfirmaPago extends Component {
                                 caja
                             });
                             console.log("🧾 Venta Formateadasppppp:", JSON.stringify(datos, null, 2));
-
                             MDL.compra_venta.registrar(datos).then((res) => {
                                 console.log("compra_venta registrado exitosa " + res)
                             }).catch(

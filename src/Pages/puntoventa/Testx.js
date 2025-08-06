@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification, SForm, SHr, SThread } from 'servisofts-component';
 import SIconApp from '../../Assets/SIconApp';
-import PopupTotal from './Components/Foto/PopupConfirmaPago';
-import PopupConfirmaPago from './Components/Foto/PopupConfirmaPago';
+import PopupTotal from './Components/Carrito/PopupConfirmaPago';
+import PopupConfirmaPago from './Components/Carrito/PopupConfirmaPago';
 const variableGlobal = 0;
 export default class Testx extends Component {
     constructor(props) {
@@ -43,7 +43,6 @@ export default class Testx extends Component {
         if (isNaN(monto_recibido_number)) monto_recibido_number = 0;
         if (!this._recibido) this._recibido = "";
         if (!this._devolvido) this._devolvido = 0;
-        // totalFinal = 100;
         const defaultData = this.data?.cliente ?? {};
         return SPopup.open({
             key: "PopupPago",
@@ -84,9 +83,6 @@ export default class Testx extends Component {
                                     <SIconApp name='Search' fill={STheme.color.lightGray} />
                                 </SView>,
                                 onChangeText: (text: string) => {
-                                    // variableGlobal =text
-                                    // this.form.setValues({ "cambio": text });
-                                    // this._devolvido = text;
                                     this.forceUpdate();
                                 },
                             },
@@ -181,10 +177,6 @@ export default class Testx extends Component {
                                     conFactura: conFactura ? "si" : "no",
                                 },
                                 carrito: this.props.carrito,
-                                // cliente: this.data.cliente,
-                                // cliente: this.props.data ? this.props.data?.cliente : this.data.cliente,
-                                // cliente: this.data?.cliente,
-                                // vendedor: Model.usuario.Action.getUsuarioLog()
                             });
                             console.log("🧾 Venta Formateadasssssssss:");
                             console.log(JSON.stringify(datos, null, 2));
@@ -246,7 +238,6 @@ export default class Testx extends Component {
                 </SView>
                 {this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                     this.renderPopudPago()
-                    // variableGlobal
                 }}>
                     <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pagosss</SText>
                 </SView>

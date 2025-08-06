@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification, SForm, SHr, SThread, SImage } from 'servisofts-component';
 import MDL from '../../../../MDL';
-// import FotoCliente from './FotoCliente';
 import SIconApp from '../../../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
 export default class FotoCliente extends Component {
-
     constructor(props) {
         super(props);
     }
@@ -31,7 +29,6 @@ export default class FotoCliente extends Component {
             })
         })
     }
-
     form: SForm | null = null;
     seleccionarCliente() {
         let formRef;
@@ -132,10 +129,6 @@ export default class FotoCliente extends Component {
             )
         });
     }
-
-
-
-
     renderTecladoNumerico = () => {
         const cliente = this.data?.cliente ?? {};
         const { key, nombres, apellidos, telefono, nombre_completo } = cliente;

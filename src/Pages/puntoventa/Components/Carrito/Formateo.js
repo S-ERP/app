@@ -7,17 +7,11 @@ import SIconApp from '../../../../Assets/SIconApp';
 import PButtom from '../../../../Components/PButtom';
 import PButtom3 from '../../../../Components/PButtom3';
 import ResumenTotales from './ResumenTotales';
-import ConfirmarPago from './ConfirmarPago';
-// import React, { Component } from 'react';
-// import { SMath } from 'servisofts-component';
-// import Model from '../../../../Model';
 export default class Formateo extends Component {
     constructor(props) {
         super(props);
     }
-    /**
-     * Formatea los datos del carrito, cliente, caja y vendedor para enviar al backend.
-     */
+
     formatearVenta = () => {
         const { carrito = [], cliente, subtotal, totalImpuesto, totalDescuento, totalFinal, montoRecibido, conFactura } = this.props;
         const vendedor = Model.usuario.Action.getUsuarioLog();

@@ -6,9 +6,8 @@ import SIconApp from '../../../../Assets/SIconApp';
 import PButtom from '../../../../Components/PButtom';
 import PButtom3 from '../../../../Components/PButtom3';
 import ResumenTotales from './ResumenTotales';
-import ConfirmarPago from './ConfirmarPago';
 import FotoCliente2 from '../Foto/FotoCliente';
-import PopupConfirmaPago from '../Foto/PopupConfirmaPago';
+import PopupConfirmaPago from './PopupConfirmaPago';
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
@@ -172,8 +171,6 @@ export default class TecladoNumerico extends Component {
                                 },
                                 carrito: this.props?.carrito,
                                 cliente: this.data.cliente,
-                                // cliente: this.props.data ? this.props.data?.cliente : this.data.cliente,
-                                // cliente: this.data?.cliente,
                                 vendedor: Model.usuario.Action.getUsuarioLog()
                             });
                             console.log("🧾 Venta Formateadaaaaaaaaaaaa:");
@@ -193,8 +190,6 @@ export default class TecladoNumerico extends Component {
             </SView>
         })
     }
-
-
     renderTecladoNumerico = () => {
         const cliente = this.data.cliente ?? {};
         const { key, nombres, apellidos, telefono, nombre_completo } = cliente;
@@ -223,32 +218,22 @@ export default class TecladoNumerico extends Component {
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                             let carro = this.props?.carrito || {};
                             console.log("mirala1 " + JSON.stringify(this.data.cliente))
-
-                            // aqui es
-                            // this.data.cliente = null;
-                            // FotoCliente2.limpiarCliente();
-                            // FotoCliente2.onReload2({});
-                            // this.data.cliente = {};
-                            // this.forceUpdate();
-                            // console.log("mirala " + JSON.stringify(this.data.cliente))
-                            // return;
                             PopupConfirmaPago.open({
                                 subtotal: subtotal,
+                                descuento: this.props.descuento,
+                                iva: this.props.descuento,
                                 totalImpuesto: totalImpuesto,
-                                totalDescuento: totalDescuento,
+                                totalDescuento: descuento,
                                 totalFinal: totalFinal,
                                 numeroIva: numeroIva,
                                 conFactura: conFactura,
                                 carrito: this.props?.carrito || {},
-                                cliente: this.data.cliente,
+                                cliente: this.data?.cliente,
                                 onReload: () => {
-                                    // Aquí ejecutás lo que querés que pase al confirmar
                                     this.props?.onReload?.(); // o cualquier otra función de recarga
                                 }
                             }
-
                             )
-                            // <ConfirmarPago />
                         }}>
                             <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagare</SText>
                         </SView>
@@ -269,13 +254,11 @@ export default class TecladoNumerico extends Component {
                 </SView >
                 {
                     this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-                        // this.renderPopudPago()
-
                         this.data.cliente = null;
                         return;
                         PopupConfirmaPago.open({
                             subtotal: subtotal,
-                            descuento: descuento,
+                            descuento: this.props.descuento,
                             totalImpuesto: totalImpuesto,
                             totalDescuento: totalDescuento,
                             totalFinal: totalFinal,
