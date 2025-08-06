@@ -29,17 +29,20 @@ export default class PopupConfirmaPago extends Component {
     dataFormateada({ carrito = null, cliente = null, caja = null, vendedor = null }) {
         return {
             // detalle: carrito.map(item => ({
-            productos: carrito.map(item => ({
-                key: item.key,
+            detalle: carrito.map(item => ({
+                key_modelo: item.key,
                 descripcion: item.descripcion,
-                precio_compra: item.precio_compra ?? 0,
-                precio_venta: item.precio_venta ?? 0,
-                stock: item.stock ?? 0,
+                precio_unitario: item.precio_venta ?? 0,
                 cantidad: item.cantidad ?? 0,
-                key_marca: item.key_marca ?? null,
-                marca_descripcion: item.marca?.descripcion ?? null,
-                key_tipo_producto: item.key_tipo_producto ?? null,
-                tipo_producto: item.tipo_producto?.descripcion ?? null,
+
+                // precio_compra: item.precio_compra ?? 0,
+                // precio_venta: item.precio_venta ?? 0,
+                // stock: item.stock ?? 0,
+                // cantidad: item.cantidad ?? 0,
+                // key_marca: item.key_marca ?? null,
+                // marca_descripcion: item.marca?.descripcion ?? null,
+                // key_tipo_producto: item.key_tipo_producto ?? null,
+                // tipo_producto: item.tipo_producto?.descripcion ?? null,
             })),
             key_cliente: cliente?.key ?? null,
             key_vendedor: vendedor?.key ?? null,
@@ -47,7 +50,7 @@ export default class PopupConfirmaPago extends Component {
         };
     }
     render() {
-        const { subtotal, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura, carrito, cliente } = this.props;
+        const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura, carrito, cliente } = this.props;
         return (
             <SView col="xs-12" center>
                 <SView height={8} />
@@ -117,12 +120,14 @@ export default class PopupConfirmaPago extends Component {
                             const vendedor = Model.usuario.Action.getUsuarioLog();
                             const caja = {
                                 subtotal: SMath.formatMoney(subtotal, 2),
-                                IVA: SMath.formatMoney(totalImpuesto, 2),
-                                Descuento: SMath.formatMoney(this.totalDescuento, 2),
-                                totalFinal: SMath.formatMoney(totalFinal, 2),
+                                iva: SMath.formatMoney(descuento, 2),
+                                descuento: SMath.formatMoney(this.totalDescuento, 2),
+                                monto_total: SMath.formatMoney(subtotal, 2),
+                                // monto_total: SMath.formatMoney(totalFinal, 2),
                                 montoRecibido: SMath.formatMoney(this.variableGlobal, 2),
                                 cambio: SMath.formatMoney((this.variableGlobal - totalFinal), 2),
                                 conFactura: conFactura ? "si" : "no",
+                                monto_factura: conFactura ? SMath.formatMoney(subtotal, 2) : 0,
                             };
                             const datos = this.dataFormateada({
                                 carrito,
@@ -137,7 +142,7 @@ export default class PopupConfirmaPago extends Component {
                             }).catch(
                                 console.log("compra_venta registrado error ")
                             )
-                             this.forceUpdate();
+                            this.forceUpdate();
                             this.props?.onReload();
                             SPopup.close("popup_config_horario");
                         }}

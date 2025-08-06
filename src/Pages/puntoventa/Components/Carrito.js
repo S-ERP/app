@@ -441,7 +441,10 @@ export default class Carrito extends Component {
                         </SView>
                     </SView>
                 }
-                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} subtotal={subtotal} numeroIva={this._numeroIva} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal} conFactura={this.conFactura}
+                <TecladoNumerico data={{ cliente: this.data?.cliente }} carrito={this.getCarritoimprimir()} carritonuevo={this.carritonuevo} numeroIva={this._numeroIva} totalImpuesto={totalImpuesto} totalDescuento={totalDescuento} totalFinal={totalFinal} conFactura={this.conFactura}
+                    subtotal={subtotal}
+                    descuento={this.descuentoManual}
+
                     onReload={() => { this.vaciarCarrito(); }}
                 />
             </>

@@ -11,15 +11,22 @@ export default class compra_venta extends MDLAbstract<EventListener> {
   proveedor = new proveedor();
 
   async registrar(data: any) {
+    const formar = {
+      key_usuario: Model.usuario.Action.getKey(),
+      key_empresa: MDL.empresa.select?.key,
+      descuento: data.caja.descuento,
+      monto_total: data.caja.monto_total,
+      monto_factura: data.caja.monto_factura,
+      detalle: data.detalle,
+    };
+    // console.log("aqui " + JSON.stringify(formar));
 
-    console.log("aqui " + JSON.stringify(data));
+    // return;
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
       component: "compra_venta",
       type: "ventaRapida",
-      data: data,
-      key_usuario: Model.usuario.Action.getKey(),
-      key_empresa: MDL.empresa.select?.key,
+      data: formar,
     });
     return resp.data;
   }

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { SImage, SInput, SNavigation, SText, STheme, SView } from 'servisofts-component';
 import SIconApp from '../../../Assets/SIconApp';
-import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
 import FotoUsuario from './Foto/FotoUsuario';
 export default class Header extends Component {

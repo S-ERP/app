@@ -75,14 +75,11 @@ import ricky from "./ricky";
 import crm from "./crm";
 import plantilla from "./crm/plantilla";
 import turno from "./turno";
-import proveedores from "../Components/compra_venta/Proveedor";
 import Proveedor from "../Components/compra_venta/Proveedor";
 import RegistroInventario from "./inventario/almacen/RegistroInventarios";
 import ReporteConteoInventario from "./inventario/almacen/ReporteConteoInventario";
 import testpuntoventa from "./testpuntoventa";
-import punto_venta from "./punto_venta";
-import Main from "./punto_venta/Main";
-import Galaxia from "./punto_venta/Galaxia";
+import Main from "./puntoventa/Main";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -164,7 +161,5 @@ export default SPage.combinePages("/", {
   //   inventariar :
   "inventario/almacen/profile/registro_inventario": RegistroInventario,
   "productos/reporte_conteo_inventario": ReporteConteoInventario,
-  puntoventa11111: testpuntoventa,
   puntoventa: Main,
-//   puntoventa: Galaxia,
 });

@@ -63,7 +63,7 @@ export default class TecladoNumerico extends Component {
         };
     }
     renderPopudPago() {
-        const { subtotal, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
+        const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
         let monto_recibido_number = parseFloat(this._recibido);
         if (isNaN(monto_recibido_number)) monto_recibido_number = 0;
         if (!this._recibido) this._recibido = "";
@@ -199,7 +199,7 @@ export default class TecladoNumerico extends Component {
     renderTecladoNumerico = () => {
         const cliente = this.data.cliente ?? {};
         const { key, nombres, apellidos, telefono, nombre_completo } = cliente;
-        const { subtotal, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
+        const { subtotal, descuento,  totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
         const style_text = {
             color: STheme.color.text,
             fontSize: 12,
@@ -276,6 +276,7 @@ export default class TecladoNumerico extends Component {
                         return;
                         PopupConfirmaPago.open({
                             subtotal: subtotal,
+                            descuento: descuento,
                             totalImpuesto: totalImpuesto,
                             totalDescuento: totalDescuento,
                             totalFinal: totalFinal,
