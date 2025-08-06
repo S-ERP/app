@@ -7,6 +7,18 @@ export default class FotoCliente extends Component {
     constructor(props) {
         super(props);
     }
+    clienteDataCompleto = null;
+    form: SForm | null = null;
+
+    static limpiar(instance, data) {
+        instance.clienteDataCompleto = null; // Elimina el cliente seleccionado
+        instance.form?.setValues({
+            razon_social: data?.razon_social || "",
+            correo: data?.correo || "",
+            nombres: data?.nombres || "",
+        });
+        instance.forceUpdate(); // Refresca la UI
+    };
     componentDidMount() {
         setTimeout(() => {
             this.hanldeEditTelefono();
@@ -29,7 +41,6 @@ export default class FotoCliente extends Component {
             })
         })
     }
-    form: SForm | null = null;
     seleccionarCliente() {
         let formRef;
         const defaultData = this.data?.cliente ?? {};
@@ -73,7 +84,7 @@ export default class FotoCliente extends Component {
                                     <SIconApp name='Search' fill={STheme.color.lightGray} />
                                 </SView>,
                                 onChangeText: (text: string) => {
-                                     new SThread(2000, "buscar_nit", true).start(() => {
+                                    new SThread(2000, "buscar_nit", true).start(() => {
                                         this.hanldeEditTelefono();
                                     })
                                 },
@@ -86,7 +97,7 @@ export default class FotoCliente extends Component {
                                 col: "xs-12",
                                 disabled: true,
                                 label: "razon social",
-                                 defaultValue: defaultData?.razon_social,
+                                defaultValue: defaultData?.razon_social,
                                 onSubmitEditing: () => this.form?.focus("correo"),
                             },
                             correo: {

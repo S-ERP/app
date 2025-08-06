@@ -8,6 +8,7 @@ import PButtom3 from '../../../../Components/PButtom3';
 import ResumenTotales from './ResumenTotales';
 import FotoCliente2 from '../Foto/FotoCliente';
 import PopupConfirmaPago from './PopupConfirmaPago';
+// import PopupConfirmaPago from './PopupConfirmaPago';
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
@@ -224,8 +225,8 @@ export default class TecladoNumerico extends Component {
                                 iva: this.props.descuento,
                                 totalImpuesto: totalImpuesto,
                                 totalDescuento: descuento,
-                                totalFinal: totalFinal,
-                                numeroIva: numeroIva,
+                                totalFinal: (subtotal - this.props.descuento),
+                                 numeroIva: numeroIva,
                                 conFactura: conFactura,
                                 carrito: this.props?.carrito || {},
                                 cliente: this.data?.cliente,
