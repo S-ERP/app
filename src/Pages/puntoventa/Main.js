@@ -6,6 +6,7 @@ import Modelo from "./Components/Modelo";
 import Categoria from "./Components/Categoria";
 import SIconApp from "../../Assets/SIconApp";
 import { Dimensions } from "react-native";
+import PopupCarritoFlotante from "./Components/Carrito/PopupCarritoFlotante";
 export default class Main extends Component {
     constructor(props) {
         super(props);
@@ -71,7 +72,14 @@ export default class Main extends Component {
                     }}
                     onPress={() => {
                         console.log("prin " + JSON.stringify(this.carritoRef?.carrito))
+
                         const productos = this.carritoRef?.carrito;
+
+                        // alvaro esta trabajando
+                        // PopupCarritoFlotante.open({
+                        //     productos: productos
+                        // });
+
                         this.setState({ showCarritoModal: true }, () => {
                             this?.carritoRefModal?.setCarrito(productos);
                             this.forceUpdate();

@@ -1,0 +1,75 @@
+import React, { Component } from 'react';
+import { SView, SText, STheme, SPopup, SNotification, SButtom, SHr } from 'servisofts-component';
+import Carrito from '../Carrito';
+
+export default class PopupCarritoFlotante extends Component {
+    static open(props) {
+        SPopup.open({
+            key: "popup_carrito_flotante",
+            type: 1,
+            content: (
+                <SView col="xs-10 sm-9" center backgroundColor={STheme.color.background} style={{
+                    borderRadius: 8,
+                    maxWidth: 400,
+                    shadowColor: "#18181b",
+                    shadowOffset: { width: 5, height: 4 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 4,
+                    elevation: 60,
+                }} padding={24} withoutFeedback>
+                    <ContenidoCarritoFlotante {...props} />
+                </SView>
+            )
+        });
+    }
+}
+
+class ContenidoCarritoFlotante extends Component {
+    carrito = [];
+    descuentoManual = 0;
+
+    componentDidMount() {
+        this.loader();
+    }
+
+    loader() {
+        this.carritoRefModal?.setCarrito?.(this.props.productos);
+        this.forceUpdate();
+    }
+
+    vaciarCarrito() {
+
+        this.carritoRefModal.setCarrito([]);
+        this.carrito.forEach(item => {
+            this.carritoRefModal?.onModificarStock?.(item.key, +item.cantidad);
+        });
+        this.descuentoManual = 0;
+        this.carrito = [];
+        SNotification.send({ title: "Carrito vaciado", message: "Todos los productos fueron removidos." });
+        this.forceUpdate();
+    }
+
+    render() {
+        return (
+            <SView col="xs-12" center>
+                <SView height={8} />
+                <SText fontSize={18} bold center>Carrito de Compras</SText>
+                <SHr height={16} />
+
+                <SButtom
+                    props={{ type: "danger" }}
+                    onPress={() => this.vaciarCarrito()}
+                >
+                    Vaciar carrito
+                </SButtom>
+
+                <SHr height={16} />
+
+                <Carrito
+                    ref={(ref) => (this.carritoRefModal = ref)}
+                    onModificarStock={(key, delta) => this.carritoRefModal?.modificarStock?.(key, delta)}
+                />
+            </SView>
+        );
+    }
+}

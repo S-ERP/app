@@ -9,12 +9,15 @@ import ResumenTotales from './Carrito/ResumenTotales';
 import TecladoNumerico from './Carrito/TecladoNumerico';
 import MDL from '../../../MDL';
 import FotoCliente from './Foto/FotoCliente';
+import PopupCliente from './Carrito/PopupCliente';
 export default class Carrito extends Component {
     carrito = [];
     descuentoManual = "";
     showPaymentModal = false;
     data = {};
     amountReceived = "";
+
+    fotoClienteRef;
     componentDidMount() {
         this.loadData()
     }
@@ -67,12 +70,15 @@ export default class Carrito extends Component {
     };
     vaciarCarrito() {
         this.carrito.forEach(item => { this.props.onModificarStock?.(item.key, +item.cantidad); });
-        this.descuentoManual = 0;
+        // this.carrito.length = 0; // También puedes usar this.carrito = [];
+        this.carritoRefModal?.setCarrito?.([]);
+
         this.carrito = [];
 
-        FotoCliente.instance?.limpiar();
+        this.descuentoManual = 0;
+        // FotoCliente.instance?.limpiar();
         // this.fotoClienteRef?.limpiar();
-
+        // FotoCliente.limpiar();
         console.log("vacios " + this.carrito)
         this.forceUpdate();
     };
@@ -173,11 +179,11 @@ export default class Carrito extends Component {
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-6"} border="red" center>
 
-                                <FotoCliente ref={(ref) => (this.fotoClienteRef = ref)} onReload2={(cliente) => {
+                                {/* <FotoCliente ref={(ref) => (this.fotoClienteRef = ref)} onReload2={(cliente) => {
                                     this.data.cliente = cliente;
                                     this.forceUpdate();
-                                }}  ></FotoCliente>
-                                {/* <SView col={"xs-12  "} row center
+                                }}  ></FotoCliente> */}
+                                <SView col={"xs-12  "} row center
                                 onPress={() => this.seleccionarCliente()}
                             >
                                 <SView col={"xs-5 md-5"}    >
@@ -195,7 +201,7 @@ export default class Carrito extends Component {
                                         fontWeight: "bold", fontSize: 12
                                     }}>{this.data?.cliente?.nombres || "Clientes"}</SText>
                                 </SView>
-                            </SView> */}
+                            </SView>
                             </SView>
                         </SView>
                     </SView>
