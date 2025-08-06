@@ -7,8 +7,7 @@ import PButtom from '../../../../Components/PButtom';
 import PButtom3 from '../../../../Components/PButtom3';
 import ResumenTotales from './ResumenTotales';
 import ConfirmarPago from './ConfirmarPago';
-import Galaxia from '../../Galaxia';
-import FotoCliente2 from '../Foto/FotoCliente2';
+import FotoCliente2 from '../Foto/FotoCliente';
 import PopupConfirmaPago from '../Foto/PopupConfirmaPago';
 export default class TecladoNumerico extends Component {
     constructor(props) {
@@ -199,7 +198,7 @@ export default class TecladoNumerico extends Component {
     renderTecladoNumerico = () => {
         const cliente = this.data.cliente ?? {};
         const { key, nombres, apellidos, telefono, nombre_completo } = cliente;
-        const { subtotal, descuento,  totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
+        const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
         const style_text = {
             color: STheme.color.text,
             fontSize: 12,

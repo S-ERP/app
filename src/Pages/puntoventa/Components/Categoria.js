@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import { SHr, SInput, SScrollView2, SScrollView3, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SInput, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
-import { Container } from '../../../Components';
 import { ScrollView } from 'react-native-gesture-handler';
 const categoriasEjemplo = [
     { key: "frutas", descripcion: "Frutas" },

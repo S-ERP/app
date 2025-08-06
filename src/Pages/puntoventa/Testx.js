@@ -4,7 +4,7 @@ import SIconApp from '../../Assets/SIconApp';
 import PopupTotal from './Components/Foto/PopupConfirmaPago';
 import PopupConfirmaPago from './Components/Foto/PopupConfirmaPago';
 const variableGlobal = 0;
-export default class Galaxia extends Component {
+export default class Testx extends Component {
     constructor(props) {
         super(props);
         this.data = props.data;

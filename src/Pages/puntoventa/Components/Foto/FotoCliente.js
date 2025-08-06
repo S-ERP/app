@@ -4,17 +4,10 @@ import MDL from '../../../../MDL';
 // import FotoCliente from './FotoCliente';
 import SIconApp from '../../../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
-export default class FotoCliente2 extends Component {
+export default class FotoCliente extends Component {
 
-
-    // static limpiarCliente() {
-    //     this.data.cliente = null;
-    //     this.forceUpdate();
-
-    // }
     constructor(props) {
         super(props);
-        // this.data = props.data;
     }
     componentDidMount() {
         setTimeout(() => {
@@ -38,20 +31,7 @@ export default class FotoCliente2 extends Component {
             })
         })
     }
-    seleccionarCliente2() {
-        SNavigation.navigate("/cliente", {
-            onSelect: (obj) => {
-                var cliente = {
-                    key: obj.key,
-                    nombres: obj.nombres ?? "",
-                    apellidos: obj.apellidos ?? "",
-                    telefono: obj.telefono ?? "",
-                    nombre_completo: `${obj.nombres ?? ""} ${obj.apellidos ?? ""}`.trim()
-                }
-                this.forceUpdate();
-            }
-        })
-    }
+
     form: SForm | null = null;
     seleccionarCliente() {
         let formRef;
@@ -96,8 +76,7 @@ export default class FotoCliente2 extends Component {
                                     <SIconApp name='Search' fill={STheme.color.lightGray} />
                                 </SView>,
                                 onChangeText: (text: string) => {
-                                    // this.form.setValues({ "razon_social": text });
-                                    new SThread(2000, "buscar_nit", true).start(() => {
+                                     new SThread(2000, "buscar_nit", true).start(() => {
                                         this.hanldeEditTelefono();
                                     })
                                 },
@@ -109,9 +88,8 @@ export default class FotoCliente2 extends Component {
                             razon_social: {
                                 col: "xs-12",
                                 disabled: true,
-                                label: "razon socialsssssss",
-                                // defaultValue: this.form?.getValues().nit,
-                                defaultValue: defaultData?.razon_social,
+                                label: "razon social",
+                                 defaultValue: defaultData?.razon_social,
                                 onSubmitEditing: () => this.form?.focus("correo"),
                             },
                             correo: {
