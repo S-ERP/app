@@ -71,7 +71,7 @@ export default class Main extends Component {
                     }}
                     onPress={() => {
                         console.log("prin " + JSON.stringify(this.carritoRef?.carrito))
-                        const productos = this.carritoRef?.getCarrito();
+                        const productos = this.carritoRef?.carrito;
                         this.setState({ showCarritoModal: true }, () => {
                             this?.carritoRefModal?.setCarrito(productos);
                             this.forceUpdate();
@@ -123,16 +123,7 @@ export default class Main extends Component {
                         Carrito de Compras
                     </SText>
                     {this.renderCarrito2()}
-                    {/* <SView
-                        style={{
-                            marginTop: 20,
-                            alignItems: "center",
-                            cursor: "pointer",
-                        }}
-                        onPress={() => this.setState({ showCarritoModal: false })}
-                    >
-                        <SText color={STheme.color.danger}>Cerrar</SText>
-                    </SView> */}
+
                 </SView>
             </SView>
         );

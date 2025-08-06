@@ -4,21 +4,26 @@ import MDL from '../../../../MDL';
 import SIconApp from '../../../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
 export default class FotoCliente extends Component {
+    static instance = null; // 🔁 Aquí guardamos la instancia
+
     constructor(props) {
         super(props);
+        FotoCliente.instance = this; // 👉 guardamos esta instancia
+
     }
     clienteDataCompleto = null;
     form: SForm | null = null;
 
-    static limpiar(instance, data) {
-        instance.clienteDataCompleto = null; // Elimina el cliente seleccionado
-        instance.form?.setValues({
-            razon_social: data?.razon_social || "",
-            correo: data?.correo || "",
-            nombres: data?.nombres || "",
-        });
-        instance.forceUpdate(); // Refresca la UI
-    };
+    limpiar() {
+        console.log("presiono");
+        this.data.cliente = {};
+        this.clienteDataCompleto = null;
+        // this.forceUpdate();
+        // SPopup.close("PopupClienteManual");
+        console.log("presiono");
+    }
+
+
     componentDidMount() {
         setTimeout(() => {
             this.hanldeEditTelefono();
@@ -117,7 +122,13 @@ export default class FotoCliente extends Component {
                     <SHr />
                     <SView row col={"xs-12"}>
                         <SView flex />
-                        <SView center style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }} >
+                        <SView center style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }} onPress={() => {
+                            this.data.cliente = null;
+                            this.clienteDataCompleto = null;
+                            this.forceUpdate();
+                            SPopup.close("PopupClienteManual");
+                        }}
+                        >
                             <SText color={STheme.color.text}>Cancelar</SText>
                         </SView>
                         <SView width={8} />

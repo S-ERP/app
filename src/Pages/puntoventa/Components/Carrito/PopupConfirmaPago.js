@@ -29,16 +29,16 @@ export default class PopupConfirmaPago extends Component {
 
     dataFormateada({ carrito = [], cliente = null, caja = null, vendedor = null }) {
         const carritoFormateado = carrito.map(item => ({
-            key: item.key,
+            key_modelo: item.key,
             descripcion: item.descripcion,
-            precio_compra: item.precio_compra ?? 0,
-            precio_venta: item.precio_venta ?? 0,
-            stock: item.stock ?? 0,
+            // precio_compra: item.precio_compra ?? 0,
+            precio_unitario: item.precio_venta ?? 0,
+            // stock: item.stock ?? 0,
             cantidad: item.cantidad ?? 0,
-            key_marca: item.key_marca ?? null,
-            marca_descripcion: item.marca?.descripcion ?? null,
-            key_tipo_producto: item.key_tipo_producto ?? null,
-            tipo_producto: item.tipo_producto?.descripcion ?? null,
+            // key_marca: item.key_marca ?? null,
+            // marca_descripcion: item.marca?.descripcion ?? null,
+            // key_tipo_producto: item.key_tipo_producto ?? null,
+            // tipo_producto: item.tipo_producto?.descripcion ?? null,
         }));
         const clienteFormateado = cliente?.key;
         const vendedorFormateado = vendedor?.key;
@@ -139,7 +139,7 @@ export default class PopupConfirmaPago extends Component {
                             const caja = {
                                 subtotal: SMath.formatMoney(subtotal, 2),
                                 iva: SMath.formatMoney(descuento, 2),
-                                descuento: SMath.formatMoney(descuento, 2),
+                                descuento: SMath.formatMoney(descuento || 0, 2),
                                 monto_total: SMath.formatMoney((subtotal - descuento), 2),
                                 montoRecibido: SMath.formatMoney(this.variableGlobal, 2),
                                 cambio: SMath.formatMoney((this.variableGlobal - totalFinal), 2),

@@ -8,6 +8,7 @@ import PButtom3 from '../../../../Components/PButtom3';
 import ResumenTotales from './ResumenTotales';
 import FotoCliente2 from '../Foto/FotoCliente';
 import PopupConfirmaPago from './PopupConfirmaPago';
+import FotoCliente from '../Foto/FotoCliente';
 // import PopupConfirmaPago from './PopupConfirmaPago';
 export default class TecladoNumerico extends Component {
     constructor(props) {
@@ -211,10 +212,10 @@ export default class TecladoNumerico extends Component {
                 <SView col={"xs-0 sm-12"} row color={STheme.color.danger}>
                     <SView col={"xs-4"}>
                         <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
-                            <FotoCliente2 onReload2={(cliente) => {
+                            <FotoCliente onReload2={(cliente) => {
                                 this.data.cliente = cliente;
                                 this.forceUpdate();
-                            }}  ></FotoCliente2>
+                            }}  ></FotoCliente>
                         </SView>
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                             let carro = this.props?.carrito || {};
@@ -255,18 +256,25 @@ export default class TecladoNumerico extends Component {
                 </SView >
                 {
                     this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-                        this.data.cliente = null;
-                        return;
+                        // this.data.cliente = null;
+                        // return;
                         PopupConfirmaPago.open({
                             subtotal: subtotal,
                             descuento: this.props.descuento,
+                            iva: this.props.descuento,
                             totalImpuesto: totalImpuesto,
-                            totalDescuento: totalDescuento,
-                            totalFinal: totalFinal,
+                            totalDescuento: descuento,
+                            totalFinal: (subtotal - this.props.descuento),
                             numeroIva: numeroIva,
                             conFactura: conFactura,
                             carrito: this.props?.carrito || {},
-                            cliente: this.data.cliente
+                            cliente: this.data?.cliente,
+                            onReload: () => {
+                                // this.props?.carrito = [];
+                                // console.log("se marcho")
+                                this.props?.onReload?.(); // o cualquier otra función de recarga
+                                // this.forceUpdate();
+                            }
                         })
                     }}>
                         <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pagosss</SText>
