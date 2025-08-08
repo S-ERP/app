@@ -73,10 +73,15 @@ export default class Main extends Component {
                     onPress={() => {
                         console.log("prin " + JSON.stringify(this.carritoRef?.carrito))
                         const productos = this.carritoRef?.carrito;
-                        this.setState({ showCarritoModal: true }, () => {
-                            this?.carritoRefModal?.setCarrito(productos);
-                            this.forceUpdate();
-                        });
+
+                        PopupCarritoFlotante.open({
+                            productos: productos
+
+                        })
+                        // this.setState({ showCarritoModal: true }, () => {
+                        //     this?.carritoRefModal?.setCarrito(productos);
+                        //     this.forceUpdate();
+                        // });
                     }}
                 >
                     <SIconApp name="carritoproducto" width={28} height={28} fill={STheme.color.text} />
@@ -92,7 +97,6 @@ export default class Main extends Component {
                 col="xs-12"
                 height="100%"
                 center
-                backgroundColor="red"
                 style={{
                     position: "absolute",
                     top: 0,

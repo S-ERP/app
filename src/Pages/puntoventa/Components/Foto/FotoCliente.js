@@ -33,7 +33,7 @@ export default class FotoCliente extends Component {
                         })
                     }
                     }>
-                        <SView center col={"xs-5  "}>
+                        <SView center col={"xs-8  "}>
                             <SView center backgroundColor={STheme.color.background} style={{
                                 minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4, marginRight: (this.pollo?.key ? 6 : 14), overflow: "hidden",
                             }}>
@@ -41,8 +41,8 @@ export default class FotoCliente extends Component {
                             </SView>
                         </SView>
                         <SView flex center >
-                            <SText style={{ ...style_text, fontSize: 12 }}>{this.pollo?.nombres || "Cliente"}</SText>
-                            {this.pollo?.key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff" }}>Cliente</SText> : null}
+                            <SText style={{ ...style_text, fontSize: 12 }}>{this.pollo?.nombres || "CLIENTE"}</SText>
+                            {this.pollo?.key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff", textTransform:"uppercase" }}>CLIENTE</SText> : null}
                         </SView>
                     </SView>
                 </SView>

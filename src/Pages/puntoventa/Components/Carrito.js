@@ -106,10 +106,15 @@ export default class Carrito extends Component {
         const totalFinal = this.calcularTotalConDescuento(totalConIVA);
         return (
             <>
+                {/* <SView col={"xs-12"} flex center  ></SView> */}
+
                 {subtotal <= 0 ?
-                    <SView backgroundColor={STheme.color.background} flex center style={{ borderRadius: 8, shadowColor: STheme.color.card, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
+                    <SView backgroundColor={STheme.color.background} flex center style={{
+                        borderRadius: 8, shadowColor: STheme.color.card, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1,
+                        minHeight: 250
+                    }}
                     >
-                        <SView row center backgroundColor='transparent' >
+                        <SView row center >
                             <SIconApp name='carritoproducto' height={50} fill={STheme.color.card} />
                             <SText fontSize={12} color={STheme.color.card}>Comience a agregar productos</SText>
                         </SView>
@@ -120,7 +125,7 @@ export default class Carrito extends Component {
                             <SView col={"xs-10 md-10"} row  >
                                 <SText fontSize={16} bold color={STheme.color.text}>Detalle venta</SText>
                             </SView>
-                            <SView col={"xs-2 md-2"} backgroundColor='transparent' row center onPress={() => this.vaciarCarrito()} >
+                            <SView col={"xs-2 md-2"} row center onPress={() => this.vaciarCarrito()} >
                                 <SView backgroundColor={STheme.color.card} border={STheme.color.text} style={{ borderRadius: 2, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4, height: 24, opacity: 0.6 }}>
                                     <SText fontSize={12} center color={STheme.color.text}>Vaciar</SText>
                                 </SView>
@@ -128,7 +133,7 @@ export default class Carrito extends Component {
                         </SView>
                         <SHr height={4} />
                         { }
-                        <SView col={"xs-12"} flex center backgroundColor='transparent'
+                        <SView col={"xs-12"} flex center
                             style={{
                                 shadowColor: "#000",
                                 shadowOffset: { width: 0, height: 2 },
@@ -168,12 +173,15 @@ export default class Carrito extends Component {
                         <SHr height={8} />
                         { }
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
-                            <SView col={"xs-8"}   center>
-                                {/* <FotoCliente ref={(ref) => (this.fotoClienteRef = ref)} onReload2={(cliente) => {
+                            <SView col={"xs-12"} center>
+
+                                <FotoCliente ref={(ref) => (this.fotoClienteRef = ref)} onReload2={(cliente) => {
                                     this.data.cliente = cliente;
                                     this.forceUpdate();
-                                }}  ></FotoCliente> */}
-                                <SView col={"xs-12  "} row center
+                                }}  ></FotoCliente>
+
+
+                                {/* <SView col={"xs-12  "} row center
                                     onPress={() => this.seleccionarCliente()}
                                 >
                                     <SView width={45}  >
@@ -186,7 +194,7 @@ export default class Carrito extends Component {
                                     <SView flex  >
                                         <SText style={{ color: STheme.color.text, fontWeight: "bold", fontSize: 12, textTransform: 'uppercase' }}>{this.data?.cliente?.nombres || "Seleccionar Cliente"}</SText>
                                     </SView>
-                                </SView>
+                                </SView> */}
                             </SView>
                         </SView>
                     </SView>

@@ -44,14 +44,17 @@ class ContenidoCarritoFlotante extends Component {
     }
     render() {
         return (
-            <SView col="xs-12" center>
+            <SView col="xs-12" flex center>
                 <SView height={8} />
                 <SText fontSize={18} bold center>Carrito de Compras</SText>
                 <SHr height={16} />
-                <Carrito
-                    ref={(ref) => (this.carritoRefModal = ref)}
-                    onModificarStock={(key, delta) => this.carritoRefModal?.modificarStock?.(key, delta)}
-                />
+
+                <SView col="xs-12">
+                    <Carrito
+                        ref={(ref) => (this.carritoRefModal = ref)}
+                        onModificarStock={(key, delta) => this.carritoRefModal?.modificarStock?.(key, delta)}
+                    />
+                </SView>
             </SView>
         );
     }
