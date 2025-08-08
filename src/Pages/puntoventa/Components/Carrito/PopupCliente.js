@@ -63,7 +63,7 @@ export default class PopupCliente extends Component {
                             type: 'number',
                             backgroundColor: "red",
                             background: "blue",
-                            borderColor: "red",
+                            // borderColor: "red",
                             required: true,
                             autoFocus: true,
                             defaultValue: defaultData?.nit,

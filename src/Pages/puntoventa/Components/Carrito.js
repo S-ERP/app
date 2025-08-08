@@ -138,6 +138,9 @@ export default class Carrito extends Component {
                                 borderColor: "#F3F4F6",
                             }}
                         >
+
+
+
                             <SScrollView2 disableHorizontal>
                                 <FlatList data={this.carrito} keyExtractor={(item) => item.key.toString()} renderItem={this.renderItemCarrito} />
                             </SScrollView2>
@@ -165,30 +168,25 @@ export default class Carrito extends Component {
                         <SHr height={8} />
                         { }
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
-                            <SView col={"xs-6"} border="red" center>
+                            <SView col={"xs-8"}   center>
                                 {/* <FotoCliente ref={(ref) => (this.fotoClienteRef = ref)} onReload2={(cliente) => {
                                     this.data.cliente = cliente;
                                     this.forceUpdate();
                                 }}  ></FotoCliente> */}
                                 <SView col={"xs-12  "} row center
-                                onPress={() => this.seleccionarCliente()}
-                            >
-                                <SView col={"xs-5 md-5"}    >
-                                    <SView center backgroundColor={STheme.color.background} style={{
-                                        minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
-                                        marginRight: (this.data?.cliente?.key ? 6 : 14), overflow: "hidden",
-                                    }}>
-                                        { }
+                                    onPress={() => this.seleccionarCliente()}
+                                >
+                                    <SView width={45}  >
+                                        <SView center backgroundColor={STheme.color.background} style={{
+                                            minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
+                                            marginRight: (this.data?.cliente?.key ? 6 : 8), overflow: "hidden",
+                                        }}>
+                                         </SView>
+                                    </SView>
+                                    <SView flex  >
+                                        <SText style={{ color: STheme.color.text, fontWeight: "bold", fontSize: 12, textTransform: 'uppercase' }}>{this.data?.cliente?.nombres || "Seleccionar Cliente"}</SText>
                                     </SView>
                                 </SView>
-                                <SView flex  >
-                                    <SText style={{
-                                        color: STheme.color.text,
-                                        fontSize: 12,
-                                        fontWeight: "bold", fontSize: 12
-                                    }}>{this.data?.cliente?.nombres || "Clientes"}</SText>
-                                </SView>
-                            </SView>
                             </SView>
                         </SView>
                     </SView>

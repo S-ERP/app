@@ -206,7 +206,7 @@ export default class TecladoNumerico extends Component {
         ];
         return (
             <>
-                <SView col={"xs-0 sm-12"} row color={STheme.color.danger}>
+                <SView col={"xs-0 md-12"} row color={STheme.color.danger}>
                     <SView col={"xs-4"}>
                         <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <FotoCliente onReload2={(cliente) => {

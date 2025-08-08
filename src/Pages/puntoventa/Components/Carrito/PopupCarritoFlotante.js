@@ -48,13 +48,6 @@ class ContenidoCarritoFlotante extends Component {
                 <SView height={8} />
                 <SText fontSize={18} bold center>Carrito de Compras</SText>
                 <SHr height={16} />
-                <SButtom
-                    props={{ type: "danger" }}
-                    onPress={() => this.vaciarCarrito()}
-                >
-                    Vaciar carrito
-                </SButtom>
-                <SHr height={16} />
                 <Carrito
                     ref={(ref) => (this.carritoRefModal = ref)}
                     onModificarStock={(key, delta) => this.carritoRefModal?.modificarStock?.(key, delta)}

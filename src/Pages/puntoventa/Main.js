@@ -92,6 +92,7 @@ export default class Main extends Component {
                 col="xs-12"
                 height="100%"
                 center
+                backgroundColor="red"
                 style={{
                     position: "absolute",
                     top: 0,
