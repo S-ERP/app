@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { SView, SText, STheme, SPopup, SNotification, SButtom, SHr } from 'servisofts-component';
 import Carrito from '../Carrito';
-
 export default class PopupCarritoFlotante extends Component {
     static open(props) {
         SPopup.open({
@@ -23,22 +22,17 @@ export default class PopupCarritoFlotante extends Component {
         });
     }
 }
-
 class ContenidoCarritoFlotante extends Component {
     carrito = [];
     descuentoManual = 0;
-
     componentDidMount() {
         this.loader();
     }
-
     loader() {
         this.carritoRefModal?.setCarrito?.(this.props.productos);
         this.forceUpdate();
     }
-
     vaciarCarrito() {
-
         this.carritoRefModal.setCarrito([]);
         this.carrito.forEach(item => {
             this.carritoRefModal?.onModificarStock?.(item.key, +item.cantidad);
@@ -48,23 +42,19 @@ class ContenidoCarritoFlotante extends Component {
         SNotification.send({ title: "Carrito vaciado", message: "Todos los productos fueron removidos." });
         this.forceUpdate();
     }
-
     render() {
         return (
             <SView col="xs-12" center>
                 <SView height={8} />
                 <SText fontSize={18} bold center>Carrito de Compras</SText>
                 <SHr height={16} />
-
                 <SButtom
                     props={{ type: "danger" }}
                     onPress={() => this.vaciarCarrito()}
                 >
                     Vaciar carrito
                 </SButtom>
-
                 <SHr height={16} />
-
                 <Carrito
                     ref={(ref) => (this.carritoRefModal = ref)}
                     onModificarStock={(key, delta) => this.carritoRefModal?.modificarStock?.(key, delta)}

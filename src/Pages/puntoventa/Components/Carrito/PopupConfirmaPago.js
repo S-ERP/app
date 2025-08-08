@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { SView, SText, STheme, SForm, SPopup, SInput, SMath, SNotification } from 'servisofts-component';
 import SIconApp from '../../../../Assets/SIconApp';
 import ResumenTotales from './ResumenTotales';
-// import carrito from '../../../../Model/inventario/carrito';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 export default class PopupConfirmaPago extends Component {
@@ -26,19 +25,12 @@ export default class PopupConfirmaPago extends Component {
     }
     variableGlobal = "";
     totalDescuento = 0;
-
     dataFormateada({ carrito = [], cliente = null, caja = null, vendedor = null }) {
         const carritoFormateado = carrito.map(item => ({
             key_modelo: item.key,
             descripcion: item.descripcion,
-            // precio_compra: item.precio_compra ?? 0,
             precio_unitario: item.precio_venta ?? 0,
-            // stock: item.stock ?? 0,
             cantidad: item.cantidad ?? 0,
-            // key_marca: item.key_marca ?? null,
-            // marca_descripcion: item.marca?.descripcion ?? null,
-            // key_tipo_producto: item.key_tipo_producto ?? null,
-            // tipo_producto: item.tipo_producto?.descripcion ?? null,
         }));
         const clienteFormateado = cliente?.key;
         const vendedorFormateado = vendedor?.key;
@@ -49,24 +41,6 @@ export default class PopupConfirmaPago extends Component {
             caja: caja,
         };
     }
-
-    // dataFormateada({ carrito = [], cliente = null, caja = null, vendedor = null }) {
-
-    //     const carritoFormateado = carrito.map(item => ({
-
-    // dataFormateada({ carrito = null, cliente = null, caja = null, vendedor = null }) {
-    //     return {
-    //         detalle: carrito.map(item => ({
-    //             key_modelo: item.key,
-    //             descripcion: item.descripcion,
-    //             precio_unitario: item.precio_venta ?? 0,
-    //             cantidad: item.cantidad ?? 0,
-    //         })),
-    //         key_cliente: cliente?.key,
-    //         key_vendedor: vendedor?.key,
-    //         caja: caja,
-    //     };
-    // }
     render() {
         const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura, carrito, cliente } = this.props;
         return (
@@ -152,7 +126,6 @@ export default class PopupConfirmaPago extends Component {
                                 vendedor,
                                 caja
                             });
-                            // console.log("🧾 Venta Formateadasppppp:", JSON.stringify(datos, null, 2));
                             MDL.compra_venta.registrar(datos).then((res) => {
                                 console.log("compra_venta registrado exitosa " + res)
                             }).catch(

@@ -178,8 +178,6 @@ export default class Testx extends Component {
                                 },
                                 carrito: this.props.carrito,
                             });
-                            console.log("🧾 Venta Formateadasssssssss:");
-                            console.log(JSON.stringify(datos, null, 2));
                             this.showPaymentModal = false;
                             this._recibido = "";
                             this._devolvido = "";

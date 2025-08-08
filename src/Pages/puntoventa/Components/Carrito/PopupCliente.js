@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import { SView, SText, STheme, SForm, SPopup, SInput, SMath, SNotification, SThread, SHr } from 'servisofts-component';
 import SIconApp from '../../../../Assets/SIconApp';
-
 import MDL from '../../../../MDL';
 export default class PopupCliente extends Component {
-
     static instance = null; // guardamos la referencia aquí
     clienteDataCompleto = null;
     form: SForm | null = null;
-
     static open(props) {
         SPopup.open({
             key: "popup_config_horario",
@@ -27,9 +24,6 @@ export default class PopupCliente extends Component {
             )
         });
     }
-
-
-
     componentDidMount() {
         setTimeout(() => {
             this.hanldeEditTelefono();
@@ -53,16 +47,13 @@ export default class PopupCliente extends Component {
         })
     }
     render() {
-
         let formRef;
         const defaultData = this.data?.cliente ?? {};
-
         return (
             <SView col="xs-12" center>
                 <SView height={8} />
                 <SText fontSize={18} bold center>Datos del Cliente</SText>
                 <SView height={8} />
-
                 <SForm row ref={(ref: any) => this.form = ref}
                     style={{ justifyContent: "space-between" }}
                     inputs={{
@@ -117,7 +108,6 @@ export default class PopupCliente extends Component {
                     <SView flex />
                     <SView center style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }}
                         onPress={() => {
-                            // limpiar();
                             SPopup.close("popup_config_horario");
                         }}
                     >

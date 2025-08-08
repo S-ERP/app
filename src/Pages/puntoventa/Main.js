@@ -72,14 +72,7 @@ export default class Main extends Component {
                     }}
                     onPress={() => {
                         console.log("prin " + JSON.stringify(this.carritoRef?.carrito))
-
                         const productos = this.carritoRef?.carrito;
-
-                        // alvaro esta trabajando
-                        // PopupCarritoFlotante.open({
-                        //     productos: productos
-                        // });
-
                         this.setState({ showCarritoModal: true }, () => {
                             this?.carritoRefModal?.setCarrito(productos);
                             this.forceUpdate();
@@ -131,7 +124,6 @@ export default class Main extends Component {
                         Carrito de Compras
                     </SText>
                     {this.renderCarrito2()}
-
                 </SView>
             </SView>
         );

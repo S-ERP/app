@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
 import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath, SButtom, SNotification, SNavigation, SIcon, SPopup, SForm, SThread } from 'servisofts-component';
-
 import SSocket from 'servisofts-socket';
 import SIconApp from '../../../Assets/SIconApp';
 import CarritoItem from './Carrito/CarritoItem';
@@ -16,7 +15,6 @@ export default class Carrito extends Component {
     showPaymentModal = false;
     data = {};
     amountReceived = "";
-
     fotoClienteRef;
     componentDidMount() {
         this.loadData()
@@ -70,15 +68,9 @@ export default class Carrito extends Component {
     };
     vaciarCarrito() {
         this.carrito.forEach(item => { this.props.onModificarStock?.(item.key, +item.cantidad); });
-        // this.carrito.length = 0; // También puedes usar this.carrito = [];
         this.carritoRefModal?.setCarrito?.([]);
-
         this.carrito = [];
-
         this.descuentoManual = 0;
-        // FotoCliente.instance?.limpiar();
-        // this.fotoClienteRef?.limpiar();
-        // FotoCliente.limpiar();
         console.log("vacios " + this.carrito)
         this.forceUpdate();
     };
@@ -98,7 +90,6 @@ export default class Carrito extends Component {
     };
     calcularTotalConDescuento = (total) => total - parseFloat(this.descuentoManual || "0");
     getCarrito() { this.carrito; }
-
     renderItemCarrito = ({ item }) => (
         <CarritoItem
             item={item}
@@ -107,15 +98,12 @@ export default class Carrito extends Component {
             onEliminar={() => this.eliminarItem(item)}
         />
     );
-
     renderCarrito = () => {
         const subtotal = this.calcularSubtotal();
         const totalConIVA = this.calcularTotalConIVA(subtotal);
         const totalImpuesto = this.calcularIVA(subtotal);
         const totalDescuento = this.descuentoManual || 0;
         const totalFinal = this.calcularTotalConDescuento(totalConIVA);
-        // const totalFinal = this.calcularTotalConDescuento(totalConIVA);
-        // const carro = this.getCarrito();
         return (
             <>
                 {subtotal <= 0 ?
@@ -178,7 +166,6 @@ export default class Carrito extends Component {
                         { }
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-6"} border="red" center>
-
                                 {/* <FotoCliente ref={(ref) => (this.fotoClienteRef = ref)} onReload2={(cliente) => {
                                     this.data.cliente = cliente;
                                     this.forceUpdate();

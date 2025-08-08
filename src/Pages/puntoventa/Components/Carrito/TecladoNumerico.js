@@ -9,7 +9,6 @@ import ResumenTotales from './ResumenTotales';
 import FotoCliente2 from '../Foto/FotoCliente';
 import PopupConfirmaPago from './PopupConfirmaPago';
 import FotoCliente from '../Foto/FotoCliente';
-// import PopupConfirmaPago from './PopupConfirmaPago';
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
@@ -175,8 +174,6 @@ export default class TecladoNumerico extends Component {
                                 cliente: this.data.cliente,
                                 vendedor: Model.usuario.Action.getUsuarioLog()
                             });
-                            console.log("🧾 Venta Formateadaaaaaaaaaaaa:");
-                            console.log(JSON.stringify(datos, null, 2));
                             this.showPaymentModal = false;
                             this._recibido = "";
                             this._devolvido = "";
@@ -256,8 +253,6 @@ export default class TecladoNumerico extends Component {
                 </SView >
                 {
                     this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-                        // this.data.cliente = null;
-                        // return;
                         PopupConfirmaPago.open({
                             subtotal: subtotal,
                             descuento: this.props.descuento,
@@ -270,10 +265,7 @@ export default class TecladoNumerico extends Component {
                             carrito: this.props?.carrito || {},
                             cliente: this.data?.cliente,
                             onReload: () => {
-                                // this.props?.carrito = [];
-                                // console.log("se marcho")
                                 this.props?.onReload?.(); // o cualquier otra función de recarga
-                                // this.forceUpdate();
                             }
                         })
                     }}>

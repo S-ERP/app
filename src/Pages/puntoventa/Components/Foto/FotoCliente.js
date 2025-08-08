@@ -5,13 +5,10 @@ import SIconApp from '../../../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
 import PopupCliente from '../Carrito/PopupCliente';
 export default class FotoCliente extends Component {
-
     constructor(props) {
         super(props);
     }
-
     limpiar() {
-        console.log("LIMPIAR CLIENTE");
         this.pollo = {};
          this.forceUpdate();
     }
@@ -28,19 +25,13 @@ export default class FotoCliente extends Component {
                     <SView col={"xs-12  "} row center onPress={() => {
                         this.limpiar();
                         PopupCliente.open({
-
                             onReloadCliente: (cliente) => {
                                 this.pollo = cliente;
                                 console.log("trajo " + JSON.stringify(cliente))
                                 this.forceUpdate();
                             }
-
-
                         })
-
-
                     }
-
                     }>
                         <SView center col={"xs-5  "}>
                             <SView center backgroundColor={STheme.color.background} style={{
