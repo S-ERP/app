@@ -269,7 +269,7 @@ export default class TecladoNumerico extends Component {
                             }
                         })
                     }}>
-                        <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pagosss</SText>
+                        <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pago</SText>
                     </SView>
                         : null
                 }

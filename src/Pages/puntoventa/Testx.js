@@ -212,8 +212,10 @@ export default class Testx extends Component {
         const carro = [];
         return (
             <>
-                <SView col={"xs-0 sm-12"} row color={STheme.color.danger}>
-                    <SView col={"xs-4"}>
+                <SView col={"xs-0 sm-12"} row color={STheme.color.danger}   >
+                    <SView col={"xs-4"
+
+                    }>
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                             PopupConfirmaPago.open({
                                 total: 100,
@@ -231,7 +233,7 @@ export default class Testx extends Component {
                     </SView>
                     <SView flex />
                 </SView>
-                {this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
+                {this.props.subtotal ? <SView col={"xs-12 md-0"} height={42   } center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                     this.renderPopudPago()
                 }}>
                     <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pagosss</SText>
