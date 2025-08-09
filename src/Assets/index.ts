@@ -107,6 +107,32 @@ import menuAll, {
   ReactComponent as menuAllW,
 } from "./svg/producto/menuAll.svg";
 
+import ctaAjuste, {
+  ReactComponent as ctaAjusteW,
+} from "./svg/menucontabilidad/ctaAjuste.svg";
+
+import ctaAjuste2, {
+  ReactComponent as ctaAjuste2W,
+} from "./svg/menucontabilidad/ctaAjuste2.svg";
+import ctaAsiento, {
+  ReactComponent as ctaAsientoW,
+} from "./svg/menucontabilidad/ctaAsiento.svg";
+import ctaBalance, {
+  ReactComponent as ctaBalanceW,
+} from "./svg/menucontabilidad/ctaBalance.svg";
+import ctaDimensiones, {
+  ReactComponent as ctaDimensionesW,
+} from "./svg/menucontabilidad/ctaDimensiones.svg";
+import ctahome, {
+  ReactComponent as ctahomeW,
+} from "./svg/menucontabilidad/ctahome.svg";
+import ctaPlancuentas, {
+  ReactComponent as ctaPlancuentasW,
+} from "./svg/menucontabilidad/ctaPlancuentas.svg";
+import ctaSistema, {
+  ReactComponent as ctaSistemaW,
+} from "./svg/menucontabilidad/ctaSistema.svg";
+
 import iCamera, { ReactComponent as iCameraW } from "./svg/scene/iCamera.svg";
 import iEchado, { ReactComponent as iEchadoW } from "./svg/scene/iEchado.svg";
 import iExit, { ReactComponent as iExitW } from "./svg/scene/iExit.svg";
@@ -176,16 +202,18 @@ import crmpause, { ReactComponent as crmpauseW } from "./svg/crm/pause.svg";
 
 import crmword, { ReactComponent as crmwordW } from "./svg/crm/archivoword.svg";
 
-
-import crmllamadacompletada, { ReactComponent as crmllamadacompletadaW } from "./svg/crm/crm_llamada_compleatas.svg";
-import crmllamadaconfirmada, { ReactComponent as crmllamadaconfirmadaW } from "./svg/crm/crm_llamada_confirmada.svg";
+import crmllamadacompletada, {
+  ReactComponent as crmllamadacompletadaW,
+} from "./svg/crm/crm_llamada_compleatas.svg";
+import crmllamadaconfirmada, {
+  ReactComponent as crmllamadaconfirmadaW,
+} from "./svg/crm/crm_llamada_confirmada.svg";
 import crmllamadafallida, {
   ReactComponent as crmllamadafallidaW,
 } from "./svg/crm/crm_llamada_fallida.svg";
-import crmllamadatasaconversion, { ReactComponent as crmllamadatasaconversionW } from "./svg/crm/crm_llamada_tasa_conversion.svg";
-
-
-
+import crmllamadatasaconversion, {
+  ReactComponent as crmllamadatasaconversionW,
+} from "./svg/crm/crm_llamada_tasa_conversion.svg";
 
 import crmexcel, {
   ReactComponent as crmexcelW,
@@ -229,9 +257,8 @@ import barcode, { ReactComponent as barcodeW } from "./svg/barcode.svg";
 import blender from "./svg/blender";
 import drive from "./svg/drive";
 import crmmicrofono, {
-    ReactComponent as crmmicrofonoW,
+  ReactComponent as crmmicrofonoW,
 } from "./svg/crm/microfono.svg";
-// import blender from "./conta";
 
 export const svg = {
   Logo: { Native: Logo, Web: LogoW },
@@ -374,6 +401,14 @@ export const svg = {
   },
   crmpdarchivo: { Native: crmpdarchivo, Web: crmpdarchivoW },
   barcode: { Native: barcode, Web: barcodeW },
+  ctaAjuste: { Native: ctaAjuste, Web: ctaAjusteW },
+  ctaAjuste2: { Native: ctaAjuste2, Web: ctaAjuste2W },
+  ctaAsiento: { Native: ctaAsiento, Web: ctaAsientoW },
+  ctaBalance: { Native: ctaBalance, Web: ctaBalanceW },
+  ctaDimensiones: { Native: ctaDimensiones, Web: ctaDimensionesW },
+  ctaHome: { Native: ctahome, Web: ctahomeW },
+  ctaPlancuentas: { Native: ctaPlancuentas, Web: ctaPlancuentasW },
+  ctaSistema: { Native: ctaSistema, Web: ctaSistemaW },
 
   clock: { Native: Clock, Web: ClockW },
 

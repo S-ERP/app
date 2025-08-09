@@ -147,7 +147,7 @@ export default class cuentas extends React.Component {
                                 ]
                             })
                         }}>
-                            <SIconApp name="configurar" height={10} fill={STheme.color.lightGray} />
+                            <SIconApp name="ctaAjuste2" height={10} stroke={STheme.color.lightGray} />
                         </SView>
                     }}
                 />
@@ -262,5 +262,3 @@ export default class cuentas extends React.Component {
         </SPageConta >
     }
 }
-
-
