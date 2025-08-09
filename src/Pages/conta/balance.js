@@ -1,5 +1,5 @@
 import React from "react";
-import { SInput, SText, SView } from "servisofts-component";
+import { SInput, SText, STheme, SView } from "servisofts-component";
 import SPageConta from "./Components/SPageConta";
 import SSocket from "servisofts-socket";
 import MDL from "../../MDL";
@@ -31,6 +31,13 @@ export default class conta extends React.Component {
             }
             return false;
         })
+    }
+
+    numberColor(val) {
+        val = parseFloat(val || "0");
+        if (val > 0) return STheme.color.text;
+        if (val < 0) return STheme.color.danger;
+        return STheme.color.card;
     }
     render() {
         return <SPageConta title={"Balance general"} center disableScroll>
@@ -104,22 +111,23 @@ export default class conta extends React.Component {
                     {/* <DinamicTable.Col key="debe" label="Debe" data={e => e.row.debe}/> */}
 
                     <DinamicTable.Col key="debe" label="Debe"
-                        data={e => e.row.debe }
+                        data={e => e.row.debe}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
-                            return <SText style={{ ...e.textStyle, paddingStart: space }}>{e.data || "0"}</SText>
+                            return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.data || "0"}</SText>
                         }}
                     />
-                    <DinamicTable.Col key="haber" label="Haber" data={e => e.row.haber }
+                    <DinamicTable.Col key="haber" label="Haber" data={e => e.row.haber}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
-                            return <SText style={{ ...e.textStyle, paddingStart: space }}>{e.data || "0"}</SText>
+                            const val = e.data || "0"
+                            return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{val}</SText>
                         }} />
                     <DinamicTable.Col key="saldo" label="Saldo"
                         data={e => ["ACTIVO", "GASTO"].includes(e.row.tipo) ? ((e.row.debe || 0) - (e.row.haber || 0)) : ((e.row.haber || 0) - (e.row.debe || 0))}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
-                            return <SText style={{ ...e.textStyle, paddingStart: space }}>{e.data || "0"}</SText>
+                            return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.data || "0"}</SText>
                         }}
                     />
                 </DinamicTable>
