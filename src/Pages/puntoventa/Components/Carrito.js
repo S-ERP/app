@@ -33,7 +33,7 @@ export default class Carrito extends Component {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
             this.carrito[index].cantidad += 1;
-            this.carrito[index].stock = producto.stock;
+            // this.carrito[index].stock = producto.stock;
         }
         else this.carrito.push({ ...producto, cantidad: 1 });
         this.forceUpdate();
@@ -41,10 +41,10 @@ export default class Carrito extends Component {
     aumentarCantidad = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
-            const success = this.props.onModificarStock?.(producto.key, -1);
-            if (success === false) return alert("No hay más stock disponible");
+            // const success = this.props.onModificarStock?.(producto.key, -1);
+            // if (success === false) return alert("No hay más stock disponible");
             this.carrito[index].cantidad += 1;
-            this.carrito[index].stock -= 1;
+            // this.carrito[index].stock -= 1;
             this.forceUpdate();
         }
     };
@@ -52,8 +52,8 @@ export default class Carrito extends Component {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
             this.carrito[index].cantidad -= 1;
-            this.carrito[index].stock += 1;
-            this.props.onModificarStock?.(producto.key, +1);
+            // this.carrito[index].stock += 1;
+            // this.props.onModificarStock?.(producto.key, +1);
             if (this.carrito[index].cantidad <= 0) this.carrito.splice(index, 1);
             this.forceUpdate();
         }
@@ -61,13 +61,13 @@ export default class Carrito extends Component {
     eliminarItem = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
-            this.props.onModificarStock?.(producto.key, +this.carrito[index].cantidad);
+            // this.props.onModificarStock?.(producto.key, +this.carrito[index].cantidad);
             this.carrito.splice(index, 1);
             this.forceUpdate();
         }
     };
     vaciarCarrito() {
-        this.carrito.forEach(item => { this.props.onModificarStock?.(item.key, +item.cantidad); });
+        // this.carrito.forEach(item => { this.props.onModificarStock?.(item.key, +item.cantidad); });
         this.carritoRefModal?.setCarrito?.([]);
         this.carrito = [];
         this.descuentoManual = 0;
