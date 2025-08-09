@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Text } from 'react-native';
-import { SView } from 'servisofts-component';
+import { SLoad, SView } from 'servisofts-component';
 import { Page, View, Text as SPDFText, create } from 'servisofts-rn-spdf';
+import Model from '../../../Model';
 
 const fontSize = 14;
 
@@ -38,6 +39,14 @@ class index extends Component {
 
 
     detalleAlvaro() {
+
+
+        this.data = this.props.data;
+        this.compra_venta_detalle = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: this.props.data.key })
+        console.log("pollito " + JSON.stringify(this.compra_venta_detalle))
+        if (!this.compra_venta_detalle) return <SLoad />
+
+
         const detalleItems = [
             { descripcion: "621649-BROCHA 2", cantidad: "1.000", precio_unitario: "12.00", total: "12.00" },
             { descripcion: "621649-BLANCO SINTETICO LITRO", cantidad: "2.000", precio_unitario: "50.00", total: "100.00" },
@@ -46,18 +55,19 @@ class index extends Component {
             { descripcion: "621649-LIJA 220", cantidad: "1.000", precio_unitario: "4.00", total: "4.00" },
         ];
 
-        return detalleItems.map((item, i) => (
+        return Object.values(this.compra_venta_detalle).map((item, i) => (
+            // return detalleItems.map((item, i) => (
             <View style={{ width: "100%" }}>
                 <View style={{ height: 4 }} />
-                    <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>{item.descripcion}</SPDFText>
+                <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>{item.descripcion}</SPDFText>
                 <View style={{ width: "100%", flexDirection: "row" }}>
-                <View style={{ height: 4 }} />
+                    <View style={{ height: 4 }} />
                     <View style={{ width: "100%", flexDirection: "row" }}>
                         <View style={{ width: "60%", alignItems: "flex-end" }}>
-                            <SPDFText style={textStyle}>{`${item.cantidad} X ${item.precio_unitario}`}</SPDFText>
+                            <SPDFText style={textStyle}>{"cant "+`${item.cantidad} X ${item.precio_unitario}Bs`}</SPDFText>
                         </View>
                         <View style={{ width: "40%", alignItems: "flex-end" }}>
-                            <SPDFText style={textStyle}>{item.total}</SPDFText>
+                            <SPDFText style={textStyle}>{(item.cantidad * item.precio_unitario) +"Bs"}</SPDFText>
                         </View>
                     </View>
                 </View>
@@ -72,7 +82,7 @@ class index extends Component {
                 <View style={{ width: "100%", height: 4 }} />
 
                 <View style={{ width: "100%", alignItems: "center" }}>
-                    <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>FACTURA</SPDFText>
+                    <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>FACTURA{this.props.data.key} </SPDFText>
                     <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>CON DERECHO A CRÉDITO FISCAL</SPDFText>
                     <SPDFText style={{ ...textStyle }}>COMERCIAL TORRICO</SPDFText>
                     <SPDFText style={{ ...textStyle }}>CASA MATRIZ</SPDFText>
