@@ -24,7 +24,7 @@ export default {
     // empresa: 'http://192.168.2.1:30029/',
 
     inventario: "https://inventario.servisofts.com/http/",
-      // inventario: 'http://192.168.2.1:30039/',
+    // inventario: 'http://192.168.2.1:30039/',
 
     compra_venta: "https://compraventa.servisofts.com/http/",
     // compra_venta: "http://192.168.2.1:30041/",
@@ -44,6 +44,9 @@ export default {
     crm: "https://crm.servisofts.com/http/",
     // drive: "http://192.168.2.1:30017/",
     drive: "https://drive.servisofts.com/http/",
+    // crm: "http://192.168.2.1:30051/",
+
+    // cliente: "https://cliente.servisofts.com/http/",
     // crm: "http://192.168.2.1:30051/",
   },
   timeReconnect: 5000,

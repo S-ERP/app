@@ -1,196 +1,126 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { SButtom, SDate, SDatePicker, SHr, SImage, SInput, SLoad, SMath, SNavigation, SNotification, SPage, SSPiner, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
+// import STextPlay from '../Components/STextPlay';
+// import Container from '../Components/Container';
+// import SMD from '../SMD';
 import MDtest1 from '../SMD/MDtest1';
+// import MDtest2 from '../SMD/MDtest2';
+// import SwipeableView from '../Components/SwipeableView';
+// import Loby from "./loby/root"
+// import Publicaciones from "./publicacion/root"
+// import Menu from './menu';
 import MenuDragable from '../Components/MenuDragable';
-// import Model from '../Model';
+import Model from '../Model';
+// import MultipageMenu from '../Components/MultipageMenu';
 import SSocket from 'servisofts-socket';
 import DataBase from '../DataBase';
 import SIconApp from '../Assets/SIconApp';
-import MDL from '../MDL';
-import { FlatList } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+// import { Trigger } from 'servisofts-db';
+// import { Image } from 'react-native';
+
+
 
 const productosComputacion = [
     {
-        key: 1,
-        descripcion: "Corner Desk Left Sit",
+        id: 1,
+        name: "Corner Desk Left Sit",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 97.75,
+        price: 97.75,
         currency: "$",
         category: "desks",
         stock: 15,
-        otrooo: "Escritorio esquinero izquierdo ergonómico",
+        description: "Escritorio esquinero izquierdo ergonómico",
     },
     {
-        key: 2,
-        descripcion: "Corner Desk Right Sit",
+        id: 2,
+        name: "Corner Desk Right Sit",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 169.05,
+        price: 169.05,
         currency: "$",
         category: "desks",
         stock: 12,
-        otrooo: "Escritorio esquinero derecho ergonómico",
+        description: "Escritorio esquinero derecho ergonómico",
     },
     {
-        key: 3,
-        descripcion: "Customizable Desk (Custom, White)",
+        id: 3,
+        name: "Customizable Desk (Custom, White)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 920.46,
+        price: 920.46,
         currency: "$",
         category: "desks",
         stock: 8,
-        otrooo: "Escritorio personalizable blanco",
+        description: "Escritorio personalizable blanco",
     },
     {
-        key: 4,
-        descripcion: "Customizable Desk (Custom, Black)",
+        id: 4,
+        name: "Customizable Desk (Custom, Black)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 862.5,
+        price: 862.5,
         currency: "$",
         category: "desks",
         stock: 10,
-        otrooo: "Escritorio personalizable negro",
+        description: "Escritorio personalizable negro",
     },
     {
-        key: 5,
-        descripcion: "Customizable Desk (Custom, Wood)",
+        id: 5,
+        name: "Customizable Desk (Custom, Wood)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 862.5,
+        price: 862.5,
         currency: "$",
         category: "desks",
         stock: 6,
-        otrooo: "Escritorio personalizable madera",
+        description: "Escritorio personalizable madera",
     },
     {
-        key: 6,
-        descripcion: "Customizable Desk (Steel, Black)",
+        id: 6,
+        name: "Customizable Desk (Steel, Black)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 862.5,
+        price: 862.5,
         currency: "$",
         category: "desks",
         stock: 14,
-        otrooo: "Escritorio acero negro",
+        description: "Escritorio acero negro",
     },
     {
-        key: 7,
-        descripcion: "Customizable Desk (Steel, White)",
+        id: 7,
+        name: "Customizable Desk (Steel, White)",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 862.5,
+        price: 862.5,
         currency: "$",
         category: "desks",
         stock: 9,
-        otrooo: "Escritorio acero blanco",
+        description: "Escritorio acero blanco",
     },
     {
-        key: 8,
-        descripcion: "Desk Combination",
+        id: 8,
+        name: "Desk Combination",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 517.5,
+        price: 517.5,
         currency: "$",
         category: "desks",
         stock: 11,
-        otrooo: "Combinación de escritorio modular",
+        description: "Combinación de escritorio modular",
     },
     {
-        key: 9,
-        descripcion: "Four Person Desk",
+        id: 9,
+        name: "Four Person Desk",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 2702.5,
+        price: 2702.5,
         currency: "$",
         category: "desks",
         stock: 3,
-        otrooo: "Escritorio para cuatro personas",
+        description: "Escritorio para cuatro personas",
     },
     {
-        key: 10,
-        descripcion: "Large Desk",
+        id: 10,
+        name: "Large Desk",
         image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 2068.85,
+        price: 2068.85,
         currency: "$",
         category: "desks",
         stock: 5,
-        otrooo: "Escritorio grande ejecutivo",
-    },
-    {
-        key: 11,
-        descripcion: "Large Desk",
-        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 2068.85,
-        currency: "$",
-        category: "desks",
-        stock: 5,
-        otrooo: "Escritorio grande ejecutivo",
-    },
-    {
-        key: 12,
-        descripcion: "Large Desk",
-        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 2068.85,
-        currency: "$",
-        category: "desks",
-        stock: 5,
-        otrooo: "Escritorio grande ejecutivo",
-    },
-    {
-        key: 13,
-        descripcion: "Large Desk",
-        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 2068.85,
-        currency: "$",
-        category: "desks",
-        stock: 5,
-        otrooo: "Escritorio grande ejecutivo",
-    },
-    {
-        key: 14,
-        descripcion: "Large Desk",
-        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 2068.85,
-        currency: "$",
-        category: "desks",
-        stock: 5,
-        otrooo: "Escritorio grande ejecutivo",
-    },
-    {
-        key: 15,
-        descripcion: "Large Desk",
-        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 2068.85,
-        currency: "$",
-        category: "desks",
-        stock: 5,
-        otrooo: "Escritorio grande ejecutivo",
-    },
-    {
-        key: 16,
-        descripcion: "Large Desk",
-        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 2068.85,
-        currency: "$",
-        category: "desks",
-        stock: 5,
-        otrooo: "Escritorio grande ejecutivo",
-    },
-    {
-        key: 17,
-        descripcion: "Large Desk",
-        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 2068.85,
-        currency: "$",
-        category: "desks",
-        stock: 5,
-        otrooo: "Escritorio grande ejecutivo",
-    },
-    {
-        key: 18,
-        descripcion: "Large Desk",
-        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-        precio_venta: 2068.85,
-        currency: "$",
-        category: "desks",
-        stock: 5,
-        otrooo: "Escritorio grande ejecutivo",
+        description: "Escritorio grande ejecutivo",
     },
 ]
 
@@ -203,30 +133,16 @@ const categorias = [
     // Agrega más categorías según tus productos
 ]
 
-export default class testpuntoventa extends Component {
+export default class testpuntoventaV4 extends Component {
     constructor(props) {
         super(props)
         this.state = {
             text: MDtest1,
             carrito: [
-                // { key: 1, name: "Large Cabinet", precio_venta: 368.0, stock: 1 },
-                // { key: 2, name: "Storage Box", precio_venta: 18.17, stock: 1 },
-                // { key: 3, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                // { key: 4, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                // { key: 5, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                // { key: 6, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                // { key: 7, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                // { key: 8, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                // { key: 9, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                // { key: 10, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                // { key: 11, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                // { key: 12, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                // { key: 13, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                // { key: 14, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
-                // { key: 15, name: "Letter Tray", precio_venta: 5.52, stock: 1 },
+                { id: 1, name: "Large Cabinet", price: 368.0, quantity: 1 },
+                { id: 2, name: "Storage Box", price: 18.17, quantity: 1 },
+                { id: 3, name: "Letter Tray", price: 5.52, quantity: 1 },
             ],
-
-            // carrito: [],
             searchText: "",
             selectedCategory: "all",
             calculatorDisplay: "0",
@@ -236,56 +152,26 @@ export default class testpuntoventa extends Component {
         }
     }
 
-    componentDidMount() {
-        this.loadApis();
-    }
-
-    async loadApis() {
-        const modelos = await MDL.inventario.getAllModeloStock();
-        this.modelos = modelos;
-
-        const tipos = await MDL.inventario.getAllTipoProducto();
-        const json_tipos = [
-            { key: "all", label: "Todos" },
-            ...tipos.map((tipo) => ({
-                key: tipo.key,
-                label: tipo.descripcion,
-            })),
-        ];
-        this.tipomodelos = json_tipos;
-
-        console.log("Api Modelo:", modelos);
-        console.log("Api Tipos Modelo:", json_tipos);
-        this.forceUpdate()
-    }
-
-
     aumentarCantidad = (productoId) => {
         const { carrito } = this.state
         const nuevoCarrito = carrito.map((item) =>
-            item.key === productoId ? { ...item, stock: item.stock + 1 } : item,
+            item.id === productoId ? { ...item, quantity: item.quantity + 1 } : item,
         )
         this.setState({ carrito: nuevoCarrito })
-
-        console.log(" aumentarCantidad " + nuevoCarrito)
     }
 
     // Para editar la cantidad directamente (requiere un SInput en el render)
     editarCantidadDirecta = (productoId, newQuantity) => {
-
-
-        const stock = Number.parseInt(newQuantity)
-        if (isNaN(stock) || stock < 0) return // Validar entrada
+        const quantity = Number.parseInt(newQuantity)
+        if (isNaN(quantity) || quantity < 0) return // Validar entrada
 
         const { carrito } = this.state
         let nuevoCarrito
-        if (stock === 0) {
-            nuevoCarrito = carrito.filter((item) => item.key !== productoId)
+        if (quantity === 0) {
+            nuevoCarrito = carrito.filter((item) => item.id !== productoId)
         } else {
-            nuevoCarrito = carrito.map((item) => (item.key === productoId ? { ...item, stock: stock } : item))
+            nuevoCarrito = carrito.map((item) => (item.id === productoId ? { ...item, quantity: quantity } : item))
         }
-        console.log(" editarCantidadDirecta " + nuevoCarrito)
-
         this.setState({ carrito: nuevoCarrito })
     }
 
@@ -372,114 +258,15 @@ export default class testpuntoventa extends Component {
         )
     }
 
-
     // Detalle del carrito mejorado
-
-    renderItemCarrito = (item) => {
-        const carrito = this.state.carrito;
-        const index = carrito.findIndex(i => i.key === item.key);
-        const total = carrito.length;
-
-        return (
-            <SView
-                key={item.key || index}
-                col={"xs-12"}
-                row
-                style={{
-                    paddingVertical: 4,
-                    borderBottomWidth: index < total - 1 ? 1 : 0,
-                    borderBottomColor: "#F3F4F6",
-                    alignItems: "center",
-                }}
-            >
-                {/* Nombre y precio */}
-                <SView col={"xs-5"}>
-                    <SText fontSize={13} bold color={"#111827"}>
-                        {item.descripcion}
-                    </SText>
-                    <SText fontSize={11} color={"#6B7280"}>
-                        Bs {SMath.formatMoney(item.precio_venta, 2)} / Und
-                    </SText>
-                </SView>
-
-                {/* Controles de cantidad */}
-                <SView col={"xs-3"} row center>
-                    <SInput
-                        value={String(item.stock)}
-                        onChangeText={(text) => this.editarCantidadDirecta(item.key, text)}
-                        keyboardType="numeric"
-                        style={{
-                            width: 40,
-                            height: 24,
-                            padding: 0,
-                            textAlign: "center",
-                            fontSize: 12,
-                            borderWidth: 1,
-                            borderColor: "#D1D5DB",
-                            borderRadius: 4,
-                            color: "black",
-                        }}
-                    />
-                    <SView
-                        center
-                        backgroundColor={"#E0F2F7"}
-                        style={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: 12,
-                            position: "absolute",
-                            left: -32,
-                        }}
-                        onPress={() => this.reducirCantidad(item.key)}
-                    >
-                        <SText fontSize={14} bold color={"#0284C7"}>-</SText>
-                    </SView>
-                    <SView
-                        center
-                        backgroundColor={"#D1FAE5"}
-                        style={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: 12,
-                            position: "absolute",
-                            right: -32,
-                        }}
-                        onPress={() => this.aumentarCantidad(item.key)}
-                    >
-                        <SText fontSize={14} bold color={"#059669"}>+</SText>
-                    </SView>
-                </SView>
-
-                {/* Subtotal */}
-                <SView col={"xs-3"} center style={{ alignItems: "flex-end" }}>
-                    <SText fontSize={13} bold color={"#111827"}>
-                        Bs {SMath.formatMoney(item.precio_venta * item.stock, 2)}
-                    </SText>
-                </SView>
-
-                {/* Eliminar */}
-                <SView col={"xs-1"} center>
-                    <SView
-                        center
-                        style={{ width: 24, height: 24 }}
-                        onPress={() => this.quitarDelCarrito(item.key)}
-                    >
-                        <SIconApp name="eliminarI" width={10} height={10} fill={"#DC2626"} />
-                    </SView>
-                </SView>
-            </SView>
-        );
-    };
-
-
-
     renderDetalleCarrito() {
         const { carrito } = this.state
 
         return (
             <SView
+
+
                 backgroundColor={"#FFFFFF"}
-                height={"30%"}
                 style={{
                     borderRadius: 8,
                     padding: 16,
@@ -495,21 +282,78 @@ export default class testpuntoventa extends Component {
                     Orden Actual
                 </SText>
 
+                {carrito.map((item, index) => (
+                    <SView
+                        key={index}
+                        col={"xs-12"}
+                        row
+                        style={{
+                            paddingVertical: 4,
+                            borderBottomWidth: index < carrito.length - 1 ? 1 : 0,
+                            borderBottomColor: "#F3F4F6",
+                            alignItems: "center", // Centrar verticalmente los items
+                        }}
+                    >
+                        <SView col={"xs-5"}>
+                            {/* Reducir ancho para hacer espacio a los controles */}
+                            <SText fontSize={13} bold color={"#111827"}>
+                                {item.name}
+                            </SText>
+                            <SText fontSize={11} color={"#6B7280"}>
+                                ${SMath.formatMoney(item.price, 2)} / Und
+                            </SText>
+                        </SView>
 
+                        {/* Controles de Cantidad */}
+                        <SView col={"xs-3"} row center>
 
-                <FlatList
-                    style={{
-                        width: "100%",
-                    }}
-                    scrollEnabled={true}
-                    data={this.state.carrito}
-                    renderItem={({ item, index }) => this.renderItemCarrito(item)
-                    }
-                />
+                            <SInput
+                                value={String(item.quantity)}
+                                onChangeText={(text) => this.editarCantidadDirecta(item.id, text)}
+                                keyboardType="numeric"
+                                style={{
+                                    width: 40,
+                                    height: 24,
+                                    padding: 0,
+                                    textAlign: "center",
+                                    fontSize: 12,
+                                    borderWidth: 1,
+                                    borderColor: "#D1D5DB",
+                                    borderRadius: 4,
+                                    color: "black",
+                                }}
+                            />
+                            <SView
+                                center backgroundColor={"#E0F2F7"} // Color más suave
+                                style={{ width: 24, height: 24, borderRadius: 12, marginRight: 150, position: "absolute" }}
+                                onPress={() => this.reducirCantidad(item.id)}
+                            >
+                                <SText fontSize={14} bold color={"#0284C7"}>-</SText>
+                            </SView>
+                            <SView
+                                center
+                                backgroundColor={"#D1FAE5"} // Color más suave
+                                style={{ width: 24, height: 24, borderRadius: 12, marginLeft: 4, position: "absolute" }}
+                                onPress={() => this.aumentarCantidad(item.id)}
+                            >
+                                <SText fontSize={14} bold color={"#059669"}> + </SText>
+                            </SView>
+                        </SView>
 
-                {/* {carrito.map((item, index) => (
-                    this.renderItemCarrito(item)
-                ))} */}
+                        <SView col={"xs-3"} center style={{ alignItems: "flex-end" }}>
+                            <SText fontSize={13} bold color={"#111827"}>
+                                {SMath.formatMoney(item.price * item.quantity, 2)}
+                            </SText>
+                        </SView>
+
+                        {/* Botón Eliminar */}
+                        <SView col={"xs-1"} center>
+                            <SView center style={{ width: 24, height: 24, }} onPress={() => this.quitarDelCarrito(item.id)} >
+                                <SIconApp name="eliminarI" width={10} height={10} fill={"#DC2626"} />
+                            </SView>
+                        </SView>
+                    </SView>
+                ))}
 
                 {/* Mensaje cuando el carrito está vacío */}
                 {carrito.length === 0 && (
@@ -526,7 +370,7 @@ export default class testpuntoventa extends Component {
     // Subtotal mejorado
     renderSubtotal() {
         const { carrito } = this.state
-        const subtotal = carrito.reduce((sum, item) => sum + item.precio_venta * item.stock, 0)
+        const subtotal = carrito.reduce((sum, item) => sum + item.price * item.quantity, 0)
         const taxes = subtotal * 0.13 // 13% de impuestos
         const total = subtotal + taxes
 
@@ -539,23 +383,22 @@ export default class testpuntoventa extends Component {
                     padding: 16,
                     marginBottom: 8,
                 }}
-                height={80}
             >
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
                     <SText fontSize={13} color={"#6B7280"}>
                         Total:
                     </SText>
                     <SText fontSize={16} bold color={"#111827"}>
-                        Bs {SMath.formatMoney(total, 2)}
+                        $ {SMath.formatMoney(total, 2)}
                     </SText>
                 </SView>
 
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                     <SText fontSize={11} color={"#6B7280"}>
-                        Impuesto:
+                        Taxes:
                     </SText>
                     <SText fontSize={11} color={"#6B7280"}>
-                        Sumar Iva13%  Bs {SMath.formatMoney(taxes, 2)}
+                        $ {SMath.formatMoney(taxes, 2)}
                     </SText>
                 </SView>
             </SView>
@@ -599,12 +442,6 @@ export default class testpuntoventa extends Component {
                 </SView>
             </SView>
         )
-    }
-
-    getStockDisponible(producto) {
-        const itemEnCarrito = this.state.carrito.find(i => i.key === producto.key);
-        const cantidadEnCarrito = itemEnCarrito?.stock || 0;
-        return producto.stock - cantidadEnCarrito;
     }
 
     // Botones de configuración mejorados
@@ -759,11 +596,7 @@ export default class testpuntoventa extends Component {
                                 borderWidth: 1,
                                 borderColor: "rgba(255,255,255,0.2)",
                             }}
-                            onPress={() =>
-                                this.setState({ showPaymentModal: true })
-
-
-                            }
+                            onPress={() => console.log("pagar")}
                         >
                             <SText fontSize={12} bold color={"white"}>pagar</SText>
                         </SView>
@@ -808,24 +641,16 @@ export default class testpuntoventa extends Component {
 
     // Productos mejorados
     renderProductos() {
-
-        const categorias = this.tipomodelos || [];
-        const modelos = this.modelos || [];
-
         const { searchText, selectedCategory } = this.state
 
-        // const productosFiltrados = productosComputacion.filter((item) => {
-        const productosFiltrados = modelos.filter((item) => {
-            const matchesSearch = item.descripcion.toLowerCase().includes(searchText.toLowerCase())
-            const matchesCategory = selectedCategory === "all" || item.key_tipo_producto === selectedCategory
+        const productosFiltrados = productosComputacion.filter((producto) => {
+            const matchesSearch = producto.name.toLowerCase().includes(searchText.toLowerCase())
+            const matchesCategory = selectedCategory === "all" || producto.category === selectedCategory
             return matchesSearch && matchesCategory
         })
-        const columnas = 5;
-        const colSize = parseFloat((12 / (columnas + 1)).toFixed(2)); // por ejemplo: 12 / 6 = 2.0
 
         return (
             <SView col={"xs-12"} style={{ padding: 20 }}>
-
                 {/* Selector de Categorías */}
                 <SView col={"xs-12"} row style={{ marginBottom: 20, justifyContent: "center" }}>
                     {categorias.map((cat) => (
@@ -856,12 +681,10 @@ export default class testpuntoventa extends Component {
 
                 <SView col={"xs-12"} row style={{ flexWrap: "wrap" }}>
                     {productosFiltrados.length > 0 ? (
-
                         productosFiltrados.map((producto, index) => (
-
                             <SView
                                 key={index}
-                                col={`xs-${colSize}`} // 👈 dinámico
+                                col={"xs-2.4"}
                                 backgroundColor={"#FFFFFF"}
                                 style={{
                                     margin: 4,
@@ -881,14 +704,12 @@ export default class testpuntoventa extends Component {
                             >
                                 <SView center style={{ marginBottom: 12 }}>
                                     <SImage
-                                        // src={producto.image}
-                                        src={SSocket.api.inventario + "modelo/.128_" + producto.key + "?date=" + this.state.time}
+                                        src={producto.image}
                                         style={{
                                             width: 120,
                                             height: 120,
                                             borderRadius: 8,
                                             backgroundColor: "#F9FAFB",
-                                            // overflow: "hidden",
                                         }}
                                         resizeMode="cover"
                                     />
@@ -905,33 +726,19 @@ export default class testpuntoventa extends Component {
                                             textAlign: "center",
                                         }}
                                     >
-                                        {producto.descripcion}
+                                        {producto.name}
                                     </SText>
 
-                                    <SText fontSize={14} bold color={"#714B67"} center> Bs {SMath.formatMoney(producto.precio_venta, 2)} </SText>
-
-
-                                    <SText
-                                        fontSize={10}
-                                        color={this.getStockDisponible(producto) > 0 ? "#10B981" : "#EF4444"}
-                                        center
-                                        style={{ marginTop: 4 }}
-                                    >
-                                        Disponible: {this.getStockDisponible(producto)} und
+                                    <SText fontSize={14} bold color={"#714B67"} center>
+                                        $ {SMath.formatMoney(producto.price, 2)}
                                     </SText>
-                                    {/* <SText fontSize={10} color={this.state.carrito.stock > 0 ? "#10B981" : "red"} center style={{ marginTop: 4 }}>
-                                        Stock: {producto.stock - (this.state.carrito.find(i => i.key === producto.key)?.stock || 0)}
-                                    </SText> */}
 
-
-                                    {/* <SText fontSize={10} color={"#10B981"} center style={{ marginTop: 4 }}>
+                                    <SText fontSize={10} color={"#10B981"} center style={{ marginTop: 4 }}>
                                         Stock: {producto.stock}
-                                    </SText> */}
+                                    </SText>
                                 </SView>
                             </SView>
-
                         ))
-
                     ) : (
                         <SView col={"xs-12"} center style={{ paddingVertical: 50 }}>
                             <SText fontSize={16} color={STheme.color.gray}>
@@ -945,54 +752,40 @@ export default class testpuntoventa extends Component {
     }
 
     // Funciones auxiliares
-
     agregarAlCarrito = (producto) => {
-        this.setState({ loading: true });
+        this.setState({ loading: true })
 
+        // Simular una operación asíncrona
         setTimeout(() => {
-            const stockDisponible = this.getStockDisponible(producto);
-
-            if (stockDisponible <= 0) {
-                SNotification.send({
-                    title: "Sin stock disponible",
-                    body: "No puedes agregar más unidades de este producto.",
-                    type: "warning",
-                });
-                this.setState({ loading: false });
-                return;
-            }
-
-            const { carrito } = this.state;
-            const productoExistente = carrito.find((item) => item.key === producto.key);
+            const { carrito } = this.state
+            const productoExistente = carrito.find((item) => item.id === producto.id)
 
             if (productoExistente) {
                 const nuevoCarrito = carrito.map((item) =>
-                    item.key === producto.key ? { ...item, stock: item.stock + 1 } : item
-                );
-                this.setState({ carrito: nuevoCarrito });
+                    item.id === producto.id ? { ...item, quantity: item.quantity + 1 } : item,
+                )
+                this.setState({ carrito: nuevoCarrito })
             } else {
                 const nuevoCarrito = [
                     ...carrito,
                     {
-                        key: producto.key,
-                        descripcion: producto.descripcion,
-                        precio_venta: producto.precio_venta,
-                        stock: 1,
+                        id: producto.id,
+                        name: producto.name,
+                        price: producto.price,
+                        quantity: 1,
                     },
-                ];
-                this.setState({ carrito: nuevoCarrito });
+                ]
+                this.setState({ carrito: nuevoCarrito })
             }
 
             SNotification.send({
                 title: "Producto agregado",
-                body: `${producto.descripcion} agregado al carrito`,
+                body: `${producto.name} agregado al carrito`,
                 type: "success",
-            });
-
-            this.setState({ loading: false });
-        }, 300);
-    };
-
+            })
+            this.setState({ loading: false })
+        }, 300)
+    }
 
     handleCalculatorPress = (tecla) => {
         const { calculatorDisplay } = this.state
@@ -1025,89 +818,53 @@ export default class testpuntoventa extends Component {
         this.setState({ calculatorDisplay: nuevoDisplay })
     }
 
-
-
     renderPaymentModal() {
-        const { carrito, amountReceived, showPaymentModal } = this.state;
+        const { carrito, amountReceived } = this.state
+        const subtotal = carrito.reduce((sum, item) => sum + item.price * item.quantity, 0)
+        const taxes = subtotal * 0.13
+        const total = subtotal + taxes
+        const change = Number.parseFloat(amountReceived) - total
 
-        if (!showPaymentModal) return null;
-
-        const subtotal = carrito.reduce((sum, item) => sum + item.precio_venta * item.stock, 0);
-        const taxRate = 0.13;
-        const taxes = subtotal * taxRate;
-        const total = subtotal + taxes;
-
-        const montoRecibido = parseFloat(amountReceived);
-        const change = isNaN(montoRecibido) ? 0 : montoRecibido - total;
-
-        const handleConfirmarPago = () => {
-            if (change >= 0) {
-                SNotification.send({
-                    title: "Pago Exitoso",
-                    body: `Cambio: Bs ${SMath.formatMoney(change, 2)}`,
-                    type: "success",
-                });
-
-                console.log("🧾 Pago confirmado. Total:", total);
-                console.log("🛒 Carrito guardado:", JSON.stringify(carrito, null, 2));
-
-                this.setState({
-                    carrito: [],
-                    showPaymentModal: false,
-                    amountReceived: "",
-                });
-            } else {
-                SNotification.send({
-                    title: "Monto insuficiente",
-                    body: "El monto recibido es menor al total a pagar.",
-                    type: "danger",
-                });
-            }
-        };
+        if (!this.state.showPaymentModal) return null
 
         return (
             <SView
                 col={"xs-12"}
                 height={"100%"}
-                center
                 style={{
                     position: "absolute",
                     backgroundColor: "rgba(0,0,0,0.6)",
                     zIndex: 1000,
                 }}
+                center
             >
                 <SView
                     width={400}
-                    height={460}
+                    height={450}
                     backgroundColor={STheme.color.background}
-                    style={{
-                        borderRadius: 12,
-                        padding: 24,
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 8,
-                        elevation: 6,
-                    }}
+                    style={{ borderRadius: 12, padding: 24 }}
                 >
-                    <SText fontSize={20} bold center style={{ marginBottom: 24 }}>
-                        💰 Confirmar Pago
+                    <SText fontSize={20} bold center style={{ marginBottom: 20 }}>
+                        Realizar Pago
                     </SText>
 
-                    {/* Total a pagar */}
                     <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 12 }}>
-                        <SText fontSize={16} color={STheme.color.text}>Total a Pagar:</SText>
-                        <SText fontSize={18} bold color={STheme.color.warning}>Bs {SMath.formatMoney(total, 2)}</SText>
+                        <SText fontSize={16} color={STheme.color.text}>
+                            Total a Pagar:
+                        </SText>
+                        <SText fontSize={18} bold color={STheme.color.primary}>
+                            $ {SMath.formatMoney(total, 2)}
+                        </SText>
                     </SView>
 
-                    {/* Monto recibido */}
                     <SView col={"xs-12"} style={{ marginBottom: 20 }}>
-                        <SText fontSize={14} color={STheme.color.text}>Monto Recibido:</SText>
+                        <SText fontSize={14} color={STheme.color.text}>
+                            Monto Recibido:
+                        </SText>
                         <SInput
                             value={amountReceived}
                             onChangeText={(text) => this.setState({ amountReceived: text })}
                             keyboardType="numeric"
-                            placeholder="Ej. 100.00"
                             style={{
                                 height: 48,
                                 fontSize: 20,
@@ -1121,16 +878,16 @@ export default class testpuntoventa extends Component {
                         />
                     </SView>
 
-                    {/* Cambio */}
                     <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 20 }}>
-                        <SText fontSize={16} color={STheme.color.text}>Cambio:</SText>
+                        <SText fontSize={16} color={STheme.color.text}>
+                            Cambio:
+                        </SText>
                         <SText fontSize={18} bold color={change >= 0 ? STheme.color.success : STheme.color.danger}>
-                            Bs {SMath.formatMoney(change, 2)}
+                            $ {SMath.formatMoney(change, 2)}
                         </SText>
                     </SView>
 
-                    {/* Botones */}
-                    <SView col={"xs-12"} row style={{ justifyContent: "space-around" }}>
+                    <SView col={"xs-12"} row style={{ justifyContent: "space-around", marginTop: "auto" }}>
                         <SButtom
                             onPress={() => this.setState({ showPaymentModal: false, amountReceived: "" })}
                             style={{
@@ -1142,9 +899,23 @@ export default class testpuntoventa extends Component {
                         >
                             <SText color={STheme.color.text}>Cancelar</SText>
                         </SButtom>
-
                         <SButtom
-                            onPress={handleConfirmarPago}
+                            onPress={() => {
+                                if (change >= 0) {
+                                    SNotification.send({
+                                        title: "Pago Exitoso",
+                                        body: `Cambio: $${SMath.formatMoney(change, 2)}`,
+                                        type: "success",
+                                    })
+                                    this.setState({ carrito: [], showPaymentModal: false, amountReceived: "" })
+                                } else {
+                                    SNotification.send({
+                                        title: "Monto Insuficiente",
+                                        body: "El monto recibido es menor al total.",
+                                        type: "danger",
+                                    })
+                                }
+                            }}
                             style={{
                                 backgroundColor: STheme.color.primary,
                                 paddingVertical: 12,
@@ -1157,36 +928,55 @@ export default class testpuntoventa extends Component {
                     </SView>
                 </SView>
             </SView>
-        );
+        )
     }
-
 
     render() {
         return (
             <SPage disableScroll>
+                {/* Header */}
                 {this.renderHeader()}
+
+                {/* Main Content */}
                 <SView flex row backgroundColor={"#F8F9FA"}>
                     {/* Sidebar */}
-                    <SView col={"xs-4"} flex backgroundColor={"#F8F9FA"}
+                    <SView
+                        col={"xs-4"}
+                        flex
+                        backgroundColor={"#F8F9FA"}
                         style={{
                             padding: 16,
                             borderRightWidth: 1,
                             borderRightColor: "#E5E7EB",
                         }}
                     >
+                        {/* Carrito */}
+                        {/* <SView style={{ flex: 1 }}> */}
                         {this.renderDetalleCarrito()}
+                        {/* <SView flex /> */}
+
                         {this.renderSubtotal()}
-                        {/* {this.renderTecladoNumerico()} */}
+
+                        {/* <SView flex /> */}
+                        {/* {this.renderPuntosLealtad()} */}
+                        {/* {this.renderBotonesConfiguracion()} */}
+                        {/* {this.renderUsuarioActual()} */}
+                        {/* </SView> */}
+
+                        {/* Teclado */}
+                        {this.renderTecladoNumerico()}
                     </SView>
 
                     {/* Área de productos */}
                     <SView col={"xs-8"} backgroundColor={"#F8F9FA"}>
-                        {/* {this.renderProductos()} */}
                         <SView style={{ flex: 1, overflow: "scroll" }}>{this.renderProductos()}</SView>
                     </SView>
                 </SView>
 
+                {/* Modal de Pago */}
                 {this.renderPaymentModal()}
+
+                {/* Indicador de Carga */}
                 {this.state.loading && <SLoad />}
             </SPage>
         )
@@ -1194,18 +984,15 @@ export default class testpuntoventa extends Component {
 
     quitarDelCarrito = (productoId) => {
         const { carrito } = this.state
-        const nuevoCarrito = carrito.filter((item) => item.key !== productoId)
+        const nuevoCarrito = carrito.filter((item) => item.id !== productoId)
         this.setState({ carrito: nuevoCarrito })
     }
 
     reducirCantidad = (productoId) => {
         const { carrito } = this.state
         const nuevoCarrito = carrito.map((item) =>
-            item.key === productoId ? { ...item, stock: Math.max(1, item.stock - 1) } : item,
+            item.id === productoId ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item,
         ) // Evita cantidades negativas
-
-        console.log(" reducirCantidad " + JSON.stringify(nuevoCarrito))
-
         this.setState({ carrito: nuevoCarrito })
     }
 }

@@ -1,0 +1,8 @@
+{
+    "search.exclude": {
+        // "**": true, // excluye TODO
+        "**/node_modules":true,
+        // "search.useIgnoreFiles": false,
+        "src/Pages/punto_venta": false // excepto esta carpeta
+    }
+}
