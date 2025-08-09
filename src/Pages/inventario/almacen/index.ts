@@ -7,7 +7,6 @@ import profile from "./profile/index";
 import edit from "./edit";
 import _delete from "./delete";
 import RegistroInventarios from "./RegistroInventarios";
-import ReporteConteoInventario from "./ReporteConteoInventario";
 const model = Model.almacen;
 
 export const Parent = {
@@ -27,5 +26,4 @@ export default SPage.combinePages(Parent.name, {
     "edit": edit,
     "delete": _delete,
     "profile/registro_inventario": RegistroInventarios,
-    // "ReporteConteoInventario": ReporteConteoInventario
-})
+ })

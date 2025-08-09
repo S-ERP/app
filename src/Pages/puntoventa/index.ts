@@ -5,7 +5,6 @@ import Testx from "./Testx";
 export const Parent = {
   name: "puntoventa",
   path: `/puntoventa`,
-  //   model,
 };
 export default SPage.combinePages(Parent.name, {
   "": Main,

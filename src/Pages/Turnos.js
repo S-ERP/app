@@ -14,7 +14,7 @@ import TurnoComponent from '../Components/TurnoComponent';
 import Container from '../Components/Container';
 
 
-export default class turnov2 extends Component {
+export default class Turnos extends Component {
     constructor(props) {
         super(props);
         this.state = {
