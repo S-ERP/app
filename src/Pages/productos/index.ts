@@ -10,6 +10,9 @@ import catalogo from "./catalogo";
 import inventario from "./inventario";
 import carrito from "./carrito";
 
+
+//   "productos/reporte_conteo_inventario": ReporteConteoInventario,
+
 export default SPage.combinePages("productos",
     {
         "": root,
@@ -21,6 +24,7 @@ export default SPage.combinePages("productos",
         ...inventario_dato,
         ...inventario,
         ...tipo_producto
+        // "reporte_conteo_inventario":ReporteConteoInventario,
 
 
     }
