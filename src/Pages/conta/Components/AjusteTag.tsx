@@ -9,7 +9,7 @@ import {
     GestureDetector,
     Gesture,
 } from "react-native-gesture-handler";
-import { SText, STheme } from "servisofts-component";
+import { SText, STheme, SView } from "servisofts-component";
 import MDL from "../../../MDL";
 
 type Props = {
@@ -83,11 +83,21 @@ export default function AjusteTag({ ajuste, onPress, style, textStyle, allowDrag
                         height: "100%",
                         alignItems: "center",
                         justifyContent: "center",
+                        flexDirection: "row",
                     },
                     animatedStyle,
                     style,
                 ]}
             >
+                <SView style={{
+                    backgroundColor: MDL.contabilidad.color_tipo[ajuste?.grupo_sugerido],
+                    borderRadius: 100,
+                    width: 8,
+                    height: 8,
+                }}>
+
+                </SView>
+                <SView width={4}/>
                 <SText style={{ fontSize: 10, textAlign: "center", ...textStyle }}
                     activeOpacity={1}
                     onPress={handlePress}>

@@ -1,5 +1,5 @@
 import React from "react";
-import { SDate, SHr, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SDate, SHr, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import { DinamicTable } from "servisofts-table";
 import MDL from "../../MDL";
@@ -13,8 +13,14 @@ import AjusteTagInfoPopup from "./Components/AjusteInfoPopup";
 import AjusteTagDropBox from "./Components/AjusteTagDropBox";
 import ajustes from "../ajustes";
 import CuentaContableForm from "./Components/CuentaContableForm";
+import tipo from "../whatsapp/tipo";
+import { Text } from "react-native";
+
+
 
 export default class cuentas extends React.Component {
+
+
 
     state = {
         ajustes: []
@@ -94,6 +100,7 @@ export default class cuentas extends React.Component {
                                             // const hermanas = e.dinamicTable.data.filter(r => r.codigo.startsWith(e.row.codigo + "."));
                                             CuentaContableForm.open({
                                                 cuenta_contable: {
+                                                    tipo: e.row.tipo,
                                                     codigo: codigo,
                                                     descripcion: "",
                                                 },
@@ -144,6 +151,23 @@ export default class cuentas extends React.Component {
                         </SView>
                     }}
                 />
+                <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                }} textStyle={{
+                    fontSize: 7
+                }}
+                    customComponent={e => {
+                        const aditionalStyle = {
+                            borderWidth: 1,
+                            borderColor: MDL.contabilidad.color_tipo[e.row.tipo],
+                            backgroundColor: MDL.contabilidad.color_tipo[e.row.tipo] + "55",
+                            padding: 3,
+                            borderRadius: 4,
+                        };
+                        return <SText clean style={{ ...e.textStyle, ...aditionalStyle }}>{e.data}</SText>
+                    }}
+                />
                 <DinamicTable.Col key={"codigo"} label="Codigo" width={120} data={e => e.row.codigo} textStyle={{
                     fontWeight: "bold",
                     letterSpacing: 1.1
@@ -169,7 +193,21 @@ export default class cuentas extends React.Component {
                     customComponent={e => {
                         return <AjusteTagDropBox onDrop={dropTag => {
                             if (dropTag?.ajuste_empresa?.key) {
+                                // Retornamos si es el mismo ajuste
                                 if (dropTag?.ajuste_empresa?.key_cuenta_contable == e.row.key) return;
+                            }
+                            if (dropTag?.grupo_sugerido != e?.row?.tipo) {
+                                SNotification.send({
+                                    title: "Error",
+                                    body: "No se puede asignar un ajuste de tipo " + dropTag?.grupo_sugerido + " a una cuenta de tipo " + e?.row?.tipo,
+                                    color: STheme.color.warning,
+                                    time: 3000,
+                                })
+                                console.log("No se puede asignar un ajuste de tipo " + dropTag?.grupo_sugerido + " a una cuenta de tipo " + e?.row?.tipo);
+                                return;
+                            }
+                            if (dropTag?.ajuste_empresa?.key) {
+
                                 MDL.contabilidad.saveAjusteEmpresa({
                                     key: dropTag.ajuste_empresa.key,
                                     key_cuenta_contable: e.row.key,

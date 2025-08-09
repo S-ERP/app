@@ -15,8 +15,8 @@ export default class AjusteTagInfoPopup extends React.Component<Props> {
         MDL.contabilidad.saveAjusteEmpresa({
             key: this.props?.ajuste?.ajuste_empresa?.key,
             estado: 0,
-        }).then(e=>{
-            if(this.props.onPress) {
+        }).then(e => {
+            if (this.props.onPress) {
                 this.props.onPress();
             }
             SPopup.close("AjusteTagInfoPopup");
@@ -28,7 +28,13 @@ export default class AjusteTagInfoPopup extends React.Component<Props> {
             borderRadius: 8,
             padding: 16,
         }}>
-            <SText fontSize={14} bold><SText clean fontSize={10} color={STheme.color.lightGray} >{ajuste?.grupo_sugerido}</SText> {ajuste?.descripcion}</SText>
+            <SText fontSize={14} bold><SText clean fontSize={10} color={STheme.color.lightGray} style={{
+                borderWidth: 1,
+                borderColor: MDL.contabilidad.color_tipo[ajuste?.grupo_sugerido],
+                backgroundColor: MDL.contabilidad.color_tipo[ajuste?.grupo_sugerido] + "55",
+                padding: 3,
+                borderRadius: 4,
+            }} >{ajuste?.grupo_sugerido}</SText> {ajuste?.descripcion}</SText>
             <SHr height={8} />
             <SText fontSize={12} color={STheme.color.lightGray}>{ajuste?.observacion}</SText>
             {this.props.ajuste.ajuste_empresa && <>

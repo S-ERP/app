@@ -55,6 +55,18 @@ export default class SPageContaMenu extends React.Component {
                 params={null}
             />
             <MenuItem parent={this}
+                title={"Dimensiones"}
+                icon={<SIconApp name={"menuAll"} fill={STheme.color.text} />}
+                url={"/conta/dimension"}
+                params={null}
+            />
+            <MenuItem parent={this}
+                title={"Balance general"}
+                icon={<SIconApp name={"menuAll"} fill={STheme.color.text} />}
+                url={"/conta/balance"}
+                params={null}
+            />
+            <MenuItem parent={this}
                 title={"Crear asiento"}
                 icon={<SIconApp name={"adicional"} fill={STheme.color.text} />}
                 url={"/contabilidad/asiento"}

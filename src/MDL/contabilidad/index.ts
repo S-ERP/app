@@ -6,6 +6,13 @@ import cuenta_contable from "./cuenta_contable";
 
 export default class contabilidad extends MDLAbstract<EventListener> {
 
+    color_tipo = {
+        "ACTIVO": "#4CAF50",
+        "PASIVO": "#FF9800",
+        "PATRIMONIO": "#2196F3",
+        "INGRESO": "#9C27B0",
+        "GASTO": "#F44336"
+    }
     cuenta_contable = new cuenta_contable();
     async componentDidMount() {
         this.cuenta_contable.componentDidMount();
@@ -76,5 +83,27 @@ export default class contabilidad extends MDLAbstract<EventListener> {
         });
 
         return raiz;
+    }
+    async getNivelesPlanCuentas() {
+        return await this.executeFunction("get_niveles_del_plan_de_cuentas", [MDL?.empresa?.select?.key])
+    }
+    async reporte_balance_general() {
+        return await this.executeFunction("reporte_balance_general", [MDL?.empresa?.select?.key])
+    }
+
+    async executeFunction(name: string, params?: any[]) {
+        const resp: any = await SSocket.sendPromise({
+            service: "contabilidad",
+            component: "reporte",
+            type: "execute_function",
+            func: name,
+            params: params?.map((param) => {
+                if (typeof param === "string") {
+                    return "'" + param + "'";
+                }
+                return param;
+            })
+        })
+        return resp.data as any[];
     }
 }

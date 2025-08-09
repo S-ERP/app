@@ -7,6 +7,7 @@ import packageInfo from "../../../package.json";
 import MDLAbstract from "../MDLAbstract";
 
 export default class whatsapp extends MDLAbstract<EventListener> {
+  // url = "http://192.168.2.1:3000";
   url = "http://192.168.3.3:3000";
   // url = "https://wtspp.servisofts.com";
 
