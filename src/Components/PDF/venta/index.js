@@ -38,7 +38,7 @@ class index extends Component {
     }
 
 
-    detalleAlvaro() {
+    detalleAlvaross() {
 
 
         this.data = this.props.data;
@@ -75,6 +75,62 @@ class index extends Component {
             </View>
         ));
     }
+
+    detalleAlvaro() {
+        this.data = this.props.data;
+        this.compra_venta_detalle = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: this.props.data.key });
+        if (!this.compra_venta_detalle) return <SLoad />;
+
+        // Convertir a array para iterar
+        const itemsArray = Object.values(this.compra_venta_detalle);
+
+        // Calcular subtotal
+        const subtotal = itemsArray.reduce((acc, item) => {
+            // Asegurarse que cantidad y precio_unitario sean números
+            const cantidad = Number(item.cantidad);
+            const precio = Number(item.precio_unitario);
+            return acc + (cantidad * precio);
+        }, 0);
+
+        return (
+            <View style={{ width: "100%" }}>
+                {itemsArray.map((item, i) => (
+                    <View key={item.key || i} style={{ width: "100%" }}>
+                        <View style={{ height: 4 }} />
+                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>{item.descripcion}</SPDFText>
+                        <View style={{ width: "100%", flexDirection: "row" }}>
+                            <View style={{ height: 4 }} />
+                            <View style={{ width: "100%", flexDirection: "row" }}>
+                                <View style={{ width: "60%", alignItems: "flex-end" }}>
+                                    <SPDFText style={textStyle}>
+                                        {`cant ${item.cantidad} X ${item.precio_unitario} Bs`}
+                                    </SPDFText>
+                                </View>
+                                <View style={{ width: "40%", alignItems: "flex-end" }}>
+                                    <SPDFText style={textStyle}>
+                                        {(Number(item.cantidad) * Number(item.precio_unitario)).toFixed(2) + " Bs"}
+                                    </SPDFText>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={{ height: 4 }} />
+                    </View>
+                ))}
+
+                {/* Subtotal */}
+                <View style={{ width: "100%", height: 10 }} />
+                <View style={{ width: "100%", flexDirection: "row" }}>
+                    <View style={{ width: "60%", alignItems: "flex-end" }}>
+                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>SUBTOTAL Bs.</SPDFText>
+                    </View>
+                    <View style={{ width: "40%", alignItems: "flex-end" }}>
+                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>{subtotal.toFixed(2)} Bs</SPDFText>
+                    </View>
+                </View>
+            </View>
+        );
+    }
+
 
     cliente() {
         const cliente = this.props.data.cliente;
@@ -135,130 +191,71 @@ class index extends Component {
             </View>
         </View>
     }
-    vendedor() {
-        const cliente = this.props.data.cliente;
-        return <View style={{ width: "100%", alignItems: "center" }}>
-            <SPDFText style={{ ...textStyle, fontWeight: "bold", marginBottom: 8 }}>CLIENTE </SPDFText>
 
-            <View style={{ width: "100%", alignItems: "center" }}>
-
-                <View style={{ width: "100%", flexDirection: "row" }}>
-                    <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Nombre completo:</SPDFText>
-                    </View>
-                    <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{cliente.nombres}</SPDFText>
-                    </View>
-                </View>
-
-                <View style={{ width: "100%", flexDirection: "row" }}>
-                    <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Fecha Nacimiento:</SPDFText>
-                    </View>
-                    <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{cliente.fecha_nacimiento}</SPDFText>
-                    </View>
-                </View>
-                <View style={{ width: "100%", flexDirection: "row" }}>
-                    <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Teléfono:</SPDFText>
-                    </View>
-                    <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{cliente.telefono}</SPDFText>
-                    </View>
-                </View>
-                <View style={{ width: "100%", flexDirection: "row" }}>
-                    <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>NIT:</SPDFText>
-                    </View>
-                    <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{cliente.nit}</SPDFText>
-                    </View>
-                </View>
-                <View style={{ width: "100%", flexDirection: "row" }}>
-                    <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Razón Social:</SPDFText>
-                    </View>
-                    <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{cliente.razon_social}</SPDFText>
-                    </View>
-                </View>
-                <View style={{ width: "100%", flexDirection: "row" }}>
-                    <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Correo:</SPDFText>
-                    </View>
-                    <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{cliente.correo}</SPDFText>
-                    </View>
-                </View>
-            </View>
-        </View>
-    }
-
-    proveedor() {
-        const proveedor = this.props.data.proveedor;
+    detalleVenta() {
+        const data = this.props.data;
         return (
             <View style={{ width: "100%", alignItems: "center" }}>
+                <View style={{ width: "100%", flexDirection: "row" }}>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Descripción:</SPDFText>
+                    </View>
+                    <View style={{ width: "50%" }}>
+                        <SPDFText style={{ ...textStyle }}>{data.descripcion}</SPDFText>
+                    </View>
+                </View>
+
+                <View style={{ width: "100%", flexDirection: "row" }}>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Tipo:</SPDFText>
+                    </View>
+                    <View style={{ width: "50%" }}>
+                        <SPDFText style={{ ...textStyle }}>{data.tipo}</SPDFText>
+                    </View>
+                </View>
+
+                <View style={{ width: "100%", flexDirection: "row" }}>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Estado:</SPDFText>
+                    </View>
+                    <View style={{ width: "50%" }}>
+                        <SPDFText style={{ ...textStyle }}>{data.estado}</SPDFText>
+                    </View>
+                </View>
+
                 <View style={{ width: "100%", flexDirection: "row" }}>
                     <View style={{ width: "50%", alignItems: "flex-end" }}>
                         <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Key Usuario:</SPDFText>
                     </View>
                     <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{proveedor.key_usuario || "-"}</SPDFText>
+                        <SPDFText style={{ ...textStyle }}>{data.key_usuario}</SPDFText>
                     </View>
                 </View>
 
                 <View style={{ width: "100%", flexDirection: "row" }}>
                     <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Key Empresa:</SPDFText>
+                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Fecha On:</SPDFText>
                     </View>
                     <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{proveedor.key_empresa}</SPDFText>
+                        <SPDFText style={{ ...textStyle }}>{data.fecha_on}</SPDFText>
                     </View>
                 </View>
 
                 <View style={{ width: "100%", flexDirection: "row" }}>
                     <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Correo:</SPDFText>
+                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Porcentaje Interés:</SPDFText>
                     </View>
                     <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{proveedor.correo || "-"}</SPDFText>
+                        <SPDFText style={{ ...textStyle }}>{data.porcentaje_interes}</SPDFText>
                     </View>
                 </View>
 
                 <View style={{ width: "100%", flexDirection: "row" }}>
                     <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>NIT:</SPDFText>
+                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Periodicidad Valor:</SPDFText>
                     </View>
                     <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{proveedor.nit}</SPDFText>
-                    </View>
-                </View>
-
-                <View style={{ width: "100%", flexDirection: "row" }}>
-                    <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Dirección:</SPDFText>
-                    </View>
-                    <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{proveedor.direccion}</SPDFText>
-                    </View>
-                </View>
-
-                <View style={{ width: "100%", flexDirection: "row" }}>
-                    <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Razón Social:</SPDFText>
-                    </View>
-                    <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{proveedor.razon_social}</SPDFText>
-                    </View>
-                </View>
-
-                <View style={{ width: "100%", flexDirection: "row" }}>
-                    <View style={{ width: "50%", alignItems: "flex-end" }}>
-                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Teléfono:</SPDFText>
-                    </View>
-                    <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{proveedor.telefono || "-"}</SPDFText>
+                        <SPDFText style={{ ...textStyle }}>{data.periodicidad_valor}</SPDFText>
                     </View>
                 </View>
 
@@ -267,8 +264,107 @@ class index extends Component {
                         <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Key Sucursal:</SPDFText>
                     </View>
                     <View style={{ width: "50%" }}>
-                        <SPDFText style={{ ...textStyle }}>{proveedor.key_sucursal}</SPDFText>
+                        <SPDFText style={{ ...textStyle }}>{data.key_sucursal}</SPDFText>
                     </View>
+                </View>
+
+                <View style={{ width: "100%", flexDirection: "row" }}>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Tipo Pago:</SPDFText>
+                    </View>
+                    <View style={{ width: "50%" }}>
+                        <SPDFText style={{ ...textStyle }}>{data.tipo_pago}</SPDFText>
+                    </View>
+                </View>
+
+                <View style={{ width: "100%", flexDirection: "row" }}>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Estado (state):</SPDFText>
+                    </View>
+                    <View style={{ width: "50%" }}>
+                        <SPDFText style={{ ...textStyle }}>{data.state}</SPDFText>
+                    </View>
+                </View>
+
+                <View style={{ width: "100%", flexDirection: "row" }}>
+                    <View style={{ width: "50%", alignItems: "flex-end" }}>
+                        <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Observación:</SPDFText>
+                    </View>
+                    <View style={{ width: "50%" }}>
+                        <SPDFText style={{ ...textStyle }}>{data.observacion}</SPDFText>
+                    </View>
+                </View>
+            </View>
+        );
+    }
+
+
+    proveedor() {
+        const proveedor = this.props.data.proveedor;
+        return (
+
+            <View style={{ width: "100%", alignItems: "center" }}>
+                <SPDFText style={{ ...textStyle, fontWeight: "bold", marginBottom: 8 }}>PROVEEDOR </SPDFText>
+
+                <View style={{ width: "100%", alignItems: "center" }}>
+
+
+                    <View style={{ width: "100%", flexDirection: "row" }}>
+                        <View style={{ width: "50%", alignItems: "flex-end" }}>
+                            <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>NIT:</SPDFText>
+                        </View>
+                        <View style={{ width: "50%" }}>
+                            <SPDFText style={{ ...textStyle }}>{proveedor.nit}</SPDFText>
+                        </View>
+                    </View>
+
+
+                    <View style={{ width: "100%", flexDirection: "row" }}>
+                        <View style={{ width: "50%", alignItems: "flex-end" }}>
+                            <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Razón Social:</SPDFText>
+                        </View>
+                        <View style={{ width: "50%" }}>
+                            <SPDFText style={{ ...textStyle }}>{proveedor.razon_social}</SPDFText>
+                        </View>
+                    </View>
+                    <View style={{ width: "100%", flexDirection: "row" }}>
+                        <View style={{ width: "50%", alignItems: "flex-end" }}>
+                            <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Sucursal:</SPDFText>
+                        </View>
+                        <View style={{ width: "50%" }}>
+                            <SPDFText style={{ ...textStyle }}>{proveedor.razon_social}</SPDFText>
+                        </View>
+                    </View>
+
+                    <View style={{ width: "100%", flexDirection: "row" }}>
+                        <View style={{ width: "50%", alignItems: "flex-end" }}>
+                            <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Dirección:</SPDFText>
+                        </View>
+                        <View style={{ width: "50%" }}>
+                            <SPDFText style={{ ...textStyle }}>{proveedor.direccion}</SPDFText>
+                        </View>
+                    </View>
+
+
+
+                    <View style={{ width: "100%", flexDirection: "row" }}>
+                        <View style={{ width: "50%", alignItems: "flex-end" }}>
+                            <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Teléfono:</SPDFText>
+                        </View>
+                        <View style={{ width: "50%" }}>
+                            <SPDFText style={{ ...textStyle }}>{proveedor.telefono || "-"}</SPDFText>
+                        </View>
+                    </View>
+
+                    <View style={{ width: "100%", flexDirection: "row" }}>
+                        <View style={{ width: "50%", alignItems: "flex-end" }}>
+                            <SPDFText style={{ ...textStyle, fontWeight: "bold" }}>Correo:</SPDFText>
+                        </View>
+                        <View style={{ width: "50%" }}>
+                            <SPDFText style={{ ...textStyle }}>{proveedor.correo || "-"}</SPDFText>
+                        </View>
+                    </View>
+
                 </View>
             </View>
         );
@@ -355,6 +451,9 @@ class index extends Component {
                 </View>
 
                 {this.detalleAlvaro()}
+                {this.espacioPunto()}
+
+                {this.detalleVenta()}
                 {this.espacioPunto()}
 
                 <View style={{ width: "100%" }}>

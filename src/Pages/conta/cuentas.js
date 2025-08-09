@@ -147,7 +147,7 @@ export default class cuentas extends React.Component {
                                 ]
                             })
                         }}>
-                            <SIconApp name="configurar" height={10} fill={STheme.color.lightGray} />
+                            <SIconApp name="ctaAjuste2" height={10} stroke={STheme.color.lightGray} />
                         </SView>
                     }}
                 />
@@ -168,11 +168,11 @@ export default class cuentas extends React.Component {
                         return <SText clean style={{ ...e.textStyle, ...aditionalStyle }}>{e.data}</SText>
                     }}
                 />
-                <DinamicTable.Col key={"codigo"} label="Codigo" width={120} data={e => e.row.codigo} textStyle={{
+                <DinamicTable.Col key={"codigo"} label="Código" width={120} data={e => e.row.codigo} textStyle={{
                     fontWeight: "bold",
                     letterSpacing: 1.1
                 }} />
-                <DinamicTable.Col key={"descripcion"} label="descripcion" width={350}
+                <DinamicTable.Col key={"descripcion"} label="Descripción" width={350}
                     data={e => e.row.descripcion}
                     customComponent={(e) => {
                         const space = (e?.row?.codigo || "").length * 2;
@@ -262,5 +262,3 @@ export default class cuentas extends React.Component {
         </SPageConta >
     }
 }
-
-

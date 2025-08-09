@@ -45,40 +45,40 @@ export default class SPageContaMenu extends React.Component {
             </SView>
             <MenuItem parent={this}
                 title={"Inicio"}
-                icon={<SIconApp name={"AlertOutline"} fill={STheme.color.text} />}
+                icon={<SIconApp name={"ctaHome"} stroke={STheme.color.text} />}
                 url={"/conta"}
             />
             <MenuItem parent={this}
                 title={"Plan de cuentas"}
-                icon={<SIconApp name={"menuAll"} fill={STheme.color.text} />}
+                icon={<SIconApp name={"ctaPlancuentas"} stroke={STheme.color.text} />}
                 url={"/conta/cuentas"}
                 params={null}
             />
             <MenuItem parent={this}
                 title={"Dimensiones"}
-                icon={<SIconApp name={"menuAll"} fill={STheme.color.text} />}
+                icon={<SIconApp name={"ctaDimensiones"} stroke={STheme.color.text} />}
                 url={"/conta/dimension"}
                 params={null}
             />
             <MenuItem parent={this}
                 title={"Balance general"}
-                icon={<SIconApp name={"menuAll"} fill={STheme.color.text} />}
+                icon={<SIconApp name={"ctaBalance"} stroke={STheme.color.text} />}
                 url={"/conta/balance"}
                 params={null}
             />
             <MenuItem parent={this}
                 title={"Crear asiento"}
-                icon={<SIconApp name={"adicional"} fill={STheme.color.text} />}
+                icon={<SIconApp name={"ctaAsiento"} stroke={STheme.color.text} />}
                 url={"/contabilidad/asiento"}
                 params={null}
             />
             <MenuItem parent={this}
                 title={"Sitema antiguo"}
-                icon={<SIconApp name={"crmpause"} fill={STheme.color.text} />}
+                icon={<SIconApp name={"ctaSistema"} stroke={STheme.color.text} />}
                 url={"/contabilidad"}
                 params={null}
             />
-            <SView flex/>
+            <SView flex />
             <MenuItem parent={this}
                 title={"Ajustes"}
                 icon={<SIconApp name={"Engranaje"} fill={STheme.color.text} />}
@@ -92,7 +92,7 @@ export default class SPageContaMenu extends React.Component {
 
 const MenuItem = (props: { title: string, parent: SPageContaMenu, icon: any, url?: string, params?: any }) => {
 
-    const select= props.url === props.parent.state.urlPage;
+    const select = props.url === props.parent.state.urlPage;
     return <SView col={"xs-12"} height={SizeClose} row style={{
         alignItems: "center",
         backgroundColor: select ? STheme.color.card : "transparent",
