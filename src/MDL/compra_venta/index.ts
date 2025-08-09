@@ -19,9 +19,6 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       monto_factura: parseFloat(data.caja.monto_factura),
       detalle: data.detalle,
     };
-    console.log("aqui " + JSON.stringify(formar));
-
-    return;
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
       component: "compra_venta",

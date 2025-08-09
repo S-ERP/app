@@ -229,8 +229,9 @@ import barcode, { ReactComponent as barcodeW } from "./svg/barcode.svg";
 import blender from "./svg/blender";
 import drive from "./svg/drive";
 import crmmicrofono, {
-  ReactComponent as crmmicrofonoW,
+    ReactComponent as crmmicrofonoW,
 } from "./svg/crm/microfono.svg";
+// import blender from "./conta";
 
 export const svg = {
   Logo: { Native: Logo, Web: LogoW },
