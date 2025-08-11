@@ -1,339 +1,230 @@
 <!doctype html>
 <html lang="es">
-
-<head>
+  <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Factura / Recibo - Simulación</title>
+    <title>Panel de Avances - Sistemas</title>
     <style>
-        :root {
-            --ticket-width-px: 304px;
-            /* ~80mm a 96dpi */
-            --text: #222;
-            --muted: #666;
-        }
+      :root{
+        --bg:#0f172a;         /* slate-900 */
+        --panel:#111827;      /* gray-900 */
+        --card:#1f2937;       /* gray-800 */
+        --border:#334155;     /* slate-700 */
+        --text:#e5e7eb;       /* gray-200 */
+        --muted:#9ca3af;      /* gray-400 */
+        --accent:#10b981;     /* emerald-500 */
+        --accent-600:#059669; /* emerald-600 */
+      }
+      *{box-sizing:border-box}
+      html,body{height:100%}
+      body{
+        margin:0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+        color:var(--text);
+        background: radial-gradient(1200px 800px at 70% -10%, #1e293b 0%, var(--bg) 55%);
+      }
 
-        * {
-            box-sizing: border-box;
-        }
+      /* Layout */
+      .app{
+        display:grid;
+        grid-template-columns: 280px 1fr;
+        min-height:100dvh;
+      }
+      aside{
+        background:linear-gradient(180deg, var(--panel) 0%, #0b1220 100%);
+        border-right:1px solid var(--border);
+        position:sticky; top:0; height:100dvh;
+      }
+      .brand{
+        display:flex; align-items:center; gap:.6rem;
+        padding:1.25rem 1rem; border-bottom:1px solid var(--border);
+      }
+      .brand-badge{
+        width:36px;height:36px;border-radius:8px;
+        background:linear-gradient(135deg,var(--accent),var(--accent-600));
+        display:grid;place-items:center;font-weight:800;color:#052e2b;
+      }
+      .brand h1{font-size:1rem;margin:0}
+      nav{padding:1rem}
+      .menu{
+        list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.5rem;
+      }
+      .menu a{
+        display:flex; align-items:center; gap:.6rem;
+        text-decoration:none; color:var(--text);
+        padding:.75rem .9rem; border:1px solid var(--border);
+        background-color:rgba(255,255,255,0.02);
+        border-radius:.6rem;
+        transition:background-color .2s, border-color .2s, transform .05s;
+      }
+      .menu a:hover{ background-color:rgba(16,185,129,0.08); border-color:#25634d; }
+      .menu a:active{ transform: translateY(1px); }
+      .menu small{color:var(--muted); margin-left:auto}
 
-        body {
-            margin: 0;
-            background: #f5f5f5;
-            color: var(--text);
-            font: 14px/1.35 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji";
-        }
+      header{
+        padding:2rem 2rem 1rem 2rem;
+        border-bottom:1px solid var(--border);
+        background:linear-gradient(180deg, rgba(16,185,129,0.08), transparent 40%);
+      }
+      .hello{
+        max-width:900px; margin:0 auto;
+      }
+      .hello h2{
+        margin:0 0 .25rem 0; font-size:clamp(1.4rem, 1rem + 1.5vw, 2rem);
+      }
+      .hello p{margin:.25rem 0 0 0; color:var(--muted)}
+      main{padding:2rem}
+      .container{max-width:1000px; margin:0 auto}
 
-        .wrap {
-            min-height: 100vh;
-            display: grid;
-            place-items: start center;
-            padding: 24px 12px;
-        }
+      /* Cards grid */
+      .grid{
+        display:grid; gap:1rem;
+        grid-template-columns: repeat(12, 1fr);
+      }
+      .card{
+        grid-column: span 6; /* 2 cols on desktop */
+        background-color:var(--card);
+        border:1px solid var(--border);
+        border-radius:.8rem; padding:1rem;
+      }
+      .card h3{margin:.25rem 0 .5rem 0; font-size:1.05rem}
+      .card p{margin:0; color:var(--muted)}
+      .card a{
+        display:inline-block; margin-top:.8rem;
+        color:#052e2b; background:linear-gradient(135deg,var(--accent),var(--accent-600));
+        padding:.5rem .8rem; border-radius:.5rem; text-decoration:none; font-weight:600;
+      }
+      .badge{
+        display:inline-flex; align-items:center; gap:.4rem;
+        font-size:.75rem; color:var(--muted); border:1px dashed var(--border);
+        padding:.2rem .5rem; border-radius:999px;
+      }
 
-        .ticket {
-            width: min(var(--ticket-width-px), 100%);
-            background: #fff;
-            padding: 12px 14px 18px;
-            border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-        }
+      /* Footer */
+      footer{
+        padding:1.25rem 2rem; color:var(--muted); border-top:1px solid var(--border);
+      }
 
-        .center {
-            text-align: center;
-        }
+      /* Responsive */
+      .mobile-bar{
+        display:none;
+        padding:.75rem 1rem; border-bottom:1px solid var(--border);
+        align-items:center; justify-content:space-between;
+      }
+      .menu-toggle{
+        appearance:none; border:1px solid var(--border); background:transparent;
+        color:var(--text); padding:.45rem .7rem; border-radius:.5rem; cursor:pointer;
+      }
+      @media (max-width: 960px){
+        .app{ grid-template-columns: 1fr; }
+        aside{ position:relative; height:auto; }
+        .mobile-bar{ display:flex; }
+        nav{ display:none; }
+        nav.open{ display:block; }
+        .grid .card{ grid-column: span 12; } /* 1 col on mobile */
+        main{ padding:1.25rem }
+        header{ padding:1.25rem 1.25rem .75rem }
+      }
 
-        .muted {
-            color: var(--muted);
-        }
-
-        .small {
-            font-size: 12px;
-        }
-
-        .bold {
-            font-weight: 700;
-        }
-
-        h1,
-        h2,
-        h3,
-        p {
-            margin: 0;
-        }
-
-        h1 {
-            font-size: 14px;
-            letter-spacing: .2px;
-            text-transform: uppercase;
-        }
-
-        .subhead {
-            margin-top: 2px;
-            font-weight: 700;
-            font-size: 12px;
-        }
-
-        .block {
-            margin-top: 10px;
-        }
-
-        /* Separadores punteados */
-        .rule {
-            margin: 10px 0;
-            height: 0;
-            border: 0;
-            border-top: 2px dotted #bdbdbd;
-        }
-
-        /* Filas clave:valor */
-        .kv {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 2px 8px;
-            font-size: 12px;
-        }
-
-        .kv b {
-            font-weight: 700;
-        }
-
-        .kv span {
-            color: var(--text);
-        }
-
-        /* Detalle de items */
-        .section-title {
-            text-transform: uppercase;
-            font-weight: 800;
-            letter-spacing: .3px;
-            text-align: center;
-            margin: 6px 0 4px;
-        }
-
-        .items {
-            margin-top: 6px;
-        }
-
-        .item {
-            padding: 6px 0;
-            border-bottom: 1px dotted #ddd;
-        }
-
-        .item-name {
-            font-weight: 600;
-            font-size: 12px;
-        }
-
-        .item-meta {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 4px 8px;
-            font-size: 12px;
-            margin-top: 2px;
-        }
-
-        /* Totales con “líder” punteado */
-        .total-row {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 8px;
-            padding: 4px 0;
-            align-items: baseline;
-        }
-
-        .total-row .label {
-            position: relative;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-
-        .total-row .label:after {
-            content: "................................................................................";
-            color: #bbb;
-            letter-spacing: 1px;
-            margin-left: 6px;
-        }
-
-        .total-row .value {
-            font-variant-numeric: tabular-nums;
-        }
-
-        .total-row.emph .value,
-        .total-row.emph .label {
-            font-weight: 800;
-        }
-
-        .legal {
-            margin-top: 10px;
-            font-size: 12px;
-            text-align: justify;
-        }
-
-        .footer {
-            margin-top: 10px;
-            text-align: center;
-            font-size: 12px;
-        }
-
-        .actions {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin: 10px auto 0;
-        }
-
-        button {
-            border: 1px solid #d1d5db;
-            background: #fff;
-            color: #111827;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font: inherit;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #f8f9fb;
-        }
-
-        @media (max-width: 360px) {
-            body {
-                font-size: 13px;
-            }
-        }
-
-        /* Estilos de impresión */
-        @media print {
-            body {
-                background: #fff;
-            }
-
-            .wrap {
-                padding: 0;
-            }
-
-            .ticket {
-                width: 80mm;
-                /* target 80mm roll */
-                max-width: none;
-                box-shadow: none;
-                border-radius: 0;
-                padding: 6mm 6mm 10mm;
-            }
-
-            .actions {
-                display: none !important;
-            }
-        }
-
-        @page {
-            size: 80mm auto;
-            margin: 0;
-        }
-
+      /* Focus styles */
+      :focus-visible{
+        outline:2px solid var(--accent); outline-offset:2px; border-radius:.4rem;
+      }
     </style>
-</head>
+  </head>
+  <body>
+    <div class="app">
+       Sidebar
+      <aside>
+        <div class="brand" aria-label="Identidad del sistema">
+          <div class="brand-badge" aria-hidden="true">SI</div>
+          <h1>Sistema Integral</h1>
+        </div>
 
-<body>
-    <main class="wrap" role="main">
-        <article class="ticket" aria-label="Factura tipo recibo">
-            <header class="center">
-                <h1>FACTURA</h1>
-                <div class="subhead">Con Derecho a Credito Fiscal</div>
-                <div class="block">
-                    <div class="bold">COMERCIAL TORRICO</div>
-                    <div>Casa Matriz</div>
-                    <div class="small">No. Punto de Venta 0</div>
-                    <div class="small">c/ Diego de Bazan s/n comercial minorista, artesanos</div>
-                    <div class="small">Tel. +591 70838928</div>
-                    <div class="small">Casa Matriz</div>
-                </div>
-            </header>
+        <div class="mobile-bar">
+          <strong>Menú</strong>
+          <button class="menu-toggle" aria-controls="menu" aria-expanded="false">Abrir</button>
+        </div>
 
-            <hr class="rule" aria-hidden="true" />
+        <nav id="menu" class="" aria-label="Navegación principal">
+          <ul class="menu">
+            <li><a href="#proveedor-form">Formulario de Proveedor <small>Alta</small></a></li>
+            <li><a href="#gestion-proveedores">Gestión de Proveedores <small>CRUD</small></a></li>
+            <li><a href="#registro-inventario">Registro de Inventario <small>Entradas</small></a></li>
+            <li><a href="#reporte-conteo">Reporte de Conteo de Inventario <small>PDF</small></a></li>
+            <li><a href="#punto-venta">Punto de Venta <small>POS</small></a></li>
+          </ul>
+        </nav>
+      </aside>
 
-            <section class="block kv" aria-label="Datos fiscales">
-                <b>NIT</b><span>818134019</span>
-                <b>FACTURA N°</b><span>5533</span>
-                <b>CÓD. AUTORIZACIÓN</b>
-                <span>
-                    37FA9FD2B705300927CCF7BA04EF7B7C29BC973027698<br />
-                    3516F0FF1F74
-                </span>
+       Content
+      <div>
+        <header>
+          <div class="hello">
+            <span class="badge" aria-label="Estado del proyecto">Versión preliminar · Última actualización: hoy</span>
+            <h2>Hola, Gerente de Sistemas</h2>
+            <p>A continuación encontrará un resumen formal de los avances desarrollados hasta el momento.</p>
+          </div>
+        </header>
+
+        <main>
+          <div class="container">
+            <section aria-labelledby="resumen">
+              <h2 id="resumen" class="sr-only">Resumen de módulos</h2>
+              <div class="grid">
+                <article id="proveedor-form" class="card">
+                  <h3>Formulario de Proveedor</h3>
+                  <p>Captura de proveedores con validaciones, campos clave y preparación para envío a base de datos.</p>
+                  <a href="#">Abrir módulo</a>
+                </article>
+
+                <article id="gestion-proveedores" class="card">
+                  <h3>Gestión de Proveedores</h3>
+                  <p>Listado, búsqueda y acciones de edición/eliminación. Paginación preparada.</p>
+                  <a href="#">Abrir módulo</a>
+                </article>
+
+                <article id="registro-inventario" class="card">
+                  <h3>Registro de Inventario</h3>
+                  <p>Altas y movimientos de inventario con control de existencias y costos.</p>
+                  <a href="#">Abrir módulo</a>
+                </article>
+
+                <article id="reporte-conteo" class="card">
+                  <h3>Reporte de Conteo de Inventario</h3>
+                  <p>Generación de reporte con filtros por fecha y categoría, exportable.</p>
+                  <a href="#">Abrir módulo</a>
+                </article>
+
+                <article id="punto-venta" class="card">
+                  <h3>Punto de Venta</h3>
+                  <p>Flujo de venta, carrito, cálculo de totales e impuestos; soporte para lector de código de barras.</p>
+                  <a href="#">Abrir módulo</a>
+                </article>
+              </div>
             </section>
+          </div>
+        </main>
 
-            <hr class="rule" aria-hidden="true" />
+        <footer>
+          © <span id="y"></span> Área de Sistemas · Entrega de avances
+        </footer>
+      </div>
+    </div>
 
-            <section class="block kv" aria-label="Datos del cliente">
-                <b>NOMBRE/RAZÓN SOCIAL</b><span>DAVID FORONDA</span>
-                <b>NIT/CI/CEX</b><span>1575801013</span>
-                <b>COD. CLIENTE</b><span>0</span>
-                <b>FECHA DE EMISIÓN</b><span>2025-08-01 12:34:47</span>
-            </section>
-
-            <div class="section-title">DETALLE</div>
-
-            <section class="items" aria-label="Detalle de productos">
-                <div class="item">
-                    <div class="item-name">621649 - MASILLAS PLASTICAS</div>
-                    <div class="item-meta">
-                        <div class="muted">2 x 40 - 0.0</div>
-                        <div class="bold">80.0</div>
-                    </div>
-                </div>
-            </section>
-
-            <hr class="rule" aria-hidden="true" />
-
-            <section class="block" aria-label="Totales">
-                <div class="total-row">
-                    <div class="label">SUBTOTAL Bs.</div>
-                    <div class="value">80.0</div>
-                </div>
-                <div class="total-row">
-                    <div class="label">DESCUENTO Bs.</div>
-                    <div class="value">0.0</div>
-                </div>
-                <div class="total-row">
-                    <div class="label">TOTAL Bs.</div>
-                    <div class="value">80.0</div>
-                </div>
-                <div class="total-row">
-                    <div class="label">MONTO GIFT CARD Bs.</div>
-                    <div class="value">0.0</div>
-                </div>
-                <div class="total-row emph">
-                    <div class="label">MONTO A PAGAR Bs.</div>
-                    <div class="value">80.0</div>
-                </div>
-                <div class="total-row">
-                    <div class="label">IMPORTE BASE CRÉDITO FISCAL Bs.</div>
-                    <div class="value">80.0</div>
-                </div>
-            </section>
-
-            <section class="block small" aria-label="Monto literal">
-                <p><span class="bold">Son:</span> ochenta 00/100 Bolivianos.</p>
-            </section>
-
-            <section class="legal muted">
-                <p>ESTA FACTURA CONTRIBUYE AL DESARROLLO DEL PAÍS, EL USO ILÍCITO SERÁ SANCIONADO</p>
-            </section>
-
-            <div class="actions">
-                <button type="button" onclick="window.print()">Imprimir</button>
-            </div>
-
-            <footer class="footer muted" aria-label="Pie">
-                <p class="small">Gracias por su preferencia</p>
-            </footer>
-        </article>
-    </main>
     <script>
-        // Puedes llamar a print automáticamente descomentando la línea siguiente.
-        // window.print()
+      // Accesibilidad: toggle del menú móvil
+      const btn = document.querySelector('.menu-toggle');
+      const nav = document.getElementById('menu');
+      if (btn && nav){
+        btn.addEventListener('click', () => {
+          const open = nav.classList.toggle('open');
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          btn.textContent = open ? 'Cerrar' : 'Abrir';
+        });
+      }
+      // Año dinámico en el footer
+      document.getElementById('y').textContent = new Date().getFullYear();
     </script>
-</body>
-
+  </body>
 </html>

@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { SButtom, SForm, SHr, SIcon, SInput, SPopup, SText, STheme, SUuid, SView } from 'servisofts-component';
-import MDL from '../../MDL';
-import PButtom from '../PButtom';
-import Model from '../../Model';
+// import MDL from '../../MDL';
+// import PButtom from '../PButtom';
 import SIconApp from '../../Assets/SIconApp';
+import MDL from '../../MDL';
+// import Model from '../../Model';
+// import SIconApp from '../../Assets/SIconApp';
 
-export default class ProveedorFormulario extends Component {
+export default class Perfil extends Component {
 
     constructor(props) {
         super(props);

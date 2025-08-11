@@ -10,6 +10,8 @@ import catalogo from "./catalogo";
 import inventario from "./inventario";
 import carrito from "./carrito";
 
+
+
 export default SPage.combinePages("productos",
     {
         "": root,

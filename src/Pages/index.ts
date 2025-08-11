@@ -74,12 +74,17 @@ import factura from "../Components/PDF/factura";
 import ricky from "./ricky";
 import crm from "./crm";
 import plantilla from "./crm/plantilla";
-import turno from "./turno";
-import Proveedor from "../Components/compra_venta/Proveedor";
-import RegistroInventario from "./inventario/almacen/RegistroInventarios";
-import ReporteConteoInventario from "./inventario/almacen/ReporteConteoInventario";
+// import turno from "./Turnos";
+// import Proveedor from "../Components/compra_venta/Proveedor";
+// import RegistroInventario from "./inventario/almacen/RegistroInventarios";
+// import ReporteConteoInventario from "./inventario/almacen/ReporteConteoInventario";
 import testpuntoventa from "./testpuntoventa";
 import Main from "./puntoventa/Main";
+import alvaro from "./alvaro";
+import proveedor from "./proveedor";
+// import Proveedor from "../Components/compra_venta/Proveedor";
+import puntoventa from "./puntoventa";
+import Turnos from "./Turnos";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -155,11 +160,10 @@ export default SPage.combinePages("/", {
   ...crm,
   "pdf/factura": factura,
   plantilla,
-  turno,
-  proveedor: Proveedor,
+    Turnos,
+  ...proveedor,
   ...qr_reader,
-  //   inventariar :
-  "inventario/almacen/profile/registro_inventario": RegistroInventario,
-  "productos/reporte_conteo_inventario": ReporteConteoInventario,
-  puntoventa: Main,
+  ...puntoventa,
+
+  alvaro,
 });

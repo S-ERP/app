@@ -13,8 +13,8 @@ import StateTiqueta from "./StateTiqueta";
 import QRVenta from "./QRVenta";
 import QRCompra from "./QRCompra";
 import GenerarAsiento from "./GenerarAsiento";
-import Proveedor from "./Proveedor";
-import ProveedorFormulario from "./ProveedorFormulario";
+// import Proveedor from "./Proveedor";
+// import ProveedorFormulario from "./ProveedorFormulario";
 
 
 export default {
@@ -33,6 +33,6 @@ export default {
   GenerarAsiento,
   QRVenta,
   QRCompra,
-  Proveedor,
-  ProveedorFormulario,
+//   Proveedor,
+//   ProveedorFormulario,
 };

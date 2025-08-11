@@ -7,16 +7,20 @@ import SCharts from 'servisofts-charts';
 import Usuarios from 'servisofts-component/img/Usuarios';
 import { version } from 'process';
 import MDL from '../../MDL';
-import Config from '../../Config';
-import Model from '../../Model';
-import FloatButtom from '../FloatButtom';
-import TurnoComponent from '../TurnoComponent';
-import Container from '../Container';
-import ProveedorFormulario from './ProveedorFormulario';
-import FloatMenu from '../FloatMenu';
-import SIconApp from '../../Assets/SIconApp';
+import FloatButtom from '../../Components/FloatButtom';
+// import ProveedorFormulario from '../../Components/compra_venta/ProveedorFormulario';
+// import MDL from '../../MDL';
+// import Config from '../../Config';
+// import Model from '../../Model';
+// import FloatButtom from '../FloatButtom';
+// import TurnoComponent from '../TurnoComponent';
+// import Container from '../Container';
+// import ProveedorFormulario from './ProveedorFormulario';
+// import FloatMenu from '../FloatMenu';
+// import SIconApp from '../../Assets/SIconApp';
+import Perfil from './Perfil';
 
-export default class Proveedor extends Component {
+export default class Lista extends Component {
 
 
     onSelect = SNavigation.getParam("onSelect")
@@ -33,7 +37,7 @@ export default class Proveedor extends Component {
             content: (
                 <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
                     <SView col={"xs-12"} height={470} center >
-                        <ProveedorFormulario key_proveedor={aux_key} data={data} onReload={() => { this.DinamicTable.loadData(); }} ></ProveedorFormulario>
+                        <Perfil key_proveedor={aux_key} data={data} onReload={() => { this.DinamicTable.loadData(); }} ></Perfil>
                     </SView>
                 </SView>
             )
@@ -124,7 +128,7 @@ export default class Proveedor extends Component {
 
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
-            
+
 
             {/* <DinamicTable.Col key={"foto"} label='User'
                 data={(e) => e.row?.key_usuario}

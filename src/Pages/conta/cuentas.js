@@ -181,7 +181,7 @@ export default class cuentas extends React.Component {
                         if (e?.row?.codigo?.length == 1) {
                             aditionalStyle.fontWeight = "bold";
                         }
-                        return <SText style={{ ...e.textStyle, paddingStart: space, ...aditionalStyle }}>{e.data}</SText>
+                        return <SText style={{ ...e.textStyle, paddingStart: space, ...aditionalStyle, textTransform:"uppercase" }}>{e.data}</SText>
                     }}
                 />
                 <DinamicTable.Col key={"ajuste"} label="Tipo"

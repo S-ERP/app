@@ -142,7 +142,7 @@ export default class Main extends Component {
     render() {
         return (
             <SPage disableScroll hidden>
-                <Header />
+                <Header onSelect={this.setSucursal} />
                 <SView col="xs-12" row flex backgroundColor={STheme.color.background}>
                      <SView
                         col="xs-12 sm-12 md-7.5 lg-9"

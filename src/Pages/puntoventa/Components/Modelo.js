@@ -88,8 +88,8 @@ export default class Modelo extends Component {
                                             borderColor: STheme.color.lightGray,
                                         }}
                                         onPress={() => {
-                                            if (producto.stock <= 0) return alert("No hay más stock disponible");
-                                            producto.stock -= 1; // ⬅️ Resta stock localmente
+                                            // if (producto.stock <= 0) return alert("No hay más stock disponible");
+                                            // producto.stock -= 1; // ⬅️ Resta stock localmente
                                             this.props.onPressProducto?.({ ...producto }); // enviar copia actualizada
                                             this.forceUpdate();  // ⬅️ Fuerza render para reflejar el cambio
                                         }}
