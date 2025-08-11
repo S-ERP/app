@@ -105,6 +105,20 @@ export default class root extends React.Component {
             <SHr />
             <SHr h={1} color={STheme.color.card} />
             <SView col={"xs-12"} padding={4} flex>
+                <SView col={"xs-12"} row>
+                    <SView width={30} padding={2} center>
+                        {/* <SIconApp name="Delete" /> */}
+                    </SView>
+                    <SView flex={2} padding={2}>
+                        <SText>Producto</SText>
+                    </SView>
+                    <SView width={100} padding={2} center>
+                        <SText>Cantidad</SText>
+                    </SView>
+                    <SView width={100} padding={2} center>
+                        <SText>Precio</SText>
+                    </SView>
+                </SView>
                 <FlatList data={this.state.detalle}
                     renderItem={({ item }) => <Detalle parent={this} data={item} />}
                     keyExtractor={(item, index) => index.toString()}

@@ -7,13 +7,14 @@ import packageInfo from "../../../package.json";
 import MDLAbstract from "../MDLAbstract";
 import Device from "./device";
 export default class whatsapp extends MDLAbstract<EventListener> {
-  url = "http://192.168.3.3:3000";
+  // url = "http://192.168.3.3:3000";
+  // url = ;
   // url = "http://192.168.2.1:3000";
   // url = "https://wtspp.servisofts.com";
   device = new Device();
 
   async send(params: { key_device: string, phone: string; message?: string, image?: string }) {
-    const resp = await fetch(this.url + "/send", {
+    const resp = await fetch((SSocket.api as any).whatsapp + "/send", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +37,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
     offset: string;
     phone: string;
   }) {
-    const resp = await fetch(this.url + "/api/device/getAllChatsById", {
+    const resp = await fetch((SSocket.api as any).whatsapp  + "/api/device/getAllChatsById", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

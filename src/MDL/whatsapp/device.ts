@@ -8,11 +8,11 @@ import MDLAbstract from "../MDLAbstract";
 
 export default class whatsapp extends MDLAbstract<EventListener> {
   // url = "http://192.168.2.1:3000";
-  url = "http://192.168.3.3:3000";
+  // url = (SSocket.api as any).whatsapp ;
   // url = "https://wtspp.servisofts.com";
 
   async registrar(params: { descripcion: string; webhook: string }) {
-    const resp = await fetch(this.url + "/api/device", {
+    const resp = await fetch((SSocket.api as any).whatsapp + "/api/device", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -28,7 +28,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
   }
 
   async getAll() {
-    const resp = await fetch(this.url + "/api/device", {
+    const resp = await fetch((SSocket.api as any).whatsapp + "/api/device", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -38,7 +38,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
     return json;
   }
   async getByKey(key: string) {
-    const resp = await fetch(this.url + "/api/device/" + key, {
+    const resp = await fetch((SSocket.api as any).whatsapp + "/api/device/" + key, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -49,7 +49,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
   }
 
   async edit(key: string, obj: any) {
-    const resp = await fetch(this.url + "/api/device/" + key, {
+    const resp = await fetch((SSocket.api as any).whatsapp + "/api/device/" + key, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -61,7 +61,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
   }
 
   async getChats(key: string) {
-    const resp = await fetch(this.url + "/api/device/" + key + "/chats", {
+    const resp = await fetch((SSocket.api as any).whatsapp + "/api/device/" + key + "/chats", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -73,7 +73,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
 
   async getChatById(key: string, idchat: string) {
     const resp = await fetch(
-      this.url + "/api/device/" + key + "/chatsById/" + idchat,
+      (SSocket.api as any).whatsapp + "/api/device/" + key + "/chatsById/" + idchat,
       {
         method: "GET",
         headers: {
@@ -86,7 +86,7 @@ export default class whatsapp extends MDLAbstract<EventListener> {
   }
   async sendSeen(key: string, idchat: string) {
     const resp = await fetch(
-      this.url + "/api/device/" + key + "/sendSeen/" + idchat,
+      (SSocket.api as any).whatsapp + "/api/device/" + key + "/sendSeen/" + idchat,
       {
         method: "GET",
         headers: {
@@ -99,17 +99,17 @@ export default class whatsapp extends MDLAbstract<EventListener> {
   }
 
   getUrlImage(key: string, id: any) {
-    return this.url + "/api/device/" + key + "/profilePic/" + id;
+    return (SSocket.api as any).whatsapp + "/api/device/" + key + "/profilePic/" + id;
   }
   getMedia(key: string, id: any) {
-    return this.url + "/api/device/" + key + "/media/" + id;
+    return (SSocket.api as any).whatsapp + "/api/device/" + key + "/media/" + id;
   }
   getFile(key: string, id: any) {
-    return this.url + "/api/device/" + key + "/file/" + id;
+    return (SSocket.api as any).whatsapp + "/api/device/" + key + "/file/" + id;
   }
   async reconnect(key: string) {
     const resp = await fetch(
-      this.url + "/api/device/" + key + "/reconnect",
+      (SSocket.api as any).whatsapp + "/api/device/" + key + "/reconnect",
       {
         method: "GET",
       }

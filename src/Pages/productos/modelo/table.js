@@ -72,22 +72,22 @@ export default class table extends Component {
                         e: e.evt,
                         label: e.row.descripcion,
                         options: [
-                            {
-                                label: "Agregar inventario",
-                                icon: <SIconApp name='Add' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    FormularioAgregarInventario.open({
-                                        editObject: e.row,
-                                        onSuccess: () => {
-                                            if (this.table) {
-                                                this.table.loadData();
-                                                // this.state.time = new Date().getTime();
-                                            }
-                                        }
-                                    })
-                                    // SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto });
-                                }
-                            },
+                            // {
+                            //     label: "Agregar inventario",
+                            //     icon: <SIconApp name='Add' fill={STheme.color.text} />,
+                            //     onPress: () => {
+                            //         FormularioAgregarInventario.open({
+                            //             editObject: e.row,
+                            //             onSuccess: () => {
+                            //                 if (this.table) {
+                            //                     this.table.loadData();
+                            //                     // this.state.time = new Date().getTime();
+                            //                 }
+                            //             }
+                            //         })
+                            //         // SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto });
+                            //     }
+                            // },
                             {
                                 label: "Editar",
                                 icon: <SIconApp name='Edit' />,
