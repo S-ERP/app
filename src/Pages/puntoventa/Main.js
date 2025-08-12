@@ -37,6 +37,8 @@ export default class Main extends Component {
     componentWillUnmount() {
         Dimensions.removeEventListener("change", this.onChangeDimensions);
     }
+    
+
     renderCarrito() {
         return (
             <Carrito

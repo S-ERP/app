@@ -10,7 +10,7 @@ export default class Action extends SAction {
 
   getSelect() {
     return this._getReducer().select;
-    }
+  }
 
   getAllByKeyEmpresa(key_empresa) {
     // var empresa: any = Model.empresa.Action.getSelect();
@@ -27,4 +27,23 @@ export default class Action extends SAction {
     });
     return resp;
   }
+
+
+  getByKey({ key }) {
+    var reducer = this._getReducer();
+
+    // Si ya tenemos el dato en el reducer, retornamos directo (optimización)
+    if (reducer.data && reducer.data[key]) {
+      return reducer.data[key];
+    }
+
+    // Sino, hacemos la consulta por clave
+    var resp = super.getByKey({
+      key: key,
+      key_usuario: Model.usuario.Action.getKey(),
+    });
+
+    return resp;
+  }
+
 }

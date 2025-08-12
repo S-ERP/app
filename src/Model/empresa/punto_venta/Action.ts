@@ -3,7 +3,7 @@ import { SAction } from "servisofts-model";
 import Model from "../..";
 export default class Action extends SAction {
     // getAll({ key_sucursal }) {
-       
+
     //     return this.getAllBySucursal({
     //         key_sucursal: key_sucursal
     //     })
@@ -15,6 +15,8 @@ export default class Action extends SAction {
             reducer.data = null;
             reducer.key_sucursal = key_sucursal;
         }
+        console.log("todo " + JSON.stringify(reducer));
+
         return super.getAll({
             key_sucursal: key_sucursal
         })

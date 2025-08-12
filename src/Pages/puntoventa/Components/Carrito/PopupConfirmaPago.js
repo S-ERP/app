@@ -5,6 +5,14 @@ import ResumenTotales from './ResumenTotales';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 export default class PopupConfirmaPago extends Component {
+
+    sucursal = null;
+
+    async componentDidMount() {
+        this.sucursal = await MDL.compra_venta.getSucursalSeleccionada();
+        this.forceUpdate(); // Refresca para que aparezca la sucursal
+    }
+
     static open(props) {
         SPopup.open({
             key: "popup_config_horario",
@@ -25,7 +33,7 @@ export default class PopupConfirmaPago extends Component {
     }
     variableGlobal = "";
     totalDescuento = 0;
-    dataFormateada({ carrito = [], cliente = null, caja = null, vendedor = null }) {
+    dataFormateada({ sucursal = null, carrito = [], cliente = null, caja = null, vendedor = null }) {
         const carritoFormateado = carrito.map(item => ({
             key_modelo: item.key,
             descripcion: item.descripcion,
@@ -33,15 +41,19 @@ export default class PopupConfirmaPago extends Component {
             cantidad: item.cantidad ?? 0,
         }));
         const clienteFormateado = cliente?.key;
+        const sucursalFormateado = sucursal?.key_sucursal;
         const vendedorFormateado = vendedor?.key;
         return {
             detalle: carritoFormateado,
             key_cliente: clienteFormateado ?? null,
+            key_sucursal: sucursalFormateado ?? null,
             key_vendedor: vendedorFormateado ?? null,
             caja: caja,
         };
     }
     render() {
+        const sucursal = this.sucursal;
+
         const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura, carrito, cliente } = this.props;
         return (
             <SView col="xs-12" center>
@@ -109,6 +121,20 @@ export default class PopupConfirmaPago extends Component {
                                 });
                                 return;
                             }
+
+
+                            if (!this.sucursal || !this.sucursal.key_sucursal) {
+                                SNotification.send({
+                                    title: "Error",
+                                    body: "No hay sucursal",
+                                    type: "error",
+                                    color: STheme.color.error,
+                                    time: 5000,
+                                });
+                                return;
+                            }
+
+
                             const vendedor = Model.usuario.Action.getUsuarioLog();
                             const caja = {
                                 subtotal: SMath.formatMoney(subtotal, 2),
@@ -121,13 +147,19 @@ export default class PopupConfirmaPago extends Component {
                                 monto_factura: conFactura ? SMath.formatMoney((subtotal - descuento), 2) : SMath.formatMoney(0, 2),
                             };
                             const datos = this.dataFormateada({
+                                sucursal,
                                 carrito,
                                 cliente,
                                 vendedor,
                                 caja
                             });
+
+                            //alert(JSON.stringify(datos));
+                            //return;
+
+
                             MDL.compra_venta.registrar(datos).then((res) => {
-                                console.log("compra_venta registrado exitosa " + res)
+                                console.log("compra_venta registrado exitosa " + JSON.stringify(res))
                             }).catch(
                                 console.log("compra_venta registrado error ")
                             )
