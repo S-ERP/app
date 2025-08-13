@@ -260,11 +260,50 @@ export default class index extends Component {
         const montoGiftCard = toNumber(data.monto_gift_card);
         const total = subtotal - descuento - montoGiftCard;
 
+
+
+        // const { data } = this.props;
+        const proveedor = data.proveedor || {};
+        //   const { data } = this.props;
+        // const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key }) || {};
+        // const items = Object.values(detalles);
+        // let subtotal = 0;
+        // for (const item of items) {
+        //     subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
+        // }
+        const montoPagado = 200; // Valor fijo del código original
         return (
 
             <SPDF.View style={{ width: "100%", height: 120, flexDirection: "row" }}>
                 <SPDF.View style={{ flex: 6, height: "100%", justifyContent: "center" }}>
-                    <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold" }}>{"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{"00/100 Bolivianos"}</SPDF.Text>
+                    <SPDF.View style={{ width: "100%", height: "100%" }}>
+
+                        <SPDF.View style={{ width: "100%", }}>
+                            <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>FORMA DE PAGO: {validarDato(data.tipo_pago)}</SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>MONTO PAGADO: {formatCurrency(montoPagado)}</SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>CAMBIO: {formatCurrency(montoPagado - subtotal)}</SPDF.Text>
+                        </SPDF.View>
+
+                        <SPDF.View style={{ width: "100%", height: 4, }}></SPDF.View>
+
+                        <SPDF.View style={{ width: "100%", }}>
+                            <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>CAJERO: María Gómez</SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>CAJA: 01</SPDF.Text>
+                        </SPDF.View>
+
+                        <SPDF.View style={{ width: "100%", height: 4, }}></SPDF.View>
+
+                        <SPDF.View style={{ width: "100%", }}>
+                            <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>PROVEEDOR</SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>Razón Social: {validarDato(proveedor.razon_social || proveedor.nombres)}</SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>NIT: {validarDato(proveedor.nit || proveedor.ci)}</SPDF.Text>
+                        </SPDF.View>
+
+                        <SPDF.View style={{ width: "100%", height: 4, }}></SPDF.View>
+
+                        <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold" }}>{"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{"00/100 Bolivianos"}</SPDF.Text>
+                    </SPDF.View>
+
                 </SPDF.View>
 
                 <SPDF.View style={{ flex: 3, height: "100%", justifyContent: "center", alignItems: "center" }}>
@@ -369,9 +408,9 @@ export default class index extends Component {
                     {/* {this.TipoPago()} */}
                     {/* {this.espacio()} */}
                     {this.FooterRecibo()}
-                    {/* <SPDF.View style={{ width: "100%", height: 20, alignItems: "center", position: "absolute", bottom: 0 }}>
+                    <SPDF.View style={{ width: "100%", height: 20, alignItems: "center", bottom: 0 }}>
                         <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>1/1</SPDF.Text>
-                    </SPDF.View> */}
+                    </SPDF.View>
                 </SPDF.View>
             </SPDF.Page>
         );
