@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
-import { Text } from 'react-native';
-import { SLoad, SView } from 'servisofts-component';
-import { Page, View, Text as SPDFText, create } from 'servisofts-rn-spdf';
+import { View, Text } from 'react-native';
+import { SMath, SView } from 'servisofts-component';
+import * as SPDF from 'servisofts-rn-spdf'
 import Model from '../../../Model';
-import PropTypes from 'prop-types';
+import { Return } from 'three/examples/jsm/nodes/Nodes';
+import MDL from '../../../MDL';
 
-// Centralized styles
-const STYLES = {
-    page: { width: 464, margin: 24, padding: 0 },
-    text: { fontSize: 14, font: 'Roboto', color: '#000' },
-    textItemDetalle: { fontSize: 10, font: 'Roboto', color: '#000' },
-    bold: { fontWeight: 'bold' },
-    center: { textAlign: 'center' },
-    spacer: { height: 8 },
 
-    row: { width: '100%', flexDirection: 'row', marginVertical: 2 },
-    column: { width: '50%', alignItems: 'flex-end' },
-};
+// const HEIGHT = 14;
+// const BorderColor = "#CCCCCC"
+const fontSize = 14;
+
+const textStyle = {
+    fontSize: fontSize,
+    font: "Roboto",
+    paddingBottom: 4,
+}
+
 
 // Utilities
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
@@ -26,75 +26,280 @@ const formatDate = (dateStr, fallback = 'Sin fecha') =>
     dateStr && !isNaN(new Date(dateStr))
         ? new Date(dateStr).toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' })
         : fallback;
+const formatDateTime = (dateStr, fallback = 'Sin fecha') =>
+    dateStr && !isNaN(new Date(dateStr))
+        ? new Date(dateStr).toLocaleString('es-BO', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false // opcional, si quieres formato 24h
+        })
+        : fallback;
 
-class index extends Component {
+// Ejemplo
 
 
-    // Encabezado del recibo
+export default class ReciboRollo extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        };
+
+    }
+
+ 
+
+    espacio() {
+        return <SPDF.View style={{ width: "100%" }}>
+            <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
+
+            <SPDF.Text style={{ width: "100%", fontSize: 14, fontWeight: "bold", }}>{"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"}</SPDF.Text>
+            <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
+
+        </SPDF.View>
+    }
+    espacioPunto() {
+        return <SPDF.View style={{ width: "100%" }}>
+            <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
+            <SPDF.Text style={{ width: "100%", fontSize: fontSize * 1.2, }}>{"......................................................................................................."}</SPDF.Text>
+            <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
+        </SPDF.View>
+    }
+
+
     HeaderRecibo() {
+
+        const { data } = this.props;
+        const empresa = MDL.empresa.select?.descripcion;
+        const sucursal = Model.sucursal.Action.getByKey({ key: data.key_sucursal });
+        //  const empresssa = MDL.sucursal.select.cliente
+
+        return <SPDF.View style={{ width: "100%", alignItems: "center", }}>
+            <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{validarDato(empresa, 'EMPRESA')}</SPDF.Text>
+            <SPDF.Text style={{ ...textStyle, }}>Sucursal: {sucursal?.descripcion}</SPDF.Text>
+            <SPDF.Text style={{ ...textStyle, }}>{validarDato(sucursal?.direccion, 'Av. Sur Nro. 0')}</SPDF.Text>
+            <SPDF.Text style={{ ...textStyle, }}>{validarDato(sucursal?.telefono, 'Tel: (123) 00000000')}</SPDF.Text>
+            <SPDF.Text style={{ ...textStyle, }}>REF: A-125678-9</SPDF.Text>
+        </SPDF.View>
+    };
+
+    InfoVenta = () => {
         const { data } = this.props;
 
-        // Obtener la sucursal
-        const sucursal = Model.sucursal.Action.getByKey({ key: data.key_sucursal });
-
-        console.log("Datos completos:", JSON.stringify(data));
-
-        const fields = [
-            "PINTURAS EL COLOR S.A.",
-            `Sucursal: ${validarDato(sucursal?.descripcion, 'Centro Comercial')}`,
-            `${validarDato(sucursal?.direccion, 'Av. xxx Nro. 0')}`,
-            sucursal?.telefono ? `Tel: ${sucursal.telefono}` : "Tel: (123) 00000000",
-            "REF: A-125678-9",
-        ];
-
         return (
-            <View style={{ width: '100%', alignItems: 'center' }}>
-                {fields.map((text, i) => (
-                    <SPDFText
-                        key={i}
-                        style={{
-                            ...STYLES.text,
-                            ...(i < 2 ? STYLES.bold : {}),
-                            ...STYLES.center
-                        }}
-                    >
-                        {text}
-                    </SPDFText>
-                ))}
-            </View>
+            <SPDF.View style={{ width: "100%", alignItems: "center", }}>
+                <SPDF.Text style={{ ...textStyle, fontWeight: "bold", }}>{"RECIBO DE VENTA"}</SPDF.Text>
+
+                <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                    <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                        <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>NRO: </SPDF.Text>
+                    </SPDF.View>
+                    <SPDF.View style={{ width: "50%" }}>
+                        <SPDF.Text style={{ ...textStyle, width: "100%" }}>{"99997"} </SPDF.Text>
+                    </SPDF.View>
+                </SPDF.View>
+
+                <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                    <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                        <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>FECHA: </SPDF.Text>
+                    </SPDF.View>
+                    <SPDF.View style={{ width: "50%" }}>
+                        <SPDF.Text style={{ ...textStyle }}>   {formatDate(data.fecha_on)}</SPDF.Text>
+                    </SPDF.View>
+                </SPDF.View>
+
+                <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                    <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                        <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>HORA: </SPDF.Text>
+                    </SPDF.View>
+                    <SPDF.View style={{ width: "50%" }}>
+                        <SPDF.Text style={{ ...textStyle }}>   {data.fecha_on
+                            ? new Date(data.fecha_on).toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                            : 'Sin hora'}</SPDF.Text>
+                    </SPDF.View>
+                </SPDF.View>
+
+
+
+
+            </SPDF.View>
+
+
         );
     };
 
 
-    // Información del cliente
-    Cliente = () => {
+    cliente() {
         const { data } = this.props;
         const cliente = data.cliente || {};
-        const fields = [
-            { label: 'Cliente:', value: cliente.razon_social || cliente.nombres },
-            // { label: 'Nombre/Razón Social:', value: cliente.razon_social || cliente.nombres },
-            { label: 'NIT/CI/CEX:', value: cliente.nit },
-            // { label: 'Cód. Cliente:', value: cliente.codigo_cliente },
-            // { label: 'Fecha de Emisión:', value: data.fecha_emision },
-        ];
-        return (
-            <View style={{ width: '100%', alignItems: 'center' }}>
-                {/* <SPDFText style={{ ...STYLES.text, ...STYLES.bold, ...STYLES.center, marginBottom: 8 }}>CLIENTE</SPDFText> */}
-                {fields.map(({ label, value }, i) => (
-                    <View key={i} style={STYLES.row}>
-                        <View style={STYLES.column}>
-                            <SPDFText style={{ ...STYLES.text, ...STYLES.bold }}>{label}</SPDFText>
-                        </View>
-                        <View style={{ width: '50%' }}>
-                            <SPDFText style={STYLES.text}>{validarDato(value)}</SPDFText>
-                        </View>
-                    </View>
-                ))}
-            </View>
-        );
-    };
+        return <SPDF.View style={{ width: "100%", alignItems: "center", }}>
+            <SPDF.Text style={{ ...textStyle, fontWeight: "bold", }}>{"CLIENTE"}</SPDF.Text>
 
-    DetalleVenta = () => {
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>NOMBRE/RAZÓN SOCIAL: </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={{ ...textStyle, width: "70%" }}>{cliente.razon_social || cliente.nombres} </SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>NIT/CI: </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={{ ...textStyle, width: "70%" }}> {cliente.nit || cliente.ci}</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>COD. CLIENTE: </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={{ ...textStyle, width: "70%" }}>123456</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+
+
+
+
+
+        </SPDF.View>
+    }
+    Proveedor() {
+        const { data } = this.props;
+        const proveedor = data.proveedor || {};
+        return <SPDF.View style={{ width: "100%", alignItems: "center", }}>
+            <SPDF.Text style={{ ...textStyle, fontWeight: "bold", }}>{"PROVEEDOR"}</SPDF.Text>
+
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>RAZÓN SOCIAL: </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={{ ...textStyle, width: "70%" }}>{proveedor.razon_social || proveedor.nombres} </SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>NIT: </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={{ ...textStyle, width: "70%" }}> {proveedor.nit || proveedor.ci}</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+
+
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>COD. PROV: </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={{ ...textStyle, width: "70%" }}>123456</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>DIRECCION: </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={{ ...textStyle, width: "70%" }}>{proveedor.direccion}</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>TELEFONO: </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={{ ...textStyle }}>{proveedor.telefono}</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+
+
+
+        </SPDF.View>
+    }
+
+
+    Cajero() {
+        // "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+
+
+        return <SPDF.View style={{ width: "100%", alignItems: "center", }}>
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>CAJERO: </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={{ ...textStyle, width: "100%" }}>María Gómez</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>CAJA: </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={{ ...textStyle }}>01</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+
+        </SPDF.View>
+    }
+
+    TipoPago() {
+        const { data } = this.props;
+        const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key });
+        if (!detalles) return null;
+
+
+        const items = Object.values(detalles);
+        let subtotal = 0;
+        for (const item of items) {
+            subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
+        }
+
+
+        return <SPDF.View style={{ width: "100%", alignItems: "center", }}>
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>FORMA DE PAGO: </SPDF.Text>
+                </SPDF.View>
+
+
+
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={{ ...textStyle, width: "100%" }}> {data.tipo_pago} </SPDF.Text>
+                </SPDF.View>
+
+            </SPDF.View>
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>MONTO PAGADO: </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={{ ...textStyle }}>{200}</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
+                <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>CAMBIO: </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={{ ...textStyle }}>{200 - subtotal}</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+
+        </SPDF.View>
+    }
+
+
+    detalle() {
+
         const { data } = this.props;
         const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key }) || {};
         const items = Object.values(detalles).length
@@ -111,323 +316,178 @@ class index extends Component {
         for (const item of items) {
             subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
         }
-        return (
-            <View style={{ width: '100%', alignItems: 'center' }}>
-                <SPDFText style={{ ...STYLES.text, ...STYLES.bold, ...STYLES.center, marginBottom: 6 }}>
-                    DETALLE
-                </SPDFText>
-                <View style={STYLES.row}>
 
+        return <SPDF.View style={{ width: "100%" }}>
 
-                    <SPDFText style={{ ...STYLES.textItemDetalle, ...STYLES.bold, width: '70%' }}>DESCRIPCIÓN</SPDFText>
-                    <SPDFText style={{ ...STYLES.textItemDetalle, ...STYLES.bold, width: '8%' }}>CANT</SPDFText>
-                    <SPDFText style={{ ...STYLES.textItemDetalle, ...STYLES.bold, width: '10%' }}>PRECIO</SPDFText>
-                    <SPDFText style={{ ...STYLES.textItemDetalle, ...STYLES.bold, width: '8%' }}>TOTAL</SPDFText>
-                    {/* <SPDFText style={{ ...STYLES.text, ...STYLES.bold, width: '50%' }}>DESCRIPCIÓN</SPDFText>
-                    <SPDFText style={{ ...STYLES.text, ...STYLES.bold, width: '15%' }}>CANT</SPDFText>
-                    <SPDFText style={{ ...STYLES.text, ...STYLES.bold, width: '20%' }}>PRECIO</SPDFText>
-                    <SPDFText style={{ ...STYLES.text, ...STYLES.bold, width: '15%' }}>TOTAL</SPDFText> */}
-                </View>
-                {items.map((item, i) => {
-                    const cantidad = toNumber(item.cantidad);
-                    const precio = toNumber(item.precio_unitario);
-                    return (
-                        <View key={item.key || i} style={{ width: '100%', marginBottom: 4 }}>
-                            <SPDFText style={STYLES.text}>{validarDato(item.descripcion)}</SPDFText>
-                            <View style={STYLES.row}>
-                                <SPDFText style={{ ...STYLES.textItemDetalle, width: '50%' }} />
-                                <SPDFText style={{ ...STYLES.textItemDetalle, width: '15%' }}>{cantidad.toFixed(2)}</SPDFText>
-                                <SPDFText style={{ ...STYLES.textItemDetalle, width: '20%' }}>{formatCurrency(precio)}</SPDFText>
-                                <SPDFText style={{ ...STYLES.textItemDetalle, width: '15%' }}>{formatCurrency(cantidad * precio)}</SPDFText>
-                            </View>
-                        </View>
-                    );
-                })}
-                <View style={STYLES.row}>
-                    <SPDFText style={{ ...STYLES.text, ...STYLES.bold, width: '85%' }}>SUBTOTAL</SPDFText>
-                    <SPDFText style={{ ...STYLES.text, ...STYLES.bold, width: '15%' }}>{formatCurrency(subtotal)}</SPDFText>
-                </View>
-            </View>
-        );
-    };
+            <SPDF.View style={{ width: "100%", alignItems: "center" }}>
+                <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>DETALLE</SPDF.Text>
+                <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
+            </SPDF.View>
 
+            {items.map((item, i) => {
+                const cantidad = toNumber(item.cantidad);
+                const precio = toNumber(item.precio_unitario);
+                return <SPDF.View style={{ width: "100%", marginBottom: 4 }}>
+                    {/* <View key={item.key || i} style={{ width: '100%', marginBottom: 4 }}> */}
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{item.descripcion}</SPDF.Text>
+                    <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
+                        <SPDF.View style={{ width: "50%" }}>
+                            <SPDF.Text style={{ ...textStyle, }}>cant {cantidad} x {precio} BS</SPDF.Text>
+                        </SPDF.View>
+                        <SPDF.View style={{ width: "50%", alignItems: "end" }}>
+                            <SPDF.Text style={{ ...textStyle, }}>{formatCurrency(cantidad * precio)}</SPDF.Text>
+                        </SPDF.View>
+                    </SPDF.View>
+                    {/* </View> */}
+                </SPDF.View>
 
-    // Detalles de la venta
-    DetalleVenta2 = () => {
-        const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: this.props.data.key });
-        if (!detalles) return <SLoad />;
-        const items = Object.values(detalles);
-        let subtotal = 0;
-        for (const item of items) {
-            subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
-        }
-        return (
-            <View style={{ width: '100%', alignItems: 'center' }}>
-                <SPDFText style={{ ...STYLES.text, ...STYLES.bold, ...STYLES.center, marginBottom: 8 }}>DETALLE</SPDFText>
-                {items.map((item, i) => {
-                    const cantidad = toNumber(item.cantidad);
-                    const precio = toNumber(item.precio_unitario);
-                    return (
-                        <View key={item.key || i} style={{ width: '100%', marginBottom: 4 }}>
-                            <SPDFText style={{ ...STYLES.text, ...STYLES.bold }}>{validarDato(item.descripcion)}</SPDFText>
-                            <View style={STYLES.row}>
-                                <View style={{ width: '60%', alignItems: 'flex-end' }}>
-                                    <SPDFText style={STYLES.text}>{`cant ${cantidad.toFixed(2)} x ${formatCurrency(precio)}`}</SPDFText>
-                                </View>
-                                <View style={{ width: '40%', alignItems: 'flex-end' }}>
-                                    <SPDFText style={STYLES.text}>{formatCurrency(cantidad * precio)}</SPDFText>
-                                </View>
-                            </View>
-                        </View>
-                    );
-                })}
-                <View style={STYLES.spacer} />
-                {/* <View style={STYLES.row}>
-                    <View style={{ width: '60%', alignItems: 'flex-end' }}>
-                        <SPDFText style={{ ...STYLES.text, ...STYLES.bold }}>SUBTOTAL Bs.</SPDFText>
-                    </View>
-                    <View style={{ width: '40%', alignItems: 'flex-end' }}>
-                        <SPDFText style={{ ...STYLES.text, ...STYLES.bold }}>{formatCurrency(subtotal)}</SPDFText>
-                    </View>
-                </View> */}
-            </View>
-        );
-    };
+            })}
 
-    // Información del cliente
-    Cajero() {
-        const { data } = this.props;
-        const cliente = data.cliente || {};
-        const fields = [
-            { label: 'Cajero:', value: cliente.razon_social || cliente.nombres || 'María Gómez' },
-            { label: 'Caja:', value: cliente.nit || '01' },
-        ];
-        return (
-            <View style={{ width: '100%', alignItems: 'center' }}>
-                {/* <SPDFText style={{ ...STYLES.text, ...STYLES.bold, ...STYLES.center, marginBottom: 6 }}>
-                        CLIENTE
-                    </SPDFText> */}
-                {fields.map(({ label, value }, i) => (
-                    <View key={i} style={STYLES.row}>
-                        <View style={STYLES.column}>
-                            <SPDFText style={{ ...STYLES.text, ...STYLES.bold }}>{label}</SPDFText>
-                        </View>
-                        <View style={{ width: '50%' }}>
-                            <SPDFText style={STYLES.text}>{validarDato(value)}</SPDFText>
-                        </View>
-                    </View>
-                ))}
-            </View>
-        );
-    };
+        </SPDF.View>
 
+    }
 
-    // Información de totales
-    InfoSubtotal = () => {
+    subtotales() {
+
         const { data } = this.props;
         const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key });
         if (!detalles) return null;
+
+        console.log("te regalo Detalles:", detalles);
+
         const items = Object.values(detalles);
         let subtotal = 0;
         for (const item of items) {
             subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
         }
+
+        total > 0 ? total : 0
         const descuento = toNumber(data.descuento);
         const montoGiftCard = toNumber(data.monto_gift_card);
         const total = subtotal - descuento - montoGiftCard;
 
-        
-        const fields = [
-            { label: 'SUBTOTAL Bs.', value: subtotal },
-            { label: 'DESCUENTO Bs.', value: descuento },
-            { label: 'TOTAL Bs.', value: total },
-            { label: 'MONTO GIFT CARD Bs.', value: montoGiftCard },
-            { label: 'MONTO A PAGAR Bs.', value: total > 0 ? total : 0, bold: true },
-            { label: 'IMPORTE BASE CRÉDITO FISCAL Bs.', value: total > 0 ? total : 0, bold: true },
-        ];
+        return <SPDF.View style={{ width: "100%", }}>
+            <SPDF.View style={{ height: 4, }} />
+            <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
+                <SPDF.View style={{ width: "60%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, }}>{"SUBTOTAL Bs. "}</SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "40%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, }}>{subtotal}</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+            <SPDF.View style={{ height: 4, }} />
+            <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
+                <SPDF.View style={{ width: "60%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, }}>{"DESCUENTO Bs. "}</SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "40%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, }}>{descuento ? descuento : 0}</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+            <SPDF.View style={{ height: 4, }} />
+            <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
+                <SPDF.View style={{ width: "60%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, }}>{"TOTAL Bs. "}</SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "40%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, }}>{total}</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+            <SPDF.View style={{ height: 4, }} />
+            <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
+                <SPDF.View style={{ width: "60%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, }}>{"MONTO GIFT CARD Bs. "}</SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "40%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, }}>{montoGiftCard > 0 ? montoGiftCard : 0}  </SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+            <SPDF.View style={{ height: 4, }} />
+            <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
+                <SPDF.View style={{ width: "60%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{"MONTO A PAGAR Bs. "}</SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "40%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{total > 0 ? total : 0}</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+            <SPDF.View style={{ height: 4, }} />
+            <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
+                <SPDF.View style={{ width: "60%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontSize: fontSize * 0.9, fontWeight: "bold" }}>{"IMPORTE BASE CRÉDITO FISCAL Bs. "}</SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ width: "40%", alignItems: "end" }}>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{total > 0 ? total : 0}</SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+            <SPDF.View style={{ width: "100%", height: 40 }}></SPDF.View>
+            <SPDF.Text style={{ ...textStyle, paddingLeft: 8 }}>{"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{"00/100 Bolivianos"}</SPDF.Text>
 
+            {/* <SPDF.Text style={{ ...textStyle, paddingLeft: 8 }}>{"Son: Doscientos dos 00/100 Bolivianos."}</SPDF.Text> */}
+        </SPDF.View>
 
-        return (
-            <View style={{ width: '100%' }}>
-                {fields.map(({ label, value, bold }, i) => (
-                    <View key={i} style={STYLES.row}>
-                        <View style={{ width: '60%', alignItems: 'flex-end' }}>
-                            <SPDFText style={{ ...STYLES.text, ...(bold ? STYLES.bold : {}) }}>{label}</SPDFText>
-                        </View>
-                        <View style={{ width: '40%', alignItems: 'flex-end' }}>
-                            <SPDFText style={{ ...STYLES.text, ...(bold ? STYLES.bold : {}) }}>{formatCurrency(value)}</SPDFText>
-                        </View>
-                    </View>
-                ))}
-                <SPDFText style={{ ...STYLES.text, paddingLeft: 8 }}>
-                    {validarDato(data.totalTexto, `Son: ${formatCurrency(total > 0 ? total : 0)}`)}
-                </SPDFText>
+    }
+    FooterRecibO() {
+        return <SPDF.View style={{ width: "100%", alignItems: "center", }}>
+            <SPDF.View style={{ width: "100%", height: 8 }}></SPDF.View>
+            <SPDF.Text style={{ ...textStyle, width: "85%", textAlign: "center", }}>{"¡Gracias por su compra!"}</SPDF.Text>
+            <SPDF.View style={{ width: "100%", height: 6 }}></SPDF.View>
+            <SPDF.Text style={{ ...textStyle, fontSize: fontSize * 0.8, width: "75%", textAlign: "center", }}>{"Guarde este recibo para devoluciones."}</SPDF.Text>
+            <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
+            <SPDF.Text style={{ ...textStyle, fontSize: fontSize * 0.9, textAlign: "center", width: "70%", }}>{"Visítenos en www.pinturaselcolor.com"}</SPDF.Text>
+            <SPDF.View style={{ width: "100%", height: 10 }}></SPDF.View>
+        </SPDF.View>
 
-                {this.EspacioPunto()}
-
-                <View style={STYLES.row}>
-                    <View style={{ width: '60%', alignItems: 'flex-end' }}>
-                        <SPDFText style={{ ...STYLES.text, ...STYLES.bold }}>TOTAL A PAGAR:</SPDFText>
-                    </View>
-                    <View style={{ width: '40%', alignItems: 'flex-end' }}>
-                        <SPDFText style={{ ...STYLES.text, ...STYLES.bold }}>{formatCurrency(subtotal)}</SPDFText>
-                    </View>
-                </View>
-
-
-            </View>
-        );
-    };
-
-    // Información de la venta
-    InfoVenta = () => {
-        const { data } = this.props;
-        const fields = [
-            { label: 'No. Recibo:', value: "b2aa9d81" },
-            // { label: 'No. Recibo:', value: data.key_usuario },
-            // { label: 'Descripción:', value: data.descripcion },
-            // { label: 'Tipo:', value: data.tipo },
-            // { label: 'Tipo Pago:', value: data.tipo_pago },
-            // { label: 'Observación:', value: data.observacion },
-            { label: 'Fecha:', value: formatDate(data.fecha_on) },
-            {
-                label: 'Hora:',
-                value: data.fecha_on
-                    ? new Date(data.fecha_on).toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-                    : 'Sin hora',
-            },
-            // { label: 'Key Usuario:', value: data.key_usuario },
-        ];
-        return (
-            <View style={{ width: '100%', alignItems: 'center' }}>
-                <SPDFText style={{ ...STYLES.text, ...STYLES.bold, ...STYLES.center, marginBottom: 8 }}>
-                    RECIBO DE VENTA
-                </SPDFText>
-                {fields.map(({ label, value }, i) => (
-                    <View key={i} style={STYLES.row}>
-                        <View style={STYLES.column}>
-                            <SPDFText style={{ ...STYLES.text, ...STYLES.bold }}>{label}</SPDFText>
-                        </View>
-                        <View style={{ width: '50%' }}>
-                            <SPDFText style={STYLES.text}>{validarDato(value)}</SPDFText>
-                        </View>
-                    </View>
-                ))}
-            </View>
-        );
-    };
-
-
-    Espacio() {
-        return (
-            <View style={{ width: "100%" }}>
-                <View style={{ width: "100%", height: 6 }} />
-                <SPDFText style={{ width: "100%", fontSize: 12, fontWeight: "bold" }}>
-                    {'- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -'}
-                </SPDFText>
-                <View style={{ width: "100%", height: 6 }} />
-            </View>
-        );
     }
 
-    EspacioPunto() {
-        return (
-            <View style={{ width: "100%" }}>
-                <View style={{ width: "100%", height: 6 }} />
-                <SPDFText style={{ width: "100%", fontSize: 14 }}>
-                    {'.......................................................................................................'}
-                </SPDFText>
-                <View style={{ width: "100%", height: 6 }} />
-            </View>
-        );
-    }
-
-
-
-
-    // Footer del recibo
-    Footer() {
-        return <View style={{ width: "100%", alignItems: "center" }}>
-            <View style={{ width: "100%", height: 16 }} />
-            <SPDFText style={{ ...STYLES.text, width: "85%", textAlign: "center" }}>Guarde este recibo para devoluciones.</SPDFText>
-            <View style={{ width: "100%", height: 8 }} />
-            <SPDFText style={{ ...STYLES.text, fontSize: 14 * 0.8, width: "75%", textAlign: "center" }}>Guarde este recibo para devoluciones.</SPDFText>
-            <View style={{ width: "100%", height: 8 }} />
-            <SPDFText style={{ ...STYLES.text, fontSize: 14 * 0.9, textAlign: "center", width: "70%" }} >Visítenos en www.pinturaselcolor.com</SPDFText>
-            <View style={{ width: "100%", height: 20 }} />
-        </View>
-    }
-
-
-    // Generar el PDF
     handlePress = () => {
-        const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: this.props.data.key });
-        if (!detalles) {
-            console.error('No se encontraron detalles de la venta');
-            return;
-        }
-        create(
-            <Page style={STYLES.page}>
-                {this.Espacio()}
-                {this.HeaderRecibo()}
-                {this.Espacio()}
-                {this.InfoVenta()}
-                {/* InfoVenta */}
-                {/* {this.BodyRecibo()} */}
-                {/* {this.EspacioPunto()} */}
-                {/* {this.Espacio()} */}
-                {this.EspacioPunto()}
-                {/* {this.Sucursal()} */}
-                {/* {this.Espacio()} */}
-                {this.Cliente()}
-                {this.Espacio()}
-                {this.DetalleVenta()}
-                {this.Espacio()}
-                {this.DetalleVenta2()}
-                {this.EspacioPunto()}
-                {this.InfoSubtotal()}
-                {this.Espacio()}
-
-                {this.Cajero()}
+        SPDF.create(<SPDF.Page style={{ width: 464, margin: 24, padding: 0, borderWidth: 0 }} >
+            <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
 
 
-                {this.Espacio()}
-                {this.Footer()}
+            {/* {this.espacio()} */}
+
+            {this.HeaderRecibo()}
 
 
-            </Page>
-        );
-    };
+
+            {this.espacio()}
+
+
+            {this.InfoVenta()}
+
+            {this.espacio()}
+            {this.cliente()}
+            {this.espacio()}
+
+            {this.Proveedor()}
+            {this.espacio()}
+
+
+            {this.detalle()}
+
+
+
+            {this.espacioPunto()}
+            {this.subtotales()}
+            {this.espacioPunto()}
+
+            {this.TipoPago()}
+            < SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View >
+
+            {this.Cajero()}
+
+            {this.espacio()}
+            < SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View >
+            {this.FooterRecibO()}
+
+        </SPDF.Page >)
+    }
 
     render() {
-        return (
-            <SView onPress={this.handlePress.bind(this)}>
-                <Text>Exportar PDF</Text>
-            </SView>
-        );
+        return <SView onPress={this.handlePress.bind(this)}>
+            <Text> Export PDF Rollo </Text>
+        </SView>
     }
 }
-
-index.propTypes = {
-    data: PropTypes.shape({
-        key: PropTypes.string.isRequired,
-        numero_factura: PropTypes.string,
-        nit_empresa: PropTypes.string,
-        codigo_autorizacion: PropTypes.string,
-        punto_venta: PropTypes.string,
-        key_sucursal: PropTypes.string,
-        cliente: PropTypes.object,
-        descripcion: PropTypes.string,
-        tipo: PropTypes.string,
-        tipo_pago: PropTypes.string,
-        observacion: PropTypes.string,
-        fecha_on: PropTypes.string,
-        fecha_emision: PropTypes.string,
-        key_usuario: PropTypes.string,
-        descuento: PropTypes.number,
-        monto_gift_card: PropTypes.number,
-        totalTexto: PropTypes.string,
-    }).isRequired,
-};
-
-export default index;

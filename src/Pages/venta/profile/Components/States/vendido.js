@@ -7,6 +7,8 @@ import Cliente from '../Cliente';
 import Detalle from '../Detalle';
 import PlanPagos from '../PlanPagos';
 import Proveedor from '../Proveedor';
+import ReciboCarta from '../../../../../Components/PDF/venta/ReciboCarta';
+import ReciboRollo from '../../../../../Components/PDF/venta/ReciboRollo';
 
 
 export default class index extends Component {
@@ -53,10 +55,21 @@ export default class index extends Component {
             <Components.compra_venta.Comentarios data={this.data} disabled />
 
 
-            <Components.compra_venta.Exportar data={this.data} />
-            <SHr/>
+            <SView col={"xs-12"} row center>
+                <SView card style={{ padding: 16 }}  >
+                    <ReciboCarta data={this.data} />
+                </SView>
+                <SView width={8} />
+                <SView card style={{ padding: 16 }}  >
+                    <ReciboRollo data={this.data} />
+                </SView>
+            </SView>
+
+
+            {/* <Components.compra_venta.Exportar data={this.data} /> */}
+            <SHr />
             <Components.compra_venta.GenerarAsiento data={this.data} />
-            <SHr/>
+            <SHr />
             <SView col={"xs-12"} row center>
 
                 {/* <SView card style={{ padding: 16 }} onPress={() => {
