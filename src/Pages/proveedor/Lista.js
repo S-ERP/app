@@ -8,17 +8,9 @@ import Usuarios from 'servisofts-component/img/Usuarios';
 import { version } from 'process';
 import MDL from '../../MDL';
 import FloatButtom from '../../Components/FloatButtom';
-// import ProveedorFormulario from '../../Components/compra_venta/ProveedorFormulario';
-// import MDL from '../../MDL';
-// import Config from '../../Config';
-// import Model from '../../Model';
-// import FloatButtom from '../FloatButtom';
-// import TurnoComponent from '../TurnoComponent';
-// import Container from '../Container';
-// import ProveedorFormulario from './ProveedorFormulario';
-// import FloatMenu from '../FloatMenu';
-// import SIconApp from '../../Assets/SIconApp';
 import Perfil from './Perfil';
+import FloatMenu from '../../Components/FloatMenu';
+import SIconApp from '../../Assets/SIconApp';
 
 export default class Lista extends Component {
 

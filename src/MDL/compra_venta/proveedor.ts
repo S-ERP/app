@@ -47,8 +47,8 @@ export default class proveedor {
 
   async registrar(data: any) {
     data.key_empresa = MDL.empresa.select?.key;
-    data.nombre = "oruro";
-    data.nit = "10";
+    // data.nombre = "oruro";
+    // data.nit = "10";
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
       component: "proveedor",
