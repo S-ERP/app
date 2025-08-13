@@ -86,6 +86,7 @@ export default class Modelo extends Component {
                                             elevation: 3,
                                             borderWidth: 1,
                                             borderColor: STheme.color.lightGray,
+                                            overflow:"hidden"
                                         }}
                                         onPress={() => {
                                             // if (producto.stock <= 0) return alert("No hay más stock disponible");
@@ -94,7 +95,7 @@ export default class Modelo extends Component {
                                             this.forceUpdate();  // ⬅️ Fuerza render para reflejar el cambio
                                         }}
                                     >
-                                        <SView center style={{ marginBottom: 12, height: 120 }}>
+                                        <SView center style={{ marginBottom: 12, height: 120, overflow:"hidden" , backgroundColor:STheme.color.card}}>
                                             <FotoModelo data={producto} ></FotoModelo>
                                         </SView>
                                         <SView col={"xs-12"} padding={4}>
