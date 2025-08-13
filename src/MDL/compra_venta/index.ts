@@ -6,9 +6,10 @@ import Model from "../../Model";
 import SSocket from "servisofts-socket";
 import MDL from "..";
 import { SStorage } from "servisofts-component";
-
+import proveedor from "./proveedor";
 export default class compra_venta extends MDLAbstract<EventListener> {
   sucursalSeleccionada = null;
+  proveedor = new proveedor();
 
   async registrar(data: any) {
     const sucursal = this.sucursalSeleccionada;

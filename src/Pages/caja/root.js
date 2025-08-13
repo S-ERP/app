@@ -108,7 +108,7 @@ class index extends Component {
             this.state.punto_venta = Model.punto_venta.Action.getByKey(caja.key_punto_venta, { key_sucursal: caja.key_sucursal }); //TODO
             if (!this.state.punto_venta) return <SText>Cargando punto_venta...</SText>
             this.state.sucursal = Model.sucursal.Action.getByKey(caja.key_sucursal);
-            if (!this.state.sucursal) return <SText>Cargando sucursal...</SText>
+            // if (!this.state.sucursal) return <SText>Cargando sucursal...</SText>
             return <>
                 {this.render_inputs({ disabled: true })}
                 <SHr />

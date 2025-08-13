@@ -14,7 +14,7 @@ class index extends DPA.item {
     $getData() {
         var data = super.$getData();
         var sucursal = Model.sucursal.Action.getByKey(data.key_sucursal);
-        if (!sucursal) return null;
+        // if (!sucursal) return null;
         data.sucursal = sucursal;
         return data;
     }
@@ -29,10 +29,10 @@ class index extends DPA.item {
                 <SView width={20} height={20} card style={{
                     overflow: "hidden"
                 }}>
-                    <SImage src={Model.sucursal._get_image_download_path(SSocket.api, this.data.sucursal.key)} />
+                    <SImage src={Model.sucursal._get_image_download_path(SSocket.api, this.data.sucursal?.key)} />
                 </SView>
                 <SView width={4} />
-                <SText>{this.data.sucursal.descripcion}</SText>
+                <SText>{this.data.sucursal?.descripcion}</SText>
                 <SView flex />
             </SView>
         </SView>

@@ -6,9 +6,10 @@ import { DinamicTable } from 'servisofts-table';
 import SCharts from 'servisofts-charts';
 import Usuarios from 'servisofts-component/img/Usuarios';
 import { version } from 'process';
-import MDL from '../../../MDL';
+// import MDL from '../../../MDL';
 import FloatButtom from '../../../Components/FloatButtom';
 import SIconApp from '../../../Assets/SIconApp';
+import MDL from '../../../MDL';
 
 export default class ReporteConteoInventario extends Component {
     constructor(props) {
@@ -68,7 +69,7 @@ export default class ReporteConteoInventario extends Component {
                 customComponent={e => <SView center row><SIconApp name='history' width={14} height={14} fill={STheme.color.text} />
                     <SText> {e.row?.hora}</SText></SView>} />
 
-            <DinamicTable.Col key="fecha_confirmacion" label="fecha_confirmacion" width={80} data={(e) => e.row?.fecha_confirmacion}/>
+            <DinamicTable.Col key="fecha_confirmacion" label="fecha_confirmacion" width={80} data={(e) => e.row?.fecha_confirmacion} />
             <DinamicTable.Col key="key_conteo4" label="Ver" width={120} data={(e) => e.row?.key_conteo}
                 customComponent={e => <SView center style={{
                     padding: 4,
@@ -135,10 +136,11 @@ export default class ReporteConteoInventario extends Component {
 
                     return !(e.row.fecha_confirmacion) ? <SView center style={{ height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
                         onPress={() => {
-                            MDL.inventario.aplicar_cardex(e.row?.key_conteo).then((resp: any) => {
-                                console.log("aplicar_cardex", resp);
-                                // this.table.loadData();
-                            })
+                            alert("trabajandolo... Registrar en Cardex")
+                            // MDL.inventario.aplicar_cardex(e.row?.key_conteo).then((resp: any) => {
+                            //     console.log("aplicar_cardex" + JSON.stringify(resp));
+                            //     // this.table.loadData();
+                            // })
                         }} >
                         <SText >Registrar en Cardex</SText>
                     </SView>
