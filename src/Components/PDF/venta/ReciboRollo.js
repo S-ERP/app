@@ -235,6 +235,8 @@ class index extends Component {
         const descuento = toNumber(data.descuento);
         const montoGiftCard = toNumber(data.monto_gift_card);
         const total = subtotal - descuento - montoGiftCard;
+
+        
         const fields = [
             { label: 'SUBTOTAL Bs.', value: subtotal },
             { label: 'DESCUENTO Bs.', value: descuento },
