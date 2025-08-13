@@ -88,6 +88,9 @@ export default class contabilidad extends MDLAbstract<EventListener> {
   async reporte_balance_general() {
     return await this.executeFunction("reporte_balance_general", [MDL?.empresa?.select?.key])
   }
+  async reporte_libro_diario() {
+    return await this.executeFunction("reporte_libro_diario", [MDL?.empresa?.select?.key])
+  }
 
   async executeFunction(name: string, params?: any[]) {
     const resp: any = await SSocket.sendPromise({

@@ -6,36 +6,15 @@ import MDL from "../../MDL";
 import { DinamicTable } from "servisofts-table";
 import Config from "../../Config";
 
-export default class conta extends React.Component {
+export default class libro_diario extends React.Component {
     dinamicTable: DinamicTable<any>;
-    nivelLen = 1;
-    nivelEQ = "Hasta";
     componentDidMount() {
-        MDL.contabilidad.getNivelesPlanCuentas().then((niveles) => {
-            this.niveles = niveles;
-            this.nivelLen = niveles[0].len ?? 1;
-            this.dinamicTable.loadData();
-            this.forceUpdate();
-        })
+       
     }
     async loadData() {
         try {
-
-
-            const cuentas = await MDL.contabilidad.reporte_balance_general();
-            console.log(this.niveles)
-            const nivelLen = this.niveles?.[this.nivelLen - 1]?.len || "1"
-            return cuentas.filter(e => {
-                if(!e.codigo) return false;
-                if (this.nivelEQ === "Hasta") {
-                    return e.codigo.length <= nivelLen;
-                } else if (this.nivelEQ === "Desde") {
-                    return e.codigo.length >= nivelLen;
-                } else if (this.nivelEQ === "Como") {
-                    return e.codigo.length == nivelLen;
-                }
-                return false;
-            })
+            const data = await MDL.contabilidad.reporte_libro_diario();
+            return data;
         } catch (error) {
             console.log(error);
             throw error
@@ -49,44 +28,18 @@ export default class conta extends React.Component {
         return STheme.color.card;
     }
     render() {
-        return <SPageConta title={"Balance general"} center disableScroll>
-            <SView row col={"xs-12"} style={{ alignItems: "center" }}>
-                {this.niveles && <SView width={60}><SInput type="select2"
-                    style={{
-                        padding: 2,
-                        height: 30,
-                        textAlign: "center"
-                    }}
-                    defaultValue={this.nivelEQ + ""}
-                    options={["Hasta", "Desde", "Como"]} onChangeText={e => {
-                        this.nivelEQ = e;
-                        this.dinamicTable.loadData();
-                    }} /></SView>}
-                <SView width={2} />
-                <SText>{"el nivel"}</SText>
-                <SView width={2} />
-                {this.niveles && <SView width={70}><SInput type="select2"
-                    width={70}
-                    style={{
-                        padding: 2,
-                        height: 30,
-                        textAlign: "center"
-                    }}
-                    defaultValue={this.nivelLen + ""}
-                    options={this.niveles.map((a, i) => (i + 1) + "")} onChangeText={e => {
-                        this.nivelLen = parseFloat(e || "1");
-                        this.dinamicTable.loadData();
-                    }} /></SView>}
-            </SView>
-
+        return <SPageConta title={"Libro Diario"} center disableScroll>
             <SView col={"xs-12"} flex>
                 <DinamicTable
                     ref={(e) => this.dinamicTable = e}
                     {...Config.table.applyTheme()}
                     loadData={this.loadData.bind(this)}
+                    keyExtractor={(e) => e.key}
                     selectType="multiple"
                 >
-                    <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{
+                    <DinamicTable.Col key="tipo" label="Tipo" data={e => e.row?.asiento_contable?.tipo} />
+                    <DinamicTable.Col key="codigo" label="Código" data={e => e.row?.asiento_contable?.codigo} />
+                    {/* <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{
                         alignItems: "center",
                         justifyContent: "center",
                     }} textStyle={{
@@ -102,9 +55,8 @@ export default class conta extends React.Component {
                             };
                             return <SText clean style={{ ...e.textStyle, ...aditionalStyle }}>{e.data}</SText>
                         }}
-                    />
-                    <DinamicTable.Col key="codigo" label="Código" data={e => e.row.codigo} />
-                    {/* <DinamicTable.Col key="descripcion" label="Descripcion" data={e => e.row.descripcion} /> */}
+                    /> */}
+                    {/* <DinamicTable.Col key="codigo" label="Código" data={e => e.row.codigo} /> */}
                     <DinamicTable.Col key={"descripcion"} label="descripcion" width={350}
                         data={e => e.row.descripcion}
                         customComponent={(e) => {
@@ -117,8 +69,6 @@ export default class conta extends React.Component {
                             return <SText style={{ ...e.textStyle, paddingStart: space, ...aditionalStyle }}>{e.data}</SText>
                         }}
                     />
-                    {/* <DinamicTable.Col key="debe" label="Debe" data={e => e.row.debe}/> */}
-
                     <DinamicTable.Col key="debe" label="Debe"
                         data={e => e.row.debe}
                         customComponent={(e) => {
@@ -132,13 +82,13 @@ export default class conta extends React.Component {
                             const val = e.data || "0"
                             return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{val}</SText>
                         }} />
-                    <DinamicTable.Col key="saldo" label="Saldo"
+                    {/* <DinamicTable.Col key="saldo" label="Saldo"
                         data={e => ["ACTIVO", "GASTO"].includes(e.row.tipo) ? ((e.row.debe || 0) - (e.row.haber || 0)) : ((e.row.haber || 0) - (e.row.debe || 0))}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
                             return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.data || "0"}</SText>
                         }}
-                    />
+                    /> */}
                 </DinamicTable>
             </SView>
         </SPageConta >
