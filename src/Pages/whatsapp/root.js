@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SPage, SView, SText, STheme, SIcon, SPopup, SInput, SButtom, SHr, SNotification, SNavigation, SImage } from 'servisofts-component';
+import { SPage, SView, SText, STheme, SIcon, SPopup, SInput, SButtom, SHr, SNotification, SNavigation, SImage, SLoad, SStorage } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import FloatButtom from '../../Components/FloatButtom';
 import MDL from '../../MDL';
@@ -280,7 +280,14 @@ class WhatsappDevices extends Component {
             <SPage title="Dispositivos WhatsApp" disableScroll>
                 <DinamicTable
                     ref={ref => this.DinamicTable = ref}
-                    loadData={async () => await MDL.whatsapp.device.getAll()}
+                    // loadData={async () => await MDL.whatsapp.device.getAll()}
+                    loadData={async () => {
+                        const data_empresa_ = await SStorage.getItem("empresa_select"); 
+                        const data_empresa = JSON.parse(data_empresa_); 
+                        let key_empresa = data_empresa?.key;
+                        const data = await MDL.whatsapp.device.getAll();
+                        return data.filter(item => item.key_empresa === key_empresa);
+                    }}
                     key="id"
                     language="es"
                     colors={Config.table.colors()}
