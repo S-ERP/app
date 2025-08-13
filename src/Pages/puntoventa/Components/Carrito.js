@@ -123,10 +123,10 @@ export default class Carrito extends Component {
                     <SView backgroundColor={STheme.color.background} flex style={{ borderRadius: 8, shadowColor: "#000", shadowOffset: { width: 0, }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }} >
                         <SView col={"xs-12"} row   >
                             <SView col={"xs-10 md-10"} row  >
-                                <SText fontSize={16} bold color={STheme.color.text}>Detalle venta</SText>
+                                <SText fontSize={15} bold color={STheme.color.text}>Detalle venta</SText>
                             </SView>
-                            <SView col={"xs-2 md-2"} row center onPress={() => this.vaciarCarrito()} >
-                                <SView backgroundColor={STheme.color.card} border={STheme.color.text} style={{ borderRadius: 2, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4, height: 24, opacity: 0.6 }}>
+                            <SView col={"xs-2 md-2"}  center onPress={() => this.vaciarCarrito()} style={{alignItems:"flex-end" }} >
+                                <SView backgroundColor={STheme.color.card} border={STheme.color.text} style={{ borderRadius: 20, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4, height: 24, opacity: 0.6,alignItems:"flex-end" }}>
                                     <SText fontSize={12} center color={STheme.color.text}>Vaciar</SText>
                                 </SView>
                             </SView>
@@ -135,42 +135,47 @@ export default class Carrito extends Component {
                         { }
                         <SView col={"xs-12"} flex center
                             style={{
-                                shadowColor: "#000",
+                                // shadowColor: "#000",
                                 shadowOffset: { width: 0, height: 2 },
                                 shadowOpacity: 0.1,
                                 shadowRadius: 8,
                                 borderWidth: 1,
-                                borderColor: "#F3F4F6",
+                                borderColor: STheme.color.gray,
+                                backgroundColor: STheme.color.card,
+                                borderRadius: 8,
                             }}
                         >
-
-
-
                             <SScrollView2 disableHorizontal>
+                                <SHr height={4} />
                                 <FlatList data={this.carrito} keyExtractor={(item) => item.key.toString()} renderItem={this.renderItemCarrito} />
                             </SScrollView2>
                         </SView>
-                        <SHr height={8} />
+                        <SHr height={5} />
                         <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
-                        { }
-                        <SView col={"xs-12"} height={70} center >
-                            <SInput label={"Descuento VIP (Bs):"} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", }}
-                                onChangeText={(text) => {
-                                    this.descuentoManual = text;
-                                    this.forceUpdate();
-                                }}
-                            />
+                        
+                        <SView col={"xs-12"} row >
+                            <SView col={"xs-6"} height={60} center >
+                                <SInput label={"Descuento VIP (Bs):"} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", borderRadius: 8 }}
+                                    onChangeText={(text) => {
+                                        this.descuentoManual = text;
+                                        this.forceUpdate();
+                                    }}
+                                />
+                            </SView>
+                            <SView col={"xs-6"}  row center  >
+                                <SView width={70} style={{ alignItems: "flex-end" }}  >
+                                    <SInput label={"Con factura"} type='checkBox' defaultValue={false}
+                                        onChangeText={(text) => {
+                                            this.conFactura = text;
+                                            this.forceUpdate();
+                                        }}
+                                    />
+                                </SView>
+
+                            </SView>
                         </SView>
-                        { }
-                        <SView col={"xs-12"} height={50} center  >
-                            <SInput label={"Con factura ?"} type='checkBox' defaultValue={false}
-                                onChangeText={(text) => {
-                                    this.conFactura = text;
-                                    this.forceUpdate();
-                                }}
-                            />
-                        </SView>
-                        <SHr height={8} />
+
+                        <SHr height={3} />
                         { }
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-12"} center>

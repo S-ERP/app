@@ -59,8 +59,8 @@ export default class Header extends Component {
         let sucursal = this.state.sucursal;
 
         return (
-            <SView col={"xs-12"} row center height={60} backgroundColor={STheme.color.background} style={{ borderBottomWidth: 1, borderColor: STheme.color.card }}>
-                <SView col={"xs-1 md-0.5"} style={{ paddingBottom: 4 }} center height
+            <SView col={"xs-12"} row center height={40} backgroundColor={STheme.color.background} style={{ borderBottomWidth: 1, borderColor: STheme.color.card }}>
+                <SView width={40} style={{ paddingBottom: 4 }} center height
                     onPress={() => {
                         if (this.props.onBack) {
                             const prevent_default = this.props.onBack();
@@ -73,7 +73,7 @@ export default class Header extends Component {
                 </SView>
 
                 <SView col={"xs-4 md-2"} row border="transparent" >
-                    <SText fontSize={18} bold color={STheme.color.text} style={{ letterSpacing: -0.5, textTransform: "uppercase" }}>
+                    <SText fontSize={15} bold color={STheme.color.text} style={{ letterSpacing: -0.5, textTransform: "uppercase" }}>
                         {empresa?.razon_social || ""}
                     </SText>
                 </SView>
@@ -82,26 +82,48 @@ export default class Header extends Component {
 
                 <SView col={"xs-4 md-2"} row border="transparent"
                     onPress={() => this.seleccionarSucursal()}
+                    style={{
+                        padding: 5,
+                        borderRadius: 8,
+                        backgroundColor: STheme.color.card,
+                    }} center
                 >
-                    <SText fontSize={18} bold color={STheme.color.text} style={{ letterSpacing: -0.5, textTransform: "uppercase" }}>
+                    <SText fontSize={14} bold color={STheme.color.text} style={{ letterSpacing: -0.5, textTransform: "uppercase" }}>
                         Suc: {sucursal?.descripcion || "Selecciona"}
                     </SText>
+                    <SView width={10} />
+                    <SView style={{
+                        top: -1,
+                        width: 0,
+                        height: 0,
+                        borderLeft: "8px solid transparent",
+                        borderRight: "8px solid transparent",
+                        borderBottom: "12px solid",
+                        borderBottomColor: STheme.color.text,
+                        borderRadius:3,
+                        transform: "rotate(180deg)"
+                    }} />
                 </SView>
 
                 <SView flex />
 
                 <SView col={"xs-7 md-5 lg-3"} height row center border="transparent" style={{ justifyContent: "flex-end" }}>
-                    <SView col={"xs-0 md-1"} backgroundColor='transparent'>
-                        <SIconApp name="Wifi" width={20} height={20} fill={"#19b121ff"} />
-                    </SView>
-                    <SView flex />
-                    <SView col={"xs-10 md-8"} row center backgroundColor='transparent'>
-                        <SView center backgroundColor={"transparent"} style={{ width: 32, height: 32, borderRadius: 16, marginRight: 8, overflow: "hidden" }}>
+                    
+                    <SView col={"xs-10 md-8"} row center backgroundColor='transparent' style={{
+                        borderRightColor: STheme.color.gray,
+                        borderRightWidth: 1,
+                    }}>
+                        <SView center backgroundColor={"transparent"} style={{ width: 28, height: 28, borderRadius: 16, marginRight: 8, overflow: "hidden" }}>
                             <FotoUsuario data={usuario} />
                         </SView>
                         <SText fontSize={14} color={STheme.color.text}>
-                            {usuario?.Nombres + " " + usuario?.Apellidos}
+                            {/* {usuario?.Nombres + " " + usuario?.Apellidos} */}
+                            {usuario?.Nombres}
                         </SText>
+                    </SView>
+                      <SView flex />
+                    <SView col={"xs-0 md-1"} backgroundColor='transparent'>
+                        <SIconApp name="Wifi" width={20} height={20} fill={"#19b121ff"} />
                     </SView>
                     <SView flex />
                     <SView col={"xs-1.5 md-1"} height style={{ paddingTop: 15 }} row center>
