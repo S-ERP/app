@@ -37,7 +37,7 @@ export default class Main extends Component {
     componentWillUnmount() {
         Dimensions.removeEventListener("change", this.onChangeDimensions);
     }
-    
+
 
     renderCarrito() {
         return (
@@ -146,8 +146,21 @@ export default class Main extends Component {
             <SPage disableScroll hidden>
                 <Header onSelect={this.setSucursal} />
                 <SView col="xs-12" row flex backgroundColor={STheme.color.background}>
-                     <SView
-                        col="xs-12 sm-12 md-7.5 lg-9"
+                    <SView flex
+                        col="xs-12 sm-12 md-4.5 lg-3.5"
+                        style={{
+                            display: this.getColSize() === 4 ? "none" : "flex",
+                            padding: 8,
+                            // borderLeftWidth: 1,
+                            // borderLeftColor: STheme.color.card,
+                            borderRightWidth: 1,
+                            borderRightColor: STheme.color.card,
+                        }}
+                    >
+                        {this.renderCarrito()}
+                    </SView>
+                    <SView
+                        col="xs-12 sm-12 md-7.5 lg-8.5"
                         style={{
                             display: this.state.showCarritoModal ? "none" : "flex",
                             borderRightWidth: 1,
@@ -170,17 +183,7 @@ export default class Main extends Component {
                             }}
                         />
                     </SView>
-                    <SView flex
-                        col="xs-12 sm-12 md-4.5 lg-3"
-                        style={{
-                            display: this.getColSize() === 4 ? "none" : "flex",
-                            padding: 16,
-                            borderLeftWidth: 1,
-                            borderLeftColor: STheme.color.card,
-                        }}
-                    >
-                        {this.renderCarrito()}
-                    </SView>
+
                 </SView>
                 {this.btnFlotante()}
                 {this.renderCarritoModal()}

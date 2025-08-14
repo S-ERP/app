@@ -21,8 +21,8 @@ export default class FotoCliente extends Component {
         const url = SSocket.api.crm + "cliente/" + this.pollo?.key;
         return (
             <>
-                <SView center row backgroundColor={STheme.color.darkGray} style={{ height: 44, borderRadius: 2, margin: 2 }}>
-                    <SView col={"xs-12  "} row center onPress={() => {
+                <SView center row backgroundColor={STheme.color.darkGray} style={{ height: 38, borderRadius: 2, margin: 2 }}>
+                    <SView col={"xs-12"} row center onPress={() => {
                         this.limpiar();
                         PopupCliente.open({
                             onReloadCliente: (cliente) => {
@@ -33,7 +33,7 @@ export default class FotoCliente extends Component {
                         })
                     }
                     }>
-                        <SView center col={"xs-8  "}>
+                        <SView center col={"xs-5"}>
                             <SView center backgroundColor={STheme.color.background} style={{
                                 minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4, marginRight: (this.pollo?.key ? 6 : 14), overflow: "hidden",
                             }}>

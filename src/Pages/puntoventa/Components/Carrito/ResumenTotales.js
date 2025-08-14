@@ -46,35 +46,35 @@ export default class ResumenTotales extends Component {
             <SView
                 col={"xs-12"}
                 border={STheme.color.card}
-                style={{ borderRadius: 2, padding: 14 }}
-                height={110}
+                style={{ borderRadius: 8, padding: 8 , backgroundColor: STheme.color.card}}
+                height={100}
             >
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
-                    <SText fontSize={13} color={STheme.color.darkGray}>Subtotal:</SText>
-                    <SText fontSize={13} bold color={STheme.color.darkGray}>
+                    <SText fontSize={13} color={STheme.color.text}>Subtotal:</SText>
+                    <SText fontSize={13} bold color={STheme.color.text}>
                         Bs {SMath.formatMoney(subtotal, 2)}
                     </SText>
                 </SView>
 
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
-                    <SText fontSize={12} color={STheme.color.darkGray}>
+                    <SText fontSize={12} color={STheme.color.text}>
                         IVA ({numeroIva}%)
                     </SText>
-                    <SText fontSize={13} color={STheme.color.darkGray}>
+                    <SText fontSize={13} color={STheme.color.text}>
                         + Bs {SMath.formatMoney(totalImpuesto, 2)}
                     </SText>
                 </SView>
 
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
-                    <SText fontSize={12} color={STheme.color.darkGray}>Descuento:</SText>
-                    <SText fontSize={13} color={STheme.color.darkGray}>
+                    <SText fontSize={12} color={STheme.color.text}>Descuento:</SText>
+                    <SText fontSize={13} color={STheme.color.text}>
                         - Bs {SMath.formatMoney(totalDescuento || 0, 2)}
                     </SText>
                 </SView>
 
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
-                    <SText fontSize={13} color={STheme.color.darkGray}>Total:</SText>
-                    <SText fontSize={13} bold color={STheme.color.darkGray}>
+                    <SText fontSize={13} color={STheme.color.text}>Total:</SText>
+                    <SText fontSize={13} bold color={STheme.color.text}>
                         Bs {SMath.formatMoney((subtotal - (totalDescuento || 0)), 2)}
                     </SText>
                 </SView>
@@ -82,8 +82,8 @@ export default class ResumenTotales extends Component {
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}
                     onPress={() => this.seleccionarSucursal()}
                 >
-                    <SText fontSize={13} color={STheme.color.darkGray}>Sucursal:</SText>
-                    <SText fontSize={13} bold color={sucursal?.descripcion ? STheme.color.darkGray : "red"}>
+                    <SText fontSize={13} color={STheme.color.text}>Sucursal:</SText>
+                    <SText fontSize={13} bold color={sucursal?.descripcion ? STheme.color.text : "red"}>
                         {sucursal?.descripcion || "No seleccionada"}
                     </SText>
                 </SView>

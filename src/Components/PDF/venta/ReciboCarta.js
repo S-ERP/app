@@ -22,14 +22,12 @@ const formatDateTime = (dateStr, fallback = 'Sin fecha') =>
             hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
         })
         : fallback;
-export default class index extends Component {
+export default class ReciboCarta extends Component {
     constructor(props) {
         super(props);
         this.state = {};
     }
-    componentDidMount() {
-        this.handlePress();
-    }
+ 
     espacio() {
         return <SPDF.View style={{ width: "100%", height: 8 }} />;
     }
@@ -337,7 +335,7 @@ export default class index extends Component {
         return (
             <SView onPress={this.handlePress.bind(this)}>
                 <SLoad type="window" hidden={!this.state.loading} />
-                <SText>PDF Carta</SText>
+                <SText>Export PDF Carta</SText>
             </SView>
         );
     }

@@ -97,12 +97,21 @@ export default class Perfil extends Component {
 
                             },
                             telefono: {
-                                col: "xs-6",
+                                col: "xs-12",
                                 label: "Teléfono",
                                 type: "telefono",
                                 defaultValue: this.props.data?.telefono,
                                 onSubmitEditing: () => this.form?.submit(),
                             },
+
+                            //   telefono: {
+                            //     col: "xs-12",
+                            //     label: "Teléfono",
+                            //     type: "telefono",
+                            //     defaultValue: this.props.data?.telefono,
+                            //     onSubmitEditing: () => this.form?.submit(),
+                            // },
+
                         }}
                         onSubmit={(val) => {
                             const data = {

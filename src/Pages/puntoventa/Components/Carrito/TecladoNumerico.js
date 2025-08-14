@@ -208,7 +208,7 @@ export default class TecladoNumerico extends Component {
             <>
                 <SView col={"xs-0 md-12"} row color={STheme.color.danger}>
                     <SView col={"xs-4"}>
-                        <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
+                        <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 40, borderRadius: 2, margin: 2 }}>
                             <FotoCliente onReload2={(cliente) => {
                                 this.data.cliente = cliente;
                                 this.forceUpdate();
@@ -242,7 +242,7 @@ export default class TecladoNumerico extends Component {
                             <SView key={i} row>
                                 {fila.map((t, j) => (
                                     <SView key={j} flex center backgroundColor={STheme.color.darkGray} border={STheme.color.card}
-                                        style={{ height: 44, borderRadius: 2, margin: 2 }}
+                                        style={{ height: 40, borderRadius: 2, margin: 2 }}
                                         onPress={() => this.handleCalculatorPress(t)} >
                                         <SText style={style_text}>{t}</SText>
                                     </SView>
