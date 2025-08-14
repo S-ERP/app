@@ -14,6 +14,7 @@ const textStyle = {
     paddingBottom: 4,
 }
 
+
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
 const formatCurrency = (val) => `${toNumber(val).toFixed(2)} Bs`;
@@ -215,6 +216,8 @@ export default class ReciboRollo extends Component {
         if (!detalles) return null;
         const items = Object.values(detalles);
         let subtotal = 0;
+        let pagado = 200;
+        let cambio = subtotal - pagado;
         for (const item of items) {
             subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
         }
@@ -232,7 +235,10 @@ export default class ReciboRollo extends Component {
                     <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>MONTO PAGADO: </SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ width: "50%" }}>
-                    <SPDF.Text style={{ ...textStyle }}>{200}</SPDF.Text>
+
+
+
+                    <SPDF.Text style={{ ...textStyle }}>{formatCurrency(pagado > 0 ? pagado : 0)} Bs</SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
             <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
@@ -240,7 +246,7 @@ export default class ReciboRollo extends Component {
                     <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>CAMBIO: </SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ width: "50%" }}>
-                    <SPDF.Text style={{ ...textStyle }}>{200 - subtotal}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle }}>{formatCurrency(cambio > 0 ? cambio : 0)} Bs</SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
         </SPDF.View>
@@ -307,7 +313,7 @@ export default class ReciboRollo extends Component {
                     <SPDF.Text style={{ ...textStyle, }}>{"SUBTOTAL Bs. "}</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ width: "40%", alignItems: "end" }}>
-                    <SPDF.Text style={{ ...textStyle, }}>{subtotal}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, }}>{formatCurrency(subtotal > 0 ? subtotal : 0)} Bs</SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
             <SPDF.View style={{ height: 4, }} />
@@ -316,7 +322,7 @@ export default class ReciboRollo extends Component {
                     <SPDF.Text style={{ ...textStyle, }}>{"DESCUENTO Bs. "}</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ width: "40%", alignItems: "end" }}>
-                    <SPDF.Text style={{ ...textStyle, }}>{descuento ? descuento : 0}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, }}>{formatCurrency(descuento > 0 ? descuento : 0)} Bs</SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
             <SPDF.View style={{ height: 4, }} />
@@ -325,7 +331,7 @@ export default class ReciboRollo extends Component {
                     <SPDF.Text style={{ ...textStyle, }}>{"TOTAL Bs. "}</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ width: "40%", alignItems: "end" }}>
-                    <SPDF.Text style={{ ...textStyle, }}>{total}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, }}>{formatCurrency(total > 0 ? total : 0)} Bs</SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
             <SPDF.View style={{ height: 4, }} />
@@ -334,7 +340,7 @@ export default class ReciboRollo extends Component {
                     <SPDF.Text style={{ ...textStyle, }}>{"MONTO GIFT CARD Bs. "}</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ width: "40%", alignItems: "end" }}>
-                    <SPDF.Text style={{ ...textStyle, }}>{montoGiftCard > 0 ? montoGiftCard : 0}  </SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, }}>{formatCurrency(montoGiftCard > 0 ? montoGiftCard : 0)} Bs</SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
             <SPDF.View style={{ height: 4, }} />
@@ -343,7 +349,7 @@ export default class ReciboRollo extends Component {
                     <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{"MONTO A PAGAR Bs. "}</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ width: "40%", alignItems: "end" }}>
-                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{total > 0 ? total : 0}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{formatCurrency(total > 0 ? total : 0)} Bs</SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
             <SPDF.View style={{ height: 4, }} />
@@ -352,12 +358,11 @@ export default class ReciboRollo extends Component {
                     <SPDF.Text style={{ ...textStyle, fontSize: fontSize * 0.9, fontWeight: "bold" }}>{"IMPORTE BASE CRÉDITO FISCAL Bs. "}</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ width: "40%", alignItems: "end" }}>
-                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{total > 0 ? total : 0}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{formatCurrency(total > 0 ? total : 0)} Bs</SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
             <SPDF.View style={{ width: "100%", height: 40 }}></SPDF.View>
             <SPDF.Text style={{ ...textStyle, paddingLeft: 8 }}>{"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{"00/100 Bolivianos"}</SPDF.Text>
-            {/* <SPDF.Text style={{ ...textStyle, paddingLeft: 8 }}>{"Son: Doscientos dos 00/100 Bolivianos."}</SPDF.Text> */}
         </SPDF.View>
     }
     FooterRecibO() {
@@ -375,12 +380,10 @@ export default class ReciboRollo extends Component {
         SPDF.create(<SPDF.Page style={{ width: 464, margin: 24, padding: 0, borderWidth: 0 }} >
             <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
             {this.HeaderRecibo()}
-            <SPDF.View style={{ width: "100%", height: 8 }}></SPDF.View>
+            <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
             {this.InfoVenta()}
             <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
-
             {this.cliente()}
-            {/* <SPDF.View style={{ width: "100%", height: 8 }}></SPDF.View> */}
             {this.espacioPunto()}
             {this.Proveedor()}
             {this.espacio()}
