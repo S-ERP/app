@@ -254,9 +254,10 @@ export default class ReciboCarta extends Component {
                             <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>NIT: {validarDato(proveedor?.nit || proveedor?.ci)}</SPDF.Text>
                         </SPDF.View> */}
 
-                        <SPDF.View style={{ width: "100%", bottom: 0 }}></SPDF.View>
-
-                        <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold" }}>{"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{"00/100 Bolivianos"}</SPDF.Text>
+                        <SPDF.View style={{ width: "100%", flex: 1 }}></SPDF.View>
+                        <SPDF.View style={{ width: "100%", }}>
+                            <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, bottom: 0, fontWeight: "bold" }}>{"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{"00/100 Bolivianos"}</SPDF.Text>
+                        </SPDF.View>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ flex: 3, height: "100%", justifyContent: "center", alignItems: "center" }}>
@@ -296,13 +297,15 @@ export default class ReciboCarta extends Component {
 
     renderTotalesDetalle({ label, monto }) {
         return <SPDF.View style={{ width: "100%", flexDirection: "row", height: 16, }}>
-            <SPDF.View style={{ flex: 2, height: "100%", alignItems: "center", borderWidth: 1, alignItems: "center", flexDirection: "row" }}>
+            
+            <SPDF.View style={{ flex: 2, height: "100%", alignItems: "center", borderWidth: 1, alignItems: "center", justifyContent: "center",  flexDirection: "row" }}>
                 <SPDF.View style={{ flex: 1 }} />
                 <SPDF.Text style={{ ...textStyle, fontSize: 7, alignItems: "center", }}>{label}</SPDF.Text>
             </SPDF.View>
+
             <SPDF.View style={{ flex: 1, height: "100%", borderWidth: 1, justifyContent: "center", alignItems: "center", flexDirection: "row" }}>
-                {/* <SPDF.View style={{ flex: 1 }} /> */}
-                <SPDF.Text style={{ ...textStyle, fontSize: 9, alignItems: "center", }}>{monto}</SPDF.Text>
+                <SPDF.View style={{ flex: 1 }} />
+                <SPDF.Text style={{ ...textStyle, fontSize: 7, alignItems: "center", }}>{monto}</SPDF.Text>
             </SPDF.View>
         </SPDF.View>
     }
@@ -327,7 +330,7 @@ export default class ReciboCarta extends Component {
     }
     FooterRecibo() {
         return (
-            <SPDF.View style={{ width: "100%", flexDirection: "row", alignItems: "center", borderWidth: 1 }}>
+            <SPDF.View style={{ width: "100%", alignItems: "center", borderWidth: 1 }}>
 
                 <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
                     <SPDF.View style={{ flex: 1, height: 50 }}>
@@ -345,11 +348,12 @@ export default class ReciboCarta extends Component {
                 </SPDF.View>
 
 
-                {/* <SPDF.View style={{ width: "100%", alignItems: "center" }}>
+                <SPDF.View style={{ width: "100%", alignItems: "center", height: 50 }}>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>¡Gracias por su compra!</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>Guarde este recibo para devoluciones.</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>Visítenos en www.pinturaselcolor.com</SPDF.Text>
-                </SPDF.View> */}
+                </SPDF.View>
+
             </SPDF.View>
         );
     }
