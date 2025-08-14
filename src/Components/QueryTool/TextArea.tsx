@@ -237,15 +237,15 @@ export default class TextArea extends React.Component<TextAreaProps> {
     }
     render() {
         let textStyle: TextStyle = {
-            fontSize: 14,
+            fontSize: 12,
             lineHeight: 18,
             fontFamily: "Cascadia",
             font: "Cascadia",
-            caretColor: STheme.color.text,
+            // caretColor: STheme.color.text,
             color: STheme.color.text,
             // fontWeight: 700,
-            // caretColor: "#99D6F8",
-            // color: "#99D6F8",
+            caretColor: "#d0eefeff",
+            color: "#d0eefeff",
             padding: 0,
             margin: 0,
 
@@ -323,7 +323,7 @@ export default class TextArea extends React.Component<TextAreaProps> {
                                                     margin: 0,
                                                     width: "100%",
                                                     height: "100%",
-                                                    color: "#ffffff",
+                                                    // color: "#ffffff",
                                                 }}
                                                 autoCorrect={false}
                                                 autoFocus
