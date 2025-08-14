@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { SView, SText, SLoad, SDate, SMath } from 'servisofts-component';
+import { SView, SText, SLoad, SDate, SMath, SImage } from 'servisofts-component';
 import * as SPDF from 'servisofts-rn-spdf';
 import Model from '../../../Model';
 import MDL from '../../../MDL';
+import SSocket from 'servisofts-socket';
 const fontSize = 9; // Reducido para ajustarse al formato carta
 const textStyle = {
     font: "Roboto",
@@ -27,7 +28,7 @@ export default class ReciboCarta extends Component {
         super(props);
         this.state = {};
     }
- 
+
     espacio() {
         return <SPDF.View style={{ width: "100%", height: 8 }} />;
     }
@@ -38,7 +39,12 @@ export default class ReciboCarta extends Component {
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row", height: 80, alignItems: "center" }}>
                 <SPDF.View style={{ flex: 3, alignItems: "center" }}>
-                    <SPDF.View style={{ width: "100%", height: 70, borderWidth: 1, backgroundColor: "#000" }} />
+                    <SPDF.View style={{ width: "100%", height: 70, borderWidth: 1 }} >
+                    {/* <SPDF. style={{ width: "100%", height: 70, borderWidth: 1 }} > */}
+
+                        <SImage src={SSocket.api.empresa + "empresa/" + data.key_empresa} />
+                    </SPDF.View>
+
                     {/* <SPDF.View style={{ flex: 1, alignItems: "center" }}>
                         <SPDF.View style={{ width: 70, height: 70, borderWidth: 1, backgroundColor: "#000" }} />
                     </SPDF.View> */}
@@ -71,7 +77,7 @@ export default class ReciboCarta extends Component {
                 <SPDF.View style={{ flex: 3, alignItems: "center", height: "100%" }}>
                     <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
                         <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, justifyContent: "center", fontWeight: "bold" }}>{"Fecha: "}</SPDF.Text>
-                        {}
+                        { }
                         <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>{new SDate(data.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("dd/MM/yyyy HH").toUpperCase()}</SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ height: 4 }}></SPDF.View>
@@ -175,7 +181,7 @@ export default class ReciboCarta extends Component {
                         }}>
                             <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}>
                                 <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center", }}>{i + 1}</SPDF.Text>
-                                {}
+                                { }
                             </SPDF.View>
                             <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row" }}>
                                 <SPDF.View style={{ flex: 1 }} />
@@ -222,7 +228,7 @@ export default class ReciboCarta extends Component {
             <SPDF.View style={{ width: "100%", height: 120, flexDirection: "row" }}>
                 <SPDF.View style={{ flex: 6, height: "100%", justifyContent: "center" }}>
                     <SPDF.View style={{ width: "100%", height: "100%" }}>
-                        <SPDF.View style={{ width: "100%", }}>
+                        {/* <SPDF.View style={{ width: "100%", }}>
                             <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>FORMA DE PAGO: {validarDato(data.tipo_pago)}</SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>MONTO PAGADO: {formatCurrency(montoPagado)}</SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>CAMBIO: {formatCurrency(montoPagado - subtotal)}</SPDF.Text>
@@ -238,7 +244,7 @@ export default class ReciboCarta extends Component {
                             <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>Razón Social: {validarDato(proveedor.razon_social || proveedor.nombres)}</SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>NIT: {validarDato(proveedor.nit || proveedor.ci)}</SPDF.Text>
                         </SPDF.View>
-                        <SPDF.View style={{ width: "100%", height: 4, }}></SPDF.View>
+                        <SPDF.View style={{ width: "100%", height: 4, }}></SPDF.View> */}
                         <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold" }}>{"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{"00/100 Bolivianos"}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
@@ -305,24 +311,38 @@ export default class ReciboCarta extends Component {
                     {this.espacio()}
                     <SPDF.View style={{ width: "100%", alignItems: "center" }}>
                         <SPDF.Text style={{ ...textStyle, fontWeight: "bold", fontSize: 16, }}>{"RECIBO DE VENTA"}</SPDF.Text>
-                        <SPDF.Text style={{ ...textStyle, }}>{"(Con Derecho a Credito Fiscal)"}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, }}>{"(Comprobante de Pago Recibido)"}</SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: "100%", height: 12 }} />
                     {this.espacio()}
                     {this.cliente()}
-                    {/* 
-                    {this.espacio()}
-                    {this.Proveedor()}
-                    {this.espacio()}
-                    {this.Cajero()}
-                    {this.espacio()} */}
                     {this.espacio()}
                     {this.detalle()}
                     {this.subtotales()}
                     <SPDF.View style={{ width: "100%", height: 16, }}></SPDF.View>
-                    {}
-                    {}
-                    {}
+
+
+                    <SPDF.View style={{ width: "100%", height: 16, }}></SPDF.View>
+
+                    <SPDF.View style={{
+                        width: "100%",
+                        flexDirection: "row",
+                        height: 100,
+                    }}>
+                        <SPDF.View style={{ flex: 1, height: 50 }}>
+                            {/* <SPDF.View style={{ flex: 1, height: 50, alignItems: "center" }}> */}
+                            <SPDF.Text style={{ ...textStyle, fontSize: 8, }}>{"ESTE RECIBO CONFIRMA EL PAGO RECIBIDO. EL USO ILÍCITO SERÁ SANCIONADO PENALMENTE DE ACUERDO A LEY"}</SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, fontSize: 8, }}>{"Ley N° 453: Tienes derecho a un trato equitativo sin discriminación en la oferta de servicios"}</SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, fontSize: 8, }}>{"\"Este documento es la Representación Gráfica de un Documento Fiscal Digital emitido en una modalidad de registro en línea\""}</SPDF.Text>
+                        </SPDF.View>
+                        <SPDF.View style={{ width: 16 }} />
+                        <SPDF.View style={{ width: 70, height: 70, borderWidth: 1, alignItems: "center" }}>
+
+                            <SPDF.Text style={{ ...textStyle, fontSize: 8, }}>{"QR"}</SPDF.Text>
+                        </SPDF.View>
+                    </SPDF.View>
+
+
                     {this.FooterRecibo()}
                     <SPDF.View style={{ width: "100%", height: 20, alignItems: "center", bottom: 0 }}>
                         <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>1/1</SPDF.Text>
@@ -335,7 +355,7 @@ export default class ReciboCarta extends Component {
         return (
             <SView onPress={this.handlePress.bind(this)}>
                 <SLoad type="window" hidden={!this.state.loading} />
-                <SText>Export PDF Carta</SText>
+                <SText>PDF CARTA</SText>
             </SView>
         );
     }

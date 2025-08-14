@@ -487,7 +487,7 @@ export default class ReciboRollo extends Component {
 
     render() {
         return <SView onPress={this.handlePress.bind(this)}>
-            <Text> Export PDF Rollo </Text>
+            <Text>PDF ROLLO</Text>
         </SView>
     }
 }
