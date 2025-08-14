@@ -106,7 +106,7 @@ export default class PopupConfirmaPago extends Component {
         )
         console.log("WWWWW 5")
         this.forceUpdate();
-        // this.props?.onReload();
+        this.props?.onReload();
         SPopup.close("popup_config_horario");
         console.log("WWWWW 6")
     }
