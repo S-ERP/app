@@ -176,6 +176,7 @@ export default class Main extends Component {
                         <Modelo
                             ref={(ref) => (this.modeloRef = ref)}
                             tipoKey={this.selectedTipoKey}
+                            // items={this.carritoRef?.carrito}
                             searchText={this.searchText}
                             onPressProducto={(producto) => {
                                 this.carritoRef?.addProducto(producto);
