@@ -21,6 +21,14 @@ export default class ReciboRollo extends Component {
         this.state = {
         };
     }
+
+    static async imprimir(key) {
+        const dell = await MDL.compra_venta.getByKeyComraVenta(key);
+        new ReciboRollo({ data: dell }).handlePress();
+        console.log("miralo ", dell)
+    }
+
+
     espacio() {
         return <SPDF.View style={{ width: "100%" }}>
             <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
@@ -180,7 +188,9 @@ export default class ReciboRollo extends Component {
     }
     TipoPago() {
         const { data } = this.props;
-        const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key });
+        // const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key });
+        const detalles = data?.detalle;
+
         if (!detalles) return null;
         const items = Object.values(detalles);
         let subtotal = 0;
@@ -218,7 +228,9 @@ export default class ReciboRollo extends Component {
     }
     detalle() {
         const { data } = this.props;
-        const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key }) || {};
+        // const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key }) || {};
+        const detalles = data?.detalle;
+
         const items = Object.values(detalles).length
             ? Object.values(detalles)
             : [
@@ -257,7 +269,9 @@ export default class ReciboRollo extends Component {
     }
     subtotales() {
         const { data } = this.props;
-        const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key });
+        // const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key });
+        const detalles = data?.detalle;
+
         if (!detalles) return null;
         console.log("te regalo Detalles:", detalles);
         const items = Object.values(detalles);

@@ -35,6 +35,29 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     return resp.data;
   }
 
+
+  getByKey(value: any) {
+    return SSocket.sendPromise({
+      service: "compra_venta",
+      component: "compra_venta",
+      type: "getByKey",
+      key: value,
+      key_empresa: Model.empresa.Action.getKey(),
+    }).then((resp: any) => resp.data);
+  }
+
+  async getByKeyComraVenta(value: any) {
+    const resp: any = await SSocket.sendPromise({
+      service: "compra_venta",
+      component: "reporte",
+      type: "execute_function",
+      func: "_get_compraventa_byalvaro",
+      params: ["'" + value + "'"],
+    });
+    return resp.data[0] || [];
+  }
+
+
   setSucursalSeleccionada(sucursal: any) {
     this.sucursalSeleccionada = sucursal;
     return new Promise((resolve, reject) => {

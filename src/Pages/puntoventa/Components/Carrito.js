@@ -207,7 +207,7 @@ export default class Carrito extends Component {
                     </SView>
                 }
                 <TecladoNumerico
-                    data={{ cliente: this.data?.cliente }}
+                    data={{ cliente: this.data.cliente }}
                     carrito={this.carrito}
                     carritonuevo={this.carritonuevo}
                     numeroIva={this._numeroIva}

@@ -4,6 +4,8 @@ import SIconApp from '../../../../Assets/SIconApp';
 import ResumenTotales from './ResumenTotales';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
+import ReciboRollo from '../../../../Components/PDF/venta/ReciboRollo';
+import ReciboCarta from '../../../../Components/PDF/venta/ReciboCarta';
 export default class PopupConfirmaPago extends Component {
 
     sucursal = null;
@@ -90,7 +92,6 @@ export default class PopupConfirmaPago extends Component {
             conFactura: conFactura ? "si" : "no",
             monto_factura: conFactura ? SMath.formatMoney((subtotal - descuento), 2) : SMath.formatMoney(0, 2),
         };
-        console.log("WWWWW 3")
         const datos = this.dataFormateada({
             sucursal,
             carrito,
@@ -98,17 +99,36 @@ export default class PopupConfirmaPago extends Component {
             vendedor,
             caja
         });
-        console.log("WWWWW 4")
+        SNotification.send({
+            key: "compra",
+            title: "Esperando...",
+            type: "loading",
+        })
+
+     
         MDL.compra_venta.registrar(datos).then((res) => {
-            console.log("compra_venta registrado exitosa " + JSON.stringify(res))
-        }).catch(
-            console.log("compra_venta registrado error ")
-        )
-        console.log("WWWWW 5")
-        this.forceUpdate();
-        this.props?.onReload();
-        SPopup.close("popup_config_horario");
-        console.log("WWWWW 6")
+            this.forceUpdate();
+            this.props?.onReload();
+            ReciboRollo.imprimir(res.key)
+            ReciboCarta.imprimir(res.key)
+
+            SPopup.close("popup_config_horario");
+            SNotification.remove("compra")
+        }).catch(res => {
+            console.log("compra_venta registrado error " + res.error),
+                SNotification.send({
+                    key: "compra",
+                    title: "Error",
+                    body: res.error,
+                    type: "error",
+                    color: STheme.color.error,
+                    time: 5000
+                }
+                )
+        })
+
+
+  
     }
 
     render() {
@@ -116,6 +136,7 @@ export default class PopupConfirmaPago extends Component {
 
         const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura, carrito, cliente } = this.props;
 
+        console.log("traeido " + cliente)
         return (
             <SView col="xs-12" center>
                 <SView height={8} />
@@ -135,7 +156,7 @@ export default class PopupConfirmaPago extends Component {
                         autoFocus={true}
                         type="number"
                         border={STheme.color.card}
-                        style={{ backgroundColor: "transparent" , borderRadius:8}}
+                        style={{ backgroundColor: "transparent", borderRadius: 8 }}
                         onChangeText={(text) => {
                             this.variableGlobal = parseFloat(text) || 0;
                             this.forceUpdate();
@@ -181,7 +202,7 @@ export default class PopupConfirmaPago extends Component {
                     <SView center flex height={40} style={{ backgroundColor: STheme.color.text, borderColor: STheme.color.gray, borderWidth: 1, borderRadius: 4 }}
                         onPress={() => {
                             this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito, cliente)
-                            
+
                             // if (!this.variableGlobal || this.variableGlobal < totalFinal) {
                             //     SNotification.send({
                             //         title: "Error",

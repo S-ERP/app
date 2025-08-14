@@ -4,7 +4,7 @@ import * as SPDF from 'servisofts-rn-spdf';
 import Model from '../../../Model';
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
- const textStyle = {
+const textStyle = {
     font: "Roboto",
     fontSize: 9,
 };
@@ -16,6 +16,14 @@ const formatDate = (dateStr, fallback = 'Sin fecha') =>
         ? new Date(dateStr).toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' })
         : fallback;
 export default class ReciboCarta extends Component {
+
+
+    static async imprimir(key) {
+        const dell = await MDL.compra_venta.getByKeyComraVenta(key);
+        new ReciboCarta({ data: dell }).handlePress();
+        console.log("miralo ", dell)
+    }
+
     constructor(props) {
         super(props);
         this.state = {};
@@ -100,7 +108,8 @@ export default class ReciboCarta extends Component {
     }
     detalle() {
         const { data } = this.props;
-        const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key }) || {};
+        // const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key }) || {};
+        const detalles = data?.detalle;
         const items = Object.values(detalles).length
             ? Object.values(detalles)
             : [
@@ -175,7 +184,9 @@ export default class ReciboCarta extends Component {
     }
     subtotales() {
         const { data } = this.props;
-        const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key }) || {};
+        // const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key }) || {};`
+        const detalles = data?.detalle;
+
         const items = Object.values(detalles);
         let subtotal = 0;
         for (const item of items) {
@@ -257,7 +268,9 @@ export default class ReciboCarta extends Component {
     }
     TipoPago() {
         const { data } = this.props;
-        const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key }) || {};
+        // const detalles = Model.compra_venta_detalle.Action.getAllConProductos({ key_compra_venta: data.key }) || {};
+        const detalles = data?.detalle;
+
         const items = Object.values(detalles);
         let subtotal = 0;
         for (const item of items) {
@@ -287,7 +300,7 @@ export default class ReciboCarta extends Component {
                         <SPDF.Text style={{ ...textStyle, fontSize: 8, }}>{"QR"}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
-                <SPDF.View style={{ width: "100%", alignItems: "center", height: 40,   }}>
+                <SPDF.View style={{ width: "100%", alignItems: "center", height: 40, }}>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>¡Gracias por su compra!</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>Guarde este recibo para devoluciones.</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>Visítenos en www.empresa.com</SPDF.Text>
