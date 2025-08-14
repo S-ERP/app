@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification, SForm, SHr, SThread } from 'servisofts-component';
+import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification, SForm, SHr, SThread, SIcon } from 'servisofts-component';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 import SIconApp from '../../../../Assets/SIconApp';
@@ -224,7 +224,7 @@ export default class TecladoNumerico extends Component {
                                 totalImpuesto: totalImpuesto,
                                 totalDescuento: descuento,
                                 totalFinal: (subtotal - this.props.descuento),
-                                 numeroIva: numeroIva,
+                                numeroIva: numeroIva,
                                 conFactura: conFactura,
                                 carrito: this.props?.carrito || {},
                                 cliente: this.data?.cliente,
@@ -234,6 +234,8 @@ export default class TecladoNumerico extends Component {
                             }
                             )
                         }}>
+                            <SIcon name="iconRight" width={50} height={50} fill={STheme.color.background} />
+                            <SHr height={5} />
                             <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagare</SText>
                         </SView>
                     </SView>

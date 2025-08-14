@@ -51,14 +51,75 @@ export default class PopupConfirmaPago extends Component {
             caja: caja,
         };
     }
+
+    renderButton(totalFinal, subtotal, descuento, conFactura, carrito, cliente) {
+        const sucursal = this.sucursal;
+        console.log("WWWWW")
+        if (!this.variableGlobal || this.variableGlobal < totalFinal) {
+            SNotification.send({
+                title: "Error",
+                body: "Monto insuficiente para pagar",
+                type: "error",
+                color: STheme.color.error,
+                time: 5000,
+            });
+            return;
+        }
+        console.log("WWWWW 1")
+
+        if (!this.sucursal || !this.sucursal.key_sucursal) {
+            SNotification.send({
+                title: "Error",
+                body: "No hay sucursal",
+                type: "error",
+                color: STheme.color.error,
+                time: 5000,
+            });
+            return;
+        }
+        console.log("WWWWW 2")
+
+        const vendedor = Model.usuario.Action.getUsuarioLog();
+        const caja = {
+            subtotal: SMath.formatMoney(subtotal, 2),
+            iva: SMath.formatMoney(descuento, 2),
+            descuento: SMath.formatMoney(descuento || 0, 2),
+            monto_total: SMath.formatMoney((subtotal - descuento), 2),
+            montoRecibido: SMath.formatMoney(this.variableGlobal, 2),
+            cambio: SMath.formatMoney((this.variableGlobal - totalFinal), 2),
+            conFactura: conFactura ? "si" : "no",
+            monto_factura: conFactura ? SMath.formatMoney((subtotal - descuento), 2) : SMath.formatMoney(0, 2),
+        };
+        console.log("WWWWW 3")
+        const datos = this.dataFormateada({
+            sucursal,
+            carrito,
+            cliente,
+            vendedor,
+            caja
+        });
+        console.log("WWWWW 4")
+        MDL.compra_venta.registrar(datos).then((res) => {
+            console.log("compra_venta registrado exitosa " + JSON.stringify(res))
+        }).catch(
+            console.log("compra_venta registrado error ")
+        )
+        console.log("WWWWW 5")
+        this.forceUpdate();
+        // this.props?.onReload();
+        SPopup.close("popup_config_horario");
+        console.log("WWWWW 6")
+    }
+
     render() {
         const sucursal = this.sucursal;
 
         const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura, carrito, cliente } = this.props;
+
         return (
             <SView col="xs-12" center>
                 <SView height={8} />
-                <SText fontSize={18} bold center>Confirmar Pago</SText>
+                <SText fontSize={18} bold center >Confirmar Pago</SText>
                 <SView height={8} />
                 <ResumenTotales
                     subtotal={subtotal}
@@ -71,12 +132,20 @@ export default class PopupConfirmaPago extends Component {
                     <SInput
                         label="Monto Recibido:"
                         placeholder="0"
+                        autoFocus={true}
                         type="number"
                         border={STheme.color.card}
-                        style={{ backgroundColor: "transparent" }}
+                        style={{ backgroundColor: "transparent" , borderRadius:8}}
                         onChangeText={(text) => {
                             this.variableGlobal = parseFloat(text) || 0;
                             this.forceUpdate();
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                                // this.props.onConfirm(this.variableGlobal);
+                                // console.log("AAAAA")
+                                this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito, cliente);
+                            }
                         }}
                     />
                     {/* <SInput
@@ -109,66 +178,63 @@ export default class PopupConfirmaPago extends Component {
                         <SText>Cancelar</SText>
                     </SView>
                     <SView width={8} />
-                    <SView center flex height={40} style={{ backgroundColor: "#18181b", borderColor: STheme.color.gray, borderWidth: 1, borderRadius: 4 }}
+                    <SView center flex height={40} style={{ backgroundColor: STheme.color.text, borderColor: STheme.color.gray, borderWidth: 1, borderRadius: 4 }}
                         onPress={() => {
-                            if (!this.variableGlobal || this.variableGlobal < totalFinal) {
-                                SNotification.send({
-                                    title: "Error",
-                                    body: "Monto insuficiente para pagar",
-                                    type: "error",
-                                    color: STheme.color.error,
-                                    time: 5000,
-                                });
-                                return;
-                            }
+                            this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito, cliente)
+                            
+                            // if (!this.variableGlobal || this.variableGlobal < totalFinal) {
+                            //     SNotification.send({
+                            //         title: "Error",
+                            //         body: "Monto insuficiente para pagar",
+                            //         type: "error",
+                            //         color: STheme.color.error,
+                            //         time: 5000,
+                            //     });
+                            //     return;
+                            // }
 
 
-                            if (!this.sucursal || !this.sucursal.key_sucursal) {
-                                SNotification.send({
-                                    title: "Error",
-                                    body: "No hay sucursal",
-                                    type: "error",
-                                    color: STheme.color.error,
-                                    time: 5000,
-                                });
-                                return;
-                            }
+                            // if (!this.sucursal || !this.sucursal.key_sucursal) {
+                            //     SNotification.send({
+                            //         title: "Error",
+                            //         body: "No hay sucursal",
+                            //         type: "error",
+                            //         color: STheme.color.error,
+                            //         time: 5000,
+                            //     });
+                            //     return;
+                            // }
 
+                            // const vendedor = Model.usuario.Action.getUsuarioLog();
+                            // const caja = {
+                            //     subtotal: SMath.formatMoney(subtotal, 2),
+                            //     iva: SMath.formatMoney(descuento, 2),
+                            //     descuento: SMath.formatMoney(descuento || 0, 2),
+                            //     monto_total: SMath.formatMoney((subtotal - descuento), 2),
+                            //     montoRecibido: SMath.formatMoney(this.variableGlobal, 2),
+                            //     cambio: SMath.formatMoney((this.variableGlobal - totalFinal), 2),
+                            //     conFactura: conFactura ? "si" : "no",
+                            //     monto_factura: conFactura ? SMath.formatMoney((subtotal - descuento), 2) : SMath.formatMoney(0, 2),
+                            // };
+                            // const datos = this.dataFormateada({
+                            //     sucursal,
+                            //     carrito,
+                            //     cliente,
+                            //     vendedor,
+                            //     caja
+                            // });
 
-                            const vendedor = Model.usuario.Action.getUsuarioLog();
-                            const caja = {
-                                subtotal: SMath.formatMoney(subtotal, 2),
-                                iva: SMath.formatMoney(descuento, 2),
-                                descuento: SMath.formatMoney(descuento || 0, 2),
-                                monto_total: SMath.formatMoney((subtotal - descuento), 2),
-                                montoRecibido: SMath.formatMoney(this.variableGlobal, 2),
-                                cambio: SMath.formatMoney((this.variableGlobal - totalFinal), 2),
-                                conFactura: conFactura ? "si" : "no",
-                                monto_factura: conFactura ? SMath.formatMoney((subtotal - descuento), 2) : SMath.formatMoney(0, 2),
-                            };
-                            const datos = this.dataFormateada({
-                                sucursal,
-                                carrito,
-                                cliente,
-                                vendedor,
-                                caja
-                            });
-
-                            //alert(JSON.stringify(datos));
-                            //return;
-
-
-                            MDL.compra_venta.registrar(datos).then((res) => {
-                                console.log("compra_venta registrado exitosa " + JSON.stringify(res))
-                            }).catch(
-                                console.log("compra_venta registrado error ")
-                            )
-                            this.forceUpdate();
-                            this.props?.onReload();
-                            SPopup.close("popup_config_horario");
+                            // MDL.compra_venta.registrar(datos).then((res) => {
+                            //     console.log("compra_venta registrado exitosa " + JSON.stringify(res))
+                            // }).catch(
+                            //     console.log("compra_venta registrado error ")
+                            // )
+                            // this.forceUpdate();
+                            // this.props?.onReload();
+                            // SPopup.close("popup_config_horario");
                         }}
                     >
-                        <SText color={STheme.color.background}>Confirmar Pago</SText>
+                        <SText color={STheme.color.background} >Confirmar Pago</SText>
                     </SView>
                 </SView>
                 <SView width={8} />
