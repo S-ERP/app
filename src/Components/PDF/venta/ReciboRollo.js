@@ -4,8 +4,7 @@ import { SMath, SView } from 'servisofts-component';
 import * as SPDF from 'servisofts-rn-spdf'
 import Model from '../../../Model';
 import MDL from '../../../MDL';
-const fontSize = 14;
-const textStyle = { fontSize: fontSize, font: "Roboto", paddingBottom: 4}
+const textStyle = { fontSize: 14, font: "Roboto", paddingBottom: 4 }
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
 const formatCurrency = (val) => `${toNumber(val).toFixed(2)} Bs`;
@@ -13,6 +12,9 @@ const formatDate = (dateStr, fallback = 'Sin fecha') =>
     dateStr && !isNaN(new Date(dateStr))
         ? new Date(dateStr).toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' })
         : fallback;
+
+
+
 export default class ReciboRollo extends Component {
     constructor(props) {
         super(props);
@@ -29,7 +31,7 @@ export default class ReciboRollo extends Component {
     espacioPunto() {
         return <SPDF.View style={{ width: "100%" }}>
             <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
-            <SPDF.Text style={{ width: "100%", fontSize: fontSize * 1.2, }}>{"......................................................................................................."}</SPDF.Text>
+            <SPDF.Text style={{ width: "100%", fontSize: 14 }}>{"............................................................................................................................"}</SPDF.Text>
             <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
         </SPDF.View>
     }
@@ -38,18 +40,17 @@ export default class ReciboRollo extends Component {
         const empresa = MDL.empresa.select;
         const sucursal = Model.sucursal.Action.getByKey({ key: data.key_sucursal });
         return <SPDF.View style={{ width: "100%", alignItems: "center", }}>
-            <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{validarDato(empresa.razon_social, 'EMPRESA')}</SPDF.Text>
-            <SPDF.Text style={{ ...textStyle, }}>Sucursal: {sucursal?.descripcion}</SPDF.Text>
+            <SPDF.Text style={{ ...textStyle, fontWeight: "bold", }}>{validarDato(empresa?.razon_social, 'EMPRESA')}</SPDF.Text>
+            <SPDF.Text style={{ ...textStyle, }}>Sucursal: {validarDato(sucursal?.descripcion, 'Central')}</SPDF.Text>
             <SPDF.Text style={{ ...textStyle, alignItems: "center" }}>No. Punto de Venta {validarDato(data.venta, '1')}</SPDF.Text>
             <SPDF.Text style={{ ...textStyle, }}>{validarDato(sucursal?.direccion, 'Av. Sur Nro. 0')}</SPDF.Text>
-            <SPDF.Text style={{ ...textStyle, }}>{validarDato(sucursal?.telefono, 'Tel: (123) 00000000')}</SPDF.Text>
+            <SPDF.Text style={{ ...textStyle, }}>Telefono:{validarDato(sucursal?.telefono, 'S/N')}</SPDF.Text>
         </SPDF.View>
     };
     InfoVenta = () => {
         const { data } = this.props;
         return (
             <SPDF.View style={{ width: "100%", alignItems: "center", }}>
-                {/* <SPDF.Text style={{ ...textStyle, fontWeight: "bold", }}>{"RECIBO DE VENTA"}</SPDF.Text> */}
                 <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
                     <SPDF.View style={{ width: "50%", alignItems: "end" }}>
                         <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>RECIBO NRO: </SPDF.Text>
@@ -83,11 +84,11 @@ export default class ReciboRollo extends Component {
         const { data } = this.props;
         const cliente = data.cliente || {};
         return <SPDF.View style={{ width: "100%", alignItems: "center", }}>
-            {/* <SPDF.Text style={{ ...textStyle, fontWeight: "bold", }}>{"CLIENTE"}</SPDF.Text> */}
+            { }
             <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
                 <SPDF.View style={{ width: "50%", alignItems: "end" }}>
                     <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>CLIENTE: </SPDF.Text>
-                    {/* <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>NOMBRE/RAZÓN SOCIAL: </SPDF.Text> */}
+                    { }
                 </SPDF.View>
                 <SPDF.View style={{ width: "50%" }}>
                     <SPDF.Text style={{ ...textStyle, width: "70%" }}>{validarDato(cliente.razon_social || cliente.nombres, 'S/N')} </SPDF.Text>
@@ -115,11 +116,9 @@ export default class ReciboRollo extends Component {
         const { data } = this.props;
         const proveedor = data.proveedor || {};
         return <SPDF.View style={{ width: "100%", alignItems: "center", }}>
-            {/* <SPDF.Text style={{ ...textStyle, fontWeight: "bold", }}>{"PROVEEDOR"}</SPDF.Text> */}
             <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
                 <SPDF.View style={{ width: "50%", alignItems: "end" }}>
                     <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>PROVEEDOR: </SPDF.Text>
-                    {/* <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>RAZÓN SOCIAL: </SPDF.Text> */}
                 </SPDF.View>
                 <SPDF.View style={{ width: "50%" }}>
                     <SPDF.Text style={{ ...textStyle, width: "70%" }}>{validarDato(proveedor.razon_social || proveedor.nombres, 'S/N')} </SPDF.Text>
@@ -131,7 +130,6 @@ export default class ReciboRollo extends Component {
                 </SPDF.View>
                 <SPDF.View style={{ width: "50%" }}>
                     <SPDF.Text style={{ ...textStyle, width: "70%" }}> {validarDato(proveedor.nit || proveedor.ci, '0')}</SPDF.Text>
-                    {/* <SPDF.Text style={{ ...textStyle, width: "70%" }}> {proveedor.nit || proveedor.ci}</SPDF.Text> */}
                 </SPDF.View>
             </SPDF.View>
             {/* <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
@@ -148,7 +146,6 @@ export default class ReciboRollo extends Component {
                 </SPDF.View>
                 <SPDF.View style={{ width: "50%" }}>
                     <SPDF.Text style={{ ...textStyle, width: "70%" }}> {validarDato(proveedor.direccion, 'S/N')}</SPDF.Text>
-                    {/* <SPDF.Text style={{ ...textStyle, width: "70%" }}>{proveedor.direccion}</SPDF.Text> */}
                 </SPDF.View>
             </SPDF.View>
             <SPDF.View style={{ width: "100%", flexDirection: "row", }} >
@@ -157,7 +154,6 @@ export default class ReciboRollo extends Component {
                 </SPDF.View>
                 <SPDF.View style={{ width: "50%" }}>
                     <SPDF.Text style={{ ...textStyle, width: "70%" }}> {validarDato(proveedor.telefono, 'S/N')}</SPDF.Text>
-                    {/* <SPDF.Text style={{ ...textStyle }}>{proveedor.telefono}</SPDF.Text> */}
                 </SPDF.View>
             </SPDF.View>
         </SPDF.View>
@@ -246,7 +242,6 @@ export default class ReciboRollo extends Component {
                 const cantidad = toNumber(item.cantidad);
                 const precio = toNumber(item.precio_unitario);
                 return <SPDF.View style={{ width: "100%", marginBottom: 4 }}>
-                    {/* <View key={item.key || i} style={{ width: '100%', marginBottom: 4 }}> */}
                     <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{item.descripcion}</SPDF.Text>
                     <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
                         <SPDF.View style={{ width: "50%" }}>
@@ -256,7 +251,6 @@ export default class ReciboRollo extends Component {
                             <SPDF.Text style={{ ...textStyle, }}>{formatCurrency(cantidad * precio)}</SPDF.Text>
                         </SPDF.View>
                     </SPDF.View>
-                    {/* </View> */}
                 </SPDF.View>
             })}
         </SPDF.View>
@@ -324,7 +318,7 @@ export default class ReciboRollo extends Component {
             <SPDF.View style={{ height: 4, }} />
             <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
                 <SPDF.View style={{ width: "60%", alignItems: "end" }}>
-                    <SPDF.Text style={{ ...textStyle, fontSize: fontSize * 0.9, fontWeight: "bold" }}>{"IMPORTE BASE CRÉDITO FISCAL Bs. "}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, fontSize: 13, fontWeight: "bold" }}>{"IMPORTE BASE CRÉDITO FISCAL Bs. "}</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ width: "40%", alignItems: "end" }}>
                     <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{formatCurrency(total > 0 ? total : 0)}</SPDF.Text>
@@ -339,9 +333,9 @@ export default class ReciboRollo extends Component {
             <SPDF.View style={{ width: "100%", height: 8 }}></SPDF.View>
             <SPDF.Text style={{ ...textStyle, width: "85%", textAlign: "center", }}>{"¡Gracias por su compra!"}</SPDF.Text>
             <SPDF.View style={{ width: "100%", height: 6 }}></SPDF.View>
-            <SPDF.Text style={{ ...textStyle, fontSize: fontSize * 0.8, width: "75%", textAlign: "center", }}>{"Guarde este recibo para devoluciones."}</SPDF.Text>
+            <SPDF.Text style={{ ...textStyle, fontSize: 14, width: "75%", textAlign: "center", }}>{"Guarde este recibo para devoluciones."}</SPDF.Text>
             <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
-            <SPDF.Text style={{ ...textStyle, fontSize: fontSize * 0.9, textAlign: "center", width: "70%", }}>{"Visítenos en www.pinturaselcolor.com"}</SPDF.Text>
+            <SPDF.Text style={{ ...textStyle, fontSize: 14, textAlign: "center", width: "70%", }}>{"Visítenos en www.pinturaselcolor.com"}</SPDF.Text>
             <SPDF.View style={{ width: "100%", height: 10 }}></SPDF.View>
         </SPDF.View>
     }
@@ -353,8 +347,8 @@ export default class ReciboRollo extends Component {
             {this.InfoVenta()}
             <SPDF.View style={{ width: "100%", height: 4 }}></SPDF.View>
             {this.cliente()}
-            {this.espacioPunto()}
-            {this.Proveedor()}
+            {/* {this.espacioPunto()}
+            {this.Proveedor()} */}
             {this.espacio()}
             {this.detalle()}
             {this.espacioPunto()}
