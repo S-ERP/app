@@ -4,8 +4,7 @@ import * as SPDF from 'servisofts-rn-spdf';
 import Model from '../../../Model';
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
-const fontSize = 9; // Reducido para ajustarse al formato carta
-const textStyle = {
+ const textStyle = {
     font: "Roboto",
     fontSize: 9,
 };
@@ -16,20 +15,13 @@ const formatDate = (dateStr, fallback = 'Sin fecha') =>
     dateStr && !isNaN(new Date(dateStr))
         ? new Date(dateStr).toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' })
         : fallback;
-const formatDateTime = (dateStr, fallback = 'Sin fecha') =>
-    dateStr && !isNaN(new Date(dateStr))
-        ? new Date(dateStr).toLocaleString('es-BO', {
-            day: '2-digit', month: '2-digit', year: 'numeric',
-            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-        })
-        : fallback;
 export default class ReciboCarta extends Component {
     constructor(props) {
         super(props);
         this.state = {};
     }
     espacio() {
-        return <SPDF.View style={{ width: "100%", height: 8 }} />;
+        return <SPDF.View style={{ width: "100%", height: 16 }} />;
     }
     HeaderRecibo() {
         const { data } = this.props;
@@ -98,13 +90,13 @@ export default class ReciboCarta extends Component {
                         <SPDF.View style={{ height: 4 }}></SPDF.View>
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
                             <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>{"Nombre/Razon Social:"}</SPDF.Text>
-                            <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>{cliente.razon_social}</SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>{validarDato(cliente.razon_social, 'S/N')} {cliente.razon_social}</SPDF.Text>
                         </SPDF.View>
                     </SPDF.View>
                     <SPDF.View style={{ flex: 1, height: "100%" }}>
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
                             <SPDF.Text style={{ ...textStyle, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>{"NIT/CI/CEX:"}</SPDF.Text>
-                            <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>{cliente.nit}</SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>{validarDato(cliente.nit, '0')} {cliente.nit}</SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ height: 4 }}></SPDF.View>
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
@@ -131,7 +123,6 @@ export default class ReciboCarta extends Component {
             ];
         return (
             <SPDF.View style={{ width: "100%", }}>
-                {/* <SPDF.View style={{ width: "100%", height: 16, }}></SPDF.View> */}
                 <SPDF.View style={{ width: "100%", height: 44, flexDirection: "row", backgroundColor: "#D0D0D0" }}>
                     <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}>
                         <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center", }}>{"CÓDIGO PRODUCTO / SERVICIO"}</SPDF.Text>
@@ -264,7 +255,7 @@ export default class ReciboCarta extends Component {
     }
     renderTotalesDetalle({ label, monto }) {
         return <SPDF.View style={{ width: "100%", flexDirection: "row", height: 16, }}>
-            <SPDF.View style={{ flex: 2, height: "100%", alignItems: "center", borderWidth: 1, alignItems: "center", justifyContent: "center", flexDirection: "row" }}>
+            <SPDF.View style={{ flex: 2, height: "100%", alignItems: "center", borderWidth: 1, alignItems: "center", flexDirection: "row" }}>
                 <SPDF.View style={{ flex: 1 }} />
                 <SPDF.Text style={{ ...textStyle, fontSize: 7, alignItems: "center", }}>{label}</SPDF.Text>
             </SPDF.View>
@@ -302,12 +293,11 @@ export default class ReciboCarta extends Component {
                         <SPDF.Text style={{ ...textStyle, fontSize: 8, }}>{"Ley N° 453: Tienes derecho a un trato equitativo sin discriminación en la oferta de servicios"}</SPDF.Text>
                         <SPDF.Text style={{ ...textStyle, fontSize: 8, }}>{"\"Este documento es la Representación Gráfica de un Documento Fiscal Digital emitido en una modalidad de registro en línea\""}</SPDF.Text>
                     </SPDF.View>
-                    {/* <SPDF.View style={{ width: 16 }} /> */}
                     <SPDF.View style={{ width: 70, height: 70, borderWidth: 1, justifyContent: "center", alignItems: "center" }}>
                         <SPDF.Text style={{ ...textStyle, fontSize: 8, }}>{"QR"}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
-                <SPDF.View style={{ width: "100%", alignItems: "center", height: 50, borderWidth: 1 }}>
+                <SPDF.View style={{ width: "100%", alignItems: "center", height: 40,   }}>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>¡Gracias por su compra!</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>Guarde este recibo para devoluciones.</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>Visítenos en www.pinturaselcolor.com</SPDF.Text>
@@ -330,6 +320,8 @@ export default class ReciboCarta extends Component {
                     {this.cliente()}
                     {this.espacio()}
                     {this.detalle()}
+                    {this.espacio()}
+                    {this.espacio()}
                     {this.espacio()}
                     {this.FooterRecibo()}
                     {this.espacio()}
