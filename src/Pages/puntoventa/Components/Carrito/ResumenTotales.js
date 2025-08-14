@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SView, SText, STheme, SMath, SNavigation, SPopup } from 'servisofts-component';
+import { SView, SText, STheme, SMath, SNavigation, SPopup, SHr } from 'servisofts-component';
 import MDL from '../../../../MDL';
 
 
@@ -46,8 +46,8 @@ export default class ResumenTotales extends Component {
             <SView
                 col={"xs-12"}
                 border={STheme.color.card}
-                style={{ borderRadius: 8, padding: 8 , backgroundColor: STheme.color.card}}
-                height={100}
+                style={{ borderRadius: 8, padding: 8, backgroundColor: STheme.color.card }}
+                height={135}
             >
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
                     <SText fontSize={13} color={STheme.color.text}>Subtotal:</SText>
@@ -72,12 +72,17 @@ export default class ResumenTotales extends Component {
                     </SText>
                 </SView>
 
-                <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
-                    <SText fontSize={13} color={STheme.color.text}>Total:</SText>
-                    <SText fontSize={13} bold color={STheme.color.text}>
+                <SHr height={3} />
+                <SView col={"xs-12"} style={{ borderColor: STheme.color.gray, borderBottomWidth: 2 }} />
+                <SHr height={5} />
+                <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4, padding: 3 }}>
+                    <SText fontSize={18} color={STheme.color.text}>Total:</SText>
+                    <SText fontSize={18} bold color={STheme.color.text}>
                         Bs {SMath.formatMoney((subtotal - (totalDescuento || 0)), 2)}
                     </SText>
                 </SView>
+                <SView col={"xs-12"} style={{ borderColor: STheme.color.gray, borderBottomWidth: 2 }} />
+                <SHr height={8} />
 
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}
                     onPress={() => this.seleccionarSucursal()}

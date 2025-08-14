@@ -111,7 +111,7 @@ export default class PopupCliente extends Component {
                         <SText color={STheme.color.text}>Cancelar</SText>
                     </SView>
                     <SView width={8} />
-                    <SView center style={{ backgroundColor: "#18181b", borderColor: STheme.color.gray, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }}
+                    <SView center style={{ backgroundColor: STheme.color.text, borderColor: STheme.color.gray, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }}
                         onPress={() => {
                             this.props.onReloadCliente?.(this.clienteDataCompleto);
                             SPopup.close("popup_config_horario");

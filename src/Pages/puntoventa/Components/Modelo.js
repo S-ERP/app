@@ -79,14 +79,15 @@ export default class Modelo extends Component {
                                         margin={2}
                                         style={{
                                             borderRadius: 8,
-                                            shadowColor: "#000",
+                                            // shadowColor: "#000",
                                             shadowOffset: { width: 0, height: 2 },
                                             shadowOpacity: 0.1,
                                             shadowRadius: 8,
                                             elevation: 3,
                                             borderWidth: 1,
                                             borderColor: STheme.color.lightGray,
-                                            overflow:"hidden"
+                                            overflow:"hidden",
+                                            backgroundColor: STheme.color.background
                                         }}
                                         onPress={() => {
                                             // if (producto.stock <= 0) return alert("No hay más stock disponible");
