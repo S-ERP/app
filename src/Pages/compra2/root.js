@@ -50,12 +50,13 @@ export default class root extends React.Component {
                 key_sucursal: sucursal.key,
                 key_empresa: MDL.empresa.select.key,
                 key_usuario: MDL.usuario.session.key,
+                facturar: false,
             }
             data.detalle = this.state.detalle.map(item => (
                 {
                     cantidad: item.cantidad,
                     precio_unitario: item.precio,
-                    precio_facturado: item.precio,
+                    // precio_facturado: item.precio,
                     descuento: 0,
                     descripcion: item.producto,
                     key_modelo: item.modelo?.key,
@@ -133,7 +134,7 @@ export default class root extends React.Component {
                     {/* <SView col={"xs-12"} padding={4} center>
                         <SText fontSize={12} padding={8} card onPress={this.handleSubmit.bind(this)}>GUARDAR</SText>
                     </SView> */}
-                    <SView col={"xs-12"}  center>
+                    <SView col={"xs-12"} center>
                         <SHr height={15} />
                         <PButtom type='primary' small onPress={this.handleSubmit.bind(this)}>GUARDAR</PButtom>
                     </SView>
