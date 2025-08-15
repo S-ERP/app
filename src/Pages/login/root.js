@@ -6,6 +6,7 @@ import CryptoJS from 'crypto-js';
 import { Container } from '../../Components';
 
 export default class Login extends Component {
+    static HIDDEN = true;
     constructor(props) {
         super(props);
         this.state = {

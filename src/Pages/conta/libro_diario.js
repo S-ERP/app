@@ -38,14 +38,39 @@ export default class libro_diario extends React.Component {
                     selectType="multiple"
                 >
                     <DinamicTable.Col key="tipo" label="Tipo" data={e => e.row?.asiento_contable?.tipo} width={60}
-                        textStyle={{
-                            color: STheme.color.lightGray,
-                        }} />
+                        customComponent={e => {
+                            let color = STheme.color.lightGray;
+                            if (e.data == "ingreso") {
+                                color = STheme.color.success
+                            }
+                            if (e.data == "egreso") {
+                                color = STheme.color.danger
+                            }
+
+                            return <SView
+                                style={{
+                                    ...e.textStyle,
+                                    backgroundColor: color + "66",
+                                    padding: 2,
+                                    borderRadius: 4,
+                                }}><SText
+                                    center
+                                    style={{
+                                        ...e.textStyle,
+                                        fontSize: 8
+                                    }}
+                                >{e.data.toUpperCase()}</SText>
+                            </SView>
+                        }
+                        }
+                    />
                     <DinamicTable.Col key="codigo" label="Código" data={e => e.row?.asiento_contable?.codigo} width={80} customComponent={e => <SText
                         style={{
                             ...e.textStyle,
                             color: STheme.colorFromText(e.row.fecha_on)
+                            
                         }}
+                        bold
                         onPress={() => {
                             // contabilidad/asiento_contable/profile?pk=5b8b2f0f-54f5-4cb0-9118-87bd0d91d459
                             SNavigation.navigate("/contabilidad/asiento_contable/profile", { pk: e.row.asiento_contable.key })
@@ -99,6 +124,9 @@ export default class libro_diario extends React.Component {
                         cellStyle={{
                             backgroundColor: STheme.color.success + "33"
                         }}
+                        textStyle={{
+                            fontWeight:"bold"
+                        }}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
                             return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{SMath.formatMoney(e.data || "0")}</SText>
@@ -108,6 +136,9 @@ export default class libro_diario extends React.Component {
                     <DinamicTable.Col key="haber" label="Haber" data={e => e.row.haber}
                         cellStyle={{
                             backgroundColor: STheme.color.danger + "33"
+                        }}
+                        textStyle={{
+                            fontWeight:"bold"
                         }}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;

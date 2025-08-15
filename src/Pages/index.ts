@@ -85,6 +85,7 @@ import proveedor from "./proveedor";
 // import Proveedor from "../Components/compra_venta/Proveedor";
 import puntoventa from "./puntoventa";
 import Turnos from "./Turnos";
+import widgets from "./widgets";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -106,7 +107,7 @@ export default SPage.combinePages("/", {
   ...loby,
   ...registro,
   ...nota,
-  widgets: test,
+  widgets,
   test: test,
   start: start,
   wiki: wiki,
@@ -160,7 +161,7 @@ export default SPage.combinePages("/", {
   ...crm,
   "pdf/factura": factura,
   plantilla,
-    Turnos,
+  Turnos,
   ...proveedor,
   ...qr_reader,
   ...puntoventa,

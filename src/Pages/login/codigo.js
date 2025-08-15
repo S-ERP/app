@@ -7,6 +7,7 @@ import SectionHeader from './components/SectionHeader';
 import Model from '../../Model';
 
 class login extends Component {
+    static HIDDEN = true;
     constructor(props) {
         super(props);
         this.state = {
@@ -37,7 +38,7 @@ class login extends Component {
     render() {
         // if (!this.state.ready) return <SLoad />
         return (
-            <SPage hidden footer={<BottomNavigator url={"/login"} float={100}/>} >
+            <SPage hidden footer={<BottomNavigator url={"/login"} float={100} />} >
                 <SView col={"xs-12"} center>
                     <SView col={"xs-12"} backgroundColor={STheme.color.primary}>
                         <Container>

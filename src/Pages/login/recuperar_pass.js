@@ -8,6 +8,7 @@ import Model from '../../Model';
 
 
 class recuperar_pass extends Component {
+        static HIDDEN = true;
     constructor(props) {
         super(props);
         this.state = {

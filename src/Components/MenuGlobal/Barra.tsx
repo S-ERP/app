@@ -46,79 +46,98 @@ export default class Barra extends React.Component {
             }} padding={4}>
                 <SIconApp name="Menu" fill={STheme.color.text} />
             </SView>
-
-            <ScrollView showsVerticalScrollIndicator={this.state.open}>
-                <Page label={"Home"} url={"/"} icon={<SIconApp name="ctaHome" stroke={STheme.color.text} fill="transparent" />} />
-                <Page label={"Menu"} url={"/menu"} icon={<SIconApp name="Menu" stroke={STheme.color.text} fill="transparent" />} />
-                <Page label={"Empresa"}
-                    icon={<ImagePage key_page="9b80fd4e-855c-430d-ad17-64449065eb3e" />}
-                >
-                    <Page label={"Perfil"} url={"/empresa"} permiso={"ver"} />
-                    <Page label={"Sucursales"} url={"/sucursal"} permiso={"ver"} />
-                </Page>
-                <Page label={"Contabilidad"}
-                    icon={<ImagePage key_page="fd0c2bfe-0f13-4e81-a967-213cc0adb299" />}
-                >
-                    <Page label={"Plan de cuentas"} url={"/conta/cuentas"} permiso="ver" />
-                    <Page label={"Dimensiones"} url={"/conta/dimension"} permiso="ver" />
-                    <Page label={"Balance general"} url={"/conta/balance"} permiso="ver" />
-                    <Page label={"Libro Diario"} url={"/conta/libro_diario"} permiso="ver" />
-                    <Page label={"Crear Asiento"} url={"/contabilidad/asiento"} permiso="ver" />
-                    <Page label={"Sistema Antiguo"} url={"/contabilidad"} permiso="ver" />
-                    <Page label={"Reportes"} >
-                        <Page label={"Sistema Antiguo"} url={"/contabilidad"} permiso="ver" />
+            <SView col={"xs-12"} flex>
+                <ScrollView showsVerticalScrollIndicator={false} >
+                    <Page label={"Home"} url={"/"} icon={<SIconApp name="ctaHome" stroke={STheme.color.text} fill="transparent" />} />
+                    {/* <Page label={"Menu"} url={"/menu"} icon={<SIconApp name="Menu" fill={STheme.color.text} />} /> */}
+                    <Page label={"Empresa"}
+                        icon={<ImagePage key_page="9b80fd4e-855c-430d-ad17-64449065eb3e" />}
+                    >
+                        <Page label={"Perfil"} url={"/empresa"} permiso={"ver"} />
+                        <Page label={"Sucursales"} url={"/sucursal"} permiso={"ver"} />
                     </Page>
-                </Page>
-                <Page label={"Inventario"}
-                    icon={<ImagePage key_page="c50a9c4a-429c-426e-9ebf-c6874da14062" />}
-                >
-                    <Page label={"Almacenes"} url={"/inventario"} permiso="ver" />
-                    <Page label={"Productos"} url={"/productos"} permiso="ver" />
-                    <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" permiso_url="/inventario" />
-                </Page>
-                <Page label={"Caja"} url={"/caja"} permiso="ver"
-                    icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}
-                />
-                <Page label={"Compras"}
-                    icon={<ImagePage key_page="c0a4c4e6-082f-4f23-a755-01369653ee49" />}
-                >
-                    <Page label={"Proveedores"} url={"/proveedor"} permiso="ver" />
-                    <Page label={"Compras"} url={"/compra"} permiso="ver" />
-                    <Page label={"Compras Rapida"} url={"/compra2"} permiso="ver" permiso_url="/compra" />
-                </Page>
-                <Page label={"Ventas"}
-                    icon={<ImagePage key_page="8becb109-9987-4520-840d-7f0efdb6e3c6" />}
-                >
-                    <Page label={"Clientes"} url={"/cliente"} permiso="ver" />
-                    <Page label={"Ventas"} url={"/venta"} permiso="ver" />
-                    <Page label={"Ventas Rapida"} url={"/puntoventa"} permiso="ver" permiso_url="/venta" />
-                </Page>
-                <Page label={"Facturacion"} url={"/facturacion"}
-                    permiso="ver"
-                    icon={<ImagePage key_page="a122ab1e-bf18-4831-8136-befa06e406d3" />}
-                />
-                <Page label={"CRM"} url={"/crm"}
-                    permiso="page"
-                    icon={<ImagePage key_page="9b5de113-c6e9-4bef-b686-5732056f71fb" />}
-                />
-                <Page label={"Drive"} url={"/drive"}
-                    permiso="page"
-                    icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
-                />
-                <Page label={"Camara"} url={"/qr_reader"}
-                    permiso="page"
-                    icon={<ImagePage key_page="676e0ed7-2320-4adb-8dfa-624e0c48df07" />}
-                />
-                {/* <Page label={"Iconos"} url={"/icons"} /> */}
-                <Page label={"Usuarios"} url={"/usuario"}
-                    permiso="ver"
-                    icon={<ImagePage key_page="419dfc13-34db-4935-a13c-b05cfd9d599a" />}
-                />
-                <Page label={"Roles y Permisos"} url={"/rol"}
-                    permiso="ver"
-                    icon={<ImagePage key_page="c4666514-202f-4d8d-8656-64c82065ba67" />}
-                />
-            </ScrollView>
+                    <Page label={"Contabilidad"}
+                        icon={<ImagePage key_page="fd0c2bfe-0f13-4e81-a967-213cc0adb299" />}
+                    >
+                        <Page label={"Plan de cuentas"} url={"/conta/cuentas"} permiso="ver" />
+                        <Page label={"Dimensiones"} url={"/conta/dimension"} permiso="ver" />
+                        <Page label={"Balance general"} url={"/conta/balance"} permiso="ver" />
+                        <Page label={"Libro Diario"} url={"/conta/libro_diario"} permiso="ver" />
+                        <Page label={"Crear Asiento"} url={"/contabilidad/asiento"} permiso="ver" />
+                        <Page label={"Sistema Antiguo"} url={"/contabilidad"} permiso="ver" />
+                        <Page label={"Reportes"} >
+                            <Page label={"Sistema Antiguo"} url={"/contabilidad"} permiso="ver" />
+                        </Page>
+                    </Page>
+                    <Page label={"Inventario"}
+                        icon={<ImagePage key_page="c50a9c4a-429c-426e-9ebf-c6874da14062" />}
+                    >
+                        <Page label={"Almacenes"} url={"/inventario"} permiso="ver" />
+                        <Page label={"Productos"} url={"/productos"} permiso="ver" />
+                        <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" permiso_url="/inventario" />
+                    </Page>
+                    <Page label={"Caja"} url={"/caja"} permiso="ver"
+                        icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}
+                    />
+                    <Page label={"Compras"}
+                        icon={<ImagePage key_page="c0a4c4e6-082f-4f23-a755-01369653ee49" />}
+                    >
+                        <Page label={"Proveedores"} url={"/proveedor"} permiso="page" />
+                        <Page label={"Compras"} url={"/compra"} permiso="ver" />
+                        <Page label={"Compras Rapida"} url={"/compra2"} permiso="ver" permiso_url="/compra" />
+                    </Page>
+                    <Page label={"Ventas"}
+                        icon={<ImagePage key_page="8becb109-9987-4520-840d-7f0efdb6e3c6" />}
+                    >
+                        <Page label={"Clientes"} url={"/cliente"} permiso="ver" />
+                        <Page label={"Ventas"} url={"/venta"} permiso="ver" />
+                        <Page label={"Ventas Rapida"} url={"/puntoventa"} permiso="ver" permiso_url="/venta" />
+                    </Page>
+                    <Page label={"Facturacion"} url={"/facturacion"}
+                        permiso="ver"
+                        icon={<ImagePage key_page="a122ab1e-bf18-4831-8136-befa06e406d3" />}
+                    />
+                    <Page label={"CRM"} url={"/crm"}
+                        permiso="page"
+                        icon={<ImagePage key_page="9b5de113-c6e9-4bef-b686-5732056f71fb" />}
+                    />
+                    <Page label={"whatsapp"} url={"/whatsapp"}
+                        permiso="page"
+                        icon={<ImagePage key_page="5cb364bf-bcd1-4263-8079-654a17e02767" />}
+                    />
+                    <Page label={"Drive"} url={"/drive"}
+                        permiso="page"
+                        icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
+                    />
+                    <Page label={"Camara"} url={"/qr_reader"}
+                        permiso="page"
+                        icon={<ImagePage key_page="676e0ed7-2320-4adb-8dfa-624e0c48df07" />}
+                    />
+                    {/* <Page label={"Iconos"} url={"/icons"} /> */}
+                    <SHr h={100} />
+                </ScrollView>
+                <SView col={"xs-12"} >
+                    <SHr h={1} color={STheme.color.card} />
+                    <Page label={"Usuarios"} url={"/usuario"}
+                        permiso="ver"
+                        icon={<ImagePage key_page="419dfc13-34db-4935-a13c-b05cfd9d599a" />}
+                    />
+                    <Page label={"Roles y Permisos"} url={"/rol"}
+                        permiso="ver"
+                        icon={<ImagePage key_page="c4666514-202f-4d8d-8656-64c82065ba67" />}
+                    />
+                    <Page label={"Developers Tools"}
+                        icon={<SIconApp name="Ajustes" />}
+                    >
+                        <Page label={"Icons"} url={"/icons"} />
+                        <Page label={"Test"} url={"/test"} />
+                    </Page>
+                    <Page label={"Ayuda"} url={"/wiki"}
+                        icon={<ImagePage key_page="bf38c052-b726-43db-a66d-c202ef79a391" />}
+                    />
+                    <SHr/>
+                </SView>
+            </SView>
         </View>
     }
 }
