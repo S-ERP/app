@@ -1,37 +1,22 @@
 import React, { Component } from 'react';
 import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification, SForm, SHr, SThread, SIcon } from 'servisofts-component';
 import Model from '../../../../Model';
-import MDL from '../../../../MDL';
-import SIconApp from '../../../../Assets/SIconApp';
-import PButtom from '../../../../Components/PButtom';
-import PButtom3 from '../../../../Components/PButtom3';
+
 import ResumenTotales from './ResumenTotales';
- import PopupConfirmaPago from './PopupConfirmaPago';
+import PopupConfirmaPago from './PopupConfirmaPago';
 import FotoCliente from '../Foto/FotoCliente';
-import PopupCliente from './PopupCliente';
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
-        this.data = props.data;
-        this.carrito = props.carrito;
-        this.carritonuevo = props.carritonuevo;
-        this.showPaymentModal = false;
-        this._recibido = "";
-        this._devolvido = "";
-        this.descuentoManual = "";
+        // this.data = props.data;
+        // this.carrito = props.carrito;
+        // this.carritonuevo = props.carritonuevo;
+        // this.showPaymentModal = false;
+        // this._recibido = "";
+        // this._devolvido = "";
+        // this.descuentoManual = "";
     }
-    handleCalculatorPress = (tecla) => {
-        let val = this.descuentoManual || "";
-        switch (tecla) {
-            case "<": val = val.slice(0, -1); break;
-            case "+/-": val = val.startsWith("-") ? val.slice(1) : "-" + val; break;
-            case ".": if (!val.includes(".")) val += "."; break;
-            case "Cant": case "% de desc.": case "Precio": return;
-            default: if (/^\d$/.test(tecla)) val += tecla;
-        }
-        this.descuentoManual = val;
-        this.forceUpdate();
-    };
+
     dataFormateada({ carrito = [], cliente = null, caja = null, vendedor = null }) {
         const carritoFormateado = carrito.map(item => ({
             key: item.key,
@@ -54,19 +39,13 @@ export default class TecladoNumerico extends Component {
             caja: caja,
         };
     }
-    dataSinFormateada({ carrito = [], cliente = null, vendedor = null }) {
-        return {
-            carrito,
-            cliente,
-            vendedor,
-        };
-    }
+
     renderPopudPago() {
         const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
         let monto_recibido_number = parseFloat(this._recibido);
         if (isNaN(monto_recibido_number)) monto_recibido_number = 0;
-        if (!this._recibido) this._recibido = "";
-        if (!this._devolvido) this._devolvido = 0;
+        // if (!this._recibido) this._recibido = "";
+        // if (!this._devolvido) this._devolvido = 0;
         return SPopup.open({
             key: "PopupPago",
             type: 1,
@@ -100,7 +79,7 @@ export default class TecladoNumerico extends Component {
                             } else {
                                 this._devolvido = 0;
                             }
-                            this.forceUpdate();
+                            // this.forceUpdate();
                         }}
                         border={STheme.color.card}
                         type='number'
@@ -129,7 +108,7 @@ export default class TecladoNumerico extends Component {
                             this._devolvido = "";
                             this.data.cliente = "";
                             this.props.onReload();
-                            this.forceUpdate();
+                            // this.forceUpdate();
                             SPopup.close("PopupPago");
                         }}
                     >
@@ -179,7 +158,7 @@ export default class TecladoNumerico extends Component {
                             this._devolvido = "";
                             this.data.cliente = {};
                             this.props.onReload();
-                            this.forceUpdate();
+                            // this.forceUpdate();
                             SPopup.close("PopupPago");
                         }}
                     >
@@ -210,7 +189,7 @@ export default class TecladoNumerico extends Component {
                             <FotoCliente onReloadCliente={(cliente) => {
                                 console.log("cheking 22222222222 web" + JSON.stringify(cliente))
                                 this.cliente = cliente;
-                                this.forceUpdate();
+                                // this.forceUpdate();
                             }}  ></FotoCliente>
                         </SView>
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
@@ -226,8 +205,20 @@ export default class TecladoNumerico extends Component {
                                 conFactura: conFactura,
                                 carrito: this.props?.carrito || {},
                                 cliente: this.cliente,
+                                // onReload: () => {
+                                //     this.props?.onReload?.(); // o cualquier otra función de recarga
+                                // }
                                 onReload: () => {
-                                    this.props?.onReload?.(); // o cualquier otra función de recarga
+                                    this._recibido = "";
+                                    this._devolvido = "";
+                                    this.cliente = {};
+                                    this.forceUpdate();
+                                    this.props.onReload();
+                                },
+                                onReloadCliente: (cliente) => {
+                                    this.cliente = cliente || {};
+                                    this.props.onReloadCliente?.(cliente);
+                                    this.forceUpdate();
                                 }
                             }
                             )
@@ -253,8 +244,7 @@ export default class TecladoNumerico extends Component {
                 </SView >
                 {
                     this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-                        console.log("estamos en movil "+this.props?.cliente)
-                        console.log("estamos en movil22222 "+this.props.cliente)
+                        console.log("modo movil " + this.props.cliente)
                         PopupConfirmaPago.open({
                             subtotal: subtotal,
                             descuento: this.props.descuento,
@@ -266,9 +256,23 @@ export default class TecladoNumerico extends Component {
                             conFactura: conFactura,
                             carrito: this.props?.carrito || {},
                             cliente: this.props?.cliente,
+
                             onReload: () => {
-                                this.props?.onReload?.(); // o cualquier otra función de recarga
+                                this._recibido = "";
+                                this._devolvido = "";
+                                this.cliente = {};
+                                this.forceUpdate();
+                                this.props.onReload();
+                            },
+                            onReloadCliente: (cliente) => {
+                                this.cliente = cliente || {};
+                                this.props.onReloadCliente?.(cliente);
+                                this.forceUpdate();
                             }
+
+                            // onReload: () => {
+                            //     this.props?.onReload?.(); // o cualquier otra función de recarga
+                            // }
                         })
                     }}>
                         <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pago</SText>
@@ -279,10 +283,6 @@ export default class TecladoNumerico extends Component {
         );
     };
     render() {
-        return <>
-            { }
-            {this.renderTecladoNumerico()}
-            { }
-        </>
+        return this.renderTecladoNumerico();
     }
 }

@@ -15,6 +15,14 @@ export default class FotoCliente extends Component {
       },
     });
   };
+  // handleSelectCliente = () => {
+  //   PopupCliente.open({
+  //     onReloadCliente: (cliente) => {
+  //       this.setState({ cliente });
+  //       this.props.onReloadCliente?.(cliente);
+  //     },
+  //   });
+  // };
   render() {
     const { cliente } = this.state;
     const style_text = {

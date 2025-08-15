@@ -12,8 +12,6 @@ export default class Main extends Component {
         super(props);
         this.selectedTipoKey = "all";
         this.searchText = "";
-        this.tamañoMovil = false;
-        this.bandera = false;
         this.state = {
             showCarritoModal: false,
             carritoModalData: [],
@@ -47,14 +45,14 @@ export default class Main extends Component {
             />
         );
     }
-    renderCarrito2() {
-        return (
-            <Carrito
-                ref={(ref) => (this.carritoRefModal = ref)}
-                onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
-            />
-        );
-    }
+    // renderCarrito2() {
+    //     return (
+    //         <Carrito
+    //             ref={(ref) => (this.carritoRefModal = ref)}
+    //             onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
+    //         />
+    //     );
+    // }
     btnFlotante() {
         return (
             <SView col="xs-12 md-0 ">
@@ -78,7 +76,6 @@ export default class Main extends Component {
 
                         PopupCarritoFlotante.open({
                             productos: productos
-
                         })
                         // this.setState({ showCarritoModal: true }, () => {
                         //     this?.carritoRefModal?.setCarrito(productos);
@@ -91,50 +88,50 @@ export default class Main extends Component {
             </SView>
         );
     }
-    renderCarritoModal() {
-        if (!this.state.showCarritoModal) return null;
-        let valor = this.carritoRef?.carrito.length ?? 0;
-        return (
-            <SView
-                col="xs-12"
-                height="100%"
-                center
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: "rgba(0,0,0,0.6)",
-                    zIndex: 10000,
-                }}
-                onPress={() => {
-                    this.setState({ showCarritoModal: false });
-                }}
-            >
-                <SView
-                    width={350}
-                    height={500}
-                    backgroundColor={STheme.color.background}
-                    style={{
-                        borderRadius: 16,
-                        padding: 20,
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: 0.25,
-                        shadowRadius: 5,
-                        elevation: 5,
-                    }}
-                    onPress={(e) => e.stopPropagation()}
-                >
-                    <SText bold center fontSize={20} style={{ marginBottom: 10 }}>
-                        Carrito de Compras
-                    </SText>
-                    {this.renderCarrito2()}
-                </SView>
-            </SView>
-        );
-    }
+    // renderCarritoModal() {
+    //     if (!this.state.showCarritoModal) return null;
+    //     let valor = this.carritoRef?.carrito.length ?? 0;
+    //     return (
+    //         <SView
+    //             col="xs-12"
+    //             height="100%"
+    //             center
+    //             style={{
+    //                 position: "absolute",
+    //                 top: 0,
+    //                 left: 0,
+    //                 right: 0,
+    //                 bottom: 0,
+    //                 backgroundColor: "rgba(0,0,0,0.6)",
+    //                 zIndex: 10000,
+    //             }}
+    //             onPress={() => {
+    //                 this.setState({ showCarritoModal: false });
+    //             }}
+    //         >
+    //             <SView
+    //                 width={350}
+    //                 height={500}
+    //                 backgroundColor={STheme.color.background}
+    //                 style={{
+    //                     borderRadius: 16,
+    //                     padding: 20,
+    //                     shadowColor: "#000",
+    //                     shadowOffset: { width: 0, height: 4 },
+    //                     shadowOpacity: 0.25,
+    //                     shadowRadius: 5,
+    //                     elevation: 5,
+    //                 }}
+    //                 onPress={(e) => e.stopPropagation()}
+    //             >
+    //                 <SText bold center fontSize={20} style={{ marginBottom: 10 }}>
+    //                     Carrito de Compras
+    //                 </SText>
+    //                 {this.renderCarrito2()}
+    //             </SView>
+    //         </SView>
+    //     );
+    // }
     getColSize() {
         const width = Dimensions.get('window').width;
         if (width >= 1200) return parseFloat((12 / 8).toFixed(2));
@@ -187,7 +184,7 @@ export default class Main extends Component {
 
                 </SView>
                 {this.btnFlotante()}
-                {this.renderCarritoModal()}
+                {/* {this.renderCarritoModal()} */}
             </SPage>
         );
     }
