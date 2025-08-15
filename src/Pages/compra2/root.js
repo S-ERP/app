@@ -50,7 +50,7 @@ export default class root extends React.Component {
                 key_sucursal: sucursal.key,
                 key_empresa: MDL.empresa.select.key,
                 key_usuario: MDL.usuario.session.key,
-                facturar: true,
+                facturar: this.facturar || false,
             }
             data.detalle = this.state.detalle.map(item => (
                 {
@@ -87,8 +87,20 @@ export default class root extends React.Component {
         return <SPage title={"Compras"} disableScroll>
             <SView col={"xs-12"} center>
                 <SHr height={15} />
-                <SView col={"xs-11"} flex padding={15} card>
+                <SView col={"xs-10"} flex padding={15} card>
                     <SView col={"xs-12"} row  >
+                        <SView col={"xs-12"} padding={4} style={{alignItems:"flex-end",}} height={30}>
+                            <SView width={105}  style={{marginTop:0}}>
+                                <SInput label={"Con factura"} type='checkBox' defaultValue={false}
+                                    onChangeText={(text) => {
+                                        this.facturar = text;
+                                        this.forceUpdate();
+                                    }}
+                                    style={{marginTop:0}}
+                                />
+                            </SView>
+
+                        </SView>
                         <SView col={"xs-6"} padding={4}>
                             <SInput
                                 ref={ref => this.inputs["sucursal"] = ref}
@@ -193,12 +205,13 @@ class Detalle extends React.Component {
                     <SInput
                         ref={ref => this.inputs["cantidad"] = ref}
                         placeholder={"Cantidad"}
-                        defaultValue={this.props.data.cantidad.toFixed(2)}
+                        defaultValue={this.props.data.cantidad}
                         onChangeText={e => {
-                            this.props.data.cantidad = parseFloat(e ?? 0);
+                            // this.props.data.cantidad = parseFloat(e ?? 0);
+                            this.props.data.cantidad = e;
                         }}
                         icon
-                        type="money"
+                        type="number"
                     />
                 </SView>
                 <SView width={100} padding={2}>
@@ -206,7 +219,7 @@ class Detalle extends React.Component {
                         ref={ref => this.inputs["precio"] = ref}
                         icon
                         placeholder={"Precio"}
-                        defaultValue={this.props.data.precio}
+                        defaultValue={this.props.data.precio || "0.00"}
                         onChangeText={e => {
                             this.props.data.precio = parseFloat(e ?? 0);;
                         }}

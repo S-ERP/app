@@ -114,6 +114,7 @@ export default class PopupCliente extends Component {
                     <SView center style={{ backgroundColor: STheme.color.text, borderColor: STheme.color.gray, borderWidth: 2, borderRadius: 4, width: 90, height: 32 }}
                         onPress={() => {
                             this.props.onReloadCliente?.(this.clienteDataCompleto);
+                            console.log("PopupCliente............... "+this.clienteDataCompleto)
                             SPopup.close("popup_config_horario");
                         }}
                     >

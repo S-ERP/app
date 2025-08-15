@@ -89,7 +89,7 @@ export default class PopupConfirmaPago extends Component {
             monto_total: SMath.formatMoney((subtotal - descuento), 2),
             montoRecibido: SMath.formatMoney(this.variableGlobal, 2),
             cambio: SMath.formatMoney((this.variableGlobal - totalFinal), 2),
-            conFactura: conFactura ? "si" : "no",
+            conFactura: conFactura ? true : false,
             monto_factura: conFactura ? SMath.formatMoney((subtotal - descuento), 2) : SMath.formatMoney(0, 2),
         };
         const datos = this.dataFormateada({
@@ -105,7 +105,7 @@ export default class PopupConfirmaPago extends Component {
             type: "loading",
         })
 
-     
+
         MDL.compra_venta.registrar(datos).then((res) => {
             this.forceUpdate();
             this.props?.onReload();
@@ -128,7 +128,7 @@ export default class PopupConfirmaPago extends Component {
         })
 
 
-  
+
     }
 
     render() {
