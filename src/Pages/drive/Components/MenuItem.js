@@ -71,7 +71,7 @@ export default class MenuItem extends Component {
     }
 
     handleCambiarNombre() {
-        ChangeName.open({ path: this.props.path, obj: this.props.obj, onEvent: this.props.onEvent })
+        ChangeName.open({ path: Actions.root_path + "" + this.props.path, obj: this.props.obj, onEvent: this.props.onEvent })
         MenuItem.close()
     }
 
@@ -97,7 +97,7 @@ export default class MenuItem extends Component {
 
     handleCopiarVinculo() {
         // const type = this.props?.file?.type ?? "";
-        let finalPath = this.props.path;
+        let finalPath = Actions.root_path + this.props.path;
         if (this.props.path.startsWith("/")) finalPath = finalPath.slice(1, finalPath.length)
         let DiverPath = SSocket.api.drive + finalPath;
         let compress = "compress=zip";
@@ -157,10 +157,10 @@ export default class MenuItem extends Component {
                 <SHr h={1} color={STheme.color.card} />
                 <SHr h={16} />
                 {this.renderButom({ label: "Cambiar nombre", icon: <SIcon name='Edit' />, onPress: this.handleCambiarNombre.bind(this) })}
-                {this.renderButom({ label: "Cambiar color", icon: <SIcon name='Ajustes' /> })}
+                {/* {this.renderButom({ label: "Cambiar color", icon: <SIcon name='Ajustes' /> })} */}
                 {this.renderButom({ label: "Mover", icon: <SIcon name='Ajustes' />, onPress: this.handleMover.bind(this) })}
-                {this.renderButom({ label: "Detalles y actividad", icon: <SIcon name='Ajustes' /> })}
-                {this.renderButom({ label: "Agregar a pantalla principal", icon: <SIcon name='Ajustes' /> })}
+                {/* {this.renderButom({ label: "Detalles y actividad", icon: <SIcon name='Ajustes' /> })} */}
+                {/* {this.renderButom({ label: "Agregar a pantalla principal", icon: <SIcon name='Ajustes' /> })} */}
                 {this.renderButom({ label: "Eliminar", icon: <SIcon name='Delete' />, onPress: this.handleEliminar.bind(this) })}
                 {this.renderButom({ label: "Enviar a la papaelera", icon: <SIcon name='Delete' />, onPress: this.handleEnviarAPapelera.bind(this) })}
             </ScrollView>

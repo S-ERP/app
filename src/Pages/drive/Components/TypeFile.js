@@ -5,6 +5,7 @@ import { SDate, SHr, SIcon, SImage, SList, SNavigation, SPage, SText, STheme, ST
 import SSocket from 'servisofts-socket';
 import SVideo from '../../../Components/SVideo';
 import PDFViewer from './PDFViewer';
+import { Actions } from '..';
 
 export default class TypeFile extends Component<{ file: any, path: string }> {
     constructor(props) {
@@ -15,7 +16,7 @@ export default class TypeFile extends Component<{ file: any, path: string }> {
 
     renderPreview() {
         const type = this.props?.file?.type ?? "";
-        let finalPath = this.props.path;
+        let finalPath = Actions.root_path + "" + this.props.path;
         if (this.props.path.startsWith("/")) finalPath = finalPath.slice(1, finalPath.length)
         let DiverPath = SSocket.api.drive + finalPath;
         DiverPath = encodeURI(DiverPath).replace("#", "%23")

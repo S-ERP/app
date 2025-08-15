@@ -69,25 +69,25 @@ export default class config extends Component {
 
             })
 
-            SSocket.sendPromise({
-                "component": "banco",
-                "type": "getAllFull",
-                "key_usuario": Model.usuario.Action.getKey(),
-                "key_empresa": MDL.empresa?.select?.key,
-            }).then(resp => {
-                e.data.bancos = resp.data;
-                e.data.bancos.map((banco) => {
-                    if(banco.cuentas) {
-                        banco.cuentas.map((cuenta) => {
-                            cuenta._color = STheme.colorFromText(cuenta.key)
-                        })
-                    }
-                    banco._color = STheme.colorFromText(banco.key)
-                })
-                this.forceUpdate();
-            }).catch(alm => {
+            // SSocket.sendPromise({
+            //     "component": "banco",
+            //     "type": "getAllFull",
+            //     "key_usuario": Model.usuario.Action.getKey(),
+            //     "key_empresa": MDL.empresa?.select?.key,
+            // }).then(resp => {
+            //     e.data.bancos = resp.data;
+            //     e.data.bancos.map((banco) => {
+            //         if(banco.cuentas) {
+            //             banco.cuentas.map((cuenta) => {
+            //                 cuenta._color = STheme.colorFromText(cuenta.key)
+            //             })
+            //         }
+            //         banco._color = STheme.colorFromText(banco.key)
+            //     })
+            //     this.forceUpdate();
+            // }).catch(alm => {
 
-            })
+            // })
 
             this.setState({ data: e.data })
         }).catch(e => {
@@ -602,8 +602,8 @@ export default class config extends Component {
                     </SView>
                     <SHr h={16} />
                     {this.renderSucursales()}
-                    <SHr h={32} />
-                    {this.renderBancos()}
+                    {/* <SHr h={32} /> */}
+                    {/* {this.renderBancos()} */}
                     <SHr h={32} />
                     {this.renderModenas()}
 

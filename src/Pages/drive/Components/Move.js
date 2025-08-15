@@ -25,8 +25,8 @@ export default class Move extends Component {
         // let pathfinal = !this.props.path ? name : this.props.path + "/" + name
         let pathfinalFrom = !this.props.path ? this.props?.obj?.name : this.props.path + "/" + this.props?.obj?.name
         Actions.mv({
-            path: pathfinalFrom,
-            path_to: name
+            path: Actions.root_path + pathfinalFrom,
+            path_to: Actions.root_path + name
         }).then(e => {
             if (this.props.onEvent) {
                 this.props.onEvent("change_name", {
@@ -53,7 +53,7 @@ export default class Move extends Component {
 
     render() {
         // let pathfinal = !this.props.path ? name : this.props.path + "/" + name
-        let pathfinalFrom = !this.props.path ? this.props?.obj?.name : this.props.path + "/" + this.props?.obj?.name
+        let pathfinalFrom = !this.props.path ? this.props?.obj?.name : this.props.path  + this.props?.obj?.name
         return <SView col={"xs-10"} backgroundColor={STheme.color.background} withoutFeedback padding={16} style={{
             borderRadius: 16
         }}>

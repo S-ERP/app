@@ -88,6 +88,7 @@ export default class Page extends React.Component<PageProps> {
                 let validos = 0;
                 React.Children.map(props.children, (child) => {
                     if (!React.isValidElement(child)) return child;
+                    if(child.type.name != "Page") return;
                     const props: PageProps = child.props || {};
                     if (this.permisoAceptado(child.props)) {
                         validos++;

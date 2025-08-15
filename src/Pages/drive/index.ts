@@ -18,6 +18,9 @@ export default SPage.combinePages(Parent.name, {
 
 
 export const Actions = {
+    root_path: "/home",
+
+
     mkdir: ({ path }) => {
         return SSocket.sendPromise({
             service: "drive",
