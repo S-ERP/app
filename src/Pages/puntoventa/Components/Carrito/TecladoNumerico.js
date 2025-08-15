@@ -9,6 +9,7 @@ import ResumenTotales from './ResumenTotales';
 import FotoCliente2 from '../Foto/FotoCliente';
 import PopupConfirmaPago from './PopupConfirmaPago';
 import FotoCliente from '../Foto/FotoCliente';
+import PopupCliente from './PopupCliente';
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
@@ -210,14 +211,30 @@ export default class TecladoNumerico extends Component {
                     <SView col={"xs-4"}>
                         <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 40, borderRadius: 2, margin: 2 }}>
                             <FotoCliente onReloadCliente={(cliente) => {
-                                console.log("carajo " + JSON.stringify(cliente))
+                                console.log("cheking 22222222222 web" + JSON.stringify(cliente))
+
                                 this.data.cliente = cliente;
                                 this.forceUpdate();
                             }}  ></FotoCliente>
                         </SView>
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                             let carro = this.props?.carrito || {};
-                            console.log("mirala1 " + JSON.stringify(this.data.cliente))
+
+                            PopupCliente.onReloadCliente = (cliente) => {
+                                this.data.cliente = cliente;
+                                this.forceUpdate();
+                            }
+                            const clientela = this.data.cliente;
+                            console.log("mirala ssssssssssssss " + JSON.stringify(clientela))
+
+
+                            // onReloadCliente: (cliente) => {
+                            //                         this.pollo = cliente;
+                            //                         console.log("trajo " + JSON.stringify(cliente))
+                            //                         this.forceUpdate();
+                            //                     }
+
+                            console.log("mirala1 " + JSON.stringify(clientela))
                             PopupConfirmaPago.open({
                                 subtotal: subtotal,
                                 descuento: this.props.descuento,
