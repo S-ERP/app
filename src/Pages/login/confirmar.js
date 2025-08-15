@@ -11,6 +11,7 @@ import CardUser from './components/CardUser';
 import SSocket from 'servisofts-socket';
 
 class login extends Component {
+        static HIDDEN = true;
     constructor(props) {
         super(props);
         this.state = {

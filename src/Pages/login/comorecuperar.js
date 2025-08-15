@@ -9,6 +9,7 @@ import SIconApp from '../../Assets/SIconApp';
 
 // create a component
 class comorecuperar extends Component {
+        static HIDDEN = true;
     render() {
         const sizeIcon = 40
         return <SPage title="Recuperar contraseña">

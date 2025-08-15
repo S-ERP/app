@@ -11,6 +11,7 @@ import PButtom from '../../Components/PButtom';
 import Model from '../../Model';
 
 class recuperar extends Component {
+        static HIDDEN = true;
     constructor(props) {
         super(props);
         this.state = {

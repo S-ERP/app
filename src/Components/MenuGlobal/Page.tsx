@@ -4,6 +4,7 @@ import { SHr, SNavigation, SPage, SText, STheme, SView } from "servisofts-compon
 import SIconApp, { SIconAppType } from "../../Assets/SIconApp";
 import { Route } from "@react-navigation/native";
 import MDL from "../../MDL";
+import MenuGlobal from ".";
 
 
 
@@ -15,6 +16,7 @@ type PageProps = {
     children?: React.ReactNode;
     permiso?: string;
     permiso_url?: string,
+    size?: number,
 }
 export default class Page extends React.Component<PageProps> {
     state = {
@@ -71,7 +73,8 @@ export default class Page extends React.Component<PageProps> {
             this.inputRefs.push(ref);
             const props: PageProps = child.props || {};
             return React.cloneElement(child, {
-                ref
+                ref,
+                size: this.size * 0.8
             })
             // }
         })
@@ -105,14 +108,14 @@ export default class Page extends React.Component<PageProps> {
         return true;
     }
 
-    size = 30
+    size = this.props.size || 30
     render() {
 
         if (!this.permisoAceptado(this.props)) return null;
 
         return <>
             <SView style={{
-                marginTop: 4,
+                marginTop: 2,
                 width: "100%",
                 height: this.size,
                 flexDirection: "row",
@@ -122,6 +125,15 @@ export default class Page extends React.Component<PageProps> {
                 if (this.props.url) {
                     SNavigation.navigate(this.props.url, this.props.params);
                 } else {
+                    if (MenuGlobal.INSTACE?._barra) {
+                        if (!MenuGlobal.INSTACE?._barra.state.open) {
+                            MenuGlobal.INSTACE?._barra?.open();
+                            if (this.state.open) {
+                                return;
+                            }
+                        }
+
+                    }
                     this.setState({
                         open: !this.state.open
                     })
@@ -129,26 +141,27 @@ export default class Page extends React.Component<PageProps> {
             }}>
                 <View style={{ width: 4 }} />
                 <View style={{
-                    width: this.size - 2,
-                    height: this.size - 2,
+                    width: this.size - 3,
+                    height: this.size - 3,
                     borderRadius: 4,
                     overflow: "hidden",
                     // backgroundColor: STheme.color.card,
                     justifyContent: "center",
                     alignItems: "center",
                 }}>
-                    {this.props.icon}
-                    {/* {this.props.icon ? <SIconApp name={this.props.icon} fill={STheme.color.text} /> : <SText bold style={{ opacity: 0.7 }}>{this.props.label.substring(0, 1)}</SText>} */}
+                    {/* {this.props.icon} */}
+                    {this.props.icon ? this.props.icon : <SText bold style={{ opacity: 0.7, fontSize: 10 }}>{(this.props?.label).match(/\b\p{L}/gu)?.join("").toUpperCase()}</SText>}
                 </View>
                 <View style={{ width: 8 }} />
                 <SText numberOfLines={1} style={{
                     flex: 1,
+                    fontSize: 12,
                 }}>{this.props.label}</SText>
                 <View style={{ width: 4 }} />
                 {this.props.children && <SView width={10} height={10} style={{ transform: [{ rotate: this.state.open ? "90deg" : "-90deg" }] }}><SIconApp name="Back" fill={STheme.color.text} /></SView>}
                 <View style={{ width: 4 }} />
             </SView>
-            {this.state.open &&
+            {(this.state.open && MenuGlobal.INSTACE?._barra?.state?.open) &&
                 <SView style={{ paddingStart: this.size / 2, }}>
                     {this.injectRefs(this.props.children)}
                 </SView>}
