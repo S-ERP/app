@@ -115,8 +115,9 @@ export default class Carrito extends Component {
                     }}
                     >
                         <SView row center >
-                            <SIconApp name='carritoproducto' height={50} fill={STheme.color.card} />
-                            <SText fontSize={12} color={STheme.color.card}>Comience a agregar productos</SText>
+                            <SIconApp name='carritoproducto' height={50} fill={STheme.color.text} />
+                            <SHr height={10} />
+                            <SText fontSize={12} color={STheme.color.text}>Su carrito de compras está vacío</SText>
                         </SView>
                     </SView>
                     :
@@ -124,9 +125,10 @@ export default class Carrito extends Component {
                         <SView col={"xs-12"} row   >
                             <SView col={"xs-10 md-10"} row  >
                                 <SText fontSize={15} bold color={STheme.color.text}>Detalle venta</SText>
+                                
                             </SView>
-                            <SView col={"xs-2 md-2"}  center onPress={() => this.vaciarCarrito()} style={{alignItems:"flex-end" }} >
-                                <SView backgroundColor={STheme.color.card} border={STheme.color.text} style={{ borderRadius: 20, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4, height: 24, opacity: 0.6,alignItems:"flex-end" }}>
+                            <SView col={"xs-2 md-2"} center onPress={() => this.vaciarCarrito()} style={{ alignItems: "flex-end" }} >
+                                <SView backgroundColor={STheme.color.card} border={STheme.color.text} style={{ borderRadius: 20, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4, height: 24, opacity: 0.6, alignItems: "flex-end" }}>
                                     <SText fontSize={12} center color={STheme.color.text}>Vaciar</SText>
                                 </SView>
                             </SView>
@@ -152,7 +154,7 @@ export default class Carrito extends Component {
                         </SView>
                         <SHr height={5} />
                         <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
-                        
+
                         <SView col={"xs-12"} row >
                             <SView col={"xs-6"} height={60} center >
                                 <SInput label={"Descuento VIP (Bs):"} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", borderRadius: 8 }}
@@ -162,7 +164,7 @@ export default class Carrito extends Component {
                                     }}
                                 />
                             </SView>
-                            <SView col={"xs-6"}  row center  >
+                            <SView col={"xs-6"} row center  >
                                 <SView width={70} style={{ alignItems: "flex-end" }}  >
                                     <SInput label={"Con factura"} type='checkBox' defaultValue={false}
                                         onChangeText={(text) => {
@@ -205,7 +207,7 @@ export default class Carrito extends Component {
                     </SView>
                 }
                 <TecladoNumerico
-                    data={{ cliente: this.data?.cliente }}
+                    data={{ cliente: this.data.cliente }}
                     carrito={this.carrito}
                     carritonuevo={this.carritonuevo}
                     numeroIva={this._numeroIva}

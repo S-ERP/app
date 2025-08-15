@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification, SForm, SHr, SThread } from 'servisofts-component';
+import { SView, SText, STheme, SNavigation, SMath, SInput, SButtom, SPopup, SNotification, SForm, SHr, SThread, SIcon } from 'servisofts-component';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 import SIconApp from '../../../../Assets/SIconApp';
@@ -190,8 +190,8 @@ export default class TecladoNumerico extends Component {
         })
     }
     renderTecladoNumerico = () => {
-        const cliente = this.data.cliente ?? {};
-        const { key, nombres, apellidos, telefono, nombre_completo } = cliente;
+        // const cliente = this.data.cliente;;
+        // const { key, nombres, apellidos, telefono, nombre_completo } = cliente;
         const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
         const style_text = {
             color: STheme.color.text,
@@ -209,7 +209,8 @@ export default class TecladoNumerico extends Component {
                 <SView col={"xs-0 md-12"} row color={STheme.color.danger}>
                     <SView col={"xs-4"}>
                         <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 40, borderRadius: 2, margin: 2 }}>
-                            <FotoCliente onReload2={(cliente) => {
+                            <FotoCliente onReloadCliente={(cliente) => {
+                                console.log("carajo " + JSON.stringify(cliente))
                                 this.data.cliente = cliente;
                                 this.forceUpdate();
                             }}  ></FotoCliente>
@@ -224,16 +225,18 @@ export default class TecladoNumerico extends Component {
                                 totalImpuesto: totalImpuesto,
                                 totalDescuento: descuento,
                                 totalFinal: (subtotal - this.props.descuento),
-                                 numeroIva: numeroIva,
+                                numeroIva: numeroIva,
                                 conFactura: conFactura,
                                 carrito: this.props?.carrito || {},
-                                cliente: this.data?.cliente,
+                                cliente: this.props.data?.cliente,
                                 onReload: () => {
                                     this.props?.onReload?.(); // o cualquier otra función de recarga
                                 }
                             }
                             )
                         }}>
+                            <SIcon name="iconRight" width={50} height={50} fill={STheme.color.background} />
+                            <SHr height={5} />
                             <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagare</SText>
                         </SView>
                     </SView>
@@ -263,7 +266,7 @@ export default class TecladoNumerico extends Component {
                             numeroIva: numeroIva,
                             conFactura: conFactura,
                             carrito: this.props?.carrito || {},
-                            cliente: this.data?.cliente,
+                            cliente: this.props.data?.cliente,
                             onReload: () => {
                                 this.props?.onReload?.(); // o cualquier otra función de recarga
                             }

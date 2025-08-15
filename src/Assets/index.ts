@@ -260,6 +260,8 @@ import crmmicrofono, {
   ReactComponent as crmmicrofonoW,
 } from "./svg/crm/microfono.svg";
 
+import iconRight , { ReactComponent as iconRightW } from "./svg/iconRight.svg"
+
 export const svg = {
   Logo: { Native: Logo, Web: LogoW },
   pregunta1: { Native: pregunta1, Web: pregunta1W },
@@ -411,6 +413,8 @@ export const svg = {
   ctaSistema: { Native: ctaSistema, Web: ctaSistemaW },
 
   clock: { Native: Clock, Web: ClockW },
+
+  iconRight: { Native: iconRight, Web: iconRightW },
 
   ...blender,
 };

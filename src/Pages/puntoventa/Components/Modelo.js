@@ -65,13 +65,15 @@ export default class Modelo extends Component {
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
         if (this.props.searchText) { const search = this.props.searchText.toLowerCase(); productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search)); }
         const colSize = this.getColSize();
+
         return (
             <SView col={"xs-12"} flex center backgroundColor='transparent'>
                 <SScrollView2 disableHorizontal>
                     <SView col={"xs-12"} style={{ padding: 2 }}>
-                        <SView col={"xs-12"} row  padding={5}>
+                        <SView col={"xs-12"} row padding={5}>
                             {productosFiltrados.map((producto, index) => {
                                 const src = producto.key ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}` : productSinFoto;
+
                                 return (
                                     <SView
                                         key={index}
@@ -79,23 +81,25 @@ export default class Modelo extends Component {
                                         margin={2}
                                         style={{
                                             borderRadius: 8,
-                                            shadowColor: "#000",
+                                            // shadowColor: "#000",
                                             shadowOffset: { width: 0, height: 2 },
                                             shadowOpacity: 0.1,
                                             shadowRadius: 8,
                                             elevation: 3,
                                             borderWidth: 1,
                                             borderColor: STheme.color.lightGray,
-                                            overflow:"hidden"
+                                            overflow: "hidden",
+                                            backgroundColor: STheme.color.background
                                         }}
                                         onPress={() => {
+                                            console.log("PRO - PRESS", producto)
                                             // if (producto.stock <= 0) return alert("No hay más stock disponible");
                                             // producto.stock -= 1; // ⬅️ Resta stock localmente
                                             this.props.onPressProducto?.({ ...producto }); // enviar copia actualizada
                                             this.forceUpdate();  // ⬅️ Fuerza render para reflejar el cambio
                                         }}
                                     >
-                                        <SView center style={{ marginBottom: 12, height: 120, overflow:"hidden" , backgroundColor:STheme.color.card}}>
+                                        <SView center style={{ marginBottom: 12, height: 120, overflow: "hidden", backgroundColor: STheme.color.card }}>
                                             <FotoModelo data={producto} ></FotoModelo>
                                         </SView>
                                         <SView col={"xs-12"} padding={4}>
