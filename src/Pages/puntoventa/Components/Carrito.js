@@ -10,10 +10,6 @@ import FotoCliente from './Foto/FotoCliente';
 export default class Carrito extends Component {
     carrito = [];
     descuentoManual = "";
-    showPaymentModal = false;
-    data = {};
-    amountReceived = "";
-    fotoClienteRef;
     conFactura = false;
     cliente = {};
     componentDidMount() {
@@ -59,16 +55,36 @@ export default class Carrito extends Component {
             this.forceUpdate();
         }
     };
-    vaciarCarrito() {
-        this.carritoRefModal?.setCarrito?.([]);
+
+
+    resetCarrito = () => {
         this.carrito = [];
-        this.descuentoManual = 0;
-        console.log("vacios " + this.carrito)
+        this.descuentoManual = '';
+        this.conFactura = false;
+        this.cliente = null;
+        this.props.onModificarStock?.(null, 0);
+    };
+
+    vaciarCarrito = () => {
+        this.carrito = [];
+        this.descuentoManual = "";
+        this.conFactura = false;
+        this.cliente = {};
+        this.props.onModificarStock?.(null, 0);
+        this.carritoRefModal?.setCarrito?.([]);
+
         this.forceUpdate();
     };
-    handleClienteChange = (cliente) => {
-        this.setState({ cliente });
-    };
+
+    // vaciarCarrito() {
+    //     this.carritoRefModal?.setCarrito?.([]);
+    //     this.carrito = [];
+    //     this.descuentoManual = 0;
+    //     this.conFactura = false;
+    //     this.cliente = null;
+    //     this.forceUpdate();
+    // };
+
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
     calcularTotalConIVA = (subtotal) => {
         if (!this._enviromentsIva) return subtotal;
@@ -84,7 +100,6 @@ export default class Carrito extends Component {
         return subtotal * this._enviromentsIva;
     };
     calcularTotalConDescuento = (total) => total - parseFloat(this.descuentoManual || "0");
-    getCarrito() { this.carrito; }
     renderItemCarrito = ({ item }) => (
         <CarritoItem
             item={item}
@@ -101,7 +116,6 @@ export default class Carrito extends Component {
         const totalFinal = this.calcularTotalConDescuento(totalConIVA);
         return (
             <>
-                {/* <SView col={"xs-12"} flex center  ></SView> */}
                 {subtotal <= 0 ?
                     <SView backgroundColor={STheme.color.background} flex center style={{
                         borderRadius: 8, shadowColor: STheme.color.card, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1,
@@ -170,33 +184,11 @@ export default class Carrito extends Component {
                         { }
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.danger} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-12"} center>
-                                {/* 
-                                <FotoCliente ref={(ref) => (this.fotoClienteRef = ref)} onReloadCliente={(cliente) => {
-                                    this.data.cliente = cliente;
-                                    this.cliente = cliente;
-                                    console.log("cheking 22222222222 movil" + JSON.stringify(cliente))
-                                    this.forceUpdate();
-                                }}  ></FotoCliente> */}
                                 <FotoCliente onReloadCliente={(cliente) => {
                                     console.log("cheking 111111111 movil" + JSON.stringify(cliente))
                                     this.cliente = cliente;
                                     this.forceUpdate();
                                 }}  ></FotoCliente>
-                                {/* <FotoCliente onReloadCliente={this.handleClienteChange} /> */}
-                                {/* <SView col={"xs-12  "} row center
-                                    onPress={() => this.seleccionarCliente()}
-                                >
-                                    <SView width={45}  >
-                                        <SView center backgroundColor={STheme.color.background} style={{
-                                            minWidth: 10, width: 30, minHeight: 10, height: 30, borderRadius: 18, margin: 4,
-                                            marginRight: (this.data?.cliente?.key ? 6 : 8), overflow: "hidden",
-                                        }}>
-                                         </SView>
-                                    </SView>
-                                    <SView flex  >
-                                        <SText style={{ color: STheme.color.text, fontWeight: "bold", fontSize: 12, textTransform: 'uppercase' }}>{this.data?.cliente?.nombres || "Seleccionar Cliente"}</SText>
-                                    </SView>
-                                </SView> */}
                             </SView>
                         </SView>
                     </SView>
@@ -212,6 +204,10 @@ export default class Carrito extends Component {
                     conFactura={this.conFactura}
                     subtotal={subtotal}
                     onReload={() => { this.vaciarCarrito(); }}
+                    onReloadCliente={(cliente) => {
+                        this.cliente = cliente || {};
+                        this.forceUpdate();
+                    }}
                 />
             </>
         );

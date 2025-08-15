@@ -12,12 +12,12 @@ export default class CarritoItem extends Component {
                         <FotoModelo data={item} />
                     </SView>
                 </SView>
-                <SView col={"xs-4 md-4 lg-4.5"} backgroundColor='transparent'>
+                <SView col={"xs-4 sm-4 lg-4.5"} backgroundColor='transparent'>
                     <SText fontSize={12}>{item.descripcion}</SText>
                     <SText fontSize={12}>Bs {item.precio_venta.toFixed(2)} / Und</SText>
                     {/* <SText fontSize={12}>stock actual: {item.stock}</SText> */}
                 </SView>
-                <SView col={"xs-5 md-5.2 lg-4.3"} flex row center backgroundColor='transparent'>
+                <SView col={"xs-5 sm-5.2 lg-4.3"} flex row center backgroundColor='green'>
                     <SView center border={STheme.color.text} style={{ width: 24, height: 24, borderRadius: 12 }} onPress={onDisminuir}>
                         <SText fontSize={18} color={"#EF4444"}>-</SText>
                     </SView>
