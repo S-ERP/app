@@ -6,8 +6,7 @@ import SIconApp from '../../../../Assets/SIconApp';
 import PButtom from '../../../../Components/PButtom';
 import PButtom3 from '../../../../Components/PButtom3';
 import ResumenTotales from './ResumenTotales';
-import FotoCliente2 from '../Foto/FotoCliente';
-import PopupConfirmaPago from './PopupConfirmaPago';
+ import PopupConfirmaPago from './PopupConfirmaPago';
 import FotoCliente from '../Foto/FotoCliente';
 import PopupCliente from './PopupCliente';
 export default class TecladoNumerico extends Component {
@@ -212,20 +211,19 @@ export default class TecladoNumerico extends Component {
                         <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 40, borderRadius: 2, margin: 2 }}>
                             <FotoCliente onReloadCliente={(cliente) => {
                                 console.log("cheking 22222222222 web" + JSON.stringify(cliente))
-
-                                this.data.cliente = cliente;
+                                this.cliente = cliente;
                                 this.forceUpdate();
                             }}  ></FotoCliente>
                         </SView>
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                             let carro = this.props?.carrito || {};
 
-                            PopupCliente.onReloadCliente = (cliente) => {
-                                this.data.cliente = cliente;
-                                this.forceUpdate();
-                            }
-                            const clientela = this.data.cliente;
-                            console.log("mirala ssssssssssssss " + JSON.stringify(clientela))
+                            // PopupCliente.onReloadCliente = (cliente) => {
+                            //     this.cliente = cliente;
+                            //     this.forceUpdate();
+                            // }
+                            // const clientela = this.data.cliente;
+                            // console.log("mirala ssssssssssssss " + JSON.stringify(clientela))
 
 
                             // onReloadCliente: (cliente) => {
@@ -234,7 +232,7 @@ export default class TecladoNumerico extends Component {
                             //                         this.forceUpdate();
                             //                     }
 
-                            console.log("mirala1 " + JSON.stringify(clientela))
+                            // console.log("mirala1 " + JSON.stringify(clientela))
                             PopupConfirmaPago.open({
                                 subtotal: subtotal,
                                 descuento: this.props.descuento,
@@ -245,7 +243,7 @@ export default class TecladoNumerico extends Component {
                                 numeroIva: numeroIva,
                                 conFactura: conFactura,
                                 carrito: this.props?.carrito || {},
-                                cliente: this.props.data?.cliente,
+                                cliente: this.cliente,
                                 onReload: () => {
                                     this.props?.onReload?.(); // o cualquier otra función de recarga
                                 }
@@ -273,6 +271,10 @@ export default class TecladoNumerico extends Component {
                 </SView >
                 {
                     this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
+
+                        console.log("estamos en movil "+this.props?.cliente)
+                        console.log("estamos en movil22222 "+this.props.cliente)
+
                         PopupConfirmaPago.open({
                             subtotal: subtotal,
                             descuento: this.props.descuento,
@@ -283,7 +285,7 @@ export default class TecladoNumerico extends Component {
                             numeroIva: numeroIva,
                             conFactura: conFactura,
                             carrito: this.props?.carrito || {},
-                            cliente: this.props.data?.cliente,
+                            cliente: this.props?.cliente,
                             onReload: () => {
                                 this.props?.onReload?.(); // o cualquier otra función de recarga
                             }

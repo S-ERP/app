@@ -1,5 +1,5 @@
 import React from "react";
-import { SHr, SInput, SNavigation, SNotification, SPage, SText, STheme, SThread, SView } from "servisofts-component";
+import { SHr, SIcon, SInput, SNavigation, SNotification, SPage, SText, STheme, SThread, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import SIconApp from "../../Assets/SIconApp";
 import detalle from "../compra/detalle";
@@ -15,7 +15,10 @@ export default class root extends React.Component {
         proveedores: [],
         detalle: [
             { producto: "", cantidad: 1, precio: 0, modelo: null },
-        ]
+        ],
+        // bookings: [
+        //     this.createDefaultCompra(),
+        // ],
     }
     inputs = {}
     componentDidMount() {
@@ -31,6 +34,22 @@ export default class root extends React.Component {
             this.setState({ proveedores: proveedores })
         })
     }
+
+    // createDefaultCompra() {
+    //     return {
+    //         "cantidad": 1,
+    //         "descripcion": "",
+    //         "descripcion_staff_tipo": "",
+    //         "hora_fin": "",
+    //         "hora_inicio": "",
+    //         "fecha_fin": "",
+    //         "fecha_inicio": "",
+    //         "key_staff_tipo": "",
+    //         "nivel_ingles": "NONE",
+    //         "observacion": "",
+
+    //     }
+    // }
 
     handleSubmit = async () => {
         console.log("DETALLE ", this.state.detalle)
@@ -89,14 +108,14 @@ export default class root extends React.Component {
                 <SHr height={15} />
                 <SView col={"xs-10"} flex padding={15} card>
                     <SView col={"xs-12"} row  >
-                        <SView col={"xs-12"} padding={4} style={{alignItems:"flex-end",}} height={30}>
-                            <SView width={105}  style={{marginTop:0}}>
+                        <SView col={"xs-12"} padding={4} style={{ alignItems: "flex-end", }} height={30}>
+                            <SView width={105} style={{ marginTop: 0 }}>
                                 <SInput label={"Con factura"} type='checkBox' defaultValue={false}
                                     onChangeText={(text) => {
                                         this.facturar = text;
                                         this.forceUpdate();
                                     }}
-                                    style={{marginTop:0}}
+                                    style={{ marginTop: 0 }}
                                 />
                             </SView>
 
@@ -138,16 +157,40 @@ export default class root extends React.Component {
                             </SView>
                         </SView>
                         <FlatList data={this.state.detalle}
-                            renderItem={({ item }) => <Detalle parent={this} data={item} />}
+                            renderItem={({ item, index }) => <Detalle parent={this} data={item} onDelete={() => {
+                                this.state.detalle.splice(index, 1);
+                                this.setState({ detalle: this.state.detalle })
+                            }} />}
                             keyExtractor={(item, index) => index.toString()}
                             ListEmptyComponent={() => <SText center>No hay productos agregados</SText>}
                         />
+                    </SView>
+                    <SHr height={5} />
+                    <SView col={"xs-12"} style={{ alignItems: "flex-end" }}>
+                        <SView width={85} height={35} onPress={() => {
+                            // this.state.detalle.push(this.createDefaultCompra());
+                            this.state.detalle.push(this.state.detalle);
+                            this.setState({ detalle: this.state.detalle })
+                            console.log("DETALLE ", this.state.detalle)
+                        }} row center
+                            style={{
+                                backgroundColor: STheme.color.danger,
+                                borderRadius: 4,
+                                // padding: 8,
+                                // justifyContent: "center",
+                                // alignItems: "center",
+                            }}
+                        >
+                            <SIcon name='iconAdd' width={15} height={15} fill={STheme.color.white} />
+                            <SView width={10} />
+                            <SText fontSize={14} color={STheme.color.white} >AÑADIR</SText>
+                        </SView>
                     </SView>
                     {/* <SView col={"xs-12"} padding={4} center>
                         <SText fontSize={12} padding={8} card onPress={this.handleSubmit.bind(this)}>GUARDAR</SText>
                     </SView> */}
                     <SView col={"xs-12"} center>
-                        <SHr height={15} />
+                        <SHr height={25} />
                         <PButtom type='primary' small onPress={this.handleSubmit.bind(this)}>GUARDAR</PButtom>
                     </SView>
                 </SView>
@@ -205,7 +248,7 @@ class Detalle extends React.Component {
                     <SInput
                         ref={ref => this.inputs["cantidad"] = ref}
                         placeholder={"Cantidad"}
-                        defaultValue={this.props.data.cantidad}
+                        defaultValue={this.props.data.cantidad || "1"}
                         onChangeText={e => {
                             // this.props.data.cantidad = parseFloat(e ?? 0);
                             this.props.data.cantidad = e;
@@ -226,7 +269,7 @@ class Detalle extends React.Component {
                         type="money"
                     />
                 </SView>
-                <SView width={30} padding={2} center>
+                <SView width={30} padding={2} center onPress={this.props.onDelete}>
                     <SIconApp name="Delete" />
                 </SView>
             </SView>
