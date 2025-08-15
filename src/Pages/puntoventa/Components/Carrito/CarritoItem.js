@@ -19,9 +19,9 @@ export default class CarritoItem extends Component {
                         <SText col={"xs-12"} fontSize={12}>Bs {item.precio_venta.toFixed(2)} / Und</SText>
                     </SView>
                 </SView>
-                <SView col={"md-3 lg-3 xl-4.5"} row center border='transparent'>
+                <SView col={"md-5.5 lg-4.5 xl-3.5"} row center border='transparent'>
                     <SView col={"xs-12"} row center backgroundColor='transparent'>
-                        <SView col={"md-12 xl-4"} row center backgroundColor='transparent' >
+                        <SView col={"md-4 xl-4"} row center backgroundColor='transparent' >
 
                             <SView
                                 center
@@ -40,7 +40,7 @@ export default class CarritoItem extends Component {
                             </SView>
                         </SView>
 
-                        <SView col={"md-12 xl-4"} row center backgroundColor='transparent'  >
+                        <SView col={"md-4 xl-4"} row center backgroundColor='transparent'  >
 
                             <SView center style={{ marginHorizontal: 5 }}>
                                 <SInput
@@ -53,7 +53,7 @@ export default class CarritoItem extends Component {
                                 />
                             </SView>
                         </SView>
-                        <SView col={"md-12 xl-4"} row center backgroundColor='transparent' >
+                        <SView col={"md-4 xl-4"} row center backgroundColor='transparent' >
 
                             <SView
                                 center
