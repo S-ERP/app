@@ -35,11 +35,14 @@ export default class AjusteTagInfoPopup extends React.Component<Props> {
                 padding: 3,
                 borderRadius: 4,
             }} >{ajuste?.grupo_sugerido}</SText> {ajuste?.descripcion}</SText>
+
             <SHr height={8} />
             <SText fontSize={12} color={STheme.color.lightGray}>{ajuste?.observacion}</SText>
+            <SHr height={4} />
+            <SText fontSize={10} color={STheme.color.lightGray}>key: {ajuste?.key}</SText>
             {this.props.ajuste.ajuste_empresa && <>
                 <SHr height={8} />
-                <SText fontSize={8}>{this.props?.ajuste?.ajuste_empresa?.key_cuenta_contable}</SText>
+                {/* <SText fontSize={8}>{this.props?.ajuste?.ajuste_empresa?.key_cuenta_contable}</SText> */}
                 <SText color={STheme.color.danger} onPress={this.handleDeleteAjusteEmpresa.bind(this)}>{"RESET"}</SText>
             </>}
         </SView>
