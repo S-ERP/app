@@ -1,5 +1,5 @@
 import React from "react";
-import { SInput, SPage, SText, STheme, SView } from "servisofts-component";
+import { SInput, SMath, SPage, SText, STheme, SView } from "servisofts-component";
 import SPageConta from "./Components/SPageConta";
 import SSocket from "servisofts-socket";
 import MDL from "../../MDL";
@@ -123,20 +123,20 @@ export default class conta extends React.Component {
                         data={e => e.row.debe}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
-                            return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.data || "0"}</SText>
+                            return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{SMath.formatMoney(e.data || "0")}</SText>
                         }}
                     />
                     <DinamicTable.Col key="haber" label="Haber" data={e => e.row.haber}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
                             const val = e.data || "0"
-                            return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{val}</SText>
+                            return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{SMath.formatMoney(val)}</SText>
                         }} />
                     <DinamicTable.Col key="saldo" label="Saldo"
                         data={e => ["ACTIVO", "GASTO"].includes(e.row.tipo) ? ((e.row.debe || 0) - (e.row.haber || 0)) : ((e.row.haber || 0) - (e.row.debe || 0))}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
-                            return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.data || "0"}</SText>
+                            return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{SMath.formatMoney(e.data || "0")}</SText>
                         }}
                     />
                 </DinamicTable>

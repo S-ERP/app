@@ -50,7 +50,7 @@ export default class root extends React.Component {
                 key_sucursal: sucursal.key,
                 key_empresa: MDL.empresa.select.key,
                 key_usuario: MDL.usuario.session.key,
-                facturar: false,
+                facturar: true,
             }
             data.detalle = this.state.detalle.map(item => (
                 {
