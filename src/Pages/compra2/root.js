@@ -5,6 +5,7 @@ import SIconApp from "../../Assets/SIconApp";
 import detalle from "../compra/detalle";
 import { FlatList } from "react-native";
 import SSocket from "servisofts-socket";
+import PButtom from "../../Components/PButtom";
 
 export default class root extends React.Component {
 
@@ -32,6 +33,7 @@ export default class root extends React.Component {
     }
 
     handleSubmit = async () => {
+        console.log("DETALLE ", this.state.detalle)
         try {
 
 
@@ -81,52 +83,61 @@ export default class root extends React.Component {
 
     }
     render() {
-        return <SPage title={"compra"} disableScroll>
-            <SView col={"xs-12"} row>
-                <SView col={"xs-6"} padding={4}>
-                    <SInput
-                        ref={ref => this.inputs["sucursal"] = ref}
-                        label={"Sucursal"}
-                        type="select2"
-                        placeholder={"Seleccione una sucursal"}
-                        options={this.state.sucursales.map(a => a.descripcion)}
-                    />
+        return <SPage title={"Compras"} disableScroll>
+            <SView col={"xs-12"} center>
+                <SHr height={15} />
+                <SView col={"xs-11"} flex padding={15} card>
+                    <SView col={"xs-12"} row  >
+                        <SView col={"xs-6"} padding={4}>
+                            <SInput
+                                ref={ref => this.inputs["sucursal"] = ref}
+                                label={"Sucursal"}
+                                type="select2"
+                                placeholder={"Seleccione una sucursal"}
+                                options={this.state.sucursales.map(a => a.descripcion)}
+                            />
+                        </SView>
+                        <SView col={"xs-6"} padding={4}>
+                            <SInput
+                                ref={ref => this.inputs["proveedor"] = ref}
+                                label={"Proveedor"}
+                                type="select2"
+                                placeholder={"Seleccione un proveedor"}
+                                options={this.state.proveedores.map(a => a.razon_social)}
+                            />
+                        </SView>
+                    </SView>
+                    <SHr />
+                    <SHr h={1} color={STheme.color.card} />
+                    <SView col={"xs-12"} padding={4} flex>
+                        <SView col={"xs-12"} row>
+                            {/* <SView width={30} padding={2} center>
+                                <SIconApp name="Delete" />
+                            </SView> */}
+                            <SView flex={2} padding={2}>
+                                <SText>Producto</SText>
+                            </SView>
+                            <SView width={115} padding={2} >
+                                <SText>Cantidad</SText>
+                            </SView>
+                            <SView width={75} padding={2} >
+                                <SText>Precio</SText>
+                            </SView>
+                        </SView>
+                        <FlatList data={this.state.detalle}
+                            renderItem={({ item }) => <Detalle parent={this} data={item} />}
+                            keyExtractor={(item, index) => index.toString()}
+                            ListEmptyComponent={() => <SText center>No hay productos agregados</SText>}
+                        />
+                    </SView>
+                    {/* <SView col={"xs-12"} padding={4} center>
+                        <SText fontSize={12} padding={8} card onPress={this.handleSubmit.bind(this)}>GUARDAR</SText>
+                    </SView> */}
+                    <SView col={"xs-12"}  center>
+                        <SHr height={15} />
+                        <PButtom type='primary' small onPress={this.handleSubmit.bind(this)}>GUARDAR</PButtom>
+                    </SView>
                 </SView>
-                <SView col={"xs-6"} padding={4}>
-                    <SInput
-                        ref={ref => this.inputs["proveedor"] = ref}
-                        label={"Proveedor"}
-                        type="select2"
-                        placeholder={"Seleccione un proveedor"}
-                        options={this.state.proveedores.map(a => a.razon_social)}
-                    />
-                </SView>
-            </SView>
-            <SHr />
-            <SHr h={1} color={STheme.color.card} />
-            <SView col={"xs-12"} padding={4} flex>
-                <SView col={"xs-12"} row>
-                    <SView width={30} padding={2} center>
-                        {/* <SIconApp name="Delete" /> */}
-                    </SView>
-                    <SView flex={2} padding={2}>
-                        <SText>Producto</SText>
-                    </SView>
-                    <SView width={100} padding={2} center>
-                        <SText>Cantidad</SText>
-                    </SView>
-                    <SView width={100} padding={2} center>
-                        <SText>Precio</SText>
-                    </SView>
-                </SView>
-                <FlatList data={this.state.detalle}
-                    renderItem={({ item }) => <Detalle parent={this} data={item} />}
-                    keyExtractor={(item, index) => index.toString()}
-                    ListEmptyComponent={() => <SText center>No hay productos agregados</SText>}
-                />
-            </SView>
-            <SView col={"xs-12"} padding={4} center>
-                <SText fontSize={12} padding={8} card onPress={this.handleSubmit.bind(this)}>GUARDAR</SText>
             </SView>
         </SPage>
     }
@@ -144,9 +155,7 @@ class Detalle extends React.Component {
     render() {
         return (
             <SView col={"xs-12"} row>
-                <SView width={30} padding={2} center>
-                    <SIconApp name="Delete" />
-                </SView>
+
                 <SView flex={2} padding={2}>
                     <SInput
                         ref={ref => this.inputs["producto"] = ref}
@@ -169,6 +178,7 @@ class Detalle extends React.Component {
                                         time: 4000
                                     });
                                 } else {
+                                    console.log("PRODUCTOS", producto)
                                     this.props.data.modelo = producto;
                                     this.inputs["precio"].setValue((producto.precio_compra ?? 0).toFixed(2));
                                     // (this.inputs["producto"]).setState({ error: false });
@@ -177,6 +187,7 @@ class Detalle extends React.Component {
                         }}
                     />
                 </SView>
+
                 <SView width={100} padding={2}>
                     <SInput
                         ref={ref => this.inputs["cantidad"] = ref}
@@ -200,6 +211,9 @@ class Detalle extends React.Component {
                         }}
                         type="money"
                     />
+                </SView>
+                <SView width={30} padding={2} center>
+                    <SIconApp name="Delete" />
                 </SView>
             </SView>
         );
