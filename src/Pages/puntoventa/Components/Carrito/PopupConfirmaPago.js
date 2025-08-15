@@ -7,14 +7,11 @@ import MDL from '../../../../MDL';
 import ReciboRollo from '../../../../Components/PDF/venta/ReciboRollo';
 import ReciboCarta from '../../../../Components/PDF/venta/ReciboCarta';
 export default class PopupConfirmaPago extends Component {
-
     sucursal = null;
-
     async componentDidMount() {
         this.sucursal = await MDL.compra_venta.getSucursalSeleccionada();
         this.forceUpdate(); // Refresca para que aparezca la sucursal
     }
-
     static open(props) {
         SPopup.open({
             key: "popup_config_horario",
@@ -53,7 +50,6 @@ export default class PopupConfirmaPago extends Component {
             caja: caja,
         };
     }
-
     renderButton(totalFinal, subtotal, descuento, conFactura, carrito, cliente) {
         const sucursal = this.sucursal;
         console.log("WWWWW")
@@ -68,7 +64,6 @@ export default class PopupConfirmaPago extends Component {
             return;
         }
         console.log("WWWWW 1")
-
         if (!this.sucursal || !this.sucursal.key_sucursal) {
             SNotification.send({
                 title: "Error",
@@ -80,7 +75,6 @@ export default class PopupConfirmaPago extends Component {
             return;
         }
         console.log("WWWWW 2")
-
         const vendedor = Model.usuario.Action.getUsuarioLog();
         const caja = {
             subtotal: SMath.formatMoney(subtotal, 2),
@@ -104,14 +98,11 @@ export default class PopupConfirmaPago extends Component {
             title: "Esperando...",
             type: "loading",
         })
-
-
         MDL.compra_venta.registrar(datos).then((res) => {
             this.forceUpdate();
             this.props?.onReload();
             ReciboRollo.imprimir(res.key)
             ReciboCarta.imprimir(res.key)
-
             SPopup.close("popup_config_horario");
             SNotification.remove("compra")
         }).catch(res => {
@@ -126,16 +117,10 @@ export default class PopupConfirmaPago extends Component {
                 }
                 )
         })
-
-
-
     }
-
     render() {
         const sucursal = this.sucursal;
-
         const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura, carrito, cliente } = this.props;
-
         console.log("traeido " + cliente)
         return (
             <SView col="xs-12" center>
@@ -202,7 +187,6 @@ export default class PopupConfirmaPago extends Component {
                     <SView center flex height={40} style={{ backgroundColor: STheme.color.text, borderColor: STheme.color.gray, borderWidth: 1, borderRadius: 4 }}
                         onPress={() => {
                             this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito, cliente)
-
                             // if (!this.variableGlobal || this.variableGlobal < totalFinal) {
                             //     SNotification.send({
                             //         title: "Error",
@@ -213,8 +197,6 @@ export default class PopupConfirmaPago extends Component {
                             //     });
                             //     return;
                             // }
-
-
                             // if (!this.sucursal || !this.sucursal.key_sucursal) {
                             //     SNotification.send({
                             //         title: "Error",
@@ -225,7 +207,6 @@ export default class PopupConfirmaPago extends Component {
                             //     });
                             //     return;
                             // }
-
                             // const vendedor = Model.usuario.Action.getUsuarioLog();
                             // const caja = {
                             //     subtotal: SMath.formatMoney(subtotal, 2),
@@ -244,7 +225,6 @@ export default class PopupConfirmaPago extends Component {
                             //     vendedor,
                             //     caja
                             // });
-
                             // MDL.compra_venta.registrar(datos).then((res) => {
                             //     console.log("compra_venta registrado exitosa " + JSON.stringify(res))
                             // }).catch(

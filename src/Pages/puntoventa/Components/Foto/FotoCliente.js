@@ -3,12 +3,10 @@ import { SView, SText, STheme, SImage } from 'servisofts-component';
 import SIconApp from '../../../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
 import PopupCliente from '../Carrito/PopupCliente';
-
 export default class FotoCliente extends Component {
   state = {
     cliente: null,
   };
-
   handleSelectCliente = () => {
     PopupCliente.open({
       onReloadCliente: (cliente) => {
@@ -17,7 +15,6 @@ export default class FotoCliente extends Component {
       },
     });
   };
-
   render() {
     const { cliente } = this.state;
     const style_text = {
@@ -26,7 +23,6 @@ export default class FotoCliente extends Component {
       fontWeight: 'bold',
     };
     const url = cliente?.key ? `${SSocket.api.crm}cliente/${cliente.key}` : null;
-
     return (
       <SView
         center

@@ -1,21 +1,14 @@
 import React, { Component } from 'react';
 import { SView, SText, STheme, SMath, SNavigation, SPopup, SHr } from 'servisofts-component';
 import MDL from '../../../../MDL';
-
-
-
-
 export default class ResumenTotales extends Component {
     sucursal = null;
-
     async componentDidMount() {
         this.sucursal = await MDL.compra_venta.getSucursalSeleccionada();
         this.forceUpdate(); // Forzamos render para mostrar sucursal
     }
-
     seleccionarSucursal() {
         SPopup.close("popup_config_horario");
-
         SNavigation.navigate("/sucursal", {
             onSelect: (obj) => {
                 const sucu = {
@@ -37,11 +30,9 @@ export default class ResumenTotales extends Component {
             }
         });
     }
-
     render() {
         const sucursal = this.sucursal;
         const { subtotal, totalImpuesto, numeroIva, totalDescuento } = this.props;
-
         return (
             <SView
                 col={"xs-12"}
@@ -55,7 +46,6 @@ export default class ResumenTotales extends Component {
                         Bs {SMath.formatMoney(subtotal, 2)}
                     </SText>
                 </SView>
-
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                     <SText fontSize={12} color={STheme.color.text}>
                         IVA ({numeroIva}%)
@@ -64,14 +54,12 @@ export default class ResumenTotales extends Component {
                         + Bs {SMath.formatMoney(totalImpuesto, 2)}
                     </SText>
                 </SView>
-
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                     <SText fontSize={12} color={STheme.color.text}>Descuento:</SText>
                     <SText fontSize={13} color={STheme.color.text}>
                         - Bs {SMath.formatMoney(totalDescuento || 0, 2)}
                     </SText>
                 </SView>
-
                 <SHr height={3} />
                 <SView col={"xs-12"} style={{ borderColor: STheme.color.gray, borderBottomWidth: 2 }} />
                 <SHr height={5} />
@@ -83,7 +71,6 @@ export default class ResumenTotales extends Component {
                 </SView>
                 <SView col={"xs-12"} style={{ borderColor: STheme.color.gray, borderBottomWidth: 2 }} />
                 <SHr height={8} />
-
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}
                     onPress={() => this.seleccionarSucursal()}
                 >

@@ -2,12 +2,10 @@ import React, { Component } from 'react';
 import { SView, SText, STheme, SForm, SPopup, SInput, SThread, SHr } from 'servisofts-component';
 import SIconApp from '../../../../Assets/SIconApp';
 import MDL from '../../../../MDL';
-
 export default class PopupCliente extends Component {
   state = {
     clienteData: {},
   };
-
   static open(props) {
     SPopup.open({
       key: 'popup_config_horario',
@@ -34,13 +32,11 @@ export default class PopupCliente extends Component {
       ),
     });
   }
-
   componentDidMount() {
     setTimeout(() => {
       this.handleEditTelefono();
     }, 100);
   }
-
   handleEditTelefono = () => {
     const nit = this.form?.getValues().nit;
     if (!nit) {
@@ -48,7 +44,6 @@ export default class PopupCliente extends Component {
       this.form?.setValues({ razon_social: '', correo: '', nombres: '' });
       return;
     }
-
     MDL.crm.cliente.buscar_nit(nit).then((e) => {
       this.setState({ clienteData: e });
       this.form?.setValues({
@@ -61,7 +56,6 @@ export default class PopupCliente extends Component {
       this.form?.setValues({ razon_social: '', correo: '', nombres: '' });
     });
   };
-
   render() {
     const defaultData = this.props?.defaultData ?? {};
     return (
