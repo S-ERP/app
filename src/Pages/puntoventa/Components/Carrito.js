@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
-import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SMath, SButtom, SNotification, SNavigation, SIcon, SPopup, SForm, SThread } from 'servisofts-component';
-import SSocket from 'servisofts-socket';
+import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, } from 'servisofts-component';
 import SIconApp from '../../../Assets/SIconApp';
 import CarritoItem from './Carrito/CarritoItem';
 import ResumenTotales from './Carrito/ResumenTotales';
 import TecladoNumerico from './Carrito/TecladoNumerico';
 import MDL from '../../../MDL';
 import FotoCliente from './Foto/FotoCliente';
-import PopupCliente from './Carrito/PopupCliente';
 export default class Carrito extends Component {
     carrito = [];
     descuentoManual = "";
@@ -76,6 +74,10 @@ export default class Carrito extends Component {
         this.descuentoManual = 0;
         console.log("vacios " + this.carrito)
         this.forceUpdate();
+    };
+
+    handleClienteChange = (cliente) => {
+        this.setState({ cliente });
     };
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
     calcularTotalConIVA = (subtotal) => {
@@ -182,17 +184,25 @@ export default class Carrito extends Component {
 
                         <SHr height={3} />
                         { }
-                        <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
+                        <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.danger} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-12"} center>
-
+                                {/* 
                                 <FotoCliente ref={(ref) => (this.fotoClienteRef = ref)} onReloadCliente={(cliente) => {
                                     this.data.cliente = cliente;
                                     this.cliente = cliente;
                                     console.log("cheking 22222222222 movil" + JSON.stringify(cliente))
 
                                     this.forceUpdate();
+                                }}  ></FotoCliente> */}
+
+
+                                <FotoCliente onReloadCliente={(cliente) => {
+                                    console.log("cheking 111111111 movil" + JSON.stringify(cliente))
+                                    this.cliente = cliente;
+                                    this.forceUpdate();
                                 }}  ></FotoCliente>
 
+                                {/* <FotoCliente onReloadCliente={this.handleClienteChange} /> */}
 
                                 {/* <SView col={"xs-12  "} row center
                                     onPress={() => this.seleccionarCliente()}
@@ -213,7 +223,8 @@ export default class Carrito extends Component {
                     </SView>
                 }
                 <TecladoNumerico
-                    data={{ cliente: this.data.cliente }}
+                    // data={this.cliente}
+                    cliente={this.cliente}
                     carrito={this.carrito}
                     carritonuevo={this.carritonuevo}
                     numeroIva={this._numeroIva}
