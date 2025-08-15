@@ -14,6 +14,7 @@ type PageProps = {
     icon?: React.ReactNode,
     children?: React.ReactNode;
     permiso?: string;
+    permiso_url?: string,
 }
 export default class Page extends React.Component<PageProps> {
     state = {
@@ -66,7 +67,6 @@ export default class Page extends React.Component<PageProps> {
         this.inputRefs = [];
         return React.Children.map(children, (child) => {
             if (!React.isValidElement(child)) return child;
-            // if (child.type == Page) {
             const ref = React.createRef<Page>();
             this.inputRefs.push(ref);
             const props: PageProps = child.props || {};
@@ -76,20 +76,30 @@ export default class Page extends React.Component<PageProps> {
             // }
         })
     }
-    permisoAceptado() {
-        if (this.props.permiso) {
-            // if (!MDL.rolesPermisos.getPermiso({ url: this.props.url as any, permiso: this.props.permiso })) return false
+    permisoAceptado(props: PageProps) {
+        if (props.permiso) {
+            if (!MDL.rolesPermisos.getPermiso({ url: props.permiso_url || props.url as any, permiso: props.permiso })) return false
             return true;
         } else {
-            // if (this.props.children > 0) {
-            //     let visibles = 0;
-            //     this.inputRefs.forEach(ref => {
-            //         if (ref.current?.permisoAceptado()) {
-            //             visibles++;
-            //         }
-            //     })
-            //     if (visibles == 0) return false;
-            // }
+            if (props.children) {
+                let validos = 0;
+                React.Children.map(props.children, (child) => {
+                    if (!React.isValidElement(child)) return child;
+                    const props: PageProps = child.props || {};
+                    if (this.permisoAceptado(child.props)) {
+                        validos++;
+                    }
+                })
+                if (validos == 0) return false;
+
+                //     let visibles = 0;
+                //     this.inputRefs.forEach(ref => {
+                //         if (ref.current?.permisoAceptado()) {
+                //             visibles++;
+                //         }
+                //     })
+                //     if (visibles == 0) return false;
+            }
         }
 
         return true;
@@ -97,8 +107,8 @@ export default class Page extends React.Component<PageProps> {
 
     size = 30
     render() {
-        const childrenWithRefs = this.injectRefs(this.props.children);
-        if (!this.permisoAceptado()) return null;
+
+        if (!this.permisoAceptado(this.props)) return null;
 
         return <>
             <SView style={{
@@ -140,7 +150,7 @@ export default class Page extends React.Component<PageProps> {
             </SView>
             {this.state.open &&
                 <SView style={{ paddingStart: this.size / 2, }}>
-                    {childrenWithRefs}
+                    {this.injectRefs(this.props.children)}
                 </SView>}
         </>
     }

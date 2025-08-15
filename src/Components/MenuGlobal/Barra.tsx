@@ -59,19 +59,22 @@ export default class Barra extends React.Component {
                 <Page label={"Contabilidad"}
                     icon={<ImagePage key_page="fd0c2bfe-0f13-4e81-a967-213cc0adb299" />}
                 >
-                    <Page label={"Plan de cuentas"} url={"/conta/cuentas"} />
-                    <Page label={"Dimensiones"} url={"/conta/dimension"} />
-                    <Page label={"Balance general"} url={"/conta/balance"} />
-                    <Page label={"Libro Diario"} url={"/conta/libro_diario"} />
-                    <Page label={"Crear Asiento"} url={"/contabilidad/asiento"} />
+                    <Page label={"Plan de cuentas"} url={"/conta/cuentas"} permiso="ver" />
+                    <Page label={"Dimensiones"} url={"/conta/dimension"} permiso="ver" />
+                    <Page label={"Balance general"} url={"/conta/balance"} permiso="ver" />
+                    <Page label={"Libro Diario"} url={"/conta/libro_diario"} permiso="ver" />
+                    <Page label={"Crear Asiento"} url={"/contabilidad/asiento"} permiso="ver" />
                     <Page label={"Sistema Antiguo"} url={"/contabilidad"} permiso="ver" />
+                    <Page label={"Reportes"} >
+                        <Page label={"Sistema Antiguo"} url={"/contabilidad"} permiso="ver" />
+                    </Page>
                 </Page>
                 <Page label={"Inventario"}
                     icon={<ImagePage key_page="c50a9c4a-429c-426e-9ebf-c6874da14062" />}
                 >
                     <Page label={"Almacenes"} url={"/inventario"} permiso="ver" />
                     <Page label={"Productos"} url={"/productos"} permiso="ver" />
-                    <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" />
+                    <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" permiso_url="/inventario" />
                 </Page>
                 <Page label={"Caja"} url={"/caja"} permiso="ver"
                     icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}
@@ -81,26 +84,30 @@ export default class Barra extends React.Component {
                 >
                     <Page label={"Proveedores"} url={"/proveedor"} permiso="ver" />
                     <Page label={"Compras"} url={"/compra"} permiso="ver" />
-                    <Page label={"Compras Rapida"} url={"/compra2"} />
+                    <Page label={"Compras Rapida"} url={"/compra2"} permiso="ver" permiso_url="/compra" />
                 </Page>
                 <Page label={"Ventas"}
                     icon={<ImagePage key_page="8becb109-9987-4520-840d-7f0efdb6e3c6" />}
                 >
                     <Page label={"Clientes"} url={"/cliente"} permiso="ver" />
                     <Page label={"Ventas"} url={"/venta"} permiso="ver" />
-                    <Page label={"Ventas Rapida"} url={"/puntoventa"} />
+                    <Page label={"Ventas Rapida"} url={"/puntoventa"} permiso="ver" permiso_url="/venta" />
                 </Page>
                 <Page label={"Facturacion"} url={"/facturacion"}
                     permiso="ver"
                     icon={<ImagePage key_page="a122ab1e-bf18-4831-8136-befa06e406d3" />}
                 />
                 <Page label={"CRM"} url={"/crm"}
-                    permiso="ver"
+                    permiso="page"
                     icon={<ImagePage key_page="9b5de113-c6e9-4bef-b686-5732056f71fb" />}
                 />
                 <Page label={"Drive"} url={"/drive"}
-                    permiso="ver"
-                    icon={<ImagePage key_page="fd0c2bfe-0f13-4e81-a967-213cc0adb299" />}
+                    permiso="page"
+                    icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
+                />
+                <Page label={"Camara"} url={"/qr_reader"}
+                    permiso="page"
+                    icon={<ImagePage key_page="676e0ed7-2320-4adb-8dfa-624e0c48df07" />}
                 />
                 {/* <Page label={"Iconos"} url={"/icons"} /> */}
                 <Page label={"Usuarios"} url={"/usuario"}
