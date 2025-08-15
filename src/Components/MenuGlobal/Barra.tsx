@@ -1,6 +1,6 @@
 import React from "react";
 import { ScrollView, View } from "react-native";
-import { SHr, SImage, SNavigation, SPage, SText, STheme, SView } from "servisofts-component";
+import { SGradient, SHr, SImage, SNavigation, SPage, SText, STheme, SView } from "servisofts-component";
 import Page from "./Page";
 import SIconApp from "../../Assets/SIconApp";
 import { Route } from "@react-navigation/native";
@@ -116,7 +116,16 @@ export default class Barra extends React.Component {
                     {/* <Page label={"Iconos"} url={"/icons"} /> */}
                     <SHr h={100} />
                 </ScrollView>
+
                 <SView col={"xs-12"} >
+                    <SView style={{
+                        top: -100,
+                        width: "100%",
+                        height: 100,
+                        position: "absolute",
+                    }}>
+                        <SGradient colors={[STheme.color.background + "ff", STheme.color.background + "00"]} />
+                    </SView>
                     <SHr h={1} color={STheme.color.card} />
                     <Page label={"Usuarios"} url={"/usuario"}
                         permiso="ver"
@@ -135,7 +144,7 @@ export default class Barra extends React.Component {
                     <Page label={"Ayuda"} url={"/wiki"}
                         icon={<ImagePage key_page="bf38c052-b726-43db-a66d-c202ef79a391" />}
                     />
-                    <SHr/>
+                    <SHr />
                 </SView>
             </SView>
         </View>
