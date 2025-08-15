@@ -146,26 +146,34 @@ export default class Carrito extends Component {
                         </SView>
                         <SHr height={5} />
                         <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
-                        <SView col={"xs-12"} row  >
-                            <SView col={"md-12 xl-6"} height={60} center border={"transparent"} >
-                                <SInput label={"Descuento VIP (Bs):"} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", borderRadius: 8 }}
-                                    onChangeText={(text) => {
-                                        this.descuentoManual = text;
-                                        this.forceUpdate();
-                                    }}
-                                />
+                        <SView col={"xs-12"} row center  >
+                            <SView col={"md-12 xl-6"} height={60} border={"transparent"} >
+                                <SView col={"xs-10"}  >
+                                    <SView col={"xs-10"} style={{ marginTop: -8 }}   >
+
+
+                                        <SInput label={"Descuento VIP (Bs):"} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", borderRadius: 8 }}
+                                            onChangeText={(text) => {
+                                                this.descuentoManual = text;
+                                                this.forceUpdate();
+                                            }}
+                                        />
+                                    </SView>
+                                </SView>
                             </SView>
                             <SView col={"md-12 xl-6"} height={60} center border={"transparent"} >
-                                <SInput label={"Con factura"} type='checkBox' defaultValue={this.conFactura}
-                                    onChangeText={(text) => {
-                                        this.conFactura = text;
-                                        this.forceUpdate();
-                                    }}
-                                />
+                                <SView col={"md-12  "} style={{ marginLeft: 18, marginTop: 10 }}      >
+                                    <SInput label={"Con factura"} type='checkBox' defaultValue={this.conFactura}
+                                        onChangeText={(text) => {
+                                            this.conFactura = text;
+                                            this.forceUpdate();
+                                        }}
+                                    />
+                                </SView>
                             </SView>
                         </SView>
-                        <SHr height={3} />
-                        { }
+                        <SHr height={2} color='red' />
+
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.danger} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-12"} center>
                                 <FotoCliente onReloadCliente={(cliente) => {
