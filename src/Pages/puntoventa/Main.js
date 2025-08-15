@@ -27,25 +27,23 @@ export default class Main extends Component {
     };
     componentDidMount() {
 
-        const itemsEjemplo = [
-            {
-                key: "producto_123",
-                descripcion: "Producto Ejemplo 1",
-                precio_venta: 50.00,
-                cantidad: 2,
-                stock: 10
-            },
-            {
-                key: "producto_456",
-                descripcion: "Producto Ejemplo 2",
-                precio_venta: 30.00,
-                cantidad: 1,
-                stock: 20
-            }
-        ];
-        this.carritoRef?.setCarrito(itemsEjemplo);
-
-        // this.renderCarrito();
+        // const itemsEjemplo = [
+        //     {
+        //         key: "producto_123",
+        //         descripcion: "Producto Ejemplo 1",
+        //         precio_venta: 50.00,
+        //         cantidad: 2,
+        //         stock: 10
+        //     },
+        //     {
+        //         key: "producto_456",
+        //         descripcion: "Producto Ejemplo 2",
+        //         precio_venta: 30.00,
+        //         cantidad: 1,
+        //         stock: 20
+        //     }
+        // ];
+        // this.carritoRef?.setCarrito(itemsEjemplo);
 
         this.renderCarrito();
         Dimensions.addEventListener("change", this.onChangeDimensions);
