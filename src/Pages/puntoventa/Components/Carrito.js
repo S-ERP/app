@@ -16,6 +16,9 @@ export default class Carrito extends Component {
     data = {};
     amountReceived = "";
     fotoClienteRef;
+    conFactura = false;
+    cliente = {};
+
     componentDidMount() {
         this.loadData()
     }
@@ -125,7 +128,7 @@ export default class Carrito extends Component {
                         <SView col={"xs-12"} row   >
                             <SView col={"xs-10 md-10"} row  >
                                 <SText fontSize={15} bold color={STheme.color.text}>Detalle venta</SText>
-                                
+
                             </SView>
                             <SView col={"xs-2 md-2"} center onPress={() => this.vaciarCarrito()} style={{ alignItems: "flex-end" }} >
                                 <SView backgroundColor={STheme.color.card} border={STheme.color.text} style={{ borderRadius: 20, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4, height: 24, opacity: 0.6, alignItems: "flex-end" }}>
@@ -166,7 +169,7 @@ export default class Carrito extends Component {
                             </SView>
                             <SView col={"xs-6"} row center  >
                                 <SView width={70} style={{ alignItems: "flex-end" }}  >
-                                    <SInput label={"Con factura"} type='checkBox' defaultValue={false}
+                                    <SInput label={"Con factura"} type='checkBox' defaultValue={this.conFactura}
                                         onChangeText={(text) => {
                                             this.conFactura = text;
                                             this.forceUpdate();
@@ -182,8 +185,11 @@ export default class Carrito extends Component {
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-12"} center>
 
-                                <FotoCliente ref={(ref) => (this.fotoClienteRef = ref)} onReload2={(cliente) => {
+                                <FotoCliente ref={(ref) => (this.fotoClienteRef = ref)} onReloadCliente={(cliente) => {
                                     this.data.cliente = cliente;
+                                    this.cliente = cliente;
+                                    console.log("cheking 22222222222 movil" + JSON.stringify(cliente))
+
                                     this.forceUpdate();
                                 }}  ></FotoCliente>
 

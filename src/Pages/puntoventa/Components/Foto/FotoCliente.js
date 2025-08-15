@@ -10,8 +10,16 @@ export default class FotoCliente extends Component {
     }
     limpiar() {
         this.pollo = {};
-         this.forceUpdate();
+        this.forceUpdate();
     }
+
+    static getCliente() {
+
+        const cliente = this.pollo
+
+        return cliente;
+    }
+
     renderTecladoNumerico = () => {
         const style_text = {
             color: STheme.color.text,
@@ -23,7 +31,7 @@ export default class FotoCliente extends Component {
             <>
                 <SView center row backgroundColor={STheme.color.darkGray} style={{ height: 38, borderRadius: 2, margin: 2 }}>
                     <SView col={"xs-12"} row center onPress={() => {
-                        this.limpiar();
+                        // this.limpiar();
                         PopupCliente.open({
                             onReloadCliente: (cliente) => {
                                 this.pollo = cliente;
@@ -31,6 +39,14 @@ export default class FotoCliente extends Component {
                                 this.forceUpdate();
                             }
                         })
+
+                        // this.props.onReloadCliente?.(this.clienteDataCompleto);
+
+                        // PopupCliente.onReloadCliente = (cliente) => {
+                        //     this.pollo = cliente;
+                        //     this.forceUpdate();
+                        // }
+
                     }
                     }>
                         <SView center col={"xs-5"}>
@@ -42,7 +58,7 @@ export default class FotoCliente extends Component {
                         </SView>
                         <SView flex center >
                             <SText style={{ ...style_text, fontSize: 12 }}>{this.pollo?.nombres || "CLIENTE"}</SText>
-                            {this.pollo?.key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff", textTransform:"uppercase" }}>CLIENTE</SText> : null}
+                            {this.pollo?.key ? <SText style={{ ...style_text, fontSize: 12, color: "#26e9aeff", textTransform: "uppercase" }}>CLIENTE</SText> : null}
                         </SView>
                     </SView>
                 </SView>

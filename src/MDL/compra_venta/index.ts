@@ -13,6 +13,8 @@ export default class compra_venta extends MDLAbstract<EventListener> {
 
   async registrar(data: any) {
     const sucursal = this.sucursalSeleccionada;
+    console.log("faaaaaa "+JSON.stringify(data))
+    // return;
     const formar = {
       key_usuario: Model.usuario.Action.getKey(),
       key_empresa: MDL.empresa.select?.key,
@@ -20,7 +22,8 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       key_sucursal: data.key_sucursal,
       descuento: parseFloat(data.caja.descuento),
       monto_total: parseFloat(data.caja.monto_total),
-      monto_factura: parseFloat(data.caja.monto_factura),
+      // monto_factura: parseFloat(data.caja.monto_factura),
+      facturar: data?.caja?.conFactura,
       detalle: data.detalle,
     };
 
