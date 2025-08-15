@@ -4,6 +4,7 @@ import { SNavigation, SPage, SText, STheme } from "servisofts-component";
 import Barra from "./Barra";
 import { Route } from "@react-navigation/native";
 import Pages from "../../Pages";
+import MDL from "../../MDL";
 
 type MenuGlobalProps = {
     children?: React.ReactNode;
@@ -17,6 +18,9 @@ export default class MenuGlobal extends React.Component<MenuGlobalProps> {
     }
     componentDidMount(): void {
         MenuGlobal.INSTACE = this;
+        MDL.rolesPermisos.getPermisoAsync({ url: "/", permiso: "ver" }).then(()=>{
+            this.forceUpdate();
+        })
         SNavigation.addOnChangeListener(this.onNavigationChange.bind(this))
     }
     onNavigationChange(e: Route<any>) {

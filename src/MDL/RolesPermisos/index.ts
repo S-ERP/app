@@ -44,14 +44,15 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
 
 
     getPermiso({ url, permiso }: { url: string, permiso: string }) {
+        const key_empresa = Model.empresa.Action.getKey();
         return Model.usuarioPage.Action.getPermiso({
             url: url,
             permiso: permiso,
-            key_empresa: Model.empresa.Action.getKey(),
+            key_empresa: key_empresa,
             loading: ""
         })
     }
-    
+
     async getPermisoAsync({ url, permiso }: { url: string, permiso: string }) {
         await this.loadPermissions();
         return this.getPermiso({ url, permiso });

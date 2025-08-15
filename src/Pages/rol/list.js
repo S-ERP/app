@@ -1,6 +1,7 @@
 import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
 import Model from '../../Model';
+import MDL from '../../MDL';
 
 class index extends DPA.list {
     constructor(props) {
@@ -15,13 +16,13 @@ class index extends DPA.list {
         });
     }
     $allowNew() {
-        return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "new" });
+        return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "new", key_empresa: MDL.empresa?.select?.key });
     }
     $allowTable() {
-        return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "table" });
+        return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "table", key_empresa: MDL.empresa?.select?.key });
     }
     $allowAccess() {
-        return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "ver" });
+        return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "ver", key_empresa: MDL.empresa?.select?.key });
     }
     $filter(data) {
 
