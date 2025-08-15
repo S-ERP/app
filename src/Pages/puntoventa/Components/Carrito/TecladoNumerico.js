@@ -190,8 +190,6 @@ export default class TecladoNumerico extends Component {
         })
     }
     renderTecladoNumerico = () => {
-        // const cliente = this.data.cliente;;
-        // const { key, nombres, apellidos, telefono, nombre_completo } = cliente;
         const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
         const style_text = {
             color: STheme.color.text,
@@ -217,22 +215,6 @@ export default class TecladoNumerico extends Component {
                         </SView>
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                             let carro = this.props?.carrito || {};
-
-                            // PopupCliente.onReloadCliente = (cliente) => {
-                            //     this.cliente = cliente;
-                            //     this.forceUpdate();
-                            // }
-                            // const clientela = this.data.cliente;
-                            // console.log("mirala ssssssssssssss " + JSON.stringify(clientela))
-
-
-                            // onReloadCliente: (cliente) => {
-                            //                         this.pollo = cliente;
-                            //                         console.log("trajo " + JSON.stringify(cliente))
-                            //                         this.forceUpdate();
-                            //                     }
-
-                            // console.log("mirala1 " + JSON.stringify(clientela))
                             PopupConfirmaPago.open({
                                 subtotal: subtotal,
                                 descuento: this.props.descuento,
@@ -271,10 +253,8 @@ export default class TecladoNumerico extends Component {
                 </SView >
                 {
                     this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-
                         console.log("estamos en movil "+this.props?.cliente)
                         console.log("estamos en movil22222 "+this.props.cliente)
-
                         PopupConfirmaPago.open({
                             subtotal: subtotal,
                             descuento: this.props.descuento,

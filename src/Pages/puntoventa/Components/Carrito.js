@@ -16,7 +16,6 @@ export default class Carrito extends Component {
     fotoClienteRef;
     conFactura = false;
     cliente = {};
-
     componentDidMount() {
         this.loadData()
     }
@@ -34,7 +33,6 @@ export default class Carrito extends Component {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
             this.carrito[index].cantidad += 1;
-            // this.carrito[index].stock = producto.stock;
         }
         else this.carrito.push({ ...producto, cantidad: 1 });
         this.forceUpdate();
@@ -42,10 +40,7 @@ export default class Carrito extends Component {
     aumentarCantidad = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
-            // const success = this.props.onModificarStock?.(producto.key, -1);
-            // if (success === false) return alert("No hay más stock disponible");
             this.carrito[index].cantidad += 1;
-            // this.carrito[index].stock -= 1;
             this.forceUpdate();
         }
     };
@@ -53,8 +48,6 @@ export default class Carrito extends Component {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
             this.carrito[index].cantidad -= 1;
-            // this.carrito[index].stock += 1;
-            // this.props.onModificarStock?.(producto.key, +1);
             if (this.carrito[index].cantidad <= 0) this.carrito.splice(index, 1);
             this.forceUpdate();
         }
@@ -62,20 +55,17 @@ export default class Carrito extends Component {
     eliminarItem = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
-            // this.props.onModificarStock?.(producto.key, +this.carrito[index].cantidad);
             this.carrito.splice(index, 1);
             this.forceUpdate();
         }
     };
     vaciarCarrito() {
-        // this.carrito.forEach(item => { this.props.onModificarStock?.(item.key, +item.cantidad); });
         this.carritoRefModal?.setCarrito?.([]);
         this.carrito = [];
         this.descuentoManual = 0;
         console.log("vacios " + this.carrito)
         this.forceUpdate();
     };
-
     handleClienteChange = (cliente) => {
         this.setState({ cliente });
     };
@@ -112,7 +102,6 @@ export default class Carrito extends Component {
         return (
             <>
                 {/* <SView col={"xs-12"} flex center  ></SView> */}
-
                 {subtotal <= 0 ?
                     <SView backgroundColor={STheme.color.background} flex center style={{
                         borderRadius: 8, shadowColor: STheme.color.card, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1,
@@ -130,7 +119,6 @@ export default class Carrito extends Component {
                         <SView col={"xs-12"} row   >
                             <SView col={"xs-10 md-10"} row  >
                                 <SText fontSize={15} bold color={STheme.color.text}>Detalle venta</SText>
-
                             </SView>
                             <SView col={"xs-2 md-2"} center onPress={() => this.vaciarCarrito()} style={{ alignItems: "flex-end" }} >
                                 <SView backgroundColor={STheme.color.card} border={STheme.color.text} style={{ borderRadius: 20, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4, height: 24, opacity: 0.6, alignItems: "flex-end" }}>
@@ -142,7 +130,6 @@ export default class Carrito extends Component {
                         { }
                         <SView col={"xs-12"} flex center
                             style={{
-                                // shadowColor: "#000",
                                 shadowOffset: { width: 0, height: 2 },
                                 shadowOpacity: 0.1,
                                 shadowRadius: 8,
@@ -159,7 +146,6 @@ export default class Carrito extends Component {
                         </SView>
                         <SHr height={5} />
                         <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
-
                         <SView col={"xs-12"} row >
                             <SView col={"xs-6"} height={60} center >
                                 <SInput label={"Descuento VIP (Bs):"} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", borderRadius: 8 }}
@@ -178,10 +164,8 @@ export default class Carrito extends Component {
                                         }}
                                     />
                                 </SView>
-
                             </SView>
                         </SView>
-
                         <SHr height={3} />
                         { }
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.danger} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
@@ -191,19 +175,14 @@ export default class Carrito extends Component {
                                     this.data.cliente = cliente;
                                     this.cliente = cliente;
                                     console.log("cheking 22222222222 movil" + JSON.stringify(cliente))
-
                                     this.forceUpdate();
                                 }}  ></FotoCliente> */}
-
-
                                 <FotoCliente onReloadCliente={(cliente) => {
                                     console.log("cheking 111111111 movil" + JSON.stringify(cliente))
                                     this.cliente = cliente;
                                     this.forceUpdate();
                                 }}  ></FotoCliente>
-
                                 {/* <FotoCliente onReloadCliente={this.handleClienteChange} /> */}
-
                                 {/* <SView col={"xs-12  "} row center
                                     onPress={() => this.seleccionarCliente()}
                                 >
@@ -223,7 +202,6 @@ export default class Carrito extends Component {
                     </SView>
                 }
                 <TecladoNumerico
-                    // data={this.cliente}
                     cliente={this.cliente}
                     carrito={this.carrito}
                     carritonuevo={this.carritonuevo}
