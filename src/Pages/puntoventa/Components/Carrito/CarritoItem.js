@@ -73,8 +73,8 @@ export default class CarritoItem extends Component {
 
                     </SView>
                 </SView>
-                <SView width={35} center border='transparent'>
-                    <SView style={{ justifyContent: "flex-end" }}>
+                <SView col={"md-2 xl-2.5"} center border='green'>
+                    <SView col={"xs-12"} style={{ justifyContent: "flex-start" }}>
                         <SText col={"xs-12"} fontSize={11} bold> Bs {(item.precio_venta * item.cantidad).toFixed(2)}</SText>
                     </SView>
                 </SView>
