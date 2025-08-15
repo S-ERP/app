@@ -14,7 +14,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
   async registrar(data: any) {
     const sucursal = this.sucursalSeleccionada;
     console.log("faaaaaa "+JSON.stringify(data))
-    return;
+    // return;
     const formar = {
       key_usuario: Model.usuario.Action.getKey(),
       key_empresa: MDL.empresa.select?.key,

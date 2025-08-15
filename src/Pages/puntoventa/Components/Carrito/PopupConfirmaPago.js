@@ -6,7 +6,7 @@ import MDL from '../../../../MDL';
 import ReciboRollo from '../../../../Components/PDF/venta/ReciboRollo';
 import ReciboCarta from '../../../../Components/PDF/venta/ReciboCarta';
 export default class PopupConfirmaPago extends Component {
-    sucursal = null;
+    // sucursal = null;
     async componentDidMount() {
         this.sucursal = await MDL.compra_venta.getSucursalSeleccionada();
         // this.forceUpdate(); // Refresca para que aparezca la sucursal
@@ -179,7 +179,7 @@ export default class PopupConfirmaPago extends Component {
                     <SView center flex height={40} style={{ borderColor: STheme.color.card, borderWidth: 2, borderRadius: 4 }}
                         onPress={() => {
                             this.props?.onReload?.();
-                              this.props?.onReloadCliente?.(null); // Limpia cliente en FotoCliente
+                            this.props?.onReloadCliente?.(null); // Limpia cliente en FotoCliente
 
                             SPopup.close("popup_config_horario");
                         }}
