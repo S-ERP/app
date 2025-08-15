@@ -14,6 +14,7 @@ import Socket from './Socket';
 import { Platform } from 'react-native';
 import DataBaseContainer from './DataBase/DataBaseContainer';
 import MDL from './MDL';
+import MenuGlobal from './Components/MenuGlobal';
 // import SplashScreen from 'react-native-splash-screen'
 setProps(Config.socket);
 
@@ -62,15 +63,17 @@ const App = (props) => {
                 theme={{ themes: Config.theme, initialTheme: "dark" }}
             >
                 <DataBaseContainer>
-                    <SNavigation
-                        linking={{
-                            prefixes: ["https://serp.servisofts.com/", "http://serp.servisofts.com/"],
-                            getInitialURL: () => {
-                                Firebase.getInitialURL();
-                            }
-                        }}
-                        props={{ navBar: NavBar, title: 'SERP', pages: Pages }}
-                    />
+                    <MenuGlobal>
+                        <SNavigation
+                            linking={{
+                                prefixes: ["https://serp.servisofts.com/", "http://serp.servisofts.com/"],
+                                getInitialURL: () => {
+                                    Firebase.getInitialURL();
+                                }
+                            }}
+                            props={{ navBar: NavBar, title: 'SERP', pages: Pages }}
+                        />
+                    </MenuGlobal>
                 </DataBaseContainer>
                 {/* <SUploadContainer /> */}
                 <Socket store={store} />

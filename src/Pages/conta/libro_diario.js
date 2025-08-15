@@ -1,12 +1,12 @@
 import React from "react";
-import { SInput, SText, STheme, SView } from "servisofts-component";
-import SPageConta from "./Components/SPageConta";
+import { SInput, SPage, SText, STheme, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import MDL from "../../MDL";
 import { DinamicTable } from "servisofts-table";
 import Config from "../../Config";
 
 export default class libro_diario extends React.Component {
+    // static HIDDEN= true;
     dinamicTable: DinamicTable<any>;
     componentDidMount() {
        
@@ -28,7 +28,7 @@ export default class libro_diario extends React.Component {
         return STheme.color.card;
     }
     render() {
-        return <SPageConta title={"Libro Diario"} center disableScroll>
+        return <SPage title={"Libro Diario"} center disableScroll>
             <SView col={"xs-12"} flex>
                 <DinamicTable
                     ref={(e) => this.dinamicTable = e}
@@ -91,6 +91,6 @@ export default class libro_diario extends React.Component {
                     /> */}
                 </DinamicTable>
             </SView>
-        </SPageConta >
+        </SPage >
     }
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { SInput, SText, STheme, SView } from "servisofts-component";
+import { SInput, SPage, SText, STheme, SView } from "servisofts-component";
 import SPageConta from "./Components/SPageConta";
 import SSocket from "servisofts-socket";
 import MDL from "../../MDL";
@@ -26,7 +26,7 @@ export default class conta extends React.Component {
             console.log(this.niveles)
             const nivelLen = this.niveles?.[this.nivelLen - 1]?.len || "1"
             return cuentas.filter(e => {
-                if(!e.codigo) return false;
+                if (!e.codigo) return false;
                 if (this.nivelEQ === "Hasta") {
                     return e.codigo.length <= nivelLen;
                 } else if (this.nivelEQ === "Desde") {
@@ -49,7 +49,7 @@ export default class conta extends React.Component {
         return STheme.color.card;
     }
     render() {
-        return <SPageConta title={"Balance general"} center disableScroll>
+        return <SPage title={"Balance general"} center disableScroll>
             <SView row col={"xs-12"} style={{ alignItems: "center" }}>
                 {this.niveles && <SView width={60}><SInput type="select2"
                     style={{
@@ -60,7 +60,7 @@ export default class conta extends React.Component {
                     defaultValue={this.nivelEQ + ""}
                     options={["Hasta", "Desde", "Como"]} onChangeText={e => {
                         this.nivelEQ = e;
-                        this.dinamicTable.loadData();
+                        if (this.dinamicTable) this.dinamicTable.loadData();
                     }} /></SView>}
                 <SView width={2} />
                 <SText>{"el nivel"}</SText>
@@ -75,7 +75,7 @@ export default class conta extends React.Component {
                     defaultValue={this.nivelLen + ""}
                     options={this.niveles.map((a, i) => (i + 1) + "")} onChangeText={e => {
                         this.nivelLen = parseFloat(e || "1");
-                        this.dinamicTable.loadData();
+                        if (this.dinamicTable) this.dinamicTable.loadData();
                     }} /></SView>}
             </SView>
 
@@ -141,6 +141,6 @@ export default class conta extends React.Component {
                     />
                 </DinamicTable>
             </SView>
-        </SPageConta >
+        </SPage >
     }
 }

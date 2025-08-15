@@ -28,7 +28,7 @@ const Card = ({ label, value, backgroundColor, onPress, icon }) => {
             onPress={onPress}>
             <SHr height={10} />
             <SView col={"xs-3"} center padding={4}>
-                <SIcon name={icon}  fill={STheme.color.text} />
+                <SIcon name={icon} fill={STheme.color.text} />
             </SView>
             <SView col={"xs-9"} center>
                 <SText fontSize={15} bold color={STheme.color.text}>{value}</SText>
@@ -42,6 +42,7 @@ const Card = ({ label, value, backgroundColor, onPress, icon }) => {
 
 // create a component
 class index extends Component {
+    static HIDDEN = true;
     getAcciones(usuario) {
         return <SView row>
             {/* <SText padding={16} card onPress={() => {

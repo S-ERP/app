@@ -30,7 +30,7 @@ export default class cuentas extends React.Component {
         this.DinamicTable.loadData();
     }
     render() {
-        return <SPageConta title={"Plan de cuentas"} disableScroll>
+        return <SPage title={"Plan de cuentas"} disableScroll>
             <DinamicTable {...Config.table.applyTheme()}
                 ref={ref => this.DinamicTable = ref}
                 selectType="multiple"
@@ -259,6 +259,6 @@ export default class cuentas extends React.Component {
             }}>
                 <InformacionDeAjustes ajustes={this.state.ajustes} />
             </SView>
-        </SPageConta >
+        </SPage >
     }
 }

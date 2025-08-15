@@ -17,7 +17,6 @@ import MenuAccionesDespacho from './MenuAccionesDespacho';
 import DraggableView from './DragableView';
 import SSocket from "servisofts-socket";
 import Chatlead from '../Components/Whatsapp/Chatlead';
-import { ScrollView } from 'react-native-gesture-handler';
 import ChatById from '../../whatsapp/ChatById';
 const CardContent = ({ children }) => {
     return <SView col={"xs-12 sm-6 md-6 lg-4"} padding={0} center>

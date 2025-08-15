@@ -14,7 +14,7 @@ export default class SPageConta extends React.Component<Props> {
             width: "100%",
             backgroundColor: STheme.color.background,
         }}>
-            <NavBar {...this.props} />
+
             <View style={{
                 flex: 1,
                 width: "100%",
@@ -22,6 +22,7 @@ export default class SPageConta extends React.Component<Props> {
             }}>
                 <SPageContaMenu />
                 <View style={{ flex: 1, height: "100%", }}>
+                    <NavBar {...this.props} />
                     <SPage {...this.props} hidden>
                         {this.props.children}
                     </SPage>

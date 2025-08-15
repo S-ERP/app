@@ -7,7 +7,7 @@ import { IconNamesApp } from '.';
 type AllIconNames = IconNames | IconNamesApp;
 
 
-type SIconAppType = Omit<SIconType, "name"> & {
+export type SIconAppType = Omit<SIconType, "name"> & {
     name: AllIconNames;
 }
 
