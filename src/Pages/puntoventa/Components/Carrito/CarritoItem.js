@@ -8,7 +8,7 @@ export default class CarritoItem extends Component {
         const { item, onAumentar, onDisminuir, onEliminar } = this.props;
         return (
             <SView col={"xs-12"} row style={{ paddingVertical: 4, borderBottomWidth: 0.2, borderBottomColor: STheme.color.card }}>
-                <SView width={32} row center backgroundColor='transparent'>
+                <SView width={40} row center backgroundColor='transparent'>
                     <SView style={{ width: 30, minWidth: 18, height: 30, minHeight: 18, borderRadius: 18, overflow: "hidden", justifyContent: "flex-start" }}>
                         <FotoModelo data={item} />
                     </SView>
@@ -73,7 +73,7 @@ export default class CarritoItem extends Component {
 
                     </SView>
                 </SView>
-                <SView col={"md-2 xl-2.5"} center border='green'>
+                <SView col={"md-2 xl-2.5"} center border='transparent'>
                     <SView col={"xs-12"} style={{ justifyContent: "flex-start" }}>
                         <SText col={"xs-12"} fontSize={11} bold> Bs {(item.precio_venta * item.cantidad).toFixed(2)}</SText>
                     </SView>
