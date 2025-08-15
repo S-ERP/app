@@ -19,6 +19,7 @@ export default class Carrito extends Component {
         const enviroments = await MDL.contabilidad.getEnviroment();
         this._enviromentsIva = parseFloat(enviroments?.IVA?.observacion) / 100;
         this._numeroIva = parseInt(enviroments?.IVA?.observacion);
+        
         this.forceUpdate();
     }
     setCarrito(nuevoCarrito) {
@@ -57,13 +58,7 @@ export default class Carrito extends Component {
     };
 
 
-    resetCarrito = () => {
-        this.carrito = [];
-        this.descuentoManual = '';
-        this.conFactura = false;
-        this.cliente = null;
-        this.props.onModificarStock?.(null, 0);
-    };
+ 
 
     vaciarCarrito = () => {
         this.carrito = [];
@@ -72,19 +67,10 @@ export default class Carrito extends Component {
         this.cliente = {};
         this.props.onModificarStock?.(null, 0);
         this.carritoRefModal?.setCarrito?.([]);
-
         this.forceUpdate();
     };
 
-    // vaciarCarrito() {
-    //     this.carritoRefModal?.setCarrito?.([]);
-    //     this.carrito = [];
-    //     this.descuentoManual = 0;
-    //     this.conFactura = false;
-    //     this.cliente = null;
-    //     this.forceUpdate();
-    // };
-
+ 
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
     calcularTotalConIVA = (subtotal) => {
         if (!this._enviromentsIva) return subtotal;
