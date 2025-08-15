@@ -117,15 +117,18 @@ export default class Barra extends React.Component {
                     <SHr h={100} />
                 </ScrollView>
 
-                <SView col={"xs-12"} >
+                <SView col={"xs-12"} pointerEvents="none" >
                     <SView style={{
                         top: -100,
                         width: "100%",
                         height: 100,
                         position: "absolute",
-                    }}>
+
+                    }} pointerEvents="none" >
                         <SGradient colors={[STheme.color.background + "ff", STheme.color.background + "00"]} />
                     </SView>
+                </SView>
+                <SView col={"xs-12"}  >
                     <SHr h={1} color={STheme.color.card} />
                     <Page label={"Usuarios"} url={"/usuario"}
                         permiso="ver"

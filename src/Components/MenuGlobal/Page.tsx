@@ -20,7 +20,7 @@ type PageProps = {
 }
 export default class Page extends React.Component<PageProps> {
     state = {
-        open: false,
+        open: true,
         active: false
     }
     componentDidMount(): void {
