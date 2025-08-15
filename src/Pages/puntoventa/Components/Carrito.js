@@ -19,7 +19,7 @@ export default class Carrito extends Component {
         const enviroments = await MDL.contabilidad.getEnviroment();
         this._enviromentsIva = parseFloat(enviroments?.IVA?.observacion) / 100;
         this._numeroIva = parseInt(enviroments?.IVA?.observacion);
-        
+
         this.forceUpdate();
     }
     setCarrito(nuevoCarrito) {
@@ -58,7 +58,7 @@ export default class Carrito extends Component {
     };
 
 
- 
+
 
     vaciarCarrito = () => {
         this.carrito = [];
@@ -70,7 +70,7 @@ export default class Carrito extends Component {
         this.forceUpdate();
     };
 
- 
+
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
     calcularTotalConIVA = (subtotal) => {
         if (!this._enviromentsIva) return subtotal;
@@ -146,17 +146,19 @@ export default class Carrito extends Component {
                         </SView>
                         <SHr height={5} />
                         <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
-                        <SView col={"xs-12"} row >
-                            <SView col={"xs-6"} height={60} center >
-                                <SInput label={"Descuento VIP (Bs):"} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", borderRadius: 8 }}
-                                    onChangeText={(text) => {
-                                        this.descuentoManual = text;
-                                        this.forceUpdate();
-                                    }}
-                                />
+                        <SView col={"xs-12"} row center   >
+                            <SView col={"md-12 xl-6"} height={70} border={"transparent"} >
+                                <SView col={"xs-10"} center  >
+                                    <SInput label={"Descuento VIP (Bs):"} height={40} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={STheme.color.card} style={{ backgroundColor: "transparent", borderRadius: 8 }}
+                                        onChangeText={(text) => {
+                                            this.descuentoManual = text;
+                                            this.forceUpdate();
+                                        }}
+                                    />
+                                </SView>
                             </SView>
-                            <SView col={"xs-6"} row center  >
-                                <SView width={70} style={{ alignItems: "flex-end" }}  >
+                            <SView col={"md-12 xl-6"} height={60} center border={"transparent"} >
+                                <SView col={"md-12  "} center    >
                                     <SInput label={"Con factura"} type='checkBox' defaultValue={this.conFactura}
                                         onChangeText={(text) => {
                                             this.conFactura = text;
@@ -166,8 +168,8 @@ export default class Carrito extends Component {
                                 </SView>
                             </SView>
                         </SView>
-                        <SHr height={3} />
-                        { }
+                        <SHr height={4}  />
+
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.danger} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-12"} center>
                                 <FotoCliente onReloadCliente={(cliente) => {
