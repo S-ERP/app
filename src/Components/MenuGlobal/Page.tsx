@@ -127,9 +127,8 @@ export default class Page extends React.Component<PageProps> {
                 } else {
                     if (MenuGlobal.INSTACE?._barra) {
                         if (!MenuGlobal.INSTACE?._barra.state.open) {
-                            MenuGlobal.INSTACE?._barra?.open();
-                            if (this.state.open) {
-                                return;
+                            if (!this.state.open) {
+                                MenuGlobal.INSTACE?._barra?.open();
                             }
                         }
 
@@ -145,7 +144,7 @@ export default class Page extends React.Component<PageProps> {
                     height: this.size - 3,
                     borderRadius: 4,
                     overflow: "hidden",
-                    // backgroundColor: STheme.color.card,
+                    backgroundColor: this.props.icon ? "transparent" : STheme.color.card,
                     justifyContent: "center",
                     alignItems: "center",
                 }}>
@@ -161,8 +160,8 @@ export default class Page extends React.Component<PageProps> {
                 {this.props.children && <SView width={10} height={10} style={{ transform: [{ rotate: this.state.open ? "90deg" : "-90deg" }] }}><SIconApp name="Back" fill={STheme.color.text} /></SView>}
                 <View style={{ width: 4 }} />
             </SView>
-            {(this.state.open && MenuGlobal.INSTACE?._barra?.state?.open) &&
-                <SView style={{ paddingStart: this.size / 2, }}>
+            {(this.state.open) &&
+                <SView style={{ paddingStart: MenuGlobal.INSTACE?._barra?.state?.open ? this.size / 2 : this.size / 8, }}>
                     {this.injectRefs(this.props.children)}
                 </SView>}
         </>

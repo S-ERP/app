@@ -15,7 +15,7 @@ export default class TypeFolder extends Component {
             showHidden: false,
             time: new Date().getTime(),
             buscador: "",
-            realTime: true,
+            realTime: false,
             data: []
         };
     }
