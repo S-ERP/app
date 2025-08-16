@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SPage, STheme, SPopup, SView, SText, SNavigation, SIcon, SDate, SNotification } from 'servisofts-component';
+import { SHr, SPage, STheme, SPopup, SView, SText, SNavigation, SIcon, SDate, SNotification, SImage } from 'servisofts-component';
 import MDL from '../../MDL';
 
 import { DinamicTable } from 'servisofts-table'
@@ -14,6 +14,21 @@ import FormEditarPassword from './Components/FormEditarPassword';
 // import SelectFiltroGuardado from '../../Components/FiltroTabla/SelectFiltroGuardado';
 // import FiltroTabla from '../../Components/FiltroTabla';
 import FloatButtom from '../../Components/FloatButtom';
+import Model from '../../Model';
+import SSocket from 'servisofts-socket';
+
+
+const ImageLabel = ({ label, src, textStyle, wrap = true }) => {
+    return <SView row >
+        <SView width={20} height={20} style={{ borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card }}>
+            <SImage enablePreview src={src} style={{ resizeMode: "cover" }} />
+        </SView>
+        <SView width={4} />
+
+        <Text style={[textStyle, { flex: 1 }]} numberOfLines={!wrap ? 0 : 1} >{label}</Text>
+    </SView>
+}
+
 export default class table extends Component {
     static PERMISO = "ver"
     constructor(props) {
@@ -24,6 +39,21 @@ export default class table extends Component {
 
     loadData = async () => {
         var users = await MDL.usuario.getAll()
+
+        let eu = Model.empresa_usuario.Action.getAllByKeyEmpresa(Model.empresa.Action.getKey());
+        let usuarios = await MDL.usuario.getAll()
+        console.log(eu);
+        if (!eu || !usuarios) return null
+        let data = Object.values(eu).map(a => {
+            let usr = usuarios[a.key_usuario];
+            usr.empresa_usuario = a;
+            return usr;
+        })
+        console.log("DATA", data);
+        this.setState({ data })
+        return Object.values(data).filter(user => user.estado === "1")
+
+
         // var userRoles = await MDL.role.getAllUserRoles();
         // var roles = await MDL.role.getAll();
         // users.map((user) => {
@@ -39,8 +69,7 @@ export default class table extends Component {
         //         return !!userRole.rol
         //     })
         // })
-        this.setState({ users })
-        return Object.values(users).filter(user => user.estado === "1")
+
     }
 
     validarFecha = (fecha_) => {
@@ -182,6 +211,7 @@ export default class table extends Component {
                     key='Nombres'
                     label='Nombre'
                     data={e => e.row.Nombres}
+                    customComponent={e => <ImageLabel wrap={e.colData.wrap} label={e.data} src={SSocket.api.root + "usuario/" + e.row?.key} textStyle={e.textStyle} />}
                     width={150} />
                 <DinamicTable.Col
                     key='Apellidos'
