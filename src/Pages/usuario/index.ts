@@ -4,6 +4,7 @@ import list from "./list";
 import all from "./all";
 import list_empresa from "./list_empresa";
 import table from "./table";
+import table2 from "./table2";
 import _new from "./new";
 import profile from "./profile";
 import edit from "./edit";
@@ -24,6 +25,7 @@ export default SPage.combinePages(Parent.name, {
     "all": all,
     "eliminados": eliminados,
     "table": table,
+    "table2": table2,
     "new": _new,
     "profile": profile,
     "edit": edit,
