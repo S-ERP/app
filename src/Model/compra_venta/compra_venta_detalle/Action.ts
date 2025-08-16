@@ -67,7 +67,6 @@ export default class Action extends SAction {
             const { precio_unitario, precio_facturado, cantidad, descuento } = obj;
             const precio = ((precio_unitario * cantidad) - (descuento ?? 0));
             t.subtotal += precio;
-            t.credito_fiscal += precio_facturado ?? 0
         }))
         t.total = t.subtotal - t.descuento
         t.total_a_pagar = t.total - t.gifcard

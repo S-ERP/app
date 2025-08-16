@@ -31,6 +31,17 @@ export default class CajaArqueo extends Component<PropsType> {
 
     table = {}
 
+    buildStyleNumber(number, style) {
+        const s = { ...style }
+        if (number == 0) {
+            s.color = STheme.color.lightGray;
+        } else if (number > 0) {
+            s.color = STheme.color.success;
+        } else {
+             s.color = STheme.color.danger
+        }
+        return s;
+    }
     renderTipoPago(tipo_pago) {
         var movimientos = Object.values(this.caja_detalles).filter(o => o.key_tipo_pago == tipo_pago.key && o.estado != 0)
         var monto = 0;
@@ -48,33 +59,33 @@ export default class CajaArqueo extends Component<PropsType> {
         });
 
         this.table[tipo_pago.key] = monto;
-        
+
         var color = STheme.color.lightGray
         if (monto != 0) {
             color = monto >= 0 ? STheme.color.success : STheme.color.danger
         }
 
         return <SView col={"xs-12"} >
-            <SHr />
+            <SHr h={4} />
             <SView col={"xs-12"} row>
                 <SView flex >
                     <SText style={this.textStyle}>{tipo_pago.descripcion}</SText>
                 </SView>
                 <SView width={this.size / 2} style={this.contentTextStyle}>
-                    <SText style={this.textStyle}>{movimientos.length}</SText>
+                    <SText style={this.buildStyleNumber(movimientos.length, this.textStyle)}>{movimientos.length}</SText>
                 </SView>
                 <SView width={this.size} style={this.contentTextStyle}>
-                    <SText style={this.textStyle}>{SMath.formatMoney(monto_ingreso)}</SText>
+                    <SText style={this.buildStyleNumber(monto_ingreso, this.textStyle)}>{SMath.formatMoney(monto_ingreso)}</SText>
                 </SView>
                 <SView width={this.size} style={this.contentTextStyle}>
-                    <SText style={this.textStyle}>{SMath.formatMoney(monto_egreso)}</SText>
+                    <SText style={this.buildStyleNumber(monto_egreso, this.textStyle)}>{SMath.formatMoney(monto_egreso)}</SText>
                 </SView>
                 <SView width={this.size} style={this.contentTextStyle}>
-                    <SText style={this.textStyle} color={color}>{SMath.formatMoney(monto)}</SText>
+                    <SText style={this.buildStyleNumber(monto, this.textStyle)} color={color}>{SMath.formatMoney(monto)}</SText>
                 </SView>
             </SView>
-            <SHr />
-            <SHr h={1} color={STheme.color.lightBlack} />
+            <SHr h={4} />
+            <SHr h={1} color={STheme.color.card} />
         </SView>
     }
 
@@ -101,8 +112,8 @@ export default class CajaArqueo extends Component<PropsType> {
         }
         var cantidad = movimientos.length;
         return <SView col={"xs-12"} row style={{
-            paddingTop: 8,
-            paddingBottom: 8,
+            paddingTop: 4,
+            paddingBottom: 4,
             backgroundColor: STheme.color.card,
         }}>
             <SView flex >
@@ -127,14 +138,18 @@ export default class CajaArqueo extends Component<PropsType> {
                 <SView width={this.size} style={this.contentTextStyle}><SText style={this.textStyle} color={STheme.color.lightGray}>Egresos</SText></SView>
                 <SView width={this.size} style={this.contentTextStyle}><SText style={this.textStyle} color={STheme.color.lightGray}>Total</SText></SView>
             </SView>
-            <SHr h={2} color={STheme.color.lightBlack} />
+            <SHr h={2} color={STheme.color.card} />
             {/* <SText>{'Arqueo de caja'}</SText> */}
-            <SList
+            {Object.values(this.tipo_pago).map(a => {
+                return this.renderTipoPago(a)
+            })}
+            <SHr h={1} color={STheme.color.card} />
+            {/* <SList
                 data={this.tipo_pago}
                 render={this.renderTipoPago.bind(this)}
-            />
+            /> */}
             {this.getTotal()}
-            <SHr h={2} color={STheme.color.lightBlack} />
+            {/* <SHr h={1} color={STheme.color.lightBlack} /> */}
         </SView>
         );
     }

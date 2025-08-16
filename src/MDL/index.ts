@@ -9,6 +9,7 @@ import inventario from "./inventario";
 import compra_venta from "./compra_venta";
 import contabilidad from "./contabilidad"
 import punto_venta from "./punto_venta";
+import caja from "./caja";
 // import punto_venta from "../Model/empresa/punto_venta";
  export default {
    empresa: new empresa(),
@@ -22,4 +23,5 @@ import punto_venta from "./punto_venta";
    compra_venta: new compra_venta(),
    contabilidad: new contabilidad(),
    punto_venta: new punto_venta(),
+   caja:new caja()
  };

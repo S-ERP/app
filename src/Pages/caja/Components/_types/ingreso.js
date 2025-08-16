@@ -67,7 +67,8 @@ export default class ingreso {
                                     SNotification.send({
                                         title: "Error",
                                         body: e?.error,
-                                        time:5000,
+                                        color: STheme.color.danger,
+                                        time: 5000,
                                     })
                                 })
                             }

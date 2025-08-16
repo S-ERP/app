@@ -35,7 +35,7 @@ export default class Totales extends Component {
             <SHr height={4} />
             {this.totales_item({ label: "TOTAL A PAGAR Bs.", bold: true, value: this.state.totales.total_a_pagar })}
             <SHr height={4} />
-            {this.totales_item({ label: "IMPORTE BASE CREDITO FISCAL", bold: true, value: this.state.totales.credito_fiscal })}
+            {this.totales_item({ label: "IMPORTE BASE CREDITO FISCAL", bold: true, value: this.props.data?.precio_facturado })}
             <SHr />
             <SHr />
             <SText center>{"SON: " + SMath.numberToLetter(this.state.totales.total_a_pagar)}</SText>

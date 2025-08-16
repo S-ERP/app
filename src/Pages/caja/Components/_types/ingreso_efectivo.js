@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SButtom, SHr, SInput, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SButtom, SHr, SInput, SNavigation, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../../Model';
 import PopupMontoDetalle from '../PopupMontoDetalle';
 import Config from '../../../../Config';
@@ -66,6 +66,13 @@ export default class index {
                         }).then((resp) => {
                             console.log(resp)
 
+                        }).catch(e => {
+                            SNotification.send({
+                                title: "Error",
+                                body: e?.error,
+                                color: STheme.color.danger,
+                                time: 5000,
+                            })
                         })
 
                     }

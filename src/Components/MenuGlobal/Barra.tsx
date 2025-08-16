@@ -1,6 +1,6 @@
 import React from "react";
 import { ScrollView, View } from "react-native";
-import { SGradient, SHr, SImage, SNavigation, SPage, SText, STheme, SView } from "servisofts-component";
+import { SGradient, SHr, SImage, SNavigation, SPage, SStorage, SText, STheme, SView } from "servisofts-component";
 import Page from "./Page";
 import SIconApp from "../../Assets/SIconApp";
 import { Route } from "@react-navigation/native";
@@ -9,14 +9,21 @@ import SSocket from "servisofts-socket";
 
 export default class Barra extends React.Component {
     state = {
-        open: true,
+        open: false,
         openWidth: 200,
         closeWidth: 40,
     }
 
-
+    componentDidMount(): void {
+        SStorage.getItem("menu_global_open").then((value) => {
+            this.setState({
+                open: value === "1"
+            })
+        })
+    }
 
     changeStatus() {
+
         if (this.state.open) {
             this.close()
         } else {
@@ -24,11 +31,14 @@ export default class Barra extends React.Component {
         }
     }
     open() {
+        SStorage.setItem("menu_global_open", "1");
+
         this.setState({
             open: true,
         })
     }
     close() {
+        SStorage.setItem("menu_global_open", "0");
         this.setState({
             open: false,
         })

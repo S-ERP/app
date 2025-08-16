@@ -31,6 +31,7 @@ export default class index extends Component<indexPropsType> {
             data={tipos_pago}
             filter={(a) => ((this.props.include ?? []).indexOf(a.key) >= 0)}
             render={(obj) => {
+
                 return <SView col={"xs-12"} card style={{ padding: 4 }} row center onPress={() => {
                     if (this.props.onSelect) {
                         this.props.onSelect(obj)
@@ -44,6 +45,7 @@ export default class index extends Component<indexPropsType> {
                     <SView flex>
                         <SText>{obj.descripcion}</SText>
                         <SText fontSize={10} color={STheme.color.lightGray}>{obj.observacion}</SText>
+                        {obj.pasa_por_caja && <SText fontSize={10} color={STheme.color.warning}>Pasa por caja</SText>}
                     </SView>
                     <SView style={{ padding: 4 }}>
                         <SView width={40} height={40} card >

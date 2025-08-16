@@ -66,10 +66,12 @@ export default class root extends React.Component {
                 descripcion: "Compra rapida",
                 observacion: "Sin observacion",
                 key_proveedor: proveedor.key,
-                key_sucursal: sucursal.key,
-                key_empresa: MDL.empresa.select.key,
+                // key_sucursal: sucursal.key,
+                // key_empresa: MDL.empresa.select.key,
                 key_usuario: MDL.usuario.session.key,
                 facturar: this.facturar || false,
+                key_caja: "66b036b2-aee9-4746-b468-ad1443d2f170",
+                key_tipo_pago: "transferencia",
             }
             data.detalle = this.state.detalle.map(item => (
                 {
