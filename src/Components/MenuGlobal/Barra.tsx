@@ -147,14 +147,17 @@ export default class Barra extends React.Component {
                 </SView>
                 <SView col={"xs-12"}  >
                     <SHr h={1} color={STheme.color.card} />
-                    <Page label={"Usuarios"} url={"/usuario"}
-                        permiso="ver"
+                    <Page label={"Usuarios"} 
                         icon={<ImagePage key_page="419dfc13-34db-4935-a13c-b05cfd9d599a" />}
-                    />
-                    <Page label={"Roles y Permisos"} url={"/rol"}
+                    >
+                        <Page label={"All"} url={"/usuario"} permiso="ver"  />
+                        <Page label={"Lista"} url={"/usuario/table"}  permiso="ver" permiso_url="/usuario" />
+                        <Page label={"Roles y Permisos"} url={"/rol"}  permiso="ver"  />
+                    </Page>
+                    {/* <Page label={"Roles y Permisos"} url={"/rol"}
                         permiso="ver"
                         icon={<ImagePage key_page="c4666514-202f-4d8d-8656-64c82065ba67" />}
-                    />
+                    /> */}
 
                     <Page label={"Ayuda"} url={"/wiki"}
                         icon={<ImagePage key_page="bf38c052-b726-43db-a66d-c202ef79a391" />}
