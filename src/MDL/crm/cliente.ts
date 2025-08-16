@@ -35,6 +35,19 @@ export default class cliente {
     return resp.data;
   }
 
+  async getByKey(key_cliente: string) {
+    const resp: any = await SSocket.sendPromise({
+      service: "crm",
+      component: "cliente",
+      type: "getByKey",
+      key: key_cliente,
+      key_empresa: Model.empresa.Action.getKey(),
+    });
+    return resp.data;
+  }
+
+
+
   async registrar(data: Cliente) {
     data.key_empresa = Model.empresa.Action.getKey();
     const resp: any = await SSocket.sendPromise({
