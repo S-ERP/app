@@ -6,6 +6,7 @@ import CajaArqueo from '../CajaArqueo';
 import PopupMontoDetalle from '../PopupMontoDetalle';
 
 import PDF from '../../../../Components/PDF';
+import MDL from '../../../../MDL';
 
 export default class index {
     static key = "cierre";
@@ -43,6 +44,7 @@ export default class index {
                     key_usuario: Model.usuario.Action.getKey()
                 }).then((e) => {
                     setState({ loading: false, error: "" })
+                    MDL.caja.getActiva();
                     SPopup.close("caja_cierre")
                     // SNavigation.goBack();
                 }).catch((e) => {

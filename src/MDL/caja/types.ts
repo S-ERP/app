@@ -1,5 +1,5 @@
 
-export type caja = {
+export type Caja = {
   key: string;
   key_usuario: string;
   fecha_on: string;
@@ -9,5 +9,5 @@ export type caja = {
 
 
 export type EventListener = {
-  type: "handleChange"
+  type: "onChangeActiva"
 }

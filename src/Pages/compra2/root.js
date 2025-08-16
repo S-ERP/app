@@ -70,8 +70,8 @@ export default class root extends React.Component {
                 // key_empresa: MDL.empresa.select.key,
                 key_usuario: MDL.usuario.session.key,
                 facturar: this.facturar || false,
-                key_caja: "66b036b2-aee9-4746-b468-ad1443d2f170",
-                key_tipo_pago: "transferencia",
+                key_caja: MDL.caja.activa.key,
+                key_tipo_pago: "efectivo",
             }
             data.detalle = this.state.detalle.map(item => (
                 {
@@ -213,7 +213,7 @@ class Detalle extends React.Component {
     inputs = {}
     render() {
         return (
-            <SView col={"xs-12"} row style={{borderBottomWidth: 0.5, borderBottomColor: STheme.color.card, paddingBottom: 8, paddingTop: 8 }}>
+            <SView col={"xs-12"} row style={{ borderBottomWidth: 0.5, borderBottomColor: STheme.color.card, paddingBottom: 8, paddingTop: 8 }}>
                 <SView col={"xs-12 sm-7"} padding={4}>
                     {/* <SView flex={2} padding={2}> */}
                     <SInput

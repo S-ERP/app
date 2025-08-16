@@ -11,17 +11,35 @@ import contabilidad from "./contabilidad"
 import punto_venta from "./punto_venta";
 import caja from "./caja";
 // import punto_venta from "../Model/empresa/punto_venta";
- export default {
-   empresa: new empresa(),
-   factura: new factura(),
-   crm: new crm(),
-   whatsapp: new whatsapp(),
-   usuario: new usuario(),
-   rolesPermisos: new RolesPermisos(),
-   qr_reader: new qr_reader(),
-   inventario: new inventario(),
-   compra_venta: new compra_venta(),
-   contabilidad: new contabilidad(),
-   punto_venta: new punto_venta(),
-   caja:new caja()
- };
+export const MDL = {
+  usuario: new usuario(),
+  empresa: new empresa(),
+  factura: new factura(),
+  crm: new crm(),
+  whatsapp: new whatsapp(),
+  rolesPermisos: new RolesPermisos(),
+  qr_reader: new qr_reader(),
+  inventario: new inventario(),
+  compra_venta: new compra_venta(),
+  contabilidad: new contabilidad(),
+  punto_venta: new punto_venta(),
+  caja: new caja()
+};
+
+export const componentDidMount = async () => {
+  // await Promise.all(MDL.map(mdl => mdl.componentDidMount()));
+  // for (const key in Object.keys(MDL)) {
+  //   if (MDL[key].componentDidMount) {
+  //     await MDL[key].componentDidMount();
+  //   }
+  // }
+
+  for (const key in MDL) {
+    if ((MDL as any)[key].componentDidMount) {
+      await (MDL as any)[key].componentDidMount();
+    }
+  }
+
+}
+
+export default MDL;

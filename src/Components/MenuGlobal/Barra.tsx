@@ -5,6 +5,7 @@ import Page from "./Page";
 import SIconApp from "../../Assets/SIconApp";
 import { Route } from "@react-navigation/native";
 import SSocket from "servisofts-socket";
+import CajaActiva from "./components/CajaActiva";
 
 
 export default class Barra extends React.Component {
@@ -89,6 +90,7 @@ export default class Barra extends React.Component {
                     </Page>
                     <Page label={"Caja"} url={"/caja"} permiso="ver"
                         icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}
+                        decoradores={<CajaActiva />}
                     />
                     <Page label={"Compras"}
                         icon={<ImagePage key_page="c0a4c4e6-082f-4f23-a755-01369653ee49" />}
