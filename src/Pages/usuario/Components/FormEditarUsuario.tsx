@@ -5,7 +5,7 @@ import MDL from '../../../MDL';
 import { DinamicTable } from 'servisofts-table';
 import { SForm, SHr, SIcon, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import PButtom from '../../../Components/PButtom';
-import { Role } from '../../../MDL/role/types';
+// import { Role } from '../../../MDL/role/types';
 import { Usuario } from '../../../MDL/usuario/types';
 
 
@@ -39,36 +39,45 @@ export default class FormEditarUsuario extends Component<FormEditarType> {
             <SForm
                 ref={(ref: any) => this.form = ref}
                 inputs={{
-                    "name": {
+                    "Nombres": {
                         label: "Nombres", autoFocus: true, required: true,
-                        defaultValue: this.props.data.name,
+                        defaultValue: this.props.data.Nombres,
                         autoCorrect: false,
                         onSubmitEditing: () => {
-                            if (this.form) this.form.focus("lastname");
+                            if (this.form) this.form.focus("Nombres");
                         }
                     },
-                    "lastname": {
+                    "Apellidos": {
                         label: "Apellidos", required: true,
-                        defaultValue: this.props.data.lastname,
+                        defaultValue: this.props.data.Apellidos,
                         autoCorrect: false,
                         onSubmitEditing: () => {
-                            if (this.form) this.form.focus("phone");
+                            if (this.form) this.form.focus("Apellidos");
                         }
                     },
-                    "phone": {
-                        label: "Teléfono",
-                        defaultValue: this.props.data.phone,
-                        type: 'phone',
+                    "CI": {
+                        label: "CI",
+                        defaultValue: this.props.data.CI,
+                        // type: "",
                         isRequired: true,
                         onSubmitEditing: () => {
-                            if (this.form) this.form.focus("email");
+                            if (this.form) this.form.focus("CI");
                         }
                     },
-                    "email": {
+                     "Telefono": {
+                        label: "Telefono",
+                        defaultValue: this.props.data.Telefono,
+                        // type: "",
+                        isRequired: true,
+                        onSubmitEditing: () => {
+                            if (this.form) this.form.focus("CI");
+                        }
+                    },
+                    "Correo": {
                         label: "Correo electrónico",
                         type: 'email',
                         isRequired: true,
-                        defaultValue: this.props.data.email,
+                        defaultValue: this.props.data.Correo,
                         onSubmitEditing: () => {
                             if (this.form) this.form.submit()
                         }
@@ -82,6 +91,7 @@ export default class FormEditarUsuario extends Component<FormEditarType> {
                     })
                     MDL.usuario.editar({
                         ...e,
+                        estado: this.props.data.estado,
                         key: this.props.data.key,
 
                     } as any).then((e: any) => {

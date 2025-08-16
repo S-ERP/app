@@ -89,6 +89,20 @@ export default class usuario extends MDLAbstract<EventListener> {
         return data;
     }
 
+    getAll = async () => {
+        const resp: any = await SSocket.sendPromise({
+
+            cabecera: "usuario_app",
+            version: "2.0",
+            service: "usuario",
+            component: "usuario",
+            type: "getAll",
+        });
+        // return resp.data;
+        // return Object.values(resp.data ?? {}) as Usuario[];
+        return resp.data as Usuario[];
+    }
+
 
 
     registro = async (data: Usuario) => {
@@ -197,5 +211,18 @@ export default class usuario extends MDLAbstract<EventListener> {
         }
 
     }
+
+    // eliminar = async (key_usuario: string) => {
+    //     try {
+    //         const response = await HTTP.DELETE({
+    //             url: Config.apis.usuario + "/database/rows/users",
+    //             token: MDL.usuario.session?.token,
+    //             body: [key_usuario]
+    //         });
+    //         return response;
+    //     } catch (error: any) {
+    //         throw error?.message
+    //     }
+    // }
 
 }
