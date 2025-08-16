@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { SButtom, SDate, SHr, SIcon, SInput, SList, SLoad, SMath, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../Model';
 import Container from '../../../Components/Container';
+import MDL from '../../../MDL';
 
 class CajaClose extends Component {
     constructor(props) {
@@ -77,6 +78,7 @@ class CajaClose extends Component {
                         key_empresa: Model.empresa.Action.getKey(),
                         key_usuario: Model.usuario.Action.getKey()
                     }).then((e) => {
+                        MDL.caja.getActiva();
                         this.setState({ loading: false })
                         console.log(e);
                     }).catch((e) => {

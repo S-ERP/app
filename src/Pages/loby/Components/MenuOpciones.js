@@ -48,8 +48,8 @@ export default class MenuOpciones extends Component {
                 </Chat> */}
                 {/* <SView width={8} height={60} /> */}
 
-                {this.renderMunuItem({ label: "", icon: "configurar", onPress: () => SNavigation.navigate("/empresa/config") })}
-                <SView width={8}  height={60}/>
+                {/* {this.renderMunuItem({ label: "", icon: "configurar", onPress: () => SNavigation.navigate("/empresa/config") })} */}
+                {/* <SView width={8}  height={60}/> */}
                 {/* <InvitarUsuario /> */}
                 {this.renderMunuItem({ label: "", icon: "share", onPress: () => SNavigation.navigate("/empresa/invite") })}
                 {/* {this.renderMunuItem({ label: "Productos", icon: "productos", onPress: () => SNavigation.navigate("/productos/tipo_producto/options") })} */}

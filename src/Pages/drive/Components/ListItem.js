@@ -4,6 +4,7 @@ import SSocket from 'servisofts-socket';
 import MenuItem from './MenuItem';
 import ItemIcon from './ItemIcon';
 import { DBUploadTask } from '../../../Components/SUpload';
+import { Actions } from '..';
 
 const h = 44
 
@@ -85,7 +86,7 @@ export default class ListItem extends Component {
         // return new SDate(date).timeSince(new SDate())
     }
     buildIcon() {
-        return <ItemIcon obj={this.props.obj} path={this.props.path} time={this.props.time} />
+        return <ItemIcon obj={this.props.obj} path={Actions.root_path + "" +this.props.path} time={this.props.time} />
     }
 
     renderProgresBar = () => {

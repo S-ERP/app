@@ -48,6 +48,7 @@ export default class cuentas extends React.Component {
                     return arr;
                     // return MDL.contabilidad.agruparCuentas(arr)
                 }}
+                
 
                 loadInitialState={async () => {
                     return {
@@ -57,7 +58,7 @@ export default class cuentas extends React.Component {
                     }
                 }}
                 onSelect={(e) => {
-
+                    
                 }}
             >
                 {/* <DinamicTable.Col key={"key"} label="Key" width={50}

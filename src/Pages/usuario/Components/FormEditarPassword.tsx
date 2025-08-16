@@ -64,7 +64,8 @@ export default class FormEditarPassword extends Component<FormEditarType> {
                         type: "loading",
                     })
                     MDL.usuario.editar({
-                        password: password,
+                        estado: this.props.data.estado,
+                        Password: password,
                         key: this.props.data.key,
 
                     } as any).then((e: any) => {

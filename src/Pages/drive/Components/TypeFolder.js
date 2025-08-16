@@ -21,7 +21,7 @@ export default class TypeFolder extends Component {
     }
 
     loadData() {
-        Actions.ls({ path: this.props.path })
+        Actions.ls({ path: Actions.root_path + "" +this.props.path })
             .then(e => {
                 let extras = Object.values(DBUploadTask)
                     .filter(a => {

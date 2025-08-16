@@ -87,7 +87,8 @@ class CajaOpen extends Component {
 
     render() {
         return (<SView col={"xs-11 sm-10 md-8 lg-6 xl-4"}>
-
+            <SText>{this.props.data.key}</SText>
+            <SHr/>
             {this.render_open(this.props.data)}
             {/* <SelectMonedas key_empresa={this.props.sucursal.key_empresa}/> */}
         </SView>

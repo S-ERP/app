@@ -1,22 +1,30 @@
 import React from "react";
 import { ScrollView, View } from "react-native";
-import { SGradient, SHr, SImage, SNavigation, SPage, SText, STheme, SView } from "servisofts-component";
+import { SGradient, SHr, SImage, SNavigation, SPage, SStorage, SText, STheme, SView } from "servisofts-component";
 import Page from "./Page";
 import SIconApp from "../../Assets/SIconApp";
 import { Route } from "@react-navigation/native";
 import SSocket from "servisofts-socket";
+import CajaActiva from "./components/CajaActiva";
 
 
 export default class Barra extends React.Component {
     state = {
-        open: true,
+        open: false,
         openWidth: 200,
         closeWidth: 40,
     }
 
-
+    componentDidMount(): void {
+        SStorage.getItem("menu_global_open").then((value) => {
+            this.setState({
+                open: value === "1"
+            })
+        })
+    }
 
     changeStatus() {
+
         if (this.state.open) {
             this.close()
         } else {
@@ -24,11 +32,14 @@ export default class Barra extends React.Component {
         }
     }
     open() {
+        SStorage.setItem("menu_global_open", "1");
+
         this.setState({
             open: true,
         })
     }
     close() {
+        SStorage.setItem("menu_global_open", "0");
         this.setState({
             open: false,
         })
@@ -55,6 +66,7 @@ export default class Barra extends React.Component {
                     >
                         <Page label={"Perfil"} url={"/empresa"} permiso={"ver"} />
                         <Page label={"Sucursales"} url={"/sucursal"} permiso={"ver"} />
+                        <Page label={"Config"} url={"/empresa/config"} permiso={"edit"} permiso_url="/empresa" />
                     </Page>
                     <Page label={"Contabilidad"}
                         icon={<ImagePage key_page="fd0c2bfe-0f13-4e81-a967-213cc0adb299" />}
@@ -78,6 +90,7 @@ export default class Barra extends React.Component {
                     </Page>
                     <Page label={"Caja"} url={"/caja"} permiso="ver"
                         icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}
+                        decoradores={<CajaActiva />}
                     />
                     <Page label={"Compras"}
                         icon={<ImagePage key_page="c0a4c4e6-082f-4f23-a755-01369653ee49" />}
@@ -113,6 +126,12 @@ export default class Barra extends React.Component {
                         permiso="page"
                         icon={<ImagePage key_page="676e0ed7-2320-4adb-8dfa-624e0c48df07" />}
                     />
+                    <Page label={"Developers Tools"}
+                        icon={<SIconApp name="Ajustes" />}
+                    >
+                        <Page label={"Icons"} url={"/icons"} />
+                        <Page label={"Test"} url={"/test"} />
+                    </Page>
                     {/* <Page label={"Iconos"} url={"/icons"} /> */}
                     <SHr h={100} />
                 </ScrollView>
@@ -130,20 +149,18 @@ export default class Barra extends React.Component {
                 </SView>
                 <SView col={"xs-12"}  >
                     <SHr h={1} color={STheme.color.card} />
-                    <Page label={"Usuarios"} url={"/usuario"}
-                        permiso="ver"
+                    <Page label={"Usuarios"} 
                         icon={<ImagePage key_page="419dfc13-34db-4935-a13c-b05cfd9d599a" />}
-                    />
-                    <Page label={"Roles y Permisos"} url={"/rol"}
+                    >
+                        <Page label={"All"} url={"/usuario"} permiso="ver"  />
+                        <Page label={"Lista"} url={"/usuario/table"}  permiso="ver" permiso_url="/usuario" />
+                        <Page label={"Roles y Permisos"} url={"/rol"}  permiso="ver"  />
+                    </Page>
+                    {/* <Page label={"Roles y Permisos"} url={"/rol"}
                         permiso="ver"
                         icon={<ImagePage key_page="c4666514-202f-4d8d-8656-64c82065ba67" />}
-                    />
-                    <Page label={"Developers Tools"}
-                        icon={<SIconApp name="Ajustes" />}
-                    >
-                        <Page label={"Icons"} url={"/icons"} />
-                        <Page label={"Test"} url={"/test"} />
-                    </Page>
+                    /> */}
+
                     <Page label={"Ayuda"} url={"/wiki"}
                         icon={<ImagePage key_page="bf38c052-b726-43db-a66d-c202ef79a391" />}
                     />

@@ -262,6 +262,7 @@ import crmmicrofono, {
 
 import iconRight , { ReactComponent as iconRightW } from "./svg/iconRight.svg"
 import iconAdd , { ReactComponent as iconAddW } from "./svg/iconAdd.svg"
+import Muser , { ReactComponent as MuserW } from "./svg/Muser.svg"
 
 export const svg = {
   Logo: { Native: Logo, Web: LogoW },
@@ -417,6 +418,7 @@ export const svg = {
 
   iconRight: { Native: iconRight, Web: iconRightW },
   iconAdd: { Native: iconAdd, Web: iconAddW },
+  Muser: { Native: Muser, Web: MuserW },
 
   ...blender,
 };

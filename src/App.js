@@ -13,7 +13,7 @@ import ErrorBoundary from './Components/ErrorBoundary';
 import Socket from './Socket';
 import { Platform } from 'react-native';
 import DataBaseContainer from './DataBase/DataBaseContainer';
-import MDL from './MDL';
+import * as MDL from './MDL';
 import MenuGlobal from './Components/MenuGlobal';
 // import SplashScreen from 'react-native-splash-screen'
 setProps(Config.socket);
@@ -40,14 +40,13 @@ const App = (props) => {
         } catch (e) {
             console.log(e);
         }
-        MDL.empresa.init();
-        MDL.qr_reader.componentDidMount();
-        MDL.usuario.componentDidMount();
+
+        MDL.componentDidMount();
+
         Firebase.setBadgeCount(0);
         SNavigation.addOnChangeListener(e => {
             console.log("onChange", e);
-
-            MDL.empresa.setUsuarioLog({ url: e.name, params: e.params })
+            MDL.MDL.empresa.setUsuarioLog({ url: e.name, params: e.params })
         })
         // App launched, remove the badge count
     }, []);

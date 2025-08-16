@@ -4,6 +4,7 @@ import { SDate, SHr, SPopup, SText, STheme, SView } from 'servisofts-component';
 import NewFolder from './NewFolder';
 import SUpload from '../../../Components/SUpload';
 import SSocket from 'servisofts-socket';
+import { Actions } from '..';
 
 const PopupSubir = ({ path, onEvent }) => {
     return <SView col={"xs-12"} backgroundColor={STheme.color.background} withoutFeedback padding={16} style={{
@@ -69,7 +70,7 @@ export default class AddButtom extends Component {
     handlePress = () => {
         SPopup.open({
             key: AddButtom.KEY_POPUP,
-            content: <PopupSubir path={this.props.path} onEvent={this.props.onEvent} />
+            content: <PopupSubir path={Actions.root_path + "" +this.props.path} onEvent={this.props.onEvent} />
         })
     }
     render() {

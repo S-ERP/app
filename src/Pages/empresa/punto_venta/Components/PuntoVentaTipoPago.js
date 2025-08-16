@@ -91,7 +91,7 @@ export default class PuntoVentaTipoPago extends Component {
                         <SText fontSize={10} color={STheme.color.lightGray}>{obj.observacion}</SText>
                         <SHr height={4} />
                         {this.getCuenta(select)}
-                        {this.getSwitch(select)}
+                        {/* {this.getSwitch(select)} */}
                     </SView>
                 </SView>
             }}

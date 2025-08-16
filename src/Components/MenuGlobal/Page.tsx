@@ -17,6 +17,7 @@ type PageProps = {
     permiso?: string;
     permiso_url?: string,
     size?: number,
+    decoradores?: React.ReactNode;
 }
 export default class Page extends React.Component<PageProps> {
     state = {
@@ -88,6 +89,7 @@ export default class Page extends React.Component<PageProps> {
                 let validos = 0;
                 React.Children.map(props.children, (child) => {
                     if (!React.isValidElement(child)) return child;
+                    if (child.type.name != "Page") return;
                     const props: PageProps = child.props || {};
                     if (this.permisoAceptado(child.props)) {
                         validos++;
@@ -156,7 +158,8 @@ export default class Page extends React.Component<PageProps> {
                     flex: 1,
                     fontSize: 12,
                 }}>{this.props.label}</SText>
-                <View style={{ width: 4 }} />
+                {this.props.decoradores && this.props.decoradores}
+                < View style={{ width: 4 }} />
                 {this.props.children && <SView width={10} height={10} style={{ transform: [{ rotate: this.state.open ? "90deg" : "-90deg" }] }}><SIconApp name="Back" fill={STheme.color.text} /></SView>}
                 <View style={{ width: 4 }} />
             </SView>

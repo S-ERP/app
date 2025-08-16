@@ -66,10 +66,12 @@ export default class root extends React.Component {
                 descripcion: "Compra rapida",
                 observacion: "Sin observacion",
                 key_proveedor: proveedor.key,
-                key_sucursal: sucursal.key,
-                key_empresa: MDL.empresa.select.key,
+                // key_sucursal: sucursal.key,
+                // key_empresa: MDL.empresa.select.key,
                 key_usuario: MDL.usuario.session.key,
                 facturar: this.facturar || false,
+                key_caja: MDL.caja.activa.key,
+                key_tipo_pago: "efectivo",
             }
             data.detalle = this.state.detalle.map(item => (
                 {
@@ -103,7 +105,7 @@ export default class root extends React.Component {
 
     }
     render() {
-        return <SPage title={"Compras"} disableScroll>
+        return <SPage title={"Compras"} >
             <SView col={"xs-12"} center>
                 <SHr height={15} />
                 <SView col={"xs-10"} flex padding={15} card>
@@ -120,7 +122,7 @@ export default class root extends React.Component {
                             </SView>
 
                         </SView>
-                        <SView col={"xs-6"} padding={4}>
+                        <SView col={"xs-12 sm-6"} padding={4}>
                             <SInput
                                 ref={ref => this.inputs["sucursal"] = ref}
                                 label={"Sucursal"}
@@ -129,7 +131,7 @@ export default class root extends React.Component {
                                 options={this.state.sucursales.map(a => a.descripcion)}
                             />
                         </SView>
-                        <SView col={"xs-6"} padding={4}>
+                        <SView col={"xs-12 sm-6"} padding={4}>
                             <SInput
                                 ref={ref => this.inputs["proveedor"] = ref}
                                 label={"Proveedor"}
@@ -142,17 +144,17 @@ export default class root extends React.Component {
                     <SHr />
                     <SHr h={1} color={STheme.color.card} />
                     <SView col={"xs-12"} padding={4} flex>
-                        <SView col={"xs-12"} row>
+                        <SView col={"xs-12"} row >
                             {/* <SView width={30} padding={2} center>
                                 <SIconApp name="Delete" />
                             </SView> */}
-                            <SView flex={2} padding={2}>
+                            <SView col={"xs-4 sm-7"} padding={2}>
                                 <SText>Producto</SText>
                             </SView>
-                            <SView width={115} padding={2} >
+                            <SView col={"xs-4 sm-2"} padding={2} center >
                                 <SText>Cantidad</SText>
                             </SView>
-                            <SView width={75} padding={2} >
+                            <SView col={"xs-4 sm-3"} padding={2} center >
                                 <SText>Precio</SText>
                             </SView>
                         </SView>
@@ -195,6 +197,7 @@ export default class root extends React.Component {
                     </SView>
                 </SView>
             </SView>
+            <SHr height={25} />
         </SPage>
     }
 }
@@ -210,9 +213,9 @@ class Detalle extends React.Component {
     inputs = {}
     render() {
         return (
-            <SView col={"xs-12"} row>
-
-                <SView flex={2} padding={2}>
+            <SView col={"xs-12"} row style={{ borderBottomWidth: 0.5, borderBottomColor: STheme.color.card, paddingBottom: 8, paddingTop: 8 }}>
+                <SView col={"xs-12 sm-7"} padding={4}>
+                    {/* <SView flex={2} padding={2}> */}
                     <SInput
                         ref={ref => this.inputs["producto"] = ref}
                         type="select2"
@@ -228,7 +231,6 @@ class Detalle extends React.Component {
                                 if (!value) return;
                                 const producto = this.props.parent.state.modelos.find(a => a.descripcion == value);
                                 if (!producto) {
-                                    // (this.inputs["producto"]).setState({ error: true });
                                     SNotification.send({
                                         title: "El producto seleccionado no esta registrado en el sistema",
                                         time: 4000
@@ -237,40 +239,41 @@ class Detalle extends React.Component {
                                     console.log("PRODUCTOS", producto)
                                     this.props.data.modelo = producto;
                                     this.inputs["precio"].setValue((producto.precio_compra ?? 0).toFixed(2));
-                                    // (this.inputs["producto"]).setState({ error: false });
                                 }
                             })
                         }}
                     />
                 </SView>
-
-                <SView width={100} padding={2}>
-                    <SInput
-                        ref={ref => this.inputs["cantidad"] = ref}
-                        placeholder={"Cantidad"}
-                        defaultValue={this.props.data.cantidad || "1"}
-                        onChangeText={e => {
-                            // this.props.data.cantidad = parseFloat(e ?? 0);
-                            this.props.data.cantidad = e;
-                        }}
-                        icon
-                        type="number"
-                    />
-                </SView>
-                <SView width={100} padding={2}>
-                    <SInput
-                        ref={ref => this.inputs["precio"] = ref}
-                        icon
-                        placeholder={"Precio"}
-                        defaultValue={this.props.data.precio || "0.00"}
-                        onChangeText={e => {
-                            this.props.data.precio = parseFloat(e ?? 0);;
-                        }}
-                        type="money"
-                    />
-                </SView>
-                <SView width={30} padding={2} center onPress={this.props.onDelete}>
-                    <SIconApp name="Delete" />
+                <SView col={"xs-12 sm-5"} row>
+                    {/* <SView width={100} padding={2}> */}
+                    <SView col={"xs-5"} padding={4}>
+                        <SInput
+                            ref={ref => this.inputs["cantidad"] = ref}
+                            placeholder={"Cantidad"}
+                            defaultValue={this.props.data.cantidad || "1"}
+                            onChangeText={e => {
+                                this.props.data.cantidad = e;
+                            }}
+                            icon
+                            type="number"
+                        />
+                    </SView>
+                    <SView col={"xs-5"} padding={4}>
+                        <SInput
+                            ref={ref => this.inputs["precio"] = ref}
+                            icon
+                            placeholder={"Precio"}
+                            defaultValue={this.props.data.precio || "0.00"}
+                            onChangeText={e => {
+                                this.props.data.precio = parseFloat(e ?? 0);;
+                            }}
+                            type="money"
+                        />
+                    </SView>
+                    {/* <SView width={30} padding={2} center onPress={this.props.onDelete}> */}
+                    <SView col={"xs-2"} padding={4} center onPress={this.props.onDelete}>
+                        <SIconApp name="Delete" width={30} />
+                    </SView>
                 </SView>
             </SView>
         );
