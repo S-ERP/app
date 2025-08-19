@@ -115,7 +115,7 @@ export default class ComprobanteCarta extends Component {
                                 {"FECHA: "}
                             </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {new SDate(data?.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("dd/MM/yyyy").toUpperCase()}
+                                {new SDate(data?.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("dd/MM/yyyy")?.toUpperCase()}
                             </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ height: 4 }} />
@@ -131,7 +131,7 @@ export default class ComprobanteCarta extends Component {
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
                             <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>FORMA DE PAGO:</SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {validarDato((data?.tipo_pago.toUpperCase()), 'S/D')}
+                                {validarDato((data?.tipo_pago?.toUpperCase()), 'S/D')}
                             </SPDF.Text>
                         </SPDF.View>
                     </SPDF.View>
@@ -140,23 +140,23 @@ export default class ComprobanteCarta extends Component {
 
                     <SPDF.View style={{ flex: 3, alignItems: "center", height: "100%", }}>
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
-                            <SPDF.Text style={{ ...textStyle, width: 100, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
+                            <SPDF.Text style={{ ...textStyle, width: 95, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
                                 {"NIT: "}
                             </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}> {validarDato(proveedor.nit, '0')}  </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ height: 4 }} />
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
-                            <SPDF.Text style={{ ...textStyle, width: 100, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
+                            <SPDF.Text style={{ ...textStyle, width: 95, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
                                 {"PROVEEDOR:"}
                             </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {validarDato((proveedor?.razon_social.toUpperCase()), '6356465-2')}
+                                {validarDato((proveedor?.razon_social?.toUpperCase()), '6356465-2')}
                             </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ height: 4 }} />
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
-                            <SPDF.Text style={{ ...textStyle, width: 100, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>CONTACTO:</SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, width: 95, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>CONTACTO:</SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
                                 {validarDato(data?.telefono, '+591 00000000')}
                             </SPDF.Text>

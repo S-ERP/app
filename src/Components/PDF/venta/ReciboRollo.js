@@ -131,7 +131,7 @@ export default class ReciboRollo extends Component {
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
                         <SPDF.Text style={{ ...textStyle, width: '70%' }}>
-                            {validarDato((cliente?.razon_social.toUpperCase()), 'S/N')}
+                            {validarDato((cliente?.razon_social?.toUpperCase()), 'S/N')}
                         </SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
@@ -196,7 +196,7 @@ export default class ReciboRollo extends Component {
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>FORMA DE PAGO: </SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle, width: '100%' }}>{(data?.tipo_pago.toUpperCase())}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, width: '100%' }}>{(data?.tipo_pago?.toUpperCase())}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
