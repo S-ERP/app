@@ -76,7 +76,7 @@ export default class ComprobanteRollo extends Component {
                     SUCURSAL: {validarDato(sucursal?.descripcion, 'CENTRAL')}
                 </SPDF.Text>
                 <SPDF.Text style={{ ...textStyle }}>
-                    {validarDato((sucursal?.direccion.toUpperCase()), 'AV. SUR NRO. 1')}
+                    {validarDato((sucursal?.direccion?.toUpperCase()), 'AV. SUR NRO. 1')}
                 </SPDF.Text>
                 <SPDF.Text style={{ ...textStyle }}>
                     TELÉFONO: {validarDato(sucursal?.telefono, 'S/N')}
@@ -128,7 +128,7 @@ export default class ComprobanteRollo extends Component {
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
                         <SPDF.Text style={{ ...textStyle, width: '70%' }}>
-                            {validarDato((proveedor?.razon_social.toUpperCase()), 'S/N')}
+                            {validarDato((proveedor?.razon_social?.toUpperCase()), 'S/N')}
                         </SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
@@ -192,7 +192,7 @@ export default class ComprobanteRollo extends Component {
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>FORMA DE PAGO: </SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle, width: '100%' }}>{(data?.tipo_pago.toUpperCase())}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, width: '100%' }}>{(data?.tipo_pago?.toUpperCase())}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
