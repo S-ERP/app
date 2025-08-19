@@ -66,7 +66,7 @@ export default class ReciboRollo extends Component {
     }
     static HeaderRecibo(data) {
         const empresa = MDL.empresa.select;
-        const sucursal = Model.sucursal.Action.getByKey({ key: data.key_sucursal });
+        const sucursal = Model.sucursal.Action.getByKey({ key: data?.key_sucursal });
         return (
             <SPDF.View style={{ width: '100%', alignItems: 'center' }}>
                 <SPDF.Text style={{ ...textStyle, fontWeight: 'bold', fontSize: 16 }}>
@@ -76,7 +76,7 @@ export default class ReciboRollo extends Component {
                     SUCURSAL: {validarDato(sucursal?.descripcion, 'Central')}
                 </SPDF.Text>
                 <SPDF.Text style={{ ...textStyle, alignItems: 'center' }}>
-                    NRO. PUNTO DE VENTA {validarDato(data.venta, '1')}
+                    NRO. PUNTO DE VENTA {validarDato(data?.venta, '1')}
                 </SPDF.Text>
                 <SPDF.Text style={{ ...textStyle }}>
                     {validarDato(sucursal?.direccion, 'Av. Sur Nro. 0')}
@@ -103,7 +103,7 @@ export default class ReciboRollo extends Component {
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>FECHA: </SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle }}>{formatDate(data.fecha_on)}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{formatDate(data?.fecha_on)}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
@@ -112,8 +112,8 @@ export default class ReciboRollo extends Component {
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
                         <SPDF.Text style={{ ...textStyle }}>
-                            {data.fecha_on
-                                ? new Date(data.fecha_on).toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                            {data?.fecha_on
+                                ? new Date(data?.fecha_on).toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
                                 : 'Sin hora'}
                         </SPDF.Text>
                     </SPDF.View>
@@ -122,7 +122,7 @@ export default class ReciboRollo extends Component {
         );
     }
     static cliente(data) {
-        const cliente = data.cliente || {};
+        const cliente = data?.cliente || {};
         return (
             <SPDF.View style={{ width: '100%', alignItems: 'center' }}>
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
@@ -131,7 +131,7 @@ export default class ReciboRollo extends Component {
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
                         <SPDF.Text style={{ ...textStyle, width: '70%' }}>
-                            {validarDato((cliente.razon_social.toUpperCase()), 'S/N')}
+                            {validarDato((cliente?.razon_social.toUpperCase()), 'S/N')}
                         </SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
@@ -141,7 +141,7 @@ export default class ReciboRollo extends Component {
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
                         <SPDF.Text style={{ ...textStyle, width: '70%' }}>
-                            {validarDato(cliente.nit || cliente.ci, '0')}
+                            {validarDato(cliente?.nit || cliente?.ci, '0')}
                         </SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
@@ -156,53 +156,7 @@ export default class ReciboRollo extends Component {
             </SPDF.View>
         );
     }
-    static Proveedor(data) {
-        const proveedor = data.proveedor || {};
-        return (
-            <SPDF.View style={{ width: '100%', alignItems: 'center' }}>
-                <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
-                    <SPDF.View style={{ width: '50%', alignItems: 'end' }}>
-                        <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>PROVEEDOR: </SPDF.Text>
-                    </SPDF.View>
-                    <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle, width: '70%' }}>
-                            {validarDato(proveedor.razon_social || proveedor.nombres, 'S/N')}
-                        </SPDF.Text>
-                    </SPDF.View>
-                </SPDF.View>
-                <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
-                    <SPDF.View style={{ width: '50%', alignItems: 'end' }}>
-                        <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>NIT: </SPDF.Text>
-                    </SPDF.View>
-                    <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle, width: '70%' }}>
-                            {validarDato(proveedor.nit || proveedor.ci, '0')}
-                        </SPDF.Text>
-                    </SPDF.View>
-                </SPDF.View>
-                <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
-                    <SPDF.View style={{ width: '50%', alignItems: 'end' }}>
-                        <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>DIRECCION: </SPDF.Text>
-                    </SPDF.View>
-                    <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle, width: '70%' }}>
-                            {validarDato((proveedor.direccion.toUpperCase()), 'S/N')}
-                        </SPDF.Text>
-                    </SPDF.View>
-                </SPDF.View>
-                <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
-                    <SPDF.View style={{ width: '50%', alignItems: 'end' }}>
-                        <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>TELEFONO: </SPDF.Text>
-                    </SPDF.View>
-                    <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle, width: '70%' }}>
-                            {validarDato(proveedor.telefono, 'S/N')}
-                        </SPDF.Text>
-                    </SPDF.View>
-                </SPDF.View>
-            </SPDF.View>
-        );
-    }
+   
     static Cajero() {
         return (
             <SPDF.View style={{ width: '100%', alignItems: 'center' }}>
@@ -242,7 +196,7 @@ export default class ReciboRollo extends Component {
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>FORMA DE PAGO: </SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle, width: '100%' }}>{(data.tipo_pago.toUpperCase())}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, width: '100%' }}>{(data?.tipo_pago.toUpperCase())}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
@@ -314,8 +268,8 @@ export default class ReciboRollo extends Component {
         for (const item of items) {
             subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
         }
-        const descuento = toNumber(data.descuento);
-        const montoGiftCard = toNumber(data.monto_gift_card);
+        const descuento = toNumber(data?.descuento);
+        const montoGiftCard = toNumber(data?.monto_gift_card);
         const total = subtotal - descuento - montoGiftCard;
         return (
             <SPDF.View style={{ width: '100%' }}>
@@ -408,7 +362,7 @@ export default class ReciboRollo extends Component {
     }
     render() {
         return (
-            <SView onPress={() => ReciboRollo.imprimir(this.props.data.key)}>
+            <SView onPress={() => ReciboRollo.imprimir(this.props.data?.key)}>
                 <Text>PDF ROLLO</Text>
             </SView>
         );

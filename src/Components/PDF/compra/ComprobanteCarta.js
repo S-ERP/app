@@ -71,7 +71,7 @@ export default class ComprobanteCarta extends Component {
     }
     static HeaderRecibo(data) {
         const empresa = MDL.empresa.select;
-        const sucursal = Model.sucursal.Action.getByKey({ key: data.key_sucursal });
+        const sucursal = Model.sucursal.Action.getByKey({ key: data?.key_sucursal });
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row", height: 110, alignItems: "center" }}>
                 <SPDF.View style={{ flex: 3, alignItems: "center" }}>
@@ -100,7 +100,7 @@ export default class ComprobanteCarta extends Component {
         );
     }
     static proveedor(data) {
-        const proveedor = data.proveedor || {};
+        const proveedor = data?.proveedor || {};
         return (
             <SPDF.View style={{ width: "100%", alignItems: "center", height: 80 }}>
                 <SPDF.View style={{ width: "100%", alignItems: "center" }}>
@@ -115,7 +115,7 @@ export default class ComprobanteCarta extends Component {
                                 {"FECHA: "}
                             </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {new SDate(data.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("dd/MM/yyyy").toUpperCase()}
+                                {new SDate(data?.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("dd/MM/yyyy").toUpperCase()}
                             </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ height: 4 }} />
@@ -124,7 +124,7 @@ export default class ComprobanteCarta extends Component {
                                 {"COD. PROVEEDOR:"}
                             </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {validarDato(proveedor.nit, '6356465-2')}
+                                {validarDato(proveedor?.nit, '6356465-2')}
                             </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ height: 4 }} />
@@ -149,7 +149,7 @@ export default class ComprobanteCarta extends Component {
                                 {"PROVEEDOR:"}
                             </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {validarDato((proveedor.razon_social.toUpperCase()), '6356465-2')}
+                                {validarDato((proveedor?.razon_social.toUpperCase()), '6356465-2')}
                             </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ height: 4 }} />
@@ -256,8 +256,8 @@ export default class ComprobanteCarta extends Component {
         for (const item of items) {
             subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
         }
-        const descuento = toNumber(data.descuento);
-        const montoGiftCard = toNumber(data.monto_gift_card);
+        const descuento = toNumber(data?.descuento);
+        const montoGiftCard = toNumber(data?.monto_gift_card);
         const total = subtotal - descuento - montoGiftCard;
         return (
             <SPDF.View style={{ width: "100%", height: 98, flexDirection: "row" }}>
