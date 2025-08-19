@@ -3,7 +3,8 @@ import { SMath, SView, SText, SDate, SImage } from 'servisofts-component';
 import * as SPDF from 'servisofts-rn-spdf';
 import MDL from '../../../MDL';
 import Model from '../../../Model';
-const textStyle = { font: "Roboto", fontSize: 9};
+import SSocket from 'servisofts-socket';
+const textStyle = { font: "Roboto", fontSize: 9 };
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
 const formatCurrency = (val) => `${toNumber(val).toFixed(2)} Bs`;
@@ -75,9 +76,7 @@ export default class ComprobanteCarta extends Component {
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row", height: 110, alignItems: "center" }}>
                 <SPDF.View style={{ flex: 3, alignItems: "center" }}>
-                    <SPDF.View style={{ width: "100%", height: 50, borderWidth: 1, }}>
-                        {/* <SImage src={SSocket.api.empresa + "empresa/" + empresa?.key} /> */}
-                    </SPDF.View>
+                    <SPDF.Image src={SSocket.api.empresa + "empresa/" + empresa?.key} style={{ width: 100, height: 50,  }} />
                     <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{validarDato(empresa?.razon_social, 'MI EMPRESA')}</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle }}>Sucursal: {validarDato(sucursal?.descripcion, 'Mi Sucursal')}</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle }}>{validarDato(sucursal?.direccion, 'Av. Sur Nro. 0')}</SPDF.Text>
