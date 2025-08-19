@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { SDate, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SText, STheme, SThread, SUuid, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 
 export default class CajaActiva extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            key: SUuid(),
             caja: MDL.caja.activa
         };
     }
@@ -23,11 +24,11 @@ export default class CajaActiva extends Component {
 
     hilo() {
         if (!this.run) return;
-        setInterval(() => {
+        new SThread(1000, this.state.key, true).start(() => {
             if (!this.run) return;
             this.setState({ caja: MDL.caja.activa });
             this.hilo();
-        }, 1000);
+        })
     }
     componentWillUnmount() {
         this.run = false;
