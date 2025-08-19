@@ -4,6 +4,7 @@ import { SMath, SView, SText, SDate, SImage } from 'servisofts-component';
 import * as SPDF from 'servisofts-rn-spdf';
 import Model from '../../../Model';
 import MDL from '../../../MDL';
+import SSocket from 'servisofts-socket';
 const textStyle = { fontSize: 14, font: 'Roboto', paddingBottom: 4 };
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
@@ -18,30 +19,61 @@ export default class ComprobanteRollo extends Component {
         this.state = {};
     }
     static async imprimir(key) {
-        const data = await MDL.compra_venta.getByKeyComraVenta(key);
-        console.log('miralo ', data);
-        SPDF.create(
-            <SPDF.Page style={{ width: 464, margin: 24, padding: 0, borderWidth: 0 }}>
-                <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
-                {ComprobanteRollo.HeaderRecibo(data)}
-                <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
-                {ComprobanteRollo.InfoVenta(data)}
-                <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
-                {ComprobanteRollo.proveedor(data)}
-                {ComprobanteRollo.espacio()}
-                {ComprobanteRollo.detalle(data)}
-                {ComprobanteRollo.espacioPunto()}
-                {ComprobanteRollo.subtotales(data)}
-                {ComprobanteRollo.espacio()}
-                {ComprobanteRollo.TipoPago(data)}
-                <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
-                {ComprobanteRollo.Cajero()}
-                {ComprobanteRollo.espacio()}
-                <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
-                {ComprobanteRollo.FooterRecibO()}
-            </SPDF.Page>
-        );
+        try {
+            const data = await MDL.compra_venta.getByKeyComraVenta(key);
+            console.log('miralo ', data);
+
+            const dataQR = await ComprobanteRollo.getQR(data?.key);
+            console.log('QR ' + dataQR?.data?.b64);
+
+            SPDF.create(
+                <SPDF.Page style={{ width: 464, margin: 24, padding: 0, borderWidth: 0 }}>
+                    <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
+                    {ComprobanteRollo.HeaderRecibo(data)}
+                    <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
+                    {ComprobanteRollo.InfoVenta(data)}
+                    <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
+                    {ComprobanteRollo.proveedor(data)}
+                    {ComprobanteRollo.espacio()}
+                    {ComprobanteRollo.detalle(data)}
+                    {ComprobanteRollo.espacioPunto()}
+                    {ComprobanteRollo.subtotales(data)}
+                    {ComprobanteRollo.espacio()}
+                    {ComprobanteRollo.TipoPago(data)}
+                    <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
+                    {ComprobanteRollo.Cajero()}
+                    {ComprobanteRollo.espacio()}
+                    <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
+                    {ComprobanteRollo.FooterRecibO(dataQR?.data?.b64)}
+                </SPDF.Page>
+            );
+        } catch (error) {
+            console.error("Error al generar el recibo:", error);
+        }
     }
+
+    static getQR(key) {
+        if (!key) {
+            return Promise.reject(new Error("Key inválida para generar QR"));
+        }
+        const content = `https://darmotos.servisofts.com/venta/profile?pk=${encodeURIComponent(key)}`;
+        return SSocket.sendPromise({
+            "service": "sqr",
+            "component": "qr",
+            "type": "registro",
+            "estado": "cargando",
+            "data": {
+                "image_src": "https://darmotos.servisofts.com/logo512.png",
+                "framework": "Rounded",
+                "header": "Circle",
+                "body": "Dot",
+                "content": content,
+                "type_color": "solid",
+            }
+        });
+    }
+
+
     static espacio() {
         return (
             <SPDF.View style={{ width: '100%' }}>
@@ -336,11 +368,13 @@ export default class ComprobanteRollo extends Component {
             </SPDF.View>
         );
     }
-    static FooterRecibO() {
+    static FooterRecibO(qr) {
         const empresa = MDL.empresa.select;
         return (
             <SPDF.View style={{ width: '100%', alignItems: 'center' }}>
                 <SPDF.View style={{ width: '100%', height: 8 }}></SPDF.View>
+                <SPDF.Image src={`data:image/png;base64,${qr}`} style={{ width: 120, height: 120, }} />
+
                 <SPDF.Text style={{ ...textStyle, width: '85%', textAlign: 'center' }}>
                     {'¡Gracias por su compra!'}
                 </SPDF.Text>
