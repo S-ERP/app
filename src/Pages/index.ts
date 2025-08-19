@@ -22,6 +22,7 @@ import compra from "./compra";
 import compra2 from "./compra2";
 import venta from "./venta";
 import caja from "./caja";
+import caja2 from "./caja2";
 import cobranza from "./cobranza";
 import notification from "./notification";
 import reporte from "./reporte";
@@ -132,6 +133,7 @@ export default SPage.combinePages("/", {
   ...compra2,
   ...venta,
   ...caja,
+  ...caja2,
   ...cobranza,
   ...notification,
   ...reporte,
