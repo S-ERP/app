@@ -34,24 +34,42 @@ export default class table extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            data: [],
         };
+        this.keyUsers = []
     }
 
-    loadData = async () => {
-        var users = await MDL.usuario.getAll()
+    async componentDidMount() {
+        const dataOk = await this.loadData();
+        this.setState({ data: dataOk });
+    }
 
-        let eu = Model.empresa_usuario.Action.getAllByKeyEmpresa(Model.empresa.Action.getKey());
-        let usuarios = await MDL.usuario.getAll()
-        console.log(eu);
-        if (!eu || !usuarios) return null
-        let data = Object.values(eu).map(a => {
-            let usr = usuarios[a.key_usuario];
-            usr.empresa_usuario = a;
-            return usr;
-        })
-        console.log("DATA", data);
-        this.setState({ data })
-        return Object.values(data).filter(user => user.estado === "1")
+    async loadData() {
+        try {
+            // let eu = Model.empresa_usuario.Action.getAllByKeyEmpresa(Model.empresa.Action.getKey());
+            const eu = await SSocket.sendPromise({
+                service: "empresa",
+                component: "empresa_usuario",
+                type: "getAll",
+                key_empresa: Model.empresa.Action.getKey()
+            })
+            const usuarios = await MDL.usuario.getAll()
+            console.log("eu ", eu?.data);
+            console.log("usuarios ", usuarios);
+            if (!eu?.data || !usuarios) return []
+            return Object.values(eu?.data).map(a => {
+                let usr = usuarios[a.key_usuario];
+                if (!usr) return null;
+                usr.empresa_usuario = a;
+                console.log("aa")
+                this.keyUsers.push(a.key_usuario);
+                return usr;
+            }).filter(u => u && u.estado === "1");
+        } catch (error) {
+            console.error("Error loading data:", error);
+            // this.state.data = [];
+            return [];
+        }
 
 
         // var userRoles = await MDL.role.getAllUserRoles();
@@ -92,7 +110,7 @@ export default class table extends Component {
 
 
     render() {
-        console.log(this.state.users)
+        console.log("DATA FINALlll", this.state.data);
         return <SPage disableScroll preventBack title={"Usuarios"}
             icon={<SIcon name='Muser' fill={STheme.color.text} />}
             navBarContent={<SView flex row>
@@ -180,6 +198,22 @@ export default class table extends Component {
 
                                 }
                             },
+                            {
+                                label: "Administrar Roles",
+                                icon: <SIcon name="Engranaje" fill={STheme.color.text} />,
+                                // icon: "Add",
+                                onPress: () => {
+                                    RolesDelUsuario.open({
+                                        // data: e.row,
+                                        keyUsers: this.keyUsers,
+                                        // data: this.keyUsers,
+                                        onRegister: (e) => {
+                                            this.table.loadData();
+                                        }
+                                    })
+
+                                }
+                            },
 
 
                         ]
@@ -189,6 +223,7 @@ export default class table extends Component {
 
 
                 loadData={this.loadData.bind(this)}
+                // loadData={this.state?.data}
                 colors={Config.table.colors()}
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
@@ -239,8 +274,9 @@ export default class table extends Component {
                     key='roles'
                     label='# roles'
                     data={e => e.row.roles.map(i => i?.rol?.description)}
-                    width={150} />
-                <DinamicTable.Col key="created_at" data={a => !a.row.created_at ? null : new SDate(a.row.created_at, "yyyy-MM-ddThh:mm:ssTZD").date}
+                    width={150} /> */}
+
+                {/*  <DinamicTable.Col key="created_at" data={a => !a.row.created_at ? null : new SDate(a.row.created_at, "yyyy-MM-ddThh:mm:ssTZD").date}
                     dataType='date'
                     label={"F. Registro"}
                     format={e => this.validarFecha(e.data)}
