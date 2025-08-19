@@ -23,7 +23,7 @@ export default class proveedor {
     // return JSON.stringify(resp.data);
   }
 
-  async getByKey(value: any) {
+  async getByKey(value: String) {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
       component: "proveedor",

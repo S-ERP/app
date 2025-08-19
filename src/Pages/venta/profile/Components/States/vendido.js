@@ -62,32 +62,21 @@ export default class index extends Component {
                     <SHr />
                 </SView>
                 <SView col={"xs-12"} center row>
-                    <SView card style={{ padding: 16 }}  >
-                        <ReciboRollo data={this.data} />
+                    <SView card style={{ padding: 16 }}>
+                        <SView onPress={() => ReciboRollo.imprimir(this.data.key)}>
+                            <SText>PDF ROLLO</SText>
+                        </SView>
                     </SView>
                     <SView width={8} />
-                    <SView card style={{ padding: 16 }}  >
-                        <ReciboCarta data={this.data} />
+                    <SView card style={{ padding: 16 }}>
+                        <SView onPress={() => ReciboCarta.imprimir(this.data.key)}>
+                            <SText>PDF CARTA</SText>
+                        </SView>
                     </SView>
                 </SView>
             </SView>
-     
-            {/* <SView col={"xs-12"} row center>
-                <SView col={"xs-12"} center>
-                    <SHr />
-                    <SText bold>EXPORTAR FACTURA</SText>
-                    <SHr />
-                </SView>
-                <SView col={"xs-12"} center row>
-                    <SView card style={{ padding: 16 }}  >
-                        <ReciboCarta data={this.data} />
-                    </SView>
-                    <SView width={8} />
-                    <SView card style={{ padding: 16 }}  >
-                        <ReciboRollo data={this.data} />
-                    </SView>
-                </SView>
-            </SView> */}
+
+            
             {/* <Components.compra_venta.Exportar data={this.data} /> */}
             <SHr />
             <Components.compra_venta.GenerarAsiento data={this.data} />

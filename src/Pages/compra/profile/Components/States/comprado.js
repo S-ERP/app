@@ -7,6 +7,8 @@ import Cliente from '../Cliente';
 import Detalle from '../Detalle';
 import PlanPagos from '../PlanPagos';
 import Proveedor from '../Proveedor';
+import ComprobanteRollo from '../../../../../Components/PDF/compra/ComprobanteRollo';
+import ComprobanteCarta from '../../../../../Components/PDF/compra/ComprobanteCarta';
 
 export default class index extends Component {
     constructor(props) {
@@ -44,8 +46,40 @@ export default class index extends Component {
 
 
             <Components.compra_venta.Exportar data={this.data} />
+            {/* <SHr height={16} /> */}
+
+
+            <SView col={"xs-12"} row center>
+                <SView col={"xs-12"} center>
+                    <SHr />
+                    <SText bold>EXPORTAR COMPROBANTE</SText>
+                    <SHr />
+                </SView>
+                <SView col={"xs-12"} center row>
+                    <SView card style={{ padding: 16 }}>
+                        {/* <SView onPress={() => ComprobanteRollo.imprimir("98d04c3a-1881-46f2-9e1d-b8237fc5b650")}> */}
+                        <SView onPress={() => ComprobanteRollo.imprimir(this.data.key)}>
+                            <SText>PDF ROLLO</SText>
+                        </SView>
+                    </SView>
+                    <SView width={8} />
+                    <SView card style={{ padding: 16 }}>
+                        {/* <SView onPress={() => ComprobanteCarta.imprimir("98d04c3a-1881-46f2-9e1d-b8237fc5b650")}> */}
+                        <SView onPress={() => ComprobanteCarta.imprimir(this.data.key)}>
+                            <SText>PDF CARTA</SText>
+                        </SView>
+                    </SView>
+                </SView>
+            </SView>
+
             <SHr height={16} />
+
+
             <Components.compra_venta.GenerarAsiento data={this.data} />
+
+            <SHr height={16} />
+
+
             <SView col={"xs-12"} row center>
                 {/* <SView card style={{ padding: 16 }} onPress={() => {
                     Model.compra_venta.Action.changeState({ data: this.data, state: "denegado" })
