@@ -7,6 +7,7 @@ import SIconApp from '../../Assets/SIconApp';
 import { DinamicTable } from 'servisofts-table';
 import Model from '../../Model';
 import MDL from '../../MDL';
+import Config from '../../Config';
 
 export default class Lista extends Component {
     constructor(props) {
@@ -17,20 +18,20 @@ export default class Lista extends Component {
 
 
 
-    // onSelect = SNavigation.getParam("onSelect")
+    onSelect = SNavigation.getParam("onSelect")
 
-    // mostrarPopup(aux_key: any, data: any) {
-    //     SPopup.open({
-    //         key: "popup_config_horario",
-    //         content: (
-    //             <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
-    //                 <SView col={"xs-12"} height={470} center >
-    //                     {/* <Perfil key_proveedor={aux_key} data={data} onReload={() => { this.DinamicTable.loadData(); }} ></Perfil> */}
-    //                 </SView>
-    //             </SView>
-    //         )
-    //     });
-    // }
+    mostrarPopup(aux_key: any, data: any) {
+        SPopup.open({
+            key: "popup_config_horario",
+            content: (
+                <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
+                    <SView col={"xs-12"} height={470} center >
+                        {/* <Perfil key_proveedor={aux_key} data={data} onReload={() => { this.DinamicTable.loadData(); }} ></Perfil> */}
+                    </SView>
+                </SView>
+            )
+        });
+    }
 
 
 
@@ -39,17 +40,7 @@ export default class Lista extends Component {
 
         return (<DinamicTable
             ref={ref => this.DinamicTable = ref}
-            // loadData={async () => await MDL.whatsapp.device.getAll()}
             loadData={async () => {
-                // const data_empresa_ = await SStorage.getItem("empresa_select");
-                // const data_empresa = JSON.parse(data_empresa_);
-                // let key_empresa = data_empresa?.key;
-                // const data = Model.compra_venta.Action.getAll({});
-                // console.log("toso " + JSON.stringify(data_empresa?.key) )
-                // return data.filter(item => item.key_empresa === key_empresa);
-
-
-
                 this.data = Model.compra_venta.Action.getAll();
                 if (!this.data) return null;
                 this.compras = []
@@ -69,19 +60,15 @@ export default class Lista extends Component {
                     }
 
                 })
-                console.log("aquiiii   " + JSON.stringify(this.ventas))
-
                 return this.ventas;
-                // return asdsad.filter(item => item.key_empresa === key_empresa);
-
             }}
             key="id"
             language="es"
-        // colors={Config.table.colors()}
-        // cellStyle={Config.table.cellStyle()}
-        // textStyle={Config.table.textStyle()}
-        // selectType='single'
-        // keyExtractor={e => e.key}
+            colors={Config.table.colors()}
+            cellStyle={Config.table.cellStyle()}
+            textStyle={Config.table.textStyle()}
+            selectType='single'
+            keyExtractor={e => e.key}
 
 
         >
@@ -89,9 +76,34 @@ export default class Lista extends Component {
                 fontSize: 10, color: STheme.color.lightGray
             }} data={e => e.index + 1} />
 
-            {/* <DinamicTable.Col key="key" label="Key" width={100} textStyle={{
-                    fontSize: 10, color: STheme.color.lightGray
-                }} data={e => e.row.key} /> */}
+            <DinamicTable.Col key="key" label="Key" width={100} textStyle={{
+                fontSize: 10, color: STheme.color.lightGray
+            }} data={e => e.row.key} />
+
+            <DinamicTable.Col key="key_empresa" label="key_empresa" width={100} textStyle={{
+                fontSize: 10, color: STheme.color.lightGray
+            }} data={e => e.row.key_empresa} />
+
+            <DinamicTable.Col key="tipo" label="tipo" width={100} textStyle={{
+                fontSize: 10, color: STheme.color.lightGray
+            }} data={e => e.row.tipo} />
+
+            <DinamicTable.Col key="tipo_pago" label="tipo_pago" width={100} textStyle={{
+                fontSize: 10, color: STheme.color.lightGray
+            }} data={e => e.row.tipo_pago} />
+
+            <DinamicTable.Col key="fecha_on" label="fecha_on" width={100} textStyle={{
+                fontSize: 10, color: STheme.color.lightGray
+            }} data={e => e.row.fecha_on} />
+
+            <DinamicTable.Col key="key_cliente" label="key_cliente" width={100} textStyle={{
+                fontSize: 10, color: STheme.color.lightGray
+            }} data={e => e.row.key_cliente} />
+
+            <DinamicTable.Col key="cliente" label="cliente" width={100} textStyle={{
+                fontSize: 10, color: STheme.color.lightGray
+            }} data={e => e.row.cliente} />
+
 
 
 
@@ -109,7 +121,7 @@ export default class Lista extends Component {
                 {this.mostrarTabla()}
                 <SHr height={20} />
 
-                {/* <FloatButtom onPress={() => { this.mostrarPopup() }} /> */}
+                <FloatButtom onPress={() => { this.mostrarPopup() }} />
             </SPage>
         );
     }
