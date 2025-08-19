@@ -22,6 +22,7 @@ import compra from "./compra";
 import compra2 from "./compra2";
 import venta from "./venta";
 import caja from "./caja";
+import caja2 from "./caja2";
 import cobranza from "./cobranza";
 import notification from "./notification";
 import reporte from "./reporte";
@@ -86,6 +87,7 @@ import proveedor from "./proveedor";
 import puntoventa from "./puntoventa";
 import Turnos from "./Turnos";
 import widgets from "./widgets";
+import venta_tabla from "./venta_tabla";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -132,6 +134,7 @@ export default SPage.combinePages("/", {
   ...compra2,
   ...venta,
   ...caja,
+  ...caja2,
   ...cobranza,
   ...notification,
   ...reporte,
@@ -165,6 +168,7 @@ export default SPage.combinePages("/", {
   ...proveedor,
   ...qr_reader,
   ...puntoventa,
+  ...venta_tabla,
 
   alvaro,
 });

@@ -5,6 +5,7 @@ import { SStorage, STheme, SThread } from "servisofts-component";
 import { Platform } from "react-native";
 import packageInfo from "../../../package.json";
 import MDLAbstract from "../MDLAbstract";
+import MDL from "..";
 
 export default class empresa extends MDLAbstract<EventListener> {
   select: Empresa | undefined;
@@ -15,7 +16,7 @@ export default class empresa extends MDLAbstract<EventListener> {
   }
 
   async componentDidMount() {
-      await this.init()
+    await this.init()
   }
 
   loadEmpresaFromStorage() {
@@ -73,6 +74,15 @@ export default class empresa extends MDLAbstract<EventListener> {
       key_empresa: Model.empresa.Action.getKey(),
     });
     return Object.values(resp.data);
+  }
+  async getByKeyFull(): Promise<any> {
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "empresa",
+      type: "getByKeyFull",
+      key: MDL.empresa.select?.key,
+    });
+    return resp.data;
   }
 
   setUsuarioLog(data: {

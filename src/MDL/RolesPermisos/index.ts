@@ -57,4 +57,30 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         await this.loadPermissions();
         return this.getPermiso({ url, permiso });
     }
+
+    async getAllEmpresa() {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "rol",
+            "type": "getAll",
+            "estado": "cargando",
+            "key_empresa": Model.empresa.Action.getKey()
+        })
+        return resp.data;
+    }
+
+
+
+    async getAllUserRolesByKeyUser(keys: string[]) {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "usuarioRol",
+            "type": "getAllByUsuarios",
+            "estado": "cargando",
+            "keys": keys
+        })
+        return resp.data;
+    }
 }

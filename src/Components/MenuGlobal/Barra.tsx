@@ -92,6 +92,11 @@ export default class Barra extends React.Component {
                         icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}
                         decoradores={<CajaActiva />}
                     />
+                    <Page label={"Caja2"} url={"/caja2"}
+                        // permiso="ver"
+                        icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}
+                        decoradores={<CajaActiva />}
+                    />
                     <Page label={"Compras"}
                         icon={<ImagePage key_page="c0a4c4e6-082f-4f23-a755-01369653ee49" />}
                     >
@@ -149,12 +154,12 @@ export default class Barra extends React.Component {
                 </SView>
                 <SView col={"xs-12"}  >
                     <SHr h={1} color={STheme.color.card} />
-                    <Page label={"Usuarios"} 
+                    <Page label={"Usuarios"}
                         icon={<ImagePage key_page="419dfc13-34db-4935-a13c-b05cfd9d599a" />}
                     >
-                        <Page label={"All"} url={"/usuario"} permiso="ver"  />
-                        <Page label={"Lista"} url={"/usuario/table"}  permiso="ver" permiso_url="/usuario" />
-                        <Page label={"Roles y Permisos"} url={"/rol"}  permiso="ver"  />
+                        <Page label={"All"} url={"/usuario"} permiso="ver" />
+                        <Page label={"Lista"} url={"/usuario/table"} permiso="ver" permiso_url="/usuario" />
+                        <Page label={"Roles y Permisos"} url={"/rol"} permiso="ver" />
                     </Page>
                     {/* <Page label={"Roles y Permisos"} url={"/rol"}
                         permiso="ver"

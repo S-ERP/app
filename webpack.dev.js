@@ -40,9 +40,9 @@ module.exports = merge(common, {
         // poll: 500,
         ignored: /node_modules|src\/Assets/,
     },
-    optimization: {
-        splitChunks: {
-            chunks: 'all',
-        },
-    },
+    // optimization: {
+    //     splitChunks: {
+    //         chunks: 'all',
+    //     },
+    // },
 });
