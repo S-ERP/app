@@ -120,7 +120,24 @@ export default class tabla extends Component {
     }
 
 
+    renderState(state) {
+        var statesInfo = Model.compra_venta.Action.getStateInfo()[state];
+        return <SView row center>
+            <SView backgroundColor={statesInfo.color} style={{ borderRadius: 4, padding: 5 }}>
+                <SText color={STheme.color.text} fontSize={10}>{statesInfo.label}</SText>
+            </SView>
+        </SView>
+    }
+ 
+    renderCodigo(codigo) {
+        return <SView row center>
+            <SView border={STheme.color.card} style={{ borderRadius: 16, padding: 6,borderWidth: 1 }}>
+                <SText color={STheme.color.text} fontSize={10} bold>{codigo}</SText>
+            </SView>
+        </SView>
+    }
 
+     
 
     mostrarTabla() {
         return (
@@ -160,43 +177,31 @@ export default class tabla extends Component {
                 }}
 
                 loadInitialState={async () => {
-                    return {
-                        sorters: [{
-                            key: "tipo_pago",
-                            order: "asc",
-                            type: "string"
-                        }]
-                    }
+                    return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] }
                 }}
 
-            // loadInitialState={async () => {
-            //     return {
-            //         sorters: [
-            //             { key: "fecha_on", order: "desc", type: "date" },
-            //             // { key: "fecha_edit", order: "desc", type: "date" }
-            //         ]
-            //     }
-            // }}
 
             >
-                <DinamicTable.Col key="index" label="N°" width={40} data={(e) => e.index + 1} />
+                <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
 
 
+
+                <DinamicTable.Col key="sd" label="Estado" width={80} data={(e) => e.row?.state}
+                    customComponent={(e) => this.renderState(e.data)}
+                />
 
                 <DinamicTable.Col key={"-key"} label='Ver' width={40} data={(e) => e.row?.proyecto?.nombre}
                     customComponent={e => <SView row center card padding={2} onPress={() => { SNavigation.navigate("/crm/call", { key: e.row.key }) }}>
-                        <SIconApp name='addTarea' height={14} fill={STheme.color.lightGray} ></SIconApp>
-                        {/* <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp> */}
+                        <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
                     </SView>} />
 
                 {/* return <SIconApp name="crmpdf" fill="#FF0000" />; */}
 
-                <DinamicTable.Col key={"codigo"} label='Codigo' width={50} center
+                <DinamicTable.Col key={"codigo"} label='Codigo' width={90} center
                     data={(e) => "AL790"}
                     //  data={(e) => e.row?.codigo}
-                    customComponent={e => <SView style={{ borderRadius: 100, borderWidth: 1, borderColor: STheme.color.card, padding: 3 }} center>
-                        <SText bold fontSize={12}>{e.data}</SText>
-                    </SView>} />
+                         customComponent={(e) => this.renderCodigo(e.data)}
+                />
 
 
                 <DinamicTable.Col key="sucursal_img" label="Foto" width={50} data={(e) => e.row?.sucursal?.key}
@@ -205,7 +210,7 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="sucursal" label="Sucursal" width={80} data={(e) => e.row?.sucursal?.descripcion} />
 
 
-                <DinamicTable.Col key={"fecha_ondd"} label="Fecha realizada"
+                <DinamicTable.Col key={"fecha_on"} label="Fecha realizada"
                     dataType="date"
                     data={e => new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
                     textStyle={{ fontSize: 10, color: STheme.color.text }}
@@ -235,8 +240,11 @@ export default class tabla extends Component {
 
 
 
+                <DinamicTable.Col key="statdsddse" label="Estado" width={150} data={(e) => e.row?.state}
+                    customComponent={(e) => this.renderState(e.data)}
+                />
 
-                <DinamicTable.Col key="clienste_img" label="Estado" width={50} data={(e) => e.row?.estado}
+                <DinamicTable.Col key="sdf" label="Descripcion" width={150} data={(e) => e.row?.descripcion}
                 // customComponent={(e) => this.renderCliente(e.data)}
                 />
 
