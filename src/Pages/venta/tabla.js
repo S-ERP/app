@@ -63,50 +63,46 @@ export default class tabla extends Component {
 
         const empresa = Model.empresa?.select || {};
 
+        // --- Filtrar solo ventas ---
+        const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
 
-        // const suaur = MDL.usuario.getByKeys;
+        // --- Recolectar keys únicas de usuarios ---
+        const keysUsuarios = [];
+        ventas.forEach(cv => {
+            if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
+                keysUsuarios.push(cv.key_usuario);
+            }
+        });
 
+        // --- Obtener usuarios en lote (puede devolver objeto o array) ---
+        const usuarios = await MDL.usuario.getByKeys(keysUsuarios) || {};
+        const usuariosMap = Array.isArray(usuarios)
+            ? Object.fromEntries(usuarios.map(u => [u.key, u]))
+            : usuarios;
 
-        // Solo ventas y enriquecidas con datos extra
-        const ventas = await Promise.all(
-            Object.values(registros)
-                .filter(cv => cv.tipo === "venta")
-                .map(async (cv) => {
-                    try {
-                        const sucursal = cv.key_sucursal?.trim()
-                            ? await Model.sucursal.Action.getByKey({ key: cv.key_sucursal }) || {}
-                            : {};
+        // --- Enriquecer cada venta ---
+        const ventasEnriquecidas = await Promise.all(
+            ventas.map(async (cv) => {
+                const sucursal = cv.key_sucursal?.trim()
+                    ? await Model.sucursal.Action.getByKey({ key: cv.key_sucursal }) || {}
+                    : {};
 
-                        const proveedor = cv.key_proveedor?.trim()
-                            ? await MDL.compra_venta.proveedor.getByKey(cv.key_proveedor) || {}
-                            : {};
+                const proveedor = cv.key_proveedor?.trim()
+                    ? await MDL.compra_venta.proveedor.getByKey(cv.key_proveedor) || {}
+                    : {};
 
-                        // const cliente = cv.key_cliente?.trim()
-                        //     ? await MDL.crm.cliente.getByKey(cv.key_cliente) || {}
-                        //     : {};
-                        // key_usuario: Model.usuario.Action.getKey(),
-
-                        // const usuario = cv.key_usuario?.trim()
-                        //     ? await MDL.usuario.getByKey(cv.key_usuario) || {}
-                        //     : {};
-
-                        return {
-                            ...cv,
-                            sucursal,
-                            proveedor,
-                            // cliente,
-                            usuario,
-                            empresa,
-                        };
-                    } catch (err) {
-                        console.error("Error enriqueciendo venta:", cv.key, err);
-                        return cv;
-                    }
-                })
+                return {
+                    ...cv,
+                    sucursal,
+                    proveedor,
+                    usuario: usuariosMap[cv.key_usuario] || {},
+                    empresa,
+                };
+            })
         );
+        console.log("todoooooooo " + JSON.stringify(ventasEnriquecidas))
 
-        console.log("todoooooooo " + JSON.stringify(ventas))
-        return ventas;
+        return ventasEnriquecidas;
     }
 
 
@@ -139,10 +135,16 @@ export default class tabla extends Component {
 
 
 
+                <DinamicTable.Col key="proveedor_img" label="Foto" width={50} data={(e) => e.row?.proveedor?.key}
+                    customComponent={(e) => this.renderCliente(e.data)} />
+                <DinamicTable.Col key="proveedor_img_" label="Proveedor" width={100} data={(e) => e.row?.proveedor?.nombres} />
+
+
+
 
                 <DinamicTable.Col key="Usuario_img" label="Foto" width={50} data={(e) => e.row?.key_usuario}
                     customComponent={(e) => this.renderUsuario(e.data)} />
-                {/* <DinamicTable.Col key="Usuario_img_s" label="Admin" width={50} data={(e) => e.row?.usuario.nombres} /> */}
+                <DinamicTable.Col key="Usuario_img_s" label="Admin" width={100} data={(e) => e.row?.usuario.Nombres} />
 
 
 
