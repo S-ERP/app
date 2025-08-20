@@ -83,11 +83,9 @@ import testpuntoventa from "./testpuntoventa";
 import Main from "./puntoventa/Main";
 import alvaro from "./alvaro";
 import proveedor from "./proveedor";
-// import Proveedor from "../Components/compra_venta/Proveedor";
 import puntoventa from "./puntoventa";
 import Turnos from "./Turnos";
 import widgets from "./widgets";
-import venta_tabla from "./venta_tabla";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -168,7 +166,5 @@ export default SPage.combinePages("/", {
   ...proveedor,
   ...qr_reader,
   ...puntoventa,
-  ...venta_tabla,
-
   alvaro,
 });

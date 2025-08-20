@@ -1,15 +1,21 @@
- import React, { Component } from 'react';
+import React, { Component } from 'react';
 import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
-
 import FloatButtom from '../../Components/FloatButtom';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
 import Model from '../../Model';
 import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
+import MDL from '../../MDL';
 
-export default class Lista extends Component {
+// import FloatButtom from '../../Components/FloatButtom';
+// import SIconApp from '../../Assets/SIconApp';
+// import Config from '../../Config';
+// import Model from '../../Model';
+// import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
+
+export default class tabla extends Component {
     onSelect = SNavigation.getParam("onSelect");
 
     mostrarPopup(key, data) {
@@ -36,8 +42,8 @@ export default class Lista extends Component {
             <SImage src={`${SSocket.api.root}usuario/${srcKey}`} style={{ resizeMode: "cover" }} />
         </SView>
     );
- 
-    
+
+
     renderCliente = (srcKey) => (
         <SView style={{
             width: 24,
@@ -49,35 +55,62 @@ export default class Lista extends Component {
             <SImage src={`${SSocket.api.crm}cliente/${srcKey}`} style={{ resizeMode: "cover" }} />
         </SView>
     );
- 
+
 
     async loadData() {
         const registros = Model.compra_venta.Action.getAll();
         if (!registros) return [];
 
-        const estados_compra = {};
-        const estados_venta = {};
-        const { compras, ventas } = Object.values(registros).reduce(
-            (acc, cv) => {
-                if (cv.tipo === "compra") {
-                    estados_compra[cv.state] = (estados_compra[cv.state] || 0) + 1;
-                    acc.compras.push(cv);
-                } else if (cv.tipo === "venta") {
-                    estados_venta[cv.state] = (estados_venta[cv.state] || 0) + 1;
-                    acc.ventas.push(cv);
-                }
-                return acc;
-            },
-            { compras: [], ventas: [] }
+        const empresa = Model.empresa?.select || {};
+
+
+        // const suaur = MDL.usuario.getByKeys;
+
+
+        // Solo ventas y enriquecidas con datos extra
+        const ventas = await Promise.all(
+            Object.values(registros)
+                .filter(cv => cv.tipo === "venta")
+                .map(async (cv) => {
+                    try {
+                        const sucursal = cv.key_sucursal?.trim()
+                            ? await Model.sucursal.Action.getByKey({ key: cv.key_sucursal }) || {}
+                            : {};
+
+                        const proveedor = cv.key_proveedor?.trim()
+                            ? await MDL.compra_venta.proveedor.getByKey(cv.key_proveedor) || {}
+                            : {};
+
+                        // const cliente = cv.key_cliente?.trim()
+                        //     ? await MDL.crm.cliente.getByKey(cv.key_cliente) || {}
+                        //     : {};
+                        // key_usuario: Model.usuario.Action.getKey(),
+
+                        // const usuario = cv.key_usuario?.trim()
+                        //     ? await MDL.usuario.getByKey(cv.key_usuario) || {}
+                        //     : {};
+
+                        return {
+                            ...cv,
+                            sucursal,
+                            proveedor,
+                            // cliente,
+                            usuario,
+                            empresa,
+                        };
+                    } catch (err) {
+                        console.error("Error enriqueciendo venta:", cv.key, err);
+                        return cv;
+                    }
+                })
         );
 
-        this.estados_compra = estados_compra;
-        this.estados_venta = estados_venta;
-        this.compras = compras;
-        this.ventas = ventas;
-
+        console.log("todoooooooo " + JSON.stringify(ventas))
         return ventas;
     }
+
+
+
 
     mostrarTabla() {
         return (
@@ -94,40 +127,43 @@ export default class Lista extends Component {
             >
                 <DinamicTable.Col key="index" label="N°" width={40} data={(e) => e.index + 1} />
 
-                <DinamicTable.Col key="key" label="Key" width={100} data={(e) => e.row.key} />
-                <DinamicTable.Col key="key_empresa" label="Empresa" width={100} data={(e) => e.row.key_empresa} />
-                <DinamicTable.Col key="tipo" label="Tipo" width={100} data={(e) => e.row.tipo} />
-                <DinamicTable.Col key="tipo_pago" label="Pago" width={100} data={(e) => e.row.tipo_pago} />
-                <DinamicTable.Col key="fecha_on" label="Fecha" width={100} data={(e) => e.row.fecha_on} />
-                <DinamicTable.Col key="key_cliente" label="Key Cliente" width={100} data={(e) => e.row.key_cliente} />
-                <DinamicTable.Col key="cliente" label="Cliente" width={100} data={(e) => e.row.cliente} />
 
-                <DinamicTable.Col key="usuario" label="Usuario" width={50} data={(e) => e.row?.key_usuario}
-                    customComponent={(e) => this.renderUsuario(e.data)} />
+                <DinamicTable.Col key="sucursal" label="Sucursal" width={80} data={(e) => e.row?.sucursal?.descripcion} />
+                <DinamicTable.Col key="fecha_on" label="Fecha realizada" width={100} data={(e) => e.row.fecha_on} />
+                <DinamicTable.Col key="tipo_pago" label="Tipo Pago" width={90} data={(e) => e.row.tipo_pago} />
 
-                <DinamicTable.Col key="cliente_img" label="Cliente" width={50} data={(e) => e.row?.cliente?.key}
+
+                <DinamicTable.Col key="cliente_img" label="Foto" width={50} data={(e) => e.row?.cliente?.key}
                     customComponent={(e) => this.renderCliente(e.data)} />
+                <DinamicTable.Col key="cliente_iamg_" label="Cliente" width={100} data={(e) => e.row?.cliente?.nombres} />
 
-             
+
+
+
+                <DinamicTable.Col key="Usuario_img" label="Foto" width={50} data={(e) => e.row?.key_usuario}
+                    customComponent={(e) => this.renderUsuario(e.data)} />
+                {/* <DinamicTable.Col key="Usuario_img_s" label="Admin" width={50} data={(e) => e.row?.usuario.nombres} /> */}
+
+
+
 
                 <DinamicTable.Col key="perfil" label="Perfil Venta" width={110} data={() => ""}
                     customComponent={(e) => (
                         <SView row card padding={2} height={40} center
                             onPress={() => SNavigation.navigate("/venta/profile", { pk: e?.row?.key })}
                         >
-                            <SIconApp name="whatsapp" fill="green" width={18} />
-                            <SText center color={STheme.color.green}>Perfil</SText>
+                            <SIconApp name="carritoproducto" fill={STheme.color.text} width={18} />
                         </SView>
                     )}
                 />
 
-                <DinamicTable.Col key="pdf" label="PDF" width={110} data={() => ""}
+                <DinamicTable.Col key="pdf" label="Print PDF" width={110} data={() => ""}
                     customComponent={(e) => (
                         <SView row card padding={2} height={40} center
                             onPress={() => ReciboCarta.imprimir(e?.row?.key)}
                         >
-                            <SIconApp name="pdf" fill="red" width={18} />
-                            <SText center color={STheme.color.danger}>PDF</SText>
+                            <SIconApp name="pdf" fill={STheme.color.text} width={18} />
+                            <SText center color={STheme.color.text}>PDF</SText>
                         </SView>
                     )}
                 />
@@ -137,7 +173,7 @@ export default class Lista extends Component {
 
     render() {
         return (
-            <SPage title="Gestión de Ventas" disableScroll>
+            <SPage title="Tabla Gestión de Ventas" disableScroll>
                 {this.mostrarTabla()}
                 <SHr height={20} />
                 <FloatButtom onPress={() => this.mostrarPopup()} />
