@@ -137,8 +137,8 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="tipo_pago" label="Tipo Pago" center width={70} data={(e) => e.row?.tipo_pago ?? ""} />
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e.data)} />
                 <DinamicTable.Col key="descripcion" label="Descripcion" width={150} data={(e) => e.row?.descripcion ?? ""} />
-                <DinamicTable.Col key="subtotal" label="Subtotal" width={50} data={(e) => e.row?.subtotal ?? ""} />
-                <DinamicTable.Col key="descuento" label="descuento" width={50} data={(e) => e.row?.descuento} />
+                {/* <DinamicTable.Col key="subtotal" label="Subtotal" width={50} data={(e) => e.row?.subtotal ?? ""} /> */}
+                {/* <DinamicTable.Col key="descuento" label="descuento" width={50} data={(e) => e.row?.descuento} /> */}
                 <DinamicTable.Col key="proveedor_img" label="Foto" width={50} data={(e) => e.row?.proveedor?.key_usuario} customComponent={(e) => this.renderProveedor(e.data)} />
                 <DinamicTable.Col key="proveedor" label="Proveedor" width={100} data={(e) => e.row?.proveedor?.razon_social ?? ""} />
                 <DinamicTable.Col key="Usuario_img" label="Foto" width={50} data={(e) => e.row?.key_usuario} customComponent={(e) => this.renderUsuario(e.data)} />

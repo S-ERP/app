@@ -9,87 +9,93 @@ import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 import MDL from '../../MDL';
 import FloatMenu from '../../Components/FloatMenu';
 export default class tabla extends Component {
-    renderUsuario = (srcKey) => (
-        <SView style={{
-            width: 24,
-            height: 24,
-            borderRadius: 100,
-            overflow: "hidden",
-            backgroundColor: STheme.color.card + "66",
-        }}>
+
+
+
+    renderUsuario(srcKey) {
+        const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
             <SImage src={`${SSocket.api.root}usuario/${srcKey}`} style={{ resizeMode: "cover" }} />
-        </SView>
-    );
-    renderCliente = (srcKey) => (
-        <SView style={{
-            width: 24,
-            height: 24,
-            borderRadius: 100,
-            overflow: "hidden",
-            backgroundColor: STheme.color.card + "66",
-        }}>
+        </SView>;
+        const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.danger + "66", }} />;
+        return srcKey ? pintar : nulo;
+    };
+
+    renderCliente(srcKey) {
+        const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
             <SImage src={`${SSocket.api.crm}cliente/${srcKey}`} style={{ resizeMode: "cover" }} />
-        </SView>
-    );
-    renderSucursal = (srcKey) => (
-        <SView style={{
-            width: 24,
-            height: 24,
-            borderRadius: 100,
-            overflow: "hidden",
-            backgroundColor: STheme.color.card + "66",
-        }}>
+        </SView>;
+        const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.danger + "66", }} />;
+        return srcKey ? pintar : nulo;
+    };
+
+
+    renderSucursal(srcKey) {
+        const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
             <SImage src={`${SSocket.api.empresa}sucursal/${srcKey}`} style={{ resizeMode: "cover" }} />
-        </SView>
-    );
+        </SView>;
+        const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.danger + "66", }} />;
+        return srcKey ? pintar : nulo;
+    };
+
+
+
     async loadData() {
-        const registros = Model.compra_venta.Action.getAll();
-        if (!registros) return [];
-        const empresa = Model.empresa?.select || {};
-        const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
-        const keysUsuarios = [];
-        ventas.forEach(cv => {
-            if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
-                keysUsuarios.push(cv.key_usuario);
-            }
-        });
+        try {
 
-        const usuarios = await MDL.usuario.getByKeys(keysUsuarios) || {};
-
-        const sucursales = await MDL.empresa.getAllSucursales();
-        const sucursalesMap = Object.fromEntries(
-            sucursales.map(sucursal => [sucursal.key, {
-                ...sucursal  }])
-        );
+            const registros = Model.compra_venta.Action.getAll();
+            if (!registros) return [];
 
 
-        // console.log("adan " + JSON.stringify(sucursalesMap["393b5b5b-a6b0-4c5a-ab7f-df426671121f"]));
+            // const empresa = MDL.empresa.select || {};
+            const sucursales = await MDL.empresa.getAllSucursales();
 
+            // if (!registros) return [];
 
+            // Filter ventas early to reduce processing
+            const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
+            if (!ventas.length) return [];
 
+            // Get unique user keys
+            // const keysUsuarios = [...new Set(ventas.map(cv => cv.key_usuario).filter(Boolean))];
 
+            const keysUsuarios = [];
+            ventas.forEach(cv => {
+                if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
+                    keysUsuarios.push(cv.key_usuario);
+                }
+            });
 
+            // Fetch users in parallel
+            const usuarios = await MDL.usuario.getByKeys(keysUsuarios) || {};
+            const usuariosMap = Array.isArray(usuarios)
+                ? Object.fromEntries(usuarios.map(u => [u.key, u]))
+                : usuarios;
 
-        const usuariosMap = Array.isArray(usuarios)
-            ? Object.fromEntries(usuarios.map(u => [u.key, u]))
-            : usuarios;
-        const ventasEnriquecidas = await Promise.all(
-            ventas.map(async (cv) => {
+            // Create sucursales map
+            const sucursalesMap = Object.fromEntries(sucursales.map(s => [s.key, s]));
 
-                const proveedor = cv.key_proveedor?.trim()
-                    ? await MDL.compra_venta.proveedor.getByKey(cv.key_proveedor) || {}
-                    : {};
-                return {
-                    ...cv,
-                    proveedor,
-                    usuario: usuariosMap[cv.key_usuario] || {},
-                    sucursal: sucursalesMap[cv.key_sucursal],
-                    empresa,
-                };
-            })
-        );
-        console.log("todoooooooo " + JSON.stringify(ventasEnriquecidas))
-        return ventasEnriquecidas;
+            // Fetch all proveedores in parallel
+            const proveedorKeys = [...new Set(ventas.map(cv => cv.key_proveedor).filter(key => key?.trim()))];
+            const proveedores = await Promise.all(
+                proveedorKeys.map(key => MDL.compra_venta.proveedor.getByKey(key).then(data => [key, data || {}]))
+            );
+            const proveedoresMap = Object.fromEntries(proveedores);
+
+            // Enrich ventas without sequential awaits
+            const ventasEnriquecidas = ventas.map(cv => ({
+                ...cv,
+                proveedor: proveedoresMap[cv.key_proveedor] || {},
+                usuario: usuariosMap[cv.key_usuario] || {},
+                sucursal: sucursalesMap[cv.key_sucursal] || {},
+                // empresa,
+            }));
+
+            return ventasEnriquecidas;
+        } catch (error) {
+            console.error('Error in loadData:', error);
+            SPopup.alert('Error loading data. Please try again.');
+            return [];
+        }
     }
     renderState(state) {
         const statesInfo = MDL.compra_venta.getStateInfo()[state];
@@ -101,7 +107,7 @@ export default class tabla extends Component {
     }
 
     renderTipoPago(values) {
-        const statesTipo = MDL.compra_venta.getTipoPago(values);
+        const statesTipo = MDL.compra_venta.getTipoPago()[values];
         return <SView row center>
             <SView backgroundColor={statesTipo?.color} style={{ borderRadius: 4, padding: 5 }}>
                 <SText color={STheme.color.text} fontSize={10}>{statesTipo?.label}</SText>
@@ -161,7 +167,8 @@ export default class tabla extends Component {
                         <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
                     </SView>} />
                 <DinamicTable.Col key={"codigo"} label='Codigo' width={90} center data={(e) => e?.row?.codigo ?? "AL790"} customComponent={(e) => this.renderCodigo(e.data)} />
-                {/* <DinamicTable.Col key="sucursal_img" label="Foto" center width={50} data={(e) => e.row?.key_sucursal} customComponent={(e) => this.renderSucursal(e.data)} /> */}
+
+                <DinamicTable.Col key="sucursal_img" label="Foto" center width={50} data={(e) => e.row?.key_sucursal} customComponent={(e) => this.renderSucursal(e.data)} />
                 <DinamicTable.Col key="sucursal" label="Sucursal" width={70} data={(e) => e.row?.sucursal?.descripcion ?? ""} />
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="tipo_pago" label="Tipo Pago" width={80} data={(e) => e.row?.tipo_pago ?? ""} customComponent={(e) => this.renderTipoPago(e?.data)} />
