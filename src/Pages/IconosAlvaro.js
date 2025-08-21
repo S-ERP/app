@@ -23,26 +23,25 @@ class IconosAlvaro extends Component {
             <SPage title={'IconosAlvaro'} center>
                 <SView col={"xs-12"} row center flexWrap>
                     {iconos.map((ico, i) => (
-                        <SView 
-                            key={i} 
-                            width={200} 
-                            height={200} 
-                            border="blue"
-                            center 
+                        <SView
+                            key={i}
+                            width={200}
+                            height={200}
+                            border={STheme.color.text}
+                            center
                             style={{
-                                borderWidth: 2,
-                                borderColor: STheme.color.danger,
+                                borderWidth: 1,
+                                // borderColor: STheme.color.danger,
                                 borderRadius: 16, // esquinas redondeadas (opcional)
                                 margin: 10,
                                 padding: 10
                             }}
                         >
-                            <SIconApp 
-                                name={ico} 
-                                fill={"blue"} 
-                                stroke={"pink"} 
-                                width={150} 
-                                height={150} 
+                            <SIconApp
+                                name={ico}
+                                fill={STheme.color.text}
+                                width={150}
+                                height={150}
                             />
                         </SView>
                     ))}
