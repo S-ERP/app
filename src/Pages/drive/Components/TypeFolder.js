@@ -109,7 +109,7 @@ export default class TypeFolder extends Component {
                         const file = e[i];
                         console.log(file)
                         let finalName = (file?.fullPath ?? file.name);
-                        let pathfinal = this.props.path + (this.props.path == "/" ? encodeURI(finalName) : "/" + encodeURI(finalName))
+                        let pathfinal = Actions.root_path + this.props.path + (this.props.path == "/" ? encodeURI(finalName) : "/" + encodeURI(finalName))
                         const submite = SUpload.submitFile({
                             host: SSocket.api.drive + "uploadv2",
                             path: pathfinal,
