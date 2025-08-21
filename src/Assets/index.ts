@@ -427,7 +427,7 @@ export const svg = {
   pagocheque: { Native: pagocheque, Web: pagochequeW },
   pagoefectivo: { Native: pagoefectivo, Web: pagoefectivoW },
   pagopagare: { Native: pagopagare, Web: pagopagareW },
-  pagoqr: { Native: pagoqr, Web: pagoqr },
+  pagoqr: { Native: pagoqr, Web: pagoqrW },
   pagotarjeta: { Native: pagotarjeta, Web: pagotarjetaW },
   pagotransferencia: { Native: pagotransferencia, Web: pagotransferenciaW },
 
