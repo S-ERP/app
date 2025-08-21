@@ -1,12 +1,13 @@
 import { Proyecto, EventListener } from "./type";
 
 import MDLAbstract from "../MDLAbstract";
-
 import Model from "../../Model";
 import SSocket from "servisofts-socket";
 import MDL from "..";
-import { SStorage } from "servisofts-component";
+import { SStorage, STheme } from "servisofts-component";
 import proveedor from "./proveedor";
+ 
+
 export default class compra_venta extends MDLAbstract<EventListener> {
   sucursalSeleccionada = null;
   proveedor = new proveedor();
@@ -41,6 +42,30 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data;
   }
+
+  getStateInfo(key?: string) {
+    const states: any = {
+      cotizacion: { color: STheme.color.lightGray, label: "Cotización" },
+      aprobado: { color: STheme.color.warning, label: "Aprobado" },
+      denegado: { color: STheme.color.danger, label: "Denegado" },
+      comprado: { color: STheme.color.success, label: "Comprado" },
+      vendido: { color: STheme.color.success, label: "Vendido" },
+    };
+    if (!key) return states;
+    return states[key] ?? null;
+  }
+
+
+  getTipoPago(key?: string) {
+    const _states: any = {
+      contado: { color: STheme.color.lightGray, label: "Contado" },
+      pp_discrecional: { color: STheme.color.success, label: "Discrecional" },
+      pp_financiero: { color: STheme.color.warning, label: "Financiero" },
+    };
+    if (!key) return _states;
+    return _states[key] ?? null;
+  }
+
 
 
   getByKey(value: any) {
