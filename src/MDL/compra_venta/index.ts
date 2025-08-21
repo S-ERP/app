@@ -14,7 +14,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
 
   async registrar(data: any) {
     const sucursal = this.sucursalSeleccionada;
-    console.log("faaaaaa " + JSON.stringify(data))
+    console.log("se esta registrando todo " + JSON.stringify(data))
     // return;
     const formar = {
       key_usuario: Model.usuario.Action.getKey(),
@@ -24,7 +24,8 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       key_cliente: data.key_cliente,
       // key_vendedor: data.key_vendedor,
       key_caja: MDL.caja.activa?.key,
-      key_tipo_pago: "efectivo",
+      key_tipo_pago: data?.caja?.key_tipo_pago,
+      // key_tipo_pago: "efectivo",
       // descuento: parseFloat(data.caja.descuento),
       // monto_total: parseFloat(data.caja.monto_total),
       // monto_factura: parseFloat(data.caja.monto_factura),

@@ -5,6 +5,7 @@ import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 import ReciboRollo from '../../../../Components/PDF/venta/ReciboRollo';
 import ReciboCarta from '../../../../Components/PDF/venta/ReciboCarta';
+import SelectTipoPago from '../../../caja2/components/SelectTipoPago';
 export default class PopupConfirmaPago extends Component {
     // sucursal = null;
     async componentDidMount() {
@@ -52,6 +53,16 @@ export default class PopupConfirmaPago extends Component {
     renderButton(totalFinal, subtotal, descuento, conFactura, carrito, cliente) {
         const sucursal = this.sucursal;
         // console.log("WWWWW")
+        if (!this.key_tipo_pago) {
+            SNotification.send({
+                title: "Error",
+                body: "No hay tipo de pago",
+                type: "error",
+                color: STheme.color.error,
+                time: 5000,
+            });
+            return;
+        }
         if (!this.variableGlobal || this.variableGlobal < totalFinal) {
             SNotification.send({
                 title: "Error",
@@ -83,6 +94,7 @@ export default class PopupConfirmaPago extends Component {
             montoRecibido: SMath.formatMoney(this.variableGlobal, 2),
             cambio: SMath.formatMoney((this.variableGlobal - totalFinal), 2),
             conFactura: conFactura ? true : false,
+            key_tipo_pago: this.key_tipo_pago,
             monto_factura: conFactura ? SMath.formatMoney((subtotal - descuento), 2) : SMath.formatMoney(0, 2),
         };
         const datos = this.dataFormateada({
@@ -105,6 +117,7 @@ export default class PopupConfirmaPago extends Component {
             ReciboRollo.imprimir(res.key)
             ReciboCarta.imprimir(res.key)
             SPopup.close("popup_config_horario");
+            this.key_tipo_pago = null;
             SNotification.remove("compra")
         }).catch(res => {
             console.log("compra_venta registrado error " + res.error),
@@ -118,6 +131,8 @@ export default class PopupConfirmaPago extends Component {
                 }
                 )
         })
+
+
     }
     render() {
         const sucursal = this.sucursal;
@@ -166,6 +181,14 @@ export default class PopupConfirmaPago extends Component {
                             this.forceUpdate();
                         }}
                     /> */}
+
+                    <SView col="xs-12" row style={{ justifyContent: "space-between", }}>
+                        <SText fontSize={16}>Tipo pago:</SText>
+                        <SText fontSize={18} bold color={this.key_tipo_pago ? "green" : "red"}>
+                            {this.key_tipo_pago ? this.key_tipo_pago : "-"}
+                        </SText>
+                    </SView>
+
                 </SView>
                 <SView height={20} />
                 <SView col="xs-12" row style={{ justifyContent: "space-between", }}>
@@ -189,6 +212,20 @@ export default class PopupConfirmaPago extends Component {
                     <SView width={8} />
                     <SView center flex height={40} style={{ backgroundColor: STheme.color.text, borderColor: STheme.color.gray, borderWidth: 1, borderRadius: 4 }}
                         onPress={() => {
+
+                            if (!this.key_tipo_pago) {
+                                SelectTipoPago.openPopup({
+                                    key_punto_venta: MDL.caja.activa.key_punto_venta,
+                                    onSelect: (item) => {
+                                        this.key_tipo_pago = item.key_tipo_pago;
+                                        // this.handleSubmit(item.key_tipo_pago)
+                                        console.log("selecciono " + JSON.stringify(item.key_tipo_pago))
+                                        this.forceUpdate();
+                                    }
+                                });
+                            }
+
+
                             this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito, cliente)
                         }}
                     >
