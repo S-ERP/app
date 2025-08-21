@@ -1,20 +1,52 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SPage, SText } from 'servisofts-component';
+import { SPage, SView, STheme } from 'servisofts-component';
+import SIconApp from '../Assets/SIconApp';
 
 class IconosAlvaro extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-        };
+        this.state = {};
     }
 
     render() {
+        const iconos = [
+            "pagoefectivo",
+            "pagopagare",
+            "pagoqr",
+            "pagotarjeta",
+            "pagocheque",
+            "pagotransferencia"
+        ];
+
         return (
-            <SPage title={'IconosAlvaro'}>
-                
-                <SText>{'IconosAlvaro'}</SText>
-                
+            <SPage title={'IconosAlvaro'} center>
+                <SView col={"xs-12"} row center flexWrap>
+                    {iconos.map((ico, i) => (
+                        <SView 
+                            key={i} 
+                            width={200} 
+                            height={200} 
+                            border="blue"
+                            center 
+                            style={{
+                                borderWidth: 2,
+                                borderColor: STheme.color.danger,
+                                borderRadius: 16, // esquinas redondeadas (opcional)
+                                margin: 10,
+                                padding: 10
+                            }}
+                        >
+                            <SIconApp 
+                                name={ico} 
+                                fill={"blue"} 
+                                stroke={"pink"} 
+                                width={150} 
+                                height={150} 
+                            />
+                        </SView>
+                    ))}
+                </SView>
             </SPage>
         );
     }

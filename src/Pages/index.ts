@@ -86,6 +86,7 @@ import proveedor from "./proveedor";
 import puntoventa from "./puntoventa";
 import Turnos from "./Turnos";
 import widgets from "./widgets";
+import IconosAlvaro from "./IconosAlvaro";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -166,5 +167,6 @@ export default SPage.combinePages("/", {
   ...proveedor,
   ...qr_reader,
   ...puntoventa,
+  "iconosss":IconosAlvaro,
   alvaro,
 });
