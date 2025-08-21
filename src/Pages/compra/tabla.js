@@ -106,18 +106,18 @@ export default class tabla extends Component {
                 onSelect={(e) => {
                     FloatMenu.open({
                         e: e.evt,
-                        label: e.row.descripcion,
+                        label: "Tabla de compras",
                         options: [
                             {
                                 label: "Ver compra",
-                                icon: <SIconApp name='addTarea' fill="#FF0000" />,
+                                icon: <SIconApp name='addTarea' fill="#e4e4e4ff" />,
                                 onPress: () => { SNavigation.navigate("/compra/profile", { pk: e?.row?.key }) }
                             },
-                            {
-                                label: "Comprobante carta",
-                                icon: <SIconApp name='crmpdf' fill="#FF0000" />,
-                                onPress: () => { ComprobanteCarta.imprimir(e?.row?.key) }
-                            },
+                            // {
+                            //     label: "Comprobante carta",
+                            //     icon: <SIconApp name='crmpdf' fill="#FF0000" />,
+                            //     onPress: () => { ComprobanteCarta.imprimir(e?.row?.key) }
+                            // },
                         ]
                     });
                 }}
@@ -131,18 +131,63 @@ export default class tabla extends Component {
                         <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
                     </SView>} />
                 <DinamicTable.Col key={"codigo"} label='Codigo' width={90} center data={(e) => e?.row?.codigo ?? "AL790"} customComponent={(e) => this.renderCodigo(e.data)} />
-                <DinamicTable.Col key="sucursal_img" label="Foto" center width={50} data={(e) => e.row?.key_sucursal} customComponent={(e) => this.renderSucursal(e.data)} />
-                <DinamicTable.Col key="sucursal" label="Sucursal" width={70} data={(e) => e.row?.sucursal?.descripcion ?? ""} />
+
+                <DinamicTable.Col key="sucursal" label="Sucursal" width={100} data={(e) => e.row?.sucursal?.descripcion}
+                    customComponent={e => <>
+                        {(e.row?.key_sucursal) ?
+                            <SView col={"xs-12"} center row  >
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key_sucursal}`} style={{ resizeMode: "cover" }} />
+                                </SView>
+                                <SView width={5} />
+                                <SText color={STheme.color.text}>{e.row?.sucursal?.descripcion}</SText>
+                            </SView> : null}
+                    </>}
+                />
+
+                {/* <DinamicTable.Col key="sucursal_img" label="Foto" center width={50} data={(e) => e.row?.key_sucursal} customComponent={(e) => this.renderSucursal(e.data)} /> */}
+                {/* <DinamicTable.Col key="sucursal" label="Sucursal" width={70} data={(e) => e.row?.sucursal?.descripcion ?? ""} /> */}
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="tipo_pago" label="Tipo Pago" center width={70} data={(e) => e.row?.tipo_pago ?? ""} />
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e.data)} />
                 <DinamicTable.Col key="descripcion" label="Descripcion" width={150} data={(e) => e.row?.descripcion ?? ""} />
+
+
+                <DinamicTable.Col key="proveedor" label="proveedor" width={180} data={(e) => e.row?.proveedor?.razon_social ?? ""}
+                    customComponent={e => <>
+                        {(e.row?.proveedor?.key_usuario) ?
+                            <SView col={"xs-12"} center row  >
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.proveedor?.key_usuario}`} style={{ resizeMode: "cover" }} />
+                                </SView>
+                                <SView width={5} />
+                                <SText color={STheme.color.text}> {e.row?.proveedor?.razon_social}  </SText>
+                            </SView> : null}
+                    </>}
+                />
+
+
+
+                <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
+                    customComponent={e => <>
+                        {(e.row?.key_usuario) ?
+                            <SView col={"xs-12"} center row  >
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
+                                </SView>
+                                <SView width={5} />
+                                <SText color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
+                            </SView> : null}
+                    </>}
+                />
+
+
                 {/* <DinamicTable.Col key="subtotal" label="Subtotal" width={50} data={(e) => e.row?.subtotal ?? ""} /> */}
                 {/* <DinamicTable.Col key="descuento" label="descuento" width={50} data={(e) => e.row?.descuento} /> */}
-                <DinamicTable.Col key="proveedor_img" label="Foto" width={50} data={(e) => e.row?.proveedor?.key_usuario} customComponent={(e) => this.renderProveedor(e.data)} />
-                <DinamicTable.Col key="proveedor" label="Proveedor" width={100} data={(e) => e.row?.proveedor?.razon_social ?? ""} />
-                <DinamicTable.Col key="Usuario_img" label="Foto" width={50} data={(e) => e.row?.key_usuario} customComponent={(e) => this.renderUsuario(e.data)} />
-                <DinamicTable.Col key="Usuario_img_s" label="Admin" width={100} data={(e) => e.row?.usuario?.Nombres ?? ""} />
+                {/* <DinamicTable.Col key="proveedor_img" label="Foto" width={50} data={(e) => e.row?.proveedor?.key_usuario} customComponent={(e) => this.renderProveedor(e.data)} /> */}
+                {/* <DinamicTable.Col key="proveedor" label="Proveedor" width={100} data={(e) => e.row?.proveedor?.razon_social ?? ""} /> */}
+                {/* <DinamicTable.Col key="Usuario_img" label="Foto" width={50} data={(e) => e.row?.key_usuario} customComponent={(e) => this.renderUsuario(e.data)} /> */}
+                {/* <DinamicTable.Col key="Usuario_img_s" label="Admin" width={100} data={(e) => e.row?.usuario?.Nombres ?? ""} /> */}
             </DinamicTable>
         );
     }
