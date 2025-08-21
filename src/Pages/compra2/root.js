@@ -6,6 +6,7 @@ import detalle from "../compra/detalle";
 import { FlatList } from "react-native";
 import SSocket from "servisofts-socket";
 import PButtom from "../../Components/PButtom";
+import SelectTipoPago from "../caja2/components/SelectTipoPago";
 
 export default class root extends React.Component {
 
@@ -51,7 +52,8 @@ export default class root extends React.Component {
     //     }
     // }
 
-    handleSubmit = async () => {
+    handleSubmit = async (key_tipo_pago) => {
+
         console.log("DETALLE ", this.state.detalle)
         try {
 
@@ -71,7 +73,7 @@ export default class root extends React.Component {
                 key_usuario: MDL.usuario.session.key,
                 facturar: this.facturar || false,
                 key_caja: MDL.caja.activa.key,
-                key_tipo_pago: "efectivo",
+                key_tipo_pago: key_tipo_pago
             }
             data.detalle = this.state.detalle.map(item => (
                 {
@@ -193,7 +195,15 @@ export default class root extends React.Component {
                     </SView> */}
                     <SView col={"xs-12"} center>
                         <SHr height={25} />
-                        <PButtom type='primary' small onPress={this.handleSubmit.bind(this)}>GUARDAR</PButtom>
+                        <PButtom type='primary' small onPress={() => {
+                            SelectTipoPago.openPopup({
+                                key_punto_venta: MDL.caja.activa.key_punto_venta,
+                                onSelect: (item) => {
+                                    this.handleSubmit(item.key_tipo_pago)
+                                }
+                            });
+
+                        }}>GUARDAR</PButtom>
                     </SView>
                 </SView>
             </SView>
