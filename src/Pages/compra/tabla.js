@@ -158,6 +158,9 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="tipo_pago" label="Tipo de Pago" width={80} data={(e) => e.row?.tipo_pago ?? ""} customComponent={(e) => this.renderTipoPago(e?.data)} />
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e.data)} />
                 <DinamicTable.Col key="descripcion" label="Descripción" width={150} data={(e) => e.row?.descripcion ?? ""} />
+                <DinamicTable.Col key="key_asiento_contable" label="asiento" width={150} data={(e) => e.row?.key_asiento_contable ?? ""} />
+
+
                 <DinamicTable.Col key="proveedor" label="Proveedor" width={180} data={(e) => e.row?.proveedor?.razon_social ?? ""}
                     customComponent={e => <>
                         {(e.row?.proveedor?.key_usuario) ?
