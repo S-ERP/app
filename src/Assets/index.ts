@@ -268,10 +268,14 @@ import Muser, { ReactComponent as MuserW } from "./svg/Muser.svg"
 
 import pagocheque, { ReactComponent as pagochequeW, } from "./svg/cajatipopagos/cheque.svg";
 import pagoefectivo, { ReactComponent as pagoefectivoW, } from "./svg/cajatipopagos/efectivo.svg";
-import pagopagare, { ReactComponent as pagopagareW, } from "./svg/cajatipopagos/pagare.svg";
-import pagoqr, { ReactComponent as pagoqrW, } from "./svg/cajatipopagos/qr.svg";
+// import pagopagare, { ReactComponent as pagopagareW, } from "./svg/cajatipopagos/pagare.svg";
+// import pagoqr, { ReactComponent as pagoqrW, } from "./svg/cajatipopagos/qr.svg";
 import pagotarjeta, { ReactComponent as pagotarjetaW, } from "./svg/cajatipopagos/tarjeta.svg";
 import pagotransferencia, { ReactComponent as pagotransferenciaW, } from "./svg/cajatipopagos/transferencia.svg";
+
+
+import pagopagare, { ReactComponent as pagopagareW, } from "./svg/cajatipopagos/pagopagare.svg";
+import pagoqr, { ReactComponent as pagoqrW, } from "./svg/cajatipopagos/pagoqr.svg";
 
 
 export const svg = {

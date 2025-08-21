@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SPage, SText, SView, SIcon, STheme } from 'servisofts-component';
+import { SPage, SView, STheme } from 'servisofts-component';
 import SIconApp from '../Assets/SIconApp';
 
 class IconosAlvaro extends Component {
@@ -10,17 +10,42 @@ class IconosAlvaro extends Component {
     }
 
     render() {
+        const iconos = [
+            "pagoefectivo",
+            "pagopagare",
+            "pagoqr",
+            "pagotarjeta",
+            "pagocheque",
+            "pagotransferencia"
+        ];
 
         return (
             <SPage title={'IconosAlvaro'} center>
-                <SView col={"xs-12"} row center border="green">
-
-                    <SIconApp name={"pagocheque"} fill={STheme.color.text} stroke={STheme.color.text} width={180} height={180} />
-                    <SIconApp name={"pagoefectivo"} fill={STheme.color.text} stroke={STheme.color.text} width={180} height={180} />
-                    <SIconApp name={"pagopagare"} fill={STheme.color.text} stroke={STheme.color.text} width={180} height={180} />
-                    <SIconApp name={"pagoqr"} fill={STheme.color.text} stroke={STheme.color.text} width={180} height={180} />
-                    <SIconApp name={"pagotarjeta"} fill={STheme.color.text} stroke={STheme.color.text} width={180} height={180} />
-                    <SIconApp name={"pagotransferencia"} fill={STheme.color.text} stroke={STheme.color.text} width={180} height={180} />
+                <SView col={"xs-12"} row center flexWrap>
+                    {iconos.map((ico, i) => (
+                        <SView 
+                            key={i} 
+                            width={200} 
+                            height={200} 
+                            border="blue"
+                            center 
+                            style={{
+                                borderWidth: 2,
+                                borderColor: STheme.color.danger,
+                                borderRadius: 16, // esquinas redondeadas (opcional)
+                                margin: 10,
+                                padding: 10
+                            }}
+                        >
+                            <SIconApp 
+                                name={ico} 
+                                fill={"blue"} 
+                                stroke={"pink"} 
+                                width={150} 
+                                height={150} 
+                            />
+                        </SView>
+                    ))}
                 </SView>
             </SPage>
         );
