@@ -14,6 +14,7 @@ import denegado from "./denegado";
 import profile from "./profile";
 import pendientes from "./pendientes";
 import edit from "./edit";
+import tabla from "./tabla";
 const model = Model.compra_venta;
 
 export const Parent = {
@@ -34,6 +35,7 @@ export default SPage.combinePages("compra",
         "denegado": denegado,
         "pendientes": pendientes,
         "profile": profile,
+        "tabla": tabla,
         ...detalle,
     }
 )

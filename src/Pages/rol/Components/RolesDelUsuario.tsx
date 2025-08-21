@@ -5,12 +5,15 @@ import { SForm, SHr, SIcon, SInput, SLoad, SNotification, SPopup, SText, STheme,
 import PButtom from '../../../Components/PButtom';
 import { Usuario } from '../../../MDL/usuario/types';
 import MDL from '../../../MDL';
+import rol from '..';
+import Model from '../../../Model';
 
 
 type RolesDelUsuarioType = {
     data: Usuario,
     onRegister: (e: any) => void,
     onCancel?: () => void,
+    keyUsers: string[], // Array of user keys to edit roles for
 }
 
 export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
@@ -40,22 +43,56 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
     }
 
     async loadData() {
-        const roles = await MDL.role.getAll();
-        const userRoles = await MDL.role.getAllUserRolesByKeyUser(this.props.data.key);
+        // const roles = await MDL.role.getAll();
+        // const userRoles = await MDL.role.getAllUserRolesByKeyUser(this.props.data.key);
+        const roles = await MDL.rolesPermisos.getAllEmpresa()
+        //  let dd= this.props.data
+        const userRoles = await MDL.rolesPermisos.getAllUserRolesByKeyUser(this.props.keyUsers);
 
-        roles.forEach((item: any) => {
-            item.userRole = userRoles.find((userRole: any) => {
-                return userRole.key_role == item.key
-            })
-        })
+        const roles_ = userRoles[this.props.data.key]?.filter((ur: { rol: { key_empresa: any; }; }) => ur.rol?.key_empresa === Model.empresa.Action.getKey());
+
+        console.log("roles_", roles_);
+
+        console.log("conta", roles_.length);
+        let resultado: any[] = [];
+        if (roles_.length >= 1) {
+            // roles_.forEach((item: any) => {
+
+            // const foundRole = roles?.filter((r: any) => r.key === item.rol.key);
+            // if (foundRole) {
+            //     foundRole.userRole = item;
+            // }
+            // })
+            // roles.userRole = roles_;
+             resultado = Object.values(roles).map(item => {
+                const match = roles_.find(d => d.key_rol === item.key);
+                return match ? { ...item, ...match } : item;
+            });
+
+           
+        }
+ console.log("resultado", resultado);
+        console.log("conta", roles);
+
+        // roles.forEach((item: any) => {
+        //     item.userRole = userRoles.find((userRole: any) => {
+        //         return userRole.key_role == item.key
+        //     })
+        // })
 
         this.setState({
-            roles: roles,
+            // roles: roles,
+            roles: (resultado.length >= 1)  ? resultado : Object.values(roles)
+            // roles: (resultado) ? resultado : Object.values(roles)
         })
+
+        // this.state.roles= Object.values(roles)
+        this.forceUpdate();
 
     }
 
     render() {
+        console.log("roles", this.state.roles);
         return <SView center>
             <SText bold>{"Editar roles del usuario"}</SText>
             {/* <SText bold>{this.props}</SText> */}
@@ -63,7 +100,7 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
             <SHr h={1} color={STheme.color.card} />
             <SHr />
 
-            {!this.state.roles ?<SLoad type='skeleton' height={250}/> : <SView col={"xs-12"} style={{
+            {!this.state.roles ? <SLoad type='skeleton' height={250} /> : <SView col={"xs-12"} style={{
                 height: 250,
             }}>
                 <FlatList
@@ -72,13 +109,15 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
                     }}
                     data={this.state.roles}
                     renderItem={({ item }) => {
+                        console.log("item", item);
                         return <SView col={"xs-12"} row height={30}>
                             <SView width={30} height>
                                 <SInput
-                                    type='checkBox' defaultValue={!!item.userRole as any}
+                                    type='checkBox' defaultValue={!!item.rol as any}
+                                    // type='checkBox' defaultValue={"Desarrollador"}
                                     onChangeText={e => {
                                         item._edited_value = e;
-                                        if (!!e == !!item.userRole) {
+                                        if (!!e == !!item.rol) {
                                             item._edited = false;
                                         } else {
                                             item._edited = true;
@@ -88,7 +127,7 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
                                 />
                             </SView>
 
-                            <SText flex numberOfLines={1}>{item.description}</SText>
+                            <SText flex numberOfLines={1}>{item.descripcion}</SText>
                         </SView>
                     }}
                     ListFooterComponent={() => {
@@ -126,8 +165,8 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
                         }
                     })
 
-                    await MDL.role.registrarUserRoleArray(listaAgregar)
-                    await MDL.role.eliminarUserRoleArray(listaEliminar);
+                    // await MDL.role.registrarUserRoleArray(listaAgregar)
+                    // await MDL.role.eliminarUserRoleArray(listaEliminar);
                     if (this.props.onRegister) this.props.onRegister(this.state.roles)
 
                     console.log("listaAgregar", listaAgregar);

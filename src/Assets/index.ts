@@ -260,9 +260,19 @@ import crmmicrofono, {
   ReactComponent as crmmicrofonoW,
 } from "./svg/crm/microfono.svg";
 
-import iconRight , { ReactComponent as iconRightW } from "./svg/iconRight.svg"
-import iconAdd , { ReactComponent as iconAddW } from "./svg/iconAdd.svg"
-import Muser , { ReactComponent as MuserW } from "./svg/Muser.svg"
+import iconRight, { ReactComponent as iconRightW } from "./svg/iconRight.svg"
+import iconAdd, { ReactComponent as iconAddW } from "./svg/iconAdd.svg"
+import Muser, { ReactComponent as MuserW } from "./svg/Muser.svg"
+
+
+
+import pagocheque, { ReactComponent as pagochequeW, } from "./svg/cajatipopagos/cheque.svg";
+import pagoefectivo, { ReactComponent as pagoefectivoW, } from "./svg/cajatipopagos/efectivo.svg";
+import pagopagare, { ReactComponent as pagopagareW, } from "./svg/cajatipopagos/pagare.svg";
+import pagoqr, { ReactComponent as pagoqrW, } from "./svg/cajatipopagos/qr.svg";
+import pagotarjeta, { ReactComponent as pagotarjetaW, } from "./svg/cajatipopagos/tarjeta.svg";
+import pagotransferencia, { ReactComponent as pagotransferenciaW, } from "./svg/cajatipopagos/transferencia.svg";
+
 
 export const svg = {
   Logo: { Native: Logo, Web: LogoW },
@@ -414,8 +424,14 @@ export const svg = {
   ctaPlancuentas: { Native: ctaPlancuentas, Web: ctaPlancuentasW },
   ctaSistema: { Native: ctaSistema, Web: ctaSistemaW },
 
-  clock: { Native: Clock, Web: ClockW },
+  pagocheque: { Native: pagocheque, Web: pagochequeW },
+  pagoefectivo: { Native: pagoefectivo, Web: pagoefectivoW },
+  pagopagare: { Native: pagopagare, Web: pagopagareW },
+  pagoqr: { Native: pagoqr, Web: pagoqr },
+  pagotarjeta: { Native: pagotarjeta, Web: pagotarjetaW },
+  pagotransferencia: { Native: pagotransferencia, Web: pagotransferenciaW },
 
+  clock: { Native: Clock, Web: ClockW },
   iconRight: { Native: iconRight, Web: iconRightW },
   iconAdd: { Native: iconAdd, Web: iconAddW },
   Muser: { Native: Muser, Web: MuserW },

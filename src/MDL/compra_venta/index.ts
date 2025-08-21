@@ -1,12 +1,13 @@
 import { Proyecto, EventListener } from "./type";
 
 import MDLAbstract from "../MDLAbstract";
-
 import Model from "../../Model";
 import SSocket from "servisofts-socket";
 import MDL from "..";
-import { SStorage } from "servisofts-component";
+import { SStorage, STheme } from "servisofts-component";
 import proveedor from "./proveedor";
+
+
 export default class compra_venta extends MDLAbstract<EventListener> {
   sucursalSeleccionada = null;
   proveedor = new proveedor();
@@ -42,6 +43,35 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     return resp.data;
   }
 
+  getStateInfo(key?: string) {
+    const states: any = {
+      cotizacion: { color: STheme.color.lightGray, label: "Cotización" },
+      aprobado: { color: STheme.color.warning, label: "Aprobado" },
+      denegado: { color: STheme.color.danger, label: "Denegado" },
+      comprado: { color: STheme.color.success, label: "Comprado" },
+      vendido: { color: STheme.color.success, label: "Vendido" },
+    };
+    if (!key) return states;
+    return states[key] ?? null;
+  }
+
+  // color: "#8e44ad", // púrpura
+  // color: "#f39c12", // ámbar
+  // color: "#1abc9c", // turquesa
+  // color: "#171F58", // ámbar
+  // color: "#41C34A", // violeta
+
+  getTipoPago(key?: string) {
+    const _states: any = {
+      contado: { color: "#034400ff", label: "Contado" },
+      pp_discrecional: { color: "#1207b1ff", label: "Discrecional" },
+      pp_financiero: { color: "#008dbcff", label: "Financiero" },
+    };
+    if (!key) return _states;
+    return _states[key] ?? null;
+  }
+
+
 
   getByKey(value: any) {
     return SSocket.sendPromise({
@@ -62,6 +92,17 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       params: ["'" + value + "'"],
     });
     return resp.data[0] || [];
+  }
+
+  async getByKeyDetalle(value: any) {
+    const resp: any = await SSocket.sendPromise({
+      service: "compra_venta",
+      component: "reporte",
+      type: "execute_function",
+      func: "_get_compraventa_byalvaro",
+      params: ["'" + value + "'"],
+    });
+    return resp.data[0].detalle || [];
   }
 
 

@@ -283,8 +283,15 @@ export default class clienteProyecto {
             key: "spam",
             name: "No llamar",
             color: STheme.color.danger,
-            states: ["spam", "double", "cancelado"],
+            states: ["spam", "double"],
         },
+        { 
+            key:"cancelado",
+            name:"Cancelado",
+            color:STheme.color.success,
+            states:["cancelado"],
+            
+        }
 
     ];
     stagesDelivery = [

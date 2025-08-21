@@ -51,25 +51,65 @@ export default class ReciboCarta extends Component {
         }
     }
     static async imprimir(key) {
-        const data = await MDL.compra_venta.getByKeyComraVenta(key);
-        console.log('miralo ', data);
-        SPDF.create(
-            <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}>
-                <SPDF.View style={{ width: "100%" }}>
-                    {ReciboCarta.HeaderRecibo(data)}
-                    {ReciboCarta.espacio()}
-                    {ReciboCarta.cliente(data)}
-                    {ReciboCarta.espacio()}
-                    {ReciboCarta.detalle(data)}
-                    {ReciboCarta.espacio()}
-                    {ReciboCarta.espacio()}
-                    {ReciboCarta.FooterRecibo(data)}
-                    {ReciboCarta.espacio()}
-                    {ReciboCarta.pagina()}
-                </SPDF.View>
-            </SPDF.Page>
-        );
+        try {
+
+            const data = await MDL.compra_venta.getByKeyComraVenta(key);
+            console.log('miralo ', data);
+
+            const dataQR = await ReciboCarta.getQR(data?.key);
+            console.log('QR ' + dataQR?.data?.b64);
+
+            // return;
+            SPDF.create(
+                <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}>
+                    <SPDF.View style={{ width: "100%" }}>
+                        {ReciboCarta.HeaderRecibo(data)}
+                        {ReciboCarta.espacio()}
+                        {ReciboCarta.cliente(data)}
+                        {ReciboCarta.espacio()}
+                        {ReciboCarta.detalle(data)}
+                        {ReciboCarta.espacio()}
+                        {ReciboCarta.espacio()}
+                        {ReciboCarta.FooterRecibo(dataQR?.data?.b64)}
+                        {ReciboCarta.espacio()}
+                        {ReciboCarta.pagina()}
+                    </SPDF.View>
+                </SPDF.Page>
+            );
+
+        } catch (error) {
+            console.error("Error al generar el recibo:", error);
+        }
+
     }
+
+
+    static getQR(key) {
+        if (!key) {
+            return Promise.reject(new Error("Key inválida para generar QR"));
+        }
+        const content = `https://darmotos.servisofts.com/venta/profile?pk=${encodeURIComponent(key)}`;
+        // var content = `https://darmotos.servisofts.com/venta/profile?pk=${key}`;
+        return SSocket.sendPromise({
+            "service": "sqr",
+            "component": "qr",
+            "type": "registro",
+            "estado": "cargando",
+            "data": {
+                "image_src": "https://darmotos.servisofts.com/logo512.png",
+                "framework": "Rounded",
+                "header": "Circle",
+                // "colorHeader": "#ffffff",
+                // "colorBackground":"#000000",
+                "body": "Dot",
+                "content": content,
+                // "colorBody2": "#80D034",
+                // "colorBody": "#80D034",
+                "type_color": "solid",
+            }
+        });
+    }
+
     static espacio() {
         return <SPDF.View style={{ width: "100%", height: 16 }} />;
     }
@@ -79,9 +119,7 @@ export default class ReciboCarta extends Component {
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row", height: 110, alignItems: "center" }}>
                 <SPDF.View style={{ flex: 3, alignItems: "center" }}>
-                    <SPDF.View style={{ width: "100%", height: 50, borderWidth: 1 }}>
-                        <SImage src={SSocket.api.empresa + "empresa/" + empresa.key} />
-                    </SPDF.View>
+                    <SPDF.Image src={SSocket.api.empresa + "empresa/" + empresa?.key} style={{ width: 100, height: 50, }} />
                     <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{validarDato(empresa?.razon_social, 'EMPRESA')}</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle }}>Sucursal: {validarDato(sucursal?.descripcion, 'Sin sucursal')}</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, alignItems: "center" }}>No. Punto de Venta {validarDato(data?.venta, '1')}</SPDF.Text>
@@ -305,7 +343,7 @@ export default class ReciboCarta extends Component {
             </SPDF.View>
         );
     }
-    static FooterRecibo(data) {
+    static FooterRecibo(qr) {
         const empresa = MDL.empresa.select;
         return (
             <SPDF.View style={{ width: "100%", alignItems: "center" }}>
@@ -321,9 +359,9 @@ export default class ReciboCarta extends Component {
                             {"\"Este documento es la Representación Gráfica de un Documento Fiscal Digital emitido en una modalidad de registro en línea\""}
                         </SPDF.Text>
                     </SPDF.View>
-                    <SPDF.View style={{ width: 70, height: 70, borderWidth: 1, justifyContent: "center", alignItems: "center" }}>
-                        <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{"QR"}</SPDF.Text>
-                    </SPDF.View>
+
+                    <SPDF.Image src={`data:image/png;base64,${qr}`} style={{ width: 70, height: 70, }} />
+                  
                 </SPDF.View>
                 <SPDF.View style={{ width: "100%", alignItems: "center", height: 40 }}>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>¡Gracias por su compra!</SPDF.Text>

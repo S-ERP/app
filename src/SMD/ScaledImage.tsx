@@ -17,7 +17,7 @@ export default class ScaledImage extends Component<{ width?: any, height?: any, 
 
     render() {
         if (!this.state.width) return <Text>{this.props.alt ?? "img"}</Text>
-        let width = this.state.width ?? 0;
+        let width = this.width ?? 0;
         let height = this.state.height ?? 0;
         if (this.props.width && !this.props.height) {
             width = this.props.width;
