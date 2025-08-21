@@ -31,6 +31,7 @@ export default class MenuItem extends Component {
         if (this.props.onEvent) {
             let name = this.props.obj.name;
             let pathfinal = !this.props.path ? name : this.props.path + "/" + name
+            pathfinal = Actions.root_path + pathfinal
             Actions.rm({
                 path: pathfinal
             }).then(e => {

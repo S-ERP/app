@@ -15,12 +15,15 @@ import ajustes from "../ajustes";
 import CuentaContableForm from "./Components/CuentaContableForm";
 import tipo from "../whatsapp/tipo";
 import { Text } from "react-native";
+import FiltroNiveles from "./Components/FiltroNiveles";
 
 
 
 export default class cuentas extends React.Component {
 
 
+    len = 1;
+    eq = "Desde";
 
     state = {
         ajustes: []
@@ -31,6 +34,16 @@ export default class cuentas extends React.Component {
     }
     render() {
         return <SPage title={"Plan de cuentas"} disableScroll>
+            <FiltroNiveles
+                defaultLen={this.len}
+                defaultEQ={this.eq}
+                onChange={(len, eq) => {
+                    this.len = len;
+                    this.eq = eq;
+                    if (this.DinamicTable) {
+                        this.DinamicTable.loadData();
+                    }
+                }} />
             <DinamicTable {...Config.table.applyTheme()}
                 ref={ref => this.DinamicTable = ref}
                 selectType="multiple"
@@ -44,11 +57,20 @@ export default class cuentas extends React.Component {
                     arr.map((cuenta) => {
                         cuenta.ajustes = ajustes.filter((ajuste) => ajuste?.ajuste_empresa?.key_cuenta_contable == cuenta.key);
                     })
-                    const nivel = 1;
-                    return arr;
+                    return arr.filter(e => {
+                        if (!e.codigo) return false;
+                        if (this.eq === "Hasta") {
+                            return e.codigo.length <= this.len;
+                        } else if (this.eq === "Desde") {
+                            return e.codigo.length >= this.len;
+                        } else if (this.eq === "Como") {
+                            return e.codigo.length == this.len;
+                        }
+                        return false;
+                    });
                     // return MDL.contabilidad.agruparCuentas(arr)
                 }}
-                
+
 
                 loadInitialState={async () => {
                     return {
@@ -58,14 +80,18 @@ export default class cuentas extends React.Component {
                     }
                 }}
                 onSelect={(e) => {
-                    
+
                 }}
             >
                 {/* <DinamicTable.Col key={"key"} label="Key" width={50}
                     textStyle={{ fontSize: 8, color: STheme.color.lightGray }}
                     data={e => {
                         return e.row.key
-                    }} /> */}
+                    }}
+                    customComponent={(e)=>{
+                        return <SText fontSize={10}>{"open"}</SText>
+                    }}
+                /> */}
                 <DinamicTable.Col key={"ajustes"} label="Ajustes" width={50}
                     data={e => ""}
                     customComponent={(e) => {
@@ -182,7 +208,7 @@ export default class cuentas extends React.Component {
                         if (e?.row?.codigo?.length == 1) {
                             aditionalStyle.fontWeight = "bold";
                         }
-                        return <SText style={{ ...e.textStyle, paddingStart: space, ...aditionalStyle, textTransform:"uppercase" }}>{e.data}</SText>
+                        return <SText style={{ ...e.textStyle, paddingStart: space, ...aditionalStyle, textTransform: "uppercase" }}>{e.data}</SText>
                     }}
                 />
                 <DinamicTable.Col key={"ajuste"} label="Tipo"

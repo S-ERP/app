@@ -39,6 +39,10 @@ export default class contabilidad extends MDLAbstract<EventListener> {
     });
     return resp.data;
   }
+  async getAjuste(key: string) {
+    const ajustes = await this.getAjustes();
+    return ajustes.find((ajuste: any) => ajuste.key === key);
+  }
   async getCuentas() {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",

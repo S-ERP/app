@@ -85,6 +85,20 @@ export default class empresa extends MDLAbstract<EventListener> {
     return resp.data;
   }
 
+  _full: any = null;
+  async getFull(): Promise<any> {
+    if (this._full) {
+      if (this._full.key === this.select?.key) return this._full;
+    }
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "empresa",
+      type: "getByKeyFull",
+      key: this.select?.key,
+    });
+    this._full = resp.data;
+    return resp.data;
+  }
   setUsuarioLog(data: {
     url: string;
     platform?: string;

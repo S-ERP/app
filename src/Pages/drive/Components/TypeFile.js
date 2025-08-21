@@ -29,7 +29,7 @@ export default class TypeFile extends Component<{ file: any, path: string }> {
         if (type.indexOf("pdf") > -1) {
             return <PDFViewer src={DiverPath} />
         }
-        if (type.indexOf("officedocument") > -1) {
+        if (type.indexOf("officedocument") > -1 ) {
             return <>
                 {this.state.loaded ? null : <div>Cargando presentación...</div>}
                 <iframe

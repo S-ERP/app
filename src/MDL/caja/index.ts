@@ -48,6 +48,16 @@ export default class caja extends MDLAbstract<EventListener> {
     })
     return resp.data
   }
+  async getDetalle(key_caja: string) {
+
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "caja_detalle",
+      type: "getAll",
+      key_caja: key_caja,
+    })
+    return Object.values(resp.data)
+  }
   async abrir({ key_punto_venta = "", key_sucursal = "", key_cuenta_contable = "", fecha = new SDate().toString("yyyy-MM-dd") }) {
 
     const resp: any = await SSocket.sendPromise({

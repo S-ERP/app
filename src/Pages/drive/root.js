@@ -13,7 +13,7 @@ export default class root extends Component {
         super(props);
         Actions.root_path = "/serp/" + MDL.empresa?.select?.key;
         this.state = {
-            path: SNavigation.getParam("path", this.props.path ?? "/"),
+            path: SNavigation.getParam("path", this.props.path || "/"),
         };
     }
 
@@ -27,7 +27,8 @@ export default class root extends Component {
                 this.setState({ file: e })
             })
             .catch(e => {
-                if (e?.error == "La ruta especificada no contiene archivos ni carpetas." && Actions.root_path == Actions.root_path + "" + this.state.path) {
+                console.log(Actions.root_path,Actions.root_path + "" + this.state.pat)
+                if (e?.error == "La ruta especificada no contiene archivos ni carpetas." && Actions.root_path+"/" == Actions.root_path + "" + (this.state.path)) {
                     Actions.mkdir({ path: Actions.root_path + "" + this.state.path }).then(e => {
                         this.componentDidMount();
                     }).catch(e => {
