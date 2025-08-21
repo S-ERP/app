@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
 import SIconApp from '../../Assets/SIconApp';
@@ -8,6 +8,7 @@ import Model from '../../Model';
 import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 import MDL from '../../MDL';
 import FloatMenu from '../../Components/FloatMenu';
+import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
 export default class tabla extends Component {
 
     renderUsuario(srcKey) {
@@ -27,9 +28,14 @@ export default class tabla extends Component {
     };
 
     renderSucursal(srcKey) {
-        const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-            <SImage src={`${SSocket.api.empresa}sucursal/${srcKey}`} style={{ resizeMode: "cover" }} />
-        </SView>;
+        const pintar = <>
+            <SView style={{ width: 60 }}>
+                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                    <SImage src={`${SSocket.api.empresa}sucursal/${srcKey}`} style={{ resizeMode: "cover" }} />
+                </SView>
+                <SText color='red'> sucursal </SText>
+            </SView>
+        </>
         const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
         return srcKey ? pintar : nulo;
     };
@@ -40,10 +46,6 @@ export default class tabla extends Component {
             if (!registros) return [];
             // const empresa = MDL.empresa.select || {};
             const sucursales = await MDL.empresa.getAllSucursales();
-
-            // if (!registros) return [];
-
-            // Filter ventas early to reduce processing
             const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
             if (!ventas.length) return [];
 
@@ -79,7 +81,6 @@ export default class tabla extends Component {
                 proveedor: proveedoresMap[cv.key_proveedor] || {},
                 usuario: usuariosMap[cv.key_usuario] || {},
                 sucursal: sucursalesMap[cv.key_sucursal] || {},
-                // empresa,
             }));
 
             return ventasEnriquecidas;
@@ -109,7 +110,7 @@ export default class tabla extends Component {
 
     renderCodigo(codigo) {
         return <SView row center>
-            <SView border={STheme.color.card} style={{ borderRadius: 16, padding: 6, borderWidth: 1 }}>
+            <SView border={STheme.color.card} style={{ borderRadius: 8, padding: 6, borderWidth: 1 }}>
                 <SText color={STheme.color.text} fontSize={10} bold>{codigo}</SText>
             </SView>
         </SView>
@@ -118,34 +119,46 @@ export default class tabla extends Component {
     mostrarTabla() {
         return (
             <DinamicTable
+
+
+
+
                 ref={ref => (this.DinamicTable = ref)}
                 loadData={() => this.loadData()}
                 key="id"
                 language="es"
+                center
                 colors={Config.table.colors()}
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
                 selectType="single"
-                keyExtractor={(e) => e.key}
+                keyExtractor={(e) => e.key_usuario}
                 onSelect={(e) => {
                     FloatMenu.open({
                         e: e.evt,
-                        label: e.row.descripcion,
+                        label: "Tabla de ventas",
                         options: [
                             {
                                 label: "Ver venta",
-                                icon: <SIconApp name='addTarea' fill="#FF0000" />,
+                                icon: <SIconApp name='addTarea' fill="#e4e4e4ff" />,
                                 onPress: () => {
                                     SNavigation.navigate("/venta/profile", { pk: e?.row?.key })
                                 }
                             },
-                            {
-                                label: "Recibo carta",
-                                icon: <SIconApp name='crmpdf' fill="#FF0000" />,
-                                onPress: () => {
-                                    ReciboCarta.imprimir(e?.row?.key)
-                                }
-                            },
+                            // {
+                            //     label: "Imprimir tamaño carta",
+                            //     icon: <SIcon name='imprimir' />,
+                            //     onPress: () => {
+                            //         ReciboCarta.imprimir(e?.row?.key)
+                            //     }
+                            // },
+                            // {
+                            //     label: "Imprimir tipo rollo",
+                            //     icon: <SIcon name='imprimir' stroke="#710505ff" fill='blue' />,
+                            //     onPress: () => {
+                            //         ReciboRollo.imprimir(e?.row?.key)
+                            //     }
+                            // },
                         ]
                     });
                 }}
@@ -160,24 +173,61 @@ export default class tabla extends Component {
                     </SView>} />
                 <DinamicTable.Col key={"codigo"} label='Codigo' width={90} center data={(e) => e?.row?.codigo ?? "AL790"} customComponent={(e) => this.renderCodigo(e.data)} />
 
-                <DinamicTable.Col key="sucursal_img" label="Foto" center width={50} data={(e) => e.row?.key_sucursal} customComponent={(e) => this.renderSucursal(e.data)} />
-                <DinamicTable.Col key="sucursal" label="Sucursal" width={70} data={(e) => e.row?.sucursal?.descripcion ?? ""} />
+                <DinamicTable.Col key="sucursal" label="Sucursal" width={100} data={(e) => e.row?.sucursal?.descripcion}
+                    customComponent={e => <>
+                        {(e.row?.key_sucursal) ?
+                            <SView col={"xs-12"} center row  >
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key_sucursal}`} style={{ resizeMode: "cover" }} />
+                                </SView>
+                                <SView width={5} />
+                                <SText color={STheme.color.text}>{e.row?.sucursal?.descripcion}</SText>
+                            </SView> : null}
+                    </>}
+                />
+
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="tipo_pago" label="Tipo Pago" width={80} data={(e) => e.row?.tipo_pago ?? ""} customComponent={(e) => this.renderTipoPago(e?.data)} />
-                <DinamicTable.Col key="state" label="state" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e?.data)} />
+                <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e?.data)} />
                 <DinamicTable.Col key="descripcion" label="Descripcion" width={150} data={(e) => e.row?.descripcion ?? ""} />
-                {/* <DinamicTable.Col key="subtotal" label="Subtotal" width={50} data={(e) => e.row?.subtotal ?? "0"} /> */}
-                {/* <DinamicTable.Col key="descuento" label="descuento" width={50} data={(e) => e.row?.descuento ?? "0"} /> */}
-                <DinamicTable.Col key="cliente_img" label="Foto" width={50} data={(e) => e.row?.cliente?.key} customComponent={(e) => this.renderCliente(e.data)} />
-                <DinamicTable.Col key="cliente" label="Cliente" width={100} data={(e) => e.row?.cliente?.nombres ?? ""} />
-                <DinamicTable.Col key="Usuario_img" label="Foto" width={50} data={(e) => e.row?.key_usuario} customComponent={(e) => this.renderUsuario(e.data)} />
-                <DinamicTable.Col key="Usuario_img_s" label="Admin" width={100} data={(e) => e.row?.usuario?.Nombres ?? ""} />
+
+
+
+                <DinamicTable.Col key="cliente" label="Cliente" width={130} data={(e) => e.row?.cliente?.nombres ?? ""}
+                    customComponent={e => <>
+                        {(e.row?.cliente?.key) ?
+                            <SView col={"xs-12"} center row  >
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SImage src={`${SSocket.api.crm}cliente/${e.row?.cliente?.key}`} style={{ resizeMode: "cover" }} />
+                                </SView>
+                                <SView width={5} />
+                                <SText color={STheme.color.text}> {e.row?.cliente?.nombres}  </SText>
+                            </SView> : null}
+                    </>}
+                />
+
+                <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
+                    customComponent={e => <>
+                        {(e.row?.key_usuario) ?
+                            <SView col={"xs-12"} center row  >
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
+                                </SView>
+                                <SView width={5} />
+                                <SText color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
+                            </SView> : null}
+                    </>}
+                />
+
             </DinamicTable>
         );
     }
     render() {
         return (
             <SPage title="Tabla Gestión de Ventas" disableScroll>
+
+                {/* <SView width={100} height={130}  ><SIconApp name='crmpdf' fill="blue"   /></SView> */}
+                {/* <SIcon name='imprimir' stroke='red'fill='green'  ></SIcon> */}
                 {this.mostrarTabla()}
                 <SHr height={20} />
             </SPage>

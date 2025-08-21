@@ -6,7 +6,7 @@ import SSocket from "servisofts-socket";
 import MDL from "..";
 import { SStorage, STheme } from "servisofts-component";
 import proveedor from "./proveedor";
- 
+
 
 export default class compra_venta extends MDLAbstract<EventListener> {
   sucursalSeleccionada = null;
@@ -55,12 +55,17 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     return states[key] ?? null;
   }
 
+  // color: "#8e44ad", // púrpura
+  // color: "#f39c12", // ámbar
+  // color: "#1abc9c", // turquesa
+  // color: "#171F58", // ámbar
+  // color: "#41C34A", // violeta
 
   getTipoPago(key?: string) {
     const _states: any = {
-      contado: { color: STheme.color.lightGray, label: "Contado" },
-      pp_discrecional: { color: STheme.color.success, label: "Discrecional" },
-      pp_financiero: { color: STheme.color.warning, label: "Financiero" },
+      contado: { color: "#034400ff", label: "Contado" },
+      pp_discrecional: { color: "#1207b1ff", label: "Discrecional" },
+      pp_financiero: { color: "#008dbcff", label: "Financiero" },
     };
     if (!key) return _states;
     return _states[key] ?? null;
