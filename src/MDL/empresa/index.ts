@@ -53,6 +53,9 @@ export default class empresa extends MDLAbstract<EventListener> {
       };
       // STheme.repaint();
     }
+    if(MDL?.caja){
+      MDL.caja.getActiva();
+    }
     this.dispatchEvent({ type: "onChangeEmpresaSelect", data: empresa });
   }
 
@@ -74,6 +77,19 @@ export default class empresa extends MDLAbstract<EventListener> {
       key_empresa: Model.empresa.Action.getKey(),
     });
     return Object.values(resp.data);
+  }
+
+  __tipo_pago: any = null;
+  async getTipoPago(): Promise<Sucursal[]> {
+    if(this.__tipo_pago) return this.__tipo_pago;
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "tipo_pago",
+      type: "getAll",
+      key_empresa: Model.empresa.Action.getKey(),
+    });
+    this.__tipo_pago = resp.data;
+    return this.__tipo_pago;
   }
   async getByKeyFull(): Promise<any> {
     const resp: any = await SSocket.sendPromise({
