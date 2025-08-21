@@ -84,19 +84,14 @@ export default class Abierta extends Component {
                     <SHr />
                     <SView row>
                         <SText card padding={8} margin={4} onPress={() => {
-                            SelectTipoPago.openPopup({
-                                key_punto_venta: this.props.caja.key_punto_venta,
-                                onSelect: (item) => {
-
-                                }
-                            });
+                            SNavigation.navigate("/puntoventa")
                         }}>Vender Productos</SText>
                         <SText card padding={8} margin={4}>Cobrar a Clientes</SText>
                         <SText card padding={8} margin={4} onPress={() => {
 
-                        }}>Retirar efectivo de Banco</SText>
+                        }}>Cargar efectivo desde Banco</SText>
                         <SText card padding={8} margin={4}>Otros Ingresos</SText>
-                        <SText card padding={8} margin={4} onPress={()=>{
+                        <SText card padding={8} margin={4} onPress={() => {
                             SNavigation.navigate("/compra2")
                         }}>Comprar Productos</SText>
                         <SText card padding={8} margin={4}>Pagar a Proveedores</SText>
