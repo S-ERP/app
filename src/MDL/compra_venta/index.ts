@@ -24,7 +24,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       key_cliente: data.key_cliente,
       // key_vendedor: data.key_vendedor,
       key_caja: MDL.caja.activa?.key,
-      key_tipo_pago: data?.caja?.key_tipo_pago,
+      tipos_pago: data?.caja?.tipos_pago,
       // key_tipo_pago: "efectivo",
       // descuento: parseFloat(data.caja.descuento),
       // monto_total: parseFloat(data.caja.monto_total),
@@ -41,6 +41,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       type: "ventaRapida",
       data: formar,
     });
+    MDL.caja.dispatchEvent({ type: "onDetalleChange" })
     return resp.data;
   }
 

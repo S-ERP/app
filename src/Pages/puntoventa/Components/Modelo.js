@@ -80,6 +80,7 @@ export default class Modelo extends Component {
                                         col={`xs-6 md-4 lg-3 xl-1.5`}
                                         margin={2}
                                         style={{
+                                            minWidth: 120,
                                             borderRadius: 8,
                                             // shadowColor: "#000",
                                             shadowOffset: { width: 0, height: 2 },
@@ -89,7 +90,7 @@ export default class Modelo extends Component {
                                             borderWidth: 1,
                                             borderColor: STheme.color.lightGray,
                                             overflow: "hidden",
-                                            backgroundColor: STheme.color.background
+                                            // backgroundColor: STheme.color.background
                                         }}
                                         onPress={() => {
                                             console.log("PRO - PRESS", producto)
@@ -105,8 +106,10 @@ export default class Modelo extends Component {
                                         <SView col={"xs-12"} padding={4}>
                                             <SView col={"xs-12"} height={40}><SText fontSize={14} bold color={STheme.color.text}>{producto.descripcion} </SText></SView>
                                             <SView col={"xs-12"} row>
-                                                <SView flex row > <SText fontSize={12} bold color={STheme.color.text}  > Bs {SMath.formatMoney(producto.precio_venta, 2)} </SText> </SView>
-                                                <SView width={60} row   > <SText fontSize={10} color={producto?.stock > 0 ? "#10B981" : "#EF4444"}> Disp: {producto?.stock} und</SText> </SView>
+                                                <SView flex row >
+                                                    <SText fontSize={12} bold color={STheme.color.text}  > Bs {SMath.formatMoney(producto.precio_venta, 2)}</SText>
+                                                </SView>
+                                                <SText fontSize={10} color={producto?.stock > 0 ? "#10B981" : "#EF4444"}>{producto?.stock} und</SText>
                                             </SView>
                                         </SView>
                                     </SView>

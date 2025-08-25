@@ -19,15 +19,15 @@ export default class Producto extends Component {
         if (carrito) {
             // Si hay carrito agregamos los productos del carrito
             carrito.map((item) => {
-                if (!productos_final[item.key_producto]) productos_final[item.key_producto] = {}
-                productos_final[item.key_producto].carrito = item;
+                if (!productos_final[item.key_modelo]) productos_final[item.key_modelo] = {}
+                productos_final[item.key_modelo].carrito = item;
             })
         }
         if (productos) {
             // Agregamos los productos del proyecto
             productos.map((item) => {
-                if (!productos_final[item.key_producto]) productos_final[item.key_producto] = {}
-                productos_final[item.key_producto].producto = item;
+                if (!productos_final[item.key_modelo]) productos_final[item.key_modelo] = {}
+                productos_final[item.key_modelo].producto = item;
             })
         }
         this.productos_final = productos_final;
@@ -45,7 +45,7 @@ export default class Producto extends Component {
 
         const arr = Object.values(this.productos_final).filter(item => !!item.carrito_edit).map(item => { return { ...item.carrito_edit, key_cliente_proyecto: this.props.cliente_proyecto.key } });
         console.log(arr)
-        MDL.crm.clienteProyecto.editarCarrito(arr, this.props.cliente_proyecto.key).then((resp) => {
+        MDL.crm.clienteProyecto.editarCarritoV2(arr, this.props.cliente_proyecto.key).then((resp) => {
             this.props.cliente_proyecto.carrito = resp;
             this.unsavedChange = false;
             SNotification.send({

@@ -12,8 +12,8 @@ export default class FotoModelo extends Component {
         // return !data?.key ? <SIconApp name='Caja' width={20} fill={STheme.color.text} /> : <SImage src={url}  />;
         // return !data?.key ? <SImage  src={require('../../../../Assets/img/nofoto.jpg')} /> : <SImage src={url}  />;
         return <>
-        <SImage  src={require('../../../../Assets/img/nofoto.jpg')} style={{ position: 'absolute' , top:0, overflow:"hidden"}} />
-        <SImage src={url} style={{overflow:"hidden"}} />
+            <SImage src={require('../../../../Assets/img/nofoto.jpg')} style={{ position: 'absolute', top: 0, overflow: "hidden", opacity: 0.3}} />
+            <SImage src={url} style={{ overflow: "hidden" }} />
         </>
     }
 }

@@ -1,0 +1,170 @@
+import React, { Component } from 'react';
+import { View, Text } from 'react-native';
+import { SForm, SHr, SIcon, SInput, SLoad, SNotification, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
+import SSocket from 'servisofts-socket';
+import MDL from '../../../MDL';
+import Btn from '../../empresa/config/Components/Btn';
+import SIconApp from '../../../Assets/SIconApp';
+import BarcodeScanner from '../../../Components/BarcodeScanner';
+import InputFoto from '../../../Components/InputFoto';
+import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
+import TextAreaPopupOpenIcon from '../../../Components/QueryTool/TextAreaPopupOpenIcon';
+
+type Props = {
+    editObject?: any,
+    onCancel?: Function,
+    onSuccess?: Function,
+}
+
+
+const cuentaToText = (c: any) => {
+    if (!c) return "";
+    return `${c.codigo} - ${c.descripcion}`
+}
+export default class FormularioTipoProducto extends Component<Props> {
+
+    static open(props: Props) {
+        SPopup.open({
+            key: "FormularioTipoProducto",
+            content: <SView style={{
+                width: "100%",
+                maxHeight: "100%",
+                maxWidth: 500,
+                // height: 500,
+                borderRadius: 8,
+                borderColor: STheme.color.card,
+                borderWidth: 1,
+                backgroundColor: STheme.color.background
+            }} withoutFeedback >
+                <FormularioTipoProducto {...props} onCancel={() => {
+                    SPopup.close("FormularioTipoProducto")
+                    if (props.onCancel) props.onCancel()
+                }}
+                    onSuccess={(e: any) => {
+                        SPopup.close("FormularioTipoProducto")
+                        if (props.onSuccess) props.onSuccess(e)
+                    }}
+
+                />
+            </SView>
+        })
+    }
+
+    state = {
+    }
+    componentDidMount(): void {
+
+        MDL.contabilidad.getCuentas().then(cuentas => {
+            this.setState({ cuentas: Object.values(cuentas).sort((a: any, b: any) => (a.codigo > b.codigo) ? 1 : -1) });
+        }).catch(e => {
+            console.error(e);
+        })
+
+    }
+
+
+    buildCustmomInputs() {
+
+    }
+
+
+    _ref: any = {}
+    form: SForm | undefined = undefined;
+    render() {
+        if (!this.state.cuentas) return <SLoad />
+        return <SView col={"xs-12"} center padding={16}>
+            <SText fontSize={16}>{this.props.editObject ? "Editar" : "Crear"}{" Tipo Producto"}</SText>
+            <SForm ref={(ref: any) => this.form = ref} row
+                style={{
+                    justifyContent: "space-between",
+                }}
+                inputs={{
+
+                    "descripcion": {
+                        col: "xs-12",
+                        style: { paddingStart: 0, },
+                        labelStyle: { top: -10, },
+                        inputStyle: { paddingStart: 8 },
+                        icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
+                            {/* <SInput ref={ref => this._ref.image_modelo = ref} type='image' height={50} defaultValue={(SSocket.api as any).inventario + "modelo/" + this.props.editObject?.key}/> */}
+                            <InputFoto
+                                ref={ref => this._ref.image_modelo = ref}
+                                src={(SSocket.api as any).inventario + "tipo_producto/.128_" + this.props.editObject?.key}
+                                style={{
+                                    width: 50,
+                                    height: 50,
+                                }} />
+                        </SView>,
+                        label: "Nombre", placeholder: "Ingresa el nombre",
+                        isRequired: true, autoFocus: true,
+                        defaultValue: this.props.editObject?.descripcion,
+                        onSubmitEditing: () => {
+                            // if (this.form) this.form.focus("barcode");
+                        }
+                    },
+                    "tipo": {
+                        col: "xs-5.8",
+                        type: "select2",
+                        label: "Tipo",
+                        style: { paddingStart: 0, },
+                        labelStyle: { top: -10, },
+                        inputStyle: { paddingStart: 8 },
+                        defaultValue: this.props.editObject?.tipo ?? "inventario",
+                        options: ["inventario", "activo_fijo", "gasto", "servicio"]
+                    },
+                    "key_cuenta_contable": {
+                        col: "xs-5.8",
+                        type: "select2",
+                        label: "Cuenta Contable",
+                        style: { paddingStart: 0, fontSize: 10 },
+                        labelStyle: { top: -10, },
+                        inputStyle: { paddingStart: 8, fontSize: 10 },
+                        defaultValue: cuentaToText(this.state.cuentas.find(c => c.key == this.props.editObject?.key_cuenta_contable)),
+                        options: this.state.cuentas.filter(c => c.tipo == "ACTIVO").map(cuentaToText)
+                    },
+                    "key_cuenta_contable_ganancia": {
+                        col: "xs-5.8",
+                        type: "select2",
+
+                        label: "Cuenta Contable Ganancia",
+                        style: { paddingStart: 0, fontSize: 10 },
+                        labelStyle: { top: -10, },
+                        inputStyle: { paddingStart: 8, fontSize: 10 },
+                        defaultValue: cuentaToText(this.state.cuentas.find(c => c.key == this.props.editObject?.key_cuenta_contable_ganancia)),
+                        options: this.state.cuentas.filter(c => c.tipo == "INGRESO").map(cuentaToText)
+                    },
+                    "key_cuenta_contable_costo": {
+                        col: "xs-5.8",
+                        type: "select2",
+                        label: "Cuenta Contable Costo",
+                        style: { paddingStart: 0 , fontSize: 10 },
+                        labelStyle: { top: -10, },
+                        inputStyle: { paddingStart: 8, fontSize: 10 },
+                        defaultValue: cuentaToText(this.state.cuentas.find(c => c.key == this.props.editObject?.key_cuenta_contable_costo)),
+                        options: this.state.cuentas.filter(c => c.tipo == "GASTO").map(cuentaToText)
+                    },
+
+
+                }}
+                onSubmit={(data: any) => {
+
+                }}
+
+            />
+            <SHr h={16} />
+            <SView row col={"xs-12"}>
+                {this.props.onCancel && <>
+                    <Btn type='danger' label='CANCELAR' onPress={() => {
+                        if (this.props.onCancel) this.props.onCancel()
+                    }} />
+                    <SView width={8} />
+                </>}
+
+                <Btn type='primary' label='GUARDAR' onPress={() => {
+                    if (this.form) this.form.submit();
+                }} />
+
+            </SView>
+        </SView>
+    }
+}

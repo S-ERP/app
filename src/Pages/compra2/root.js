@@ -52,11 +52,16 @@ export default class root extends React.Component {
     //     }
     // }
 
-    handleSubmit = async (key_tipo_pago) => {
+    handleSubmit = async (tipos_pago) => {
 
         console.log("DETALLE ", this.state.detalle)
         try {
 
+            SNotification.send({
+                key:"compra_rapida",
+                title:"cargando",
+                type:"loading",
+            })
 
             const sucValue = this.inputs["sucursal"].getValue();
             const sucursal = this.state.sucursales.find(a => a.descripcion == sucValue)
@@ -64,7 +69,7 @@ export default class root extends React.Component {
             const proveedor = this.state.proveedores.find(a => a.razon_social == provValue)
 
             const data = {
-                tipo_pago: "contado",
+                // tipo_pago: "contado",
                 descripcion: "Compra rapida",
                 observacion: "Sin observacion",
                 key_proveedor: proveedor.key,
@@ -73,7 +78,8 @@ export default class root extends React.Component {
                 key_usuario: MDL.usuario.session.key,
                 facturar: this.facturar || false,
                 key_caja: MDL.caja.activa.key,
-                key_tipo_pago: key_tipo_pago
+                tipos_pago: tipos_pago
+                // key_tipo_pago: key_tipo_pago
             }
             data.detalle = this.state.detalle.map(item => (
                 {
@@ -91,11 +97,16 @@ export default class root extends React.Component {
                 type: "compraRapida",
                 data: data,
             })
-            SNavigation.navigate("/compra/profile", { pk: compraResp.data.key });
+            SelectTipoPago.closePopup()
+            // SNavigation.navigate("/compra/profile", { pk: compraResp.data.key });
+            SNavigation.goBack();
+            SNotification.remove("compra_rapida")
+            MDL.caja.dispatchEvent({ type: "onDetalleChange" })
             console.log("compra", compraResp);
         } catch (error) {
             console.error("Error al realizar la compra:", error);
             SNotification.send({
+                key:"compra_rapida",
                 title: "Error al realizar la compra",
                 body: error?.error || "Ocurrió un error inesperado.",
                 type: "danger",
@@ -196,10 +207,15 @@ export default class root extends React.Component {
                     <SView col={"xs-12"} center>
                         <SHr height={25} />
                         <PButtom type='primary' small onPress={() => {
+                            var max = 0;
+                            this.state.detalle.map(item => {
+                                max += (item.cantidad * item.precio)
+                            })
                             SelectTipoPago.openPopup({
                                 key_punto_venta: MDL.caja.activa.key_punto_venta,
-                                onSelect: (item) => {
-                                    this.handleSubmit(item.key_tipo_pago)
+                                montoMaximo: max,
+                                onSelect: (tipos_pago) => {
+                                    this.handleSubmit(tipos_pago)
                                 }
                             });
 

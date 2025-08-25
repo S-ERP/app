@@ -7,7 +7,14 @@ export type Caja = {
 };
 
 
+export type CajaTypeAbstract = {
+  key: string,
+  label: string,
+}
 
 export type EventListener = {
   type: "onChangeActiva"
+} |
+{
+  type: "onDetalleChange"
 }

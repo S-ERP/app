@@ -3,6 +3,7 @@ import SSocket from "servisofts-socket";
 import MDLAbstract from "../MDLAbstract";
 import { EventListener, Rol } from "./types";
 import Model from "../../Model";
+import MDL from "..";
 
 
 export default class RolesPermisos extends MDLAbstract<EventListener> {
@@ -80,6 +81,64 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
             "type": "getAllByUsuarios",
             "estado": "cargando",
             "keys": keys
+        })
+        return resp.data;
+    }
+    async getAllPage() {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "page",
+            "type": "getAll",
+            "estado": "cargando",
+            "key_usuario": ""
+        })
+        return resp.data;
+    }
+    async getAllPermiso() {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "permiso",
+            "type": "getAll",
+            "estado": "cargando",
+            "key_usuario": ""
+        })
+        return resp.data;
+    }
+    async getAllRolPermiso(key_rol: string) {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "rolPermiso",
+            "type": "getAll",
+            "estado": "cargando",
+            "key_usuario": "",
+            "key_rol": key_rol
+        })
+        return resp.data;
+    }
+    async editarRolPermiso(obj: any) {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "rolPermiso",
+            "type": "editar",
+            "estado": "cargando",
+            "data": obj,
+            "key_usuario": MDL.usuario.session?.key,
+        })
+        return resp.data;
+    }
+    async registrarRolPermiso(obj: any) {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "rolPermiso",
+            "type": "registro",
+            "estado": "cargando",
+            "data": obj,
+            "key_usuario": MDL.usuario.session?.key,
         })
         return resp.data;
     }

@@ -66,7 +66,9 @@ export default class MsgImg extends Component {
 
             }} onLayout={e => {
                 const { width, height } = e.nativeEvent.layout;
-                this.setState({ widthContainer: width, heightContainer: height });
+                console.log("Container - Ancho:", width);
+                console.log("Container - Alto:", height);
+                // this.setState({ widthContainer: width, heightContainer: height });
 
             }}>
                 <SImage src={`data:img/png;base64,${this.props.mensaje._data.body}`} style={{

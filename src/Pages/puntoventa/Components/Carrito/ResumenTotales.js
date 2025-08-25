@@ -38,7 +38,7 @@ export default class ResumenTotales extends Component {
                 col={"xs-12"}
                 border={STheme.color.card}
                 style={{ borderRadius: 8, padding: 8, backgroundColor: STheme.color.card }}
-                height={135}
+                height={100}
             >
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
                     <SText fontSize={13} color={STheme.color.text}>Subtotal:</SText>
@@ -69,16 +69,16 @@ export default class ResumenTotales extends Component {
                         Bs {SMath.formatMoney((subtotal - (totalDescuento || 0)), 2)}
                     </SText>
                 </SView>
-                <SView col={"xs-12"} style={{ borderColor: STheme.color.gray, borderBottomWidth: 2 }} />
-                <SHr height={8} />
-                <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}
+                {/* <SView col={"xs-12"} style={{ borderColor: STheme.color.gray, borderBottomWidth: 2 }} /> */}
+                {/* <SHr height={8} /> */}
+                {/* <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}
                     onPress={() => this.seleccionarSucursal()}
                 >
                     <SText fontSize={13} color={STheme.color.text}>Sucursal:</SText>
                     <SText fontSize={13} bold color={sucursal?.descripcion ? STheme.color.text : "red"}>
                         {sucursal?.descripcion || "No seleccionada"}
                     </SText>
-                </SView>
+                </SView> */}
             </SView>
         );
     }

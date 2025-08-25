@@ -16,6 +16,7 @@ export default new SModel<Action, Reducer>({
         "repleg_email": { type: "text", editable: true, label: "R.L. Email" },
         "repleg_telefono": { type: "text", editable: true, label: "R.L. Telefono" },
         "fecha_on": { type: "timestamp", label: "Fecha de registro" },
+        "ia_info": { type: "text", label: "IA Info", editable: true, },
         "estado": { type: "integer" },
         "key_servicio": { type: "text", fk: "servicio" },
         "key_usuario": { type: "text", fk: "usuario" },

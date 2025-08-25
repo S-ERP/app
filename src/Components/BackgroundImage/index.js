@@ -22,7 +22,8 @@ export default class BackgroundImage extends Component<type> {
             top: 0,
             left: 0,
             position: "absolute",
-            // opacity: 0.5,
+            opacity: STheme.color.backgroundOpacity || 1,
+            // opacity:STheme.color.background,
             ...this.props.style,
         }}>
             <SImage style={{

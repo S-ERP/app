@@ -48,7 +48,7 @@ export default class empresa extends MDLAbstract<EventListener> {
     SStorage.setItem("empresa_select", JSON.stringify(empresa));
     if (empresa.theme) {
       STheme.color = {
-        ...STheme.color,
+        ...STheme.defaultColors,
         ...empresa.theme,
       };
       // STheme.repaint();

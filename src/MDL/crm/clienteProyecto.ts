@@ -80,6 +80,18 @@ export default class clienteProyecto {
         });
         return resp.data;
     }
+    async editarCarritoV2(data: any[], key_cliente_proyecto: string) {
+        // data.key_empresa = Model.empresa.Action.getKey();
+        const resp: any = await SSocket.sendPromise({
+            service: "crm",
+            component: "cliente_proyecto",
+            type: "editarCarritoV2",
+            key_cliente_proyecto: key_cliente_proyecto,
+            data: data,
+            key_usuario: Model.usuario.Action.getKey(),
+        });
+        return resp.data;
+    }
     async eliminar(data: Proyecto) {
         data.key_empresa = Model.empresa.Action.getKey();
         const resp: any = await SSocket.sendPromise({

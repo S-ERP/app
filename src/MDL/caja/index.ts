@@ -98,4 +98,28 @@ export default class caja extends MDLAbstract<EventListener> {
     this.getActiva();
     return resp.data
   }
+
+
+  detalle_types = {
+    "apertura": {
+      "label": "Apertura",
+      "color": "#41C34A"
+    },
+    "ingreso": {
+      "label": "Ingreso",
+      "color": "#41C34A"
+    },
+    "egreso": {
+      "label": "Egreso",
+      "color": "#E74C3C"
+    },
+    "venta_rapida": {
+      "label": "Venta Rápida",
+      "color": "#41C34A"
+    },
+    "compra_rapida": {
+      "label": "Compra Rápida",
+      "color": "#9b59b6"
+    }
+  }
 }

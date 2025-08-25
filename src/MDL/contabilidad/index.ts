@@ -125,4 +125,24 @@ export default class contabilidad extends MDLAbstract<EventListener> {
     })
     return agrup
   }
+
+  async getCuentasByAjuste(key_ajuste: string, solo_hijas: boolean) {
+    const ajuste = await this.getAjuste(key_ajuste);
+    if (!ajuste) throw "Ajuste no encontrado";
+    if (!ajuste.ajuste_empresa) throw "El ajuste no se ha configurado.";
+    const cuentas = await this.getCuentas();
+    const cuentaSelect = cuentas[ajuste.ajuste_empresa.key_cuenta_contable];
+    console.log(ajuste, cuentaSelect);
+    let arr = Object.values(cuentas);
+    arr = arr.filter((cuenta: any) => cuenta.codigo.startsWith(cuentaSelect.codigo))
+    if (solo_hijas) {
+      arr = arr.filter((cuenta: any) => {
+        return arr.filter((hija: any) => hija.codigo.startsWith(cuenta.codigo + ".")).length <= 0;
+      })
+    }
+    return arr.sort((a: any, b: any) => {
+      return a.codigo.localeCompare(b.codigo);
+    });
+
+  }
 }

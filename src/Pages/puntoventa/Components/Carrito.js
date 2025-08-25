@@ -103,8 +103,8 @@ export default class Carrito extends Component {
         return (
             <>
                 {subtotal <= 0 ?
-                    <SView backgroundColor={STheme.color.background} flex center style={{
-                        borderRadius: 8, shadowColor: STheme.color.card, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1,
+                    <SView flex center style={{
+                        shadowColor: STheme.color.card, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1,
                         minHeight: 250
                     }}
                     >
@@ -115,7 +115,7 @@ export default class Carrito extends Component {
                         </SView>
                     </SView>
                     :
-                    <SView backgroundColor={STheme.color.background} flex style={{ borderRadius: 8, shadowColor: "#000", shadowOffset: { width: 0, }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }} >
+                    <SView flex style={{ borderRadius: 8, shadowColor: "#000", shadowOffset: { width: 0, }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }} >
                         <SView col={"xs-12"} row   >
                             <SView col={"xs-10 md-10"} row  >
                                 <SText fontSize={15} bold color={STheme.color.text}>Detalle venta</SText>
@@ -158,7 +158,7 @@ export default class Carrito extends Component {
                                 </SView>
                             </SView>
                             <SView col={"md-12 xl-6"} height={60} center border={"transparent"} >
-                                <SView col={"md-12  "} center    >
+                                <SView col={"md-12"} center    >
                                     <SInput label={"Con factura"} type='checkBox' defaultValue={this.conFactura}
                                         onChangeText={(text) => {
                                             this.conFactura = text;
@@ -168,7 +168,7 @@ export default class Carrito extends Component {
                                 </SView>
                             </SView>
                         </SView>
-                        <SHr height={4}  />
+                        <SHr height={4} />
 
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.danger} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-12"} center>

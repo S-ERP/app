@@ -6,6 +6,7 @@ import SIconApp from "../../Assets/SIconApp";
 import { Route } from "@react-navigation/native";
 import SSocket from "servisofts-socket";
 import CajaActiva from "./components/CajaActiva";
+import PopupEditarTema from "../../Pages/empresa/Components/PopupEditarTema";
 
 
 export default class Barra extends React.Component {
@@ -139,6 +140,9 @@ export default class Barra extends React.Component {
                     >
                         <Page label={"Icons"} url={"/icons"} />
                         <Page label={"Test"} url={"/test"} />
+                        <SText onPress={() => {
+                            PopupEditarTema.open()
+                        }}>{"Tema"}</SText>
                     </Page>
                     {/* <Page label={"Iconos"} url={"/icons"} /> */}
                     <SHr h={100} />
