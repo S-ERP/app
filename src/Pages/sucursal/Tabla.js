@@ -11,36 +11,38 @@ import FloatButtom from '../../Components/FloatButtom';
 import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
-import Perfil from './Perfil';
 import PopupCrearSucursal from '../empresa/config/Components/PopupCrearSucursal';
-// import MDL from '../../MDL';
-// import FloatButtom from '../../Components/FloatButtom';
-// import Perfil from './Perfil';
-// import FloatMenu from '../../Components/FloatMenu';
-// import SIconApp from '../../Assets/SIconApp';
-// import Config from '../../Config';
+
 
 export default class Tabla extends Component {
 
-
-    // onSelect = SNavigation.getParam("onSelect")
     constructor(props) {
         super(props);
-        this.state = {
-        };
-
+        this.state = {};
     }
 
-    mostrarPopup(aux_key: any, data: any) {
-        SPopup.open({
-            key: "popup_config_horario",
-            content: (
-                <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
-                    <SView col={"xs-12"} height={470} center >
-                        <Perfil key_sucursal={aux_key} data={data} onReload={() => { this.DinamicTable.loadData(); }} ></Perfil>
-                    </SView>
-                </SView>
-            )
+
+    componentDidMount() {
+        // navigator.geolocation.obtenerUbicacion(
+        //     pos => console.log("Lat:", pos.coords.latitude, "Lng:", pos.coords.longitude),
+        //     err => console.error(err)
+        // )
+    }
+
+
+    obtenerUbicacion = () => {
+        return new Promise((resolve, reject) => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => resolve({ lat: position.coords.latitude, lng: position.coords.longitude }),
+                    error => reject(error)
+                );
+
+                console.log("Lat:", pos.coords.latitude, "Lng:", pos.coords.longitude)
+
+            } else {
+                reject(new Error("Geolocalización no soportada"));
+            }
         });
     }
 
@@ -53,8 +55,6 @@ export default class Tabla extends Component {
             center
             language="es"
             selectType="single"
-
-
 
             onSelect={(e) => {
                 if (this.onSelect) {
@@ -70,13 +70,22 @@ export default class Tabla extends Component {
                         {
                             icon: <SIconApp name='Edit' />,
                             label: "Actualizar Sucursal",
-                            onPress: () => {
+                            onPress: async () => {
+
+                                let ubicacion = { lat: null, lng: null };
+                                try {
+                                    ubicacion = await this.obtenerUbicacion();
+                                } catch (error) {
+                                    console.warn("No se pudo obtener la ubicación:", error.message);
+                                }
+
+                                console.log("traifo " + JSON.stringify(ubicacion))
 
                                 const sucursal = {
                                     ...e.row,
                                     key_usuario: MDL.usuario.session?.key,
-                                    // lat: aqui como traigo la latitud de mi web,
-                                    // lng: aqui como traigo la longitud de mi web,
+                                    lat: ubicacion?.lat,
+                                    lng: ubicacion?.lng,
                                 }
 
                                 console.log("se esta editando sucursal " + JSON.stringify(sucursal))
@@ -129,26 +138,16 @@ export default class Tabla extends Component {
             }}
 
             loadData={async () => {
-
-
-                const proveedores = await MDL.empresa.getAllSucursales();
-                // proveedores={
-                //     ...proveedores,
-                //     key_usuario='1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b'
-                // }
-
-                // const proveedores = await MDL.compra_venta.proveedor.getAllProveedor();
-                const keysUsuarios = Object.values(proveedores).map(p => p.key_usuario).filter(Boolean);
-
+                const sucursales = await MDL.empresa.getAllSucursales();
+                const keysUsuarios = Object.values(sucursales).map(p => p.key_usuario).filter(Boolean);
                 // Obtener usuarios desde el backend
                 const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
-
                 // Adjuntar cada usuario a su proveedor correspondiente
-                Object.values(proveedores).forEach(proveedor => {
+                Object.values(sucursales).forEach(proveedor => {
                     proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario);
                 });
-                console.log("todoo el data " + JSON.stringify(proveedores))
-                return proveedores;
+                console.log("todoo el data " + JSON.stringify(sucursales))
+                return sucursales;
             }}
 
         >
@@ -167,7 +166,6 @@ export default class Tabla extends Component {
             <DinamicTable.Col key="lng" label="Lng" width={40} data={(e) => e.row?.lng} />
             <DinamicTable.Col key="codigo_facturacion" label="Código facturación" width={130} data={(e) => e.row?.codigo_facturacion} />
             {/* <DinamicTable.Col key="punto_venta" label="punto_venta" width={130} data={(e) => e.row?.punto_venta} /> */}
-            {/* <DinamicTable.Col key="punto_venta" label="punto_venta" width={130} data={(e) => e.row?.punto_venta} /> */}
             <DinamicTable.Col key="key_usuario" label="Usuario" width={80} data={(e) => e.row?.key_usuario} />
             <DinamicTable.Col key="key_empresa" label="Empresa" width={100} data={(e) => e.row?.key_empresa} />
         </DinamicTable>
@@ -180,8 +178,6 @@ export default class Tabla extends Component {
                 <SHr height={20} />
 
                 <FloatButtom onPress={() => {
-
-
                     PopupCrearSucursal.open({
                         key_empresa: MDL.empresa.select?.key,
                         onSuccess: (e) => {
