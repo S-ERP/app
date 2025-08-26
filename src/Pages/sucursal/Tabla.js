@@ -22,12 +22,7 @@ export default class Tabla extends Component {
     }
 
 
-    componentDidMount() {
-        // navigator.geolocation.obtenerUbicacion(
-        //     pos => console.log("Lat:", pos.coords.latitude, "Lng:", pos.coords.longitude),
-        //     err => console.error(err)
-        // )
-    }
+
 
 
     obtenerUbicacion = () => {
@@ -70,25 +65,20 @@ export default class Tabla extends Component {
                         {
                             icon: <SIconApp name='Edit' />,
                             label: "Actualizar Sucursal",
-                            onPress: async () => {
-
-                                let ubicacion = { lat: null, lng: null };
-                                try {
-                                    ubicacion = await this.obtenerUbicacion();
-                                } catch (error) {
-                                    console.warn("No se pudo obtener la ubicación:", error.message);
-                                }
-
-                                console.log("traifo " + JSON.stringify(ubicacion))
-
+                            onPress: () => {
+                                // let ubicacion = { lat: null, lng: null };
+                                // try {
+                                //     ubicacion = await this.obtenerUbicacion();
+                                // } catch (error) {
+                                //     console.warn("No se pudo obtener la ubicación:", error.message);
+                                // }
                                 const sucursal = {
                                     ...e.row,
                                     key_usuario: MDL.usuario.session?.key,
-                                    lat: ubicacion?.lat,
-                                    lng: ubicacion?.lng,
                                 }
 
                                 console.log("se esta editando sucursal " + JSON.stringify(sucursal))
+
                                 PopupCrearSucursal.open({
                                     editObject: sucursal,
                                     key_empresa: e.row.key_empresa,
@@ -100,34 +90,30 @@ export default class Tabla extends Component {
                         },
                         {
                             icon: <SIconApp name='Delete' />,
-                            label: "Eliminar Proveedor",
+                            label: "Eliminar Sucursal",
                             onPress: () => {
-                                // SPopup.confirm({
-                                //     title: "Eliminar Sucursal",
-                                //     message: "¿Estás seguro de eliminar esta sucursal?",
-                                //     onPress: () => {
+                                SPopup.confirm({
+                                    title: "Eliminar Sucursal",
+                                    message: "¿Estás seguro de eliminar esta sucursal?",
+                                    onPress: () => {
+                                        const sucursal_ = {
+                                            ...e.row,
+                                            estado: 0,
+                                        }
+                                        SSocket.sendPromise({
+                                            service: "empresa",
+                                            component: "sucursal",
+                                            type: "editar",
+                                            data: sucursal_,
+                                            key_usuario: MDL.usuario.session?.key,
+                                        }).then(e => {
+                                            this.DinamicTable.loadData();
+                                        }).catch(e => {
+                                            console.error("response", e);
+                                        })
 
-                                //            const sucursal = {
-                                //     ...e.row,
-                                //     key_usuario: "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
-                                //                                             data.estado = 0,
-
-                                // }
-                                //         SSocket.sendPromise({
-                                //             service: "empresa",
-                                //             component: "sucursal",
-                                //             type:   "editar"  ,
-                                //             key_usuario: MDL.usuario.login(),
-                                //             data: sucursal
-                                //         }).then(e => {
-                                //             if (this.props.onSuccess) this.props.onSuccess(e)
-                                //             console.log("response", e);
-                                //         }).catch(e => {
-                                //             console.error("response", e);
-                                //         })
-
-                                //     }
-                                // })
+                                    }
+                                })
 
                             }
                         }
@@ -136,6 +122,10 @@ export default class Tabla extends Component {
 
 
             }}
+
+            // loadInitialState={async () => {
+            //     return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
+            // }}
 
             loadData={async () => {
                 const sucursales = await MDL.empresa.getAllSucursales();
@@ -146,7 +136,7 @@ export default class Tabla extends Component {
                 Object.values(sucursales).forEach(proveedor => {
                     proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario);
                 });
-                console.log("todoo el data " + JSON.stringify(sucursales))
+                // console.log("todoo el data " + JSON.stringify(sucursales))
                 return sucursales;
             }}
 
@@ -157,7 +147,7 @@ export default class Tabla extends Component {
                     <SImage src={SSocket.api.empresa + "sucursal/" + e.row?.key} style={{ resizeMode: "cover" }} /> </SView>} />
             <DinamicTable.Col key="descripcion" label="Descripción" width={90} data={(e) => e.row?.descripcion} />
             <DinamicTable.Col key={"fecha_on"} label="F.Registro" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-            <DinamicTable.Col key="observacion" label="Observación" width={150} data={(e) => e.row?.observacion} />
+            <DinamicTable.Col key="observacion" label="Observación" width={120} data={(e) => e.row?.observacion} />
             <DinamicTable.Col key="telefono" label="Teléfono" width={150} data={(e) => e.row?.telefono} />
             <DinamicTable.Col key="direccion" label="Dirección" width={100} data={(e) => e.row?.direccion} />
             <DinamicTable.Col key="municipio" label="Municipio" width={100} data={(e) => e.row?.municipio} />
@@ -166,8 +156,30 @@ export default class Tabla extends Component {
             <DinamicTable.Col key="lng" label="Lng" width={40} data={(e) => e.row?.lng} />
             <DinamicTable.Col key="codigo_facturacion" label="Código facturación" width={130} data={(e) => e.row?.codigo_facturacion} />
             {/* <DinamicTable.Col key="punto_venta" label="punto_venta" width={130} data={(e) => e.row?.punto_venta} /> */}
-            <DinamicTable.Col key="key_usuario" label="Usuario" width={80} data={(e) => e.row?.key_usuario} />
-            <DinamicTable.Col key="key_empresa" label="Empresa" width={100} data={(e) => e.row?.key_empresa} />
+
+            <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
+                customComponent={e => <>
+                    {(e.row?.key_usuario) ?
+                        <SView col={"xs-12"} center row  >
+                            <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
+                            </SView>
+                            <SView width={5} />
+                            <SText color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
+                        </SView> : null}
+                </>}
+            />
+            <DinamicTable.Col key="empresa" label="CORP" width={50} data={(e) => e.row?.key_empresa ?? ""}
+                customComponent={e => <>
+                    {(e.row?.key_empresa) ?
+                        <SView col={"xs-12"} center row  >
+                            <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                <SImage src={`${SSocket.api.empresa}empresa/${e.row?.key_empresa}`} style={{ resizeMode: "cover" }} />
+                            </SView>
+                        </SView> : null}
+                </>}
+            />
+
         </DinamicTable>
     }
 
@@ -175,19 +187,13 @@ export default class Tabla extends Component {
         return (
             <SPage title="Gestión de Sucursales" disableScroll>
                 {this.mostrarTabla()}
-                <SHr height={20} />
-
                 <FloatButtom onPress={() => {
                     PopupCrearSucursal.open({
                         key_empresa: MDL.empresa.select?.key,
                         onSuccess: (e) => {
                             this.DinamicTable.loadData();
-
                         }
                     })
-
-
-
                 }} />
             </SPage>
         );

@@ -76,6 +76,7 @@ export default class PopupCrearSucursal extends Component<Props> {
                             key_usuario: Model.usuario.Action.getKey(),
                             data: {
                                 key_empresa: this.props.key_empresa,
+                                key_usuario: Model.usuario.Action.getKey(),
                                 ...(this.props.editObject ?? {}),
                                 ...data,
                             }
