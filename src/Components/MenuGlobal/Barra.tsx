@@ -7,6 +7,7 @@ import { Route } from "@react-navigation/native";
 import SSocket from "servisofts-socket";
 import CajaActiva from "./components/CajaActiva";
 import PopupEditarTema from "../../Pages/empresa/Components/PopupEditarTema";
+import BackgroundImage from "../BackgroundImage";
 
 
 export default class Barra extends React.Component {
@@ -53,6 +54,7 @@ export default class Barra extends React.Component {
             borderRightWidth: 1,
             borderColor: STheme.color.card
         }}>
+            <BackgroundImage/>
             <SView width={this.state.closeWidth} height={this.state.closeWidth} onPress={() => {
                 this.changeStatus()
             }} padding={4}>

@@ -57,7 +57,7 @@ export default class cuentas extends React.Component {
                     arr.map((cuenta) => {
                         cuenta.ajustes = ajustes.filter((ajuste) => ajuste?.ajuste_empresa?.key_cuenta_contable == cuenta.key);
                     })
-                    return arr;
+                    // return arr;
                     return arr.filter(e => {
                         if (!e.codigo) return false;
                         if (this.eq === "Hasta") {
