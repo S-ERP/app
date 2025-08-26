@@ -3,23 +3,14 @@ import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup,
 import * as XLSX from "xlsx";
 import SSocket from 'servisofts-socket';
 import { DinamicTable } from 'servisofts-table';
-import SCharts from 'servisofts-charts';
-import Usuarios from 'servisofts-component/img/Usuarios';
-import { version } from 'process';
 import MDL from '../../../MDL';
 import FloatButtom from '../../../Components/FloatButtom';
 import FloatMenu from '../../../Components/FloatMenu';
 import SIconApp from '../../../Assets/SIconApp';
 import Config from '../../../Config';
-// import MDL from '../../MDL';
-// import FloatButtom from '../../Components/FloatButtom';
-// import FloatMenu from '../../Components/FloatMenu';
-// import SIconApp from '../../Assets/SIconApp';
-// import Config from '../../Config';
-// import PopupCrearSucursal from '../empresa/config/Components/PopupCrearSucursal';
 
 
-export default class tablaaaa extends Component {
+export default class tabla extends Component {
 
     constructor(props) {
         super(props);
@@ -27,24 +18,19 @@ export default class tablaaaa extends Component {
     }
 
 
+    // modelos = null;
 
-
-
-    obtenerUbicacion = () => {
-        return new Promise((resolve, reject) => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    position => resolve({ lat: position.coords.latitude, lng: position.coords.longitude }),
-                    error => reject(error)
-                );
-
-                console.log("Lat:", pos.coords.latitude, "Lng:", pos.coords.longitude)
-
-            } else {
-                reject(new Error("Geolocalización no soportada"));
-            }
-        });
+    async loadDatasd() {
+        if (this.key_conteoxxx) {
+            const modelosByContador = await MDL.inventario.getAll_reporte_conteo_inventario_detallado();
+            this.modelos = modelosByContador;
+        } else {
+            const modelos = await MDL.inventario.getAllModeloStock(this.key_almacen);
+            this.modelos = modelos;
+        }
+        return this.modelos;
     }
+
 
 
     mostrarTabla() {
@@ -128,39 +114,69 @@ export default class tablaaaa extends Component {
 
             }}
 
-            // loadInitialState={async () => {
-            //     return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
-            // }}
+            loadInitialState={async () => {
+                return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
+            }}
 
             loadData={async () => {
-                const sucursales = await MDL.empresa.getAllSucursales();
-                const keysUsuarios = Object.values(sucursales).map(p => p.key_usuario).filter(Boolean);
-                // Obtener usuarios desde el backend
+
+                const inventario = await MDL.inventario.getAllAlmacen();
+
+                
+                
+                const keysUsuarios = Object.values(inventario).map(p => p.key_usuario).filter(Boolean);
                 const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
-                // Adjuntar cada usuario a su proveedor correspondiente
-                Object.values(sucursales).forEach(proveedor => {
-                    proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario);
+                const sucursales = await MDL.empresa.getAllSucursales();
+                const empresa = MDL.empresa.select?.razon_social;
+                
+
+                Object.values(inventario).forEach(itm => {
+                    itm.usuario = usuarios.find(u => u.key === itm.key_usuario);
+                    itm.sucursal = sucursales.find(u => u.key === itm.key_sucursal);
+                    itm.razon_social = empresa
                 });
-                // console.log("todoo el data " + JSON.stringify(sucursales))
-                return sucursales;
+
+                // Object.values(inventario).forEach(itm => {
+                //     itm.sucursal = sucursales.find(u => u.key === itm.key_sucursal);
+                //     itm.razon_social = empresa
+                // });
+
+
+                console.log("todoo el data " + JSON.stringify(inventario))
+                return inventario;
             }}
 
         >
+
+
+
+
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
-            <DinamicTable.Col key={"foto"} label='Foto' data={(e) => e.row?.key} width={45}
-                customComponent={e => <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                    <SImage src={SSocket.api.empresa + "sucursal/" + e.row?.key} style={{ resizeMode: "cover" }} /> </SView>} />
-            <DinamicTable.Col key="descripcion" label="Descripción" width={90} data={(e) => e.row?.descripcion} />
-            <DinamicTable.Col key={"fecha_on"} label="F.Registro" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
+
+            <DinamicTable.Col key="sucursal" label="Sucursal" width={120} data={(e) => e.row?.key_sucursal ?? ""}
+                customComponent={e => <>
+                    {(e.row?.key_sucursal) ?
+                        <SView col={"xs-12"} center row  >
+                            <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key_sucursal}`} style={{ resizeMode: "cover" }} />
+                            </SView>
+                            <SView width={5} />
+                            <SText color={STheme.color.text}>{e.row?.sucursal?.descripcion}</SText>
+                        </SView> : null}
+                </>}
+            />
+
+            <DinamicTable.Col key="descripcion" label="Almacen" width={90} data={(e) => e.row?.descripcion} />
             <DinamicTable.Col key="observacion" label="Observación" width={120} data={(e) => e.row?.observacion} />
-            <DinamicTable.Col key="telefono" label="Teléfono" width={150} data={(e) => e.row?.telefono} />
-            <DinamicTable.Col key="direccion" label="Dirección" width={100} data={(e) => e.row?.direccion} />
-            <DinamicTable.Col key="municipio" label="Municipio" width={100} data={(e) => e.row?.municipio} />
-            <DinamicTable.Col key="correo" label="Correo" width={100} data={(e) => e.row?.correo} />
-            <DinamicTable.Col key="lat" label="Lat" width={40} data={(e) => e.row?.lat} />
-            <DinamicTable.Col key="lng" label="Lng" width={40} data={(e) => e.row?.lng} />
-            <DinamicTable.Col key="codigo_facturacion" label="Código facturación" width={130} data={(e) => e.row?.codigo_facturacion} />
-            {/* <DinamicTable.Col key="punto_venta" label="punto_venta" width={130} data={(e) => e.row?.punto_venta} /> */}
+            <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
+
+            <DinamicTable.Col key="is_venta" label="Venta" width={150} data={(e) => { e.row.is_venta }} />
+            {/* <DinamicTable.Col key="is_venta" label="Venta" width={150} data={(e) => { (e.row?.is_venta == true ? "si" : "no") }} /> */}
+            <DinamicTable.Col key="is_entrega" label="Entrega" width={150} data={(e) => { e.row?.is_entrega == true ? "si" : "no" }} />
+            <DinamicTable.Col key="is_stock" label="Stock" width={150} data={(e) => { e.row?.is_stock == true ? "si" : "no" }} />
+
+            <DinamicTable.Col key="estado" label="estado" width={150} data={(e) => { e.row?.estado }} />
+
 
             <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                 customComponent={e => <>
@@ -174,13 +190,15 @@ export default class tablaaaa extends Component {
                         </SView> : null}
                 </>}
             />
-            <DinamicTable.Col key="empresa" label="CORP" width={50} data={(e) => e.row?.key_empresa ?? ""}
+            <DinamicTable.Col key="empresa" label="CORP" width={150} data={(e) => e.row?.key_empresa ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_empresa) ?
                         <SView col={"xs-12"} center row  >
                             <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                                 <SImage src={`${SSocket.api.empresa}empresa/${e.row?.key_empresa}`} style={{ resizeMode: "cover" }} />
                             </SView>
+                            <SView width={5} />
+                            <SText color={STheme.color.text}>{e.row?.razon_social}</SText>
                         </SView> : null}
                 </>}
             />
