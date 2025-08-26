@@ -22,12 +22,7 @@ export default class Tabla extends Component {
     }
 
 
-    componentDidMount() {
-        // navigator.geolocation.obtenerUbicacion(
-        //     pos => console.log("Lat:", pos.coords.latitude, "Lng:", pos.coords.longitude),
-        //     err => console.error(err)
-        // )
-    }
+
 
 
     obtenerUbicacion = () => {
@@ -71,16 +66,12 @@ export default class Tabla extends Component {
                             icon: <SIconApp name='Edit' />,
                             label: "Actualizar Sucursal",
                             onPress: async () => {
-
                                 let ubicacion = { lat: null, lng: null };
                                 try {
                                     ubicacion = await this.obtenerUbicacion();
                                 } catch (error) {
                                     console.warn("No se pudo obtener la ubicación:", error.message);
                                 }
-
-                                console.log("traifo " + JSON.stringify(ubicacion))
-
                                 const sucursal = {
                                     ...e.row,
                                     key_usuario: MDL.usuario.session?.key,
@@ -100,34 +91,33 @@ export default class Tabla extends Component {
                         },
                         {
                             icon: <SIconApp name='Delete' />,
-                            label: "Eliminar Proveedor",
+                            label: "Eliminar Sucursal",
                             onPress: () => {
-                                // SPopup.confirm({
-                                //     title: "Eliminar Sucursal",
-                                //     message: "¿Estás seguro de eliminar esta sucursal?",
-                                //     onPress: () => {
+                                SPopup.confirm({
+                                    title: "Eliminar Sucursal",
+                                    message: "¿Estás seguro de eliminar esta sucursal?",
+                                    onPress: () => {
 
-                                //            const sucursal = {
-                                //     ...e.row,
-                                //     key_usuario: "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
-                                //                                             data.estado = 0,
+                                        const sucursal_ = {
+                                            ...e.row,
+                                            estado: 0,
+                                        }
+                                        SSocket.sendPromise({
+                                            service: "empresa",
+                                            component: "sucursal",
+                                            type: "editar",
+                                            data: sucursal_,
+                                            key_usuario: MDL.usuario.session?.key,
+                                        }).then(e => {
+                                            this.DinamicTable.loadData();
+                                            // if (this.props.onSuccess) this.props.onSuccess(e)
+                                            // console.log("response", e);
+                                        }).catch(e => {
+                                            console.error("response", e);
+                                        })
 
-                                // }
-                                //         SSocket.sendPromise({
-                                //             service: "empresa",
-                                //             component: "sucursal",
-                                //             type:   "editar"  ,
-                                //             key_usuario: MDL.usuario.login(),
-                                //             data: sucursal
-                                //         }).then(e => {
-                                //             if (this.props.onSuccess) this.props.onSuccess(e)
-                                //             console.log("response", e);
-                                //         }).catch(e => {
-                                //             console.error("response", e);
-                                //         })
-
-                                //     }
-                                // })
+                                    }
+                                })
 
                             }
                         }
@@ -185,9 +175,6 @@ export default class Tabla extends Component {
 
                         }
                     })
-
-
-
                 }} />
             </SPage>
         );
