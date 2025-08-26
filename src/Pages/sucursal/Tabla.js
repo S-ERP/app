@@ -97,7 +97,6 @@ export default class Tabla extends Component {
                                     title: "Eliminar Sucursal",
                                     message: "¿Estás seguro de eliminar esta sucursal?",
                                     onPress: () => {
-
                                         const sucursal_ = {
                                             ...e.row,
                                             estado: 0,
@@ -110,8 +109,6 @@ export default class Tabla extends Component {
                                             key_usuario: MDL.usuario.session?.key,
                                         }).then(e => {
                                             this.DinamicTable.loadData();
-                                            // if (this.props.onSuccess) this.props.onSuccess(e)
-                                            // console.log("response", e);
                                         }).catch(e => {
                                             console.error("response", e);
                                         })
@@ -147,7 +144,7 @@ export default class Tabla extends Component {
                     <SImage src={SSocket.api.empresa + "sucursal/" + e.row?.key} style={{ resizeMode: "cover" }} /> </SView>} />
             <DinamicTable.Col key="descripcion" label="Descripción" width={90} data={(e) => e.row?.descripcion} />
             <DinamicTable.Col key={"fecha_on"} label="F.Registro" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-            <DinamicTable.Col key="observacion" label="Observación" width={150} data={(e) => e.row?.observacion} />
+            <DinamicTable.Col key="observacion" label="Observación" width={120} data={(e) => e.row?.observacion} />
             <DinamicTable.Col key="telefono" label="Teléfono" width={150} data={(e) => e.row?.telefono} />
             <DinamicTable.Col key="direccion" label="Dirección" width={100} data={(e) => e.row?.direccion} />
             <DinamicTable.Col key="municipio" label="Municipio" width={100} data={(e) => e.row?.municipio} />
@@ -156,8 +153,30 @@ export default class Tabla extends Component {
             <DinamicTable.Col key="lng" label="Lng" width={40} data={(e) => e.row?.lng} />
             <DinamicTable.Col key="codigo_facturacion" label="Código facturación" width={130} data={(e) => e.row?.codigo_facturacion} />
             {/* <DinamicTable.Col key="punto_venta" label="punto_venta" width={130} data={(e) => e.row?.punto_venta} /> */}
-            <DinamicTable.Col key="key_usuario" label="Usuario" width={80} data={(e) => e.row?.key_usuario} />
-            <DinamicTable.Col key="key_empresa" label="Empresa" width={100} data={(e) => e.row?.key_empresa} />
+
+            <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
+                customComponent={e => <>
+                    {(e.row?.key_usuario) ?
+                        <SView col={"xs-12"} center row  >
+                            <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
+                            </SView>
+                            <SView width={5} />
+                            <SText color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
+                        </SView> : null}
+                </>}
+            />
+            <DinamicTable.Col key="empresa" label="CORP" width={50} data={(e) => e.row?.key_empresa ?? ""}
+                customComponent={e => <>
+                    {(e.row?.key_empresa) ?
+                        <SView col={"xs-12"} center row  >
+                            <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                <SImage src={`${SSocket.api.empresa}empresa/${e.row?.key_empresa}`} style={{ resizeMode: "cover" }} />
+                            </SView>
+                        </SView> : null}
+                </>}
+            />
+
         </DinamicTable>
     }
 
