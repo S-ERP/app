@@ -52,7 +52,7 @@ export default class permiso extends React.Component {
                     </SView>
                 }} />,
             ...this.comuns.map(com => {
-                return <DinamicTable.Col key={com} label={com} width={120}
+                return <DinamicTable.Col key={com} label={com} width={100}
                     data={e => e.row.permisos.find(permiso => permiso.type == com)?.descripcion}
                     customComponent={e => {
                         if (!e.data) return;

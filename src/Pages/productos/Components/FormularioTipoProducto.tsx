@@ -21,6 +21,10 @@ const cuentaToText = (c: any) => {
     if (!c) return "";
     return `${c.codigo} - ${c.descripcion}`
 }
+const findCuentaText = (arr: any[], text: string) => {
+    const cuenta = arr.find(c => cuentaToText(c) === text);
+    return cuenta ? cuenta : null;
+}
 export default class FormularioTipoProducto extends Component<Props> {
 
     static open(props: Props) {
@@ -50,11 +54,17 @@ export default class FormularioTipoProducto extends Component<Props> {
         })
     }
 
-    state = {
+    state:any = {
     }
     componentDidMount(): void {
 
         MDL.contabilidad.getCuentas().then(cuentas => {
+            const arrCuentas = Object.values(cuentas)
+            arrCuentas.map((cuenta: any) => {
+                const hijas = arrCuentas.filter((c: any) => c.codigo.startsWith(cuenta.codigo) && c.codigo != cuenta.codigo);
+                cuenta.cantidad_hijas = hijas.length
+
+            })
             this.setState({ cuentas: Object.values(cuentas).sort((a: any, b: any) => (a.codigo > b.codigo) ? 1 : -1) });
         }).catch(e => {
             console.error(e);
@@ -112,42 +122,56 @@ export default class FormularioTipoProducto extends Component<Props> {
                         defaultValue: this.props.editObject?.tipo ?? "inventario",
                         options: ["inventario", "activo_fijo", "gasto", "servicio"]
                     },
-                    "key_cuenta_contable": {
-                        col: "xs-5.8",
-                        type: "select2",
-                        label: "Cuenta Contable",
-                        style: { paddingStart: 0, fontSize: 10 },
-                        labelStyle: { top: -10, },
-                        inputStyle: { paddingStart: 8, fontSize: 10 },
-                        defaultValue: cuentaToText(this.state.cuentas.find(c => c.key == this.props.editObject?.key_cuenta_contable)),
-                        options: this.state.cuentas.filter(c => c.tipo == "ACTIVO").map(cuentaToText)
-                    },
+
                     "key_cuenta_contable_ganancia": {
-                        col: "xs-5.8",
+                        col: "xs-12",
                         type: "select2",
 
-                        label: "Cuenta Contable Ganancia",
+                        label: "Cuenta de Ganancia",
                         style: { paddingStart: 0, fontSize: 10 },
                         labelStyle: { top: -10, },
+                        selectStyle: {
+                            fontSize: 10,
+                        },
                         inputStyle: { paddingStart: 8, fontSize: 10 },
                         defaultValue: cuentaToText(this.state.cuentas.find(c => c.key == this.props.editObject?.key_cuenta_contable_ganancia)),
-                        options: this.state.cuentas.filter(c => c.tipo == "INGRESO").map(cuentaToText)
+                        options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0 && c.tipo == "INGRESO").map(cuentaToText),
+
                     },
                     "key_cuenta_contable_costo": {
-                        col: "xs-5.8",
+                        col: "xs-12",
                         type: "select2",
-                        label: "Cuenta Contable Costo",
-                        style: { paddingStart: 0 , fontSize: 10 },
+                        label: "Cuenta de Costo",
+                        style: { paddingStart: 0, fontSize: 10 },
                         labelStyle: { top: -10, },
+                        selectStyle: {
+                            fontSize: 10,
+                        },
                         inputStyle: { paddingStart: 8, fontSize: 10 },
                         defaultValue: cuentaToText(this.state.cuentas.find(c => c.key == this.props.editObject?.key_cuenta_contable_costo)),
-                        options: this.state.cuentas.filter(c => c.tipo == "GASTO").map(cuentaToText)
+                        options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0 && c.tipo == "GASTO").map(cuentaToText)
                     },
+                    "key_cuenta_contable": {
+                        col: "xs-12",
+                        type: "select2",
+                        label: "Cuenta de inventario",
+                        style: { paddingStart: 0, fontSize: 10 },
+                        labelStyle: { top: -10, },
+                        inputStyle: { paddingStart: 8, fontSize: 10 },
+                        selectStyle: {
+                            fontSize: 10,
+                        },
+                        defaultValue: cuentaToText(this.state.cuentas.find(c => c.key == this.props.editObject?.key_cuenta_contable)),
+                        options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0 && c.tipo == "ACTIVO").map(cuentaToText),
 
+                    },
 
                 }}
                 onSubmit={(data: any) => {
-
+                    const cuentaGanancia = findCuentaText(this.state.cuentas, data.key_cuenta_contable_ganancia);
+                    const cuentaCosto = findCuentaText(this.state.cuentas, data.key_cuenta_contable_costo);
+                    const cuentaInventario = findCuentaText(this.state.cuentas, data.key_cuenta_contable);
+                    console.log(data, cuentaGanancia, cuentaCosto, cuentaInventario);
                 }}
 
             />

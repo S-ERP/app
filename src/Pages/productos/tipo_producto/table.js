@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SPage, SText, STheme, SView } from 'servisofts-component';
+import { SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../../Config';
 import MDL from '../../../MDL';
 import FloatMenu from '../../../Components/FloatMenu';
 import SIconApp from '../../../Assets/SIconApp';
 import FormularioTipoProducto from '../Components/FormularioTipoProducto';
+import FloatButtom from '../../../Components/FloatButtom';
 
 export default class table extends Component {
 
@@ -114,6 +115,17 @@ export default class table extends Component {
                     }}
                     data={e => e.row.cuenta_contable_costo ? `${e.row.cuenta_contable_costo.codigo} ${e.row.cuenta_contable_costo.descripcion}` : ""} />
             </DinamicTable>
+            <FloatButtom onPress={() => {
+                FormularioTipoProducto.open({
+                    onSuccess: () => {
+                        if (this.table) {
+                            this.table.loadData();
+                            this.state.time = new Date().getTime();
+                        }
+                    }
+
+                })
+            }} />
         </SPage>
     }
 }
