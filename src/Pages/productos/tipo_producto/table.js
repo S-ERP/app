@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../../Config';
 import MDL from '../../../MDL';
@@ -25,6 +25,7 @@ export default class table extends Component {
     render() {
         return <SPage title={"Tipos de productos"} disableScroll>
             <DinamicTable
+                ref={ref => this.table = ref}
                 {...Config.table.applyTheme()}
                 loadData={this.loadData.bind(this)}
                 selectType='single'
@@ -54,20 +55,21 @@ export default class table extends Component {
                                 label: "Eliminar",
                                 icon: <SIconApp name='Delete' />,
                                 onPress: () => {
-                                    // SPopup.confirm({
-                                    //     title: "Eliminar Modelo",
-                                    //     message: "¿Está seguro de eliminar el modelo " + e.row.descripcion + "?",
-                                    //     onPress: () => {
-                                    //         MDL.inventario.saveModelo({
-                                    //             key: e.row.key,
-                                    //             estado: 0,
-                                    //         }).then(() => {
-                                    //             if (this.table) {
-                                    //                 this.table.loadData();
-                                    //             }
-                                    //         });
-                                    //     }
-                                    // });
+
+                                    SPopup.confirm({
+                                        title: "Eliminar Tipo de producto",
+                                        message: "¿Está seguro de eliminar el tipo de producto " + e.row.descripcion + "?",
+                                        onPress: () => {
+                                            MDL.inventario.saveTipoProducto({
+                                                key: e.row.key,
+                                                estado: 0,
+                                            }).then(() => {
+                                                if (this.table) {
+                                                    this.table.loadData();
+                                                }
+                                            });
+                                        }
+                                    });
                                 }
                             },
                         ]

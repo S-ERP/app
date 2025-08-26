@@ -54,7 +54,7 @@ export default class FormularioTipoProducto extends Component<Props> {
         })
     }
 
-    state:any = {
+    state: any = {
     }
     componentDidMount(): void {
 
@@ -98,7 +98,7 @@ export default class FormularioTipoProducto extends Component<Props> {
                         icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
                             {/* <SInput ref={ref => this._ref.image_modelo = ref} type='image' height={50} defaultValue={(SSocket.api as any).inventario + "modelo/" + this.props.editObject?.key}/> */}
                             <InputFoto
-                                ref={ref => this._ref.image_modelo = ref}
+                                ref={ref => this._ref.image_perfil = ref}
                                 src={(SSocket.api as any).inventario + "tipo_producto/.128_" + this.props.editObject?.key}
                                 style={{
                                     width: 50,
@@ -172,6 +172,28 @@ export default class FormularioTipoProducto extends Component<Props> {
                     const cuentaCosto = findCuentaText(this.state.cuentas, data.key_cuenta_contable_costo);
                     const cuentaInventario = findCuentaText(this.state.cuentas, data.key_cuenta_contable);
                     console.log(data, cuentaGanancia, cuentaCosto, cuentaInventario);
+                    const final_data = {
+                        ...(this.props.editObject ?? {
+                            key_empresa: MDL.empresa.select?.key
+                        }),
+                        descripcion: data.descripcion,
+                        tipo: data.tipo,
+                        key_cuenta_contable_ganancia: cuentaGanancia?.key,
+                        key_cuenta_contable_costo: cuentaCosto?.key,
+                        key_cuenta_contable: cuentaInventario?.key,
+                    }
+                    MDL.inventario.saveTipoProducto(final_data).then((resp: any) => {
+                        if (this._ref.image_perfil) {
+                            const value = this._ref.image_perfil.getValue();
+                            if (Array.isArray(value)) {
+                                Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).inventario + "upload/tipo_producto/" + resp.key)
+                            }
+                        }
+
+                        if (this.props.onSuccess) this.props.onSuccess(resp);
+                    }).catch(e => {
+
+                    })
                 }}
 
             />
