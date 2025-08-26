@@ -32,13 +32,20 @@ export default class tabla extends Component {
     }
 
 
+    verificar(estado) {
+
+        return <SView col={"xs-12"} center row  >
+            {estado ? <SIconApp name='Check' fill='green' height={20} /> : <SIconApp name='Cerrar' fill='red' height={14} />}
+        </SView>;
+    }
+
 
     mostrarTabla() {
         return <DinamicTable
             key="tabla"
             {...Config.table.applyTheme()}
             ref={ref => this.DinamicTable = ref}
-            center
+            // center
             language="es"
             selectType="single"
 
@@ -119,31 +126,24 @@ export default class tabla extends Component {
             }}
 
             loadData={async () => {
+                const api = await MDL.inventario.getAllAlmacen();
 
-                const inventario = await MDL.inventario.getAllAlmacen();
-
-                
-                
-                const keysUsuarios = Object.values(inventario).map(p => p.key_usuario).filter(Boolean);
+                const keysUsuarios = Object.values(api).map(p => p.key_usuario).filter(Boolean);
                 const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
                 const sucursales = await MDL.empresa.getAllSucursales();
                 const empresa = MDL.empresa.select?.razon_social;
-                
 
-                Object.values(inventario).forEach(itm => {
+                Object.values(api).forEach(itm => {
                     itm.usuario = usuarios.find(u => u.key === itm.key_usuario);
                     itm.sucursal = sucursales.find(u => u.key === itm.key_sucursal);
                     itm.razon_social = empresa
                 });
 
-                // Object.values(inventario).forEach(itm => {
-                //     itm.sucursal = sucursales.find(u => u.key === itm.key_sucursal);
-                //     itm.razon_social = empresa
-                // });
 
 
-                console.log("todoo el data " + JSON.stringify(inventario))
-                return inventario;
+
+                console.log("todoo el data " + JSON.stringify(api))
+                return api;
             }}
 
         >
@@ -170,12 +170,13 @@ export default class tabla extends Component {
             <DinamicTable.Col key="observacion" label="Observación" width={120} data={(e) => e.row?.observacion} />
             <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
 
-            <DinamicTable.Col key="is_venta" label="Venta" width={150} data={(e) => { e.row.is_venta }} />
-            {/* <DinamicTable.Col key="is_venta" label="Venta" width={150} data={(e) => { (e.row?.is_venta == true ? "si" : "no") }} /> */}
-            <DinamicTable.Col key="is_entrega" label="Entrega" width={150} data={(e) => { e.row?.is_entrega == true ? "si" : "no" }} />
-            <DinamicTable.Col key="is_stock" label="Stock" width={150} data={(e) => { e.row?.is_stock == true ? "si" : "no" }} />
 
-            <DinamicTable.Col key="estado" label="estado" width={150} data={(e) => { e.row?.estado }} />
+            <DinamicTable.Col key={"is_venta"} label='Almacen para ventas?' width={120} data={(e) => e.row.is_venta} customComponent={e => this.verificar(e.row?.is_venta)} />
+            <DinamicTable.Col key={"is_entrega"} label='Requiere entrega?' width={120} data={(e) => e.row.is_entrega} customComponent={e => this.verificar(e.row?.is_entrega)} />
+            <DinamicTable.Col key={"is_stock"} label='Almacen con stock?' width={120} data={(e) => e.row.is_stock} customComponent={e => this.verificar(e.row?.is_stock)} />
+
+
+            {/* <DinamicTable.Col key={"estado"} label='Estado' width={120} data={(e) => e.row.estado} customComponent={e => this.verificar(e.row?.estado)} /> */}
 
 
             <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
@@ -190,7 +191,7 @@ export default class tabla extends Component {
                         </SView> : null}
                 </>}
             />
-            <DinamicTable.Col key="empresa" label="CORP" width={150} data={(e) => e.row?.key_empresa ?? ""}
+            <DinamicTable.Col key="empresa" label="Empresa" width={150} data={(e) => e.row?.key_empresa ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_empresa) ?
                         <SView col={"xs-12"} center row  >
