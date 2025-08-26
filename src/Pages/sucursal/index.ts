@@ -7,7 +7,7 @@ import profile from "./profile/index";
 import edit from "./edit";
 import _delete from "./delete";
 import paso1 from "./paso1";
-import Tabla from "./Tabla";
+import tabla from "./tabladddd";
 const model = Model.sucursal;
 
 export const Parent = {
@@ -16,15 +16,14 @@ export const Parent = {
     model
 }
 export default SPage.combinePages(Parent.name, {
-    "": Tabla,
+    "": tabla,
     "list": list,
     // "table": table,
-    "table": Tabla,
+    "table": tabla,
     "new": _new,
     ...profile,
     "edit": edit,
     "delete": _delete,
     "paso1": paso1,
-    // "tabla": Tabla,
-
+ 
 })

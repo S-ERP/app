@@ -195,7 +195,7 @@ export default class tabla extends Component {
                         </SView> : null}
                 </>}
             />
-            <DinamicTable.Col key="empresa" label="Empresa" width={150} data={(e) => e.row?.key_empresa ?? ""}
+            <DinamicTable.Col key="empresa" label="Empresa" width={180} data={(e) => e.row?.key_empresa ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_empresa) ?
                         <SView col={"xs-12"} row  >
@@ -206,7 +206,7 @@ export default class tabla extends Component {
                                 </SView>
                             </SView>
                             <SView width={5} />
-                            <SText center color={STheme.color.text}style={{fontSize:15, textTransform:"lowercase"}} >{e.row?.razon_social}</SText>
+                            <SText center color={STheme.color.text}style={{fontSize:15, textTransform:"capitalize"}} >{e.row?.razon_social}</SText>
                         </SView> : null}
                 </>}
             />
