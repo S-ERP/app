@@ -11,6 +11,7 @@ import FloatButtom from '../../Components/FloatButtom';
 import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
+import Perfil from './Perfil';
 // import MDL from '../../MDL';
 // import FloatButtom from '../../Components/FloatButtom';
 // import Perfil from './Perfil';
@@ -35,7 +36,7 @@ export default class Tabla extends Component {
             content: (
                 <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
                     <SView col={"xs-12"} height={470} center >
-                        {/* <Perfil key_proveedor={aux_key} data={data} onReload={() => { this.DinamicTable.loadData(); }} ></Perfil> */}
+                        <Perfil key_sucursal={aux_key} data={data} onReload={() => { this.DinamicTable.loadData(); }} ></Perfil>
                     </SView>
                 </SView>
             )
@@ -53,8 +54,6 @@ export default class Tabla extends Component {
             selectType="single"
 
 
-            ref={ref => this.DinamicTable = ref}
-
 
             onSelect={(e) => {
                 if (this.onSelect) {
@@ -71,12 +70,12 @@ export default class Tabla extends Component {
                             icon: <SIconApp name='Edit' />,
                             label: "Actualizar Sucursal",
                             onPress: () => {
-                                
-                                SNavigation.navigate("/sucursal/profile",{pk:e.row?.key})
+
+                                SNavigation.navigate("/sucursal/profile", { pk: e.row?.key })
                             }
                         },
-
-
+                        // http://localhost:3010/sucursal/profile?pk=83b86c27-e05c-4de8-bbbe-7b3ec842a20d
+                        // http://localhost:3010/sucursal/profile?pk=83b86c27-e05c-4de8-bbbe-7b3ec842a20d
                         {
                             icon: <SIconApp name='Delete' />,
                             label: "Eliminar Proveedor",
@@ -131,20 +130,20 @@ export default class Tabla extends Component {
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
             <DinamicTable.Col key={"foto"} label='Foto' data={(e) => e.row?.key} width={45}
                 customComponent={e => <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                    <SImage src={SSocket.api.empresa + "sucu/" + e.row?.key} style={{ resizeMode: "cover" }} /> </SView>} />
+                    <SImage src={SSocket.api.empresa + "sucursal/" + e.row?.key} style={{ resizeMode: "cover" }} /> </SView>} />
             <DinamicTable.Col key="descripcion" label="Descripción" width={90} data={(e) => e.row?.descripcion} />
             <DinamicTable.Col key={"fecha_on"} label="F.Registro" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
             <DinamicTable.Col key="observacion" label="Observación" width={150} data={(e) => e.row?.observacion} />
-            <DinamicTable.Col key="telefono" label="Teléfono" width={70} data={(e) => e.row?.telefono} />
-            <DinamicTable.Col key="direccion" label="Dirección" width={70} data={(e) => e.row?.direccion} />
-            <DinamicTable.Col key="municipio" label="Municipio" width={70} data={(e) => e.row?.municipio} />
-            <DinamicTable.Col key="correo" label="Correo" width={70} data={(e) => e.row?.correo} />
-            <DinamicTable.Col key="lat" label="Lat" width={70} data={(e) => e.row?.lat} />
-            <DinamicTable.Col key="lng" label="Lng" width={70} data={(e) => e.row?.lng} />
+            <DinamicTable.Col key="telefono" label="Teléfono" width={150} data={(e) => e.row?.telefono} />
+            <DinamicTable.Col key="direccion" label="Dirección" width={100} data={(e) => e.row?.direccion} />
+            <DinamicTable.Col key="municipio" label="Municipio" width={100} data={(e) => e.row?.municipio} />
+            <DinamicTable.Col key="correo" label="Correo" width={100} data={(e) => e.row?.correo} />
+            <DinamicTable.Col key="lat" label="Lat" width={40} data={(e) => e.row?.lat} />
+            <DinamicTable.Col key="lng" label="Lng" width={40} data={(e) => e.row?.lng} />
             <DinamicTable.Col key="codigo_facturacion" label="Código facturación" width={130} data={(e) => e.row?.codigo_facturacion} />
             {/* <DinamicTable.Col key="punto_venta" label="punto_venta" width={130} data={(e) => e.row?.punto_venta} /> */}
             {/* <DinamicTable.Col key="punto_venta" label="punto_venta" width={130} data={(e) => e.row?.punto_venta} /> */}
-            <DinamicTable.Col key="key_usuario" label="Usuario" width={100} data={(e) => e.row?.key_usuario} />
+            <DinamicTable.Col key="key_usuario" label="Usuario" width={80} data={(e) => e.row?.key_usuario} />
             <DinamicTable.Col key="key_empresa" label="Empresa" width={100} data={(e) => e.row?.key_empresa} />
         </DinamicTable>
     }
