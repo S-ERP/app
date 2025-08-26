@@ -66,17 +66,17 @@ export default class Tabla extends Component {
                             icon: <SIconApp name='Edit' />,
                             label: "Actualizar Sucursal",
                             onPress: async () => {
-                                let ubicacion = { lat: null, lng: null };
-                                try {
-                                    ubicacion = await this.obtenerUbicacion();
-                                } catch (error) {
-                                    console.warn("No se pudo obtener la ubicación:", error.message);
-                                }
+                                // let ubicacion = { lat: null, lng: null };
+                                // try {
+                                //     ubicacion = await this.obtenerUbicacion();
+                                // } catch (error) {
+                                //     console.warn("No se pudo obtener la ubicación:", error.message);
+                                // }
                                 const sucursal = {
                                     ...e.row,
                                     key_usuario: MDL.usuario.session?.key,
-                                    lat: ubicacion?.lat,
-                                    lng: ubicacion?.lng,
+                                    // lat: ubicacion?.lat,
+                                    // lng: ubicacion?.lng,
                                 }
 
                                 console.log("se esta editando sucursal " + JSON.stringify(sucursal))
@@ -124,6 +124,10 @@ export default class Tabla extends Component {
 
             }}
 
+            loadInitialState={async () => {
+                return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] }
+            }}
+
             loadData={async () => {
                 const sucursales = await MDL.empresa.getAllSucursales();
                 const keysUsuarios = Object.values(sucursales).map(p => p.key_usuario).filter(Boolean);
@@ -133,7 +137,7 @@ export default class Tabla extends Component {
                 Object.values(sucursales).forEach(proveedor => {
                     proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario);
                 });
-                console.log("todoo el data " + JSON.stringify(sucursales))
+                // console.log("todoo el data " + JSON.stringify(sucursales))
                 return sucursales;
             }}
 
@@ -184,14 +188,11 @@ export default class Tabla extends Component {
         return (
             <SPage title="Gestión de Sucursales" disableScroll>
                 {this.mostrarTabla()}
-                <SHr height={20} />
-
                 <FloatButtom onPress={() => {
                     PopupCrearSucursal.open({
                         key_empresa: MDL.empresa.select?.key,
                         onSuccess: (e) => {
                             this.DinamicTable.loadData();
-
                         }
                     })
                 }} />

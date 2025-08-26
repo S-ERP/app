@@ -108,6 +108,7 @@ export default class tabla extends Component {
                 loadData={() => this.loadData()}
                 key="id"
                 language="es"
+                center
                 colors={Config.table.colors()}
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
