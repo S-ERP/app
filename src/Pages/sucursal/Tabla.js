@@ -12,6 +12,7 @@ import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
 import Perfil from './Perfil';
+import PopupCrearSucursal from '../empresa/config/Components/PopupCrearSucursal';
 // import MDL from '../../MDL';
 // import FloatButtom from '../../Components/FloatButtom';
 // import Perfil from './Perfil';
@@ -64,36 +65,60 @@ export default class Tabla extends Component {
 
                 FloatMenu.open({
                     e: e.evt,
-                    label: "Razón Social: " + e.row.descripcion,
+                    label: "Sucursal: " + e.row.descripcion,
                     options: [
                         {
                             icon: <SIconApp name='Edit' />,
                             label: "Actualizar Sucursal",
                             onPress: () => {
 
-                                SNavigation.navigate("/sucursal/profile", { pk: e.row?.key })
+                                const sucursal = {
+                                    ...e.row,
+                                    key_usuario: MDL.usuario.session?.key,
+                                    // lat: aqui como traigo la latitud de mi web,
+                                    // lng: aqui como traigo la longitud de mi web,
+                                }
+
+                                console.log("se esta editando sucursal " + JSON.stringify(sucursal))
+                                PopupCrearSucursal.open({
+                                    editObject: sucursal,
+                                    key_empresa: e.row.key_empresa,
+                                    onSuccess: (e) => {
+                                        this.DinamicTable.loadData();
+                                    }
+                                })
                             }
                         },
-                        // http://localhost:3010/sucursal/profile?pk=83b86c27-e05c-4de8-bbbe-7b3ec842a20d
-                        // http://localhost:3010/sucursal/profile?pk=83b86c27-e05c-4de8-bbbe-7b3ec842a20d
                         {
                             icon: <SIconApp name='Delete' />,
                             label: "Eliminar Proveedor",
                             onPress: () => {
-                                SPopup.confirm({
-                                    title: "Eliminar Proveedor",
-                                    message: "¿Estás seguro de eliminar este Proveedor?",
-                                    onPress: () => {
-                                        const data = e?.row;
-                                        data.estado = 0;
-                                        MDL.compra_venta.proveedor.editar(data).then((res) => {
-                                            this.DinamicTable.loadData();
-                                            console.log("Eliminar proveedor exitosa");
-                                        }).catch(
-                                            console.log("Eliminar proveedor erronea")
-                                        )
-                                    }
-                                })
+                                // SPopup.confirm({
+                                //     title: "Eliminar Sucursal",
+                                //     message: "¿Estás seguro de eliminar esta sucursal?",
+                                //     onPress: () => {
+
+                                //            const sucursal = {
+                                //     ...e.row,
+                                //     key_usuario: "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
+                                //                                             data.estado = 0,
+
+                                // }
+                                //         SSocket.sendPromise({
+                                //             service: "empresa",
+                                //             component: "sucursal",
+                                //             type:   "editar"  ,
+                                //             key_usuario: MDL.usuario.login(),
+                                //             data: sucursal
+                                //         }).then(e => {
+                                //             if (this.props.onSuccess) this.props.onSuccess(e)
+                                //             console.log("response", e);
+                                //         }).catch(e => {
+                                //             console.error("response", e);
+                                //         })
+
+                                //     }
+                                // })
 
                             }
                         }
@@ -154,7 +179,20 @@ export default class Tabla extends Component {
                 {this.mostrarTabla()}
                 <SHr height={20} />
 
-                <FloatButtom onPress={() => { this.mostrarPopup() }} />
+                <FloatButtom onPress={() => {
+
+
+                    PopupCrearSucursal.open({
+                        key_empresa: MDL.empresa.select?.key,
+                        onSuccess: (e) => {
+                            this.DinamicTable.loadData();
+
+                        }
+                    })
+
+
+
+                }} />
             </SPage>
         );
     }
