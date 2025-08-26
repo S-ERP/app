@@ -8,7 +8,7 @@ import edit from "./edit";
 import _delete from "./delete";
 import RegistroInventarios from "./RegistroInventarios";
 import tabla from "./tabla";
- const model = Model.almacen;
+const model = Model.almacen;
 
 export const Parent = {
     name: "almacen",
@@ -22,10 +22,10 @@ export default SPage.combinePages(Parent.name, {
     "": list,
     "list": list,
     "tabla": tabla,
-    "table": table,
+    "table": tabla,
     "new": _new,
     ...profile,
     "edit": edit,
     "delete": _delete,
     "profile/registro_inventario": RegistroInventarios,
- })
+})

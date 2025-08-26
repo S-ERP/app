@@ -3,9 +3,6 @@ import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup,
 import * as XLSX from "xlsx";
 import SSocket from 'servisofts-socket';
 import { DinamicTable } from 'servisofts-table';
-import SCharts from 'servisofts-charts';
-import Usuarios from 'servisofts-component/img/Usuarios';
-import { version } from 'process';
 import MDL from '../../MDL';
 import FloatButtom from '../../Components/FloatButtom';
 import FloatMenu from '../../Components/FloatMenu';
@@ -14,7 +11,7 @@ import Config from '../../Config';
 import PopupCrearSucursal from '../empresa/config/Components/PopupCrearSucursal';
 
 
-export default class tabladddd extends Component {
+export default class tabla extends Component {
 
     constructor(props) {
         super(props);
@@ -170,17 +167,7 @@ export default class tabladddd extends Component {
             <DinamicTable.Col key="codigo_facturacion" label="Código facturación" width={130} data={(e) => e.row?.codigo_facturacion} />
             {/* <DinamicTable.Col key="punto_venta" label="punto_venta" width={130} data={(e) => e.row?.punto_venta} /> */}
 
-
-            {/* <DinamicTable.Col key="empresa" label="CORP" width={50} data={(e) => e.row?.key_empresa ?? ""}
-                customComponent={e => <>
-                    {(e.row?.key_empresa) ?
-                        <SView col={"xs-12"} center row  >
-                            <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                <SImage src={`${SSocket.api.empresa}empresa/${e.row?.key_empresa}`} style={{ resizeMode: "cover" }} />
-                            </SView>
-                        </SView> : null}
-                </>}
-            /> */}
+ 
             <DinamicTable.Col key={"fecha_on"} label="F.Registro" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
             <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                 customComponent={e => <>

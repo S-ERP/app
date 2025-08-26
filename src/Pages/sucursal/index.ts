@@ -7,7 +7,7 @@ import profile from "./profile/index";
 import edit from "./edit";
 import _delete from "./delete";
 import paso1 from "./paso1";
-import tabla from "./tabladddd";
+import tabla from "./tabla";
 const model = Model.sucursal;
 
 export const Parent = {
