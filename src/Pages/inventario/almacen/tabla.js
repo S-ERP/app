@@ -34,7 +34,7 @@ export default class tabla extends Component {
 
     verificar(estado) {
 
-        return <SView col={"xs-12"} center row  >
+        return <SView col={"xs-12"} center row>
             {estado ? <SIconApp name='Check' fill='green' height={20} /> : <SIconApp name='Cerrar' fill='red' height={14} />}
         </SView>;
     }
@@ -156,20 +156,21 @@ export default class tabla extends Component {
             <DinamicTable.Col key="sucursal" label="Sucursal" width={120} data={(e) => e.row?.key_sucursal ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_sucursal) ?
-                        <SView col={"xs-12"} center row  >
-                            <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key_sucursal}`} style={{ resizeMode: "cover" }} />
+                        <SView col={"xs-12"} row  >
+                            <SView style={{ width: 28 }}>
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key_sucursal}`} style={{ resizeMode: "cover" }} />
+                                </SView>
                             </SView>
                             <SView width={5} />
-                            <SText color={STheme.color.text}>{e.row?.sucursal?.descripcion}</SText>
+                            <SText center color={STheme.color.text}>{e.row?.sucursal?.descripcion}</SText>
                         </SView> : null}
                 </>}
             />
 
-            <DinamicTable.Col key="descripcion" label="Almacen" width={90} data={(e) => e.row?.descripcion} />
-            <DinamicTable.Col key="observacion" label="Observación" width={120} data={(e) => e.row?.observacion} />
+            <DinamicTable.Col key="descripcion" label="Almacen" width={100} data={(e) => e.row?.descripcion} />
+            <DinamicTable.Col key="observacion" label="Observación" width={180} data={(e) => e.row?.observacion} />
             <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-
 
             <DinamicTable.Col key={"is_venta"} label='Almacen para ventas?' width={120} data={(e) => e.row.is_venta} customComponent={e => this.verificar(e.row?.is_venta)} />
             <DinamicTable.Col key={"is_entrega"} label='Requiere entrega?' width={120} data={(e) => e.row.is_entrega} customComponent={e => this.verificar(e.row?.is_entrega)} />
@@ -182,24 +183,30 @@ export default class tabla extends Component {
             <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_usuario) ?
-                        <SView col={"xs-12"} center row  >
-                            <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
+                        <SView col={"xs-12"} row  >
+                            <SView style={{ width: 28 }}>
+
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
+                                </SView>
                             </SView>
                             <SView width={5} />
-                            <SText color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
+                            <SText center color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
                         </SView> : null}
                 </>}
             />
             <DinamicTable.Col key="empresa" label="Empresa" width={150} data={(e) => e.row?.key_empresa ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_empresa) ?
-                        <SView col={"xs-12"} center row  >
-                            <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                <SImage src={`${SSocket.api.empresa}empresa/${e.row?.key_empresa}`} style={{ resizeMode: "cover" }} />
+                        <SView col={"xs-12"} row  >
+                            <SView style={{ width: 28 }}>
+
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SImage src={`${SSocket.api.empresa}empresa/${e.row?.key_empresa}`} style={{ resizeMode: "cover" }} />
+                                </SView>
                             </SView>
                             <SView width={5} />
-                            <SText color={STheme.color.text}>{e.row?.razon_social}</SText>
+                            <SText center color={STheme.color.text}style={{fontSize:15, textTransform:"lowercase"}} >{e.row?.razon_social}</SText>
                         </SView> : null}
                 </>}
             />
