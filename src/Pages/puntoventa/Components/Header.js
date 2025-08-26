@@ -78,7 +78,7 @@ export default class Header extends Component {
                     </SText>
                 </SView>
 
-                <SView flex />
+                {/* <SView flex />
 
                 <SView col={"xs-4 md-2"} row border="transparent"
                     onPress={() => this.seleccionarSucursal()}
@@ -103,7 +103,7 @@ export default class Header extends Component {
                         borderRadius:3,
                         transform: "rotate(180deg)"
                     }} />
-                </SView>
+                </SView> */}
 
                 <SView flex />
 

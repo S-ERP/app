@@ -9,6 +9,7 @@ import PButtom from "../../Components/PButtom";
 import SelectTipoPago from "../caja2/components/SelectTipoPago";
 
 export default class root extends React.Component {
+    cajaActiva = false; // 🔹 Bandera sin usar state
 
     state = {
         sucursales: [],
@@ -21,8 +22,36 @@ export default class root extends React.Component {
         //     this.createDefaultCompra(),
         // ],
     }
+
+    async checkCaja() {
+        try {
+            const activa = await MDL.caja.getActiva();
+            this.cajaActiva = !!activa;
+            if (this.cajaActiva) {
+                //alert("esta activa caja")
+            } else {
+                // alert("sin caja");
+                // SNavigation.goBack();
+                SNotification.send({
+                    title: "Caja no aperturada",
+                    message: "Debes abrir la caja antes de continuar con las operaciones.",
+                    type: "danger",
+                    body: "⚠️Debe abrir caja⚠️",
+                    color: STheme.color.danger,
+                    time: 5000,
+                })
+                SNavigation.replace("/caja2");
+            }
+        } catch (e) {
+            console.error("Error al obtener estado de caja", e);
+        }
+    }
+
+
     inputs = {}
     componentDidMount() {
+        this.checkCaja();
+
         MDL.empresa.getAllSucursales().then(sucursales => {
             if (this.inputs["sucursal"]) this.inputs["sucursal"].setValue(sucursales[0]?.descripcion);
             this.setState({ sucursales: sucursales })
@@ -58,9 +87,9 @@ export default class root extends React.Component {
         try {
 
             SNotification.send({
-                key:"compra_rapida",
-                title:"cargando",
-                type:"loading",
+                key: "compra_rapida",
+                title: "cargando",
+                type: "loading",
             })
 
             const sucValue = this.inputs["sucursal"].getValue();
@@ -106,7 +135,7 @@ export default class root extends React.Component {
         } catch (error) {
             console.error("Error al realizar la compra:", error);
             SNotification.send({
-                key:"compra_rapida",
+                key: "compra_rapida",
                 title: "Error al realizar la compra",
                 body: error?.error || "Ocurrió un error inesperado.",
                 type: "danger",
