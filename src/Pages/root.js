@@ -44,7 +44,7 @@ const Card = ({ label, value, backgroundColor, onPress, icon }) => {
 class index extends Component {
     static HIDDEN = true;
     getAcciones(usuario) {
-        return <SView row>
+        return <SView row center>
             {/* <SText padding={16} card onPress={() => {
                 SNavigation.navigate("/empresa/new")
             }} center>Crear empresa</SText>
@@ -55,7 +55,7 @@ class index extends Component {
             <Card label={"Puedes construir tu propia empresa y personalizarla."} icon={'empresa'} value={"CREAR EMPRESA"} backgroundColor={STheme.color.success + "AA"} onPress={() => {
                 SNavigation.navigate("/empresa/new")
             }} />
-            <Card label={"Busca la empresa de tu preferencia para solicitar ser parte de ella."} icon={'empresaBuscar'} value={"BUSCAR EMPRESA"} backgroundColor={STheme.color.success + "AA"} onPress={() => {
+            {/* <Card label={"Busca la empresa de tu preferencia para solicitar ser parte de ella."} icon={'empresaBuscar'} value={"BUSCAR EMPRESA"} backgroundColor={STheme.color.success + "AA"} onPress={() => {
                 SNavigation.navigate("/empresa", {
                     onSelect: (empresa) => {
                         SPopup.confirm({
@@ -83,7 +83,7 @@ class index extends Component {
                         })
                     }
                 })
-            }} />
+            }} /> */}
             <SView width={8} />
             {/* <SText padding={16} card onPress={() => {
                 SNavigation.navigate("/empresa", {
@@ -120,6 +120,8 @@ class index extends Component {
         this.arr = Model.empresa_usuario.Action.getAllByKeyUsuario(usuario.key);
         if (!this.arr) return <SLoad />
 
+        console.log(this.arr)
+
         return <SView col={"xs-12"} center >
             <SHr height={10} />
             <SView col={"xs-12"}>
@@ -129,6 +131,11 @@ class index extends Component {
             <SList
                 buscador
                 data={this.arr}
+                order={[{
+                    key: "fecha_ultima_visita",
+                    order: "desc",
+                    type: "date"
+                }]}
                 render={(a) => {
                     return <SView col={"xs-12"} card padding={8} row onPress={() => {
                         Model.empresa.Action.setEmpresa(a.empresa);
@@ -149,8 +156,8 @@ class index extends Component {
                         <SView flex>
                             <SText bold fontSize={16}>{a?.empresa?.razon_social}</SText>
                             <SText color={STheme.color.gray}>{a?.empresa?.nit}</SText>
-                            <SHr />
-                            <SText >Tu alias: {a?.alias}</SText>
+                            {/* <SHr /> */}
+                            {/* <SText >Tu alias: {a?.alias}</SText> */}
                         </SView>
                     </SView>
                 }}

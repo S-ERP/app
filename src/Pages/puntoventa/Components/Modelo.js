@@ -73,11 +73,10 @@ export default class Modelo extends Component {
                         <SView col={"xs-12"} row padding={5}>
                             {productosFiltrados.map((producto, index) => {
                                 const src = producto.key ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}` : productSinFoto;
-
                                 return (
                                     <SView
                                         key={index}
-                                        col={`xs-6 md-4 lg-3 xl-1.5`}
+                                        col={`xs-6 md-4 lg-3`}
                                         margin={2}
                                         style={{
                                             minWidth: 120,

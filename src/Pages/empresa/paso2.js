@@ -9,6 +9,7 @@ import Container from '../../Components/Container';
 import Adornos from '../../Components/Adornos';
 import BtnNext from './Components/BtnNext';
 export default class index extends Component {
+      static HIDDEN = true;
     constructor(props) {
         super(props);
         this.state = {
