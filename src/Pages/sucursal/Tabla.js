@@ -65,7 +65,7 @@ export default class Tabla extends Component {
                         {
                             icon: <SIconApp name='Edit' />,
                             label: "Actualizar Sucursal",
-                            onPress: async () => {
+                            onPress: () => {
                                 // let ubicacion = { lat: null, lng: null };
                                 // try {
                                 //     ubicacion = await this.obtenerUbicacion();
@@ -75,11 +75,10 @@ export default class Tabla extends Component {
                                 const sucursal = {
                                     ...e.row,
                                     key_usuario: MDL.usuario.session?.key,
-                                    // lat: ubicacion?.lat,
-                                    // lng: ubicacion?.lng,
                                 }
 
                                 console.log("se esta editando sucursal " + JSON.stringify(sucursal))
+
                                 PopupCrearSucursal.open({
                                     editObject: sucursal,
                                     key_empresa: e.row.key_empresa,
@@ -124,9 +123,9 @@ export default class Tabla extends Component {
 
             }}
 
-            loadInitialState={async () => {
-                return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] }
-            }}
+            // loadInitialState={async () => {
+            //     return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
+            // }}
 
             loadData={async () => {
                 const sucursales = await MDL.empresa.getAllSucursales();
