@@ -66,15 +66,13 @@ export default class Modelo extends Component {
     renderModelos() {
         const modelos = this.modelos || [];
         const tipoKey = this.props.tipoKey;
-        // let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
 
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
         productosFiltrados = productosFiltrados.filter(m => m.precio_venta > 0);
-
         if (this.props.searchText) { const search = this.props.searchText.toLowerCase(); productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search)); }
-        // console.log("todos " + JSON.stringify(productosFiltrados))
 
         const colSize = this.getColSize();
+        // console.log("todos " + JSON.stringify(productosFiltrados))
 
         return (
             <SView col={"xs-12"} flex center backgroundColor='transparent'>
