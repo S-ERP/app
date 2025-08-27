@@ -46,36 +46,23 @@ export default class PopupCrearAlmacen extends Component<Props> {
 
     form: SForm | undefined = undefined;
     _ref: any = {}
-    sucursalSeleccionado: any;
-    state: any = {}
+    state: any = {
+        sucursales: []  // inicializamos vacio
+    }
 
 
     componentDidMount(): void {
-
         MDL.empresa.getAllSucursales().then(item => {
-
             this.setState({
                 sucursales: Object.values(item).map((suc: any) => ({
-                    key: suc.key,
-                    content: `Suc.- ${suc.descripcion}` // puedes personalizar
+                    key: suc.key?.toString(),  // ⚡ convertir key a string
+                    content: `Suc.- ${suc.descripcion}`
                 }))
             });
-
-        }).catch(e => {
-            console.error(e);
-        })
-
+        }).catch(e => console.error(e));
     }
 
-    // async componentDidMount(): void {
-    //     const sucursales = await MDL.empresa.getAllSucursales();
-    //     this.setState({
-    //         sucursales: Object.values(sucursales).map((suc: any) => ({
-    //             key: suc.key,
-    //             content: `${suc.codigo} - ${suc.descripcion}` // puedes personalizar
-    //         }))
-    //     });
-    // }
+
 
     render() {
         return <SView col={"xs-12"} center padding={16}>
@@ -107,26 +94,14 @@ export default class PopupCrearAlmacen extends Component<Props> {
                             placeholder: "Seleccione sucursal",
                             type: "select",
                             col: "xs-12",
-                            options: this.state.sucursales ?? [],  // mientras carga, se pasa un array vacío
-                            defaultValue: this.props.editObject?.key_sucursal ?? null,
-                            isRequired: true, // opcional: marcar como obligatorio
+                            style: { paddingStart: 0 },
+                            labelStyle: { top: -10 },
+                            inputStyle: { paddingStart: 8 },
+                            options: this.state.sucursales,   // siempre array
+                            defaultValue: this.props.editObject?.key_sucursal?.toString() ?? null,
+                            isRequired: true,
                         },
 
-
-                        // "key_sucursal": {
-                        //     label: "Sucurdal", placeholder: "Seleccione sucursal", defaultValue: this.props.editObject?.key_sucursal, col: "xs-5",
-                        //     // type: "select2",
-                        //     editable: false,
-                        //     onPress: () => {
-                        //         console.log("presiono");
-                        //         SNavigation.navigate("/sucursal/list", {
-                        //             onSelect: (item: any) => {
-                        //                 console.log("Sucursal " + JSON.stringify(item.key));
-                        //                 this.sucursalSeleccionado = item.key;
-                        //             }
-                        //         })
-                        //     },
-                        // },
                         "observacion": { label: "observacion", placeholder: "observacion", defaultValue: this.props.editObject?.observacion, col: "xs-12" },
                         "is_stock": { label: "Almacen con stock?", placeholder: "Seleccionar", type: "select", options: ["si", "no"], defaultValue: this.props.editObject ? (this.props.editObject.is_stock ? "si" : "no") : null, col: "xs-12" },
                         "is_venta": { label: "Almacen para ventas?", placeholder: "Seleccionar", type: "select", options: ["si", "no"], defaultValue: this.props.editObject ? (this.props.editObject.is_venta ? "si" : "no") : null, col: "xs-12" },
@@ -172,16 +147,28 @@ export default class PopupCrearAlmacen extends Component<Props> {
             </ScrollView>
             <SHr h={16} />
             <SView row col={"xs-12"}>
-                {this.props.onCancel && <>
+
+                 {this.props.onCancel &&
+                    <>
+                        <Btn type='danger' label='CANCELAR' onPress={() => this.props.onCancel?.()} />
+                        <SView width={8} />
+                    </>
+                }
+                
+                {/* {this.props.onCancel && <>
                     <Btn type='danger' label='CANCELAR' onPress={() => {
                         if (this.props.onCancel) this.props.onCancel()
                     }} />
                     <SView width={8} />
-                </>}
+                </>} */}
 
-                <Btn type='primary' label='GUARDAR' onPress={() => {
+
+                <Btn type='primary' label='GUARDAR' onPress={() => this.form?.submit()} />
+
+
+                {/* <Btn type='primary' label='GUARDAR' onPress={() => {
                     if (this.form) this.form.submit();
-                }} />
+                }} /> */}
 
             </SView>
         </SView>
