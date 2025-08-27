@@ -35,7 +35,8 @@ export default class Main extends Component {
             const activa = await MDL.caja.getActiva();
             this.cajaActiva = !!activa;
             if (this.cajaActiva) {
-                console.log("punto venta caja "+ JSON.stringify(activa.key_sucursal))
+                console.log("punto venta caja " + JSON.stringify(activa.key_sucursal))
+                this.forceUpdate();
                 //alert("esta activa caja")
             } else {
                 // alert("sin caja");
@@ -223,7 +224,7 @@ export default class Main extends Component {
                             value={this.searchText}
                             onChangeText={this.setSearchText}
                         />
-                        <Modelo
+                        {this.cajaActiva && <Modelo
                             ref={(ref) => (this.modeloRef = ref)}
                             tipoKey={this.selectedTipoKey}
                             // items={this.carritoRef?.carrito}
@@ -233,6 +234,7 @@ export default class Main extends Component {
                                 this.carritoRefModal?.addProducto?.(producto);
                             }}
                         />
+                        }
                     </SView>
 
                 </SView>

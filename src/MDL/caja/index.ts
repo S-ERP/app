@@ -1,4 +1,4 @@
-import { EventListener, Caja } from "./types";
+import { EventListener, Caja, CajaDetalle } from "./types";
 
 import MDLAbstract from "../MDLAbstract";
 import SSocket from "servisofts-socket";
@@ -96,6 +96,20 @@ export default class caja extends MDLAbstract<EventListener> {
       key_usuario: MDL.usuario.session?.key,
     })
     this.getActiva();
+    return resp.data
+  }
+  async registro_detalle(caja_detalle: CajaDetalle) {
+
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "caja_detalle",
+      type: "registro",
+      // key_punto_venta: key_punto_venta,
+      data: caja_detalle,
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    })
+    this.dispatchEvent({ type: "onDetalleChange" })
     return resp.data
   }
 

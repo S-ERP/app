@@ -38,7 +38,11 @@ export default class Modelo extends Component {
         this.loadApis();
     }
     async loadApis() {
-        const modelos = await MDL.inventario.getAllModeloStock();
+        if(!MDL.caja.activa){
+            console.log("Caja no activa");
+            return;
+        }
+        const modelos = await MDL.inventario.getAllModeloStockBySucursal(MDL.caja.activa.key_sucursal);
         this.modelos = modelos;
         this.forceUpdate();
     }

@@ -50,6 +50,7 @@ export default class Abierta extends Component {
             SNotification.send({
                 key: "caja_cerrar",
                 title: "Error al cerrar caja",
+                body: e.error,
                 color: STheme.color.danger,
                 time: 5000
             })
@@ -118,6 +119,19 @@ export default class Abierta extends Component {
                     </View>
                         <SView width={8} />
                     </>}
+                    {item?.data?.key_compra_venta && <><View style={{
+                        // backgroundColor: STheme.color.card,
+                        borderWidth: 1,
+                        borderColor: STheme.color.card,
+                        padding: 2,
+                        borderRadius: 4
+                    }}>
+                        <SText fontSize={10} onPress={() => {
+                            SNavigation.navigate("/compra/profile", { pk: item?.data?.key_compra_venta })
+                        }}>{"Compra"}</SText>
+                    </View>
+                        <SView width={8} />
+                    </>}
                     <View style={{
                         // backgroundColor: STheme.color.card,
                         borderWidth: 1,
@@ -178,15 +192,15 @@ export default class Abierta extends Component {
                                     <SText card padding={8} margin={4} onPress={() => {
                                         SNavigation.navigate("/puntoventa")
                                     }}>Vender Productos</SText>
-                                    <SText card padding={8} margin={4}>Cobrar a Clientes</SText>
+                                    <SText card style={{ backgroundColor: STheme.color.danger }} padding={8} margin={4}>Cobrar a Clientes</SText>
                                     <SText card padding={8} margin={4} onPress={() => {
 
                                     }}>Cargar efectivo desde Banco</SText>
-                                    <SText card padding={8} margin={4}>Otros Ingresos</SText>
+                                    <SText card padding={8} margin={4} style={{ backgroundColor: STheme.color.danger }} >Otros Ingresos</SText>
                                     <SText card padding={8} margin={4} onPress={() => {
                                         SNavigation.navigate("/compra2")
                                     }}>Comprar Productos</SText>
-                                    <SText card padding={8} margin={4}>Pagar a Proveedores</SText>
+                                    <SText card padding={8} margin={4} style={{ backgroundColor: STheme.color.danger }}>Pagar a Proveedores</SText>
                                     <SText card padding={8} margin={4} onPress={() => {
                                         SelectTipoPago.openPopup({
                                             key_punto_venta: this.props.caja.key_punto_venta,
@@ -197,7 +211,18 @@ export default class Abierta extends Component {
                                                 cheque: this.state.movimientos.filter(mov => mov.key_tipo_pago == "cheque").reduce((sum, mov) => sum + mov.monto, 0),
                                             },
                                             onSelect: (item) => {
+                                                MDL.caja.registro_detalle({
+                                                    key_caja: this.props.caja.key,
+                                                    fecha: this.props.caja.fecha,
+                                                    descripcion: "Envio al banco",
+                                                    monto: item.efectivo * -1,
+                                                    tipo: "egreso_banco",
+                                                    key_tipo_pago: "efectivo"
+                                                }).then(e => {
+                                                    SelectTipoPago.closePopup();
+                                                }).catch(e => {
 
+                                                })
                                             }
                                         });
                                     }}>Enviar al Banco</SText>

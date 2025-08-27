@@ -187,19 +187,18 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     //     montoTotal += parseFloat(pv.monto)
                     // })
 
-                    if (this.props.montoMaximo != montoTotal) {
-                        SNotification.send({
-                            title: "El monto total no coincide con el monto máximo",
-                            message: `Monto Total: ${montoTotal}, Monto Máximo: ${this.props.montoMaximo}`,
-                            color: STheme.color.danger,
-                            time: 5000,
-                        })
-                        return;
-                    }
+                    // if (this.props.montoMaximo != montoTotal) {
+                    //     SNotification.send({
+                    //         title: "El monto total no coincide con el monto máximo",
+                    //         message: `Monto Total: ${montoTotal}, Monto Máximo: ${this.props.montoMaximo}`,
+                    //         color: STheme.color.danger,
+                    //         time: 5000,
+                    //     })
+                    //     return;
+                    // }
                     if (this.props.onSelect) {
                         this.props.onSelect(elm);
                     }
-                    console.log(elm, montoTotal, this.props.montoMaximo);
                 }}>{"Aceptar"}</SText>
             </SView>
             {/* <SText>{JSON.stringify(this.pvtp)}</SText> */}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SView, SText, STheme, SForm, SPopup, SInput, SMath, SNotification } from 'servisofts-component';
+import { SView, SText, STheme, SForm, SPopup, SInput, SMath, SNotification, SNavigation } from 'servisofts-component';
 import ResumenTotales from './ResumenTotales';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
@@ -117,6 +117,7 @@ export default class PopupConfirmaPago extends Component {
             ReciboRollo.imprimir(res.key)
             ReciboCarta.imprimir(res.key)
             SPopup.close("popup_config_horario");
+            SNavigation.goBack();
             this.tipos_pago = null;
             SNotification.remove("compra")
         }).catch(res => {

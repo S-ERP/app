@@ -15,7 +15,10 @@ export default class Cerrada extends Component {
     this.state.punto_venta = e;
     MDL.caja.getLast({ key_punto_venta: e.key }).then((caja) => {
       this.state.lastCaja = caja;
-      if (!caja?.key_usuario) return;
+      if (!caja?.key_usuario) {
+          this.setState({ lastCaja: this.state.lastCaja });
+          return;
+      }
       MDL.usuario.getByKeys([caja.key_usuario]).then((usuarios) => {
         if (!this.state.lastCaja) return;
         this.state.lastCaja.usuario = usuarios[0];
