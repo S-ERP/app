@@ -8,6 +8,7 @@ import FloatButtom from '../../../Components/FloatButtom';
 import FloatMenu from '../../../Components/FloatMenu';
 import SIconApp from '../../../Assets/SIconApp';
 import Config from '../../../Config';
+import PopupCrearAlmacen from './Components/PopupCrearAlmacen';
 
 
 export default class tabla extends Component {
@@ -65,16 +66,25 @@ export default class tabla extends Component {
                             icon: <SIconApp name='Edit' />,
                             label: "Actualizar Almacen",
                             onPress: () => {
+                                const sucursal = {
+                                    ...e.row,
+                                    key_usuario: MDL.usuario.session?.key,
+                                }
+
+                                PopupCrearAlmacen.open({
+                                    editObject: sucursal,
+                                    key_empresa: sucursal.key_empresa,
+                                    onSuccess: (e) => {
+                                        instance.componentDidMount();
+                                    }
+                                })
+
                                 // let ubicacion = { lat: null, lng: null };
                                 // try {
                                 //     ubicacion = await this.obtenerUbicacion();
                                 // } catch (error) {
                                 //     console.warn("No se pudo obtener la ubicación:", error.message);
                                 // }
-                                const sucursal = {
-                                    ...e.row,
-                                    key_usuario: MDL.usuario.session?.key,
-                                }
 
                                 console.log("se esta editando sucursal " + JSON.stringify(sucursal))
 
@@ -154,7 +164,7 @@ export default class tabla extends Component {
 
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
 
-            <DinamicTable.Col key="sucursal" label="Sucursal" width={120} data={(e) => e.row?.key_sucursal ?? ""}
+            {/* <DinamicTable.Col key="sucursal" label="Sucursal" width={120} data={(e) => e.row?.key_sucursal ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_sucursal) ?
                         <SView col={"xs-12"} row  >
@@ -167,7 +177,7 @@ export default class tabla extends Component {
                             <SText center color={STheme.color.text}>{e.row?.sucursal?.descripcion}</SText>
                         </SView> : null}
                 </>}
-            />
+            /> */}
 
             <DinamicTable.Col key="descripcion" label="Almacen" width={100} data={(e) => e.row?.descripcion} />
             <DinamicTable.Col key="observacion" label="Observación" width={180} data={(e) => e.row?.observacion} />
@@ -220,12 +230,16 @@ export default class tabla extends Component {
             <SPage title="Gestión lista de almacenes" disableScroll>
                 {this.mostrarTabla()}
                 <FloatButtom onPress={() => {
-                    // PopupCrearSucursal.open({
-                    //     key_empresa: MDL.empresa.select?.key,
-                    //     onSuccess: (e) => {
-                    //         this.DinamicTable.loadData();
-                    //     }
-                    // })
+                    console.log("detaleeeeee ")
+
+                    PopupCrearAlmacen.open({})
+
+                    PopupCrearAlmacen.open({
+                        key_empresa: "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                        onSuccess: (e) => {
+                            this.DinamicTable.loadData();
+                        }
+                    })
                 }} />
             </SPage>
         );

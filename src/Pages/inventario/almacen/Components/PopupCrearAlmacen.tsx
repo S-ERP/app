@@ -1,0 +1,147 @@
+import React, { Component } from 'react';
+import { View, Text, ScrollView } from 'react-native';
+import { SForm, SHr, SNavigation, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
+import PButtom from '../../../../Components/PButtom';
+import SSocket from 'servisofts-socket';
+import MDL from '../../../../MDL';
+import Model from '../../../../Model';
+import Btn from './Btn';
+import InputFoto from '../../../../Components/InputFoto';
+
+type Props = {
+    key_empresa: string,
+    editObject?: any,
+    onCancel?: Function,
+    onSuccess?: Function,
+}
+
+export default class PopupCrearAlmacen extends Component<Props> {
+
+    static open(props: Props) {
+        SPopup.open({
+            key: "PopupCrearSucursal",
+            content: <SView style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                width: 500,
+                // height: 500,
+                borderRadius: 8,
+                borderColor: STheme.color.card,
+                borderWidth: 1,
+                backgroundColor: STheme.color.background
+            }} withoutFeedback >
+                <PopupCrearAlmacen {...props} onCancel={() => {
+                    SPopup.close("PopupCrearSucursal")
+                    if (props.onCancel) props.onCancel()
+                }}
+                    onSuccess={(e: any) => {
+                        SPopup.close("PopupCrearSucursal")
+                        if (props.onSuccess) props.onSuccess(e)
+                    }}
+
+                />
+            </SView>
+        })
+    }
+
+    form: SForm | undefined = undefined;
+    _ref: any = {}
+    sucursalSeleccionado: any;
+
+
+    render() {
+        return <SView col={"xs-12"} center padding={16}>
+            <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" almacen"}</SText>
+            <ScrollView>
+                <SForm ref={(ref: any) => this.form = ref}
+                    row
+                    style={{
+                        justifyContent: "space-between",
+                    }}
+                    inputs={{
+
+                        "descripcion": {
+                            label: "Nombre del almacen *", placeholder: "Ingresa el nombre del almacen", isRequired: true, autoFocus: true,
+                            defaultValue: this.props.editObject?.descripcion,
+                            onSubmitEditing: () => {
+                                if (this.form) this.form.submit();
+                            },
+                            icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
+                                <InputFoto
+                                    ref={ref => this._ref.image_sucursal = ref}
+                                    src={(SSocket.api as any).empresa + "sucursal/" + this.props.editObject?.key}
+                                    style={{ width: 50, height: 50, }} />
+                            </SView>,
+                        },
+
+                        "key_sucursal": {
+                            label: "Sucurdal", placeholder: "Seleccione sucursal", defaultValue: this.props.editObject?.key_sucursal, col: "xs-5",
+                            // type: "select2",
+                            editable: false,
+                            onPress: () => {
+                                console.log("presiono");
+                                SNavigation.navigate("/sucursal/list", {
+                                    onSelect: (item: any) => {
+                                        console.log("Sucursal " + JSON.stringify(item.key));
+                                        this.sucursalSeleccionado = item.key;
+                                    }
+                                })
+                            },
+                        },
+                        "observacion": { label: "observacion", placeholder: "observacion", defaultValue: this.props.editObject?.observacion, col: "xs-12" },
+                        "is_stock": { label: "Almacen con stock?", placeholder: "Seleccionar", type: "select", options: ["si", "no"], defaultValue: this.props.editObject?.is_stock, col: "xs-12" },
+                        "is_venta": { label: "Almacen para ventas?", placeholder: "Seleccionar", type: "select", options: ["si", "no"], defaultValue: this.props.editObject?.is_venta, col: "xs-12" },
+                        "is_entrega": { label: "Requiere entrega?", placeholder: "Seleccionar", type: "select", options: ["si", "no"], defaultValue: this.props.editObject?.is_entrega, col: "xs-12" },
+
+                    }}
+                    onSubmit={(data: any) => {
+
+                        // const api = await MDL.inventario.saveMarca();
+
+                        console.log("picaso " + JSON.stringify(data))
+
+                        // SSocket.sendPromise({
+                        //     service: "empresa",
+                        //     component: "sucursal",
+                        //     type: this.props.editObject ? "editar" : "registro",
+                        //     key_usuario: Model.usuario.Action.getKey(),
+                        //     // data: {
+                        //     //     key_empresa: this.props.key_empresa,
+                        //     //     key_usuario: Model.usuario.Action.getKey(),
+                        //     //     ...(this.props.editObject ?? {}),
+                        //     //     ...data,
+                        //     // }
+                        // }).then((e: any) => {
+                        //     if (this.props.onSuccess) this.props.onSuccess(e)
+
+                        //     if (this._ref.image_sucursal) {
+                        //         const value = this._ref.image_sucursal.getValue();
+                        //         if (Array.isArray(value)) {
+                        //             Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).empresa + "upload/sucursal/" + e.data.key_sucursal)
+                        //         }
+                        //     }
+                        //     console.log("response", e);
+                        // }).catch(e => {
+                        //     console.error("response", e);
+                        // })
+                    }}
+
+                />
+            </ScrollView>
+            <SHr h={16} />
+            <SView row col={"xs-12"}>
+                {this.props.onCancel && <>
+                    <Btn type='danger' label='CANCELAR' onPress={() => {
+                        if (this.props.onCancel) this.props.onCancel()
+                    }} />
+                    <SView width={8} />
+                </>}
+
+                <Btn type='primary' label='GUARDAR' onPress={() => {
+                    if (this.form) this.form.submit();
+                }} />
+
+            </SView>
+        </SView>
+    }
+}
