@@ -19,7 +19,7 @@ export default class PopupCrearAlmacen extends Component<Props> {
 
     static open(props: Props) {
         SPopup.open({
-            key: "PopupCrearSucursal",
+            key: "PopupCrearAlmacen",
             content: <SView style={{
                 maxWidth: "100%",
                 maxHeight: "100%",
@@ -31,11 +31,12 @@ export default class PopupCrearAlmacen extends Component<Props> {
                 backgroundColor: STheme.color.background
             }} withoutFeedback >
                 <PopupCrearAlmacen {...props} onCancel={() => {
-                    SPopup.close("PopupCrearSucursal")
+                    SPopup.close("PopupCrearAlmacen")
                     if (props.onCancel) props.onCancel()
                 }}
+
                     onSuccess={(e: any) => {
-                        SPopup.close("PopupCrearSucursal")
+                        SPopup.close("PopupCrearAlmacen")
                         if (props.onSuccess) props.onSuccess(e)
                     }}
 
@@ -85,7 +86,7 @@ export default class PopupCrearAlmacen extends Component<Props> {
                                 <InputFoto
                                     ref={ref => this._ref.image_sucursal = ref}
                                     src={(SSocket.api as any).empresa + "sucursal/" + this.props.editObject?.key}
-                                     style={{ width: 50, height: 50, }} />
+                                    style={{ width: 50, height: 50, }} />
                             </SView>,
                         },
 
@@ -136,7 +137,7 @@ export default class PopupCrearAlmacen extends Component<Props> {
 
                         MDL.inventario.saveAlmacen({ data }).then((resp: any) => {
 
-                            // console.log("ddddddd " + JSON.stringify(resp))
+                            if (this.props.onSuccess) this.props.onSuccess(resp)
 
                             if (this._ref.image_sucursal) {
                                 const value = this._ref.image_sucursal.getValue();
@@ -144,14 +145,6 @@ export default class PopupCrearAlmacen extends Component<Props> {
                                     Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).empresa + "upload/sucursal/" + resp.key)
                                 }
                             }
-
-                            // if (this._ref.image_sucursal) {
-                            //     const value = this._ref.image_sucursal.getValue();
-                            //     if (Array.isArray(value)) {
-                            //         Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).empresa + "upload/almacen/" + this.props.editObject?.key)
-                            //     }
-                            // }
-                            // if (this.props.onSuccess) this.props.onSuccess(resp)
 
 
                             this.forceUpdate();

@@ -22,9 +22,8 @@ export default class tabla extends Component {
 
 
     verificar(estado) {
-
         return <SView col={"xs-12"} center row>
-            {estado ? <SIconApp name='Check' fill='green' height={20} /> : <SIconApp name='Cerrar' fill='red' height={14} />}
+            {estado ? <SIconApp name='Check' fill='green' stroke={STheme.color.text} height={20} /> : <SIconApp name='Cerrar' fill='red' height={14} />}
         </SView>;
     }
 
@@ -47,7 +46,7 @@ export default class tabla extends Component {
 
                 FloatMenu.open({
                     e: e.evt,
-                    label: "Suc: " + e.row.sucursal?.descripcion + '-' + e.row.descripcion,
+                    label: "Suc: " + e.row?.sucursal?.descripcion + '-' + e.row?.descripcion,
                     options: [
                         {
                             icon: <SIconApp name='Edit' />,
@@ -62,12 +61,13 @@ export default class tabla extends Component {
                                     editObject: sucursal,
                                     key_empresa: sucursal.key_empresa,
                                     onSuccess: (e) => {
-                                        //  this.DinamicTable.loadData();
-                                        // this.forceUpdate();
+
                                     }
                                 })
-
-                                console.log("se esta editando sucursal " + JSON.stringify(sucursal))
+                                // console.log("que actuali " + JSON.stringify(e))
+                                this.DinamicTable.loadData();
+                                this.forceUpdate();
+                                // console.log("se esta editando sucursal " + JSON.stringify(sucursal))
 
 
                             }
@@ -162,7 +162,7 @@ export default class tabla extends Component {
                         </SView> : null}
                 </>}
             />
-          
+
             <DinamicTable.Col key="alma" label="Almacen" width={180} data={(e) => e.row?.key ?? ""}
                 customComponent={e => <>
                     {(e.row?.key) ?
@@ -181,10 +181,9 @@ export default class tabla extends Component {
             {/* <DinamicTable.Col key="descripcion" label="Almacen" width={100} data={(e) => e.row?.descripcion} /> */}
             <DinamicTable.Col key="observacion" label="Observación" width={180} data={(e) => e.row?.observacion} />
             <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-
-            <DinamicTable.Col key={"is_stock"} label='Almacen con stock?' width={120} data={(e) => e.row.is_stock} customComponent={e => this.verificar(e.row?.is_stock)} />
-            <DinamicTable.Col key={"is_venta"} label='Almacen para ventas?' width={120} data={(e) => e.row.is_venta} customComponent={e => this.verificar(e.row?.is_venta)} />
-            <DinamicTable.Col key={"is_entrega"} label='Requiere entrega?' width={120} data={(e) => e.row.is_entrega} customComponent={e => this.verificar(e.row?.is_entrega)} />
+            <DinamicTable.Col key={"is_stock"} label='Almacen con stock?' width={120} data={(e) => e.row?.is_stock} customComponent={e => this.verificar(e.row?.is_stock)} />
+            <DinamicTable.Col key={"is_venta"} label='Almacen para ventas?' width={120} data={(e) => e.row?.is_venta} customComponent={e => this.verificar(e.row?.is_venta)} />
+            <DinamicTable.Col key={"is_entrega"} label='Requiere entrega?' width={120} data={(e) => e.row?.is_entrega} customComponent={e => this.verificar(e.row?.is_entrega)} />
 
 
 
@@ -230,11 +229,11 @@ export default class tabla extends Component {
                 <FloatButtom onPress={() => {
                     PopupCrearAlmacen.open({
                         onSuccess: (e) => {
+                            console.log("que lastima " + JSON.stringify(e))
                             this.DinamicTable.loadData();
                             this.forceUpdate();
                         }
                     })
-                    // this.DinamicTable.loadData();
 
                 }} />
             </SPage>
