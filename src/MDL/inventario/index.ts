@@ -131,6 +131,45 @@ export default class inventario extends MDLAbstract<EventListener> {
       return resp.data;
     }
   }
+
+  async saveAlmacen(almacen: any) {
+
+    almacen.data.key_empresa = MDL.empresa.select?.key;
+    if (almacen.data.key) {
+
+      // console.log("ALmacen editado " + JSON.stringify(almacen))
+      // return;
+
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "almacen",
+        type: "editar",
+        data: almacen.data,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    } else {
+
+      // console.log("ALmacen save " + JSON.stringify(almacen))
+      // return;
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "almacen",
+        type: "registro",
+        data: almacen.data,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+
+
+      return resp.data;
+    }
+  }
+
+
   async saveProducto(producto: any) {
     if (producto.key) {
       const resp: any = await SSocket.sendPromise({

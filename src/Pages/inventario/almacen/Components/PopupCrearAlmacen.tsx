@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { SForm, SHr, SNavigation, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
+import { SForm, SHr, SNavigation, SNotification, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
 import PButtom from '../../../../Components/PButtom';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../../MDL';
@@ -94,9 +94,10 @@ export default class PopupCrearAlmacen extends Component<Props> {
                             placeholder: "Seleccione sucursal",
                             type: "select",
                             col: "xs-12",
-                            style: { paddingStart: 0 },
-                            labelStyle: { top: -10 },
-                            inputStyle: { paddingStart: 8 },
+                            style: { paddingStart: 0, fontSize: 10 },
+                            labelStyle: { top: -10, },
+                            // selectStyle: { fontSize: 10 },
+                            inputStyle: { paddingStart: 8, fontSize: 10 },
                             options: this.state.sucursales,   // siempre array
                             defaultValue: this.props.editObject?.key_sucursal?.toString() ?? null,
                             isRequired: true,
@@ -111,36 +112,43 @@ export default class PopupCrearAlmacen extends Component<Props> {
                     }}
                     onSubmit={(data: any) => {
 
-                        // const api = await MDL.inventario.saveMarca();
                         data.is_stock = data.is_stock === "si";
                         data.is_venta = data.is_venta === "si";
                         data.is_entrega = data.is_entrega === "si";
+                        data.key = this.props.editObject?.key;
+
                         console.log("picaso " + JSON.stringify(data))
 
-                        // SSocket.sendPromise({
-                        //     service: "empresa",
-                        //     component: "sucursal",
-                        //     type: this.props.editObject ? "editar" : "registro",
-                        //     key_usuario: Model.usuario.Action.getKey(),
-                        //     // data: {
-                        //     //     key_empresa: this.props.key_empresa,
-                        //     //     key_usuario: Model.usuario.Action.getKey(),
-                        //     //     ...(this.props.editObject ?? {}),
-                        //     //     ...data,
-                        //     // }
-                        // }).then((e: any) => {
-                        //     if (this.props.onSuccess) this.props.onSuccess(e)
+                        MDL.inventario.saveAlmacen({ data }).then((resp: any) => {
 
-                        //     if (this._ref.image_sucursal) {
-                        //         const value = this._ref.image_sucursal.getValue();
-                        //         if (Array.isArray(value)) {
-                        //             Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).empresa + "upload/sucursal/" + e.data.key_sucursal)
-                        //         }
-                        //     }
-                        //     console.log("response", e);
-                        // }).catch(e => {
-                        //     console.error("response", e);
-                        // })
+
+                            // if (this._ref.image_sucursal) {
+                            //     const value = this._ref.image_sucursal.getValue();
+                            //     if (Array.isArray(value)) {
+                            //         Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).empresa + "upload/sucursal/" + resp.data.key)
+                            //     }
+                            // }
+                            if (this.props.onSuccess) this.props.onSuccess(resp)
+
+
+                            // this.forceUpdate();
+                            SNotification.send({
+                                title: "Almacen guardada",
+                                body: "Almacen se ha guardado correctamente.",
+                                time: 3000,
+                                color: STheme.color.success,
+                            });
+                        }).catch((e: any) => {
+                            console.error("Error al guardar la Almacen:", e);
+                            SNotification.send({
+                                title: "Error",
+                                body: "No se pudo guardar la Almacen.",
+                                time: 3000,
+                                color: STheme.color.danger,
+                            });
+                        })
+
+
                     }}
 
                 />
@@ -148,13 +156,13 @@ export default class PopupCrearAlmacen extends Component<Props> {
             <SHr h={16} />
             <SView row col={"xs-12"}>
 
-                 {this.props.onCancel &&
+                {this.props.onCancel &&
                     <>
                         <Btn type='danger' label='CANCELAR' onPress={() => this.props.onCancel?.()} />
                         <SView width={8} />
                     </>
                 }
-                
+
                 {/* {this.props.onCancel && <>
                     <Btn type='danger' label='CANCELAR' onPress={() => {
                         if (this.props.onCancel) this.props.onCancel()

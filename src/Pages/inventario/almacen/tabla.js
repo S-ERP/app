@@ -19,18 +19,6 @@ export default class tabla extends Component {
     }
 
 
-    // modelos = null;
-
-    async loadDatasd() {
-        if (this.key_conteoxxx) {
-            const modelosByContador = await MDL.inventario.getAll_reporte_conteo_inventario_detallado();
-            this.modelos = modelosByContador;
-        } else {
-            const modelos = await MDL.inventario.getAllModeloStock(this.key_almacen);
-            this.modelos = modelos;
-        }
-        return this.modelos;
-    }
 
 
     verificar(estado) {
@@ -59,8 +47,7 @@ export default class tabla extends Component {
 
                 FloatMenu.open({
                     e: e.evt,
-                    label: "Suc: " + e.row.sucursal?.descripcion + '     -    ' + e.row.descripcion,
-                    // label: "Almacen: " + e.row.descripcion,
+                    label: "Suc: " + e.row.sucursal?.descripcion + '-' + e.row.descripcion,
                     options: [
                         {
                             icon: <SIconApp name='Edit' />,
@@ -78,23 +65,11 @@ export default class tabla extends Component {
                                         instance.componentDidMount();
                                     }
                                 })
-
-                                // let ubicacion = { lat: null, lng: null };
-                                // try {
-                                //     ubicacion = await this.obtenerUbicacion();
-                                // } catch (error) {
-                                //     console.warn("No se pudo obtener la ubicación:", error.message);
-                                // }
+                                this.DinamicTable.loadData();
 
                                 console.log("se esta editando sucursal " + JSON.stringify(sucursal))
 
-                                // PopupCrearSucursal.open({
-                                //     editObject: sucursal,
-                                //     key_empresa: e.row.key_empresa,
-                                //     onSuccess: (e) => {
-                                //         this.DinamicTable.loadData();
-                                //     }
-                                // })
+
                             }
                         },
                         {
@@ -105,21 +80,32 @@ export default class tabla extends Component {
                                     title: "Eliminar Sucursal",
                                     message: "¿Estás seguro de eliminar esta sucursal?",
                                     onPress: () => {
-                                        // const sucursal_ = {
-                                        //     ...e.row,
-                                        //     estado: 0,
-                                        // }
-                                        // SSocket.sendPromise({
-                                        //     service: "empresa",
-                                        //     component: "sucursal",
-                                        //     type: "editar",
-                                        //     data: sucursal_,
-                                        //     key_usuario: MDL.usuario.session?.key,
-                                        // }).then(e => {
-                                        //     this.DinamicTable.loadData();
-                                        // }).catch(e => {
-                                        //     console.error("response", e);
-                                        // })
+
+                                        const data = {
+                                            ...e.row,
+                                            estado: 0,
+                                        }
+
+
+                                        MDL.inventario.saveAlmacen({ data }).then((resp) => {
+                                            this.DinamicTable.loadData();
+                                            this.forceUpdate();
+                                            SNotification.send({
+                                                title: "Almacen Elimninada",
+                                                body: "Almacen se ha Elimninado correctamente.",
+                                                time: 3000,
+                                                color: STheme.color.success,
+                                            });
+                                        }).catch((e) => {
+                                            console.error("Error al guardar la Almacen:", e);
+                                            SNotification.send({
+                                                title: "Error",
+                                                body: "No se pudo guardar la Almacen.",
+                                                time: 3000,
+                                                color: STheme.color.danger,
+                                            });
+                                        })
+
 
                                     }
                                 })
@@ -162,7 +148,7 @@ export default class tabla extends Component {
 
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
 
-            {/* <DinamicTable.Col key="sucursal" label="Sucursal" width={120} data={(e) => e.row?.key_sucursal ?? ""}
+            <DinamicTable.Col key="sucursal" label="Sucursal" width={120} data={(e) => e.row?.key_sucursal ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_sucursal) ?
                         <SView col={"xs-12"} row  >
@@ -175,7 +161,7 @@ export default class tabla extends Component {
                             <SText center color={STheme.color.text}>{e.row?.sucursal?.descripcion}</SText>
                         </SView> : null}
                 </>}
-            /> */}
+            />
 
             <DinamicTable.Col key="descripcion" label="Almacen" width={100} data={(e) => e.row?.descripcion} />
             <DinamicTable.Col key="observacion" label="Observación" width={180} data={(e) => e.row?.observacion} />
@@ -186,7 +172,6 @@ export default class tabla extends Component {
             <DinamicTable.Col key={"is_stock"} label='Almacen con stock?' width={120} data={(e) => e.row.is_stock} customComponent={e => this.verificar(e.row?.is_stock)} />
 
 
-            {/* <DinamicTable.Col key={"estado"} label='Estado' width={120} data={(e) => e.row.estado} customComponent={e => this.verificar(e.row?.estado)} /> */}
 
 
             <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
@@ -228,16 +213,15 @@ export default class tabla extends Component {
             <SPage title="Gestión lista de almacenes" disableScroll>
                 {this.mostrarTabla()}
                 <FloatButtom onPress={() => {
-                    console.log("detaleeeeee ")
-
-                    PopupCrearAlmacen.open({})
-
                     PopupCrearAlmacen.open({
                         key_empresa: "f894ea35-5ad1-4b61-a2d0-9294965be169",
                         onSuccess: (e) => {
                             this.DinamicTable.loadData();
+                            this.forceUpdate();
                         }
                     })
+                    // this.DinamicTable.loadData();
+
                 }} />
             </SPage>
         );
