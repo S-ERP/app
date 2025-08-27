@@ -85,7 +85,7 @@ export default class PopupCrearAlmacen extends Component<Props> {
                                 <InputFoto
                                     ref={ref => this._ref.image_sucursal = ref}
                                     src={(SSocket.api as any).empresa + "sucursal/" + this.props.editObject?.key}
-                                    style={{ width: 50, height: 50, }} />
+                                     style={{ width: 50, height: 50, }} />
                             </SView>,
                         },
 
@@ -96,7 +96,6 @@ export default class PopupCrearAlmacen extends Component<Props> {
                             col: "xs-12",
                             style: { paddingStart: 0, fontSize: 10 },
                             labelStyle: { top: -10, },
-                            // selectStyle: { fontSize: 10 },
                             inputStyle: { paddingStart: 8, fontSize: 10 },
                             options: this.state.sucursales,   // siempre array
                             defaultValue: this.props.editObject?.key_sucursal?.toString() ?? null,
@@ -104,11 +103,27 @@ export default class PopupCrearAlmacen extends Component<Props> {
                         },
 
                         "observacion": { label: "observacion", placeholder: "observacion", defaultValue: this.props.editObject?.observacion, col: "xs-12" },
-                        "is_stock": { label: "Almacen con stock?", placeholder: "Seleccionar", type: "select", options: ["si", "no"], defaultValue: this.props.editObject ? (this.props.editObject.is_stock ? "si" : "no") : null, col: "xs-12" },
-                        "is_venta": { label: "Almacen para ventas?", placeholder: "Seleccionar", type: "select", options: ["si", "no"], defaultValue: this.props.editObject ? (this.props.editObject.is_venta ? "si" : "no") : null, col: "xs-12" },
-                        "is_entrega": { label: "Requiere entrega?", placeholder: "Seleccionar", type: "select", options: ["si", "no"], defaultValue: this.props.editObject ? (this.props.editObject.is_entrega ? "si" : "no") : null, col: "xs-12" },
-
-
+                        "is_stock": {
+                            label: "¿Almacén con stock?",
+                            type: "select",
+                            options: ["si", "no"],
+                            defaultValue: this.props.editObject?.is_stock ? "si" : "no",
+                            col: "xs-12",
+                        },
+                        "is_venta": {
+                            label: "¿Almacén para ventas?",
+                            type: "select",
+                            options: ["si", "no"],
+                            defaultValue: this.props.editObject?.is_venta ? "si" : "no",
+                            col: "xs-12",
+                        },
+                        "is_entrega": {
+                            label: "¿Requiere entrega?",
+                            type: "select",
+                            options: ["si", "no"],
+                            defaultValue: this.props.editObject?.is_entrega ? "si" : "no",
+                            col: "xs-12",
+                        },
                     }}
                     onSubmit={(data: any) => {
 
@@ -121,17 +136,25 @@ export default class PopupCrearAlmacen extends Component<Props> {
 
                         MDL.inventario.saveAlmacen({ data }).then((resp: any) => {
 
+                            // console.log("ddddddd " + JSON.stringify(resp))
+
+                            if (this._ref.image_sucursal) {
+                                const value = this._ref.image_sucursal.getValue();
+                                if (Array.isArray(value)) {
+                                    Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).empresa + "upload/sucursal/" + resp.key)
+                                }
+                            }
 
                             // if (this._ref.image_sucursal) {
                             //     const value = this._ref.image_sucursal.getValue();
                             //     if (Array.isArray(value)) {
-                            //         Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).empresa + "upload/sucursal/" + resp.data.key)
+                            //         Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).empresa + "upload/almacen/" + this.props.editObject?.key)
                             //     }
                             // }
-                            if (this.props.onSuccess) this.props.onSuccess(resp)
+                            // if (this.props.onSuccess) this.props.onSuccess(resp)
 
 
-                            // this.forceUpdate();
+                            this.forceUpdate();
                             SNotification.send({
                                 title: "Almacen guardada",
                                 body: "Almacen se ha guardado correctamente.",
@@ -139,6 +162,8 @@ export default class PopupCrearAlmacen extends Component<Props> {
                                 color: STheme.color.success,
                             });
                         }).catch((e: any) => {
+                            if (this.props.onSuccess) this.props.onSuccess(e)
+
                             console.error("Error al guardar la Almacen:", e);
                             SNotification.send({
                                 title: "Error",
@@ -155,28 +180,15 @@ export default class PopupCrearAlmacen extends Component<Props> {
             </ScrollView>
             <SHr h={16} />
             <SView row col={"xs-12"}>
-
-                {this.props.onCancel &&
-                    <>
-                        <Btn type='danger' label='CANCELAR' onPress={() => this.props.onCancel?.()} />
-                        <SView width={8} />
-                    </>
-                }
-
-                {/* {this.props.onCancel && <>
+                {this.props.onCancel && <>
                     <Btn type='danger' label='CANCELAR' onPress={() => {
                         if (this.props.onCancel) this.props.onCancel()
                     }} />
                     <SView width={8} />
-                </>} */}
-
-
-                <Btn type='primary' label='GUARDAR' onPress={() => this.form?.submit()} />
-
-
-                {/* <Btn type='primary' label='GUARDAR' onPress={() => {
+                </>}
+                <Btn type='primary' label='GUARDAR' onPress={() => {
                     if (this.form) this.form.submit();
-                }} /> */}
+                }} />
 
             </SView>
         </SView>
