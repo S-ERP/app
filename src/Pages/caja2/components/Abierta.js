@@ -194,7 +194,13 @@ export default class Abierta extends Component {
                                     }}>Vender Productos</SText>
                                     <SText card style={{ backgroundColor: STheme.color.danger }} padding={8} margin={4}>Cobrar a Clientes</SText>
                                     <SText card padding={8} margin={4} onPress={() => {
+                                        // SelectTipoPago.openPopup({
+                                        //     key_punto_venta: this.props.caja.key_punto_venta,
+                                        //     solo_para_caja: true,
+                                        //     onSelect: (item) => {
 
+                                        //     }
+                                        // })
                                     }}>Cargar efectivo desde Banco</SText>
                                     <SText card padding={8} margin={4} style={{ backgroundColor: STheme.color.danger }} >Otros Ingresos</SText>
                                     <SText card padding={8} margin={4} onPress={() => {
