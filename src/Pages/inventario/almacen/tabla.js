@@ -150,10 +150,8 @@ export default class tabla extends Component {
                     itm.razon_social = empresa
                 });
 
-
-
-
-                console.log("todoo el data " + JSON.stringify(api))
+                console.log("📦 DATA COMPLETA:", api);
+                // console.log("todoo el data " + JSON.stringify(api))
                 return api;
             }}
 
