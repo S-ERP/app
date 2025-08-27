@@ -58,11 +58,12 @@ export default class tabla extends Component {
 
                 FloatMenu.open({
                     e: e.evt,
-                    label: "Sucursal: " + e.row.descripcion,
+                    label: "Suc: " + e.row.sucursal?.descripcion + '     -    ' + e.row.descripcion,
+                    // label: "Almacen: " + e.row.descripcion,
                     options: [
                         {
                             icon: <SIconApp name='Edit' />,
-                            label: "Actualizar Sucursal",
+                            label: "Actualizar Almacen",
                             onPress: () => {
                                 // let ubicacion = { lat: null, lng: null };
                                 // try {
@@ -88,7 +89,7 @@ export default class tabla extends Component {
                         },
                         {
                             icon: <SIconApp name='Delete' />,
-                            label: "Eliminar Sucursal",
+                            label: "Eliminar Almacen",
                             onPress: () => {
                                 SPopup.confirm({
                                     title: "Eliminar Sucursal",
@@ -206,7 +207,7 @@ export default class tabla extends Component {
                                 </SView>
                             </SView>
                             <SView width={5} />
-                            <SText center color={STheme.color.text}style={{fontSize:15, textTransform:"capitalize"}} >{e.row?.razon_social}</SText>
+                            <SText center color={STheme.color.text} style={{ fontSize: 15, textTransform: "capitalize" }} >{e.row?.razon_social}</SText>
                         </SView> : null}
                 </>}
             />
@@ -216,7 +217,7 @@ export default class tabla extends Component {
 
     render() {
         return (
-            <SPage title="Gestión de Sucursales" disableScroll>
+            <SPage title="Gestión lista de almacenes" disableScroll>
                 {this.mostrarTabla()}
                 <FloatButtom onPress={() => {
                     // PopupCrearSucursal.open({
