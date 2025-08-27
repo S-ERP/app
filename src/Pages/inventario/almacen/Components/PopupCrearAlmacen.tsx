@@ -1,22 +1,17 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { SForm, SHr, SNavigation, SNotification, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
-import PButtom from '../../../../Components/PButtom';
+import { ScrollView } from 'react-native';
+import { SForm, SHr, SNotification, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../../MDL';
-import Model from '../../../../Model';
 import Btn from './Btn';
 import InputFoto from '../../../../Components/InputFoto';
-
 type Props = {
     key_empresa: string,
     editObject?: any,
     onCancel?: Function,
     onSuccess?: Function,
 }
-
 export default class PopupCrearAlmacen extends Component<Props> {
-
     static open(props: Props) {
         SPopup.open({
             key: "PopupCrearAlmacen",
@@ -24,7 +19,6 @@ export default class PopupCrearAlmacen extends Component<Props> {
                 maxWidth: "100%",
                 maxHeight: "100%",
                 width: 500,
-                // height: 500,
                 borderRadius: 8,
                 borderColor: STheme.color.card,
                 borderWidth: 1,
@@ -34,24 +28,19 @@ export default class PopupCrearAlmacen extends Component<Props> {
                     SPopup.close("PopupCrearAlmacen")
                     if (props.onCancel) props.onCancel()
                 }}
-
                     onSuccess={(e: any) => {
                         SPopup.close("PopupCrearAlmacen")
                         if (props.onSuccess) props.onSuccess(e)
                     }}
-
                 />
             </SView>
         })
     }
-
     form: SForm | undefined = undefined;
     _ref: any = {}
     state: any = {
         sucursales: []  // inicializamos vacio
     }
-
-
     componentDidMount(): void {
         MDL.empresa.getAllSucursales().then(item => {
             this.setState({
@@ -62,9 +51,6 @@ export default class PopupCrearAlmacen extends Component<Props> {
             });
         }).catch(e => console.error(e));
     }
-
-
-
     render() {
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" almacen"}</SText>
@@ -75,7 +61,6 @@ export default class PopupCrearAlmacen extends Component<Props> {
                         justifyContent: "space-between",
                     }}
                     inputs={{
-
                         "descripcion": {
                             label: "Nombre del almacen *", placeholder: "Ingresa el nombre del almacen", isRequired: true, autoFocus: true,
                             defaultValue: this.props.editObject?.descripcion,
@@ -89,7 +74,6 @@ export default class PopupCrearAlmacen extends Component<Props> {
                                     style={{ width: 50, height: 50, }} />
                             </SView>,
                         },
-
                         "key_sucursal": {
                             label: "Sucursal",
                             placeholder: "Seleccione sucursal",
@@ -102,7 +86,6 @@ export default class PopupCrearAlmacen extends Component<Props> {
                             defaultValue: this.props.editObject?.key_sucursal?.toString() ?? null,
                             isRequired: true,
                         },
-
                         "observacion": { label: "observacion", placeholder: "observacion", defaultValue: this.props.editObject?.observacion, col: "xs-12" },
                         "is_stock": {
                             label: "¿Almacén con stock?",
@@ -127,26 +110,19 @@ export default class PopupCrearAlmacen extends Component<Props> {
                         },
                     }}
                     onSubmit={(data: any) => {
-
                         data.is_stock = data.is_stock === "si";
                         data.is_venta = data.is_venta === "si";
                         data.is_entrega = data.is_entrega === "si";
                         data.key = this.props.editObject?.key;
-
                         console.log("picaso " + JSON.stringify(data))
-
                         MDL.inventario.saveAlmacen({ data }).then((resp: any) => {
-
                             if (this.props.onSuccess) this.props.onSuccess(resp)
-
                             if (this._ref.image_sucursal) {
                                 const value = this._ref.image_sucursal.getValue();
                                 if (Array.isArray(value)) {
                                     Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).empresa + "upload/sucursal/" + resp.key)
                                 }
                             }
-
-
                             this.forceUpdate();
                             SNotification.send({
                                 title: "Almacen guardada",
@@ -156,7 +132,6 @@ export default class PopupCrearAlmacen extends Component<Props> {
                             });
                         }).catch((e: any) => {
                             if (this.props.onSuccess) this.props.onSuccess(e)
-
                             console.error("Error al guardar la Almacen:", e);
                             SNotification.send({
                                 title: "Error",
@@ -165,10 +140,7 @@ export default class PopupCrearAlmacen extends Component<Props> {
                                 color: STheme.color.danger,
                             });
                         })
-
-
                     }}
-
                 />
             </ScrollView>
             <SHr h={16} />
@@ -182,7 +154,6 @@ export default class PopupCrearAlmacen extends Component<Props> {
                 <Btn type='primary' label='GUARDAR' onPress={() => {
                     if (this.form) this.form.submit();
                 }} />
-
             </SView>
         </SView>
     }

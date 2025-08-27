@@ -2,10 +2,8 @@ import SSocket from "servisofts-socket";
 import MDLAbstract from "../MDLAbstract";
 import { EventListener } from "./types";
 import MDL from "..";
-
 export default class inventario extends MDLAbstract<EventListener> {
   async componentDidMount() { }
-
   async getAllModeloStock(_key_almacen: string) {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
@@ -16,9 +14,7 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_usuario: MDL.usuario.session?.key,
       key_almacen: _key_almacen,
     });
-
     console.log("getAllModeloStock", resp.data);
-
     return Object.values(resp.data || {});
   }
   async getAllModeloStockBySucursal(key_sucursal: string) {
@@ -31,9 +27,7 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_usuario: MDL.usuario.session?.key,
       key_sucursal: key_sucursal,
     });
-
     console.log("getAllModeloStock", resp.data);
-
     return Object.values(resp.data || {});
   }
   async getAllModelo() {
@@ -45,7 +39,6 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_empresa: MDL.empresa.select?.key,
       key_usuario: MDL.usuario.session?.key,
     });
-
     return Object.values(resp.data || {});
   }
   async getAllMarca() {
@@ -131,15 +124,11 @@ export default class inventario extends MDLAbstract<EventListener> {
       return resp.data;
     }
   }
-
   async saveAlmacen(almacen: any) {
-
     almacen.data.key_empresa = MDL.empresa.select?.key;
     if (almacen.data.key) {
-
       // console.log("ALmacen editado " + JSON.stringify(almacen))
       // return;
-
       const resp: any = await SSocket.sendPromise({
         version: "1.0",
         service: "inventario",
@@ -151,7 +140,6 @@ export default class inventario extends MDLAbstract<EventListener> {
       });
       return resp.data;
     } else {
-
       // console.log("ALmacen save " + JSON.stringify(almacen))
       // return;
       const resp: any = await SSocket.sendPromise({
@@ -163,13 +151,9 @@ export default class inventario extends MDLAbstract<EventListener> {
         key_empresa: MDL.empresa.select?.key,
         key_usuario: MDL.usuario.session?.key,
       });
-
-
       return resp.data;
     }
   }
-
-
   async saveProducto(producto: any) {
     if (producto.key) {
       const resp: any = await SSocket.sendPromise({
@@ -220,7 +204,6 @@ export default class inventario extends MDLAbstract<EventListener> {
       return resp.data;
     }
   }
-
   async getAllProductos(key_modelo: any) {
     if (key_modelo) {
       const resp: any = await SSocket.sendPromise({
@@ -247,7 +230,6 @@ export default class inventario extends MDLAbstract<EventListener> {
     });
     return resp.data;
   }
-
   async getAllConteoManualInventario() {
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
@@ -255,10 +237,8 @@ export default class inventario extends MDLAbstract<EventListener> {
       type: "getAll",
       key_almacen: MDL.empresa.select?.key,
     });
-
     return Object.values(resp.data || {});
   }
-
   async aplicar_cardex(_key_conteo: string) {
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
@@ -268,13 +248,10 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_empresa: MDL.empresa.select?.key,
       key_conteo: _key_conteo,
     });
-
     console.log("aplicar_cardex", resp.data);
     return Object.values(resp.data || {});
   }
-
   async anular_cardex(_key_conteo: string) {
-
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
       component: "conteo_manual_inventario",
@@ -282,12 +259,9 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_empresa: MDL.empresa.select?.key,
       key_conteo: _key_conteo,
     });
-
     console.log("aplicar_cardex", resp.data);
     return Object.values(resp.data || {});
   }
-
-
   //   async saveModelo(modelo: any) {
   //     if (modelo.key) {
   //       const resp: any = await SSocket.sendPromise({
@@ -313,7 +287,6 @@ export default class inventario extends MDLAbstract<EventListener> {
   //       return resp.data;
   //     }
   //   }
-
   async saveConteoManualInventario(obj: any) {
     if (!obj.key) {
       const resp: any = await SSocket.sendPromise({
@@ -324,14 +297,12 @@ export default class inventario extends MDLAbstract<EventListener> {
         key_almacen: obj.key_almacen,
         key_usuario: MDL.usuario.session?.key,
       });
-
       this.dispatchEvent({
         type: "chavalEventos",
       });
       return resp.data;
     }
   }
-
   //   async updateConteoManualInventario(
   //     data: any[],
   //     key_cliente_proyecto: string
@@ -347,7 +318,6 @@ export default class inventario extends MDLAbstract<EventListener> {
   //     });
   //     return resp.data;
   //   }
-
   async updateConteoManualInventario(
     data: any[],
     key_almacen: string,
@@ -363,14 +333,12 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_usuario: MDL.usuario.session?.key,
       key: key_contador,
     });
-
     this.dispatchEvent({
       type: "chavalEventos",
     });
     return resp.data;
     // }
   }
-
   async getAll_reporte_conteo_inventario_detallado() {
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
@@ -380,7 +348,6 @@ export default class inventario extends MDLAbstract<EventListener> {
     });
     return resp.data;
   }
-
   async getByKey_reporte_conteo_inventario_detallado(key_contador: any) {
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
@@ -392,7 +359,6 @@ export default class inventario extends MDLAbstract<EventListener> {
     //    return Object.values(resp.data || {});
     return resp.data;
   }
-
   // async getAll_reporte_conteo_inventario_detallado() {
   // const resp: any = await SSocket.sendPromise({
   //   service: "inventario",
@@ -402,6 +368,5 @@ export default class inventario extends MDLAbstract<EventListener> {
   //  });
   // return resp.data;
   // }
-
   // {/* <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.key_usuario} /> */}
 }
