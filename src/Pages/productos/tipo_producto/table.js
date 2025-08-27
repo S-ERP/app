@@ -19,6 +19,8 @@ export default class table extends Component {
             t.cuenta_contable = cuentas[t.key_cuenta_contable];
             t.cuenta_contable_ganancia = cuentas[t.key_cuenta_contable_ganancia];
             t.cuenta_contable_costo = cuentas[t.key_cuenta_contable_costo];
+            t.cuenta_contable_depreciacion_activo = cuentas[t.key_cuenta_contable_depreciacion_activo];
+            t.cuenta_contable_depreciacion_gasto = cuentas[t.key_cuenta_contable_depreciacion_gasto];
         })
         return tipos;
     }
@@ -116,6 +118,19 @@ export default class table extends Component {
                         color: STheme.color.lightGray
                     }}
                     data={e => e.row.cuenta_contable_costo ? `${e.row.cuenta_contable_costo.codigo} ${e.row.cuenta_contable_costo.descripcion}` : ""} />
+
+                <DinamicTable.Col key={"key_cuenta_contable_depreciacion_activo"} label="key_cuenta_contable_depreciacion_activo"
+                    width={200}
+                    textStyle={{
+                        color: STheme.color.lightGray
+                    }}
+                    data={e => e.row.cuenta_contable_depreciacion_activo ? `${e.row.cuenta_contable_depreciacion_activo.codigo} ${e.row.cuenta_contable_depreciacion_activo.descripcion}` : ""} />
+                <DinamicTable.Col key={"key_cuenta_contable_depreciacion_gasto"} label="key_cuenta_contable_depreciacion_gasto"
+                    width={200}
+                    textStyle={{
+                        color: STheme.color.lightGray
+                    }}
+                    data={e => e.row.cuenta_contable_depreciacion_gasto ? `${e.row.cuenta_contable_depreciacion_gasto.codigo} ${e.row.cuenta_contable_depreciacion_gasto.descripcion}` : ""} />
             </DinamicTable>
             <FloatButtom onPress={() => {
                 FormularioTipoProducto.open({

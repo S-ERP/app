@@ -50,6 +50,7 @@ export default class PopupDesglose extends Component {
             <DinamicTable.Col key={"precio_compra"} label='P. compra' width={70} data={(e) => e.row?.precio_compra} />
             <DinamicTable.Col key={"cantidad"} label='Cantidad' width={70} data={(e) => e.row?.cantidad} />
             <DinamicTable.Col key={"almacen"} label='Almacen' width={150} data={(e) => e.row?.almacen?.descripcion} />
+            <DinamicTable.Col key={"depreciacion"} label='Depreciacion' width={150} data={(e) => e.row?.depreciacion} />
             {/* <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row?.barcode} /> */}
         </DinamicTable>
 

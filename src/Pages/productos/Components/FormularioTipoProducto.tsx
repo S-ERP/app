@@ -165,12 +165,40 @@ export default class FormularioTipoProducto extends Component<Props> {
                         options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0 && c.tipo == "ACTIVO").map(cuentaToText),
 
                     },
+                    "key_cuenta_contable_depreciacion_activo": {
+                        col: "xs-12",
+                        type: "select2",
+                        label: "Cuenta de Depreciación Activo",
+                        style: { paddingStart: 0, fontSize: 10 },
+                        labelStyle: { top: -10, },
+                        inputStyle: { paddingStart: 8, fontSize: 10 },
+                        selectStyle: {
+                            fontSize: 10,
+                        },
+                        defaultValue: cuentaToText(this.state.cuentas.find(c => c.key == this.props.editObject?.key_cuenta_contable_depreciacion_activo)),
+                        options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0 && c.tipo == "ACTIVO").map(cuentaToText),
+                    },
+                    "key_cuenta_contable_depreciacion_gasto": {
+                        col: "xs-12",
+                        type: "select2",
+                        label: "Cuenta de Depreciación Gasto",
+                        style: { paddingStart: 0, fontSize: 10 },
+                        labelStyle: { top: -10, },
+                        inputStyle: { paddingStart: 8, fontSize: 10 },
+                        selectStyle: {
+                            fontSize: 10,
+                        },
+                        defaultValue: cuentaToText(this.state.cuentas.find(c => c.key == this.props.editObject?.key_cuenta_contable_depreciacion_gasto)),
+                        options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0 && c.tipo == "GASTO").map(cuentaToText),
+                    }
 
                 }}
                 onSubmit={(data: any) => {
                     const cuentaGanancia = findCuentaText(this.state.cuentas, data.key_cuenta_contable_ganancia);
                     const cuentaCosto = findCuentaText(this.state.cuentas, data.key_cuenta_contable_costo);
                     const cuentaInventario = findCuentaText(this.state.cuentas, data.key_cuenta_contable);
+                    const cuentaDepreciacionActivo = findCuentaText(this.state.cuentas, data.key_cuenta_contable_depreciacion_activo);
+                    const cuentaDepreciacionGasto = findCuentaText(this.state.cuentas, data.key_cuenta_contable_depreciacion_gasto);
                     console.log(data, cuentaGanancia, cuentaCosto, cuentaInventario);
                     const final_data = {
                         ...(this.props.editObject ?? {
@@ -181,6 +209,8 @@ export default class FormularioTipoProducto extends Component<Props> {
                         key_cuenta_contable_ganancia: cuentaGanancia?.key,
                         key_cuenta_contable_costo: cuentaCosto?.key,
                         key_cuenta_contable: cuentaInventario?.key,
+                        key_cuenta_contable_depreciacion_activo: cuentaDepreciacionActivo?.key,
+                        key_cuenta_contable_depreciacion_gasto: cuentaDepreciacionGasto?.key,
                     }
                     MDL.inventario.saveTipoProducto(final_data).then((resp: any) => {
                         if (this._ref.image_perfil) {

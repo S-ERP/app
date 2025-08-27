@@ -114,6 +114,7 @@ export default class root extends React.Component {
                 {
                     cantidad: item.cantidad,
                     precio_unitario: item.precio,
+                    detalle: item.detalle,
                     // precio_facturado: item.precio,
                     descuento: 0,
                     descripcion: item.producto,
@@ -297,6 +298,16 @@ class Detalle extends React.Component {
                                 }
                             })
                         }}
+                    />
+                    <SHr h={4} />
+                    <SInput
+                        ref={ref => this.inputs["detalle"] = ref}
+                        placeholder={"Detalle"}
+                        defaultValue={this.props.data.detalle}
+                        onChangeText={e => {
+                            this.props.data.detalle = e;
+                        }}
+                        type="default"
                     />
                 </SView>
                 <SView col={"xs-12 sm-5"} row>
