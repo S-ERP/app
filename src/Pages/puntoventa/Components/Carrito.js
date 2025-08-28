@@ -17,11 +17,13 @@ export default class Carrito extends Component {
     }
     async loadData() {
         const enviroments = await MDL.contabilidad.getEnviroment();
-
-        console.log("numerosssssss " + JSON.stringify(enviroments))
         this._enviromentsIva = parseFloat(enviroments?.IVA?.observacion) / 100;
         this._numeroIva = parseInt(enviroments?.IVA?.observacion);
 
+
+        const activa = await MDL.caja.getActiva();
+        this._key_sucursal = activa?.key_sucursal;
+        this._key_cajero = activa?.key_usuario;
         this.forceUpdate();
     }
     setCarrito(nuevoCarrito) {
@@ -203,6 +205,8 @@ export default class Carrito extends Component {
                 }
                 <TecladoNumerico
                     cliente={this.cliente}
+                    key_sucursal={this._key_sucursal}
+                    key_cajero={this._key_cajero}
                     carrito={this.carrito}
                     carritonuevo={this.carritonuevo}
                     numeroIva={this._numeroIva}

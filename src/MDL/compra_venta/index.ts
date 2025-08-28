@@ -21,7 +21,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       // key_empresa: MDL.empresa.select?.key,
       //key_sucursal: sucursal?.key_sucursal || "default_key_aqui",
       // key_sucursal: data.key_sucursal,
-      key_cliente: data.key_cliente,
+      key_cliente: data?.key_cliente,
       // key_vendedor: data.key_vendedor,
       key_caja: MDL.caja.activa?.key,
       tipos_pago: data?.caja?.tipos_pago,

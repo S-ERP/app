@@ -5,6 +5,9 @@ import Model from '../../../../Model';
 import ResumenTotales from './ResumenTotales';
 import PopupConfirmaPago from './PopupConfirmaPago';
 import FotoCliente from '../Foto/FotoCliente';
+import SelectTipoPago from '../../../caja2/components/SelectTipoPago';
+import MDL from '../../../../MDL';
+import ReciboRollo from '../../../../Components/PDF/venta/ReciboRollo';
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
@@ -17,7 +20,10 @@ export default class TecladoNumerico extends Component {
         // this.descuentoManual = "";
     }
 
-    dataFormateada({ carrito = [], cliente = null, caja = null, vendedor = null }) {
+
+
+
+    dataFormateada({ sucursal = null, carrito = [], cliente = null, vendedor = null, caja = null }) {
         const carritoFormateado = carrito.map(item => ({
             key: item.key,
             descripcion: item.descripcion,
@@ -33,9 +39,10 @@ export default class TecladoNumerico extends Component {
         const clienteFormateado = cliente?.key;
         const vendedorFormateado = vendedor?.key;
         return {
+            sucursal: sucursal,
             carrito: carritoFormateado,
-            key_cliente: clienteFormateado ?? null,
-            key_vendedor: vendedorFormateado ?? null,
+            key_cliente: cliente?.key ?? null,
+            key_vendedor: vendedor?.key ?? null,
             caja: caja,
         };
     }
@@ -168,6 +175,101 @@ export default class TecladoNumerico extends Component {
             </SView>
         })
     }
+
+
+    renderButton(totalFinal, subtotal, descuento, conFactura, carrito, cliente) {
+        // console.log("WWWWW")
+        if (!this.tipos_pago) {
+            SNotification.send({
+                title: "Error",
+                body: "No hay tipo de pago",
+                type: "error",
+                color: STheme.color.error,
+                time: 5000,
+            });
+            return;
+        }
+        // if (!this.variableGlobal || this.variableGlobal < totalFinal) {
+        //     SNotification.send({
+        //         title: "Error",
+        //         body: "Monto insuficiente para pagar",
+        //         type: "error",
+        //         color: STheme.color.error,
+        //         time: 5000,
+        //     });
+        //     return;
+        // }
+        const recibi = this.tipos_pago.efectivo || 0;
+        const key_sucursal = this.props?.key_sucursal;
+        const key_cliente = this.cliente?.key;
+        const key_cajero = this.props?.key_cajero;
+        const detalle = carrito.map(item => ({
+            key_modelo: item.key,
+            descripcion: item.descripcion,
+            precio_unitario: item.precio_venta ?? 0,
+            cantidad: item.cantidad ?? 0,
+        }));
+
+        const caja = {
+            subtotal: SMath.formatMoney(subtotal, 2),
+            iva: SMath.formatMoney(descuento, 2),
+            descuento: SMath.formatMoney(descuento || 0, 2),
+            monto_total: SMath.formatMoney((subtotal - descuento), 2),
+            montoRecibido: SMath.formatMoney((recibi || 0), 2),
+            cambio: SMath.formatMoney((recibi - totalFinal), 2),
+            conFactura: conFactura ? true : false,
+            tipos_pago: this.tipos_pago,
+            monto_factura: conFactura ? SMath.formatMoney((subtotal - descuento), 2) : SMath.formatMoney(0, 2),
+        };
+
+        const datos = {
+            key_sucursal,
+            detalle,
+            key_cliente,
+            key_cajero,
+            caja
+        };
+
+
+
+        // console.log("basta....... " + JSON.stringify(datos))
+
+        SNotification.send({
+            key: "compra",
+            title: "Esperando...",
+            type: "loading",
+        })
+
+        MDL.compra_venta.registrar(datos).then((res) => {
+
+            this.props?.onReload?.();
+            this.props?.onReloadCliente?.(null); // Limpia cliente en FotoCliente
+
+            ReciboRollo.imprimir(res.key)
+            // ReciboCarta.imprimir(res.key)
+            SPopup.close("popup_config_horario");
+            SNavigation.goBack();
+            this.tipos_pago = null;
+            // this.tipos_pago = {};
+            SNotification.remove("compra")
+            this.forceUpdate();
+
+        }).catch(res => {
+            console.log("compra_venta registrado error " + res.error)
+            SNotification.send({
+                key: "compra",
+                title: "Error",
+                body: res.error,
+                type: "error",
+                color: STheme.color.error,
+                time: 5000
+            }
+            )
+        })
+
+
+    }
+
     renderTecladoNumerico = () => {
         const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
         const style_text = {
@@ -181,6 +283,8 @@ export default class TecladoNumerico extends Component {
             ["7", "8", "9", "Precio"],
             ["+/-", "0", ".", "<"]
         ];
+        const carrito = this.props?.carrito || {};
+
         return (
             <>
                 <SView col={"xs-0 md-12"} row color={STheme.color.danger}>
@@ -194,35 +298,29 @@ export default class TecladoNumerico extends Component {
                         </SView>
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 8, margin: 2 }} onPress={() => {
                             let carro = this.props?.carrito || {};
-                            PopupConfirmaPago.open({
-                                subtotal: subtotal,
-                                descuento: this.props.descuento,
-                                iva: this.props.descuento,
-                                totalImpuesto: totalImpuesto,
-                                totalDescuento: descuento,
-                                totalFinal: (subtotal - this.props.descuento),
-                                numeroIva: numeroIva,
-                                conFactura: conFactura,
-                                carrito: this.props?.carrito || {},
-                                cliente: this.cliente,
-                                // onReload: () => {
-                                //     this.props?.onReload?.(); // o cualquier otra función de recarga
-                                // }
-                                onReload: () => {
-                                    this._recibido = "";
-                                    this._devolvido = "";
-                                    this.cliente = {};
-                                    this.forceUpdate();
-                                    this.props.onReload();
-                                },
-                                onReloadCliente: (cliente) => {
-                                    this.cliente = cliente || {};
-                                    this.props.onReloadCliente?.(cliente);
-                                    this.forceUpdate();
-                                }
+
+                            if (!this.tipos_pago) {
+                                SelectTipoPago.openPopup({
+                                    key_punto_venta: MDL.caja.activa.key_punto_venta,
+                                    montoMaximo: totalFinal,
+                                    onSelect: (item) => {
+                                        this.tipos_pago = item;
+                                        // this.handleSubmit(item.key_tipo_pago)
+                                        console.log("selecciono " + JSON.stringify(item))
+                                        this.forceUpdate();
+                                        SelectTipoPago.closePopup();
+                                    }
+                                });
                             }
-                            )
-                        }}>
+
+
+                            this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
+
+
+                            // }
+
+                        }}
+                        >
                             <SIcon name="iconRight" width={50} height={50} fill={STheme.color.background} />
                             <SHr height={5} />
                             <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagare</SText>
@@ -233,8 +331,10 @@ export default class TecladoNumerico extends Component {
                             <SView key={i} row>
                                 {fila.map((t, j) => (
                                     <SView key={j} flex center backgroundColor={STheme.color.darkGray} border={STheme.color.card}
-                                        style={{ height: 40, borderRadius: 8,
-                                            overflow:"hidden", margin: 2 }}
+                                        style={{
+                                            height: 40, borderRadius: 8,
+                                            overflow: "hidden", margin: 2
+                                        }}
                                         onPress={() => this.handleCalculatorPress(t)} >
                                         <SText style={style_text}>{t}</SText>
                                     </SView>

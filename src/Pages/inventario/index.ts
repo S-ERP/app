@@ -6,13 +6,15 @@ import almacen from "./almacen";
 import list from "./almacen/list";
 // import RegistroInventario from "./almacen/RegistroInventarios";
 import ReporteConteoInventario from "./almacen/ReporteConteoInventario";
+import tabla from "./almacen/tabla";
 
 
 export default SPage.combinePages("inventario",
     {
-        "": list,
+        "": tabla,
+        "list": list,
         ...almacen,
-       "reporteConteoInventario": ReporteConteoInventario,
+        "reporteConteoInventario": ReporteConteoInventario,
 
     }
 )
