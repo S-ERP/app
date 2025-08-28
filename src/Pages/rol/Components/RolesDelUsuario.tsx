@@ -22,7 +22,7 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
             key: "ppupregistro",
             content: <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 300 }} padding={16} withoutFeedback col={"xs-11"}>
                 <RolesDelUsuario {...props} onRegister={(e) => {
-                    SPopup.close("ppupregistro")
+                    // SPopup.close("ppupregistro")
                     if (props.onRegister) props.onRegister(e)
                 }}
                     onCancel={() => {
@@ -64,14 +64,14 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
             // }
             // })
             // roles.userRole = roles_;
-             resultado = Object.values(roles).map(item => {
+            resultado = Object.values(roles).map(item => {
                 const match = roles_.find(d => d.key_rol === item.key);
                 return match ? { ...item, ...match } : item;
             });
 
-           
+
         }
- console.log("resultado", resultado);
+        console.log("resultado", resultado);
         console.log("conta", roles);
 
         // roles.forEach((item: any) => {
@@ -82,7 +82,7 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
 
         this.setState({
             // roles: roles,
-            roles: (resultado.length >= 1)  ? resultado : Object.values(roles)
+            roles: (resultado.length >= 1) ? resultado : Object.values(roles)
             // roles: (resultado) ? resultado : Object.values(roles)
         })
 
@@ -109,7 +109,8 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
                     }}
                     data={this.state.roles}
                     renderItem={({ item }) => {
-                        console.log("item", item);
+                        // console.log("item", item);
+
                         return <SView col={"xs-12"} row height={30}>
                             <SView width={30} height>
                                 <SInput
@@ -124,10 +125,46 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
                                         // }
                                         console.log("check", e)
                                         console.log("item", item)
-                                        if(e) {
-                                            // MDL.rolesPermisos.registro(item.key, item.key_rol)
-                                        }else{
-                                            // MDL.rolesPermisos.editar(item.key, item.key_rol)
+                                        console.log("data", this.props.data)
+                                        if (e) {
+                                            MDL.rolesPermisos.registro(this.props.data.key, item.key).then((e) => {
+
+                                                SNotification.send({
+                                                    key: "registro",
+                                                    title: "Rol registrado",
+                                                    color: STheme.color.success,
+                                                    time: 5000,
+                                                })
+                                                if (this.props.onRegister) this.props.onRegister(e)
+                                            }).catch((e) => {
+                                                SNotification.send({
+                                                    key: "registro",
+                                                    title: "Error al registrar el rol",
+                                                    body: e,
+                                                    color: STheme.color.danger,
+                                                    time: 5000,
+                                                })
+                                            })
+
+                                        } else {
+                                            item.estado = 0
+                                            MDL.rolesPermisos.editar(this.props.data.key, item).then((e) => {
+                                                SNotification.send({
+                                                    key: "registro",
+                                                    title: "Rol editado",
+                                                    color: STheme.color.success,
+                                                    time: 5000,
+                                                })
+                                                if (this.props.onRegister) this.props.onRegister(e)
+                                            }).catch((e) => {
+                                                SNotification.send({
+                                                    key: "registro",
+                                                    title: "Error al editar el rol",
+                                                    body: e,
+                                                    color: STheme.color.danger,
+                                                    time: 5000,
+                                                })
+                                            })
                                         }
 
                                     }}
@@ -149,39 +186,41 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
             <SView row col={"xs-12"}>
                 {this.props.onCancel && <>
                     <PButtom flex type='danger' onPress={() => {
-                        if (this.props.onCancel) this.props.onCancel()
-                    }}>CANCELAR</PButtom>
-                    <SView width={8} />
+                        // if (this.props.onCancel) this.props.onCancel()
+                        // if (this.props.onRegister) this.props.onRegister(this.state.roles)
+                        SPopup.close("ppupregistro")
+                    }}>CERRAR</PButtom>
+                    {/* <SView width={8} /> */}
                 </>}
 
-                <PButtom flex type='primary' onPress={async () => {
+                {/* <PButtom flex type='primary' onPress={async () => {
                     if (!this.state.roles) return;
 
-                    // MDL.rolesPermisos.
+                    MDL.rolesPermisos.
 
-                    // let listaAgregar: any[] = [];
-                    // let listaEliminar: any[] = [];
+                    let listaAgregar: any[] = [];
+                    let listaEliminar: any[] = [];
 
-                    // this.state.roles.filter((a: any) => !!a._edited).map((item: any) => {
-                    //     let value = item._edited_value
-                    //     if (!!value) {
-                    //         listaAgregar.push({
-                    //             key_user: this.props.data.key,
-                    //             key_role: item.key,
-                    //         })
-                    //     } else {
-                    //         listaEliminar.push(item.userRole.key)
-                    //     }
-                    // })
+                    this.state.roles.filter((a: any) => !!a._edited).map((item: any) => {
+                        let value = item._edited_value
+                        if (!!value) {
+                            listaAgregar.push({
+                                key_user: this.props.data.key,
+                                key_role: item.key,
+                            })
+                        } else {
+                            listaEliminar.push(item.userRole.key)
+                        }
+                    })
 
-                    // // await MDL.role.registrarUserRoleArray(listaAgregar)
-                    // // await MDL.role.eliminarUserRoleArray(listaEliminar);
-                    // if (this.props.onRegister) this.props.onRegister(this.state.roles)
+                    // await MDL.role.registrarUserRoleArray(listaAgregar)
+                    // await MDL.role.eliminarUserRoleArray(listaEliminar);
+                    if (this.props.onRegister) this.props.onRegister(this.state.roles)
 
-                    // console.log("listaAgregar", listaAgregar);
-                    // console.log("listaEliminar", listaEliminar);
+                    console.log("listaAgregar", listaAgregar);
+                    console.log("listaEliminar", listaEliminar);
 
-                }}>GUARDAR</PButtom>
+                }}>GUARDAR</PButtom> */}
             </SView>
         </SView >
     }

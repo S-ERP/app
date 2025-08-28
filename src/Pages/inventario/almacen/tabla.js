@@ -16,7 +16,7 @@ export default class tabla extends Component {
     }
     verificar(estado) {
         return <SView col={"xs-12"} center row>
-            {estado ? <SIconApp name='Check' fill='green' stroke={STheme.color.text} height={20} /> : <SIconApp name='Cerrar' fill='red' height={14} />}
+            {estado ? <SIconApp name='IconCheckedOk' fill='#19aa0cff' stroke={'#ffffffff'} height={16} /> : <SIconApp name='Cerrar' fill='red' height={14} />}
         </SView>;
     }
     async loadInitialData() {
@@ -45,6 +45,9 @@ export default class tabla extends Component {
             ref={ref => this.DinamicTable = ref}
             language="es"
             selectType="single"
+            colors={Config.table.colors()}
+            cellStyle={Config.table.cellStyle()}
+            textStyle={Config.table.textStyle()}
             onSelect={(e) => {
                 if (this.onSelect) {
                     this.onSelect(e.row)
@@ -53,10 +56,45 @@ export default class tabla extends Component {
                 }
                 FloatMenu.open({
                     e: e.evt,
-                    label: "Suc: " + e.row?.sucursal?.descripcion + '-' + e.row?.descripcion,
+                    label: "Almacén: " + e.row?.descripcion,
                     options: [
                         {
-                            icon: <SIconApp name='Edit' />,
+                            icon: <SIconApp name='producto' fill='#d1d1cdff' stroke='#8b8b8a25' width={20} />,
+                            label: "Ver Productos",
+                            onPress: () => {
+                                SNavigation.navigate("/inventario/almacen/profile/productos", { pk: e.row?.key })
+                            }
+                        },
+                        {
+                            icon: <SIconApp name='carritoproducto' fill='#d1d1cdff' stroke='#8b8b8a25' width={20} />,
+                            label: "Ver Recepcion compra",
+                            onPress: () => {
+                                SNavigation.navigate("/inventario/almacen/profile/recepcion_compra", { pk: e.row?.key })
+                            }
+                        },
+                        {
+                            icon: <SIconApp name='Favorito' fill='#ffffff6e' stroke='#d1d1cdff' width={20} />,
+                            label: "Ver Pend. de entrega",
+                            onPress: () => {
+                                SNavigation.navigate("/inventario/almacen/profile/pendiente_entrega", { pk: e.row?.key })
+                            }
+                        },
+                        {
+                            icon: <SIconApp name='Favorito' fill='#ffffff6e' stroke='#d1d1cdff' width={20} />,
+                            label: "Ver Reg. de Inventario",
+                            onPress: () => {
+                                SNavigation.navigate("/inventario/almacen/profile/registro_inventario", { pk: e.row?.key })
+                            }
+                        },
+                        {
+                            icon: <SIconApp name='confirmar' fill='#8b8b8a25' stroke='#8b8b8a' width={16} />,
+                            label: "Importar Inventario",
+                            onPress: () => {
+                                alert("trabjandolo...")
+                            }
+                        },
+                        {
+                            icon: <SIconApp name='crmeditar' fill='#8b8b8a25' stroke='#a8a89fff' width={20} />,
                             label: "Actualizar Almacen",
                             onPress: () => {
                                 const sucursal = {
@@ -73,7 +111,7 @@ export default class tabla extends Component {
                             }
                         },
                         {
-                            icon: <SIconApp name='Delete' />,
+                            icon: <SIconApp name='crmeliminar' fill='#ed3a4318' stroke='#ed3a43' width={20} />,
                             label: "Eliminar Almacen",
                             onPress: () => {
                                 SPopup.confirm({
@@ -115,26 +153,29 @@ export default class tabla extends Component {
                 return this.loadInitialData();
             }}
         >
-            <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
+            <DinamicTable.Col key="index" label="#" width={30} data={(e) => e.index + 1} />
             <DinamicTable.Col key="sucursal" label="Sucursal" width={120} data={(e) => e.row?.key_sucursal ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_sucursal) ?
                         <SView col={"xs-12"} row  >
-                            <SView style={{ width: 28 }}>
+                            {/* <SView style={{ width: 28 }}>
                                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                                     <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key_sucursal}`} style={{ resizeMode: "cover" }} />
                                 </SView>
+                            </SView> */}
+                            <SView width={10} center   >
+                                <SView style={{ borderRadius: 8, width: 8, height: 8, backgroundColor: "#2a7ffe", }} />
                             </SView>
                             <SView width={5} />
                             <SText center color={STheme.color.text}>{e.row?.sucursal?.descripcion}</SText>
                         </SView> : null}
                 </>}
             />
-            <DinamicTable.Col key="alma" label="Almacen" width={180} data={(e) => e.row?.key ?? ""}
+            <DinamicTable.Col key="almacen" label="Almacén" width={140} data={(e) => e.row?.key ?? ""}
                 customComponent={e => <>
                     {(e.row?.key) ?
                         <SView col={"xs-12"} row  >
-                            <SView style={{ width: 28 }}>
+                            <SView style={{ width: 26 }}>
                                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                                     <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key}`} style={{ resizeMode: "cover" }} />
                                 </SView>
@@ -144,12 +185,12 @@ export default class tabla extends Component {
                         </SView> : null}
                 </>}
             />
-            {}
+            { }
             <DinamicTable.Col key="observacion" label="Observación" width={180} data={(e) => e.row?.observacion} />
             <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-            <DinamicTable.Col key={"is_stock"} label='Almacen con stock?' width={120} data={(e) => e.row?.is_stock} customComponent={e => this.verificar(e.row?.is_stock)} />
-            <DinamicTable.Col key={"is_venta"} label='Almacen para ventas?' width={120} data={(e) => e.row?.is_venta} customComponent={e => this.verificar(e.row?.is_venta)} />
-            <DinamicTable.Col key={"is_entrega"} label='Requiere entrega?' width={120} data={(e) => e.row?.is_entrega} customComponent={e => this.verificar(e.row?.is_entrega)} />
+            <DinamicTable.Col key={"is_stock"} label='Con Stock?' width={90} data={(e) => e.row?.is_stock} customComponent={e => this.verificar(e.row?.is_stock)} />
+            <DinamicTable.Col key={"is_venta"} label='Para Ventas?' width={90} data={(e) => e.row?.is_venta} customComponent={e => this.verificar(e.row?.is_venta)} />
+            <DinamicTable.Col key={"is_entrega"} label='Req. Entrega?' width={90} data={(e) => e.row?.is_entrega} customComponent={e => this.verificar(e.row?.is_entrega)} />
             <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_usuario) ?
@@ -164,7 +205,7 @@ export default class tabla extends Component {
                         </SView> : null}
                 </>}
             />
-            <DinamicTable.Col key="empresa" label="Empresa" width={180} data={(e) => e.row?.key_empresa ?? ""}
+            <DinamicTable.Col key="empresa" label="Empresa" width={120} data={(e) => e.row?.key_empresa ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_empresa) ?
                         <SView col={"xs-12"} row  >
