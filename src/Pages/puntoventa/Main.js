@@ -21,6 +21,11 @@ export default class Main extends Component {
             carritoModalData: [],
         };
     }
+    static sigues() {
+        this.carritoRefModal?.setCarrito?.([]);
+        this.carritoRef?.setCarrito?.([]);
+        // this.forceUpdate();
+    };
     setTipoKey = (key) => {
         this.selectedTipoKey = key;
         this.forceUpdate();

@@ -78,32 +78,7 @@ export default class Header extends Component {
                     </SText>
                 </SView>
 
-                {/* <SView flex />
-
-                <SView col={"xs-4 md-2"} row border="transparent"
-                    onPress={() => this.seleccionarSucursal()}
-                    style={{
-                        padding: 5,
-                        borderRadius: 8,
-                        backgroundColor: STheme.color.card,
-                    }} center
-                >
-                    <SText fontSize={14} bold color={STheme.color.text} style={{ letterSpacing: -0.5, textTransform: "uppercase" }}>
-                        Suc: {sucursal?.descripcion || "Selecciona"}
-                    </SText>
-                    <SView width={10} />
-                    <SView style={{
-                        top: -1,
-                        width: 0,
-                        height: 0,
-                        borderLeft: "8px solid transparent",
-                        borderRight: "8px solid transparent",
-                        borderBottom: "12px solid",
-                        borderBottomColor: STheme.color.text,
-                        borderRadius:3,
-                        transform: "rotate(180deg)"
-                    }} />
-                </SView> */}
+               
 
                 <SView flex />
 

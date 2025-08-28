@@ -62,7 +62,9 @@ export default class Carrito extends Component {
     };
 
 
-
+    static clean = () => {
+        this.vaciarCarrito();
+    };
 
     vaciarCarrito = () => {
         this.carrito = [];

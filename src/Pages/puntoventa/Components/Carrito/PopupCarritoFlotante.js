@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { SView, SText, STheme, SPopup, SNotification, SButtom, SHr } from 'servisofts-component';
 import Carrito from '../Carrito';
 export default class PopupCarritoFlotante extends Component {
+
+    static refContenido = null;
+
     static open(props) {
         SPopup.open({
             key: "popup_carrito_flotante",
@@ -16,7 +19,9 @@ export default class PopupCarritoFlotante extends Component {
                     shadowRadius: 4,
                     elevation: 60,
                 }} padding={24} withoutFeedback>
-                    <ContenidoCarritoFlotante {...props} />
+                    <ContenidoCarritoFlotante
+                        ref={ref => (this.refContenido = ref)} // guardamos el ref
+                        {...props} />
                 </SView>
             )
         });
@@ -24,7 +29,9 @@ export default class PopupCarritoFlotante extends Component {
 
     static closePopup() {
         SPopup.close("popup_carrito_flotante")
+        this.refContenido?.vaciarCarrito?.(); // <- ahora sí funciona
     }
+
 
 }
 
@@ -39,21 +46,27 @@ class ContenidoCarritoFlotante extends Component {
         this.carritoRefModal?.setCarrito?.(this.props.productos);
         this.forceUpdate();
     }
+
+
+
     vaciarCarrito() {
-        this.carritoRefModal.setCarrito([]);
-        this.carrito.forEach(item => {
-            this.carritoRefModal?.onModificarStock?.(item.key, +item.cantidad);
-        });
+        // this.carritoRefModal?.setCarrito([]);
+        // this.carrito.forEach(item => {
+        //     this.carritoRefModal?.onModificarStock?.(item.key, +item.cantidad);
+        // });
         this.descuentoManual = 0;
         this.carrito = [];
+        this.carritoRefModal?.onModificarStock?.(null, 0);
+        this.carritoRefModal?.setCarrito?.([]);
         SNotification.send({ title: "Carrito vaciado", message: "Todos los productos fueron removidos." });
-        this.forceUpdate();
+        // this.forceUpdate();
     }
     render() {
+
         return (
             <SView col="xs-12" flex center>
                 <SView height={8} />
-                <SText fontSize={18} bold center>Carrito de Compras</SText>
+                <SText fontSize={18} bold center>Carrito de d</SText>
                 <SHr height={16} />
 
                 <SView col="xs-12">
