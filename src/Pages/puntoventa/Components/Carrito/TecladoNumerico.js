@@ -27,7 +27,7 @@ export default class TecladoNumerico extends Component {
             });
             return;
         }
-        if (!this.tipos_pago.efectivo || this.tipos_pago.efectivo < totalFinal) {
+        if (!this.tipos_pago.efectivo) {
             SNotification.send({
                 title: "Error",
                 body: "Monto insuficiente para pagar",
@@ -131,7 +131,8 @@ export default class TecladoNumerico extends Component {
                             if (!this.tipos_pago) {
                                 SelectTipoPago.openPopup({
                                     key_punto_venta: MDL.caja.activa.key_punto_venta,
-                                    montoMaximo: totalFinal,
+                                    montoMaximo: (subtotal - descuento),
+                                    // montoMaximo: totalFinal,
                                     onSelect: (item) => {
                                         this.tipos_pago = item;
                                         console.log("selecciono " + JSON.stringify(item))
@@ -171,7 +172,8 @@ export default class TecladoNumerico extends Component {
                         if (!this.tipos_pago) {
                             SelectTipoPago.openPopup({
                                 key_punto_venta: MDL.caja.activa.key_punto_venta,
-                                montoMaximo: totalFinal,
+                                montoMaximo: (subtotal - descuento),
+                                // montoMaximo: totalFinal,
                                 onSelect: (item) => {
                                     this.tipos_pago = item;
                                     console.log("selecciono " + JSON.stringify(item))
