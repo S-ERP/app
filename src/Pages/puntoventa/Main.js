@@ -9,9 +9,7 @@ import { Dimensions } from "react-native";
 import PopupCarritoFlotante from "./Components/Carrito/PopupCarritoFlotante";
 import MDL from "../../MDL";
 export default class Main extends Component {
-
     cajaActiva = false; // 🔹 Bandera sin usar state
-
     constructor(props) {
         super(props);
         this.selectedTipoKey = "all";
@@ -34,7 +32,6 @@ export default class Main extends Component {
         this.searchText = text;
         this.forceUpdate();
     };
-
     async checkCaja() {
         try {
             const activa = await MDL.caja.getActiva();
@@ -60,11 +57,8 @@ export default class Main extends Component {
             console.error("Error al obtener estado de caja", e);
         }
     }
-
     componentDidMount() {
-
         this.checkCaja();
-
         // const itemsEjemplo = [
         //     {
         //         key: "producto_123",
@@ -82,7 +76,6 @@ export default class Main extends Component {
         //     }
         // ];
         // this.carritoRef?.setCarrito(itemsEjemplo);
-
         this.renderCarrito();
         Dimensions.addEventListener("change", this.onChangeDimensions);
     }
@@ -92,8 +85,6 @@ export default class Main extends Component {
     componentWillUnmount() {
         Dimensions.removeEventListener("change", this.onChangeDimensions);
     }
-
-
     renderCarrito() {
         return (
             <Carrito
@@ -130,7 +121,6 @@ export default class Main extends Component {
                     onPress={() => {
                         console.log("prin " + JSON.stringify(this.carritoRef?.carrito))
                         const productos = this.carritoRef?.carrito;
-
                         PopupCarritoFlotante.open({
                             productos: productos
                         })
@@ -241,7 +231,6 @@ export default class Main extends Component {
                         />
                         }
                     </SView>
-
                 </SView>
                 {this.btnFlotante()}
                 {/* {this.renderCarritoModal()} */}
