@@ -25,7 +25,7 @@ export default class ComprobanteCarta extends Component {
             }
             let proveedor = {};
             if (compraVenta.key_proveedor?.trim()) {
-                proveedor = await MDL.compra_venta.proveedor.getByKey(compraVenta.key_proveedor) || {};
+                proveedor = await MDL.inventario.proveedor.getByKey(compraVenta.key_proveedor) || {};
             }
             let cliente = {};
             if (compraVenta.key_cliente?.trim()) {

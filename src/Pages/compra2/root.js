@@ -59,7 +59,7 @@ export default class root extends React.Component {
         MDL.inventario.getAllModeloStock().then(modelos => {
             this.setState({ modelos: modelos })
         })
-        MDL.compra_venta.proveedor.getAllProveedor().then(proveedores => {
+        MDL.inventario.proveedor.getAllProveedor().then(proveedores => {
             if (this.inputs["proveedor"]) this.inputs["proveedor"].setValue(proveedores[0]?.razon_social);
             this.setState({ proveedores: proveedores })
         })

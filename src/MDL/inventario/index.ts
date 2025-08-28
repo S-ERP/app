@@ -2,9 +2,12 @@ import SSocket from "servisofts-socket";
 import MDLAbstract from "../MDLAbstract";
 import { EventListener } from "./types";
 import MDL from "..";
+import proveedor from "./proveedor";
+
 export default class inventario extends MDLAbstract<EventListener> {
   async componentDidMount() { }
 
+  proveedor = new proveedor();
 
   TIPOS_DE_PRODUCTOS = [
     {
@@ -194,6 +197,7 @@ export default class inventario extends MDLAbstract<EventListener> {
       return resp.data;
     }
   }
+
   async saveTipoProducto(tipo_producto: any) {
     if (tipo_producto.key) {
       const resp: any = await SSocket.sendPromise({
@@ -213,6 +217,37 @@ export default class inventario extends MDLAbstract<EventListener> {
         component: "tipo_producto",
         type: "registro",
         data: tipo_producto,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    }
+  }
+
+  async saveModeloProveedor(modelo_proveedor: {
+    key?: string,
+    key_modelo: string,
+    key_proveedor: string,
+    estado?: number
+  }) {
+    if (modelo_proveedor.key) {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "modelo_proveedor",
+        type: "editar",
+        data: modelo_proveedor,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    } else {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "modelo_proveedor",
+        type: "registro",
+        data: modelo_proveedor,
         key_empresa: MDL.empresa.select?.key,
         key_usuario: MDL.usuario.session?.key,
       });

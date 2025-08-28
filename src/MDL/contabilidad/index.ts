@@ -56,6 +56,74 @@ export default class contabilidad extends MDLAbstract<EventListener> {
     return resp.data;
   }
 
+  ajustesCache: any = {
+    data: null,
+    key_empresa: "",
+    promise: null
+  }
+  async getAjustesCache() {
+    if (MDL.empresa?.select?.key != this.ajustesCache.key_empresa) {
+      this.ajustesCache.data = null;
+      this.ajustesCache.promise = null;
+      this.ajustesCache.key_empresa = MDL.empresa?.select?.key;
+    }
+    if (this.ajustesCache.data) return this.ajustesCache.data;
+    if (this.ajustesCache.promise) return this.ajustesCache.promise;
+    this.ajustesCache.promise = SSocket.sendPromise({
+      version: "1.0",
+      service: "contabilidad",
+      component: "ajuste",
+      type: "getAllByEmpresa",
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    }).then((resp: any) => {
+      this.ajustesCache.data = resp.data;  // Guardamos en caché
+      this.ajustesCache.promise = null;     // Limpiamos la promesa en curso
+      return this.ajustesCache.data;
+    }).catch((err: any) => {
+      this.ajustesCache.promise = null;     // Limpiar para futuros intentos
+      throw err;
+    });
+    return this.ajustesCache.promise;
+  }
+
+  async getAjusteCache(key: string) {
+    const ajustes = await this.getAjustesCache();
+    return ajustes.find((ajuste: any) => ajuste.key === key);
+  }
+  cuentasCache: any = {
+    data: null,
+    key_empresa: "",
+    promise: null
+  }
+  async getCuentasCache() {
+    if (MDL.empresa?.select?.key != this.cuentasCache.key_empresa) {
+      this.cuentasCache.data = null;
+      this.cuentasCache.promise = null;
+      this.cuentasCache.key_empresa = MDL.empresa?.select?.key;
+    }
+    if (this.cuentasCache.data) return this.cuentasCache.data;
+    if (this.cuentasCache.promise) return this.cuentasCache.promise;
+
+    this.cuentasCache.promise = SSocket.sendPromise({
+      version: "1.0",
+      service: "contabilidad",
+      component: "cuenta_contable",
+      type: "getAll",
+      eliminado: false,
+      key_empresa: MDL.empresa?.select?.key,
+      key_usuario: MDL.usuario?.session?.key,
+    }).then((resp: any) => {
+      this.cuentasCache.data = resp.data;  // Guardamos en caché
+      this.cuentasCache.promise = null;     // Limpiamos la promesa en curso
+      return this.cuentasCache.data;
+    }).catch((err: any) => {
+      this.cuentasCache.promise = null;     // Limpiar para futuros intentos
+      throw err;
+    });
+    return this.cuentasCache.promise;
+  }
+
   agruparCuentas(cuentas: any) {
     const mapa: any = {};
     const raiz: any[] = [];
@@ -145,4 +213,30 @@ export default class contabilidad extends MDLAbstract<EventListener> {
     });
 
   }
+  async getCuentasByAjusteCache(key_ajuste: string, solo_hijas: boolean) {
+    const ajuste = await this.getAjusteCache(key_ajuste);
+    if (!ajuste) throw "Ajuste no encontrado";
+    if (!ajuste.ajuste_empresa) throw "El ajuste no se ha configurado.";
+    const cuentas = await this.getCuentasCache();
+    const cuentaSelect = cuentas[ajuste.ajuste_empresa.key_cuenta_contable];
+    console.log(ajuste, cuentaSelect);
+    let arr = Object.values(cuentas);
+    arr = arr.filter((cuenta: any) => cuenta.codigo.startsWith(cuentaSelect.codigo))
+    if (solo_hijas) {
+      arr = arr.filter((cuenta: any) => {
+        return arr.filter((hija: any) => hija.codigo.startsWith(cuenta.codigo + ".")).length <= 0;
+      })
+    }
+    return arr.sort((a: any, b: any) => {
+      return a.codigo.localeCompare(b.codigo);
+    });
+
+  }
+
+
+
+  format_cuenta_to_string(cuenta: any) {
+    return `${cuenta.codigo} - ${cuenta.descripcion}`;
+  }
+  
 }

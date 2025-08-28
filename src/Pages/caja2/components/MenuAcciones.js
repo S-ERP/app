@@ -5,6 +5,7 @@ import MDL from '../../../MDL';
 import SelectTipoPago from './SelectTipoPago';
 import TotalTipoPago from './TotalTipoPago';
 import DetalleItem from './DetalleItem';
+import CargarEfectivoDelBanco from '../Acciones/CargarEfectivoDelBanco';
 
 
 export default class MenuAcciones extends Component<{ caja: any, movimientos: any[] }> {
@@ -59,14 +60,8 @@ export default class MenuAcciones extends Component<{ caja: any, movimientos: an
     }
 
     cargarEfectivoDelBanco() {
-        SPopup.open({
-            content: <SView style={{
-                width: "100%",
-                height: 500
-            }} >
-                <SText>En desarrollo</SText>
-            </SView>
-        })
+        CargarEfectivoDelBanco.open({})
+  
     }
     render() {
         return (

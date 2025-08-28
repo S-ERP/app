@@ -10,7 +10,7 @@ import BoxMenu from '../Components/Popups/BoxMenu';
 import STextPlay from '../Components/STextPlay';
 
 const Card = ({ label, value, backgroundColor, onPress, icon }) => {
-    return <SView col={"xs-12 sm-6 md-6 lg-6 xl-6 xxl-6"} padding={2}
+    return <SView col={"xs-12"} padding={2}
     >
         <SView col={"xs-12"} height={75} row card center
             style={{
@@ -24,17 +24,17 @@ const Card = ({ label, value, backgroundColor, onPress, icon }) => {
                 borderBottomWidth: 5,
                 borderBottomColor: STheme.color.text,
                 backgroundColor: STheme.color.card,
+                alignItems: "center",
+                padding: 4,
             }}
             onPress={onPress}>
-            <SHr height={10} />
-            <SView col={"xs-3"} center padding={4}>
+            <SView width={40} height={40} center padding={4}>
                 <SIcon name={icon} fill={STheme.color.text} />
             </SView>
-            <SView col={"xs-9"} center>
+            <SView flex center>
                 <SText fontSize={15} bold color={STheme.color.text}>{value}</SText>
-                <SText center fontSize={10} color={STheme.color.text}>{label}</SText>
+                <SText center fontSize={10} style={{ maxWidth: 150 }} color={STheme.color.text}>{label}</SText>
             </SView>
-            <SHr height={15} />
         </SView>
         <SHr height={4} />
     </SView>

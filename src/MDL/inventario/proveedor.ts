@@ -11,7 +11,7 @@ export default class proveedor {
 
   async getAllProveedor() {
     const resp: any = await SSocket.sendPromise({
-      service: "compra_venta",
+      service: "inventario",
       component: "proveedor",
       type: "getAll",
       key_empresa: Model.empresa.Action.getKey(),
@@ -25,7 +25,7 @@ export default class proveedor {
 
   async getByKey(value: String) {
     const resp: any = await SSocket.sendPromise({
-      service: "compra_venta",
+      service: "inventario",
       component: "proveedor",
       type: "getByKey",
       key: value,
@@ -36,7 +36,7 @@ export default class proveedor {
 
   async editar(data: any) {
     const resp: any = await SSocket.sendPromise({
-      service: "compra_venta",
+      service: "inventario",
       component: "proveedor",
       type: "editar",
       data: data,
@@ -50,7 +50,7 @@ export default class proveedor {
     // data.nombre = "oruro";
     // data.nit = "10";
     const resp: any = await SSocket.sendPromise({
-      service: "compra_venta",
+      service: "inventario",
       component: "proveedor",
       type: "registro",
       data: data,

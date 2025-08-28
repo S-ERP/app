@@ -4,6 +4,7 @@ import {  SHr, SInput, SPage, SPopup, SText, SView } from 'servisofts-component'
 import ImportarExcel from '../Components/ImportarExcel';
 import MDL from '../MDL';
 import PopupEditarTema from './empresa/Components/PopupEditarTema';
+import CargarEfectivoDelBanco from './caja2/Acciones/CargarEfectivoDelBanco';
 
 export default class test extends Component {
   constructor(props) {
@@ -32,6 +33,7 @@ export default class test extends Component {
       <SHr/>
       <SInput width={100} type='money2' defaultValue={"14,544"} decimales={1} />
       {/* <SText>{JSON.stringify(MDL.caja.activa)}</SText> */}
+      <CargarEfectivoDelBanco/>
     </SPage>
   }
 }
