@@ -232,6 +232,7 @@ export default class table extends Component {
                                         keyUsers: this.keyUsers,
                                         // data: this.keyUsers,
                                         onRegister: (e) => {
+                                            console.log("QUEEE", e)
                                             this.table.loadData();
                                         }
                                     })
