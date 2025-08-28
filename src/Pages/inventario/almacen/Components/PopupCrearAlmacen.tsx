@@ -115,8 +115,10 @@ export default class PopupCrearAlmacen extends Component<Props> {
                         data.is_entrega = data.is_entrega === "si";
                         data.key = this.props.editObject?.key;
                         console.log("picaso " + JSON.stringify(data))
+
                         MDL.inventario.saveAlmacen({ data }).then((resp: any) => {
                             if (this.props.onSuccess) this.props.onSuccess(resp)
+
                             if (this._ref.image_sucursal) {
                                 const value = this._ref.image_sucursal.getValue();
                                 if (Array.isArray(value)) {
@@ -130,6 +132,8 @@ export default class PopupCrearAlmacen extends Component<Props> {
                                 time: 3000,
                                 color: STheme.color.success,
                             });
+
+
                         }).catch((e: any) => {
                             if (this.props.onSuccess) this.props.onSuccess(e)
                             console.error("Error al guardar la Almacen:", e);
