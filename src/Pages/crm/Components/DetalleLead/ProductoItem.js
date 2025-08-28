@@ -55,7 +55,8 @@ export default class ProductoItem extends Component {
         this.props.data.carrito_edit = {
             key_proyecto_producto: this.props.data?.producto?.key || this.props.data?.carrito?.key_proyecto_producto,
             key_producto: this.props.data?.producto?.key_producto || this.props.data?.carrito?.key_producto,
-            nombre: this.props.data?.producto?.producto?.nombre,
+            key_modelo: this.props.data?.producto?.key_modelo || this.props.data?.carrito?.key_modelo,
+            nombre: this.props.data?.producto?.producto?.descripcion,
             cantidad: this.state.cantidad || this.props.data?.carrito?.cantidad || 0,
             subtotal: this.state.subtotal || this.props.data?.carrito?.subtotal || 0,
         }
@@ -76,7 +77,7 @@ export default class ProductoItem extends Component {
         if (carrito?.subtotal) {
             this.state.precio = (carrito?.subtotal / this.state.cantidad) || 0;
         } else {
-            this.state.precio = producto?.precio || 0;
+            this.state.precio = producto?.precio_venta || 0;
         }
 
         this.state.subtotal = (this.state.precio * (this.state.cantidad || 1));
@@ -106,13 +107,13 @@ export default class ProductoItem extends Component {
                     overflow: "hidden",
                     backgroundColor: STheme.color.card,
                 }}>
-                    <SImage src={SSocket.api.inventario + "producto/" + (producto?.key || carrito?.key_producto)} style={{
+                    <SImage src={SSocket.api.inventario + "modelo/" + (producto?.key || carrito?.key_modelo)} style={{
                         resizeMode: "cover",
                     }} />
                 </SView>
                 <SView width={4} />
                 <SView flex>
-                    <SText bold>{producto?.nombre || carrito?.nombre}</SText>
+                    <SText bold>{producto?.descripcion || carrito?.nombre}</SText>
                     <SView row>
                         {producto && <SText clean style={{
                             fontSize: 10,
@@ -120,7 +121,7 @@ export default class ProductoItem extends Component {
                             padding: 2,
                             borderRadius: 4,
 
-                        }}>Bs. {(producto?.precio ?? 0)}</SText>}
+                        }}>Bs. {(producto?.precio_venta ?? 0)}</SText>}
                     </SView>
                 </SView>
                 <InputCantidad ref={(ref) => this.inputCantidad = ref} value={carrito?.cantidad ?? 0} onChange={(value) => {
@@ -142,6 +143,7 @@ export default class ProductoItem extends Component {
                     <Input
                         ref={(ref) => this.inputPrecio = ref}
                         // col={"xs-4.5"}
+                        height={30}
                         // label={"Precio Bs. *"}
                         defaultValue={!this.state.subtotal ? null : parseFloat(this.state.subtotal ?? "0").toFixed(2)}
                         keyboardType={"numeric"}
@@ -180,17 +182,18 @@ export default class ProductoItem extends Component {
                     // onSubmitEditing={() => this._inputs["limite_compra"].focus()}
 
                     />
+                    {producto && <SText clean style={{
+                        position: "absolute",
+                        right: 0, bottom: -10,
+                        fontSize: 10,
+                        backgroundColor: STheme.color.warning,
+                        padding: 2,
+                        borderRadius: 4,
+                        textDecorationLine: "line-through"
+                    }}>Bs. {(producto?.precio_venta ?? 0) * (this.state.cantidad || 1)}</SText>}
                 </SView>
 
-                {producto && <SText clean style={{
-                    position: "absolute",
-                    right: 0, top: 30,
-                    fontSize: 10,
-                    backgroundColor: STheme.color.warning,
-                    padding: 2,
-                    borderRadius: 4,
-                    textDecorationLine: "line-through"
-                }}>Bs. {(producto?.precio ?? 0) * (this.state.cantidad || 1)}</SText>}
+
             </SView>
             {!proyecto_producto && <SText fontSize={10} color={STheme.color.warning}>Warning: El producto ya no se encuentra en el proyecto!</SText>}
 

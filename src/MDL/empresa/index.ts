@@ -48,10 +48,13 @@ export default class empresa extends MDLAbstract<EventListener> {
     SStorage.setItem("empresa_select", JSON.stringify(empresa));
     if (empresa.theme) {
       STheme.color = {
-        ...STheme.color,
+        ...STheme.defaultColors,
         ...empresa.theme,
       };
       // STheme.repaint();
+    }
+    if(MDL?.caja){
+      MDL.caja.getActiva();
     }
     this.dispatchEvent({ type: "onChangeEmpresaSelect", data: empresa });
   }
@@ -75,6 +78,19 @@ export default class empresa extends MDLAbstract<EventListener> {
     });
     return Object.values(resp.data);
   }
+
+  __tipo_pago: any = null;
+  async getTipoPago(): Promise<Sucursal[]> {
+    if(this.__tipo_pago) return this.__tipo_pago;
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "tipo_pago",
+      type: "getAll",
+      key_empresa: Model.empresa.Action.getKey(),
+    });
+    this.__tipo_pago = resp.data;
+    return this.__tipo_pago;
+  }
   async getByKeyFull(): Promise<any> {
     const resp: any = await SSocket.sendPromise({
       service: "empresa",
@@ -85,6 +101,20 @@ export default class empresa extends MDLAbstract<EventListener> {
     return resp.data;
   }
 
+  _full: any = null;
+  async getFull(): Promise<any> {
+    if (this._full) {
+      if (this._full.key === this.select?.key) return this._full;
+    }
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "empresa",
+      type: "getByKeyFull",
+      key: this.select?.key,
+    });
+    this._full = resp.data;
+    return resp.data;
+  }
   setUsuarioLog(data: {
     url: string;
     platform?: string;

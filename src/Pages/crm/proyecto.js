@@ -115,6 +115,7 @@ export default class proyecto extends Component {
 
                         const productos =
                             await MDL.crm.proyectoProducto.getAllConProductos();
+                        console.log("productos", productos);
                         proyectos.forEach((proyecto) => {
                             proyecto.productos = [];
                             Object.keys(productos).forEach((key) => {
@@ -166,28 +167,39 @@ export default class proyecto extends Component {
                                 label: "Agregar Productos",
                                 onPress: () => {
 
-                                    SNavigation.navigate("/restaurante/producto", {
-                                        onSelect: (producto) => {
+                                    SNavigation.navigate("/productos/modelo", {
+                                        onSelect: (modelo) => {
                                             MDL.crm.proyectoProducto.registrar({
-                                                key_producto: producto.key,
+                                                // key_producto: producto.key,
+                                                key_modelo: modelo.key,
                                                 key_proyecto: e.row.key,
-                                            });
-                                            console.log("Producto seleccionado:", producto);
+                                            }).then(e=>{
+                                                this.DinamicTable.loadData();
+                                            })
                                         }
-                                    });
+                                    })
+                                    // SNavigation.navigate("/restaurante/producto", {
+                                    //     onSelect: (producto) => {
+                                    //         MDL.crm.proyectoProducto.registrar({
+                                    //             key_producto: producto.key,
+                                    //             key_proyecto: e.row.key,
+                                    //         });
+                                    //         console.log("Producto seleccionado:", producto);
+                                    //     }
+                                    // });
 
 
 
-                                    SNavigation.navigate("/productos/producto", {
-                                        onSelect: (producto) => {
-                                            console.log("Producto seleccionado:", producto);
-                                            MDL.crm.proyectoProducto.registrar({
-                                                key_producto: producto.key,
-                                                key_proyecto: e.row.key,
-                                            });
+                                    // SNavigation.navigate("/productos/producto", {
+                                    //     onSelect: (producto) => {
+                                    //         console.log("Producto seleccionado:", producto);
+                                    //         MDL.crm.proyectoProducto.registrar({
+                                    //             key_producto: producto.key,
+                                    //             key_proyecto: e.row.key,
+                                    //         });
 
-                                        },
-                                    });
+                                    //     },
+                                    // });
                                 },
                                 icon: <SIcon name="producto" fill={STheme.color.text} />,
 
@@ -577,7 +589,7 @@ export default class proyecto extends Component {
                                                     }
                                                     FloatMenu.open({
                                                         e: f,
-                                                        label: prd?.producto?.nombre,
+                                                        label: prd?.producto?.descripcion,
                                                         options: options,
                                                     });
                                                 }}
@@ -585,16 +597,16 @@ export default class proyecto extends Component {
                                                 center
                                             >
                                                 <SView width={20} height={20} style={{ borderRadius: 4, overflow: "hidden", overflow: "hidden" }} card>
-                                                    <SImage src={SSocket.api.inventario + "producto/" + prd.key_producto} />
+                                                    <SImage src={SSocket.api.inventario + "modelo/" + prd.key_modelo} />
                                                 </SView>
                                                 <SText
                                                     card
                                                     padding={4}
                                                     style={{ maxWidth: 200 }}
-                                                    numberOfLines={1}
+
                                                 >
-                                                    {prd?.producto?.nombre}  Bs.
-                                                    {prd?.producto?.precio ?? 0}
+                                                    {prd?.producto?.descripcion}  Bs.
+                                                    {prd?.producto?.precio_venta ?? 0}
                                                 </SText>
                                             </SView>
                                         );

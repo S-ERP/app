@@ -89,7 +89,8 @@ export default class Page extends React.Component<PageProps> {
                 let validos = 0;
                 React.Children.map(props.children, (child) => {
                     if (!React.isValidElement(child)) return child;
-                    if (child.type.name != "Page") return;
+                    // console.log(child.type)
+                    // if (child.type != Page) return;
                     const props: PageProps = child.props || {};
                     if (this.permisoAceptado(child.props)) {
                         validos++;
@@ -160,7 +161,7 @@ export default class Page extends React.Component<PageProps> {
                 }}>{this.props.label}</SText>
                 {this.props.decoradores && this.props.decoradores}
                 < View style={{ width: 4 }} />
-                {this.props.children && <SView width={10} height={10} style={{ transform: [{ rotate: this.state.open ? "90deg" : "-90deg" }] }}><SIconApp name="Back" fill={STheme.color.text} /></SView>}
+                {this.props.children && <SView width={10} height={10} style={{ transform: [{ rotate: this.state.open ? "-90deg" : "180deg" }] }}><SIconApp name="Back" fill={STheme.color.text} /></SView>}
                 <View style={{ width: 4 }} />
             </SView>
             {(this.state.open) &&

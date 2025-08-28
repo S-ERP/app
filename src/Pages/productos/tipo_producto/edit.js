@@ -23,9 +23,9 @@ class index extends DPA.edit {
         }
 
         inp["tipo"].options = ["activo_fijo",
-            "gasto_administrativo",
+            "gasto",
             "inventario",
-            "venta_servicio",
+            "servicio",
             // "bancos"
         ]
         // inp["tipo"].options = ["producto", "servicio"]

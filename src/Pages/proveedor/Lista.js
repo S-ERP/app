@@ -11,6 +11,7 @@ import FloatButtom from '../../Components/FloatButtom';
 import Perfil from './Perfil';
 import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
+import Config from '../../Config';
 
 export default class Lista extends Component {
 
@@ -40,21 +41,12 @@ export default class Lista extends Component {
     mostrarTabla() {
         return <DinamicTable
             key="tabla"
+            {...Config.table.applyTheme()}
             ref={ref => this.DinamicTable = ref}
             center
             language="es"
             selectType="single"
-            colors={{
-                background: STheme.color.background,
-                header: STheme.color.card,
-            }}
-            cellStyle={{
-                borderWidth: 0,
-            }}
-            textStyle={{
-                fontSize: 12,
-                color: "white",
-            }}
+
 
             ref={ref => this.DinamicTable = ref}
 

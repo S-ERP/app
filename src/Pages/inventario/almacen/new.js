@@ -30,7 +30,7 @@ class index extends DPA.new {
                 </SView>
             },
             onPress: () => {
-                SNavigation.navigate("/sucursal", {
+                SNavigation.navigate("/sucursal/list", {
                     onSelect: (item) => {
                         this.setState({ sucursal: item })
                     }

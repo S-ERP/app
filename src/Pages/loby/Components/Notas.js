@@ -63,17 +63,17 @@ class Notas extends Component {
                 <SView col={"xs-12"} flex style={{
                     overflow: "hidden"
                 }}>
-                    <SHr height={10} />
-                    <SText fontSize={12} color={"#000"}>{observacion}</SText>
+                    {/* <SHr height={10} /> */}
+                    <SText fontSize={10} color={"#000"} >{observacion}</SText>
                 </SView>
                 {/* <SView row> */}
 
                 {/* <SView flex /> */}
-                <SText style={{
+                {/* <SText style={{
                     position: "absolute",
                     bottom: 0,
                     right: 4,
-                }} color={"#666"} fontSize={10}>+ {cantidad_participantes}</SText>
+                }} color={"#666"} fontSize={10}>+ {cantidad_participantes}</SText> */}
 
                 {/* </SView> */}
             </SView>

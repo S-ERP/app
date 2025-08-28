@@ -6,6 +6,8 @@ import SIconApp from "../../Assets/SIconApp";
 import { Route } from "@react-navigation/native";
 import SSocket from "servisofts-socket";
 import CajaActiva from "./components/CajaActiva";
+import PopupEditarTema from "../../Pages/empresa/Components/PopupEditarTema";
+import BackgroundImage from "../BackgroundImage";
 
 
 export default class Barra extends React.Component {
@@ -52,6 +54,7 @@ export default class Barra extends React.Component {
             borderRightWidth: 1,
             borderColor: STheme.color.card
         }}>
+            <BackgroundImage />
             <SView width={this.state.closeWidth} height={this.state.closeWidth} onPress={() => {
                 this.changeStatus()
             }} padding={4}>
@@ -85,8 +88,9 @@ export default class Barra extends React.Component {
                         icon={<ImagePage key_page="c50a9c4a-429c-426e-9ebf-c6874da14062" />}
                     >
                         <Page label={"Almacenes"} url={"/inventario"} permiso="ver" />
-                        <Page label={"Productos"} url={"/productos"} permiso="ver" />
+                        <Page label={"Tipos de productos"} url={"/productos/tipo_producto/table"}  />
                         <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" permiso_url="/inventario" />
+                        <Page label={"Sistema antiguo"} url={"/productos"} permiso="ver" />
                     </Page>
                     <Page label={"Caja"} url={"/caja"} permiso="ver"
                         icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}
@@ -139,6 +143,9 @@ export default class Barra extends React.Component {
                     >
                         <Page label={"Icons"} url={"/icons"} />
                         <Page label={"Test"} url={"/test"} />
+                        <SText onPress={() => {
+                            PopupEditarTema.open()
+                        }}>{"Tema"}</SText>
                     </Page>
                     {/* <Page label={"Iconos"} url={"/icons"} /> */}
                     <SHr h={100} />

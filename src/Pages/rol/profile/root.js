@@ -30,7 +30,7 @@ class index extends DPA.profile {
             <MenuPages path={"/rol/profile/"} permiso={"ver"} params={{
                 pk: this.pk
             }}>
-                {/* <MenuButtom label={"Permisos"} url={Parent.path + "/profile/permisos"} params={{ pk: this.pk }} icon={<SIcon name={"Ajustes"} />} /> */}
+                <MenuButtom label={"Permisos 2"} url={Parent.path + "/permiso"} params={{ key_rol: this.pk }} icon={<SIcon name={"Ajustes"} />} />
                 {/* <MenuButtom label={"Datos"} url={Parent.path + "/profile/datos"} params={{ pk: this.pk }} icon={<SIcon name={"Ajustes"} />} /> */}
                 {/* <MenuButtom label={"Datos"} url={Parent.path + "/profile/datos"} params={{ pk: this.pk }} icon={<SIcon name={"Ajustes"} />} /> */}
             </MenuPages>

@@ -9,6 +9,7 @@ import Container from '../../Components/Container';
 import Adornos from '../../Components/Adornos';
 import BtnNext from './Components/BtnNext';
 class index extends Component {
+    static HIDDEN = true;
     constructor(props) {
         super(props);
         this.state = {
@@ -17,7 +18,7 @@ class index extends Component {
     }
 
     render() {
-    
+
         return (
             <>
                 <SPage title={''} center onRefresh={(end) => {
@@ -40,7 +41,7 @@ class index extends Component {
                                 }}
                                 inputs={{
 
-                                    foto: { 
+                                    foto: {
                                         type: "image",
                                         label: "Foto",
                                         placeholder: "Foto",

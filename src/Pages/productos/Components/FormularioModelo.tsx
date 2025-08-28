@@ -8,6 +8,7 @@ import SIconApp from '../../../Assets/SIconApp';
 import BarcodeScanner from '../../../Components/BarcodeScanner';
 import InputFoto from '../../../Components/InputFoto';
 import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
+import TextAreaPopupOpenIcon from '../../../Components/QueryTool/TextAreaPopupOpenIcon';
 
 type Props = {
     editObject?: any,
@@ -320,8 +321,29 @@ export default class FormularioModelo extends Component<Props> {
                         defaultValue: (!this.props.editObject?.precio_venta ? "" : parseFloat(this.props.editObject?.precio_venta ?? 0).toFixed(2)),
                         label: "Precio venta", placeholder: "0,00", type: "money",
                         onSubmitEditing: () => {
+                            if (this.form) this.form.focus("observacion");
                             // if (this.form) this.form.submit();
                         }
+                    },
+                    "observacion": {
+                        col: "xs-12",
+                        defaultValue: this.props.editObject?.observacion,
+                        label: "Detalles", placeholder: "Detalles adicionales",
+                        type: "textArea",
+                        onSubmitEditing: () => {
+                            if (this.form) this.form.submit();
+                        },
+                        iconR: <TextAreaPopupOpenIcon
+                            type={"MD"}
+                            title='Detalles adicionales'
+                            getDefaultValue={() => {
+                                return this.form?.getValues()?.observacion;
+                            }}
+                            onChangeText={(text: string) => {
+                                if (this.form) {
+                                    this.form.setValues({ "observacion": text });
+                                }
+                            }} />
                     },
 
                 }}
@@ -350,6 +372,7 @@ export default class FormularioModelo extends Component<Props> {
                         key_marca: this.state.key_marca,
                         key_tipo_producto: this.state.key_tipo_producto,
                         descripcion: data.descripcion,
+                        observacion: data.observacion,
                         barcode: data.barcode,
                         precio_compra: parseFloat(data.precio_compra ?? 0),
                         precio_venta: parseFloat(data.precio_venta ?? 0),

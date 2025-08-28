@@ -6,6 +6,7 @@ import _new from "./new";
 import profile from "./profile/index";
 import edit from "./edit";
 import _delete from "./delete";
+import permiso from "./permiso";
 
 const model = Model.rol;
 
@@ -40,5 +41,6 @@ export default SPage.combinePages(Parent.name, {
     "new": _new,
     ...profile,
     "edit": edit,
+    permiso,
     "delete": _delete
 })

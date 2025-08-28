@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { SPage, SView, STheme, SText, SHr } from "servisofts-component";
+import { SPage, SView, STheme, SText, SHr, SNotification, SNavigation } from "servisofts-component";
 import Header from "./Components/Header";
 import Carrito from "./Components/Carrito";
 import Modelo from "./Components/Modelo";
@@ -7,7 +7,11 @@ import Categoria from "./Components/Categoria";
 import SIconApp from "../../Assets/SIconApp";
 import { Dimensions } from "react-native";
 import PopupCarritoFlotante from "./Components/Carrito/PopupCarritoFlotante";
+import MDL from "../../MDL";
 export default class Main extends Component {
+
+    cajaActiva = false; // 🔹 Bandera sin usar state
+
     constructor(props) {
         super(props);
         this.selectedTipoKey = "all";
@@ -25,7 +29,36 @@ export default class Main extends Component {
         this.searchText = text;
         this.forceUpdate();
     };
+
+    async checkCaja() {
+        try {
+            const activa = await MDL.caja.getActiva();
+            this.cajaActiva = !!activa;
+            if (this.cajaActiva) {
+                console.log("punto venta caja " + JSON.stringify(activa.key_sucursal))
+                this.forceUpdate();
+                //alert("esta activa caja")
+            } else {
+                // alert("sin caja");
+                // SNavigation.goBack();
+                SNotification.send({
+                    title: "Caja no aperturada",
+                    message: "Debes abrir la caja antes de continuar con las operaciones.",
+                    type: "danger",
+                    body: "⚠️Debe abrir caja⚠️",
+                    color: STheme.color.danger,
+                    time: 5000,
+                })
+                SNavigation.replace("/caja2");
+            }
+        } catch (e) {
+            console.error("Error al obtener estado de caja", e);
+        }
+    }
+
     componentDidMount() {
+
+        this.checkCaja();
 
         // const itemsEjemplo = [
         //     {
@@ -161,7 +194,9 @@ export default class Main extends Component {
         return (
             <SPage disableScroll hidden>
                 <Header onSelect={this.setSucursal} />
-                <SView col="xs-12" row flex backgroundColor={STheme.color.background}>
+                <SView col="xs-12" row flex
+                // backgroundColor={STheme.color.background}
+                >
                     <SView flex
                         col="xs-12 sm-12 md-4.5 lg-3.5"
                         style={{
@@ -189,7 +224,7 @@ export default class Main extends Component {
                             value={this.searchText}
                             onChangeText={this.setSearchText}
                         />
-                        <Modelo
+                        {this.cajaActiva && <Modelo
                             ref={(ref) => (this.modeloRef = ref)}
                             tipoKey={this.selectedTipoKey}
                             // items={this.carritoRef?.carrito}
@@ -199,6 +234,7 @@ export default class Main extends Component {
                                 this.carritoRefModal?.addProducto?.(producto);
                             }}
                         />
+                        }
                     </SView>
 
                 </SView>

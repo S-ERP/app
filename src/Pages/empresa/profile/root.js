@@ -38,10 +38,10 @@ class index extends DPA.profile {
                 <MenuButtom url='/empresa/paso3' params={{
                     key: this.pk,
                 }} label='Foto background' icon={<SIcon name={"iback"} />} />
-                <MenuButtom url='/empresa/colores' params={{ key: this.pk, }} label='Tema' icon={<SIcon name={"itema"} />} />
+                {/* <MenuButtom url='/empresa/colores' params={{ key: this.pk, }} label='Tema' icon={<SIcon name={"itema"} />} /> */}
                 <MenuButtom url='/empresa/portada' params={{ key: this.pk, }} label='ifoto' icon={<SIcon name={"itema"} />} />
             </MenuPages>
-            <Colores key_empresa={this.pk} />
+            {/* <Colores key_empresa={this.pk} /> */}
         </SView>
     }
 

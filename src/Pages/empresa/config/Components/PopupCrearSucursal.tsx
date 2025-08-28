@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { SForm, SHr, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SForm, SHr, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
 import PButtom from '../../../../Components/PButtom';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../../MDL';
 import Model from '../../../../Model';
 import Btn from './Btn';
+import InputFoto from '../../../../Components/InputFoto';
 
 type Props = {
     key_empresa: string,
@@ -43,6 +44,7 @@ export default class PopupCrearSucursal extends Component<Props> {
         })
     }
     form: SForm | undefined = undefined;
+    _ref: any = {}
     render() {
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props.editObject ? "Editar" : "Crear"}{" sucursal"}</SText>
@@ -58,7 +60,17 @@ export default class PopupCrearSucursal extends Component<Props> {
                             defaultValue: this.props.editObject?.descripcion,
                             onSubmitEditing: () => {
                                 if (this.form) this.form.submit();
-                            }
+                            },
+                            icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
+                                {/* <SInput ref={ref => this._ref.image_modelo = ref} type='image' height={50} defaultValue={(SSocket.api as any).inventario + "modelo/" + this.props.editObject?.key}/> */}
+                                <InputFoto
+                                    ref={ref => this._ref.image_sucursal = ref}
+                                    src={(SSocket.api as any).empresa + "sucursal/" + this.props.editObject?.key}
+                                    style={{
+                                        width: 50,
+                                        height: 50,
+                                    }} />
+                            </SView>,
                         },
                         "municipio": { label: "Municipio", placeholder: "Ingresa el municipio", defaultValue: this.props.editObject?.municipio, col: "xs-5" },
                         "codigo_facturacion": { label: "Codigo SIAT", placeholder: "", defaultValue: this.props.editObject?.codigo_facturacion, col: "xs-5" },
@@ -76,11 +88,19 @@ export default class PopupCrearSucursal extends Component<Props> {
                             key_usuario: Model.usuario.Action.getKey(),
                             data: {
                                 key_empresa: this.props.key_empresa,
+                                key_usuario: Model.usuario.Action.getKey(),
                                 ...(this.props.editObject ?? {}),
                                 ...data,
                             }
-                        }).then(e => {
+                        }).then((e: any) => {
                             if (this.props.onSuccess) this.props.onSuccess(e)
+
+                            if (this._ref.image_sucursal) {
+                                const value = this._ref.image_sucursal.getValue();
+                                if (Array.isArray(value)) {
+                                    Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).empresa + "upload/sucursal/" + e.data.key)
+                                }
+                            }
                             console.log("response", e);
                         }).catch(e => {
                             console.error("response", e);

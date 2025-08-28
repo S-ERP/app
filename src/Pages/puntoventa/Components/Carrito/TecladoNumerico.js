@@ -185,14 +185,14 @@ export default class TecladoNumerico extends Component {
             <>
                 <SView col={"xs-0 md-12"} row color={STheme.color.danger}>
                     <SView col={"xs-4"}>
-                        <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 40, borderRadius: 2, margin: 2 }}>
+                        <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 40, borderRadius: 8, margin: 2 }}>
                             <FotoCliente onReloadCliente={(cliente) => {
                                 console.log("cheking 22222222222 web" + JSON.stringify(cliente))
                                 this.cliente = cliente;
                                 // this.forceUpdate();
                             }}  ></FotoCliente>
                         </SView>
-                        <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
+                        <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 8, margin: 2 }} onPress={() => {
                             let carro = this.props?.carrito || {};
                             PopupConfirmaPago.open({
                                 subtotal: subtotal,
@@ -233,7 +233,8 @@ export default class TecladoNumerico extends Component {
                             <SView key={i} row>
                                 {fila.map((t, j) => (
                                     <SView key={j} flex center backgroundColor={STheme.color.darkGray} border={STheme.color.card}
-                                        style={{ height: 40, borderRadius: 2, margin: 2 }}
+                                        style={{ height: 40, borderRadius: 8,
+                                            overflow:"hidden", margin: 2 }}
                                         onPress={() => this.handleCalculatorPress(t)} >
                                         <SText style={style_text}>{t}</SText>
                                     </SView>

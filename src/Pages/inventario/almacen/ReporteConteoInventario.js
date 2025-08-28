@@ -136,11 +136,11 @@ export default class ReporteConteoInventario extends Component {
 
                     return !(e.row.fecha_confirmacion) ? <SView center style={{ height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
                         onPress={() => {
-                            alert("trabajandolo... Registrar en Cardex")
-                            // MDL.inventario.aplicar_cardex(e.row?.key_conteo).then((resp: any) => {
-                            //     console.log("aplicar_cardex" + JSON.stringify(resp));
-                            //     // this.table.loadData();
-                            // })
+                            // alert("trabajandolo... Registrar en Cardex")
+                            MDL.inventario.aplicar_cardex(e.row?.key_conteo).then((resp: any) => {
+                                console.log("aplicar_cardex" + JSON.stringify(resp));
+                                // this.table.loadData();
+                            })
                         }} >
                         <SText >Registrar en Cardex</SText>
                     </SView>

@@ -6,8 +6,10 @@ import detalle from "../compra/detalle";
 import { FlatList } from "react-native";
 import SSocket from "servisofts-socket";
 import PButtom from "../../Components/PButtom";
+import SelectTipoPago from "../caja2/components/SelectTipoPago";
 
 export default class root extends React.Component {
+    cajaActiva = false; // 🔹 Bandera sin usar state
 
     state = {
         sucursales: [],
@@ -20,8 +22,36 @@ export default class root extends React.Component {
         //     this.createDefaultCompra(),
         // ],
     }
+
+    async checkCaja() {
+        try {
+            const activa = await MDL.caja.getActiva();
+            this.cajaActiva = !!activa;
+            if (this.cajaActiva) {
+                //alert("esta activa caja")
+            } else {
+                // alert("sin caja");
+                // SNavigation.goBack();
+                SNotification.send({
+                    title: "Caja no aperturada",
+                    message: "Debes abrir la caja antes de continuar con las operaciones.",
+                    type: "danger",
+                    body: "⚠️Debe abrir caja⚠️",
+                    color: STheme.color.danger,
+                    time: 5000,
+                })
+                SNavigation.replace("/caja2");
+            }
+        } catch (e) {
+            console.error("Error al obtener estado de caja", e);
+        }
+    }
+
+
     inputs = {}
     componentDidMount() {
+        this.checkCaja();
+
         MDL.empresa.getAllSucursales().then(sucursales => {
             if (this.inputs["sucursal"]) this.inputs["sucursal"].setValue(sucursales[0]?.descripcion);
             this.setState({ sucursales: sucursales })
@@ -51,10 +81,16 @@ export default class root extends React.Component {
     //     }
     // }
 
-    handleSubmit = async () => {
+    handleSubmit = async (tipos_pago) => {
+
         console.log("DETALLE ", this.state.detalle)
         try {
 
+            SNotification.send({
+                key: "compra_rapida",
+                title: "cargando",
+                type: "loading",
+            })
 
             const sucValue = this.inputs["sucursal"].getValue();
             const sucursal = this.state.sucursales.find(a => a.descripcion == sucValue)
@@ -62,7 +98,7 @@ export default class root extends React.Component {
             const proveedor = this.state.proveedores.find(a => a.razon_social == provValue)
 
             const data = {
-                tipo_pago: "contado",
+                // tipo_pago: "contado",
                 descripcion: "Compra rapida",
                 observacion: "Sin observacion",
                 key_proveedor: proveedor.key,
@@ -71,12 +107,14 @@ export default class root extends React.Component {
                 key_usuario: MDL.usuario.session.key,
                 facturar: this.facturar || false,
                 key_caja: MDL.caja.activa.key,
-                key_tipo_pago: "efectivo",
+                tipos_pago: tipos_pago
+                // key_tipo_pago: key_tipo_pago
             }
             data.detalle = this.state.detalle.map(item => (
                 {
                     cantidad: item.cantidad,
                     precio_unitario: item.precio,
+                    detalle: item.detalle,
                     // precio_facturado: item.precio,
                     descuento: 0,
                     descripcion: item.producto,
@@ -89,11 +127,16 @@ export default class root extends React.Component {
                 type: "compraRapida",
                 data: data,
             })
-            SNavigation.navigate("/compra/profile", { pk: compraResp.data.key });
+            SelectTipoPago.closePopup()
+            // SNavigation.navigate("/compra/profile", { pk: compraResp.data.key });
+            SNavigation.goBack();
+            SNotification.remove("compra_rapida")
+            MDL.caja.dispatchEvent({ type: "onDetalleChange" })
             console.log("compra", compraResp);
         } catch (error) {
             console.error("Error al realizar la compra:", error);
             SNotification.send({
+                key: "compra_rapida",
                 title: "Error al realizar la compra",
                 body: error?.error || "Ocurrió un error inesperado.",
                 type: "danger",
@@ -193,7 +236,20 @@ export default class root extends React.Component {
                     </SView> */}
                     <SView col={"xs-12"} center>
                         <SHr height={25} />
-                        <PButtom type='primary' small onPress={this.handleSubmit.bind(this)}>GUARDAR</PButtom>
+                        <PButtom type='primary' small onPress={() => {
+                            var max = 0;
+                            this.state.detalle.map(item => {
+                                max += (item.cantidad * item.precio)
+                            })
+                            SelectTipoPago.openPopup({
+                                key_punto_venta: MDL.caja.activa.key_punto_venta,
+                                montoMaximo: max,
+                                onSelect: (tipos_pago) => {
+                                    this.handleSubmit(tipos_pago)
+                                }
+                            });
+
+                        }}>GUARDAR</PButtom>
                     </SView>
                 </SView>
             </SView>
@@ -242,6 +298,16 @@ class Detalle extends React.Component {
                                 }
                             })
                         }}
+                    />
+                    <SHr h={4} />
+                    <SInput
+                        ref={ref => this.inputs["detalle"] = ref}
+                        placeholder={"Detalle"}
+                        defaultValue={this.props.data.detalle}
+                        onChangeText={e => {
+                            this.props.data.detalle = e;
+                        }}
+                        type="default"
                     />
                 </SView>
                 <SView col={"xs-12 sm-5"} row>

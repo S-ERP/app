@@ -6,8 +6,25 @@ export type Caja = {
   estado: number;
 };
 
+export type CajaDetalle = {
+  key?: string,
+  key_caja: string,
+  fecha: string,
+  descripcion: string,
+  monto: number,
+  tipo: "egreso_banco",
+  key_tipo_pago: string
+}
 
+
+export type CajaTypeAbstract = {
+  key: string,
+  label: string,
+}
 
 export type EventListener = {
   type: "onChangeActiva"
+} |
+{
+  type: "onDetalleChange"
 }

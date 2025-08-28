@@ -10,6 +10,7 @@ import Adornos from '../../Components/Adornos';
 import BtnNext from './Components/BtnNext';
 import { Parent } from '.';
 export default class index extends Component {
+      static HIDDEN = true;
     constructor(props) {
         super(props);
         this.state = {

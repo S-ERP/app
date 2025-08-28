@@ -38,7 +38,11 @@ export default class Modelo extends Component {
         this.loadApis();
     }
     async loadApis() {
-        const modelos = await MDL.inventario.getAllModeloStock();
+        if (!MDL.caja.activa) {
+            console.log("Caja no activa");
+            return;
+        }
+        const modelos = await MDL.inventario.getAllModeloStockBySucursal(MDL.caja.activa.key_sucursal);
         this.modelos = modelos;
         this.forceUpdate();
     }
@@ -62,9 +66,13 @@ export default class Modelo extends Component {
     renderModelos() {
         const modelos = this.modelos || [];
         const tipoKey = this.props.tipoKey;
+
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
+        productosFiltrados = productosFiltrados.filter(m => m.precio_venta > 0);
         if (this.props.searchText) { const search = this.props.searchText.toLowerCase(); productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search)); }
+
         const colSize = this.getColSize();
+        // console.log("todos " + JSON.stringify(productosFiltrados))
 
         return (
             <SView col={"xs-12"} flex center backgroundColor='transparent'>
@@ -73,13 +81,13 @@ export default class Modelo extends Component {
                         <SView col={"xs-12"} row padding={5}>
                             {productosFiltrados.map((producto, index) => {
                                 const src = producto.key ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}` : productSinFoto;
-
                                 return (
                                     <SView
                                         key={index}
-                                        col={`xs-6 md-4 lg-3 xl-1.5`}
+                                        col={`xs-6 md-4 lg-3`}
                                         margin={2}
                                         style={{
+                                            minWidth: 120,
                                             borderRadius: 8,
                                             // shadowColor: "#000",
                                             shadowOffset: { width: 0, height: 2 },
@@ -89,7 +97,7 @@ export default class Modelo extends Component {
                                             borderWidth: 1,
                                             borderColor: STheme.color.lightGray,
                                             overflow: "hidden",
-                                            backgroundColor: STheme.color.background
+                                            // backgroundColor: STheme.color.background
                                         }}
                                         onPress={() => {
                                             console.log("PRO - PRESS", producto)
@@ -105,8 +113,10 @@ export default class Modelo extends Component {
                                         <SView col={"xs-12"} padding={4}>
                                             <SView col={"xs-12"} height={40}><SText fontSize={14} bold color={STheme.color.text}>{producto.descripcion} </SText></SView>
                                             <SView col={"xs-12"} row>
-                                                <SView flex row > <SText fontSize={12} bold color={STheme.color.text}  > Bs {SMath.formatMoney(producto.precio_venta, 2)} </SText> </SView>
-                                                <SView width={60} row   > <SText fontSize={10} color={producto?.stock > 0 ? "#10B981" : "#EF4444"}> Disp: {producto?.stock} und</SText> </SView>
+                                                <SView flex row >
+                                                    <SText fontSize={12} bold color={STheme.color.text}  > Bs {SMath.formatMoney(producto.precio_venta, 2)}</SText>
+                                                </SView>
+                                                <SText fontSize={10} color={producto?.stock > 0 ? "#10B981" : "#EF4444"}>{producto?.stock} und</SText>
                                             </SView>
                                         </SView>
                                     </SView>

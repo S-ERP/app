@@ -10,6 +10,7 @@ import Components from '../../Components';
 import PButtomFooter from '../../Components/PButtomFooter';
 import Adornos from '../../Components/Adornos';
 export default class index extends Component {
+    static HIDDEN = true;
     constructor(props) {
         super(props);
         this.state = {

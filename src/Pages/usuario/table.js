@@ -305,6 +305,7 @@ export default class table extends Component {
                         console.log("KEY_USER", key_user);
                         console.log("USERROLES", this.state?.userRoles);
                         const roles = this.state?.userRoles[key_user]?.filter(ur => ur.rol?.key_empresa === Model.empresa.Action.getKey());
+                        if(!roles) return;
                         //    this.state.data.roles = {...roles};
                         // let ff= this.state.data.filter((item) => item.key === key_user);
                         console.log("AQUI", roles);
