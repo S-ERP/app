@@ -148,7 +148,7 @@ export default class Carrito extends Component {
                         <SView col={"xs-12"} row center   >
                             <SView col={"md-12 xl-6"} height={70} border={"transparent"} >
                                 <SView col={"xs-10"} center  >
-                                    <SInput label={"Descuento VIP (Bs):"} height={40} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={this.descuentoManual > 0 ? "yellow" : STheme.color.card} style={{ backgroundColor: "transparent", borderRadius: 8 }}
+                                    <SInput label={"Descuento VIP (Bs):"} disabled={true} height={40} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={this.descuentoManual > 0 ? "yellow" : STheme.color.card} style={{ backgroundColor: "transparent", borderRadius: 8 }}
                                         value={this.descuentoManual?.toString()} // 🔑 importante para controlarlo
                                         onChangeText={(text) => {
                                             let valor = Number(text);
