@@ -53,7 +53,7 @@ export default class PopupCrearAlmacen extends Component<Props> {
     }
     render() {
         return <SView col={"xs-12"} center padding={16}>
-            <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" almacen"}</SText>
+            <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Almacén"}</SText>
             <ScrollView>
                 <SForm ref={(ref: any) => this.form = ref}
                     row
@@ -62,7 +62,7 @@ export default class PopupCrearAlmacen extends Component<Props> {
                     }}
                     inputs={{
                         "descripcion": {
-                            label: "Nombre del almacen *", placeholder: "Ingresa el nombre del almacen", isRequired: true, autoFocus: true,
+                            label: "Nombre del almacén *", placeholder: "Ingresa el nombre del almacén", isRequired: true, autoFocus: true,
                             defaultValue: this.props.editObject?.descripcion,
                             onSubmitEditing: () => {
                                 if (this.form) this.form.submit();
@@ -86,7 +86,7 @@ export default class PopupCrearAlmacen extends Component<Props> {
                             defaultValue: this.props.editObject?.key_sucursal?.toString() ?? null,
                             isRequired: true,
                         },
-                        "observacion": { label: "observacion", placeholder: "observacion", defaultValue: this.props.editObject?.observacion, col: "xs-12" },
+                        "observacion": { label: "Observación", placeholder: "observación", defaultValue: this.props.editObject?.observacion, col: "xs-12" },
                         "is_stock": {
                             label: "¿Almacén con stock?",
                             type: "select",
