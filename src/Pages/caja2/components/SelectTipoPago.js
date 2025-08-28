@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SInput, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SInput, SMath, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
 
@@ -137,7 +137,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     <SView flex col={"xs-12"} center >
 
                         <SView col={"xs-12"} withoutFeedback>
-                            <SInput autoFocus ref={ref => item.__ref = ref} type='money2' defaultValue={parseFloat(item.monto ?? "0")} required
+                            <SInput autoFocus ref={ref => item.__ref = ref} type='money2' defaultValue={parseFloat(item.monto ?? "0").toFixed(2)} required
                                 onChangeText={(e) => {
                                     item.monto = e;
                                 }}
@@ -177,8 +177,9 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     const elm = {};
                     const selecteds = this.pvtp.filter(a => !!a.__select);
                     selecteds.forEach(item => {
-                        elm[item.key_tipo_pago] = parseFloat(item.monto);
-                        montoTotal += parseFloat(item.monto);
+                        elm[item.key_tipo_pago] = parseFloat(item.monto).toFixed(2);
+                        // montoTotal += SMath.formatMoney((item.monto+2000), 2);
+                        montoTotal += parseFloat(item.monto).toFixed(2);
                     });
                     // Object.keys(this._select).forEach(key => {
                     //     console.log(this.pvtp)
