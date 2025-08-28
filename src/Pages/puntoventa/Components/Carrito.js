@@ -216,10 +216,7 @@ export default class Carrito extends Component {
                     conFactura={this.conFactura}
                     subtotal={subtotal}
                     onReload={() => { this.vaciarCarrito(); }}
-                    onReloadCliente={(cliente) => {
-                        this.cliente = cliente || {};
-                        this.forceUpdate();
-                    }}
+                    onReloadCliente={() => { this.cliente = null }}
                 />
             </>
         );

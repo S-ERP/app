@@ -21,7 +21,14 @@ export default class PopupCarritoFlotante extends Component {
             )
         });
     }
+
+    static closePopup() {
+        SPopup.close("popup_carrito_flotante")
+    }
+
 }
+
+
 class ContenidoCarritoFlotante extends Component {
     carrito = [];
     descuentoManual = 0;

@@ -8,6 +8,8 @@ import FotoCliente from '../Foto/FotoCliente';
 import SelectTipoPago from '../../../caja2/components/SelectTipoPago';
 import MDL from '../../../../MDL';
 import ReciboRollo from '../../../../Components/PDF/venta/ReciboRollo';
+import ReciboCarta from '../../../../Components/PDF/venta/ReciboCarta';
+import PopupCarritoFlotante from './PopupCarritoFlotante';
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
@@ -116,7 +118,7 @@ export default class TecladoNumerico extends Component {
                             this.data.cliente = "";
                             this.props.onReload();
                             // this.forceUpdate();
-                            SPopup.close("PopupPago");
+                            // SPopup.close("PopupPago");
                         }}
                     >
                         <SText color={STheme.color.text}>Cancelar</SText>
@@ -166,7 +168,7 @@ export default class TecladoNumerico extends Component {
                             this.data.cliente = {};
                             this.props.onReload();
                             // this.forceUpdate();
-                            SPopup.close("PopupPago");
+                            // SPopup.close("PopupPago");
                         }}
                     >
                         <SText color={STheme.color.background}>Confirmar Pago</SText>
@@ -248,17 +250,18 @@ export default class TecladoNumerico extends Component {
 
         MDL.compra_venta.registrar(datos).then((res) => {
 
-            this.props?.onReload?.();
-            this.props?.onReloadCliente?.(null); // Limpia cliente en FotoCliente
 
-            ReciboRollo.imprimir(res.key)
-            // ReciboCarta.imprimir(res.key)
-            SPopup.close("popup_config_horario");
-            // SNavigation.goBack();
+            // ReciboRollo.imprimir(res.key)
+            ReciboCarta.imprimir(res.key)
+            // SPopup.close("popup_config_horario");
+            // SPopup.close("PopupPago");
+
             this.tipos_pago = null;
-            SNotification.remove("compra")
+            SNotification.remove("compra");
+            this.props?.onReload?.();
+            this.props?.onReloadCliente?.(); // Limpia cliente en FotoCliente
             this.forceUpdate();
-
+            // SNavigation.navigate("/caja2")
         }).catch(res => {
 
             this.tipos_pago = null;
@@ -314,20 +317,13 @@ export default class TecladoNumerico extends Component {
                                     montoMaximo: totalFinal,
                                     onSelect: (item) => {
                                         this.tipos_pago = item;
-                                        // this.handleSubmit(item.key_tipo_pago)
                                         console.log("selecciono " + JSON.stringify(item))
                                         this.forceUpdate();
                                         this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
-
                                         SelectTipoPago.closePopup();
                                     }
                                 });
                             }
-
-
-
-
-                            // }
 
                         }}
                         >
@@ -356,35 +352,47 @@ export default class TecladoNumerico extends Component {
                 {
                     this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                         console.log("modo movil " + this.props.cliente)
-                        PopupConfirmaPago.open({
-                            subtotal: subtotal,
-                            descuento: this.props.descuento,
-                            iva: this.props.descuento,
-                            totalImpuesto: totalImpuesto,
-                            totalDescuento: descuento,
-                            totalFinal: (subtotal - this.props.descuento),
-                            numeroIva: numeroIva,
-                            conFactura: conFactura,
-                            carrito: this.props?.carrito || {},
-                            cliente: this.props?.cliente,
+                        // PopupConfirmaPago.open({
+                        //     subtotal: subtotal,
+                        //     descuento: this.props.descuento,
+                        //     iva: this.props.descuento,
+                        //     totalImpuesto: totalImpuesto,
+                        //     totalDescuento: descuento,
+                        //     totalFinal: (subtotal - this.props.descuento),
+                        //     numeroIva: numeroIva,
+                        //     conFactura: conFactura,
+                        //     carrito: this.props?.carrito || {},
+                        //     cliente: this.props?.cliente,
+                        //     onReload: () => {
+                        //         this._recibido = "";
+                        //         this._devolvido = "";
+                        //         this.cliente = {};
+                        //         this.forceUpdate();
+                        //         this.props.onReload();
+                        //     },
+                        //     onReloadCliente: (cliente) => {
+                        //         this.cliente = cliente || {};
+                        //         this.props.onReloadCliente?.(cliente);
+                        //         this.forceUpdate();
+                        //     }
+                        // })
+                        if (!this.tipos_pago) {
+                            SelectTipoPago.openPopup({
+                                key_punto_venta: MDL.caja.activa.key_punto_venta,
+                                montoMaximo: totalFinal,
+                                onSelect: (item) => {
+                                    this.tipos_pago = item;
+                                    console.log("selecciono " + JSON.stringify(item))
+                                    this.forceUpdate();
+                                    this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
+                                    // SPopup.close("popup_config_horario");
+                                    // SPopup.close("PopupPago");
+                                    PopupCarritoFlotante.closePopup();
+                                    SelectTipoPago.closePopup();
+                                }
+                            });
+                        }
 
-                            onReload: () => {
-                                this._recibido = "";
-                                this._devolvido = "";
-                                this.cliente = {};
-                                this.forceUpdate();
-                                this.props.onReload();
-                            },
-                            onReloadCliente: (cliente) => {
-                                this.cliente = cliente || {};
-                                this.props.onReloadCliente?.(cliente);
-                                this.forceUpdate();
-                            }
-
-                            // onReload: () => {
-                            //     this.props?.onReload?.(); // o cualquier otra función de recarga
-                            // }
-                        })
                     }}>
                         <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pago</SText>
                     </SView>

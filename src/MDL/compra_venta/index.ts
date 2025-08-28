@@ -16,18 +16,11 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     // return;
     const formar = {
       key_usuario: data.key_cajero,
-      // key_empresa: MDL.empresa.select?.key,
-      //key_sucursal: sucursal?.key_sucursal || "default_key_aqui",
-      // key_sucursal: data.key_sucursal,
       key_cliente: data?.key_cliente,
       cliente: data?.cliente,
-      // key_vendedor: data.key_vendedor,
+      key_cajero: data.key_cajero,
       key_caja: MDL.caja.activa?.key,
       tipos_pago: data?.caja?.tipos_pago,
-      // key_tipo_pago: "efectivo",
-      // descuento: parseFloat(data.caja.descuento),
-      // monto_total: parseFloat(data.caja.monto_total),
-      // monto_factura: parseFloat(data.caja.monto_factura),
       facturar: data?.caja?.conFactura,
       detalle: data.detalle,
     };
@@ -40,6 +33,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       type: "ventaRapida",
       data: formar,
       key_cliente: data?.key_cliente,
+      cliente: data?.cliente,
     });
     MDL.caja.dispatchEvent({ type: "onDetalleChange" })
     return resp.data;
