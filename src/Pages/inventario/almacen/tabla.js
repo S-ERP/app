@@ -50,7 +50,7 @@ export default class tabla extends Component {
             // colors={Config.table.colors()}
             // cellStyle={Config.table.cellStyle()}
             // textStyle={Config.table.textStyle()}
- 
+
             onSelect={(e) => {
                 if (this.onSelect) {
                     this.onSelect(e.row)
@@ -64,7 +64,7 @@ export default class tabla extends Component {
 
 
                         {
-                            icon: <SIconApp name='producto' fill='#FFFFFF8B' stroke='#877F7F' width={16} />,
+                            icon: <SIconApp name='producto' fill='#FFFFFF8B' stroke='#877F7F' width={18} />,
                             label: "Ver Productos",
                             onPress: () => {
                                 SNavigation.navigate("/inventario/almacen/profile/productos", { pk: e.row?.key })
@@ -72,7 +72,7 @@ export default class tabla extends Component {
                         },
 
                         {
-                            icon: <SIconApp name='carritoproducto' fill='#FFFFFF8B' stroke='#877F7F' width={16} />,
+                            icon: <SIconApp name='carritoproducto' fill='#FFFFFF8B' stroke='#877F7F' width={18} />,
                             label: "Ver Recepcion compra",
                             onPress: () => {
                                 SNavigation.navigate("/inventario/almacen/profile/recepcion_compra", { pk: e.row?.key })
@@ -80,7 +80,7 @@ export default class tabla extends Component {
                         },
 
                         {
-                            icon: <SIconApp name='Favorito' fill='#FFFFFF8B' stroke='#877F7F' width={16} />,
+                            icon: <SIconApp name='Favorito' fill='#FFFFFF8B' stroke='#877F7F' width={18} />,
                             label: "Ver Pendientes de entrega",
                             onPress: () => {
                                 SNavigation.navigate("/inventario/almacen/profile/pendiente_entrega", { pk: e.row?.key })
@@ -88,7 +88,7 @@ export default class tabla extends Component {
                         },
 
                         {
-                            icon: <SIconApp name='Favorito' fill='#FFFFFF8B' stroke='#877F7F' width={16} />,
+                            icon: <SIconApp name='Favorito' fill='#FFFFFF8B' stroke='#877F7F' width={18} />,
                             label: "Ver Registro de Inventario",
                             onPress: () => {
                                 SNavigation.navigate("/inventario/almacen/profile/registro_inventario", { pk: e.row?.key })
@@ -127,7 +127,7 @@ export default class tabla extends Component {
 
 
                         {
-                            icon: <SIconApp name='crmeliminar' fill='#ed3a4318' stroke='#ed3a43' />,
+                            icon: <SIconApp name='crmeliminar' fill='#ed3a4318' stroke='#ed3a43' width={16} />,
                             // style:{color:"blue"},
                             label: "Eliminar Almacen",
                             onPress: () => {
