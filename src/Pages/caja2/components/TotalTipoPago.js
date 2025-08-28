@@ -58,7 +58,7 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
 
         return <SView style={{
             padding: 2,
-            maxWidth: 130,
+            maxWidth: 140,
         }} col={"xs-6 sm-4"} colSquare>
             <SView style={{
                 width: "100%",
@@ -97,15 +97,15 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
                     <SView flex center style={{
                         borderRightWidth: 1,
                         borderColor: STheme.color.card
-                    }} row>
-                        <SIconApp name='Ingreso' width={8} />
-                        <View style={{ width: 2 }} />
-                        <SText color={this.getColor(totalIngresos)} fontSize={12}>{SMath.formatMoney(totalIngresos, 1)}</SText>
+                    }} >
+                        <SIconApp name='Ingreso' width={8} height={8}/>
+                        {/* <View style={{ width: 2 }} /> */}
+                        <SText numberOfLines={1} color={this.getColor(totalIngresos)} fontSize={10}>{SMath.formatMoney(totalIngresos, 1)}</SText>
                     </SView>
-                    <SView flex center row>
-                        <SIconApp name='Egreso' width={8} />
-                        <View style={{ width: 2 }} />
-                        <SText color={this.getColor(totalEgresos)} fontSize={12}>{SMath.formatMoney(totalEgresos, 1)}</SText>
+                    <SView flex center >
+                        <SIconApp name='Egreso' width={8} height={8} />
+                        {/* <View style={{ width: 2 }} /> */}
+                        <SText numberOfLines={1} color={this.getColor(totalEgresos)} fontSize={10}>{SMath.formatMoney(totalEgresos, 1)}</SText>
                     </SView>
                 </SView>
             </SView>

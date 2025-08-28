@@ -137,7 +137,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     <SView flex col={"xs-12"} center >
 
                         <SView col={"xs-12"} withoutFeedback>
-                            <SInput autoFocus ref={ref => item.__ref = ref} type='money' defaultValue={parseFloat(item.monto ?? "0").toFixed(2)} required
+                            <SInput autoFocus ref={ref => item.__ref = ref} type='money2' defaultValue={parseFloat(item.monto ?? "0")} required
                                 onChangeText={(e) => {
                                     item.monto = e;
                                 }}

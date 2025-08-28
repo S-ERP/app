@@ -61,9 +61,10 @@ export default class table extends Component {
             <BarcodeIcon onChange={this.onChangeBarcode.bind(this)} />
             <DinamicTable
                 ref={ref => this.table = ref}
-                colors={Config.table.colors()}
-                cellStyle={Config.table.cellStyle()}
-                textStyle={Config.table.textStyle()}
+                {...Config.table.applyTheme()}
+                // colors={Config.table.colors()}
+                // cellStyle={Config.table.cellStyle()}
+                // textStyle={Config.table.textStyle()}
                 selectType='single'
                 language='es'
                 loadData={this.loadData.bind(this)}
@@ -200,7 +201,25 @@ export default class table extends Component {
                     width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
 
 
-                <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sd' width={150} data={(e) => e.row?.tipo_producto?.tipo} />
+                <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sd' width={150}
+                    data={(e) => e.row?.tipo_producto?.tipo}
+                    cellStyle={{
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                        flexDirection: "row"
+                    }}
+                    customComponent={e => {
+                        return <View style={{
+                            padding: 2,
+                            borderRadius: 4,
+                            backgroundColor: STheme.colorFromText(e.data) + "44",
+                            borderWidth: 1,
+                            borderColor: STheme.colorFromText(e.data)
+                        }}>
+                            <SText fontSize={10}>{e.data}</SText>
+                        </View>
+                    }}
+                />
                 <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row?.barcode} />
             </DinamicTable>
             <FloatButtom onPress={() => {

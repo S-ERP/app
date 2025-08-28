@@ -6,6 +6,20 @@ import MDL from "..";
 export default class inventario extends MDLAbstract<EventListener> {
   async componentDidMount() { }
 
+
+  TIPOS_DE_PRODUCTOS = [
+    {
+      key: "inventario",
+      cuentas: ["key_cuenta_contable", "key_cuenta_contable_ganancia", "key_cuenta_contable_costo"]
+    }, {
+      key: "activo_fijo",
+      cuentas: ["key_cuenta_contable", "key_cuenta_contable_ganancia", "key_cuenta_contable_costo", "key_cuenta_contable_depreciacion_activo", "key_cuenta_contable_depreciacion_gasto"]
+    }, {
+      key: "servicio",
+      cuentas: ["key_cuenta_contable_ganancia", "key_cuenta_contable_costo"]
+    }
+  ]
+
   async getAllModeloStock(_key_almacen: string) {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
