@@ -116,11 +116,18 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
                                     type='checkBox' defaultValue={!!item.rol as any}
                                     // type='checkBox' defaultValue={"Desarrollador"}
                                     onChangeText={e => {
-                                        item._edited_value = e;
-                                        if (!!e == !!item.rol) {
-                                            item._edited = false;
-                                        } else {
-                                            item._edited = true;
+                                        // item._edited_value = e;
+                                        // if (!!e == !!item.rol) {
+                                        //     item._edited = false;
+                                        // } else {
+                                        //     item._edited = true;
+                                        // }
+                                        console.log("check", e)
+                                        console.log("item", item)
+                                        if(e) {
+                                            // MDL.rolesPermisos.registro(item.key, item.key_rol)
+                                        }else{
+                                            // MDL.rolesPermisos.editar(item.key, item.key_rol)
                                         }
 
                                     }}
@@ -150,27 +157,29 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
                 <PButtom flex type='primary' onPress={async () => {
                     if (!this.state.roles) return;
 
-                    let listaAgregar: any[] = [];
-                    let listaEliminar: any[] = [];
+                    // MDL.rolesPermisos.
 
-                    this.state.roles.filter((a: any) => !!a._edited).map((item: any) => {
-                        let value = item._edited_value
-                        if (!!value) {
-                            listaAgregar.push({
-                                key_user: this.props.data.key,
-                                key_role: item.key,
-                            })
-                        } else {
-                            listaEliminar.push(item.userRole.key)
-                        }
-                    })
+                    // let listaAgregar: any[] = [];
+                    // let listaEliminar: any[] = [];
 
-                    // await MDL.role.registrarUserRoleArray(listaAgregar)
-                    // await MDL.role.eliminarUserRoleArray(listaEliminar);
-                    if (this.props.onRegister) this.props.onRegister(this.state.roles)
+                    // this.state.roles.filter((a: any) => !!a._edited).map((item: any) => {
+                    //     let value = item._edited_value
+                    //     if (!!value) {
+                    //         listaAgregar.push({
+                    //             key_user: this.props.data.key,
+                    //             key_role: item.key,
+                    //         })
+                    //     } else {
+                    //         listaEliminar.push(item.userRole.key)
+                    //     }
+                    // })
 
-                    console.log("listaAgregar", listaAgregar);
-                    console.log("listaEliminar", listaEliminar);
+                    // // await MDL.role.registrarUserRoleArray(listaAgregar)
+                    // // await MDL.role.eliminarUserRoleArray(listaEliminar);
+                    // if (this.props.onRegister) this.props.onRegister(this.state.roles)
+
+                    // console.log("listaAgregar", listaAgregar);
+                    // console.log("listaEliminar", listaEliminar);
 
                 }}>GUARDAR</PButtom>
             </SView>

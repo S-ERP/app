@@ -83,4 +83,33 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         })
         return resp.data;
     }
+
+    async registro(key_usuario: string, key_rol: string) {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "usuarioRol",
+            "type": "registro",
+            "estado": "cargando",
+            "key_usuario": key_usuario,
+            "data": {
+                "key_rol": key_rol,
+                "key_usuario": key_usuario
+            }
+        })
+        return resp.data;
+    }
+
+    async editar(key_usuario: string, data: string[]) {
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "usuarioRol",
+            "type": "editar",
+            "estado": "cargando",
+            "key_usuario": key_usuario,
+            "data": data
+        })
+        return resp.data;
+    }
 }
