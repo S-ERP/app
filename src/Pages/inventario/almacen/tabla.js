@@ -63,8 +63,15 @@ export default class tabla extends Component {
                     options: [
 
 
+                        // {
+                        //     icon: <SIconApp name='producto' fill='#FFFFFF8B' stroke='#877F7F' />,
+                        //     label: "Ver Productos",
+                        //     onPress: () => {
+                        //         SNavigation.navigate("/inventario/almacen/profile/productos", { pk: e.row?.key })
+                        //     }
+                        // },
                         {
-                            icon: <SIconApp name='producto' fill='#FFFFFF8B' stroke='#877F7F' width={18} />,
+                            icon: <SIconApp name='producto' fill='#8b8b8a25' stroke='#8b8b8a'  width={20} />,
                             label: "Ver Productos",
                             onPress: () => {
                                 SNavigation.navigate("/inventario/almacen/profile/productos", { pk: e.row?.key })
@@ -72,7 +79,7 @@ export default class tabla extends Component {
                         },
 
                         {
-                            icon: <SIconApp name='carritoproducto' fill='#FFFFFF8B' stroke='#877F7F' width={18} />,
+                            icon: <SIconApp name='carritoproducto' fill='#FFFFFF8B' stroke='#877F7F' width={20} />,
                             label: "Ver Recepcion compra",
                             onPress: () => {
                                 SNavigation.navigate("/inventario/almacen/profile/recepcion_compra", { pk: e.row?.key })
@@ -80,7 +87,7 @@ export default class tabla extends Component {
                         },
 
                         {
-                            icon: <SIconApp name='Favorito' fill='#FFFFFF8B' stroke='#877F7F' width={18} />,
+                            icon: <SIconApp name='Favorito' fill='#FFFFFF8B' stroke='#877F7F' width={20} />,
                             label: "Ver Pendientes de entrega",
                             onPress: () => {
                                 SNavigation.navigate("/inventario/almacen/profile/pendiente_entrega", { pk: e.row?.key })
@@ -88,7 +95,7 @@ export default class tabla extends Component {
                         },
 
                         {
-                            icon: <SIconApp name='Favorito' fill='#FFFFFF8B' stroke='#877F7F' width={18} />,
+                            icon: <SIconApp name='Favorito' fill='#FFFFFF8B' stroke='#877F7F' width={20} />,
                             label: "Ver Registro de Inventario",
                             onPress: () => {
                                 SNavigation.navigate("/inventario/almacen/profile/registro_inventario", { pk: e.row?.key })
@@ -100,15 +107,14 @@ export default class tabla extends Component {
                             icon: <SIconApp name='confirmar' fill='#8b8b8a25' stroke='#8b8b8a' width={16} />,
                             label: "Importar Inventario",
                             onPress: () => {
-                                // SNavigation.navigate("/inventario/almacen/profile/registro_inventario", { pk: e.row?.key })
+                                alert("trabjandolo...")
                             }
                         },
 
 
 
                         {
-                            icon: <SIconApp name='crmeditar' fill='#8b8b8a' stroke='#a8a89fff' width={16} />,
-                            // icon: <SIconApp name='Edit' />,
+                            icon: <SIconApp name='crmeditar' fill='#8b8b8a25' stroke='#a8a89fff' width={20} />,
                             label: "Actualizar Almacen",
                             onPress: () => {
                                 const sucursal = {
@@ -127,8 +133,7 @@ export default class tabla extends Component {
 
 
                         {
-                            icon: <SIconApp name='crmeliminar' fill='#ed3a4318' stroke='#ed3a43' width={16} />,
-                            // style:{color:"blue"},
+                            icon: <SIconApp name='crmeliminar' fill='#ed3a4318' stroke='#ed3a43' width={20} />,
                             label: "Eliminar Almacen",
                             onPress: () => {
                                 SPopup.confirm({
