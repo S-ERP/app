@@ -45,12 +45,9 @@ export default class tabla extends Component {
             ref={ref => this.DinamicTable = ref}
             language="es"
             selectType="single"
-
-
-            // colors={Config.table.colors()}
-            // cellStyle={Config.table.cellStyle()}
-            // textStyle={Config.table.textStyle()}
-
+            colors={Config.table.colors()}
+            cellStyle={Config.table.cellStyle()}
+            textStyle={Config.table.textStyle()}
             onSelect={(e) => {
                 if (this.onSelect) {
                     this.onSelect(e.row)
@@ -59,50 +56,36 @@ export default class tabla extends Component {
                 }
                 FloatMenu.open({
                     e: e.evt,
-                    label: "Alm: " + e.row?.descripcion,
+                    label: "Almacén: " + e.row?.descripcion,
                     options: [
-
-
-                        // {
-                        //     icon: <SIconApp name='producto' fill='#FFFFFF8B' stroke='#877F7F' />,
-                        //     label: "Ver Productos",
-                        //     onPress: () => {
-                        //         SNavigation.navigate("/inventario/almacen/profile/productos", { pk: e.row?.key })
-                        //     }
-                        // },
                         {
-                            icon: <SIconApp name='producto' fill='#8b8b8a25' stroke='#8b8b8a'  width={20} />,
+                            icon: <SIconApp name='producto' fill='#d1d1cdff' stroke='#8b8b8a25' width={20} />,
                             label: "Ver Productos",
                             onPress: () => {
                                 SNavigation.navigate("/inventario/almacen/profile/productos", { pk: e.row?.key })
                             }
                         },
-
                         {
-                            icon: <SIconApp name='carritoproducto' fill='#FFFFFF8B' stroke='#877F7F' width={20} />,
+                            icon: <SIconApp name='carritoproducto' fill='#d1d1cdff' stroke='#8b8b8a25' width={20} />,
                             label: "Ver Recepcion compra",
                             onPress: () => {
                                 SNavigation.navigate("/inventario/almacen/profile/recepcion_compra", { pk: e.row?.key })
                             }
                         },
-
                         {
-                            icon: <SIconApp name='Favorito' fill='#FFFFFF8B' stroke='#877F7F' width={20} />,
-                            label: "Ver Pendientes de entrega",
+                            icon: <SIconApp name='Favorito' fill='#ffffff6e' stroke='#d1d1cdff' width={20} />,
+                            label: "Ver Pend. de entrega",
                             onPress: () => {
                                 SNavigation.navigate("/inventario/almacen/profile/pendiente_entrega", { pk: e.row?.key })
                             }
                         },
-
                         {
-                            icon: <SIconApp name='Favorito' fill='#FFFFFF8B' stroke='#877F7F' width={20} />,
-                            label: "Ver Registro de Inventario",
+                            icon: <SIconApp name='Favorito' fill='#ffffff6e' stroke='#d1d1cdff' width={20} />,
+                            label: "Ver Reg. de Inventario",
                             onPress: () => {
                                 SNavigation.navigate("/inventario/almacen/profile/registro_inventario", { pk: e.row?.key })
                             }
                         },
-
-
                         {
                             icon: <SIconApp name='confirmar' fill='#8b8b8a25' stroke='#8b8b8a' width={16} />,
                             label: "Importar Inventario",
@@ -110,9 +93,6 @@ export default class tabla extends Component {
                                 alert("trabjandolo...")
                             }
                         },
-
-
-
                         {
                             icon: <SIconApp name='crmeditar' fill='#8b8b8a25' stroke='#a8a89fff' width={20} />,
                             label: "Actualizar Almacen",
@@ -130,8 +110,6 @@ export default class tabla extends Component {
                                 })
                             }
                         },
-
-
                         {
                             icon: <SIconApp name='crmeliminar' fill='#ed3a4318' stroke='#ed3a43' width={20} />,
                             label: "Eliminar Almacen",
@@ -165,9 +143,6 @@ export default class tabla extends Component {
                                 })
                             }
                         }
-
-
-
                     ]
                 })
             }}
@@ -179,7 +154,6 @@ export default class tabla extends Component {
             }}
         >
             <DinamicTable.Col key="index" label="#" width={30} data={(e) => e.index + 1} />
-
             <DinamicTable.Col key="sucursal" label="Sucursal" width={120} data={(e) => e.row?.key_sucursal ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_sucursal) ?
@@ -245,7 +219,6 @@ export default class tabla extends Component {
                         </SView> : null}
                 </>}
             />
-
         </DinamicTable>
     }
     render() {
