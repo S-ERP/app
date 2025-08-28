@@ -11,15 +11,16 @@ export default class compra_venta extends MDLAbstract<EventListener> {
   sucursalSeleccionada = null;
 
   async registrar(data: any) {
-    const sucursal = this.sucursalSeleccionada;
-    console.log("se esta registrando todo " + JSON.stringify(data))
+    // const sucursal = this.sucursalSeleccionada;
+    // console.log("se esta registrando todo " + JSON.stringify(data))
     // return;
     const formar = {
-      key_usuario: Model.usuario.Action.getKey(),
+      key_usuario: data.key_cajero,
       // key_empresa: MDL.empresa.select?.key,
       //key_sucursal: sucursal?.key_sucursal || "default_key_aqui",
       // key_sucursal: data.key_sucursal,
       key_cliente: data?.key_cliente,
+      cliente: data?.cliente,
       // key_vendedor: data.key_vendedor,
       key_caja: MDL.caja.activa?.key,
       tipos_pago: data?.caja?.tipos_pago,
@@ -31,13 +32,14 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       detalle: data.detalle,
     };
 
-    //console.log("dime quien " + JSON.stringify(formar));
-    //return;
+    // console.log("dime quien " + JSON.stringify(formar));
+    // return;
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
       component: "compra_venta",
       type: "ventaRapida",
       data: formar,
+      key_cliente: data?.key_cliente,
     });
     MDL.caja.dispatchEvent({ type: "onDetalleChange" })
     return resp.data;

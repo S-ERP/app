@@ -177,7 +177,7 @@ export default class TecladoNumerico extends Component {
     }
 
 
-    renderButton(totalFinal, subtotal, descuento, conFactura, carrito, cliente) {
+    renderButton(totalFinal, subtotal, descuento, conFactura, carrito) {
         // console.log("WWWWW")
         if (!this.tipos_pago) {
             SNotification.send({
@@ -189,19 +189,23 @@ export default class TecladoNumerico extends Component {
             });
             return;
         }
-        // if (!this.variableGlobal || this.variableGlobal < totalFinal) {
-        //     SNotification.send({
-        //         title: "Error",
-        //         body: "Monto insuficiente para pagar",
-        //         type: "error",
-        //         color: STheme.color.error,
-        //         time: 5000,
-        //     });
-        //     return;
-        // }
+        if (!this.tipos_pago.efectivo || this.tipos_pago.efectivo < totalFinal) {
+            SNotification.send({
+                title: "Error",
+                body: "Monto insuficiente para pagar",
+                type: "error",
+                color: STheme.color.error,
+                time: 5000,
+            });
+
+            this.tipos_pago = null;
+            // this.forceUpdate();
+            return;
+        }
         const recibi = this.tipos_pago.efectivo || 0;
         const key_sucursal = this.props?.key_sucursal;
         const key_cliente = this.cliente?.key;
+        const cliente = this.cliente;
         const key_cajero = this.props?.key_cajero;
         const detalle = carrito.map(item => ({
             key_modelo: item.key,
@@ -226,6 +230,7 @@ export default class TecladoNumerico extends Component {
             key_sucursal,
             detalle,
             key_cliente,
+            cliente,
             key_cajero,
             caja
         };
@@ -240,6 +245,7 @@ export default class TecladoNumerico extends Component {
             type: "loading",
         })
 
+
         MDL.compra_venta.registrar(datos).then((res) => {
 
             this.props?.onReload?.();
@@ -248,13 +254,16 @@ export default class TecladoNumerico extends Component {
             ReciboRollo.imprimir(res.key)
             // ReciboCarta.imprimir(res.key)
             SPopup.close("popup_config_horario");
-            SNavigation.goBack();
+            // SNavigation.goBack();
             this.tipos_pago = null;
-            // this.tipos_pago = {};
             SNotification.remove("compra")
             this.forceUpdate();
 
         }).catch(res => {
+
+            this.tipos_pago = null;
+            this.forceUpdate();
+
             console.log("compra_venta registrado error " + res.error)
             SNotification.send({
                 key: "compra",
@@ -308,13 +317,14 @@ export default class TecladoNumerico extends Component {
                                         // this.handleSubmit(item.key_tipo_pago)
                                         console.log("selecciono " + JSON.stringify(item))
                                         this.forceUpdate();
+                                        this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
+
                                         SelectTipoPago.closePopup();
                                     }
                                 });
                             }
 
 
-                            this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
 
 
                             // }
