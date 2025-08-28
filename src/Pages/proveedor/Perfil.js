@@ -28,7 +28,7 @@ export default class Perfil extends Component {
         if (!this.props.key_proveedor) return;
         // console.log("mira  " + this.props.key_proveedor)
 
-        MDL.compra_venta.proveedor.getByKey(this.props.key_proveedor).then((res) => {
+        MDL.inventario.proveedor.getByKey(this.props.key_proveedor).then((res) => {
             this.ProveedorItem = res;
             this.forceUpdate();
         }).catch((err) => {
@@ -124,13 +124,13 @@ export default class Perfil extends Component {
                             if (this.ProveedorItem?.key) {
 
                                 data.key = this.ProveedorItem?.key;
-                                MDL.compra_venta.proveedor.editar(data).then((res) => {
+                                MDL.inventario.proveedor.editar(data).then((res) => {
                                     this.props.onReload();
                                 }).catch(
                                     console.log("Actualizae error")
                                 )
                             } else {
-                                MDL.compra_venta.proveedor.registrar(data).then((res) => {
+                                MDL.inventario.proveedor.registrar(data).then((res) => {
                                     this.props.onReload();
                                 }).catch(
                                     console.log("Registrar error")

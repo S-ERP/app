@@ -4,6 +4,7 @@ export type Caja = {
   key_usuario: string;
   fecha_on: string;
   estado: number;
+  fecha:string;
 };
 
 export type CajaDetalle = {
@@ -12,8 +13,9 @@ export type CajaDetalle = {
   fecha: string,
   descripcion: string,
   monto: number,
-  tipo: "egreso_banco",
-  key_tipo_pago: string
+  tipo: "egreso_banco" | "ingreso_banco",
+  key_tipo_pago: string,
+  key_cuenta_banco?: string,
 }
 
 

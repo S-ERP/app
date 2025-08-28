@@ -127,6 +127,21 @@ export default class table extends Component {
                                 }
                             },
                             {
+                                label: "Agregar Proveedor",
+                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    SNavigation.navigate("/proveedor", {
+                                        onSelect: (prov) => {
+
+                                            MDL.inventario.saveModeloProveedor({
+                                                key_modelo: e.row.key,
+                                                key_proveedor: prov.key,
+                                            })
+                                        }
+                                    });
+                                }
+                            },
+                            {
                                 label: "Ver Marca",
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
@@ -199,6 +214,9 @@ export default class table extends Component {
                     dataType='number'
                     // textStyle={{ color: STheme.color.success }}
                     width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
+                <DinamicTable.Col key={"proveedores"} label='proveedores'
+                    // textStyle={{ color: STheme.color.success }}
+                    width={70} data={(e) => (e.row.proveedores ?? []).map(p => p?.proveedor?.razon_social)} />
 
 
                 <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sd' width={150}

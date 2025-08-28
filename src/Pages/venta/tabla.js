@@ -71,7 +71,7 @@ export default class tabla extends Component {
             // Fetch all proveedores in parallel
             const proveedorKeys = [...new Set(ventas.map(cv => cv.key_proveedor).filter(key => key?.trim()))];
             const proveedores = await Promise.all(
-                proveedorKeys.map(key => MDL.compra_venta.proveedor.getByKey(key).then(data => [key, data || {}]))
+                proveedorKeys.map(key => MDL.inventario.proveedor.getByKey(key).then(data => [key, data || {}]))
             );
             const proveedoresMap = Object.fromEntries(proveedores);
 

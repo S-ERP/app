@@ -79,7 +79,7 @@ export default class Lista extends Component {
                                     onPress: () => {
                                         const data = e?.row;
                                         data.estado = 0;
-                                        MDL.compra_venta.proveedor.editar(data).then((res) => {
+                                        MDL.inventario.proveedor.editar(data).then((res) => {
                                             this.DinamicTable.loadData();
                                             console.log("Eliminar proveedor exitosa");
                                         }).catch(
@@ -97,7 +97,7 @@ export default class Lista extends Component {
             }}
 
             loadData={async () => {
-                const proveedores = await MDL.compra_venta.proveedor.getAllProveedor();
+                const proveedores = await MDL.inventario.proveedor.getAllProveedor();
                 const keysUsuarios = Object.values(proveedores).map(p => p.key_usuario).filter(Boolean);
 
                 // Obtener usuarios desde el backend

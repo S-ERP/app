@@ -250,7 +250,7 @@ export default class factura extends MDLAbstract<EventListener> {
                         SNotification.send({
                             key: "reenviar" + cuf,
                             title: "No se pudo reenviar la factura.",
-                            body: e.error,
+                            body: JSON.stringify(e?.error),
                             color: STheme.color.error,
                             time: 5000,
                         })

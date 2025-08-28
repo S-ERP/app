@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SDate, SHr, SIcon, SImage, SPage, SText, STheme, SView, SNavigation, SPopup, SLanguage, SList2, SButtom, SInput } from 'servisofts-component';
+import { SDate, SHr, SIcon, SImage, SPage, SText, STheme, SView, SNavigation, SPopup, SLanguage, SList2, SButtom, SInput, SNotification } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
 import { Linking } from 'react-native';
@@ -78,7 +78,11 @@ class BoxMenu extends Component<BoxMenuPropsType> {
             },
             {
                 label: "Verificar", icon: "Wifi", onPress: () => {
-                    MDL.factura.verificarEstado({ cuf: factura.data.cuf })
+                    MDL.factura.verificarEstado({ cuf: factura.data.cuf }).then(e=>{
+                        // SNotification.send({"title"})
+                    }).catch(e={
+
+                    })
                 }
             },
 

@@ -146,6 +146,9 @@ export default class libro_ventas extends Component {
                     console.log("onSelect", e);
 
                 }}
+                listFooterComponent={()=>{
+                    return <SHr h={200}/>
+                }}
             >
                 <DinamicTable.Col
                     key='index'
