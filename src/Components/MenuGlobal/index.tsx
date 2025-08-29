@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { SNavigation, SPage, SText, STheme } from "servisofts-component";
 import Barra from "./Barra";
 import { Route } from "@react-navigation/native";
@@ -18,7 +18,7 @@ export default class MenuGlobal extends React.Component<MenuGlobalProps> {
     }
     componentDidMount(): void {
         MenuGlobal.INSTACE = this;
-        MDL.rolesPermisos.getPermisoAsync({ url: "/", permiso: "ver" }).then(()=>{
+        MDL.rolesPermisos.getPermisoAsync({ url: "/", permiso: "ver" }).then(() => {
             this.forceUpdate();
         })
         SNavigation.addOnChangeListener(this.onNavigationChange.bind(this))
@@ -35,6 +35,11 @@ export default class MenuGlobal extends React.Component<MenuGlobalProps> {
                 visible: true,
             })
         }
+        // if (pageClass?.TITLE) {
+            if (Platform.OS == "web") {
+                window.document.title = (pageClass.TITLE || e.name) + " - S-ERP";
+            }
+        // }
 
     }
     componentWillUnmount(): void {

@@ -194,7 +194,7 @@ export default class root extends React.Component {
                                 onChangeText={e => {
                                     this.forceUpdate();
                                 }}
-                                options={this.state.proveedores.map(a => a.razon_social)}
+                                options={this.state.proveedores.map(a => (a?.razon_social || ""))}
                             />
                         </SView>
                     </SView>
