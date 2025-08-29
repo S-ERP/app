@@ -1,19 +1,23 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { SDate, SHr, SIcon, SImage, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
-import MDL from '../../MDL';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from "servisofts-socket";
-import FormRegistroCliente from './Components/FormRegistroCliente';
-import PButtom from '../../Components/PButtom';
+import MDL from '../../MDL';
 import FloatButtom from '../../Components/FloatButtom';
 import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
+import PopupCrearCliente from './Components/PopupCrearCliente';
+// import FormRegistroCliente from './Components/FormRegistroCliente';
+// import PButtom from '../../Components/PButtom';
+// import FloatButtom from '../../Components/FloatButtom';
+// import Config from '../../Config';
+// import FloatMenu from '../../Components/FloatMenu';
 
 const URL = "/crm/cliente";
 
 
-export default class cliente extends Component {
+export default class tabla extends Component {
 
     componentDidMount() {
 
@@ -94,13 +98,26 @@ export default class cliente extends Component {
                             label: "Editar",
                             icon: <SIcon name="Edit" fill={STheme.color.text} />,
                             onPress: () => {
-                                FormRegistroCliente.open({
-                                    defaultData: row,
-                                    onActualizar: (nuevoDato) => {
+
+                                const cliente = {
+                                    ...e.row,
+                                    key_usuario: MDL.usuario.session?.key,
+                                }
+                                PopupCrearCliente.open({
+                                    editObject: cliente,
+                                    key_empresa: cliente.key_empresa,
+                                    onSuccess: async () => {
                                         this.DinamicTable.loadData();
-                                        console.log("Cliente actualizado:", nuevoDato);
-                                    }
-                                });
+                                    },
+                                })
+
+                                // FormRegistroCliente.open({
+                                //     defaultData: row,
+                                //     onActualizar: (nuevoDato) => {
+                                //         this.DinamicTable.loadData();
+                                //         console.log("Cliente actualizado:", nuevoDato);
+                                //     }
+                                // });
                             }
                         })
                     }
@@ -163,7 +180,8 @@ export default class cliente extends Component {
 
 
                 <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
-                <DinamicTable.Col key="key" label="Foto" width={40} data={(e) => `${SSocket.api.crm}cliente/${e.row?.key}`}
+
+                <DinamicTable.Col key="key" label="Foto" width={40} data={(e) => `${SSocket.api.root}usuario/${e.row?.key}`}
                     customComponent={e => <SView col={"xs-12"} center row  >
                         <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                             <SImage src={`${e.data}?date=${new Date().getTime()}`} style={{ resizeMode: "cover" }} />
@@ -171,13 +189,12 @@ export default class cliente extends Component {
                     </SView>}
                 />
 
-                {/* <DinamicTable.Col key={"key"} label='ID' width={35} data={(e) => e.index + 1} /> */}
                 <DinamicTable.Col key={"nombres"} label='Nombre completo' width={180} data={(e) => e.row.nombres} />
                 <DinamicTable.Col key={"telefono"} label='Teléfono' width={120} data={(e) => e.row.telefono} />
                 <DinamicTable.Col key={"correo"} label='Correo' width={150} data={(e) => e.row.correo} />
                 <DinamicTable.Col key={"nit"} label='Nit' width={90} data={(e) => e.row.nit} />
                 <DinamicTable.Col key={"razon_social"} label='Razón social' width={90} data={(e) => e.row.razon_social} />
-                {/* <DinamicTable.Col key={"direccion"} label='Dirección' width={100} data={(e) => e.row.direccion} /> */}
+                <DinamicTable.Col key={"direccion"} label='Dirección' width={100} data={(e) => e.row.direccion} />
                 {/* <DinamicTable.Col key={"lat"} label='Latitud' width={70} data={(e) => e.row.lat} /> */}
                 {/* <DinamicTable.Col key={"lng"} label='Longitud' width={70} data={(e) => e.row.lng} /> */}
                 <DinamicTable.Col key={"fecha_nacimiento"} label='F. Nacimiento' width={110} data={(e) => e.row.fecha_nacimiento} />
@@ -204,7 +221,15 @@ export default class cliente extends Component {
             </DinamicTable>
             {MDL.rolesPermisos.getPermiso({ url: URL, permiso: "new", }) &&
 
-                <FloatButtom onPress={() => { FormRegistroCliente.open(({ onRegister: (e) => { this.DinamicTable.loadData(); } })) }} />
+                <FloatButtom onPress={() => {
+
+                    PopupCrearCliente.open({
+                        onSuccess: async () => {
+                            this.DinamicTable.loadData();
+                        },
+                    });
+
+                }} />
             }
         </SPage >
     }

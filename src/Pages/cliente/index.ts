@@ -7,6 +7,7 @@ import profile from "./profile";
 import edit from "./edit";
 import _delete from "./delete";
 import clienteCrm from "../crm/cliente"
+import tabla from "./tabla";
 const model = Model.cliente;
 
 export const Parent = {
@@ -16,7 +17,8 @@ export const Parent = {
 }
 export default SPage.combinePages(Parent.name, {
     // "": list,
-    "": clienteCrm ,
+    "": tabla,
+    // "": clienteCrm ,
     "list": list,
     "table": table,
     "new": _new,
