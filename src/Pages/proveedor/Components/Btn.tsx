@@ -1,19 +1,15 @@
 import React from "react";
 import { ViewStyle } from "react-native";
 import { SPage, SText, STheme, SView } from "servisofts-component";
-
 type Props = {
     label: string,
     onPress?: () => void,
     type: "danger" | "primary"
-
 }
 export default class Btn extends React.Component<Props> {
     render() {
         const styles: ViewStyle = {
-
         }
-
         if (this.props.type == "danger") {
             styles.backgroundColor = STheme.color.danger;
         }
