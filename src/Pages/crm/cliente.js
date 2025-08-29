@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { SHr, SIcon, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
-import FormRegistroProyecto from './Components/FormRegistroProyecto';
 import MDL from '../../MDL';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from "servisofts-socket";

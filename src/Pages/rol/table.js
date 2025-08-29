@@ -1,29 +1,53 @@
-import DPA, { connect } from 'servisofts-page';
-import { Parent } from "."
-import Model from '../../Model';
+import React from "react";
+import { SImage, SNavigation, SPage, SText, STheme, SView } from "servisofts-component";
+import { DinamicTable } from "servisofts-table";
+import MDL from "../../MDL";
+import Config from "../../Config";
+import SSocket from "servisofts-socket";
+import FloatMenu from "../../Components/FloatMenu";
 
-class index extends DPA.table {
-    constructor(props) {
-        super(props, {
-            Parent: Parent,
-            excludes: ["key", "key_servicio", "estado"]
-        });
+export default class table extends React.Component {
+    async loadData() {
+        const roles = await MDL.rolesPermisos.getAllEmpresa()
+        return Object.values(roles);
     }
-    $allowAccess() {
-        return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "table" });
-    }
-
-    $headers() {
-        var heads = super.$headers();
-        heads["descripcion"].width = 200;
-        heads["fecha_on"].width = 150;
-        return heads;
-    }
-    $filter(data) {
-        return data.estado != 0 && !data.is_admin
-    }
-    $getData() {
-        return Parent.model.Action.getAll();
+    render() {
+        return <SPage title={"Rol"}>
+            <DinamicTable
+                {...Config.table.applyTheme()}
+                loadData={this.loadData.bind(this)}
+                selectType="single"
+                onSelect={e => {
+                    FloatMenu.open({
+                        e: e.evt,
+                        options: [{
+                            label: "Permisos",
+                            onPress: () => {
+                                SNavigation.navigate("/rol/permiso", { key_rol: e.row.key })
+                            }
+                        }]
+                    })
+                }}
+            >
+                <DinamicTable.Col key={"key"} label={"Key"}
+                    textStyle={{
+                        color: STheme.color.lightGray,
+                        fontSize: 10
+                    }}
+                    data={e => e.row.key} />
+                <DinamicTable.Col key={"foto"} label={"Foto"}
+                    data={e => SSocket.api.roles_permisos + "rol/" + e.row.key}
+                    customComponent={e => <SView col={"xs-12"} height={40}>
+                        <SImage src={e.data} />
+                    </SView>}
+                />
+                <DinamicTable.Col key={"descripcion"} label={"Rol"}
+                    width={200}
+                    textStyle={{
+                        fontWeight: "bold"
+                    }}
+                    data={e => e.row.descripcion} />
+            </DinamicTable>
+        </SPage>
     }
 }
-export default connect(index);

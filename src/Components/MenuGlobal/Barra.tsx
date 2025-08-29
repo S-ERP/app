@@ -81,14 +81,14 @@ export default class Barra extends React.Component {
                         <Page label={"Crear Asiento"} url={"/contabilidad/asiento"} permiso="ver" />
                         <Page label={"Sistema Antiguo"} url={"/contabilidad"} permiso="ver" />
                         <Page label={"Reportes"} >
-                            <Page label={"Cuentas T"} url={"/conta/cuentas_t"}  />
+                            <Page label={"Cuentas T"} url={"/conta/cuentas_t"} />
                         </Page>
                     </Page>
                     <Page label={"Inventario"}
                         icon={<ImagePage key_page="c50a9c4a-429c-426e-9ebf-c6874da14062" />}
                     >
                         <Page label={"Almacenes"} url={"/inventario"} permiso="ver" />
-                        <Page label={"Tipos de productos"} url={"/productos/tipo_producto/table"}  />
+                        <Page label={"Tipos de productos"} url={"/productos/tipo_producto/table"} />
                         <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" permiso_url="/inventario" />
                         <Page label={"Sistema antiguo"} url={"/productos"} permiso="ver" />
                     </Page>
@@ -164,11 +164,11 @@ export default class Barra extends React.Component {
                 </SView>
                 <SView col={"xs-12"}  >
                     <SHr h={1} color={STheme.color.card} />
-                    <Page label={"Usuarios"}
+                    <Page label={"Usuarios y Privacidad"}
                         icon={<ImagePage key_page="419dfc13-34db-4935-a13c-b05cfd9d599a" />}
                     >
-                        <Page label={"All"} url={"/usuario"} permiso="ver" />
-                        <Page label={"Lista"} url={"/usuario/table"} permiso="ver" permiso_url="/usuario" />
+                        {/* <Page label={"All"} url={"/usuario"} permiso="ver" /> */}
+                        <Page label={"Usuarios"} url={"/usuario/table"} permiso="ver" permiso_url="/usuario" />
                         <Page label={"Roles y Permisos"} url={"/rol"} permiso="ver" />
                     </Page>
                     {/* <Page label={"Roles y Permisos"} url={"/rol"}
