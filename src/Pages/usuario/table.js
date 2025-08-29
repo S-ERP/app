@@ -16,6 +16,7 @@ import FormEditarPassword from './Components/FormEditarPassword';
 import FloatButtom from '../../Components/FloatButtom';
 import Model from '../../Model';
 import SSocket from 'servisofts-socket';
+import FormCrearUsuario from './Components/FormCrearUsuario';
 
 
 const ImageLabel = ({ label, src, textStyle, wrap = true }) => {
@@ -259,12 +260,18 @@ export default class table extends Component {
                     width={150} />
             </DinamicTable>
             <FloatButtom onPress={() => {
-                SNavigation.navigate('/registro')
+                // SNavigation.navigate('/registro')
                 // FormRegistroRole.open({
                 //   onRegister: (e) => {
                 //     this.table.loadData();
                 //   }
                 // })
+                FormCrearUsuario.open({
+                    // data: e.row,
+                    onSuccess: (e) => {
+                        this.table.loadData();
+                    }
+                })
             }} />
         </SPage>
     }
