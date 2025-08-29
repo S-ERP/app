@@ -128,11 +128,10 @@ export default class tabla extends Component {
                 key="id"
                 language="es"
                 center
-                colors={Config.table.colors()}
-                cellStyle={Config.table.cellStyle()}
-                textStyle={Config.table.textStyle()}
+                {...Config.table.applyTheme()}
                 selectType="single"
-                keyExtractor={(e) => e.key_usuario}
+                keyExtractor={(e) => e.key}
+                // keyExtractor={(e) => e.key_usuario}
                 onSelect={(e) => {
                     FloatMenu.open({
                         e: e.evt,
@@ -181,7 +180,7 @@ export default class tabla extends Component {
                                     <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key_sucursal}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                                 <SView width={5} />
-                                <SText color={STheme.color.text}>{e.row?.sucursal?.descripcion}</SText>
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.sucursal?.descripcion}</SText>
                             </SView> : null}
                     </>}
                 />
@@ -190,7 +189,7 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="tipo_pago" label="Tipo Pago" width={80} data={(e) => e.row?.tipo_pago ?? ""} customComponent={(e) => this.renderTipoPago(e?.data)} />
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e?.data)} />
                 <DinamicTable.Col key="descripcion" label="Descripción" width={150} data={(e) => e.row?.descripcion ?? ""} />
-                
+
                 <DinamicTable.Col key="key_asiento_contable" label="asiento" width={150} data={(e) => e.row?.key_asiento_contable ?? ""} />
 
 
@@ -216,7 +215,7 @@ export default class tabla extends Component {
                                     <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                                 <SView width={5} />
-                                <SText color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.usuario?.Nombres}</SText>
                             </SView> : null}
                     </>}
                 />

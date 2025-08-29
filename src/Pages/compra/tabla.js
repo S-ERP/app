@@ -190,7 +190,7 @@ export default class tabla extends Component {
                                     <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                                 <SView width={5} />
-                                <SText color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.usuario?.Nombres}</SText>
                             </SView> : null}
                     </>}
                 />
