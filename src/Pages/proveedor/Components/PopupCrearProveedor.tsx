@@ -38,9 +38,6 @@ export default class PopupCrearProveedor extends Component<Props> {
     }
     form: SForm | undefined = undefined;
     _ref: any = {}
-    state: any = {
-        sucursales: []  // inicializamos vacio
-    }
     render() {
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Proveedor"}</SText>

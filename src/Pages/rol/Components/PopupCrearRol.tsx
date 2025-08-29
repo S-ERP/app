@@ -98,7 +98,6 @@ export default class PopupCrearRol extends Component<Props> {
                                         Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).roles_permisos + "upload/rol/" + resp.key)
                                     }
                                 }
-
                                 SNotification.send({
                                     title: "rol guardada",
                                     body: "rol se ha guardado correctamente.",
