@@ -12,9 +12,6 @@ type Props = {
     onSuccess?: Function,
 }
 export default class PopupCrearProveedor extends Component<Props> {
-
-
-
     static open(props: Props) {
         SPopup.open({
             key: "PopupCrearProveedor",
@@ -44,12 +41,6 @@ export default class PopupCrearProveedor extends Component<Props> {
     state: any = {
         sucursales: []  // inicializamos vacio
     }
-
-
-
-
-
-
     render() {
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Proveedor"}</SText>
@@ -73,27 +64,21 @@ export default class PopupCrearProveedor extends Component<Props> {
                         "telefono": { label: "Teléfono", placeholder: "Teléfono", type: "telefono", defaultValue: this.props.editObject?.telefono, col: "xs-12" },
                     }}
                     onSubmit={(val: any) => {
-
                         const data = {
                             ...val,
                             key_cuenta_contable: "1.0.1",
                         };
-
-
                         if (this.props.editObject?.key) {
                             data.key = this.props.editObject?.key;
                             MDL.inventario.proveedor.editar(data).then((resp: any) => {
                                 if (this.props.onSuccess) this.props.onSuccess(resp)
-
                                 console.log("eitationnnn " + JSON.stringify(resp))
-
                                 if (this._ref.image_sucursal) {
                                     const value = this._ref.image_sucursal.getValue();
                                     if (Array.isArray(value)) {
                                         Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).inventario + "upload/proveedor/" + resp.key)
                                     }
                                 }
-                                // this.forceUpdate();
                                 SNotification.send({
                                     title: "proveedor guardada",
                                     body: "proveedor se ha guardado correctamente.",
@@ -111,10 +96,6 @@ export default class PopupCrearProveedor extends Component<Props> {
                                 });
                             })
                         } else {
-
-                            // console.log("todo  " + JSON.stringify(data))
-                            // console.log("giardar prove")
-
                             MDL.inventario.proveedor.registrar(data).then((resp: any) => {
                                 if (this.props.onSuccess) this.props.onSuccess(resp)
                                 if (this._ref.image_sucursal) {
@@ -123,7 +104,6 @@ export default class PopupCrearProveedor extends Component<Props> {
                                         Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).inventario + "upload/proveedor/" + resp.key)
                                     }
                                 }
-                                // this.forceUpdate();
                                 SNotification.send({
                                     title: "Almacen guardada",
                                     body: "Almacen se ha guardado correctamente.",

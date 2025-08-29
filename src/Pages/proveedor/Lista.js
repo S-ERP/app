@@ -1,46 +1,28 @@
 import React, { Component } from 'react';
 import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2, SHr, SNotification, SImage, SDate, SButtom } from 'servisofts-component';
-import * as XLSX from "xlsx";
 import SSocket from 'servisofts-socket';
 import { DinamicTable } from 'servisofts-table';
-import SCharts from 'servisofts-charts';
-import Usuarios from 'servisofts-component/img/Usuarios';
-import { version } from 'process';
 import MDL from '../../MDL';
 import FloatButtom from '../../Components/FloatButtom';
-import Perfil from './Perfil';
 import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
 import PopupCrearProveedor from './Components/PopupCrearProveedor';
-
 export default class Lista extends Component {
-
-
     constructor(props) {
         super(props);
         this.state = {};
     }
-
-
-
     async loadInitialData() {
         try {
-
             // siempre poner todas las apis en una funcion asi para que recargue rapido la tabla
             const proveedores = await MDL.inventario.proveedor.getAllProveedor();
             const keysUsuarios = Object.values(proveedores).map(p => p.key_usuario).filter(Boolean);
-
-            // Obtener usuarios desde el backend
             const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
-
-            // Adjuntar cada usuario a su proveedor correspondiente
             Object.values(proveedores).forEach(proveedor => {
                 proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario);
             });
-
             return proveedores;
-
         } catch (error) {
             console.error('Error loading initial data:', error);
             SNotification.send({
@@ -52,8 +34,6 @@ export default class Lista extends Component {
             return [];
         }
     }
-
-
     mostrarTabla() {
         return <DinamicTable
             key="tabla"
@@ -62,22 +42,18 @@ export default class Lista extends Component {
             center
             language="es"
             selectType="single"
-
             colors={Config.table.colors()}
             cellStyle={Config.table.cellStyle()}
             textStyle={Config.table.textStyle()}
-
             loadInitialState={async () => {
                 return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
             }}
-
             onSelect={(e) => {
                 if (this.onSelect) {
                     this.onSelect(e.row)
                     SNavigation.goBack();
                     return;
                 }
-
                 FloatMenu.open({
                     e: e.evt,
                     label: "Razón Social: " + e.row.razon_social,
@@ -90,7 +66,6 @@ export default class Lista extends Component {
                                     ...e.row,
                                     key_usuario: MDL.usuario.session?.key,
                                 }
-
                                 PopupCrearProveedor.open({
                                     editObject: proveedor,
                                     key_empresa: proveedor.key_empresa,
@@ -98,15 +73,12 @@ export default class Lista extends Component {
                                         this.DinamicTable.loadData();
                                     },
                                 })
-
-
                             }
                         },
                         {
                             icon: <SIconApp name='Delete' />,
                             label: "Eliminar Proveedor",
                             onPress: () => {
-
                                 SPopup.confirm({
                                     title: "Eliminar Proveedor",
                                     message: "¿Estás seguro de eliminar esta sucursal?",
@@ -134,30 +106,16 @@ export default class Lista extends Component {
                                         })
                                     }
                                 })
-
-
-
                             }
                         }
                     ]
                 })
-
-
             }}
-
-
             loadData={async () => {
-
                 return this.loadInitialData();
-
-
             }}
-
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
-
-
-
             <DinamicTable.Col key="key" label="Foto" width={180} data={(e) => e.row?.key ?? ""}
                 customComponent={e => <>
                     {(e?.row?.key) ?
@@ -168,9 +126,6 @@ export default class Lista extends Component {
                         </SView> : null}
                 </>}
             />
-
-
-
             <DinamicTable.Col key="razon_social" label="Razón Social" width={200} data={(e) => e.row?.razon_social} />
             <DinamicTable.Col key="nit" label="NIT" width={150} data={(e) => e.row?.nit} />
             <DinamicTable.Col key="nombre" label="Nombre de Contacto" width={150} data={(e) => e.row?.nombre} />
@@ -192,24 +147,19 @@ export default class Lista extends Component {
             />
         </DinamicTable>
     }
-
     render() {
         return (
             <SPage title="Gestión de Proveedores" disableScroll>
                 {this.mostrarTabla()}
                 <SHr height={20} />
-
                 <FloatButtom onPress={() => {
                     PopupCrearProveedor.open({
                         onSuccess: async () => {
                             this.DinamicTable.loadData();
                         },
                     });
-
                 }} />
             </SPage>
         );
     }
-
-
 }
