@@ -153,7 +153,7 @@ export default class table extends Component {
                                 icon: <SIcon name="Lock" fill={STheme.color.text} />,
                             },
                             {
-                                label: "Eliminar usuario",
+                                label: "Eliminar de la empresa",
                                 // icon: "Delete",
                                 icon: <SIcon name="Delete" fill={STheme.color.text} />,
                                 onPress: () => {
@@ -161,17 +161,26 @@ export default class table extends Component {
                                         title: "Eliminar usuario",
                                         message: "¿Estas seguro de eliminar el usuario?",
                                         onPress: () => {
+                                            SSocket.sendPromise({
+                                                service: "empresa",
+                                                component: "empresa_usuario",
+                                                type: "editar",
+                                                data: {
+                                                    key: e.row.empresa_usuario.key,
+                                                    estado: 0
+                                                }
+                                            })
                                             // MDL.usuario.eliminar(e.row.key).then((resp) => {
                                             //     this.table.loadData();
                                             // }).catch((e) => {
                                             //     SNotification.error("Error al eliminar el usuario")
                                             // })
-                                            e.row.estado = 0;
-                                            MDL.usuario.editar(e.row).then((resp) => {
-                                                this.table.loadData();
-                                            }).catch((e) => {
-                                                SNotification.error("Error al eliminar el usuario")
-                                            })
+                                            // e.row.estado = 0;
+                                            // MDL.usuario.editar(e.row).then((resp) => {
+                                            //     this.table.loadData();
+                                            // }).catch((e) => {
+                                            //     SNotification.error("Error al eliminar el usuario")
+                                            // })
                                         }
                                     })
 

@@ -33,10 +33,13 @@ export default class cuentas_t extends React.Component {
     }
     render() {
         return <SPage title={"Cuentas T"}>
-            <SView col={"xs-12"} row padding={8}>
+            <SView col={"xs-12"} row padding={8} style={{
+
+            }}>
                 {this.state.data.map((detalle, i) => {
                     return <CuentaT detalle={detalle} />
                 })}
+
             </SView>
 
         </SPage>
@@ -100,16 +103,19 @@ class CuentaT extends React.Component {
             // borderWidth: 1,
             borderRadius: 4,
             backgroundColor: STheme.color.card,
-            margin: 2,
+            margin: 4,
             padding: 4
         }}>
             <SView col={"xs-12"} >
+                <SText fontSize={10} color={STheme.color.text} numberOfLines={2}>{cuenta.codigo}</SText>
                 <SView style={aditionalStyle}>
                     <SText fontSize={7} center>{cuenta.tipo}</SText>
                 </SView>
-                <SHr h={12} />
-                <SView col={"xs-12"}>
-                    <SText fontSize={10} color={STheme.color.text} numberOfLines={2}>{cuenta.codigo} {cuenta.descripcion}</SText>
+                <SHr h={4} />
+                <SView col={"xs-12"} style={{
+                    height: 20,
+                }}>
+                    <SText fontSize={10} color={STheme.color.text} numberOfLines={2}>{cuenta.descripcion}</SText>
                 </SView>
                 {/* <SText col={"xs-12"} fontSize={10} center color={STheme.color.text} numberOfLines={1}>{cuenta.descripcion}</SText> */}
                 {/* <SText fontSize={12} center color={STheme.color.text}>{cuenta.tipo}</SText> */}
@@ -117,7 +123,7 @@ class CuentaT extends React.Component {
             <SHr />
             <SView col={"xs-12"} row >
                 <SView flex center>
-                    <SText fontSize={10} color={STheme.color.text}>{"D"}</SText>
+                    <SText fontSize={10} color={STheme.color.lightGray}>{"D"}</SText>
                 </SView>
                 <SView style={{
                     width: 1,
@@ -125,7 +131,7 @@ class CuentaT extends React.Component {
                     height: "100%"
                 }} />
                 <SView flex center >
-                    <SText fontSize={10} color={STheme.color.text}>{"H"}</SText>
+                    <SText fontSize={10} color={STheme.color.lightGray}>{"H"}</SText>
                 </SView>
             </SView>
             <SHr h={1} color={STheme.color.card} />

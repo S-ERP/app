@@ -2,7 +2,7 @@ import { SPage } from "servisofts-component";
 
 import root from "./root";
 
-export default SPage.combinePages("caja2",
+export default SPage.combinePages("caja",
     {
         "": root,
     }

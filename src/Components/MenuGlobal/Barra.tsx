@@ -74,33 +74,43 @@ export default class Barra extends React.Component {
                     <Page label={"Contabilidad"}
                         icon={<ImagePage key_page="fd0c2bfe-0f13-4e81-a967-213cc0adb299" />}
                     >
+                        {/* <Page label={"Reportes"} icon={<SIconApp name="menuAll" fill={STheme.color.text} />} > */}
+
+                        {/* </Page> */}
+                        {/* <Page label={"Configuracion"} icon={<SIconApp name="Ajustes" fill={STheme.color.text} />} > */}
                         <Page label={"Plan de cuentas"} url={"/conta/cuentas"} permiso="ver" />
                         <Page label={"Dimensiones"} url={"/conta/dimension"} permiso="ver" />
+
+                        <Page label={"Crear Asiento"} url={"/contabilidad/asiento"} permiso="ver"
+                        // icon={<SIconApp name="Add" fill={STheme.color.text} />} 
+                        />
+
                         <Page label={"Balance general"} url={"/conta/balance"} permiso="ver" />
                         <Page label={"Libro Diario"} url={"/conta/libro_diario"} permiso="ver" />
-                        <Page label={"Crear Asiento"} url={"/contabilidad/asiento"} permiso="ver" />
+                        <Page label={"Cuentas T"} url={"/conta/cuentas_t"} permiso_url={"/conta/cuentas"} permiso="ver" />
                         <Page label={"Sistema Antiguo"} url={"/contabilidad"} permiso="ver" />
-                        <Page label={"Reportes"} >
-                            <Page label={"Cuentas T"} url={"/conta/cuentas_t"} />
-                        </Page>
+
+                        {/* </Page> */}
+
                     </Page>
                     <Page label={"Inventario"}
                         icon={<ImagePage key_page="c50a9c4a-429c-426e-9ebf-c6874da14062" />}
                     >
                         <Page label={"Almacenes"} url={"/inventario"} permiso="ver" />
-                        <Page label={"Tipos de productos"} url={"/productos/tipo_producto/table"} />
+                        <Page label={"Tipos de productos"} url={"/productos/tipo_producto/table"} permiso="ver" permiso_url="/inventario" />
                         <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" permiso_url="/inventario" />
+                        <Page label={"Conteos"} url={"/productos/reporte_conteo_inventario"} permiso="ver" permiso_url="/productos/reporte_conteo_inventario" />
                         <Page label={"Sistema antiguo"} url={"/productos"} permiso="ver" />
                     </Page>
                     <Page label={"Caja"} url={"/caja"} permiso="ver"
                         icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}
                         decoradores={<CajaActiva />}
                     />
-                    <Page label={"Caja2"} url={"/caja2"}
+                    {/* <Page label={"Caja2"} url={"/caja2"}
                         // permiso="ver"
                         icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}
                         decoradores={<CajaActiva />}
-                    />
+                    /> */}
                     <Page label={"Compras"}
                         icon={<ImagePage key_page="c0a4c4e6-082f-4f23-a755-01369653ee49" />}
                     >
@@ -139,6 +149,8 @@ export default class Barra extends React.Component {
                         icon={<ImagePage key_page="676e0ed7-2320-4adb-8dfa-624e0c48df07" />}
                     />
                     <Page label={"Developers Tools"}
+                        permiso="page"
+                        permiso_url="/dev_tools"
                         icon={<SIconApp name="Ajustes" />}
                     >
                         <Page label={"Icons"} url={"/icons"} />

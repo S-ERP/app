@@ -44,6 +44,59 @@ const inputs = (): SInputsCofig => {
 
 
         },
+        erp: {
+            labelProps: {
+                clean: true
+            },
+            LabelStyle: {
+                position: "absolute",
+                // width: "100%",
+                top: -6,
+                left: 4,
+                fontSize: 10,
+                color: STheme.color.lightGray,
+                // fontWeight: "bold",
+                borderRadius: 4,
+                paddingHorizontal: 4,
+                // borderRadius:4,
+                // color: STheme.color.text,
+                backgroundColor: STheme.color.background+"AA",
+                // borderRadius:4,
+                // padding:4,
+                // backgroundColor: "#E0E0E0" + "55",
+            },
+            View: {
+                // borderWidth: 2,
+                //  borderColor: "#E0E0E0" + "40",
+                height: 36,
+                // justifyContent: 'center',
+                // flexDirection: 'row',
+                borderRadius: 2,
+                // marginTop: 30,
+                // paddingStart: 4,
+                backgroundColor: STheme.color.card,
+                // backgroundColor: '#E0E0E0' + '35'
+            },
+            InputText: {
+                fontSize: 12,
+
+                paddingLeft: 8,
+                paddingRight: 8,
+                color: STheme.color.text,
+                placeholderTextColor: STheme.color.gray
+                // backgroundColor: "#E0E0E0" + "55",
+                // height: 55,
+                // borderRadius: 16,
+                // backgroundColor: STheme.color.card,
+            },
+            error: {
+                // borderRadius: 16,
+                borderWidth: 1,
+                borderColor: "#FA8081"
+            },
+
+
+        },
         factura: {
             LabelStyle: {
                 position: "absolute",

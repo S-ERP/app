@@ -152,7 +152,7 @@ export default class root extends React.Component {
         return <SPage title={"Compras"} >
             <SView col={"xs-12"} center>
                 <SHr height={15} />
-                <SView col={"xs-10"} flex padding={15} card>
+                <SView col={"xs-11.5 sm-11 md-10 lg-8 xl-6"} flex padding={15} card>
                     <SView col={"xs-12"} row  >
                         <SView col={"xs-12"} padding={4} style={{ alignItems: "flex-end", }} height={30}>
                             <SView width={200} style={{ marginTop: 0 }}>
@@ -176,19 +176,21 @@ export default class root extends React.Component {
                                 />
                             </SView>
                         </SView>}
-                        <SView col={"xs-12 sm-6"} padding={4}>
+                        <SView col={"xs-12 sm-6"} padding={2}>
                             <SInput
                                 ref={ref => this.inputs["sucursal"] = ref}
                                 label={"Sucursal"}
+                                 customStyle={"erp"}
                                 type="select2"
                                 placeholder={"Seleccione una sucursal"}
                                 options={this.state.sucursales.map(a => a.descripcion)}
                             />
                         </SView>
-                        <SView col={"xs-12 sm-6"} padding={4}>
+                        <SView col={"xs-12 sm-6"} padding={2}>
                             <SInput
                                 ref={ref => this.inputs["proveedor"] = ref}
                                 label={"Proveedor"}
+                                 customStyle={"erp"}
                                 type="select2"
                                 placeholder={"Seleccione un proveedor"}
                                 onChangeText={e => {
@@ -200,21 +202,8 @@ export default class root extends React.Component {
                     </SView>
                     <SHr />
                     <SHr h={1} color={STheme.color.card} />
-                    <SView col={"xs-12"} padding={4} flex>
-                        <SView col={"xs-12"} row >
-                            {/* <SView width={30} padding={2} center>
-                                <SIconApp name="Delete" />
-                            </SView> */}
-                            <SView col={"xs-4 sm-7"} padding={2}>
-                                <SText>Producto</SText>
-                            </SView>
-                            <SView col={"xs-4 sm-2"} padding={2} center >
-                                <SText>Cantidad</SText>
-                            </SView>
-                            <SView col={"xs-4 sm-3"} padding={2} center >
-                                <SText>Precio</SText>
-                            </SView>
-                        </SView>
+                    <SView col={"xs-12"} flex>
+                        <SText fontSize={10} padding={4}  color={STheme.color.lightGray}>PRODUCTOS:</SText>
                         <FlatList data={this.state.detalle}
                             renderItem={({ item, index }) => <Detalle parent={this} data={item} onDelete={() => {
                                 this.state.detalle.splice(index, 1);
@@ -296,39 +285,47 @@ class Detalle extends React.Component {
         console.log("MODELOS FILTRO", modelos_arr_filter)
         return (
             <SView col={"xs-12"} row style={{ borderBottomWidth: 0.5, borderBottomColor: STheme.color.card, paddingBottom: 8, paddingTop: 8 }}>
-                <SView col={"xs-12 sm-7"} padding={4}>
+                <SView col={"xs-12 sm-7"} padding={4} >
                     {/* <SView flex={2} padding={2}> */}
-                    <SInput
-                        ref={ref => this.inputs["producto"] = ref}
-                        type="select2"
-                        placeholder={"Seleccione un producto"}
-                        defaultValue={this.props.data.producto}
-                        options={modelos_arr_filter.map(a => a.descripcion)}
-                        onChangeText={e => {
-                            this.props.data.producto = e;
-                        }}
-                        onBlur={() => {
-                            new SThread(100, "test", true).start(() => {
-                                const value = this.inputs["producto"].getValue();
-                                if (!value) return;
-                                const producto = modelos_arr_filter.find(a => a.descripcion == value);
-                                if (!producto) {
-                                    SNotification.send({
-                                        title: "El producto seleccionado no esta registrado en el sistema",
-                                        time: 4000
-                                    });
-                                } else {
-                                    console.log("PRODUCTOS", producto)
-                                    this.props.data.modelo = producto;
-                                    this.inputs["precio"].setValue((producto.precio_compra ?? 0).toFixed(2));
-                                }
-                            })
-                        }}
-                    />
+                    <SView>
+                        <SInput
+
+                            ref={ref => this.inputs["producto"] = ref}
+                            type="select2"
+                            customStyle={"erp"}
+                            placeholder={"Seleccione un producto"}
+                            defaultValue={this.props.data.producto}
+                            options={modelos_arr_filter.map(a => a.descripcion)}
+                            onChangeText={e => {
+                                this.props.data.producto = e;
+                            }}
+                            label={"Producto"}
+
+                            onBlur={() => {
+                                new SThread(200, "test", true).start(() => {
+                                    const value = this.inputs["producto"].getValue();
+                                    if (!value) return;
+                                    const producto = modelos_arr_filter.find(a => a.descripcion == value);
+                                    if (!producto) {
+                                        SNotification.send({
+                                            title: "El producto seleccionado no esta registrado en el sistema",
+                                            time: 4000
+                                        });
+                                    } else {
+                                        console.log("PRODUCTOS", producto)
+                                        this.props.data.modelo = producto;
+                                        this.inputs["precio"].setValue((producto.precio_compra ?? 0));
+                                    }
+                                })
+                            }}
+                        />
+                    </SView>
                     <SHr h={4} />
                     <SInput
                         ref={ref => this.inputs["detalle"] = ref}
                         placeholder={"Detalle"}
+                        customStyle={"erp"}
+                        label={"Detalle"}
                         defaultValue={this.props.data.detalle}
                         onChangeText={e => {
                             this.props.data.detalle = e;
@@ -338,35 +335,39 @@ class Detalle extends React.Component {
                 </SView>
                 <SView col={"xs-12 sm-5"} row>
                     {/* <SView width={100} padding={2}> */}
-                    <SView col={"xs-5"} padding={4}>
+                    <SView flex padding={4}>
                         <SInput
                             ref={ref => this.inputs["cantidad"] = ref}
                             placeholder={"Cantidad"}
+                            customStyle={"erp"}
+                            label={"Cantidad"}
                             defaultValue={this.props.data.cantidad || "1"}
                             onChangeText={e => {
                                 this.props.data.cantidad = e;
                             }}
                             icon
-                            type="number"
+                            type="money2"
                         />
                     </SView>
-                    <SView col={"xs-5"} padding={4}>
+                    <SView flex padding={4}>
                         <SInput
                             ref={ref => this.inputs["precio"] = ref}
                             icon
                             placeholder={"Precio"}
-                            defaultValue={this.props.data.precio || "0.00"}
+                            customStyle={"erp"}
+                            label={"Precio"}
+                            defaultValue={this.props.data.precio}
                             onChangeText={e => {
                                 this.props.data.precio = parseFloat(e ?? 0);;
                             }}
-                            type="money"
+                            type="money2"
                         />
                     </SView>
-                    {/* <SView width={30} padding={2} center onPress={this.props.onDelete}> */}
-                    <SView col={"xs-2"} padding={4} center onPress={this.props.onDelete}>
-                        <SIconApp name="Delete" width={30} />
+                    <SView width={20} height={20} card padding={0} center onPress={this.props.onDelete}>
+                        <SIconApp name="Delete" />
                     </SView>
                 </SView>
+
             </SView>
         );
     }

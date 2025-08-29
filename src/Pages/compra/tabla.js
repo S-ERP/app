@@ -43,9 +43,11 @@ export default class tabla extends Component {
         </SView>
     );
     async loadData() {
-        const registros = Model.compra_venta.Action.getAll();
+        // const registros = Model.compra_venta.Action.getAll();
+        const registros = await MDL.compra_venta.getAll();
         if (!registros) return [];
-        const empresa = Model.empresa?.select || {};
+        const empresa = MDL.empresa?.select || {};
+        const sucursales = await MDL.empresa.getAllSucursales();
         const ventas = Object.values(registros).filter(cv => cv.tipo === "compra");
         const keysUsuarios = [];
         ventas.forEach(cv => {
@@ -53,6 +55,7 @@ export default class tabla extends Component {
                 keysUsuarios.push(cv.key_usuario);
             }
         });
+        const proveedores = await MDL.inventario.proveedor.getAllProveedor();
         const usuarios = await MDL.usuario.getByKeys(keysUsuarios) || {};
         const usuariosMap = Array.isArray(usuarios)
             ? Object.fromEntries(usuarios.map(u => [u.key, u]))
@@ -61,19 +64,19 @@ export default class tabla extends Component {
         const comprasEnriquecidas = await Promise.all(
             ventas.map(async (cv) => {
                 const sucursal = cv.key_sucursal?.trim()
-                    ? await Model.sucursal.Action.getByKey({ key: cv.key_sucursal }) || {}
+                    ? sucursales.find(s => s.key === cv.key_sucursal) || {}
                     : {};
                 return {
                     ...cv,
                     sucursal,
                     usuario: usuariosMap[cv.key_usuario] || {},
                     empresa,
+                    proveedor: proveedores.find(a => a.key == cv.key_proveedor) || {},
                     subtotal: totales?.subtotal || "0",
                     descuento: totales?.descuento || "0",
                 };
             })
         );
-        console.log("todoooooooo " + JSON.stringify(comprasEnriquecidas))
         return comprasEnriquecidas;
     }
     renderState(state) {
@@ -109,9 +112,7 @@ export default class tabla extends Component {
                 key="id"
                 language="es"
                 center
-                colors={Config.table.colors()}
-                cellStyle={Config.table.cellStyle()}
-                textStyle={Config.table.textStyle()}
+                {...Config.table.applyTheme()}
                 selectType="single"
                 keyExtractor={(e) => e.key}
                 onSelect={(e) => {
@@ -141,38 +142,45 @@ export default class tabla extends Component {
                     customComponent={e => <SView row center card padding={2} onPress={() => { SNavigation.navigate("/compra/profile", { pk: e.row.key }) }}>
                         <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
                     </SView>} />
-                <DinamicTable.Col key={"codigo"} label='Código' width={90} center data={(e) => e?.row?.codigo ?? "AL790"} customComponent={(e) => this.renderCodigo(e.data)} />
+                <DinamicTable.Col key={"fecha_on"} label="Fecha"
+                    width={110} dataType="date"
+                    textStyle={{
+                        fontSize: 10
+                    }}
+                    data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
+                    dateFormat="yyyy-MM-dd hh:mm" />
+                <DinamicTable.Col key={"codigo"} label='Código' width={80} center data={(e) => e?.row?.codigo ?? "AL790"} customComponent={(e) => this.renderCodigo(e.data)} />
 
                 <DinamicTable.Col key="sucursal" label="Sucursal" width={100} data={(e) => e.row?.sucursal?.descripcion}
                     customComponent={e => <>
                         {(e.row?.key_sucursal) ?
                             <SView col={"xs-12"} center row  >
-                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card }}>
                                     <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key_sucursal}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                                 <SView width={5} />
-                                <SText color={STheme.color.text}>{e.row?.sucursal?.descripcion}</SText>
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.sucursal?.descripcion}</SText>
                             </SView> : null}
                     </>}
                 />
-                <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
+
                 <DinamicTable.Col key="tipo_pago" label="Tipo de Pago" width={80} data={(e) => e.row?.tipo_pago ?? ""} customComponent={(e) => this.renderTipoPago(e?.data)} />
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e.data)} />
                 <DinamicTable.Col key="descripcion" label="Descripción" width={150} data={(e) => e.row?.descripcion ?? ""} />
-                <DinamicTable.Col key="key_asiento_contable" label="asiento" width={150} data={(e) => e.row?.key_asiento_contable ?? ""} />
+                {/* <DinamicTable.Col key="key_asiento_contable" label="asiento" width={150} data={(e) => e.row?.key_asiento_contable ?? ""} /> */}
 
 
                 <DinamicTable.Col key="proveedor" label="Proveedor" width={180} data={(e) => e.row?.proveedor?.razon_social ?? ""}
-                    customComponent={e => <>
-                        {(e.row?.proveedor?.key_usuario) ?
-                            <SView col={"xs-12"} center row  >
-                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.proveedor?.key_usuario}`} style={{ resizeMode: "cover" }} />
-                                </SView>
-                                <SView width={5} />
-                                <SText color={STheme.color.text}> {e.row?.proveedor?.razon_social}  </SText>
-                            </SView> : null}
-                    </>}
+                // customComponent={e => <>
+                //     {(e.row?.proveedor?.key_usuario) ?
+                //         <SView col={"xs-12"} center row  >
+                //             <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                //                 <SImage src={`${SSocket.api.root}usuario/${e.row?.proveedor?.key_usuario}`} style={{ resizeMode: "cover" }} />
+                //             </SView>
+                //             <SView width={5} />
+                //             <SText color={STheme.color.text}> {e.row?.proveedor?.razon_social}  </SText>
+                //         </SView> : null}
+                // </>}
                 />
                 <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>
