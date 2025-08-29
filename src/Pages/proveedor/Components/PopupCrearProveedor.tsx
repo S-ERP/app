@@ -105,18 +105,18 @@ export default class PopupCrearProveedor extends Component<Props> {
                                     }
                                 }
                                 SNotification.send({
-                                    title: "Almacen guardada",
-                                    body: "Almacen se ha guardado correctamente.",
+                                    title: "proveedor guardada",
+                                    body: "proveedor se ha guardado correctamente.",
                                     time: 3000,
                                     color: STheme.color.success,
                                 });
                                 console.log("Actualizae error")
                             }).catch((e: any) => {
                                 if (this.props.onSuccess) this.props.onSuccess(e)
-                                console.error("Error al guardar la Almacen:", e);
+                                console.error("Error al guardar la proveedor:", e);
                                 SNotification.send({
                                     title: "Error",
-                                    body: "No se pudo guardar la Almacen.",
+                                    body: "No se pudo guardar la proveedor.",
                                     time: 3000,
                                     color: STheme.color.danger,
                                 });
