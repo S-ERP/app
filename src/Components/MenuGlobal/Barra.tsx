@@ -167,8 +167,8 @@ export default class Barra extends React.Component {
                     <Page label={"Usuarios"}
                         icon={<ImagePage key_page="419dfc13-34db-4935-a13c-b05cfd9d599a" />}
                     >
-                        <Page label={"All"} url={"/usuario"} permiso="ver" />
-                        <Page label={"Lista"} url={"/usuario/table"} permiso="ver" permiso_url="/usuario" />
+                        {/* <Page label={"All"} url={"/usuario"} permiso="ver" /> */}
+                        <Page label={"Usuarios"} url={"/usuario/table"} permiso="ver" permiso_url="/usuario" />
                         <Page label={"Roles y Permisos"} url={"/rol"} permiso="ver" />
                     </Page>
                     {/* <Page label={"Roles y Permisos"} url={"/rol"}

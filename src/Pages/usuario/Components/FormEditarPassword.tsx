@@ -5,7 +5,7 @@ import MDL from '../../../MDL';
 import { DinamicTable } from 'servisofts-table';
 import { SForm, SHr, SIcon, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import PButtom from '../../../Components/PButtom';
-import { Role } from '../../../MDL/role/types';
+// import { Role } from '../../../MDL/role/types';
 import { Usuario } from '../../../MDL/usuario/types';
 import CryptoJS from 'crypto-js';
 
