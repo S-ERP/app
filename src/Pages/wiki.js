@@ -12,7 +12,8 @@ export default class index extends Component {
     }
 
     componentDidMount() {
-        fetch("https://raw.githubusercontent.com/S-ERP/.github/main/profile/README.md").then((response) => {
+        fetch("https://raw.githubusercontent.com/S-ERP/.github/refs/heads/main/profile/README.md").then((response) => {
+        // fetch("https://raw.githubusercontent.com/S-ERP/.github/main/profile/README.md").then((response) => {
             return response.text()
         }).then((text) => {
             this.setState({ text })

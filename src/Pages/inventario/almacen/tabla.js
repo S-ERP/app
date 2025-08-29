@@ -45,9 +45,9 @@ export default class tabla extends Component {
             ref={ref => this.DinamicTable = ref}
             language="es"
             selectType="single"
-            colors={Config.table.colors()}
-            cellStyle={Config.table.cellStyle()}
-            textStyle={Config.table.textStyle()}
+            // colors={Config.table.colors()}
+            // cellStyle={Config.table.cellStyle()}
+            // textStyle={Config.table.textStyle()}
             onSelect={(e) => {
                 if (this.onSelect) {
                     this.onSelect(e.row)
@@ -81,21 +81,21 @@ export default class tabla extends Component {
                         },
                         {
                             icon: <SIconApp name='Favorito' fill='#ffffff6e' stroke='#d1d1cdff' width={20} />,
-                            label: "Ver Reg. de Inventario",
+                            label: "Realizar Conteo de stock",
                             onPress: () => {
                                 SNavigation.navigate("/inventario/almacen/profile/registro_inventario", { pk: e.row?.key })
                             }
                         },
-                        {
-                            icon: <SIconApp name='confirmar' fill='#8b8b8a25' stroke='#8b8b8a' width={16} />,
-                            label: "Importar Inventario",
-                            onPress: () => {
-                                alert("trabjandolo...")
-                            }
-                        },
+                        // {
+                        //     icon: <SIconApp name='confirmar' fill='#8b8b8a25' stroke='#8b8b8a' width={16} />,
+                        //     label: "Importar Inventario",
+                        //     onPress: () => {
+                        //         alert("trabjandolo...")
+                        //     }
+                        // },
                         {
                             icon: <SIconApp name='crmeditar' fill='#8b8b8a25' stroke='#a8a89fff' width={20} />,
-                            label: "Actualizar Almacen",
+                            label: "Editar Almacen",
                             onPress: () => {
                                 const sucursal = {
                                     ...e.row,
@@ -149,9 +149,7 @@ export default class tabla extends Component {
             loadInitialState={async () => {
                 return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
             }}
-            loadData={async () => {
-                return this.loadInitialData();
-            }}
+            loadData={this.loadInitialData.bind(this)}
         >
             <DinamicTable.Col key="index" label="#" width={30} data={(e) => e.index + 1} />
 

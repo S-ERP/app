@@ -73,7 +73,13 @@ export default class CargarEfectivoDelBanco extends React.Component<CargarEfecti
                         ref={ref => this._ref["banco"] = ref}
                         label={"Banco"}
                         type="select2"
-                        options={this.state.cuentas_bancos.map((c: any) => this.format_cuenta_to_string(c))}
+                        // options={this.state.cuentas_bancos.map((c: any) => this.format_cuenta_to_string(c))}
+                        options={this.state.cuentas_bancos.map((c: any) => {
+                            return {
+                                key: c.key,
+                                content: this.format_cuenta_to_string(c)
+                            }
+                        })}
                         placeholder={"Selecciona el banco"}
                     />
                 </SView>

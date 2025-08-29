@@ -7,7 +7,8 @@ import tipo_pago from "./tipo_pago";
 import fraccionar from "./fraccionar";
 export default SPage.combinePages("caja",
     {
-        "": root,
+        // "": root,
+        "caja2": root,
         "tipo_pago": tipo_pago,
         "fraccionar": fraccionar,
         ...caja,
