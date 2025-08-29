@@ -20,6 +20,8 @@ export default class CajaDetalleItem extends Component {
         if (!data) return null;
         var tipo = _types[data.type]
         if (this.state.loading) return <SLoad />
+        if(!obj) return null;
+        if(!tipo) return null;
         return <SView onPress={() => {
             this.setState({ loading: true })
             tipo.action(obj).then(e => {

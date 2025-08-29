@@ -216,7 +216,22 @@ export default class table extends Component {
                     width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
                 <DinamicTable.Col key={"proveedores"} label='proveedores'
                     // textStyle={{ color: STheme.color.success }}
-                    width={70} data={(e) => (e.row.proveedores ?? []).map(p => p?.proveedor?.razon_social)} />
+                    width={120}
+                    data={(e) => (e.row.proveedores ?? []).map(p => p?.proveedor?.razon_social)}
+                    customComponent={e => <SView row>
+                        {(e.row.proveedores ?? []).map(p => {
+                            return <SView style={{
+                                padding: 2,
+                                borderWidth: 1,
+                                borderColor: STheme.color.lightGray,
+                                borderRadius: 4,
+                            }}>
+                                <SText fontSize={10} numberOfLines={1} >{p?.proveedor?.razon_social}</SText>
+                            </SView>
+                        })}
+                    </SView>
+                    }
+                />
 
 
                 <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sd' width={150}

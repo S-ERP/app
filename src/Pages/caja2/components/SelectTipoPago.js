@@ -163,6 +163,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     alignItems: "center"
                 }}>
                     {this.pvtp.map((item, index) => this.renderItemTipoPago(item))}
+                    {this.renderItemTipoPago({ key_tipo_pago: "credito", tipo_pago: { descripcion: "Post Pago", icon: "tarea" }})}
                 </SView>
             }
             <SView row col={"xs-12"} padding={4} style={{

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../../Config';
 import MDL from '../../../MDL';
@@ -51,7 +51,7 @@ export default class PopupDesglose extends Component {
             <DinamicTable.Col key={"cantidad"} label='Cantidad' width={70} data={(e) => e.row?.cantidad} />
             <DinamicTable.Col key={"almacen"} label='Almacen' width={150} data={(e) => e.row?.almacen?.descripcion} />
             <DinamicTable.Col key={"depreciacion"} label='Depreciacion' width={150} data={(e) => e.row?.depreciacion} />
-            {/* <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row?.barcode} /> */}
+            <DinamicTable.Col key={"fecha_on"} label='Fecha de On' width={100} data={(e) => new SDate(e.row?.fecha_on,"yyyy-MM-ddThh:mm:ss").date} />
         </DinamicTable>
 
     }

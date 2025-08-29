@@ -60,7 +60,7 @@ export default class root extends React.Component {
             this.setState({ modelos: modelos })
         })
         MDL.inventario.proveedor.getAllProveedor().then(proveedores => {
-            if (this.inputs["proveedor"]) this.inputs["proveedor"].setValue(proveedores[0]?.razon_social);
+            // if (this.inputs["proveedor"]) this.inputs["proveedor"].setValue(proveedores[0]?.razon_social);
             this.setState({ proveedores: proveedores })
         })
     }
@@ -106,6 +106,7 @@ export default class root extends React.Component {
                 // key_empresa: MDL.empresa.select.key,
                 key_usuario: MDL.usuario.session.key,
                 facturar: this.facturar || false,
+                facturar_luego: this.facturar_luego || false,
                 key_caja: MDL.caja.activa.key,
                 tipos_pago: tipos_pago
                 // key_tipo_pago: key_tipo_pago
@@ -154,7 +155,7 @@ export default class root extends React.Component {
                 <SView col={"xs-10"} flex padding={15} card>
                     <SView col={"xs-12"} row  >
                         <SView col={"xs-12"} padding={4} style={{ alignItems: "flex-end", }} height={30}>
-                            <SView width={105} style={{ marginTop: 0 }}>
+                            <SView width={200} style={{ marginTop: 0 }}>
                                 <SInput label={"Con factura"} type='checkBox' defaultValue={false}
                                     onChangeText={(text) => {
                                         this.facturar = text;
@@ -163,8 +164,18 @@ export default class root extends React.Component {
                                     style={{ marginTop: 0 }}
                                 />
                             </SView>
-
                         </SView>
+                        {this.facturar && <SView col={"xs-12"} padding={4} style={{ alignItems: "flex-end", }} height={30}>
+                            <SView width={200} style={{ marginTop: 0 }}>
+                                <SInput label={"Entregar factura mas tarde."} type='checkBox' defaultValue={false}
+                                    onChangeText={(text) => {
+                                        this.facturar_luego = text;
+                                        this.forceUpdate();
+                                    }}
+                                    style={{ marginTop: 0 }}
+                                />
+                            </SView>
+                        </SView>}
                         <SView col={"xs-12 sm-6"} padding={4}>
                             <SInput
                                 ref={ref => this.inputs["sucursal"] = ref}
@@ -180,6 +191,9 @@ export default class root extends React.Component {
                                 label={"Proveedor"}
                                 type="select2"
                                 placeholder={"Seleccione un proveedor"}
+                                onChangeText={e => {
+                                    this.forceUpdate();
+                                }}
                                 options={this.state.proveedores.map(a => a.razon_social)}
                             />
                         </SView>
@@ -268,6 +282,18 @@ class Detalle extends React.Component {
 
     inputs = {}
     render() {
+        let modelos_arr = this.props.parent.state.modelos;
+        let prov = "";
+        if (this.props?.parent?.inputs?.["proveedor"]) {
+            prov = this.props.parent.inputs["proveedor"].getValue();
+        }
+        let modelos_arr_filter = modelos_arr.filter(e => {
+            if (prov) {
+                return !!(e.proveedores ?? []).find(p => p.proveedor.razon_social == prov)
+            }
+            return true;
+        })
+        console.log("MODELOS FILTRO", modelos_arr_filter)
         return (
             <SView col={"xs-12"} row style={{ borderBottomWidth: 0.5, borderBottomColor: STheme.color.card, paddingBottom: 8, paddingTop: 8 }}>
                 <SView col={"xs-12 sm-7"} padding={4}>
@@ -277,7 +303,7 @@ class Detalle extends React.Component {
                         type="select2"
                         placeholder={"Seleccione un producto"}
                         defaultValue={this.props.data.producto}
-                        options={this.props.parent.state.modelos.map(a => a.descripcion)}
+                        options={modelos_arr_filter.map(a => a.descripcion)}
                         onChangeText={e => {
                             this.props.data.producto = e;
                         }}
@@ -285,7 +311,7 @@ class Detalle extends React.Component {
                             new SThread(100, "test", true).start(() => {
                                 const value = this.inputs["producto"].getValue();
                                 if (!value) return;
-                                const producto = this.props.parent.state.modelos.find(a => a.descripcion == value);
+                                const producto = modelos_arr_filter.find(a => a.descripcion == value);
                                 if (!producto) {
                                     SNotification.send({
                                         title: "El producto seleccionado no esta registrado en el sistema",
