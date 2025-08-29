@@ -147,7 +147,7 @@ export default class tabla extends Component {
                         <SView col={"xs-12"} row  >
                             <SView style={{ width: 28 }}>
                                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                    <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key}`} style={{ resizeMode: "cover" }} />
+                                    <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key}?date=${new Date().getTime()}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                             </SView>
                             <SView width={5} />
