@@ -1,5 +1,5 @@
 import React from "react";
-import { SDate, SHr, SImage, SNavigation, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SDate, SHr, SImage, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import { DinamicTable } from "servisofts-table";
 import MDL from "../../MDL";
 import Config from "../../Config";
@@ -60,30 +60,36 @@ export default class table extends React.Component {
                             label: "Eliminar Rol",
                             onPress: () => {
                                 SPopup.confirm({
-                                    title: "Eliminar Proveedor",
+                                    title: "Eliminar Rol",
                                     message: "¿Estás seguro de eliminar esta sucursal?",
                                     onPress: () => {
                                         const data = {
                                             ...e.row,
                                             estado: 0,
                                         }
-                                        // MDL.inventario.proveedor.editar(data).then((resp) => {
-                                        //     this.DinamicTable.loadData();
-                                        //     SNotification.send({
-                                        //         title: "Proveedor Elimninada",
-                                        //         body: "Proveedor se ha Elimninado correctamente.",
-                                        //         time: 3000,
-                                        //         color: STheme.color.success,
-                                        //     });
-                                        // }).catch((e) => {
-                                        //     console.error("Error al guardar el Proveedor", e);
-                                        //     SNotification.send({
-                                        //         title: "Error",
-                                        //         body: "No se pudo guardar el Proveedor.",
-                                        //         time: 3000,
-                                        //         color: STheme.color.danger,
-                                        //     });
-                                        // })
+
+
+                                        //  data.key = this.props.editObject?.key;
+                                        MDL.rolesPermisos.editarRol(data).then((resp: any) => {
+                                            // this.DinamicTable.loadData();
+                                            SNotification.send({
+                                                title: "rol actualizado",
+                                                body: "rol se ha guardado correctamente.",
+                                                time: 3000,
+                                                color: STheme.color.success,
+                                            });
+                                        }).catch((e) => {
+                                            if (this.props.onSuccess) this.props.onSuccess(e)
+                                            // console.error("Error al guardar el rol:", e);
+                                            SNotification.send({
+                                                title: "Error",
+                                                body: "No se pudo guardar el rol.",
+                                                time: 3000,
+                                                color: STheme.color.danger,
+                                            });
+                                        });
+
+
                                     }
                                 })
                             }
@@ -96,7 +102,7 @@ export default class table extends React.Component {
 
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
 
-            <DinamicTable.Col key={"key"} label={"Key"} textStyle={{ color: STheme.color.lightGray, fontSize: 10 }} data={e => e.row.key} />
+            {/* <DinamicTable.Col key={"key"} label={"Key"} textStyle={{ color: STheme.color.lightGray, fontSize: 10 }} data={e => e.row.key} /> */}
 
             <DinamicTable.Col key={"foto"} label={"Foto"}
                 data={e => SSocket.api.roles_permisos + "rol/" + e.row.key}
@@ -107,20 +113,7 @@ export default class table extends React.Component {
             <DinamicTable.Col key={"descripcion"} label={"Rol"} width={200} textStyle={{ fontWeight: "bold" }} data={e => e.row.descripcion} />
 
             <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-            <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
-                customComponent={e => <>
-                    {(e.row?.key_usuario) ?
-                        <SView col={"xs-12"} row  >
-                            <SView style={{ width: 28 }}>
-                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
-                                </SView>
-                            </SView>
-                            <SView width={5} />
-                            <SText center color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
-                        </SView> : null}
-                </>}
-            />
+
 
         </DinamicTable>
     }

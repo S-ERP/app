@@ -155,7 +155,7 @@ export default class Lista extends Component {
                 <FloatButtom onPress={() => {
                     PopupCrearProveedor.open({
                         onSuccess: async () => {
-                            this.DinamicTable.loadData();
+                            // this.DinamicTable.loadData();
                         },
                     });
                 }} />
