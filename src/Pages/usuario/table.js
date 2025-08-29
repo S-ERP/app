@@ -40,16 +40,8 @@ export default class table extends Component {
         this.keyUsers = []
     }
 
-    async componentDidMount() {
-        const dataOk = await this.loadData();
-        const userRoles_ = await this.getUserRoles();
-        this.setState({ data: dataOk });
-        this.setState({ userRoles: userRoles_ });
-    }
-
     async loadData() {
         try {
-            // let eu = Model.empresa_usuario.Action.getAllByKeyEmpresa(Model.empresa.Action.getKey());
             const eu = await SSocket.sendPromise({
                 service: "empresa",
                 component: "empresa_usuario",
@@ -57,60 +49,24 @@ export default class table extends Component {
                 key_empresa: Model.empresa.Action.getKey()
             })
             const usuarios = await MDL.usuario.getAll()
-            console.log("eu ", eu?.data);
-            console.log("usuarios ", usuarios);
+            this.keyUsers = Object.keys(usuarios);
+            const userRoles = await MDL.rolesPermisos.getAllUserRolesByKeyUser(this.keyUsers);
             if (!eu?.data || !usuarios) return []
             const result = Object.values(eu?.data).map(a => {
                 let usr = usuarios[a.key_usuario];
                 if (!usr) return null;
                 usr.empresa_usuario = a;
-                console.log("aa")
-                this.keyUsers.push(a.key_usuario);
+                const roles = userRoles[a.key_usuario]?.filter(ur => ur.rol?.key_empresa === MDL.empresa.select.key);
+                usr.roles = roles;
                 return usr;
             }).filter(u => u && u.estado === "1");
-
-            // const userRoles = await MDL.rolesPermisos.getAllUserRolesByKeyUser(this.keyUsers);
-            // const rolesList = Object.values(userRoles).map(ur => {
-            //     return {
-            //         key: ur.key,
-            //         label: ur.label,
-            //         key_user: ur.key_user
-            //     }
-            // });
-
-            // const rolesList = Object.values(userRoles).map(ur => {
-
-
             return result;
         } catch (error) {
             console.error("Error loading data:", error);
-            // this.state.data = [];
             return [];
         }
 
 
-
-        // var userRoles = await MDL.role.getAllUserRoles();
-        // var roles = await MDL.role.getAll();
-        // users.map((user) => {
-        //     user.roles = userRoles.filter((userRole) => {
-        //         return userRole.key_user == user.key
-        //     }).map((userRole) => {
-        //         userRole.rol = roles.find((role) => {
-        //             return role.key == userRole.key_role
-        //         })
-
-        //         return userRole;
-        //     }).filter((userRole) => {
-        //         return !!userRole.rol
-        //     })
-        // })
-
-    }
-
-    async getUserRoles() {
-        const userRoles = await MDL.rolesPermisos.getAllUserRolesByKeyUser(this.keyUsers);
-        return userRoles;
     }
 
     validarFecha = (fecha_) => {
@@ -133,7 +89,6 @@ export default class table extends Component {
 
 
     render() {
-        console.log("DATA FINALlll", this.state.data);
         return <SPage disableScroll preventBack title={"Usuarios"}
             icon={<SIcon name='Muser' fill={STheme.color.text} />}
             navBarContent={<SView flex row>
@@ -300,58 +255,8 @@ export default class table extends Component {
                 <DinamicTable.Col
                     key='key-roles'
                     label='# roles'
-                    data={e => e.row}
-                    customComponent={(e) => {
-                        let key_user = e.row.key
-                        console.log("KEY_USER", key_user);
-                        console.log("USERROLES", this.state?.userRoles);
-                        const roles = this.state?.userRoles[key_user]?.filter(ur => ur.rol?.key_empresa === Model.empresa.Action.getKey());
-                        if(!roles) return;
-                        //    this.state.data.roles = {...roles};
-                        // let ff= this.state.data.filter((item) => item.key === key_user);
-                        console.log("AQUI", roles);
-                        const rolesAll = Object.values(roles)?.map(item => item?.rol?.descripcion).join(", ");
-                     
-                        // this.setState({data: {...this.state.data, roles: roles}})
-                        return <SText fontSize={11}>{rolesAll}</SText>
-                    }}
+                    data={e => (e.row.roles ?? []).map(r => r.rol?.descripcion)}
                     width={150} />
-
-
-                {/* <DinamicTable.Col
-                    key='roles'
-                    label='# roles'
-                    data={e => e.row.roles.map(i => i?.rol?.description)}
-                    width={150} /> */}
-
-                {/*  <DinamicTable.Col key="created_at" data={a => !a.row.created_at ? null : new SDate(a.row.created_at, "yyyy-MM-ddThh:mm:ssTZD").date}
-                    dataType='date'
-                    label={"F. Registro"}
-                    format={e => this.validarFecha(e.data)}
-                    textStyle={{ color: STheme.color.lightGray }}
-                    width={140}
-                />
-                <DinamicTable.Col key="updated_at"
-                    data={a => !a.row.updated_at ? null : new SDate(a.row.updated_at, "yyyy-MM-ddThh:mm:ssTZD").date}
-                    dataType='date'
-                    label={"F. Edicion"}
-                    format={e => this.validarFecha(e.data)}
-                    textStyle={{ color: STheme.color.lightGray }}
-                    width={140}
-                />
-             
-                <DinamicTable.Col key="last_connection"
-                    data={a => !a.row.last_connection ? null : new SDate(a.row.last_connection, "yyyy-MM-ddThh:mm:ssTZD").date}
-                    dataType='date'
-                    label={"Ultima Conexión"}
-                    dateFormat='dd MON yyyy, hh:mm:ss'
-                    textStyle={{ color: STheme.color.lightGray }}
-                    customComponent={(e) => {
-                        if (!e.row.last_connection) return <SText fontSize={10} color={STheme.color.lightGray}>Sin conexión</SText>
-                        return <SText fontSize={10} color={STheme.color.lightGray}>{new SDate(e.row.last_connection, "yyyy-MM-ddThh:mm:ssTZD").timeSince(new SDate())}</SText>
-                    }}
-                    width={80}
-                /> */}
             </DinamicTable>
             <FloatButtom onPress={() => {
                 SNavigation.navigate('/registro')

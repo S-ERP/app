@@ -39,60 +39,22 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
         roles: null,
     }
     componentDidMount(): void {
+        console.log(this.props.data)
         this.loadData()
     }
 
     async loadData() {
-        // const roles = await MDL.role.getAll();
-        // const userRoles = await MDL.role.getAllUserRolesByKeyUser(this.props.data.key);
         const roles = await MDL.rolesPermisos.getAllEmpresa()
-        //  let dd= this.props.data
-        const userRoles = await MDL.rolesPermisos.getAllUserRolesByKeyUser(this.props.keyUsers);
-
-        const roles_ = userRoles[this.props.data.key]?.filter((ur: { rol: { key_empresa: any; }; }) => ur.rol?.key_empresa === Model.empresa.Action.getKey());
-
-        console.log("roles_", roles_);
-
-        console.log("conta", roles_.length);
-        let resultado: any[] = [];
-        if (roles_.length >= 1) {
-            // roles_.forEach((item: any) => {
-
-            // const foundRole = roles?.filter((r: any) => r.key === item.rol.key);
-            // if (foundRole) {
-            //     foundRole.userRole = item;
-            // }
-            // })
-            // roles.userRole = roles_;
-            resultado = Object.values(roles).map(item => {
-                const match = roles_.find(d => d.key_rol === item.key);
-                return match ? { ...item, ...match } : item;
-            });
-
-
-        }
-        console.log("resultado", resultado);
-        console.log("conta", roles);
-
-        // roles.forEach((item: any) => {
-        //     item.userRole = userRoles.find((userRole: any) => {
-        //         return userRole.key_role == item.key
-        //     })
-        // })
-
-        this.setState({
-            // roles: roles,
-            roles: (resultado.length >= 1) ? resultado : Object.values(roles)
-            // roles: (resultado) ? resultado : Object.values(roles)
+        const arr = Object.values(roles);
+        arr.map(a => {
+            a.rol_usuario = this.props.data.roles?.find((b: any) => b.key_rol == a.key) || null;
         })
-
-        // this.state.roles= Object.values(roles)
-        this.forceUpdate();
-
+        this.setState({
+            roles: arr
+        })
     }
 
     render() {
-        console.log("roles", this.state.roles);
         return <SView center>
             <SText bold>{"Editar roles del usuario"}</SText>
             {/* <SText bold>{this.props}</SText> */}
@@ -114,7 +76,7 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
                         return <SView col={"xs-12"} row height={30}>
                             <SView width={30} height>
                                 <SInput
-                                    type='checkBox' defaultValue={!!item.rol as any}
+                                    type='checkBox' defaultValue={!!item.rol_usuario as any}
                                     // type='checkBox' defaultValue={"Desarrollador"}
                                     onChangeText={e => {
                                         // item._edited_value = e;
@@ -126,7 +88,7 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
                                         console.log("check", e)
                                         console.log("item", item)
                                         console.log("data", this.props.data)
-                                        if (e) {
+                                        if (!item.rol_usuario) {
                                             MDL.rolesPermisos.registro(this.props.data.key, item.key).then((e) => {
 
                                                 SNotification.send({
@@ -147,8 +109,8 @@ export default class RolesDelUsuario extends Component<RolesDelUsuarioType> {
                                             })
 
                                         } else {
-                                            item.estado = 0
-                                            MDL.rolesPermisos.editar(this.props.data.key, item).then((e) => {
+                                            item.rol_usuario.estado = 0
+                                            MDL.rolesPermisos.editar(this.props.data.key, item.rol_usuario).then((e) => {
                                                 SNotification.send({
                                                     key: "registro",
                                                     title: "Rol editado",
