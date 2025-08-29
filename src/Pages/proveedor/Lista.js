@@ -160,13 +160,12 @@ export default class Lista extends Component {
 
             <DinamicTable.Col key="key" label="Foto" width={180} data={(e) => e.row?.key ?? ""}
                 customComponent={e => <>
-                    {/* {(e.row?.key) ? */}
+                    {(e?.row?.key) ?
                         <SView col={"xs-12"} center row  >
                             <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                <SImage src={`${SSocket.api.inventario}proveedor/${e.row?.key}`} style={{ resizeMode: "cover" }} />
+                                <SImage src={`${SSocket.api.inventario}proveedor/${e.row?.key}?date=${new Date().getTime()}`} style={{ resizeMode: "cover" }} />
                             </SView>
-                        </SView>
-                         {/* : null} */}
+                        </SView> : null}
                 </>}
             />
 

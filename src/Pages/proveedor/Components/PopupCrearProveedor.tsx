@@ -13,19 +13,7 @@ type Props = {
 }
 export default class PopupCrearProveedor extends Component<Props> {
 
-    // constructor(props) {
-    // super(props);
-    // this.state = {};
-    ProveedorItem = {
-        key: "",
-        razon_social: "",
-        nit: "",
-        nombre: "",
-        telefono: "",
-        key_cuenta_contable: "",
-        key_empresa: "",
-    }
-    // }
+
 
     static open(props: Props) {
         SPopup.open({
@@ -59,16 +47,9 @@ export default class PopupCrearProveedor extends Component<Props> {
 
 
 
-    componentDidMount(): void {
-        MDL.empresa.getAllSucursales().then(item => {
-            this.setState({
-                sucursales: Object.values(item).map((suc: any) => ({
-                    key: suc.key?.toString(),  // ⚡ convertir key a string
-                    content: `Suc.- ${suc.descripcion}`
-                }))
-            });
-        }).catch(e => console.error(e));
-    }
+
+
+
     render() {
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Proveedor"}</SText>
@@ -112,7 +93,7 @@ export default class PopupCrearProveedor extends Component<Props> {
                                         Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).inventario + "upload/proveedor/" + resp.key)
                                     }
                                 }
-                                this.forceUpdate();
+                                // this.forceUpdate();
                                 SNotification.send({
                                     title: "proveedor guardada",
                                     body: "proveedor se ha guardado correctamente.",
@@ -142,7 +123,7 @@ export default class PopupCrearProveedor extends Component<Props> {
                                         Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).inventario + "upload/proveedor/" + resp.key)
                                     }
                                 }
-                                this.forceUpdate();
+                                // this.forceUpdate();
                                 SNotification.send({
                                     title: "Almacen guardada",
                                     body: "Almacen se ha guardado correctamente.",
