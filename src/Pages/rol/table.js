@@ -1,5 +1,5 @@
 import React from "react";
-import { SDate, SHr, SImage, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SDate, SHr, SImage, SNavigation, SNotification, SPage, SPopup, STheme, SView } from "servisofts-component";
 import { DinamicTable } from "servisofts-table";
 import MDL from "../../MDL";
 import Config from "../../Config";
@@ -19,41 +19,27 @@ export default class table extends React.Component {
         return <DinamicTable
             {...Config.table.applyTheme()}
             loadData={this.loadInitialData.bind(this)}
-
             ref={ref => this.DinamicTable = ref}
-
-
-            //  loadData={async () => {
-            //     return this.loadInitialData();
-            // }}
-
             selectType="single"
             onSelect={e => {
                 FloatMenu.open({
                     e: e.evt,
                     label: "Rol: " + e.row?.descripcion,
                     options: [
-                        {
-                            label: "Permisos",
-                            onPress: () => {
-                                SNavigation.navigate("/rol/permiso", { key_rol: e.row.key })
-                            }
-                        },
-
+                        { label: "Permisos", onPress: () => { SNavigation.navigate("/rol/permiso", { key_rol: e.row.key }) } },
                         {
                             icon: <SIconApp name='Edit' />,
                             label: "Actualizar Rol",
                             onPress: () => {
-                                const proveedor = {
+                                const roles = {
                                     ...e.row,
                                     key_usuario: MDL.usuario.session?.key,
                                 }
                                 PopupCrearRol.open({
-                                    editObject: proveedor,
-                                    key_empresa: proveedor.key_empresa,
+                                    editObject: roles,
+                                    key_empresa: roles.key_empresa,
                                     onSuccess: async () => {
                                         this.DinamicTable.loadData();
-                                        // this.loadInitialData.bind(this)
                                     },
                                 })
                             }
@@ -72,8 +58,7 @@ export default class table extends React.Component {
                                         }
 
 
-                                        //  data.key = this.props.editObject?.key;
-                                        MDL.rolesPermisos.editarRol(data).then((resp: any) => {
+                                        MDL.rolesPermisos.editarRol(data).then((resp) => {
                                             this.DinamicTable.loadData();
                                             SNotification.send({
                                                 title: "rol actualizado",
@@ -113,14 +98,14 @@ export default class table extends React.Component {
                     <SImage src={e.data} />
                 </SView>}
             />
-            <DinamicTable.Col key={"descripcion"} label={"descripcion"}   data={e => e.row.descripcion} />
+            <DinamicTable.Col key={"descripcion"} label={"Descripción"} data={e => e.row.descripcion} />
             {/* <DinamicTable.Col key={"tipo"} label={"tipo"} width={50} textStyle={{ fontWeight: "bold" }} data={e => e.row.tipo} />
             <DinamicTable.Col key={"observacion"} label={"observacion"} width={50} textStyle={{ fontWeight: "bold" }} data={e => e.row.observacion} />
             <DinamicTable.Col key={"color"} label={"color"} width={50} textStyle={{ fontWeight: "bold" }} data={e => e.row.color} /> */}
 
-            <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.lightGray,   }} dateFormat="yyyy-MM-dd hh:mm" />
+            <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.lightGray, }} dateFormat="yyyy-MM-dd hh:mm" />
 
-            <DinamicTable.Col key={"key_empresa"} label={"key_empresa"} width={150} textStyle={{ fontWeight: "bold",color: STheme.color.lightGray, }} data={e => e.row.key_empresa} />
+            <DinamicTable.Col key={"key_empresa"} label={"key_empresa"} width={150} textStyle={{ color: STheme.color.lightGray, fontSize: 10 }} data={e => e.row.key_empresa} />
 
         </DinamicTable>
     }
@@ -130,10 +115,7 @@ export default class table extends React.Component {
             {this.mostrarTabla()}
             <SHr height={20} />
             <FloatButtom onPress={() => {
-
-                const proveedor = { key: null, }
                 PopupCrearRol.open({
-                    // editObject:proveedor,
                     onSuccess: async () => {
                         this.DinamicTable.loadData();
                     },

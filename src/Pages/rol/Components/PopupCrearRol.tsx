@@ -5,7 +5,6 @@ import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
 import InputFoto from '../../../Components/InputFoto';
 import Btn from './Btn';
-import Model from '../../../Model';
 type Props = {
     key_empresa: string,
     editObject?: any,
@@ -39,9 +38,6 @@ export default class PopupCrearRol extends Component<Props> {
     }
     form: SForm | undefined = undefined;
     _ref: any = {}
-    state: any = {
-        sucursales: []  // inicializamos vacio
-    }
     render() {
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Rol"}</SText>
@@ -56,8 +52,7 @@ export default class PopupCrearRol extends Component<Props> {
                             icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
                                 <InputFoto
                                     ref={ref => this._ref.image_rol = ref}
-                                    src={(SSocket.api as any).roles_permisos + "rol/" + this.props?.editObject?.key}
-                                    // src={(SSocket.api as any).roles_permisos + "rol/" + (this.props.editObject.key ? this.props.editObject.key : null)}
+                                    src={this.props.editObject?.key ? `${(SSocket.api as any).roles_permisos}rol/${this.props.editObject.key}` : undefined}
                                     style={{ width: 50, height: 50, }} />
                             </SView>,
                         },
@@ -121,9 +116,6 @@ export default class PopupCrearRol extends Component<Props> {
                                     color: STheme.color.danger,
                                 });
                             })
-
-
-
                         }
                     }}
                 />
