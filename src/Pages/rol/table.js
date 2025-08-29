@@ -105,18 +105,22 @@ export default class table extends React.Component {
 
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
 
-            {/* <DinamicTable.Col key={"key"} label={"Key"} textStyle={{ color: STheme.color.lightGray, fontSize: 10 }} data={e => e.row.key} /> */}
+            <DinamicTable.Col key={"key"} label={"Key"} textStyle={{ color: STheme.color.lightGray, fontSize: 10 }} data={e => e.row.key} />
 
             <DinamicTable.Col key={"foto"} label={"Foto"}
-                data={e => SSocket.api.roles_permisos + "rol/" + e.row.key+`?date=${new Date().getTime()}`}
+                data={e => SSocket.api.roles_permisos + "rol/" + e.row.key + `?date=${new Date().getTime()}`}
                 customComponent={e => <SView col={"xs-12"} height={40}>
                     <SImage src={e.data} />
                 </SView>}
             />
-            <DinamicTable.Col key={"descripcion"} label={"Rol"} width={200} textStyle={{ fontWeight: "bold" }} data={e => e.row.descripcion} />
+            <DinamicTable.Col key={"descripcion"} label={"descripcion"}   data={e => e.row.descripcion} />
+            {/* <DinamicTable.Col key={"tipo"} label={"tipo"} width={50} textStyle={{ fontWeight: "bold" }} data={e => e.row.tipo} />
+            <DinamicTable.Col key={"observacion"} label={"observacion"} width={50} textStyle={{ fontWeight: "bold" }} data={e => e.row.observacion} />
+            <DinamicTable.Col key={"color"} label={"color"} width={50} textStyle={{ fontWeight: "bold" }} data={e => e.row.color} /> */}
 
-            <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
+            <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.lightGray,   }} dateFormat="yyyy-MM-dd hh:mm" />
 
+            <DinamicTable.Col key={"key_empresa"} label={"key_empresa"} width={150} textStyle={{ fontWeight: "bold",color: STheme.color.lightGray, }} data={e => e.row.key_empresa} />
 
         </DinamicTable>
     }
@@ -126,10 +130,13 @@ export default class table extends React.Component {
             {this.mostrarTabla()}
             <SHr height={20} />
             <FloatButtom onPress={() => {
+
+                const proveedor = { key: null, }
                 PopupCrearRol.open({
+                    // editObject:proveedor,
                     onSuccess: async () => {
                         this.DinamicTable.loadData();
-                     },
+                    },
                 });
             }} />
         </SPage>

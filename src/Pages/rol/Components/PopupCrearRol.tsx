@@ -56,14 +56,15 @@ export default class PopupCrearRol extends Component<Props> {
                             icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
                                 <InputFoto
                                     ref={ref => this._ref.image_rol = ref}
-                                    src={(SSocket.api as any).roles_permisos + "rol/" + this.props.editObject?.key}
+                                    src={(SSocket.api as any).roles_permisos + "rol/" + this.props?.editObject?.key}
                                     // src={(SSocket.api as any).roles_permisos + "rol/" + (this.props.editObject.key ? this.props.editObject.key : null)}
                                     style={{ width: 50, height: 50, }} />
                             </SView>,
                         },
-                        "tipo": { label: "tipo", placeholder: "tipo", defaultValue: this.props.editObject?.tipo, col: "xs-12" },
-                        "observacion": { label: "observacion", placeholder: "observacion", defaultValue: this.props.editObject?.observacion, col: "xs-12" },
-                        "color": { label: "color", placeholder: "color", defaultValue: this.props.editObject?.color, col: "xs-12" },
+                        // "key_empresa": { label: "key_empresa", placeholder: "key_empresa", defaultValue: this.props.editObject?.key_empresa, col: "xs-12" },
+                        // "tipo": { label: "tipo", placeholder: "tipo", defaultValue: this.props.editObject?.tipo, col: "xs-12" },
+                        // "observacion": { label: "observacion", placeholder: "observacion", defaultValue: this.props.editObject?.observacion, col: "xs-12" },
+                        // "color": { label: "color", placeholder: "color", defaultValue: this.props.editObject?.color, col: "xs-12" },
                     }}
                     onSubmit={(data: any) => {
 
