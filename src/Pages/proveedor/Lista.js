@@ -56,7 +56,7 @@ export default class Lista extends Component {
                 }
                 FloatMenu.open({
                     e: e.evt,
-                    label: "Razón Social: " + e.row.razon_social,
+                    label: "Proveedor: " + e.row.razon_social,
                     options: [
                         {
                             icon: <SIconApp name='Edit' />,
@@ -155,7 +155,7 @@ export default class Lista extends Component {
                 <FloatButtom onPress={() => {
                     PopupCrearProveedor.open({
                         onSuccess: async () => {
-                            this.DinamicTable.loadData();
+                            // this.DinamicTable.loadData();
                         },
                     });
                 }} />

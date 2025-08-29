@@ -84,7 +84,6 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         })
         return resp.data;
     }
-
     async registro(key_usuario: string, key_rol: string) {
         const resp: any = await SSocket.sendPromise({
             "version": "1.0",
@@ -97,6 +96,46 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
                 "key_rol": key_rol,
                 "key_usuario": key_usuario
             }
+        })
+        return resp.data;
+    }
+
+
+    async registrarRol(data: any) {
+        const key_empresa = Model.empresa.Action.getKey();
+        const key_usuario = MDL.usuario.session?.key;
+        // console.log("registro ..............................  " + JSON.stringify(data))
+        // console.log("registro descripcion " + descripcion)
+        // return;
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "rol",
+            "type": "registro",
+            "estado": "cargando",
+            "key_usuario": key_usuario,
+            "data": {
+                "descripcion": data.descripcion,
+                "key_empresa": key_empresa
+            }
+        })
+        return resp.data;
+    }
+
+
+    async editarRol(data: any) {
+        const key_empresa = Model.empresa.Action.getKey();
+        const key_usuario = MDL.usuario.session?.key;
+
+        // return;
+        const resp: any = await SSocket.sendPromise({
+            "version": "1.0",
+            "service": "roles_permisos",
+            "component": "rol",
+            "type": "editar",
+            "estado": "cargando",
+            "key_usuario": key_usuario,
+            "data": data
         })
         return resp.data;
     }
