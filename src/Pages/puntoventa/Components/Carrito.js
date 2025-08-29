@@ -17,11 +17,11 @@ export default class Carrito extends Component {
     }
     async loadData() {
         const enviroments = await MDL.contabilidad.getEnviroment();
-
-        console.log("numerosssssss " + JSON.stringify(enviroments))
         this._enviromentsIva = parseFloat(enviroments?.IVA?.observacion) / 100;
         this._numeroIva = parseInt(enviroments?.IVA?.observacion);
-
+        const activa = await MDL.caja.getActiva();
+        this._key_sucursal = activa?.key_sucursal;
+        this._key_cajero = activa?.key_usuario;
         this.forceUpdate();
     }
     setCarrito(nuevoCarrito) {
@@ -58,10 +58,9 @@ export default class Carrito extends Component {
             this.forceUpdate();
         }
     };
-
-
-
-
+    static clean = () => {
+        this.vaciarCarrito();
+    };
     vaciarCarrito = () => {
         this.carrito = [];
         this.descuentoManual = "";
@@ -71,8 +70,6 @@ export default class Carrito extends Component {
         this.carritoRefModal?.setCarrito?.([]);
         this.forceUpdate();
     };
-
-
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
     calcularTotalConIVA = (subtotal) => {
         if (!this._enviromentsIva) return subtotal;
@@ -151,9 +148,8 @@ export default class Carrito extends Component {
                         <SView col={"xs-12"} row center   >
                             <SView col={"md-12 xl-6"} height={70} border={"transparent"} >
                                 <SView col={"xs-10"} center  >
-                                    <SInput label={"Descuento VIP (Bs):"} height={40} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={this.descuentoManual > 0 ? "yellow" : STheme.color.card} style={{ backgroundColor: "transparent", borderRadius: 8 }}
+                                    <SInput label={"Descuento VIP (Bs):"} disabled={true} height={40} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={this.descuentoManual > 0 ? "yellow" : STheme.color.card} style={{ backgroundColor: "transparent", borderRadius: 8 }}
                                         value={this.descuentoManual?.toString()} // 🔑 importante para controlarlo
-
                                         onChangeText={(text) => {
                                             let valor = Number(text);
                                             // if (valor > subtotal) {
@@ -189,7 +185,6 @@ export default class Carrito extends Component {
                             </SView>
                         </SView>
                         <SHr height={4} />
-
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.danger} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-12"} center>
                                 <FotoCliente onReloadCliente={(cliente) => {
@@ -203,6 +198,8 @@ export default class Carrito extends Component {
                 }
                 <TecladoNumerico
                     cliente={this.cliente}
+                    key_sucursal={this._key_sucursal}
+                    key_cajero={this._key_cajero}
                     carrito={this.carrito}
                     carritonuevo={this.carritonuevo}
                     numeroIva={this._numeroIva}
@@ -212,10 +209,7 @@ export default class Carrito extends Component {
                     conFactura={this.conFactura}
                     subtotal={subtotal}
                     onReload={() => { this.vaciarCarrito(); }}
-                    onReloadCliente={(cliente) => {
-                        this.cliente = cliente || {};
-                        this.forceUpdate();
-                    }}
+                    onReloadCliente={() => { this.cliente = null }}
                 />
             </>
         );

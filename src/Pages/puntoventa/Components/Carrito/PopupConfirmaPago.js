@@ -113,7 +113,6 @@ export default class PopupConfirmaPago extends Component {
             // this.forceUpdate();
             this.props?.onReload();
             this.props?.onReloadCliente?.(null); // Limpia cliente en FotoCliente
-
             ReciboRollo.imprimir(res.key)
             ReciboCarta.imprimir(res.key)
             SPopup.close("popup_config_horario");
@@ -132,8 +131,6 @@ export default class PopupConfirmaPago extends Component {
                 }
                 )
         })
-
-
     }
     render() {
         const sucursal = this.sucursal;
@@ -182,14 +179,12 @@ export default class PopupConfirmaPago extends Component {
                             this.forceUpdate();
                         }}
                     /> */}
-
                     {/* <SView col="xs-12" row style={{ justifyContent: "space-between", }}>
                         <SText fontSize={16}>Tipo pago:</SText>
                         <SText fontSize={18} bold color={this.tipos_pago ? "green" : "red"}>
                             {this.tipos_pago ? this.tipos_pago : "-"}
                         </SText>
                     </SView> */}
-
                 </SView>
                 <SView height={20} />
                 <SView col="xs-12" row style={{ justifyContent: "space-between", }}>
@@ -204,7 +199,6 @@ export default class PopupConfirmaPago extends Component {
                         onPress={() => {
                             this.props?.onReload?.();
                             this.props?.onReloadCliente?.(null); // Limpia cliente en FotoCliente
-
                             SPopup.close("popup_config_horario");
                         }}
                     >
@@ -213,7 +207,6 @@ export default class PopupConfirmaPago extends Component {
                     <SView width={8} />
                     <SView center flex height={40} style={{ backgroundColor: STheme.color.text, borderColor: STheme.color.gray, borderWidth: 1, borderRadius: 4 }}
                         onPress={() => {
-
                             if (!this.tipos_pago) {
                                 SelectTipoPago.openPopup({
                                     key_punto_venta: MDL.caja.activa.key_punto_venta,
@@ -227,8 +220,6 @@ export default class PopupConfirmaPago extends Component {
                                     }
                                 });
                             }
-
-
                             this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito, cliente)
                         }}
                     >
