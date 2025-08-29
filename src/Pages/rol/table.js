@@ -20,6 +20,9 @@ export default class table extends React.Component {
             {...Config.table.applyTheme()}
             loadData={this.loadInitialData.bind(this)}
 
+            ref={ref => this.DinamicTable = ref}
+
+
             //  loadData={async () => {
             //     return this.loadInitialData();
             // }}
@@ -49,8 +52,8 @@ export default class table extends React.Component {
                                     editObject: proveedor,
                                     key_empresa: proveedor.key_empresa,
                                     onSuccess: async () => {
-                                        // this.DinamicTable.loadData();
-                                        this.loadInitialData.bind(this)
+                                        this.DinamicTable.loadData();
+                                        // this.loadInitialData.bind(this)
                                     },
                                 })
                             }
@@ -71,7 +74,7 @@ export default class table extends React.Component {
 
                                         //  data.key = this.props.editObject?.key;
                                         MDL.rolesPermisos.editarRol(data).then((resp: any) => {
-                                            // this.DinamicTable.loadData();
+                                            this.DinamicTable.loadData();
                                             SNotification.send({
                                                 title: "rol actualizado",
                                                 body: "rol se ha guardado correctamente.",
@@ -105,7 +108,7 @@ export default class table extends React.Component {
             {/* <DinamicTable.Col key={"key"} label={"Key"} textStyle={{ color: STheme.color.lightGray, fontSize: 10 }} data={e => e.row.key} /> */}
 
             <DinamicTable.Col key={"foto"} label={"Foto"}
-                data={e => SSocket.api.roles_permisos + "rol/" + e.row.key}
+                data={e => SSocket.api.roles_permisos + "rol/" + e.row.key+`?date=${new Date().getTime()}`}
                 customComponent={e => <SView col={"xs-12"} height={40}>
                     <SImage src={e.data} />
                 </SView>}
@@ -125,9 +128,8 @@ export default class table extends React.Component {
             <FloatButtom onPress={() => {
                 PopupCrearRol.open({
                     onSuccess: async () => {
-                        // this.DinamicTable.loadData();
-                        this.loadInitialData.bind(this)
-                    },
+                        this.DinamicTable.loadData();
+                     },
                 });
             }} />
         </SPage>
