@@ -116,15 +116,12 @@ export default class Lista extends Component {
             }}
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
-            <DinamicTable.Col key="key" label="Foto" width={180} data={(e) => e.row?.key ?? ""}
-                customComponent={e => <>
-                    {(e?.row?.key) ?
-                        <SView col={"xs-12"} center row  >
-                            <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                <SImage src={`${SSocket.api.inventario}proveedor/${e.row?.key}?date=${new Date().getTime()}`} style={{ resizeMode: "cover" }} />
-                            </SView>
-                        </SView> : null}
-                </>}
+            <DinamicTable.Col key="key" label="Foto" width={40} data={(e) => `${SSocket.api.inventario}proveedor/${e.row?.key}`}
+                customComponent={e => <SView col={"xs-12"} center row  >
+                    <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                        <SImage src={`${e.data}?date=${new Date().getTime()}`} style={{ resizeMode: "cover" }} />
+                    </SView>
+                </SView>}
             />
             <DinamicTable.Col key="razon_social" label="Razón Social" width={200} data={(e) => e.row?.razon_social} />
             <DinamicTable.Col key="nit" label="NIT" width={150} data={(e) => e.row?.nit} />
