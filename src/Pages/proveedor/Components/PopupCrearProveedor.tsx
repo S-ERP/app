@@ -109,7 +109,7 @@ export default class PopupCrearProveedor extends Component<Props> {
                                 if (this._ref.image_sucursal) {
                                     const value = this._ref.image_sucursal.getValue();
                                     if (Array.isArray(value)) {
-                                        Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).inventario + "upload/proveedor/" + this.props.editObject?.key)
+                                        Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).inventario + "upload/proveedor/" + resp.key)
                                     }
                                 }
                                 this.forceUpdate();

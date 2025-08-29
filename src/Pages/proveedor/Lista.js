@@ -17,30 +17,17 @@ import PopupCrearProveedor from './Components/PopupCrearProveedor';
 export default class Lista extends Component {
 
 
-    onSelect = SNavigation.getParam("onSelect")
     constructor(props) {
         super(props);
-        this.state = {
-        };
-
+        this.state = {};
     }
 
-    mostrarPopup(aux_key: any, data: any) {
-        SPopup.open({
-            key: "popup_config_horario",
-            content: (
-                <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
-                    <SView col={"xs-12"} height={470} center >
-                        <Perfil key_proveedor={aux_key} data={data} onReload={() => { this.DinamicTable.loadData(); }} ></Perfil>
-                    </SView>
-                </SView>
-            )
-        });
-    }
+
 
     async loadInitialData() {
         try {
 
+            // siempre poner todas las apis en una funcion asi para que recargue rapido la tabla
             const proveedores = await MDL.inventario.proveedor.getAllProveedor();
             const keysUsuarios = Object.values(proveedores).map(p => p.key_usuario).filter(Boolean);
 
@@ -52,11 +39,16 @@ export default class Lista extends Component {
                 proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario);
             });
 
-            console.log("proveeeee " + JSON.stringify(proveedores))
             return proveedores;
 
         } catch (error) {
             console.error('Error loading initial data:', error);
+            SNotification.send({
+                title: "Error",
+                body: "No se pudo cargar la lista de proveedores.",
+                time: 3000,
+                color: STheme.color.danger,
+            });
             return [];
         }
     }
@@ -94,11 +86,11 @@ export default class Lista extends Component {
                             icon: <SIconApp name='Edit' />,
                             label: "Actualizar Proveedor",
                             onPress: () => {
-                                // this.mostrarPopup(e.row.key, e.row);
                                 const proveedor = {
                                     ...e.row,
                                     key_usuario: MDL.usuario.session?.key,
                                 }
+
                                 PopupCrearProveedor.open({
                                     editObject: proveedor,
                                     key_empresa: proveedor.key_empresa,
@@ -107,26 +99,43 @@ export default class Lista extends Component {
                                     },
                                 })
 
+
                             }
                         },
                         {
                             icon: <SIconApp name='Delete' />,
                             label: "Eliminar Proveedor",
                             onPress: () => {
+
                                 SPopup.confirm({
                                     title: "Eliminar Proveedor",
-                                    message: "¿Estás seguro de eliminar este Proveedor?",
+                                    message: "¿Estás seguro de eliminar esta sucursal?",
                                     onPress: () => {
-                                        const data = e?.row;
-                                        data.estado = 0;
-                                        MDL.inventario.proveedor.editar(data).then((res) => {
+                                        const data = {
+                                            ...e.row,
+                                            estado: 0,
+                                        }
+                                        MDL.inventario.proveedor.editar(data).then((resp) => {
                                             this.DinamicTable.loadData();
-                                            console.log("Eliminar proveedor exitosa");
-                                        }).catch(
-                                            console.log("Eliminar proveedor erronea")
-                                        )
+                                            SNotification.send({
+                                                title: "Proveedor Elimninada",
+                                                body: "Proveedor se ha Elimninado correctamente.",
+                                                time: 3000,
+                                                color: STheme.color.success,
+                                            });
+                                        }).catch((e) => {
+                                            console.error("Error al guardar el Proveedor", e);
+                                            SNotification.send({
+                                                title: "Error",
+                                                body: "No se pudo guardar el Proveedor.",
+                                                time: 3000,
+                                                color: STheme.color.danger,
+                                            });
+                                        })
                                     }
                                 })
+
+
 
                             }
                         }
@@ -151,18 +160,18 @@ export default class Lista extends Component {
 
             <DinamicTable.Col key="key" label="Foto" width={180} data={(e) => e.row?.key ?? ""}
                 customComponent={e => <>
-                    {(e.row?.key) ?
+                    {/* {(e.row?.key) ? */}
                         <SView col={"xs-12"} center row  >
                             <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                                 <SImage src={`${SSocket.api.inventario}proveedor/${e.row?.key}`} style={{ resizeMode: "cover" }} />
                             </SView>
-                        </SView> : null}
+                        </SView>
+                         {/* : null} */}
                 </>}
             />
 
 
 
-            {/* <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.usuario.Nombres} /> */}
             <DinamicTable.Col key="razon_social" label="Razón Social" width={200} data={(e) => e.row?.razon_social} />
             <DinamicTable.Col key="nit" label="NIT" width={150} data={(e) => e.row?.nit} />
             <DinamicTable.Col key="nombre" label="Nombre de Contacto" width={150} data={(e) => e.row?.nombre} />
@@ -192,7 +201,6 @@ export default class Lista extends Component {
                 <SHr height={20} />
 
                 <FloatButtom onPress={() => {
-                    // this.mostrarPopup() 
                     PopupCrearProveedor.open({
                         onSuccess: async () => {
                             this.DinamicTable.loadData();
