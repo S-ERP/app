@@ -12,6 +12,7 @@ import Perfil from './Perfil';
 import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
+import PopupCrearProveedor from './Components/PopupCrearProveedor';
 
 export default class Lista extends Component {
 
@@ -37,6 +38,29 @@ export default class Lista extends Component {
         });
     }
 
+    async loadInitialData() {
+        try {
+
+            const proveedores = await MDL.inventario.proveedor.getAllProveedor();
+            const keysUsuarios = Object.values(proveedores).map(p => p.key_usuario).filter(Boolean);
+
+            // Obtener usuarios desde el backend
+            const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
+
+            // Adjuntar cada usuario a su proveedor correspondiente
+            Object.values(proveedores).forEach(proveedor => {
+                proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario);
+            });
+
+            console.log("proveeeee " + JSON.stringify(proveedores))
+            return proveedores;
+
+        } catch (error) {
+            console.error('Error loading initial data:', error);
+            return [];
+        }
+    }
+
 
     mostrarTabla() {
         return <DinamicTable
@@ -47,9 +71,13 @@ export default class Lista extends Component {
             language="es"
             selectType="single"
 
+            colors={Config.table.colors()}
+            cellStyle={Config.table.cellStyle()}
+            textStyle={Config.table.textStyle()}
 
-            ref={ref => this.DinamicTable = ref}
-
+            loadInitialState={async () => {
+                return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
+            }}
 
             onSelect={(e) => {
                 if (this.onSelect) {
@@ -66,7 +94,19 @@ export default class Lista extends Component {
                             icon: <SIconApp name='Edit' />,
                             label: "Actualizar Proveedor",
                             onPress: () => {
-                                this.mostrarPopup(e.row.key, e.row);
+                                // this.mostrarPopup(e.row.key, e.row);
+                                const proveedor = {
+                                    ...e.row,
+                                    key_usuario: MDL.usuario.session?.key,
+                                }
+                                PopupCrearProveedor.open({
+                                    editObject: proveedor,
+                                    key_empresa: proveedor.key_empresa,
+                                    onSuccess: async () => {
+                                        this.DinamicTable.loadData();
+                                    },
+                                })
+
                             }
                         },
                         {
@@ -96,44 +136,52 @@ export default class Lista extends Component {
 
             }}
 
+
             loadData={async () => {
-                const proveedores = await MDL.inventario.proveedor.getAllProveedor();
-                const keysUsuarios = Object.values(proveedores).map(p => p.key_usuario).filter(Boolean);
 
-                // Obtener usuarios desde el backend
-                const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
+                return this.loadInitialData();
 
-                // Adjuntar cada usuario a su proveedor correspondiente
-                Object.values(proveedores).forEach(proveedor => {
-                    proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario);
-                });
-                return proveedores;
+
             }}
 
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
 
 
-            {/* <DinamicTable.Col key={"foto"} label='User'
-                data={(e) => e.row?.key_usuario}
-                width={45}
-                customComponent={e => <SView style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: 100,
-                    overflow: "hidden",
-                    backgroundColor: STheme.color.card + "66",
-                }}>
-                    <SImage src={SSocket.api.root + "usuario/" + e.data} style={{
-                        resizeMode: "cover",
-                    }} />
-                </SView>} /> */}
+
+            <DinamicTable.Col key="key" label="Foto" width={180} data={(e) => e.row?.key ?? ""}
+                customComponent={e => <>
+                    {(e.row?.key) ?
+                        <SView col={"xs-12"} center row  >
+                            <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                <SImage src={`${SSocket.api.inventario}proveedor/${e.row?.key}`} style={{ resizeMode: "cover" }} />
+                            </SView>
+                        </SView> : null}
+                </>}
+            />
+
+
 
             {/* <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.usuario.Nombres} /> */}
             <DinamicTable.Col key="razon_social" label="Razón Social" width={200} data={(e) => e.row?.razon_social} />
             <DinamicTable.Col key="nit" label="NIT" width={150} data={(e) => e.row?.nit} />
             <DinamicTable.Col key="nombre" label="Nombre de Contacto" width={150} data={(e) => e.row?.nombre} />
             <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={(e) => e.row?.telefono} />
+            <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
+            <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
+                customComponent={e => <>
+                    {(e.row?.key_usuario) ?
+                        <SView col={"xs-12"} row  >
+                            <SView style={{ width: 28 }}>
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
+                                </SView>
+                            </SView>
+                            <SView width={5} />
+                            <SText center color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
+                        </SView> : null}
+                </>}
+            />
         </DinamicTable>
     }
 
@@ -143,7 +191,15 @@ export default class Lista extends Component {
                 {this.mostrarTabla()}
                 <SHr height={20} />
 
-                <FloatButtom onPress={() => { this.mostrarPopup() }} />
+                <FloatButtom onPress={() => {
+                    // this.mostrarPopup() 
+                    PopupCrearProveedor.open({
+                        onSuccess: async () => {
+                            this.DinamicTable.loadData();
+                        },
+                    });
+
+                }} />
             </SPage>
         );
     }
