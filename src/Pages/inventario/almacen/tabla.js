@@ -170,7 +170,7 @@ export default class tabla extends Component {
             <DinamicTable.Col key="sucursal" label="Sucursal" width={120} data={(e) => e.row?.key_sucursal ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_sucursal) ?
-                        <SView col={"xs-12"} row  >
+                        <SView col={"xs-12"} row center  >
                             <SView style={{ width: 28 }}>
                                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                                     <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key_sucursal}`} style={{ resizeMode: "cover" }} />
@@ -180,21 +180,21 @@ export default class tabla extends Component {
                                 <SView style={{ borderRadius: 8, width: 8, height: 8, backgroundColor: "#2a7ffe", }} />
                             </SView> */}
                             <SView width={5} />
-                            <SText center color={STheme.color.text}>{e.row?.sucursal?.descripcion}</SText>
+                            <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.sucursal?.descripcion}</SText>
                         </SView> : null}
                 </>}
             />
             <DinamicTable.Col key="almacen" label="Almacén" width={140} data={(e) => e.row?.key ?? ""}
                 customComponent={e => <>
                     {(e.row?.key) ?
-                        <SView col={"xs-12"} row  >
+                        <SView col={"xs-12"} row center  >
                             <SView style={{ width: 26 }}>
                                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                    <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key}`} style={{ resizeMode: "cover" }} />
+                                    <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key}?date=${new Date().getTime()}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                             </SView>
                             <SView width={5} />
-                            <SText center color={STheme.color.text}>{e.row?.descripcion}</SText>
+                            <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.descripcion}</SText>
                         </SView> : null}
                 </>}
             />
@@ -207,14 +207,14 @@ export default class tabla extends Component {
             <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_usuario) ?
-                        <SView col={"xs-12"} row  >
+                        <SView col={"xs-12"} row center >
                             <SView style={{ width: 28 }}>
                                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                                     <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                             </SView>
                             <SView width={5} />
-                            <SText center color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
+                            <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.usuario?.Nombres}</SText>
                         </SView> : null}
                 </>}
             />
