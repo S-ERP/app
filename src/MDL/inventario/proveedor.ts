@@ -7,7 +7,7 @@ import MDL from "..";
 
 export default class proveedor {
   // export default class proveedor extends MDLAbstract<EventListener> {
-  async componentDidMount() {}
+  async componentDidMount() { }
 
   async getAllProveedor() {
     const resp: any = await SSocket.sendPromise({
@@ -35,6 +35,10 @@ export default class proveedor {
   }
 
   async editar(data: any) {
+
+    // console.log("editar aqui vemos " + JSON.stringify(data))
+    // return;
+
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
       component: "proveedor",
@@ -49,6 +53,9 @@ export default class proveedor {
     data.key_empresa = MDL.empresa.select?.key;
     // data.nombre = "oruro";
     // data.nit = "10";
+
+    // console.log("registrar aqui vemos " + JSON.stringify(data))
+    // return;
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
       component: "proveedor",

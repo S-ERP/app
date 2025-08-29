@@ -16,7 +16,7 @@ export default class tabla extends Component {
     }
     verificar(estado) {
         return <SView col={"xs-12"} center row>
-            {estado ? <SIconApp name='IconCheckedOk' fill='#19aa0cff' stroke={'#ffffffff'} height={16} /> : <SIconApp name='Cerrar' fill='red' height={14} />}
+            {estado ? <SIconApp name='IconCheckedOk' fill='#48bd00ff' stroke={'#c90808ff'} height={16} /> : <SIconApp name='Cerrar' fill='#d6111eff' height={14} />}
         </SView>;
     }
     async loadInitialData() {
