@@ -38,7 +38,8 @@ export default class table extends Component {
             data: [],
             userRoles: []
         };
-        this.keyUsers = []
+        this.keyUsers = [],
+            this.empresaUser = {};
     }
 
     async loadData() {
@@ -52,6 +53,7 @@ export default class table extends Component {
             const usuarios = await MDL.usuario.getAll()
             this.keyUsers = Object.keys(usuarios);
             const userRoles = await MDL.rolesPermisos.getAllUserRolesByKeyUser(this.keyUsers);
+            this.empresaUser = eu?.data;
             if (!eu?.data || !usuarios) return []
             const result = Object.values(eu?.data).map(a => {
                 let usr = usuarios[a.key_usuario];
@@ -169,18 +171,17 @@ export default class table extends Component {
                                                     key: e.row.empresa_usuario.key,
                                                     estado: 0
                                                 }
+                                            }).then(e => {
+                                                SNotification.send({
+                                                    title: "Usuario eliminado correctamente",
+                                                    color: STheme.color.success,
+                                                    time: 5000,
+                                                })
+                                                this.table.loadData();
+                                            }).catch(e => {
+                                                SNotification.error("Error al eliminar el usuario");
                                             })
-                                            // MDL.usuario.eliminar(e.row.key).then((resp) => {
-                                            //     this.table.loadData();
-                                            // }).catch((e) => {
-                                            //     SNotification.error("Error al eliminar el usuario")
-                                            // })
-                                            // e.row.estado = 0;
-                                            // MDL.usuario.editar(e.row).then((resp) => {
-                                            //     this.table.loadData();
-                                            // }).catch((e) => {
-                                            //     SNotification.error("Error al eliminar el usuario")
-                                            // })
+                                          
                                         }
                                     })
 
@@ -277,6 +278,7 @@ export default class table extends Component {
                 // })
                 FormCrearUsuario.open({
                     // data: e.row,
+                    datakeyUsers: this.empresaUser,
                     onSuccess: (e) => {
                         this.table.loadData();
                     }
