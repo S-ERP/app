@@ -13,25 +13,18 @@ export default class Carrito extends Component {
     conFactura = false;
     conStock = true;
     cliente = {};
-
-
     componentDidMount() {
-
         this.loadData()
         this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
             this.vaciarCarrito();
             this.forceUpdate();
         });
-
     }
     componentWillUnmount() {
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
     }
-
-
-
     async loadData() {
         const enviroments = await MDL.contabilidad.getEnviroment();
         this._enviromentsIva = parseFloat(enviroments?.IVA?.observacion) / 100;
@@ -75,12 +68,8 @@ export default class Carrito extends Component {
             this.forceUpdate();
         }
     };
-    static clean = () => {
-        this.vaciarCarrito();
-    };
+ 
     vaciarCarrito = () => {
-
-
         this.carrito = [];
         this.descuentoManual = "";
         this.conFactura = false;
@@ -139,8 +128,6 @@ export default class Carrito extends Component {
                                 <SText fontSize={15} bold color={STheme.color.text}>Detalle venta</SText>
                             </SView>
                             <SView col={"xs-2 md-2"} center onPress={() => {
-                                // this.vaciarCarrito()
-                                // this.forceUpdate();
                                 MDL.compra_venta.vaciarAll();
                             }
                             }
@@ -177,16 +164,6 @@ export default class Carrito extends Component {
                                         value={this.descuentoManual?.toString()} // 🔑 importante para controlarlo
                                         onChangeText={(text) => {
                                             let valor = Number(text);
-                                            // if (valor > subtotal) {
-                                            //     SNotification.send({
-                                            //         title: "Descuento inválido",
-                                            //         body: `El descuento no puede superar el subtotal (${subtotal}).`,
-                                            //         type: "error",
-                                            //         color: STheme.color.error,
-                                            //         time: 5000,
-                                            //     });
-                                            //     return;
-                                            // }
                                             if (valor > subtotal) {
                                                 valor = subtotal;
                                             } else if (valor < 0) {
@@ -201,7 +178,6 @@ export default class Carrito extends Component {
                             <SView col={"md-12 xl-6"} height={60} center row >
                                 <SView col={"md-6"} center border={"transparent"}   >
                                     <SInput label={"Con factura"} type='checkBox' labelStyle={{ left: 12 }}
-
                                         defaultValue={this.conFactura}
                                         onChangeText={(text) => {
                                             this.conFactura = text;
@@ -218,7 +194,6 @@ export default class Carrito extends Component {
                                     />
                                 </SView>
                             </SView>
-
                             {/* <SView col={"md-12 xl-6"} height={60} center border={"blue"} >
                                 <SView col={"md-12"} center    >
                                     <SInput label={"Con stock"} type='checkBox' defaultValue={this.conStock}
@@ -229,14 +204,11 @@ export default class Carrito extends Component {
                                     />
                                 </SView>
                             </SView> */}
-
-
                         </SView>
                         <SHr height={4} />
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.danger} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-12"} center>
                                 <FotoCliente onReloadCliente={(cliente) => {
-                                    console.log("cheking 111111111 movil" + JSON.stringify(cliente))
                                     this.cliente = cliente;
                                     this.forceUpdate();
                                 }}  ></FotoCliente>

@@ -39,15 +39,12 @@ export default class Modelo extends Component {
         this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
             this.loadApis();
         });
-
     }
     componentWillUnmount() {
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
     }
-
-    
     async loadApis() {
         if (!MDL.caja.activa) {
             console.log("Caja no activa");
@@ -77,14 +74,10 @@ export default class Modelo extends Component {
     renderModelos() {
         const modelos = this.modelos || [];
         const tipoKey = this.props.tipoKey;
-
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
         productosFiltrados = productosFiltrados.filter(m => m.precio_venta > 0);
         if (this.props.searchText) { const search = this.props.searchText.toLowerCase(); productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search)); }
-
         const colSize = this.getColSize();
-        // console.log("todos " + JSON.stringify(productosFiltrados))
-
         return (
             <SView col={"xs-12"} flex center backgroundColor='transparent'>
                 <SScrollView2 disableHorizontal>
@@ -100,7 +93,6 @@ export default class Modelo extends Component {
                                         style={{
                                             minWidth: 120,
                                             borderRadius: 8,
-                                            // shadowColor: "#000",
                                             shadowOffset: { width: 0, height: 2 },
                                             shadowOpacity: 0.1,
                                             shadowRadius: 8,
@@ -108,12 +100,8 @@ export default class Modelo extends Component {
                                             borderWidth: 1,
                                             borderColor: STheme.color.lightGray,
                                             overflow: "hidden",
-                                            // backgroundColor: STheme.color.background
                                         }}
                                         onPress={() => {
-                                            console.log("PRO - PRESS", producto)
-                                            // if (producto.stock <= 0) return alert("No hay más stock disponible");
-                                            // producto.stock -= 1; // ⬅️ Resta stock localmente
                                             this.props.onPressProducto?.({ ...producto }); // enviar copia actualizada
                                             this.forceUpdate();  // ⬅️ Fuerza render para reflejar el cambio
                                         }}

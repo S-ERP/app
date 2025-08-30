@@ -26,7 +26,7 @@ export default class PopupCarritoFlotante extends Component {
     }
     static closePopup() {
         SPopup.close("popup_carrito_flotante")
-        this.refContenido?.vaciarCarrito?.(); // <- ahora sí funciona
+        // this.refContenido?.vaciarCarrito?.(); // <- ahora sí funciona
     }
 }
 class ContenidoCarritoFlotante extends Component {
@@ -39,18 +39,13 @@ class ContenidoCarritoFlotante extends Component {
         this.carritoRefModal?.setCarrito?.(this.props.productos);
         this.forceUpdate();
     }
-    vaciarCarrito() {
-        // this.carritoRefModal?.setCarrito([]);
-        // this.carrito.forEach(item => {
-        //     this.carritoRefModal?.onModificarStock?.(item.key, +item.cantidad);
-        // });
-        this.descuentoManual = 0;
-        this.carrito = [];
-        this.carritoRefModal?.onModificarStock?.(null, 0);
-        this.carritoRefModal?.setCarrito?.([]);
-        SNotification.send({ title: "Carrito vaciado", message: "Todos los productos fueron removidos." });
-        // this.forceUpdate();
-    }
+    // vaciarCarrito() {
+    //     this.descuentoManual = 0;
+    //     this.carrito = [];
+    //     this.carritoRefModal?.onModificarStock?.(null, 0);
+    //     this.carritoRefModal?.setCarrito?.([]);
+    //     SNotification.send({ title: "Carrito vaciado", message: "Todos los productos fueron removidos." });
+    // }
     render() {
         return (
             <SView col="xs-12" flex center>

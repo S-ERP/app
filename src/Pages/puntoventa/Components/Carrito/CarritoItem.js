@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { SInput, SText, STheme, SView } from 'servisofts-component';
 import FotoModelo from '../Foto/FotoModelo';
 import SIconApp from '../../../../Assets/SIconApp';
-
 export default class CarritoItem extends Component {
     render() {
         const { item, onAumentar, onDisminuir, onEliminar } = this.props;
@@ -22,7 +21,6 @@ export default class CarritoItem extends Component {
                 <SView col={"md-5.5 lg-4.5 xl-3.5"} row center border='transparent'>
                     <SView col={"xs-12"} row center backgroundColor='transparent'>
                         <SView col={"md-4 xl-4"} row center backgroundColor='transparent' >
-
                             <SView
                                 center
                                 border={STheme.color.text}
@@ -39,9 +37,7 @@ export default class CarritoItem extends Component {
                                 <SText fontSize={18} color={"#EF4444"}>-</SText>
                             </SView>
                         </SView>
-
                         <SView col={"md-4 xl-4"} row center backgroundColor='transparent'  >
-
                             <SView center style={{ marginHorizontal: 5 }}>
                                 <SInput
                                     color={STheme.color.text}
@@ -54,7 +50,6 @@ export default class CarritoItem extends Component {
                             </SView>
                         </SView>
                         <SView col={"md-4 xl-4"} row center backgroundColor='transparent' >
-
                             <SView
                                 center
                                 border={STheme.color.text}
@@ -70,7 +65,6 @@ export default class CarritoItem extends Component {
                                 <SText fontSize={18} color={"#10B981"}>+</SText>
                             </SView>
                         </SView>
-
                     </SView>
                 </SView>
                 <SView col={"md-2 xl-2.5"} center border='transparent'>

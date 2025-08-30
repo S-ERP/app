@@ -4,7 +4,6 @@ import SIconApp from '../../../Assets/SIconApp';
 import Model from '../../../Model';
 import FotoUsuario from './Foto/FotoUsuario';
 import MDL from '../../../MDL';
-
 export default class Header extends Component {
     constructor(props) {
         super(props);
@@ -12,11 +11,9 @@ export default class Header extends Component {
             sucursal: null,
         };
     }
-
     componentDidMount() {
         this.cargarSucursalGuardada();
     }
-
     cargarSucursalGuardada() {
         MDL.compra_venta.getSucursalSeleccionada()
             .then(sucursal => {
@@ -28,36 +25,10 @@ export default class Header extends Component {
                 console.error("Error cargando sucursal guardada:", e);
             });
     }
-
-    seleccionarSucursal() {
-        SNavigation.navigate("/sucursal", {
-            onSelect: (obj) => {
-                const sucu = {
-                    descripcion: obj.descripcion,
-                    telefono: obj.telefono,
-                    correo: obj.correo,
-                    direccion: obj.direccion,
-                    key_sucursal: obj.key,
-                }
-                MDL.compra_venta.setSucursalSeleccionada(sucu)
-                    .then(() => {
-                        // Actualiza propiedad interna del modelo (opcional)
-                        MDL.compra_venta.sucursalSeleccionada = sucu;
-                        // Actualiza el estado local para refrescar UI
-                        this.setState({ sucursal: sucu });
-                    })
-                    .catch(() => {
-                        console.log("Error al guardar sucursal");
-                    });
-            }
-        });
-    }
-
     render() {
         let usuario = Model.usuario.Action.getUsuarioLog();
         let empresa = Model.empresa.Action.getSelect();
         let sucursal = this.state.sucursal;
-
         return (
             <SView col={"xs-12"} row center height={40} backgroundColor={STheme.color.background} style={{ borderBottomWidth: 1, borderColor: STheme.color.card }}>
                 <SView width={40} style={{ paddingBottom: 4 }} center height
@@ -71,19 +42,13 @@ export default class Header extends Component {
                 >
                     <SIconApp height={20} name={"Arrow"} fill={STheme.color.text} />
                 </SView>
-
                 <SView col={"xs-4 md-2"} row border="transparent" >
                     <SText fontSize={15} bold color={STheme.color.text} style={{ letterSpacing: -0.5, textTransform: "uppercase" }}>
                         {empresa?.razon_social || ""}
                     </SText>
                 </SView>
-
-               
-
                 <SView flex />
-
                 <SView col={"xs-7 md-5 lg-3"} height row center border="transparent" style={{ justifyContent: "flex-end" }}>
-                    
                     <SView col={"xs-10 md-8"} row center backgroundColor='transparent' style={{
                         borderRightColor: STheme.color.gray,
                         borderRightWidth: 1,
@@ -92,7 +57,6 @@ export default class Header extends Component {
                             <FotoUsuario data={usuario} />
                         </SView>
                         <SText fontSize={14} color={STheme.color.text}>
-                            {/* {usuario?.Nombres + " " + usuario?.Apellidos} */}
                             {usuario?.Nombres}
                         </SText>
                     </SView>

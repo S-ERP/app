@@ -16,30 +16,17 @@ export default class FotoCliente extends Component {
       },
     });
   };
-
-
   componentDidMount() {
     this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
       this.state.cliente = null;
       this.forceUpdate();
     });
-
   }
   componentWillUnmount() {
     if (this.evento) {
       MDL.compra_venta.removeEventListener(this.evento);
     }
   }
-
-
-  // handleSelectCliente = () => {
-  //   PopupCliente.open({
-  //     onReloadCliente: (cliente) => {
-  //       this.setState({ cliente });
-  //       this.props.onReloadCliente?.(cliente);
-  //     },
-  //   });
-  // };
   render() {
     const { cliente } = this.state;
     const style_text = {
@@ -96,7 +83,6 @@ export default class FotoCliente extends Component {
                   textTransform: 'uppercase',
                 }}
               >
-                {/* CLIENTE */}
               </SText>
             ) : null}
           </SView>

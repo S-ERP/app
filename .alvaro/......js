@@ -17,3 +17,22 @@
 // Escribe:
 
 // <SInput[^>]*style=
+
+
+
+// MDL.compra_venta.setSucursalSeleccionada(sucu)
+//     .then(() => {
+//         MDL.compra_venta.sucursalSeleccionada = sucu;
+//         this.setState({ sucursal: sucu });
+//     })
+//     .catch(() => {
+//         console.log("Error al guardar sucursal");
+//     });
+
+
+console\.log\(.+\); 
+console\.log\(.+\)
+
+
+com
+/\*[\s\S]*?\*/
