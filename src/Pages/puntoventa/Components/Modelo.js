@@ -36,6 +36,15 @@ export default class Modelo extends Component {
     }
     componentDidMount() {
         this.loadApis();
+        this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
+            this.loadApis();
+        });
+
+    }
+    componentWillUnmount() {
+        if (this.evento) {
+            MDL.compra_venta.removeEventListener(this.evento);
+        }
     }
     async loadApis() {
         if (!MDL.caja.activa) {

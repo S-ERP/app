@@ -36,6 +36,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       cliente: data?.cliente,
     });
     MDL.caja.dispatchEvent({ type: "onDetalleChange" })
+    this.dispatchEvent({ type: "venta_realizada" })
     return resp.data;
   }
 
