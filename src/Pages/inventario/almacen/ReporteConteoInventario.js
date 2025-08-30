@@ -107,7 +107,23 @@ export default class ReporteConteoInventario extends Component {
                 </>}
             />
 
+            {/* "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+"descripcion": "Central",
+"key_sucursal": "a23a8cd5-840d-4099-9ddc-1a906913c8e2",
+"key_conteo": "96bdb935-dddd-408c-b609-814fb75dcb33",
+"key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+"key_almacen": "0f8fb5f0-c4c1-4e98-ad8d-dcdbfba65258",
+"fecha_confirmacion": "2025-08-27T00:05:07.403662",
+"fecha": "2025-08-27",
+"hora": "00:03",
+"total_perdida": 1,
+"total_perdida_costo": 7,
+"total_baja": 1,
+"total_baja_costo": 3,
+"total_excedente": 0,
+"total_excedente_costo": 0, */}
 
+            {/* <DinamicTable.Col key="fecha_confirmacion" label="fecha_confirmacion" width={40} data={(e) => e.row?.fecha_confirmacion} /> */}
 
 
 
@@ -202,14 +218,13 @@ export default class ReporteConteoInventario extends Component {
 
 
 
-            <DinamicTable.Col key="fecha" label="Fecha" width={120} data={(e) => e.row?.fecha}
+            <DinamicTable.Col key="fecha" label="Fecha Creación" width={120} data={(e) => e.row?.fecha}
                 customComponent={e => <SView center row><SIconApp name='Evento' width={12} height={12} fill={STheme.color.lightGray} />
                     <SText color={STheme.color.lightGray} > {e.row?.fecha}</SText></SView>}
             />
-            <DinamicTable.Col key="hora" label="Hora" width={80} data={(e) => e.row?.hora}
+            <DinamicTable.Col key="hora" label="Hora Creación" width={80} data={(e) => e.row?.hora}
                 customComponent={e => <SView center row><SIconApp name='history' width={12} height={12} fill={STheme.color.lightGray} />
                     <SText color={STheme.color.lightGray}> {e.row?.hora}</SText></SView>} />
-            <DinamicTable.Col key="fecha_confirmacion" label="fecha_confirmacion" width={80} data={(e) => e.row?.fecha_confirmacion} />
             <DinamicTable.Col key="key_conteo4" label="Ver" width={120} data={(e) => e.row?.key_conteo}
                 customComponent={e => <SView center style={{
                     padding: 4,
@@ -228,7 +243,7 @@ export default class ReporteConteoInventario extends Component {
                     <SText >Det.Inventario</SText>
                 </SView>} />
 
-            <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
+            <DinamicTable.Col key={"fecha_confirmacion"} label="F. confirmacion" width={120} dataType="date" data={e => new SDate(e.row?.fecha_confirmacion, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
             <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_usuario) ?
