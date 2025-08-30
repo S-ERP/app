@@ -38,47 +38,60 @@ export default class Carrito extends Component {
         this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
         this.forceUpdate();
     }
+  
     addProducto = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
-            if (this.carrito[index].cantidad < 10) {
-                this.carrito[index].cantidad += 1;
+            const item = this.carrito[index];
+            if (this.conStock) {
+
+         
+                if (item.cantidad < 10) {
+                    item.cantidad += 1;
+                } else {
+                    SNotification.send({
+                        title: "Stock insuficiente",
+                        body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: 10 unidades.`,
+                        color: STheme.color.danger,
+                        time: 3000
+                    });
+                    return; // salir para no llamar forceUpdate innecesario
+                }
+            } else {
+                // conStock es false, aumentamos sin límite
+                item.cantidad += 1;
+            }
+        } else {
+            this.carrito.push({ ...producto, cantidad: 1 });
+        }
+        this.forceUpdate();
+    };
+
+    aumentarCantidad = (producto) => {
+        const index = this.carrito.findIndex(p => p.key === producto.key);
+        if (index < 0) return; // no existe
+
+        const item = this.carrito[index];
+        if (this.conStock) {
+            if (item.cantidad < 10) {
+                item.cantidad += 1;
                 this.forceUpdate();
             } else {
                 SNotification.send({
-                    title: "Stock insuficiente zzzzzzzz",
-                    body: `No hay suficiente stock para ${producto.descripcion}. Stock disponible: ${this.carrito[index].stock} unidades.`,
+                    title: "Stock insuficiente",
+                    body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: 10 unidades.`,
                     color: STheme.color.danger,
                     time: 3000
                 });
-                return;
             }
-        }
-        else this.carrito.push({ ...producto, cantidad: 1 });
-        this.forceUpdate();
-    };
-    aumentarCantidad = (producto) => {
-        const index = this.carrito.findIndex(p => p.key === producto.key);
-        if (this.carrito[index].cantidad < 10) {
-            this.carrito[index].cantidad += 1;
-            this.forceUpdate();
         } else {
-            SNotification.send({
-                title: "Stock insuficiente dddddddd",
-                body: `No hay suficiente stock para ${producto.descripcion}. Stock disponible: ${this.carrito[index].stock} unidades.`,
-                color: STheme.color.danger,
-                time: 3000
-            });
-        }
-    };
-    disminuirCantidad = (producto) => {
-        const index = this.carrito.findIndex(p => p.key === producto.key);
-        if (index >= 0) {
-            this.carrito[index].cantidad -= 1;
-            if (this.carrito[index].cantidad <= 0) this.carrito.splice(index, 1);
+            // conStock es false, aumentamos sin límite
+            item.cantidad += 1;
             this.forceUpdate();
         }
     };
+
+
     eliminarItem = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
@@ -202,8 +215,10 @@ export default class Carrito extends Component {
                                 <SView col={"md-6"} center    >
                                     <SInput label={"Con Stock"} type='checkBox' labelStyle={{ left: 12 }} defaultValue={false}
                                         onChangeText={(text) => {
-                                            MDL.compra_venta.conStock();
-                                            // this.conStock = text;
+                                            const valor = MDL.compra_venta.conStock();
+
+                                            console.log("va llevando " + text)
+                                            this.conStock = text;
                                             // this.forceUpdate();
                                         }}
                                     />
@@ -235,6 +250,7 @@ export default class Carrito extends Component {
                     conFactura={this.conFactura}
                     subtotal={subtotal}
                     onReload={() => { this.vaciarCarrito(); }}
+                    // estadostock={() => { this.estadostock(); }}
                     onReloadCliente={() => { this.cliente = null }}
                 />
             </>
