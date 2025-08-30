@@ -35,7 +35,7 @@ export const Parent = {
     model
 }
 export default SPage.combinePages(Parent.name, {
-    "": list,
+    "": table,
     "list": list,
     "table": table,
     "new": _new,
