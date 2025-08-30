@@ -40,18 +40,53 @@ export default class Carrito extends Component {
     }
     addProducto = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
+
+        // esto es para el item al agregar
+
+
         if (index >= 0) {
-            this.carrito[index].cantidad += 1;
+            // this.carrito[index].cantidad += 1;
+            if (this.carrito[index].cantidad < 3) {
+                this.carrito[index].cantidad += 1;
+                this.forceUpdate();
+            } else {
+                // Notify user that stock limit is reached
+                SNotification.send({
+                    title: "Stock insuficiente zzzzzzzz",
+                    body: `No hay suficiente stock para ${producto.descripcion}. Stock disponible: ${this.carrito[index].stock} unidades.`,
+                    color: STheme.color.danger,
+                    time: 3000
+                });
+                return;
+            }
+
+
+
         }
         else this.carrito.push({ ...producto, cantidad: 1 });
         this.forceUpdate();
     };
     aumentarCantidad = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
-        if (index >= 0) {
+        // esto es para el carrito al agregar
+
+        if (this.carrito[index].cantidad < 3) {
             this.carrito[index].cantidad += 1;
             this.forceUpdate();
+        } else {
+            // Notify user that stock limit is reached
+            SNotification.send({
+                title: "Stock insuficiente dddddddd",
+                body: `No hay suficiente stock para ${producto.descripcion}. Stock disponible: ${this.carrito[index].stock} unidades.`,
+                color: STheme.color.danger,
+                time: 3000
+            });
         }
+
+        // if (index >= 0) {
+        //     this.carrito[index].cantidad += 1;
+        //     this.forceUpdate();
+        // }
     };
     disminuirCantidad = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
@@ -68,7 +103,7 @@ export default class Carrito extends Component {
             this.forceUpdate();
         }
     };
- 
+
     vaciarCarrito = () => {
         this.carrito = [];
         this.descuentoManual = "";
@@ -86,7 +121,6 @@ export default class Carrito extends Component {
         } else {
             return subtotal;
         }
-        this.forceUpdate()
     };
     calcularIVA = (subtotal) => {
         if (!this._enviromentsIva) return 0;
@@ -127,10 +161,7 @@ export default class Carrito extends Component {
                             <SView col={"xs-10 md-10"} row  >
                                 <SText fontSize={15} bold color={STheme.color.text}>Detalle venta</SText>
                             </SView>
-                            <SView col={"xs-2 md-2"} center onPress={() => {
-                                MDL.compra_venta.vaciarAll();
-                            }
-                            }
+                            <SView col={"xs-2 md-2"} center onPress={() => { MDL.compra_venta.vaciarAll(); }}
                                 style={{ alignItems: "flex-end" }} >
                                 <SView backgroundColor={STheme.color.card} border={STheme.color.text} style={{ borderRadius: 20, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4, height: 24, opacity: 0.6, alignItems: "flex-end" }}>
                                     <SText fontSize={12} center color={STheme.color.text}>Vaciar</SText>
@@ -158,9 +189,9 @@ export default class Carrito extends Component {
                         <SHr height={5} />
                         <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
                         <SView col={"xs-12"} row center   >
-                            <SView col={"md-12 xl-6"} height={70} border={"transparent"} >
+                            <SView col={"md-12 xl-6"} height={70}  >
                                 <SView col={"xs-10"} center  >
-                                    <SInput label={"Descuento VIP (Bs):"} disabled={true} height={40} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={this.descuentoManual > 0 ? "yellow" : STheme.color.card} style={{ backgroundColor: "transparent", borderRadius: 8 }}
+                                    <SInput label={"Descuento VIP (Bs):"} disabled={true} height={40} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={this.descuentoManual > 0 ? "yellow" : STheme.color.card} style={{ borderRadius: 8 }}
                                         value={this.descuentoManual?.toString()} // 🔑 importante para controlarlo
                                         onChangeText={(text) => {
                                             let valor = Number(text);
@@ -176,7 +207,7 @@ export default class Carrito extends Component {
                                 </SView>
                             </SView>
                             <SView col={"md-12 xl-6"} height={60} center row >
-                                <SView col={"md-6"} center border={"transparent"}   >
+                                <SView col={"md-6"} center    >
                                     <SInput label={"Con factura"} type='checkBox' labelStyle={{ left: 12 }}
                                         defaultValue={this.conFactura}
                                         onChangeText={(text) => {
@@ -185,25 +216,17 @@ export default class Carrito extends Component {
                                         }}
                                     />
                                 </SView>
-                                <SView col={"md-6"} center border={"transparent"}   >
-                                    <SInput label={"Con Stock"} type='checkBox' labelStyle={{ left: 12 }} defaultValue={this.conStock}
+                                <SView col={"md-6"} center    >
+                                    <SInput label={"Con Stock"} type='checkBox' labelStyle={{ left: 12 }} defaultValue={false}
                                         onChangeText={(text) => {
-                                            this.conStock = text;
-                                            this.forceUpdate();
+                                            MDL.compra_venta.conStock();
+                                            // this.conStock = text;
+                                            // this.forceUpdate();
                                         }}
                                     />
                                 </SView>
                             </SView>
-                            {/* <SView col={"md-12 xl-6"} height={60} center border={"blue"} >
-                                <SView col={"md-12"} center    >
-                                    <SInput label={"Con stock"} type='checkBox' defaultValue={this.conStock}
-                                        onChangeText={(text) => {
-                                            this.conStock = text;
-                                            this.forceUpdate();
-                                        }}
-                                    />
-                                </SView>
-                            </SView> */}
+
                         </SView>
                         <SHr height={4} />
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.danger} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
@@ -227,7 +250,6 @@ export default class Carrito extends Component {
                     descuento={this.descuentoManual}
                     totalFinal={totalFinal}
                     conFactura={this.conFactura}
-                    conStock={this.conStock}
                     subtotal={subtotal}
                     onReload={() => { this.vaciarCarrito(); }}
                     onReloadCliente={() => { this.cliente = null }}

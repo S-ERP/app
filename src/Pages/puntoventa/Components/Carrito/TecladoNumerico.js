@@ -94,6 +94,12 @@ export default class TecladoNumerico extends Component {
             )
         })
     }
+
+    handleCalculatorPress(valor){
+
+        console.log("presiono "+valor)
+    }
+
     renderTecladoNumerico = () => {
         const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
         const style_text = {
@@ -147,7 +153,8 @@ export default class TecladoNumerico extends Component {
                                             height: 40, borderRadius: 8,
                                             overflow: "hidden", margin: 2
                                         }}
-                                        onPress={() => this.handleCalculatorPress(t)} >
+                                        onPress={() => this.handleCalculatorPress(t)} 
+                                        >
                                         <SText style={style_text}>{t}</SText>
                                     </SView>
                                 ))}

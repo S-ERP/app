@@ -33,15 +33,30 @@ export default class Modelo extends Component {
         super(props);
         this.modelos = [];
         this.time = Date.now();
+        this.conStock = false;
     }
     componentDidMount() {
         this.loadApis();
+
+
+
+
         this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
             this.loadApis();
         });
+
+        this.evento2 = MDL.compra_venta.addEventListener("conStock", () => {
+            this.conStock = !this.conStock;
+            this.forceUpdate(); // Force re-render to reflect the change
+        });
+
     }
     componentWillUnmount() {
         if (this.evento) {
+            MDL.compra_venta.removeEventListener(this.evento);
+        }
+
+        if (this.evento2) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
     }
@@ -75,11 +90,17 @@ export default class Modelo extends Component {
         const modelos = this.modelos || [];
         const tipoKey = this.props.tipoKey;
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
+
         productosFiltrados = productosFiltrados.filter(m => m.precio_venta > 0);
+
+        if (this.conStock) {
+            productosFiltrados = productosFiltrados.filter(m => m.stock > 0);
+        }
+
         if (this.props.searchText) { const search = this.props.searchText.toLowerCase(); productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search)); }
         const colSize = this.getColSize();
         return (
-            <SView col={"xs-12"} flex center backgroundColor='transparent'>
+            <SView col={"xs-12"} flex center >
                 <SScrollView2 disableHorizontal>
                     <SView col={"xs-12"} style={{ padding: 2 }}>
                         <SView col={"xs-12"} row padding={5}>
@@ -92,14 +113,23 @@ export default class Modelo extends Component {
                                         margin={2}
                                         style={{ minWidth: 120, borderRadius: 8, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3, borderWidth: 1, borderColor: STheme.color.card, overflow: "hidden", }}
                                         onPress={() => {
+
+                                            // if (producto.cantidad <= 3) {
+                                            //     alert("no puede")
+                                            //     // onAumentar
+                                            //     return
+                                            // }
                                             this.props.onPressProducto?.({ ...producto }); // enviar copia actualizada
+                                            console.log("print "+JSON.stringify(producto))
+
+
                                             this.forceUpdate();  // ⬅️ Fuerza render para reflejar el cambio
                                         }}
                                     >
                                         <SView center style={{ marginBottom: 12, height: 120, overflow: "hidden", backgroundColor: STheme.color.card }}>
                                             <FotoModelo data={producto} ></FotoModelo>
                                         </SView>
-                                        <SView col={"xs-12"} padding={4} backgroundColor='pink' >
+                                        <SView col={"xs-12"} padding={4}  >
                                             <SView col={"xs-12"} height={40}><SText fontSize={14} bold color={STheme.color.text}>{producto.descripcion} </SText></SView>
                                             <SView col={"xs-12"} row>
                                                 <SView flex row >

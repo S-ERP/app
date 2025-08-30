@@ -145,7 +145,7 @@ export default class PopupConfirmaPago extends Component {
                         autoFocus={true}
                         type="number"
                         border={STheme.color.card}
-                        style={{ backgroundColor: "transparent", borderRadius: 8 }}
+                        style={{ borderRadius: 8 }}
                         onChangeText={(text) => {
                             this.variableGlobal = parseFloat(text) || 0;
                             this.forceUpdate();

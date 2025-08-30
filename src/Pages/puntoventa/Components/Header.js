@@ -42,14 +42,14 @@ export default class Header extends Component {
                 >
                     <SIconApp height={20} name={"Arrow"} fill={STheme.color.text} />
                 </SView>
-                <SView col={"xs-4 md-2"} row border="transparent" >
+                <SView col={"xs-4 md-2"} row  >
                     <SText fontSize={15} bold color={STheme.color.text} style={{ letterSpacing: -0.5, textTransform: "uppercase" }}>
                         {empresa?.razon_social || ""}
                     </SText>
                 </SView>
                 <SView flex />
-                <SView col={"xs-7 md-5 lg-3"} height row center border="transparent" style={{ justifyContent: "flex-end" }}>
-                    <SView col={"xs-10 md-8"} row center backgroundColor='transparent' style={{
+                <SView col={"xs-7 md-5 lg-3"} height row center  style={{ justifyContent: "flex-end" }}>
+                    <SView col={"xs-10 md-8"} row center  style={{
                         borderRightColor: STheme.color.gray,
                         borderRightWidth: 1,
                     }}>
@@ -61,7 +61,7 @@ export default class Header extends Component {
                         </SText>
                     </SView>
                       <SView flex />
-                    <SView col={"xs-0 md-1"} backgroundColor='transparent'>
+                    <SView col={"xs-0 md-1"} >
                         <SIconApp name="Wifi" width={20} height={20} fill={"#19b121ff"} />
                     </SView>
                     <SView flex />

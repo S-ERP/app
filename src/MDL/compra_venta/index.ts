@@ -44,6 +44,10 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     this.dispatchEvent({ type: "venta_realizada" })
   }
 
+  conStock() {
+    this.dispatchEvent({ type: "conStock" })
+  }
+
   getStateInfo(key?: string) {
     const states: any = {
       cotizacion: { color: STheme.color.lightGray, label: "Cotización" },
