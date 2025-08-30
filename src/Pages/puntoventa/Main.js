@@ -34,14 +34,7 @@ export default class Main extends Component {
             if (this.cajaActiva) {
                 this.forceUpdate();
             } else {
-                SNotification.send({
-                    title: "Caja no aperturada",
-                    message: "Debes abrir la caja antes de continuar con las operaciones.",
-                    type: "danger",
-                    body: "⚠️Debe abrir caja⚠️",
-                    color: STheme.color.danger,
-                    time: 5000,
-                })
+                SNotification.send({ title: "Caja no aperturada", message: "Debes abrir la caja antes de continuar con las operaciones.", type: "danger", body: "⚠️Debe abrir caja⚠️", color: STheme.color.danger, time: 5000, })
                 SNavigation.replace("/caja2");
             }
         } catch (e) {

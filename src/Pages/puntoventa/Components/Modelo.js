@@ -90,17 +90,7 @@ export default class Modelo extends Component {
                                         key={index}
                                         col={`xs-6 md-4 lg-3`}
                                         margin={2}
-                                        style={{
-                                            minWidth: 120,
-                                            borderRadius: 8,
-                                            shadowOffset: { width: 0, height: 2 },
-                                            shadowOpacity: 0.1,
-                                            shadowRadius: 8,
-                                            elevation: 3,
-                                            borderWidth: 1,
-                                            borderColor: STheme.color.lightGray,
-                                            overflow: "hidden",
-                                        }}
+                                        style={{ minWidth: 120, borderRadius: 8, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3, borderWidth: 1, borderColor: STheme.color.card, overflow: "hidden", }}
                                         onPress={() => {
                                             this.props.onPressProducto?.({ ...producto }); // enviar copia actualizada
                                             this.forceUpdate();  // ⬅️ Fuerza render para reflejar el cambio
@@ -109,13 +99,13 @@ export default class Modelo extends Component {
                                         <SView center style={{ marginBottom: 12, height: 120, overflow: "hidden", backgroundColor: STheme.color.card }}>
                                             <FotoModelo data={producto} ></FotoModelo>
                                         </SView>
-                                        <SView col={"xs-12"} padding={4}>
+                                        <SView col={"xs-12"} padding={4} backgroundColor='pink' >
                                             <SView col={"xs-12"} height={40}><SText fontSize={14} bold color={STheme.color.text}>{producto.descripcion} </SText></SView>
                                             <SView col={"xs-12"} row>
                                                 <SView flex row >
-                                                    <SText fontSize={12} bold color={STheme.color.text}  > Bs {SMath.formatMoney(producto.precio_venta, 2)}</SText>
+                                                    <SText fontSize={12} bold color={STheme.color.text}  >Bs {SMath.formatMoney(producto.precio_venta, 2)}</SText>
                                                 </SView>
-                                                <SText fontSize={10} color={producto?.stock > 0 ? "#10B981" : "#EF4444"}>{producto?.stock} und</SText>
+                                                <SText fontSize={10} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"}>{producto?.stock} Und</SText>
                                             </SView>
                                         </SView>
                                     </SView>
