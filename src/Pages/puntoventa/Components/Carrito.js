@@ -18,10 +18,8 @@ export default class Carrito extends Component {
     ajustarCarrito = () => {
         if (!this.conStock) return; // si no hay control de stock, no hacemos nada
 
-        // Recorremos el carrito
         this.carrito = this.carrito.filter(item => {
             if (!item.stock || item.stock <= 0) {
-                // Si no hay stock, eliminamos del carrito y notificamos
                 SNotification.send({
                     title: "Producto sin stock",
                     body: `${item.descripcion} fue eliminado del carrito porque no tiene stock.`,
