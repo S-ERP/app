@@ -11,6 +11,7 @@ export default class Carrito extends Component {
     carrito = [];
     descuentoManual = "";
     conFactura = false;
+    conStock = true;
     cliente = {};
     componentDidMount() {
         this.loadData()
@@ -173,16 +174,39 @@ export default class Carrito extends Component {
                                     />
                                 </SView>
                             </SView>
-                            <SView col={"md-12 xl-6"} height={60} center border={"transparent"} >
-                                <SView col={"md-12"} center    >
-                                    <SInput label={"Con factura"} type='checkBox' defaultValue={this.conFactura}
+                            <SView col={"md-12 xl-6"} height={60} center row >
+                                <SView col={"md-6"} center border={"transparent"}   >
+                                    <SInput label={"Con factura"} type='checkBox' labelStyle={{ left: 12 }}
+
+                                        defaultValue={this.conFactura}
                                         onChangeText={(text) => {
                                             this.conFactura = text;
                                             this.forceUpdate();
                                         }}
                                     />
                                 </SView>
+                                <SView col={"md-6"} center border={"transparent"}   >
+                                    <SInput label={"Con Stock"} type='checkBox' labelStyle={{ left: 12 }} defaultValue={this.conStock}
+                                        onChangeText={(text) => {
+                                            this.conStock = text;
+                                            this.forceUpdate();
+                                        }}
+                                    />
+                                </SView>
                             </SView>
+
+                            {/* <SView col={"md-12 xl-6"} height={60} center border={"blue"} >
+                                <SView col={"md-12"} center    >
+                                    <SInput label={"Con stock"} type='checkBox' defaultValue={this.conStock}
+                                        onChangeText={(text) => {
+                                            this.conStock = text;
+                                            this.forceUpdate();
+                                        }}
+                                    />
+                                </SView>
+                            </SView> */}
+
+
                         </SView>
                         <SHr height={4} />
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.danger} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
@@ -207,6 +231,7 @@ export default class Carrito extends Component {
                     descuento={this.descuentoManual}
                     totalFinal={totalFinal}
                     conFactura={this.conFactura}
+                    conStock={this.conStock}
                     subtotal={subtotal}
                     onReload={() => { this.vaciarCarrito(); }}
                     onReloadCliente={() => { this.cliente = null }}
