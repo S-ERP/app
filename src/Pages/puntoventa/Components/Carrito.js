@@ -7,12 +7,48 @@ import ResumenTotales from './Carrito/ResumenTotales';
 import TecladoNumerico from './Carrito/TecladoNumerico';
 import MDL from '../../../MDL';
 import FotoCliente from './Foto/FotoCliente';
+import item from '../../compra/item';
 export default class Carrito extends Component {
     carrito = [];
     descuentoManual = "";
     conFactura = false;
-    conStock = true;
+    conStock = false;
     cliente = {};
+
+    ajustarCarrito = () => {
+        if (!this.conStock) return; // si no hay control de stock, no hacemos nada
+
+        // Recorremos el carrito
+        this.carrito = this.carrito.filter(item => {
+            if (!item.stock || item.stock <= 0) {
+                // Si no hay stock, eliminamos del carrito y notificamos
+                SNotification.send({
+                    title: "Producto sin stock",
+                    body: `${item.descripcion} fue eliminado del carrito porque no tiene stock.`,
+                    color: STheme.color.danger,
+                    time: 3000
+                });
+                return false; // filtrar fuera del carrito
+            }
+
+            // Si la cantidad supera el stock, ajustamos
+            if (item.cantidad > item.stock) {
+                item.cantidad = item.stock;
+                SNotification.send({
+                    title: "Stock ajustado",
+                    body: `La cantidad de ${item.descripcion} se ajustó al stock disponible (${item.stock}).`,
+                    color: STheme.color.warning,
+                    time: 3000
+                });
+            }
+
+            return true; // mantener el item
+        });
+
+        this.forceUpdate();
+    };
+
+
     componentDidMount() {
         this.loadData()
         this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
@@ -38,30 +74,30 @@ export default class Carrito extends Component {
         this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
         this.forceUpdate();
     }
-  
+
     addProducto = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
             const item = this.carrito[index];
             if (this.conStock) {
-
-         
-                if (item.cantidad < 10) {
+                // Solo aumentar hasta el stock disponible
+                if (item.cantidad < item.stock) {
                     item.cantidad += 1;
                 } else {
                     SNotification.send({
                         title: "Stock insuficiente",
-                        body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: 10 unidades.`,
+                        body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: ${item.stock} unidades.`,
                         color: STheme.color.danger,
                         time: 3000
                     });
-                    return; // salir para no llamar forceUpdate innecesario
+                    return;
                 }
             } else {
-                // conStock es false, aumentamos sin límite
+                // Sin control de stock, aumentar sin límite
                 item.cantidad += 1;
             }
         } else {
+            // Nuevo producto, cantidad inicial = 1
             this.carrito.push({ ...producto, cantidad: 1 });
         }
         this.forceUpdate();
@@ -69,26 +105,48 @@ export default class Carrito extends Component {
 
     aumentarCantidad = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
-        if (index < 0) return; // no existe
+        if (index < 0) return; // No existe
 
         const item = this.carrito[index];
         if (this.conStock) {
-            if (item.cantidad < 10) {
+            // Solo aumentar hasta el stock disponible
+            if (item.cantidad < item.stock) {
                 item.cantidad += 1;
                 this.forceUpdate();
             } else {
                 SNotification.send({
                     title: "Stock insuficiente",
-                    body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: 10 unidades.`,
+                    body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: ${item.stock} unidades.`,
                     color: STheme.color.danger,
                     time: 3000
                 });
             }
         } else {
-            // conStock es false, aumentamos sin límite
+            // Sin control de stock, aumentar sin límite
             item.cantidad += 1;
             this.forceUpdate();
         }
+    };
+
+    disminuirCantidad = (producto) => {
+        const index = this.carrito.findIndex(p => p.key === producto.key);
+        if (index < 0) return; // No existe
+
+        const item = this.carrito[index];
+        item.cantidad -= 1;
+
+        if (item.cantidad <= 0) {
+            // Eliminar del carrito si la cantidad llega a 0
+            this.carrito.splice(index, 1);
+            SNotification.send({
+                title: "Producto eliminado",
+                body: `${item.descripcion} fue eliminado del carrito porque su cantidad llegó a 0.`,
+                color: STheme.color.warning,
+                time: 2000
+            });
+        }
+
+        this.forceUpdate();
     };
 
 
@@ -213,12 +271,14 @@ export default class Carrito extends Component {
                                     />
                                 </SView>
                                 <SView col={"md-6"} center    >
-                                    <SInput label={"Con Stock"} type='checkBox' labelStyle={{ left: 12 }} defaultValue={false}
+                                    <SInput label={"Con Stock"} type='checkBox' labelStyle={{ left: 12 }} defaultValue={this.conStock}
                                         onChangeText={(text) => {
                                             const valor = MDL.compra_venta.conStock();
 
                                             console.log("va llevando " + text)
                                             this.conStock = text;
+
+                                            this.ajustarCarrito();
                                             // this.forceUpdate();
                                         }}
                                     />
