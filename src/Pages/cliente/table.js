@@ -71,7 +71,7 @@ class index extends DPA.table {
             width: 120,
         }
         header["Apellidos"].width = 120;
-        header["CI"].width = 100;
+        header["CIfffffff"].width = 100;
         header["Correo"].width = 220;
         // header["cantidad"].width = 140;
         // header["primer_compra"].width = 140;

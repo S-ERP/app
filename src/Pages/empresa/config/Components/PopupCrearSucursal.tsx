@@ -65,7 +65,7 @@ export default class PopupCrearSucursal extends Component<Props> {
                                 {/* <SInput ref={ref => this._ref.image_modelo = ref} type='image' height={50} defaultValue={(SSocket.api as any).inventario + "modelo/" + this.props.editObject?.key}/> */}
                                 <InputFoto
                                     ref={ref => this._ref.image_sucursal = ref}
-                                    src={(SSocket.api as any).empresa + "sucursal/" + this.props.editObject?.key}
+                                    src={(SSocket.api as any).empresa + "sucursal/" + this.props.editObject?.key + `?date=${new Date().getTime()}`}
                                     style={{
                                         width: 50,
                                         height: 50,
