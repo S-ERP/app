@@ -36,3 +36,10 @@ console\.log\(.+\)
 
 com
 /\*[\s\S]*?\*/
+
+
+
+
+style=\{\{([\s\S]*?)\}\}
+style={{ $1 }}
+src\Pages\puntoventa
