@@ -40,17 +40,11 @@ export default class Carrito extends Component {
     }
     addProducto = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
-
-        // esto es para el item al agregar
-
-
         if (index >= 0) {
-            // this.carrito[index].cantidad += 1;
-            if (this.carrito[index].cantidad < 3) {
+            if (this.carrito[index].cantidad < 10) {
                 this.carrito[index].cantidad += 1;
                 this.forceUpdate();
             } else {
-                // Notify user that stock limit is reached
                 SNotification.send({
                     title: "Stock insuficiente zzzzzzzz",
                     body: `No hay suficiente stock para ${producto.descripcion}. Stock disponible: ${this.carrito[index].stock} unidades.`,
@@ -59,22 +53,16 @@ export default class Carrito extends Component {
                 });
                 return;
             }
-
-
-
         }
         else this.carrito.push({ ...producto, cantidad: 1 });
         this.forceUpdate();
     };
     aumentarCantidad = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
-        // esto es para el carrito al agregar
-
-        if (this.carrito[index].cantidad < 3) {
+        if (this.carrito[index].cantidad < 10) {
             this.carrito[index].cantidad += 1;
             this.forceUpdate();
         } else {
-            // Notify user that stock limit is reached
             SNotification.send({
                 title: "Stock insuficiente dddddddd",
                 body: `No hay suficiente stock para ${producto.descripcion}. Stock disponible: ${this.carrito[index].stock} unidades.`,
@@ -82,11 +70,6 @@ export default class Carrito extends Component {
                 time: 3000
             });
         }
-
-        // if (index >= 0) {
-        //     this.carrito[index].cantidad += 1;
-        //     this.forceUpdate();
-        // }
     };
     disminuirCantidad = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
