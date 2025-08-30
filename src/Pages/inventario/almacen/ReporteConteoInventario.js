@@ -107,56 +107,62 @@ export default class ReporteConteoInventario extends Component {
                 </>}
             />
 
-            {/* "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-"descripcion": "Central",
-"key_sucursal": "a23a8cd5-840d-4099-9ddc-1a906913c8e2",
-"key_conteo": "96bdb935-dddd-408c-b609-814fb75dcb33",
-"key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
-"key_almacen": "0f8fb5f0-c4c1-4e98-ad8d-dcdbfba65258",
-"fecha_confirmacion": "2025-08-27T00:05:07.403662",
-"fecha": "2025-08-27",
-"hora": "00:03",
-"total_perdida": 1,
-"total_perdida_costo": 7,
-"total_baja": 1,
-"total_baja_costo": 3,
-"total_excedente": 0,
-"total_excedente_costo": 0, */}
-
-            {/* <DinamicTable.Col key="fecha_confirmacion" label="fecha_confirmacion" width={40} data={(e) => e.row?.fecha_confirmacion} /> */}
+            {/* customComponent={e => <SText flex numberOfLines={e.colData.wrap ? 0 : 1} color={STheme.color.lightGray}>{e.row?.total_perdida}</SText>} */}
 
 
 
-            <DinamicTable.Col key="total_perdida" label="T. Pérdidas" center width={70} data={(e) => e.row?.total_perdida || "0"}
-
-                customComponent={e => <SText color='red' style={{ textAlign: "center" }}>{e.row?.total_perdida}</SText>}
-
+            <DinamicTable.Col key="total_perdida" label="T. Pérdidas" center width={80} data={(e) => e.row?.total_perdida || "0"}
+                cellStyle={{ backgroundColor: STheme.color.danger + "33" }}
+                textStyle={{ fontWeight: "bold" }}
+                customComponent={e => <SText center color={(e.row?.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_perdida}</SText>}
             />
-            <DinamicTable.Col key="total_perdida_costo" label="T.Pérdidas Costo" center width={100} data={(e) => e.row?.total_perdida_costo || "0"}
+            <DinamicTable.Col key="total_perdida_costo" label="T.Pérdidas Costo" center width={110} data={(e) => e.row?.total_perdida_costo || "0"}
+                cellStyle={{ backgroundColor: STheme.color.danger + "33" }}
+                textStyle={{ fontWeight: "bold" }}
                 customComponent={(e) => {
-                    return (e.row.total_perdida_costo ? <SText style={{ textAlign: "center" }}> {"Bs " + SMath.formatMoney(e.row.total_perdida_costo, 2, "Bs ", "bolivianos")}  </SText> : null);
+                    return (e.row.total_perdida_costo ?
+                        <SView col={"xs-12"} row center  >
+                            <SIconApp name='Egreso' width={10} />
+                            <SView width={8} />
+                            <SText color={(e.row.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}>{SMath.formatMoney(e.row.total_perdida_costo, 2, "Bs ", "bolivianos")}</SText>
+                        </SView>
+                        : null);
                 }}
             />
 
 
             <DinamicTable.Col key="total_baja" label="T.Baja" width={60} data={(e) => e.row?.total_baja || "0"}
-                customComponent={e => <SText color='orange' style={{ textAlign: "center" }}>{e.row?.total_baja}</SText>}
+                cellStyle={{ backgroundColor: STheme.color.warning + "33" }}
+                textStyle={{ fontWeight: "bold" }}
+                customComponent={e => <SText center color={(e.row.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_baja}</SText>}
             />
             <DinamicTable.Col key="total_baja_costo" label="T.Baja Costo" width={90} data={(e) => e.row?.total_baja_costo || "0"}
+                cellStyle={{ backgroundColor: STheme.color.warning + "33" }}
+                textStyle={{ fontWeight: "bold" }}
                 customComponent={(e) => {
-                    return (e.row.total_baja_costo ? <SText style={{ textAlign: "center" }}> {"Bs " + SMath.formatMoney(e.row.total_baja_costo, 2, "Bs ", "bolivianos")}  </SText> : null);
+                    return (e.row.total_baja_costo ?
+                        <SText color={(e.row.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}> {SMath.formatMoney(e.row.total_baja_costo, 2, "Bs ", "bolivianos")}  </SText>
+                        : null);
                 }}
-
             />
 
 
             <DinamicTable.Col key="total_excedente" label="T.Excedente" width={90} data={(e) => e.row?.total_excedente || "0"}
-                customComponent={e => <SText color='#48bd00ff' bold style={{ textAlign: "center" }}>{e.row?.total_excedente}</SText>}
+                cellStyle={{ backgroundColor: STheme.color.success + "33" }}
+                textStyle={{ fontWeight: "bold" }}
+                customComponent={e => <SText center color={(e.row.total_excedente >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_excedente}</SText>}
             />
 
             <DinamicTable.Col key="total_excedente_costo" label="T.Excedente Costo" width={110} data={(e) => e.row?.total_excedente_costo || "0"}
+                cellStyle={{ backgroundColor: STheme.color.success + "33" }}
+                textStyle={{ fontWeight: "bold" }}
                 customComponent={(e) => {
-                    return (e.row.total_excedente_costo ? <SText style={{ textAlign: "center" }}> {"Bs " + SMath.formatMoney(e.row.total_excedente_costo, 2, "Bs ", "bolivianos")}  </SText> : null);
+                    return <SView col={"xs-12"} row center  >
+                        <SIconApp name='Ingreso' width={10} />
+                        <SView width={8} />
+                        <SText color={(e.row.total_excedente_costo >= 1) ? STheme.color.text : STheme.color.lightGray}>{SMath.formatMoney(e.row.total_excedente_costo, 2, "Bs ", "bolivianos")}</SText>
+                    </SView>
+
                 }}
             />
 
@@ -170,7 +176,7 @@ export default class ReporteConteoInventario extends Component {
 
 
 
-            <DinamicTable.Col key="key_cardex" label="Inv.Cardex" width={180} data={(e) => e.row?.key_conteo}
+            {/* <DinamicTable.Col key="key_cardex" label="Inv.Cardex" width={180} data={(e) => e.row?.key_conteo}
                 customComponent={e => {
 
                     return !(e.row.fecha_confirmacion) ? <SView center style={{ height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.secondary }}
@@ -186,10 +192,7 @@ export default class ReporteConteoInventario extends Component {
                         : null;
                 }
                 }
-            // :null
-
-
-            />
+            /> */}
 
 
             <DinamicTable.Col key="key_cardex_anular" label="Inv." width={180} data={(e) => e.row?.key_conteo}
