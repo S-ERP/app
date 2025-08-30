@@ -46,6 +46,8 @@ export default class Modelo extends Component {
             MDL.compra_venta.removeEventListener(this.evento);
         }
     }
+
+    
     async loadApis() {
         if (!MDL.caja.activa) {
             console.log("Caja no activa");

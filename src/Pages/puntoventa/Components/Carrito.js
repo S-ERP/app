@@ -13,9 +13,25 @@ export default class Carrito extends Component {
     conFactura = false;
     conStock = true;
     cliente = {};
+
+
     componentDidMount() {
+
         this.loadData()
+        this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
+            this.vaciarCarrito();
+            this.forceUpdate();
+        });
+
     }
+    componentWillUnmount() {
+        if (this.evento) {
+            MDL.compra_venta.removeEventListener(this.evento);
+        }
+    }
+
+
+
     async loadData() {
         const enviroments = await MDL.contabilidad.getEnviroment();
         this._enviromentsIva = parseFloat(enviroments?.IVA?.observacion) / 100;
@@ -63,6 +79,8 @@ export default class Carrito extends Component {
         this.vaciarCarrito();
     };
     vaciarCarrito = () => {
+
+
         this.carrito = [];
         this.descuentoManual = "";
         this.conFactura = false;
@@ -120,7 +138,13 @@ export default class Carrito extends Component {
                             <SView col={"xs-10 md-10"} row  >
                                 <SText fontSize={15} bold color={STheme.color.text}>Detalle venta</SText>
                             </SView>
-                            <SView col={"xs-2 md-2"} center onPress={() => this.vaciarCarrito()} style={{ alignItems: "flex-end" }} >
+                            <SView col={"xs-2 md-2"} center onPress={() => {
+                                // this.vaciarCarrito()
+                                // this.forceUpdate();
+                                MDL.compra_venta.vaciarAll();
+                            }
+                            }
+                                style={{ alignItems: "flex-end" }} >
                                 <SView backgroundColor={STheme.color.card} border={STheme.color.text} style={{ borderRadius: 20, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4, height: 24, opacity: 0.6, alignItems: "flex-end" }}>
                                     <SText fontSize={12} center color={STheme.color.text}>Vaciar</SText>
                                 </SView>

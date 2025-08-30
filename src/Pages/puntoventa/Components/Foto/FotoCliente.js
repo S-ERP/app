@@ -3,6 +3,7 @@ import { SView, SText, STheme, SImage } from 'servisofts-component';
 import SIconApp from '../../../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
 import PopupCliente from '../Carrito/PopupCliente';
+import MDL from '../../../../MDL';
 export default class FotoCliente extends Component {
   state = {
     cliente: null,
@@ -16,9 +17,19 @@ export default class FotoCliente extends Component {
     });
   };
 
-  // static limpiarCliente = () => {
-  //   PopupCliente.limpiarCliente();
-  // }
+
+  componentDidMount() {
+    this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
+      this.state.cliente = null;
+      this.forceUpdate();
+    });
+
+  }
+  componentWillUnmount() {
+    if (this.evento) {
+      MDL.compra_venta.removeEventListener(this.evento);
+    }
+  }
 
 
   // handleSelectCliente = () => {
