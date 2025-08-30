@@ -15,6 +15,12 @@ export default class FotoCliente extends Component {
       },
     });
   };
+
+  // static limpiarCliente = () => {
+  //   PopupCliente.limpiarCliente();
+  // }
+
+
   // handleSelectCliente = () => {
   //   PopupCliente.open({
   //     onReloadCliente: (cliente) => {
@@ -30,7 +36,7 @@ export default class FotoCliente extends Component {
       fontSize: 12,
       fontWeight: 'bold',
     };
-    const url = cliente?.key ? `${SSocket.api.crm}cliente/${cliente.key}` : null;
+    const url = cliente?.key ? `${SSocket.api.root}usuario/${cliente.key}` : null;
     return (
       <SView
         center
@@ -71,7 +77,7 @@ export default class FotoCliente extends Component {
               {cliente?.nombres || 'CLIENTE'}
             </SText>
             {cliente?.key ? (
-              <SText
+              <SText flex
                 style={{
                   ...style_text,
                   fontSize: 12,
@@ -79,7 +85,7 @@ export default class FotoCliente extends Component {
                   textTransform: 'uppercase',
                 }}
               >
-                CLIENTE
+                {/* CLIENTE */}
               </SText>
             ) : null}
           </SView>
