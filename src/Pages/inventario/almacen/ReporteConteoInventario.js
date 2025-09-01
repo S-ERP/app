@@ -81,29 +81,12 @@ export default class ReporteConteoInventario extends Component {
                             }
                         },
 
-
-
-
-
-
-
-                        {
-                            label: "confirma ricardo",
+                        ...(!e.row?.fecha_confirmacion ? [{
+                            label: "Registrar en Cardex",
                             icon: <SIconApp name='Arrow' fill="#e4e4e4ff" width={16} />,
                             onPress: () => {
 
-                                console.log("TODOOOOOOOOOOOOOOOOOOOO " + JSON.stringify(e.row))
-                                return;
-
-                                const fecha = new SDate(e.row?.fecha_confirmacion, "yyyy-MM-ddThh:mm:ss");
-                                if (!fecha) {
-                                    SNotification.send({
-                                        title: "⚠️ Sin fecha de confirmación",
-                                        body: `No se puede consolidar el inventario.`,
-                                        time: 5000,
-                                        color: STheme.color.danger
-                                    })
-                                }
+                                // Notificación inicial de carga
                                 SNotification.send({
                                     key: "proceso_consolidacion",
                                     title: "Procesando Inventario",
@@ -111,19 +94,19 @@ export default class ReporteConteoInventario extends Component {
                                     color: STheme.color.warning,
                                     type: "loading"
                                 });
+
                                 SPopup.confirm({
                                     title: "¿Seguro que quieres aplicar cambios cardex?",
-                                    message: "El inventario Nro." + e.row?.key_conteo + " será consolidado.",
+                                    message: `El inventario Nro. ${e.row?.key_conteo} será consolidado.`,
                                     onClose: () => {
-                                        SNotification.remove("proceso_consolidacion")
-
-                                        console.log("El popup fue cerrado sin confirmar");
-
+                                        SNotification.remove("proceso_consolidacion");
+                                        console.log("❌ Consolidación cancelada por el usuario");
                                     },
-                                    onPress: () => {
-                                        MDL.inventario.aplicar_cardex(e.row?.key_conteo).then((resp) => {
-                                            console.log("aplicar_cardex" + JSON.stringify(resp));
-                                            SNotification.remove("proceso_consolidacion")
+                                    onPress: async () => {
+                                        try {
+                                            const resp = await MDL.inventario.aplicar_cardex(e.row?.key_conteo);
+                                            console.log("✅ aplicar_cardex", resp);
+                                            SNotification.remove("proceso_consolidacion");
                                             SNotification.send({
                                                 key: "proceso_consolidacion",
                                                 title: "✅ Consolidación Exitosa",
@@ -131,27 +114,39 @@ export default class ReporteConteoInventario extends Component {
                                                 time: 5000,
                                                 color: STheme.color.success
                                             });
-                                        }).catch(e => {
-                                            SNotification.remove("proceso_consolidacion")
+                                        } catch (error) {
+                                            console.error("❌ Error aplicar_cardex:", error);
+
+                                            SNotification.remove("proceso_consolidacion");
                                             SNotification.send({
                                                 key: "proceso_consolidacion",
                                                 title: "❌ Error en la Consolidación",
                                                 body: `No se consolidó el inventario ${e.row?.key_conteo}.`,
                                                 time: 6000,
                                                 color: STheme.color.danger
-                                            })
-                                        })
-                                        SNotification.remove("proceso_consolidacion")
-
+                                            });
+                                        }
                                     }
-                                })
+                                });
                             }
-                        },
+                        }] : []),
 
                         ...(e.row?.fecha_confirmacion ? [{
                             label: "Anular Registro Cardex",
                             icon: <SIconApp name='Cerrar' fill="#e00b0bff" width={16} />,
                             onPress: () => {
+
+                                const fecha = new SDate(e.row?.fecha_confirmacion, "yyyy-MM-ddThh:mm:ss");
+                                if (!fecha) {
+                                    return SNotification.send({
+                                        title: "⚠️ Sin fecha de confirmación",
+                                        body: `No se puede consolidar el inventario.`,
+                                        time: 5000,
+                                        color: STheme.color.danger
+                                    });
+                                }
+
+
                                 SPopup.confirm({
                                     title: "¿Seguro que quieres eliminar el inventario?",
                                     message: "El inventario Nro." + e.row?.key_conteo + " será eliminado, si alguien es miembro de la nota puede invitarlo nuevamente.",
