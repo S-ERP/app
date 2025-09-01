@@ -32,6 +32,20 @@ export default class ReporteConteoInventario extends Component {
             this.table.loadData();
         })
     }
+
+    colorEstado(estado) {
+        switch (estado?.toUpperCase()) {
+            case "CONFIRMADO":
+                return "#4CAF50"; // verde
+            case "PENDIENTE":
+                return "#FF9800"; // naranja
+            case "ANULADO":
+                return "#F44336"; // rojo
+            default:
+                return "#9E9E9E"; // gris neutro por defecto
+        }
+    }
+
     async loadInitialData() {
         try {
             const api = await MDL.inventario.getAll_reporte_conteo_inventario_detallado();
@@ -82,11 +96,9 @@ export default class ReporteConteoInventario extends Component {
                         },
 
                         ...(!e.row?.fecha_confirmacion ? [{
-                            label: "Registrar en Cardex",
+                            label: "Consolidar en Cardex",
                             icon: <SIconApp name='Arrow' fill="#e4e4e4ff" width={16} />,
                             onPress: () => {
-
-                                // Notificación inicial de carga
                                 SNotification.send({
                                     key: "proceso_consolidacion",
                                     title: "Procesando Inventario",
@@ -126,38 +138,108 @@ export default class ReporteConteoInventario extends Component {
                                                 color: STheme.color.danger
                                             });
                                         }
+
+                                        this.table.loadData();
+
                                     }
                                 });
                             }
                         }] : []),
 
+                        // ...(e.row?.fecha_confirmacion ? [{
+                        //     label: "Anular Registro Cardex",
+                        //     icon: <SIconApp name='Cerrar' fill="#e00b0bff" width={16} />,
+                        //     onPress: () => {
+
+                        //         const fecha = new SDate(e.row?.fecha_confirmacion, "yyyy-MM-ddThh:mm:ss");
+                        //         if (!fecha) {
+                        //             return SNotification.send({
+                        //                 title: "⚠️ Sin fecha de confirmación",
+                        //                 body: `No se puede consolidar el inventario.`,
+                        //                 time: 5000,
+                        //                 color: STheme.color.danger
+                        //             });
+                        //         }
+
+
+                        //         SPopup.confirm({
+                        //             title: "¿Seguro que quieres eliminar el inventario?",
+                        //             message: "El inventario Nro." + e.row?.key_conteo + " será eliminado, si alguien es miembro de la nota puede invitarlo nuevamente.",
+                        //             onPress: () => {
+                        //                 console.log("Anular Registro Cardex", e.row?.key_conteo);
+                        //             }
+                        //         })
+
+                        //         this.table.loadData();
+
+                        //     }
+                        // }] : [])
+
                         ...(e.row?.fecha_confirmacion ? [{
                             label: "Anular Registro Cardex",
                             icon: <SIconApp name='Cerrar' fill="#e00b0bff" width={16} />,
                             onPress: () => {
-
                                 const fecha = new SDate(e.row?.fecha_confirmacion, "yyyy-MM-ddThh:mm:ss");
                                 if (!fecha) {
                                     return SNotification.send({
+                                        key: `anular_${e.row?.key_conteo}`,
                                         title: "⚠️ Sin fecha de confirmación",
-                                        body: `No se puede consolidar el inventario.`,
+                                        body: `No se puede anular el inventario.`,
                                         time: 5000,
                                         color: STheme.color.danger
                                     });
                                 }
 
+                                // Notificación de proceso en curso
+                                SNotification.send({
+                                    key: `proceso_anulacion_${e.row?.key_conteo}`,
+                                    title: "Procesando Anulación",
+                                    body: `Anulando inventario Nro. ${e.row?.key_conteo}...`,
+                                    color: STheme.color.warning,
+                                    type: "loading"
+                                });
 
+                                // Confirmación del usuario antes de anular
                                 SPopup.confirm({
                                     title: "¿Seguro que quieres eliminar el inventario?",
-                                    message: "El inventario Nro." + e.row?.key_conteo + " será eliminado, si alguien es miembro de la nota puede invitarlo nuevamente.",
-                                    onPress: () => {
-                                        console.log("Anular Registro Cardex", e.row?.key_conteo);
+                                    message: `El inventario Nro. ${e.row?.key_conteo} será eliminado. Si alguien es miembro de la nota, podrá ser invitado nuevamente.`,
+                                    onClose: () => {
+                                        SNotification.remove(`proceso_anulacion_${e.row?.key_conteo}`);
+                                        console.log("❌ Anulación cancelada por el usuario");
+                                    },
+                                    onPress: async () => {
+                                        try {
+                                            const resp = await MDL.inventario.anular_cardex(e.row?.key_conteo);
+                                            console.log("✅ Anular Registro Cardex", resp);
+
+                                            SNotification.remove(`proceso_anulacion_${e.row?.key_conteo}`);
+                                            SNotification.send({
+                                                key: `anulado_${e.row?.key_conteo}`,
+                                                title: "✅ Inventario Anulado",
+                                                body: `El inventario Nro. ${e.row?.key_conteo} fue anulado correctamente.`,
+                                                time: 5000,
+                                                color: STheme.color.success
+                                            });
+
+                                            // Recargar la tabla
+                                            this.table.loadData();
+
+                                        } catch (error) {
+                                            console.error("❌ Error al anular inventario:", error);
+
+                                            SNotification.remove(`proceso_anulacion_${e.row?.key_conteo}`);
+                                            SNotification.send({
+                                                key: `error_anular_${e.row?.key_conteo}`,
+                                                title: "❌ Error al Anular",
+                                                body: `No se pudo anular el inventario Nro. ${e.row?.key_conteo}.`,
+                                                time: 6000,
+                                                color: STheme.color.danger
+                                            });
+                                        }
                                     }
-                                })
+                                });
                             }
                         }] : [])
-
-
 
 
 
@@ -237,13 +319,37 @@ export default class ReporteConteoInventario extends Component {
                 }}
             />
 
-            <DinamicTable.Col key="fecha_confirmacion" label="fecha_confirmacion" width={190} data={(e) => e.row?.fecha_confirmacion || null}
-                cellStyle={{ backgroundColor: STheme.color.warning + "33" }} textStyle={{ fontWeight: "bold" }}
-                customComponent={(e) => {
-                    const fecha = new SDate(e.row?.fecha_confirmacion, "yyyy-MM-ddThh:mm:ss").date;
-                    return (fecha ? <SText color={STheme.color.lightGray}> {e.row?.fecha_confirmacion}  </SText> : null);
+               <DinamicTable.Col
+                key="estado"
+                label="Estado"
+                width={120}
+                data={e => e.row?.estado ?? ""}
+                customComponent={e => {
+                    // Determinamos el estado basado en fecha_confirmacion
+                    const estado = e.row?.fecha_confirmacion ? "CONFIRMADO" : "PENDIENTE";
+                    return (
+                        <SView col={"xs-12"} row center >
+                        <SView width={80} center style={{
+                                backgroundColor: this.colorEstado(estado) + "60" || STheme.color.card,
+                                borderWidth: 1, borderColor: this.colorEstado(estado) + "33" || STheme.color.card,
+                                paddingHorizontal: 2, paddingVertical: 3, borderRadius: 4
+                            }}> <SText fontSize={11}> {estado} </SText>
+                        </SView>
+                        </SView>
+                    );
                 }}
             />
+
+
+
+            <DinamicTable.Col key="fecha_confirmacion" label="F. Confirmación" width={100} data={(e) => e.row?.fecha_confirmacion || null} textStyle={{ fontWeight: "bold" }}
+                customComponent={(e) => {
+                    return (e.row?.fecha_confirmacion ? <SText fontSize={14} color={STheme.color.lightGray}> {e.row?.fecha_confirmacion}  </SText> : null);
+                }}
+            />
+
+
+
 
             <DinamicTable.Col key="fecha" label="Fecha Creación" width={120} data={(e) => e.row?.fecha}
                 customComponent={e => <SView center row><SIconApp name='Evento' width={12} height={12} fill={STheme.color.lightGray} />
