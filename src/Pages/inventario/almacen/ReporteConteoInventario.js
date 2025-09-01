@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2, SHr, SNotification, SImage, SDate, SButtom, SMath } from 'servisofts-component';
+import { SPage, SView, SIcon, SText, STable, STheme, SLoad, SNavigation, SPopup, SInput, STable2, SHr, SSfication, SImage, SDate, SButtom, SMath, SNotification } from 'servisofts-component';
 import * as XLSX from "xlsx";
 import SSocket from 'servisofts-socket';
 import { DinamicTable } from 'servisofts-table';
@@ -74,6 +74,77 @@ export default class ReporteConteoInventario extends Component {
                             }
                         },
                         {
+                            label: "Generar Asiento",
+                            icon: <SIconApp name='Ajustes' fill="#e4e4e4ff" width={16} />,
+                            onPress: () => {
+                                alert("Generar Asiento contable " + JSON.stringify(e.row?.key_conteo))
+                            }
+                        },
+
+
+
+
+
+
+
+                        {
+                            label: "confirma ricardo",
+                            icon: <SIconApp name='Arrow' fill="#e4e4e4ff" width={16} />,
+                            onPress: () => {
+
+                                const fecha = new SDate(e.row?.fecha_confirmacion, "yyyy-MM-ddThh:mm:ss");
+                                if (!fecha) {
+                                    SNotification.send({
+                                        title: "⚠️ Sin fecha de confirmación",
+                                        body: `No se puede consolidar el inventario.`,
+                                        time: 5000,
+                                        color: STheme.color.danger
+                                    })
+                                }
+                                SNotification.send({
+                                    key: "proceso_consolidacion",
+                                    title: "Procesando Inventario",
+                                    body: `Consolidando inventario Nro. ${e.row?.key_conteo}...`,
+                                    color: STheme.color.warning,
+                                    type: "loading"
+                                });
+                                SPopup.confirm({
+                                    title: "¿Seguro que quieres aplicar cambios cardex?",
+                                    message: "El inventario Nro." + e.row?.key_conteo + " será consolidado.",
+                                    onClose: () => {
+                                        SNotification.remove("proceso_consolidacion")
+
+                                        console.log("El popup fue cerrado sin confirmar");
+
+                                    },
+                                    onPress: () => {
+                                        MDL.inventario.aplicar_cardex(e.row?.key_conteo).then((resp) => {
+                                            console.log("aplicar_cardex" + JSON.stringify(resp));
+                                            SNotification.remove("proceso_consolidacion")
+                                            SNotification.send({
+                                                key: "proceso_consolidacion",
+                                                title: "✅ Consolidación Exitosa",
+                                                body: `Inventario Nro. ${e.row?.key_conteo} consolidado.`,
+                                                time: 5000,
+                                                color: STheme.color.success
+                                            });
+                                        }).catch(e => {
+                                            SNotification.remove("proceso_consolidacion")
+                                            SNotification.send({
+                                                key: "proceso_consolidacion",
+                                                title: "❌ Error en la Consolidación",
+                                                body: `No se consolidó el inventario ${e.row?.key_conteo}.`,
+                                                time: 6000,
+                                                color: STheme.color.danger
+                                            })
+                                        })
+                                        SNotification.remove("proceso_consolidacion")
+
+                                    }
+                                })
+                            }
+                        },
+                        {
                             label: "Anular Registro Cardex",
                             icon: <SIconApp name='Cerrar' fill="#e00b0bff" width={16} />,
                             onPress: () => {
@@ -88,7 +159,8 @@ export default class ReporteConteoInventario extends Component {
                         },
                     ]
                 });
-            }}
+            }
+            }
             loadData={this.loadInitialData.bind(this)}
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
@@ -159,10 +231,10 @@ export default class ReporteConteoInventario extends Component {
                     </SView>
                 }}
             />
-            <DinamicTable.Col key={"-keyprofile"} label='Ver' width={140} data={(e) => e.row?.key}
+            {/* <DinamicTable.Col key={"-keyprofile"} label='Ver' width={140} data={(e) => e.row?.key}
                 customComponent={e => <SView row center card padding={4} border={STheme.color.lightGray} onPress={() => { alert("Generar Asiento contable") }}>
                     <SText color={STheme.color.lightGray}>Generar Asiento</SText>
-                </SView>} />
+                </SView>} /> */}
             <DinamicTable.Col key={"fecha_confirmacion"} label="F. Confirmacion" width={120} dataType="date" data={e => new SDate(e.row?.fecha_confirmacion, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
             <DinamicTable.Col key="fecha" label="Fecha Creación" width={120} data={(e) => e.row?.fecha}
                 customComponent={e => <SView center row><SIconApp name='Evento' width={12} height={12} fill={STheme.color.lightGray} />
@@ -185,7 +257,7 @@ export default class ReporteConteoInventario extends Component {
                         </SView> : null}
                 </>}
             />
-        </DinamicTable>
+        </DinamicTable >
     }
     render() {
         return (
