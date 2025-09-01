@@ -92,6 +92,9 @@ export default class ReporteConteoInventario extends Component {
                             icon: <SIconApp name='Arrow' fill="#e4e4e4ff" width={16} />,
                             onPress: () => {
 
+                                console.log("TODOOOOOOOOOOOOOOOOOOOO " + JSON.stringify(e.row))
+                                return;
+
                                 const fecha = new SDate(e.row?.fecha_confirmacion, "yyyy-MM-ddThh:mm:ss");
                                 if (!fecha) {
                                     SNotification.send({
@@ -144,7 +147,8 @@ export default class ReporteConteoInventario extends Component {
                                 })
                             }
                         },
-                        {
+
+                        ...(e.row?.fecha_confirmacion ? [{
                             label: "Anular Registro Cardex",
                             icon: <SIconApp name='Cerrar' fill="#e00b0bff" width={16} />,
                             onPress: () => {
@@ -156,7 +160,13 @@ export default class ReporteConteoInventario extends Component {
                                     }
                                 })
                             }
-                        },
+                        }] : [])
+
+
+
+
+
+
                     ]
                 });
             }
@@ -231,11 +241,15 @@ export default class ReporteConteoInventario extends Component {
                     </SView>
                 }}
             />
-            {/* <DinamicTable.Col key={"-keyprofile"} label='Ver' width={140} data={(e) => e.row?.key}
-                customComponent={e => <SView row center card padding={4} border={STheme.color.lightGray} onPress={() => { alert("Generar Asiento contable") }}>
-                    <SText color={STheme.color.lightGray}>Generar Asiento</SText>
-                </SView>} /> */}
-            <DinamicTable.Col key={"fecha_confirmacion"} label="F. Confirmacion" width={120} dataType="date" data={e => new SDate(e.row?.fecha_confirmacion, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
+
+            <DinamicTable.Col key="fecha_confirmacion" label="fecha_confirmacion" width={190} data={(e) => e.row?.fecha_confirmacion || null}
+                cellStyle={{ backgroundColor: STheme.color.warning + "33" }} textStyle={{ fontWeight: "bold" }}
+                customComponent={(e) => {
+                    const fecha = new SDate(e.row?.fecha_confirmacion, "yyyy-MM-ddThh:mm:ss").date;
+                    return (fecha ? <SText color={STheme.color.lightGray}> {e.row?.fecha_confirmacion}  </SText> : null);
+                }}
+            />
+
             <DinamicTable.Col key="fecha" label="Fecha Creación" width={120} data={(e) => e.row?.fecha}
                 customComponent={e => <SView center row><SIconApp name='Evento' width={12} height={12} fill={STheme.color.lightGray} />
                     <SText color={STheme.color.lightGray} > {e.row?.fecha}</SText></SView>}
