@@ -1,5 +1,5 @@
 import React, { Children } from "react";
-import { StyleSheet, ViewStyle } from "react-native";
+import { StyleSheet, View, ViewStyle } from "react-native";
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -10,25 +10,96 @@ import {
     GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import { usePizarra } from "./Pizarra";
-import { SText } from "servisofts-component";
+import { SText, STheme, SUuid } from "servisofts-component";
+import no from "../../Pages/contabilidad/asientos_automaticos/no";
 
 type PizarraNodoProps = {
     children: React.ReactNode,
     style?: ViewStyle,
+    id: string,
     x: number, y: number,
     onChangePosition: (e: { x: number, y: number }) => void
 }
-export default function PizarraNodo({ children, style, x = 0, y = 0, onChangePosition }: PizarraNodoProps) {
+
+export type NodoInstance = {
+    id: string;
+    translateX: Animated.SharedValue<number>;
+    translateY: Animated.SharedValue<number>;
+    selected: Animated.SharedValue<boolean>;
+    panGesture?: any;
+};
+export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(), onChangePosition }: PizarraNodoProps) {
 
     const layout = useSharedValue({ width: 0, height: 0 });
     // Posiciones acumuladas
     const pizarra = usePizarra();
     const translateX = useSharedValue(x);
     const translateY = useSharedValue(y);
+    const selected = useSharedValue(false);
 
     const onDrag = useSharedValue(false);
 
 
+    const panGesture: any = Gesture.Pan()
+        .onBegin(() => {
+            // Guardamos la posición anterior
+            pizarra.preventPan.value = true;
+            onDrag.value = true;
+            if (!selected.value) {
+                Object.values(pizarra.nodos.current).forEach(nodo => {
+                    if (nodo.id == id) return;
+                    if (nodo.selected.value) {
+                        nodo.selected.value = false;
+                    }
+                });
+            } else {
+                Object.values(pizarra.nodos.current).forEach(nodo => {
+                    if (nodo.id == id) return;
+                    if (nodo.selected.value) {
+                        nodo.panGesture.context = {
+                            startX: nodo.translateX.value,
+                            startY: nodo.translateY.value,
+                        }
+                    }
+                });
+            }
+            selected.value = true;
+
+            panGesture.context = {
+                startX: translateX.value,
+                startY: translateY.value,
+            };
+
+
+        }).onStart(e => {
+
+        })
+        .onUpdate((event) => {
+            translateX.value = panGesture.context.startX + (event.translationX / pizarra.scale.value);
+            translateY.value = panGesture.context.startY + (event.translationY / pizarra.scale.value);
+
+            Object.values(pizarra.nodos.current).forEach(nodo => {
+                if (nodo.selected.value) {
+                    nodo.translateX.value = nodo.panGesture.context.startX + (event.translationX / pizarra.scale.value);
+                    nodo.translateY.value = nodo.panGesture.context.startY + (event.translationY / pizarra.scale.value);
+                }
+            });
+
+            // pizarra.selectTranslateX.value = translateX.value;
+            // pizarra.selectTranslateY.value = translateY.value;
+        }).onEnd(() => {
+            onDrag.value = false;
+        }).onFinalize(() => {
+            onDrag.value = false;
+            pizarra.preventPan.value = false;
+        });
+
+    React.useEffect(() => {
+        pizarra.registerNodo({ id: id, translateX, translateY, selected, panGesture: panGesture });
+        return () => {
+            pizarra.unregisterNodo(id);
+        };
+    }, []);
 
     // si se actualiza el translateX o el translateY, llamamos a onChangePosition
     translateX.addListener(1, (value: any) => {
@@ -37,75 +108,66 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, onChangePos
     translateY.addListener(1, (value: any) => {
         if (onChangePosition) onChangePosition({ x: translateX.value, y: value });
     });
-    // Pan gesture
-    const panGesture: any = Gesture.Pan()
-        .onBegin(() => {
-            // Guardamos la posición anterior
-            panGesture.context = {
-                startX: translateX.value,
-                startY: translateY.value,
-            };
-            onDrag.value = true;
-        })
-        .onUpdate((event) => {
-            translateX.value = panGesture.context.startX + (event.translationX / pizarra.scale.value);
-            translateY.value = panGesture.context.startY + (event.translationY / pizarra.scale.value);
-        }).onEnd(() => {
-            onDrag.value = false;
-        }).onFinalize(() => {
-            onDrag.value = false;
-        });
-
-
     const animatedStyleSelect = useAnimatedStyle(() => {
+        const isSelect = () => {
+            if (pizarra.selectStartX.value) {
+                const select = {
+                    startX: (pizarra.selectStartX.value) - (pizarra.width / 2),
+                    endX: pizarra.selectEndX.value - (pizarra.width / 2),
+                    startY: pizarra.selectStartY.value - (pizarra.width / 2),
+                    endY: pizarra.selectEndY.value - (pizarra.width / 2),
+                }
 
-        if (!pizarra.selectStartX.value) {
-            return {
-                backgroundColor: "transparent"
-            }
-        }
+                const selectPosition = {
+                    width: Math.abs(select.endX - select.startX),
+                    height: Math.abs(select.endY - select.startY),
+                    x: (select.startX < select.endX ? select.startX : select.endX),
+                    y: (select.startY < select.endY ? select.startY : select.endY),
+                }
 
-        let enabled = false;
-        let selected = false;
-        const select = {
-            startX: (pizarra.selectStartX.value / pizarra.scale.value) - (pizarra.width / 2),
-            endX: pizarra.selectEndX.value / pizarra.scale.value - (pizarra.width / 2),
-            startY: pizarra.selectStartY.value / pizarra.scale.value - (pizarra.width / 2),
-            endY: pizarra.selectEndY.value / pizarra.scale.value - (pizarra.width / 2),
-        }
-
-        const selectPosition = {
-            width: Math.abs(select.endX - select.startX),
-            height: Math.abs(select.endY - select.startY),
-            x: select.startX < select.endX ? select.startX : select.endX,
-            y: select.startY < select.endY ? select.startY : select.endY,
-        }
-        if (layout.value.width && layout.value.height) {
-            if (selectPosition.width && selectPosition.height) {
-                if (
-                    selectPosition.x < translateX.value - (layout.value.width / 2)
-                    && (selectPosition.x+selectPosition.width) > (translateX.value + (layout.value.width / 2))
-                    && selectPosition.y < translateY.value - (layout.value.height / 2)
-                    && (selectPosition.y + selectPosition.height) > (translateY.value + (layout.value.height / 2))
-                ) {
-                    console.log("Dentro de la selección");
-                    return {
-                        backgroundColor: "#f0f"
+                if (layout.value.width && layout.value.height) {
+                    if (selectPosition.width && selectPosition.height) {
+                        if (
+                            selectPosition.x < translateX.value - (layout.value.width / 2)
+                            && (selectPosition.x + selectPosition.width) > (translateX.value + (layout.value.width / 2))
+                            && selectPosition.y < translateY.value - (layout.value.height / 2)
+                            && (selectPosition.y + selectPosition.height) > (translateY.value + (layout.value.height / 2))
+                        ) {
+                            console.log("Dentro de la selección");
+                            return true;
+                        }
                     }
                 }
             }
+            return false;
         }
+        if (pizarra.selectStartX.value && !onDrag.value) {
+            selected.value = isSelect();
+        }
+
+        if (selected.value) {
+            return {
+                backgroundColor: STheme.color.card,
+                padding: 8,
+                borderRadius: 4,
+            }
+        }
+
+
         return {
-            backgroundColor: "transparent"
+            backgroundColor: "transparent",
+            padding: 8,
+            borderRadius: 0,
             // opacity: onDrag.value ? 0.5 : 1,
             // opacity: !selected ? 0.5 : 1,
         }
     });
+
     const animatedStyle = useAnimatedStyle(() => {
         return {
             // opacity: onDrag.value ? 0.5 : 1,
             // opacity: !selected ? 0.5 : 1,
-            cursor: onDrag.value ? "grabbing" : "grab",
+            cursor: onDrag.value ? "grabbing" : "pointer",
             transform: [
                 { translateX: translateX.value },
                 { translateY: translateY.value },
@@ -116,18 +178,19 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, onChangePos
 
 
 
-    return (<GestureDetector gesture={panGesture}>
-        <Animated.View style={[{
-            position: "absolute",
-        }, style, animatedStyle, animatedStyleSelect]} onLayout={(event) => {
-            const { width, height } = event.nativeEvent.layout;
-            layout.value = { width, height };
-            // translateX.value = (width / 2);
-            // translateY.value = (height / 2);
-        }}>
-            {children}
-        </Animated.View>
-    </GestureDetector>
+    return (
+        <GestureDetector gesture={(panGesture)}>
+            <Animated.View style={[{
+                position: "absolute",
+            }, style, animatedStyle, animatedStyleSelect]} onLayout={(event) => {
+                const { width, height } = event.nativeEvent.layout;
+                layout.value = { width, height };
+                // translateX.value = (width / 2);
+                // translateY.value = (height / 2);
+            }}>
+                {children}
+            </Animated.View>
+        </GestureDetector>
     );
 }
 

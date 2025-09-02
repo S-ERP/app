@@ -8,8 +8,9 @@ import {
     Gesture,
     GestureDetector,
     GestureHandlerRootView,
+    PanGesture,
 } from "react-native-gesture-handler";
-import Nodo from "./PizarraNodo";
+import Nodo, { NodoInstance } from "./PizarraNodo";
 import { SGradient, SText, STheme, SView } from "servisofts-component";
 import PizarraMiniMapa from "./MiniMapa";
 
@@ -25,6 +26,11 @@ const PizarraContext = React.createContext<{
     translateY: any,
     layoutWidth: any, layoutHeight: any,
     selectStartX: any, selectStartY: any, selectEndX: any, selectEndY: any,
+    selectTranslateX: any, selectTranslateY: any,
+    preventPan: any,
+    registerNodo: (nodo: NodoInstance) => void,
+    unregisterNodo: (key: string) => void,
+    nodos: React.MutableRefObject<Record<string, NodoInstance>>
 }>({
     width: 1000,
     scale: 1,
@@ -36,6 +42,12 @@ const PizarraContext = React.createContext<{
     selectStartY: 0,
     selectEndX: 0,
     selectEndY: 0,
+    selectTranslateX: 0,
+    selectTranslateY: 0,
+    preventPan: false,
+    registerNodo: () => { },
+    unregisterNodo: () => { },
+    nodos: { current: {} }
 });
 
 
@@ -47,9 +59,14 @@ export const usePizarra = () => React.useContext(PizarraContext);
 
 export default function Pizarra(props: PizarraProps) {
     // Posiciones acumuladas
-    const config = React.useRef({ type: "select", height: 0 });
+    const nodos = React.useRef<Record<string, NodoInstance>>({});
 
+
+    const config = React.useRef({ type: "select", height: 0 });
+    const isMiddleDown = React.useRef(false);
     const ref = React.useRef<any>();
+    const start = React.useRef({ x: 0, y: 0, tx: 0, ty: 0 });
+
     const width = 20000;
     const height = width;
 
@@ -65,46 +82,105 @@ export default function Pizarra(props: PizarraProps) {
     const selectEndY = useSharedValue(0);
     const selectTranslateX = useSharedValue(0);
     const selectTranslateY = useSharedValue(0);
+    const preventPan = useSharedValue(false);
+
+    const registerNodo = (nodo: NodoInstance) => {
+        nodos.current[nodo.id] = nodo;
+    };
+    const unregisterNodo = (key: string) => {
+        delete nodos.current[key];
+    };
+
+
+    const zoomAdd = (porc: number) => {
+        const limits = [0.2, 4];
+
+        // Trabajamos en escala logarítmica
+        const logMin = Math.log(limits[0]);
+        const logMax = Math.log(limits[1]);
+
+        let logScale = Math.log(scale.value);
+
+        // Movemos la escala en log
+        logScale += porc * (logMax - logMin); // porc pequeño como 0.05 o -0.05
+
+        // Clamp
+        if (logScale < logMin) logScale = logMin;
+        if (logScale > logMax) logScale = logMax;
+
+        const newScale = Math.exp(logScale);
+
+        const prevScale = scale.value;
+        scale.value = newScale;
+        const scaleRatio = newScale / prevScale;
+
+        translateX.value = (translateX.value * scaleRatio)
+        translateY.value = (translateY.value * scaleRatio)
+
+
+    };
+
 
 
     if (Platform.OS == "web") {
 
         const handleWheel = (e: any) => {
             e.preventDefault();
-            const zoomSpeed = 0.05;
-            const newScale = scale.value + (e.deltaY < 0 ? zoomSpeed : -zoomSpeed);
-            // Limitar el zoom
-            if (newScale >= 0.07 && newScale <= 3) {
-                const prevScale = scale.value;
-                scale.value = newScale;
-                const scaleRatio = newScale / prevScale;
 
-                // Obtener la posición del cursor relativa al elemento
-                const rect = ref.current.getBoundingClientRect();
-                // const offsetX = e.clientX - rect.left;
-                // const offsetY = e.clientY - rect.top;
-                // // Ajusta el translate para mantener el punto bajo el cursor en el mismo lugar visual
-                translateX.value = (translateX.value * scaleRatio)
-                translateY.value = (translateY.value * scaleRatio)
-                selectStartX.value = (selectStartX.value * scaleRatio)
-                selectStartY.value = (selectStartY.value * scaleRatio)
-                selectEndX.value = (selectEndX.value * scaleRatio)
-                selectEndY.value = (selectEndY.value * scaleRatio)
-                selectTranslateX.value = (selectTranslateX.value * scaleRatio)
-                selectTranslateY.value = (selectTranslateY.value * scaleRatio)
+            zoomAdd(e.deltaY < 0 ? 0.02 : -0.02);
+
+
+
+        };
+        const handleMouseDown = (e: any) => {
+            if (e.button === 1) { // rueda del mouse
+                e.preventDefault();
+                isMiddleDown.current = true;
+                start.current = {
+                    x: e.clientX,
+                    y: e.clientY,
+                    tx: translateX.value,
+                    ty: translateY.value,
+                };
             }
         };
 
+        const handleMouseMove = (e: any) => {
+            if (!isMiddleDown.current) return;
+            e.preventDefault();
+            translateX.value = start.current.tx + (e.clientX - start.current.x);
+            translateY.value = start.current.ty + (e.clientY - start.current.y);
+        };
+
+        const handleMouseUp = (e: any) => {
+            if (e.button === 1) {
+                isMiddleDown.current = false;
+            }
+        };
+
+
         React.useEffect(() => {
             if (!ref.current) return;
-            //    @ts-ignore
-            ref.current.addEventListener('wheel', handleWheel, { passive: false });
-            // window.addEventListener('wheel', handleWheel, { passive: false });
+            const el = ref.current as HTMLElement;
+            // @ts-ignore
+            el.addEventListener("wheel", handleWheel, { passive: false });
+            // @ts-ignore
+            el.addEventListener("mousedown", handleMouseDown);
+            // @ts-ignore
+            window.addEventListener("mousemove", handleMouseMove);
+            // @ts-ignore
+            window.addEventListener("mouseup", handleMouseUp);
+
             return () => {
                 if (!ref.current) return;
                 // @ts-ignore
-                ref.current.removeEventListener('wheel', handleWheel);
-                // window.removeEventListener('wheel', handleWheel);
+                el.removeEventListener("wheel", handleWheel);
+                // @ts-ignore
+                el.removeEventListener("mousedown", handleMouseDown);
+                // @ts-ignore
+                window.removeEventListener("mousemove", handleMouseMove);
+                // @ts-ignore
+                window.removeEventListener("mouseup", handleMouseUp);
             };
         }, []);
 
@@ -115,58 +191,65 @@ export default function Pizarra(props: PizarraProps) {
 
     // Pan gesture
     const panGesture: any = Gesture.Pan()
+        .onBegin((e) => {
+            if (preventPan.value) return;
+            if (config.current.type == "select") {
+                selectTranslateX.value = 0;
+                selectTranslateY.value = 0;
+                selectStartX.value = e.x / scale.value;
+                selectStartY.value = e.y / scale.value;
+                selectEndX.value = selectStartX.value;
+                selectEndY.value = selectStartY.value;
 
-        .onStart((e) => {
-            // Guardamos la posición anterior
+            }
             panGesture.context = {
                 startX: translateX.value,
                 startY: translateY.value,
-            };
-            if (config.current.type == "select") {
-                console.log(e);
-                selectTranslateX.value = 0;
-                selectTranslateY.value = 0;
-                selectStartX.value = e.x;
-                selectStartY.value = e.y;
-            } else {
-                // selectStartX.value = 0;
-                // selectStartY.value = 0;
-                // selectEndX.value = 0;
-                // selectEndY.value = 0;
-                // selectTranslateX.value = 0;
-                // selectTranslateY.value = 0;
             }
+        })
+        .onStart((e) => {
+            // Guardamos la posición anterior
+
         })
         .onUpdate((event) => {
             if (config.current.type == "select") {
-                selectEndX.value = selectStartX.value + event.translationX;
-                selectEndY.value = selectStartY.value + event.translationY;
+                selectEndX.value = selectStartX.value + (event.translationX / scale.value);
+                selectEndY.value = selectStartY.value + (event.translationY / scale.value);
                 return;
             }
             translateX.value = panGesture.context.startX + event.translationX;
             translateY.value = panGesture.context.startY + event.translationY;
-        });
-
-    const panSelected: any = Gesture.Pan().blocksExternalGesture()
-        .onBegin((e) => {
-            // selectStartX.value = 0;
-            // selectStartY.value = 0;
-            // selectEndX.value = 0;
-            // selectEndY.value = 0;
-            // selectTranslateX.value = ;
-            // selectTranslateY.value = 0;
-
-
-        }).onStart(e => {
-            panSelected.context = {
-                startX: selectTranslateX.value,
-                startY: selectTranslateY.value,
-            };
+        }).onFinalize(e => {
+            console.log("entro en el finalize pizzarra");
+            selectTranslateX.value = 0;
+            selectTranslateY.value = 0;
+            selectStartX.value = 0
+            selectStartY.value = 0
+            selectEndX.value = selectStartX.value;
+            selectEndY.value = selectStartY.value;
         })
-        .onUpdate((event) => {
-            selectTranslateX.value = panSelected.context.startX + event.translationX;
-            selectTranslateY.value = panSelected.context.startY + event.translationY;
-        });
+
+    // const panSelected: PanGesture = Gesture.Pan()
+    //     .onBegin((e) => {
+
+    //         // selectStartX.value = 0;
+    //         // selectStartY.value = 0;
+    //         // selectEndX.value = 0;
+    //         // selectEndY.value = 0;
+    //         // selectTranslateX.value = ;
+    //         // selectTranslateY.value = 0;
+
+
+    //     }).onStart(e => {
+    //         panSelected.context = {
+    //             startX: selectTranslateX.value,
+    //             startY: selectTranslateY.value,
+    //         };
+    //     })
+    //     .onUpdate((event) => {
+    //         selectTranslateX.value = panSelected.context.startX + (event.translationX / scale.value);
+    //         selectTranslateY.value = panSelected.context.startY + (event.translationY / scale.value);
+    //     });
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [
@@ -175,21 +258,24 @@ export default function Pizarra(props: PizarraProps) {
             { scale: scale.value },
         ],
     }));
-    const selectStyle = useAnimatedStyle(() => ({
-        position: "absolute",
-        width: Math.abs((selectEndX.value - selectStartX.value) / scale.value),
-        height: Math.abs((selectEndY.value - selectStartY.value) / scale.value),
-        backgroundColor: STheme.color.link + "33",
-        borderWidth: 1,
-        borderColor: STheme.color.link,
-        left: Math.min(selectStartX.value, selectEndX.value) / scale.value,
-        top: Math.min(selectStartY.value, selectEndY.value) / scale.value,
-        transform: [
-            { translateX: selectTranslateX.value },
-            { translateY: selectTranslateY.value },
-            // { scale: scale.value },
-        ],
-    }));
+    const selectStyle = useAnimatedStyle(() => {
+
+        return ({
+            position: "absolute",
+            width: Math.abs((selectEndX.value - selectStartX.value)),
+            height: Math.abs((selectEndY.value - selectStartY.value)),
+            backgroundColor: STheme.color.link + "33",
+            borderWidth: 1,
+            borderColor: STheme.color.link,
+            left: Math.min(selectStartX.value, selectEndX.value),
+            top: Math.min(selectStartY.value, selectEndY.value),
+            transform: [
+                { translateX: selectTranslateX.value },
+                { translateY: selectTranslateY.value },
+                // { scale: scale.value },
+            ],
+        })
+    });
 
 
     const pinchGesture: any = Gesture.Pinch()
@@ -203,6 +289,8 @@ export default function Pizarra(props: PizarraProps) {
             scale.value = pinchGesture.context.startScale * event.scale;
         });
 
+    // const gesture = Gesture.Exclusive(panSelected, panGesture)
+    const gesture = Gesture.Simultaneous(panGesture, pinchGesture);
     return (
 
         <GestureHandlerRootView style={{
@@ -221,8 +309,14 @@ export default function Pizarra(props: PizarraProps) {
                 selectStartY: selectStartY,
                 selectEndX: selectEndX,
                 selectEndY: selectEndY,
+                selectTranslateX: selectTranslateX,
+                selectTranslateY: selectTranslateY,
+                preventPan: preventPan,
+                registerNodo: registerNodo,
+                unregisterNodo: unregisterNodo,
+                nodos: nodos
             }}>
-                <GestureDetector gesture={Gesture.Simultaneous(panGesture, pinchGesture)}>
+                <GestureDetector gesture={gesture}>
                     <Animated.View ref={ref} style={[{
                         width: width,
                         height: height,
@@ -230,9 +324,9 @@ export default function Pizarra(props: PizarraProps) {
                         alignItems: "center",
                         borderWidth: 1,
                     }, animatedStyle]} >
-                        <GestureDetector gesture={panSelected}>
-                            <Animated.View style={[selectStyle]} />
-                        </GestureDetector>
+                        {/* <GestureDetector gesture={panSelected}> */}
+                        <Animated.View style={[selectStyle]} />
+                        {/* </GestureDetector> */}
                         {props.children}
                     </Animated.View>
                 </GestureDetector>
@@ -247,7 +341,7 @@ export default function Pizarra(props: PizarraProps) {
 const MenuType = ({ onChange }: { onChange: (type: "select" | "move") => void }) => {
     const [selected, setSelected] = React.useState<"select" | "move">("select");
     return <SView style={{
-        width: 100,
+        width: 120,
         flexDirection: "row",
         justifyContent: "space-between",
         padding: 10,

@@ -9,10 +9,12 @@ import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
 import PopupCrearProveedor from './Components/PopupCrearProveedor';
 export default class Lista extends Component {
+    onSelect = SNavigation.getParam("onSelect");
     constructor(props) {
         super(props);
         this.state = {};
     }
+    
     async loadInitialData() {
         try {
             // siempre poner todas las apis en una funcion asi para que recargue rapido la tabla
