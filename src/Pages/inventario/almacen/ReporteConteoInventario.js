@@ -11,6 +11,7 @@ import SIconApp from '../../../Assets/SIconApp';
 import MDL from '../../../MDL';
 import Config from '../../../Config';
 import FloatMenu from '../../../Components/FloatMenu';
+import Informar from './Informar';
 export default class ReporteConteoInventario extends Component {
     constructor(props) {
         super(props);
@@ -378,6 +379,7 @@ export default class ReporteConteoInventario extends Component {
         return (
             <SPage title="Reporte de Conteo de Inventario" disableScroll>
                 {this.mostrarTabla()}
+                <Informar></Informar>
             </SPage>
         );
     }
