@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { View, Text, FlatList } from 'react-native';
-import { SDate, SHr, SIcon, SImage, SMath, SNavigation, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SelectTipoPago from './SelectTipoPago';
 import TotalTipoPago from './TotalTipoPago';
 import DetalleItem from './DetalleItem';
 import MenuAcciones from './MenuAcciones';
+import Components from '../../../Components';
+import Model from '../../../Model';
 
 
 export default class Abierta extends Component {
@@ -57,6 +59,60 @@ export default class Abierta extends Component {
         })
     }
 
+    mensaje() {
+
+        // this.data ={...this.props.caja};
+        this.data = {};
+
+        return <SView col={"xs-12"} center row >
+
+
+
+            <SView width={150} row center style={{
+                backgroundColor: STheme.color.success + "33",
+                borderWidth: 1,
+                borderColor: STheme.color.card,
+                padding: 8,
+                borderRadius: 4,
+            }}
+            >
+                <SText disabled={true} onPress={() => {
+                    SPopup.date("Selecciona ss la fecha", (a) => {
+                        console.log("devorame " + JSON.stringify(this.props.caja))
+                        // alert("tu creias " + JSON.stringify(data));
+                        Model.caja.Action.editar({
+                            data: {
+                                ...data,
+                                fecha: a.fecha + "T00:00:00"
+                            },
+                            key_usuario: Model.usuario.Action.getKey(),
+                        }).then(e => {
+                            console.log(e);
+                        }).catch(e => {
+                            console.error(e);
+                        })
+                    })
+                }}>Cambiar fecha gestion</SText>
+            </SView>
+
+            <SHr />
+            <SHr />
+            <SView col={"xs-12"} row>
+                <SView flex>
+                    <SText color={STheme.color.text} fontSize={12}>{"Registrada el " + new SDate(this.props.caja.fecha_on).toString("DAY, dd de MONTH del yyyy a las hh:mm")}</SText>
+                    <SText color={STheme.color.text} fontSize={12}>{"para la fecha " + new SDate(this.props.caja.fecha, "yyyy-MM-dd").toString("DAY, dd de MONTH del yyyy")}</SText>
+                    <SHr />
+                    <SText color={STheme.color.warning} fontSize={12}>{this.props.caja.fecha_cierre ? new SDate(this.props.caja.fecha_cierre).toString("DAY, dd de MONTH del yyyy a las hh:mm") : "La caja se encuentra abierta."}</SText>
+                </SView>
+                <SView>
+                    <Components.caja.QRCaja pk={this.props.caja.key} width={120} height={120} />
+                </SView>
+            </SView>
+
+        </SView >
+
+    }
+
     render() {
         return (
             <SView col={"xs-12"} center flex>
@@ -75,7 +131,7 @@ export default class Abierta extends Component {
                             <TotalTipoPago key_punto_venta={this.props.caja.key_punto_venta} movimientos={this.state.movimientos} />
                             <SHr h={32} />
                             <SView col={"xs-11 sm-10 md-8 lg-6"} >
-                                <MenuAcciones caja={this.props.caja}  movimientos={this.state.movimientos}/>
+                                <MenuAcciones caja={this.props.caja} movimientos={this.state.movimientos} />
                             </SView>
                             <SHr h={32} />
                         </SView>
@@ -83,11 +139,16 @@ export default class Abierta extends Component {
                     }}
                     renderItem={({ item, index }) => {
                         return <SView col={"xs-12"} center>
+
+                            {this.mensaje()}
                             <SView col={"xs-11 sm-10 md-8 lg-6"} >
                                 <DetalleItem item={item} index={index} tipo_pago={this.state.tipo_pago} />
+                                {/* <DetalleItem item={item} index={index} tipo_pago={this.state.tipo_pago} gestio_abierot={}   /> */}
                             </SView>
                         </SView>
                     }} />
+
+
             </SView>
         );
     }
