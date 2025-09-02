@@ -13,7 +13,8 @@ import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
 import PopupDetalleModelo from '../Components/PopupDetalleModelo';
 import PopupDesglose from '../Components/PopupDesglose';
 import PopupModeloCardex from '../Components/PopupModeloCardex';
-import PopupInfoProv from './Components/PopupInfoProv';
+// import PopupInfoProv from './Components/PopupInfoProv';
+import PopupCrearProveedor from './Components/PopupCrearProveedor';
 
 export default class table extends Component {
     constructor(props) {
@@ -223,7 +224,7 @@ export default class table extends Component {
                             return <SView style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }}
                                 onPress={() => {
 
-                                    console.log("todoooooooooooooooooooooooooo  "+JSON.stringify(e?.row))
+                                    // console.log("todoooooooooooooooooooooooooo  " + JSON.stringify(e?.row))
 
 
                                     // PopupCrearCliente.open({
@@ -233,15 +234,29 @@ export default class table extends Component {
                                     //     //     this.DinamicTable.loadData();
                                     //     // },
                                     // })
-
-
-                                    PopupInfoProv.open({
+                                    PopupCrearProveedor.open({
                                         proveedor: p?.proveedor,
                                         producto_key: e?.row?.key,
-                                        precio_compra : e?.row?.precio_compra,
-                                        producto_descripcion : e?.row?.descripcion
+                                        precio_compra: e?.row?.precio_compra,
+                                        producto_descripcion: e?.row?.descripcion,
+                                        key_empresa: e?.row?.key_empresa,
+
+                                        onSuccess: async () => {
+                                            this.table.loadData();
+                                        },
+
                                     });
+
+
                                 }}
+
+                            //     PopupInfoProv.open({
+                            //         proveedor: p?.proveedor,
+                            //         producto_key: e?.row?.key,
+                            //         precio_compra : e?.row?.precio_compra,
+                            //         producto_descripcion : e?.row?.descripcion
+                            //     });
+                            // }}
                             >
                                 <SText fontSize={10} numberOfLines={1} >{p?.proveedor?.razon_social}</SText>
                             </SView>
@@ -285,7 +300,7 @@ export default class table extends Component {
                     }
                 });
             }} />
-        </SPage>
+        </SPage >
     }
 }
 

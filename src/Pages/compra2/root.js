@@ -149,7 +149,7 @@ export default class root extends React.Component {
 
     }
     render() {
-        return <SPage title={"Compras"} >
+        return <SPage title={"Compras sdsss"} >
             <SView col={"xs-12"} center>
                 <SHr height={15} />
                 <SView col={"xs-11.5 sm-11 md-10 lg-8 xl-6"} flex padding={15} card>
