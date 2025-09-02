@@ -12,17 +12,13 @@ export default class MonedaTablaHistorial extends Component {
     constructor(props) {
         super(props);
         this.state = {};
-        // this.onSelect = props.onSelect;
-        // this.key_moneda = props?.navigation?.getParam("key");
-        this.codigo_cuenta = SNavigation.getParam("key_moneda");
-
     }
     componentDidMount() {
         this.loadInitialData();
     }
     loadInitialData = async () => {
         const key_moneda = SNavigation.getParam("key_moneda");
-        const api = await MDL.empresa.getHistorialMoneda(this.codigo_cuenta);
+        const api = await MDL.empresa.getHistorialMoneda(key_moneda);
         return Object.values(api);
     }
     mostrarTabla() {
@@ -33,56 +29,6 @@ export default class MonedaTablaHistorial extends Component {
             center
             language="es"
             selectType="single"
-            onSelect={(e) => {
-                if (this.onSelect) {
-                    this.onSelect(e.row);
-                    SNavigation.goBack();
-                    return;
-                }
-                // FloatMenu.open({
-                //     e: e.evt,
-                //     label: "Moneda: " + e.row.descripcion,
-                //     options: [
-                //         {
-                //             icon: <SIconApp name='Edit' />,
-                //             label: "Actualizar Moneda",
-                //             onPress: () => {
-                //                 PopupCrearMoneda.open({
-                //                     editObject: e?.row,
-                //                     key_empresa: e?.row?.key_empresa,
-                //                     onSuccess: () => {
-                //                         this.table.loadData();
-                //                         this.forceUpdate();
-                //                     }
-                //                 })
-                //             }
-                //         },
-                //         {
-                //             icon: <SIconApp name='Delete' />,
-                //             label: "Eliminar Moneda",
-                //             onPress: () => {
-                //                 SPopup.confirm({
-                //                     title: "Eliminar Moneda",
-                //                     message: "¿Estás seguro de eliminar esta moneda?",
-                //                     onPress: () => {
-                //                         const moneda_ = {
-                //                             ...e.row,
-                //                             estado: 0,
-                //                         }
-                //                         MDL.empresa.editarMoneda(moneda_).then(() => {
-                //                             this.table.loadData();
-                //                             this.forceUpdate();
-                //                         }
-                //                         ).catch(err => {
-                //                             console.error("response", err);
-                //                         })
-                //                     }
-                //                 })
-                //             }
-                //         }
-                //     ]
-                // })
-            }}
             loadInitialState={async () => {
                 return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
             }}
@@ -128,15 +74,6 @@ export default class MonedaTablaHistorial extends Component {
         return (
             <SPage title="Historial registro de Moneda" disableScroll>
                 {this.mostrarTabla()}
-                <FloatButtom onPress={() => {
-                    PopupCrearMoneda.open({
-                        key_empresa: MDL.empresa.select?.key,
-                        onSuccess: () => {
-                            this.table.loadData();
-                            this.forceUpdate();
-                        }
-                    })
-                }} />
             </SPage>
         );
     }
