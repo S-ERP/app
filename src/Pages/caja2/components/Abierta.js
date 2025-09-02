@@ -64,35 +64,37 @@ export default class Abierta extends Component {
         // this.data ={...this.props.caja};
         this.data = {};
 
-        return <SView col={"xs-12"} center row >
+        return <SView col={"xs-9"} center row >
+
+            <SView col={"xs-12"} row>
 
 
-
-            <SView width={150} row center style={{
-                backgroundColor: STheme.color.success + "33",
-                borderWidth: 1,
-                borderColor: STheme.color.card,
-                padding: 8,
-                borderRadius: 4,
-            }}
-            >
-                <SText disabled={true} onPress={() => {
-                    SPopup.date("Selecciona ss la fecha", (a) => {
-                        console.log("devorame " + JSON.stringify(this.props.caja))
-                        // alert("tu creias " + JSON.stringify(data));
-                        Model.caja.Action.editar({
-                            data: {
-                                ...data,
-                                fecha: a.fecha + "T00:00:00"
-                            },
-                            key_usuario: Model.usuario.Action.getKey(),
-                        }).then(e => {
-                            console.log(e);
-                        }).catch(e => {
-                            console.error(e);
+                <SView width={150} row center style={{
+                    backgroundColor: STheme.color.card,
+                    borderWidth: 1,
+                    borderColor: STheme.color.card,
+                    padding: 8,
+                    borderRadius: 4,
+                }}
+                >
+                    <SText disabled={true} onPress={() => {
+                        SPopup.date("Selecciona ss la fecha", (a) => {
+                            console.log("devorame " + JSON.stringify(this.props.caja))
+                            // alert("tu creias " + JSON.stringify(data));
+                            Model.caja.Action.editar({
+                                data: {
+                                    ...data,
+                                    fecha: a.fecha + "T00:00:00"
+                                },
+                                key_usuario: Model.usuario.Action.getKey(),
+                            }).then(e => {
+                                console.log(e);
+                            }).catch(e => {
+                                console.error(e);
+                            })
                         })
-                    })
-                }}>Cambiar fecha gestion</SText>
+                    }}>Cambiar fecha gestion</SText>
+                </SView>
             </SView>
 
             <SHr />
