@@ -49,7 +49,7 @@ export default class Categoria extends Component {
         const categorias = this.tipomodelos || [];
         return (
             <SView col={"xs-12 md-12"} backgroundColor={STheme.color.darkGray} row center style={{ paddingHorizontal: 8, paddingVertical: 5 }} >
-                <SView col={"xs-12 md-12 lg-8.8"} backgroundColor='transparent' row  >
+                <SView col={"xs-12 md-12 lg-8.8"}  row  >
                     <ScrollView horizontal scroll={true} style={{ flex: 1, }} contentContainerStyle={{ minWidth: "100%" }}  >
                         {categorias.map(cat => (
                             <SView key={cat.key} onPress={() => this.handlePress(cat.key)}
@@ -69,7 +69,7 @@ export default class Categoria extends Component {
                     </ScrollView>
                 </SView>
                 <SView col={"xs-12 md-12 lg-0.2"} height={14} />
-                <SView col={"xs-12 md-12 lg-3"} center backgroundColor='transparent'  >
+                <SView col={"xs-12 md-12 lg-3"} center   >
                     <SView col={"xs-12  "} row center style={{ borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, paddingHorizontal: 12 ,backgroundColor: STheme.color.background}}>
                         <SInput placeholder="Buscar Producto" center style={{ flex: 1, fontSize: 14, backgroundColor: STheme.color.background }}
                             value={this.props.value}

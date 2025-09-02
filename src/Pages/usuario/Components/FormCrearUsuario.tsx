@@ -7,19 +7,23 @@ import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
 // import Model from '../../../../Model';
 import InputFoto from '../../../Components/InputFoto';
+import PopupMasUsuarios from './PopupMasUsuarios';
 
 type Props = {
     key_empresa: string,
     editObject?: any,
     onCancel?: Function,
     onSuccess?: Function,
+    data: {},
+    datakeyUsers: string[]
 }
 
 export default class FormCrearUsuario extends Component<Props> {
+    
 
     static open(props: Props) {
         SPopup.open({
-            key: "PopupCrearSucursal",
+            key: "PopupCrearUsuario",
             content: <SView style={{
                 maxWidth: "100%",
                 maxHeight: "100%",
@@ -31,11 +35,11 @@ export default class FormCrearUsuario extends Component<Props> {
                 backgroundColor: STheme.color.background
             }} withoutFeedback >
                 <FormCrearUsuario {...props} onCancel={() => {
-                    SPopup.close("PopupCrearSucursal")
+                    SPopup.close("PopupCrearUsuario")
                     if (props.onCancel) props.onCancel()
                 }}
                     onSuccess={(e: any) => {
-                        SPopup.close("PopupCrearSucursal")
+                        SPopup.close("PopupCrearUsuario")
                         if (props.onSuccess) props.onSuccess(e)
                     }}
 
@@ -46,6 +50,24 @@ export default class FormCrearUsuario extends Component<Props> {
     form: SForm | undefined = undefined;
     _ref: any = {}
     render() {
+        let dataPrueba = {
+        "8b4846a4-f730-446d-9693-9d1965c229af": {
+            "Correo": "rossy@gmail.com",
+            "Apellidos": "Flores Estrada",
+            "Nombres": "Liceth Diana",
+            "CI": "6368871SC",
+            "Telefono": "+591 73138212",
+            "Password": "202cb962ac59075b964b07152d234b70"
+        },
+        "8b4846a4-f730-446d-9693-9d1965c229fa": {
+            "Correo": "rossy2@gmail.com",
+            "Apellidos": "Flores2 Estrada2",
+            "Nombres": "Liceth2 Diana2",
+            "CI": "63688712SC",
+            "Telefono": "+591 73138212",
+            "Password": "202cb962ac59075b964b07152d234b70"
+        }
+    }
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{"Crear usuario"}</SText>
             <ScrollView>
@@ -144,6 +166,19 @@ export default class FormCrearUsuario extends Component<Props> {
                             //validar si data_ existe
                             if (e.data_) {
                                 console.log("data_", e.data_);
+                                SPopup.open({
+                                    key: "PopupMasUsuarios",
+                                    content: <PopupMasUsuarios data={e.data_} datakeyUsers={this.props?.datakeyUsers} />
+
+                                })
+
+                                // PopupMasUsuarios.open({
+                                //     // data: e.row,
+                                //     onRegister: (e) => {
+                                //         this.table.loadData();
+                                //     }
+
+                                // })
                             }
                             console.error("response", e);
                         })
@@ -164,6 +199,13 @@ export default class FormCrearUsuario extends Component<Props> {
                 <PButtom type='primary' flex onPress={() => {
                     if (this.form) this.form.submit();
                 }}>GUARDAR</PButtom>
+                {/* <PButtom type='primary' flex onPress={() => {
+                    SPopup.open({
+                        key: "PopupMasUsuarios",
+                        content: <PopupMasUsuarios data={dataPrueba} />
+
+                    })
+                }}>POPUP</PButtom> */}
 
             </SView>
         </SView>

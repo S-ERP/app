@@ -46,7 +46,7 @@ export default class PopupCrearCliente extends Component<Props> {
                 <SForm ref={(ref: any) => this.form = ref} row style={{ justifyContent: "space-between" }}
                     inputs={{
                         "nombres": {
-                            label: "nombres *", placeholder: "Ingresa la nombres", isRequired: true, autoFocus: true, defaultValue: this.props.editObject?.nombres,
+                            label: "Nombre completo *", placeholder: "Ingresa nombre completo", isRequired: true, autoFocus: true, defaultValue: this.props.editObject?.nombres,
                             onSubmitEditing: () => {
                                 if (this.form) this.form.submit();
                             },
@@ -57,17 +57,17 @@ export default class PopupCrearCliente extends Component<Props> {
                                      style={{ width: 50, height: 50, }} />
                             </SView>,
                         },
-                        "key": { label: "key", placeholder: "key", defaultValue: this.props.editObject?.key, col: "xs-12" },
-                        "direccion": { label: "direccion", placeholder: "direccion", defaultValue: this.props.editObject?.direccion, col: "xs-12" },
-                        "nit": { label: "nit", placeholder: "nit", defaultValue: this.props.editObject?.nit, col: "xs-12" },
-                        "razon_social": { label: "razon_social", placeholder: "razon_social", defaultValue: this.props.editObject?.razon_social, col: "xs-12" },
-                        "telefono": { label: "telefono", placeholder: "telefono", type: "telefono", defaultValue: this.props.editObject?.telefono, col: "xs-5.5" },
-                        "correo": { label: "correo", placeholder: "correo", type: "email", defaultValue: this.props.editObject?.correo, col: "xs-5.5" },
+                        // "key": { label: "key", placeholder: "key", defaultValue: this.props.editObject?.key, col: "xs-12" },
+                        "correo": { label: "Correo", placeholder: "Ingresa correo", type: "email", defaultValue: this.props.editObject?.correo, col: "xs-12" },
+                        "direccion": { label: "Dirección", placeholder: "Ingresa dirección", defaultValue: this.props.editObject?.direccion, col: "xs-12" },
+                        "nit": { label: "NIT", placeholder: "Ingresa nit", defaultValue: this.props.editObject?.nit, col: "xs-12" },
+                        "razon_social": { label: "Razón Social", placeholder: "Ingresa razón social", defaultValue: this.props.editObject?.razon_social, col: "xs-12" },
+                        "telefono": { label: "Teléfono", placeholder: "Ingresa telefono", type: "telefono", defaultValue: this.props.editObject?.telefono, col: "xs-5.8" },
+                        "departamento": { label: "Departamento", placeholder: "Ingresa departamento", defaultValue: this.props.editObject?.departamento, col: "xs-5.8" },
                         // "lat": { label: "lat", placeholder: "lat", defaultValue: this.props.editObject?.lat, col: "xs-5.5" },
                         // "lng": { label: "lng", placeholder: "lng", defaultValue: this.props.editObject?.lng, col: "xs-5.5" },
-                        "fecha_nacimiento": { label: "fecha_nacimiento", type: "date", placeholder: "fecha_nacimiento", defaultValue: this.props.editObject?.fecha_nacimiento, col: "xs-5.5" },
-                        "sexo": { label: "sexo", placeholder: "sexo", defaultValue: this.props.editObject?.sexo, col: "xs-5.5" },
-                        "departamento": { label: "departamento", placeholder: "departamento", defaultValue: this.props.editObject?.departamento, col: "xs-5.5" },
+                        "fecha_nacimiento": { label: "Fecha Nacimiento", type: "date", placeholder: "Ingresa fecha nacimiento", defaultValue: this.props.editObject?.fecha_nacimiento, col: "xs-5.8" },
+                        "sexo": { label: "Sexo", placeholder: "Ingresa sexo", defaultValue: this.props.editObject?.sexo, col: "xs-5.8" },
 
 
                     }}

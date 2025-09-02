@@ -19,11 +19,6 @@ export default class Main extends Component {
             carritoModalData: [],
         };
     }
-    static sigues() {
-        this.carritoRefModal?.setCarrito?.([]);
-        this.carritoRef?.setCarrito?.([]);
-        // this.forceUpdate();
-    };
     setTipoKey = (key) => {
         this.selectedTipoKey = key;
         this.forceUpdate();
@@ -37,20 +32,9 @@ export default class Main extends Component {
             const activa = await MDL.caja.getActiva();
             this.cajaActiva = !!activa;
             if (this.cajaActiva) {
-                console.log("punto venta caja " + JSON.stringify(activa.key_sucursal))
                 this.forceUpdate();
-                //alert("esta activa caja")
             } else {
-                // alert("sin caja");
-                // SNavigation.goBack();
-                SNotification.send({
-                    title: "Caja no aperturada",
-                    message: "Debes abrir la caja antes de continuar con las operaciones.",
-                    type: "danger",
-                    body: "⚠️Debe abrir caja⚠️",
-                    color: STheme.color.danger,
-                    time: 5000,
-                })
+                SNotification.send({ title: "Caja no aperturada", message: "Debes abrir la caja antes de continuar con las operaciones.", type: "danger", body: "⚠️Debe abrir caja⚠️", color: STheme.color.danger, time: 5000, })
                 SNavigation.replace("/caja2");
             }
         } catch (e) {
@@ -59,23 +43,6 @@ export default class Main extends Component {
     }
     componentDidMount() {
         this.checkCaja();
-        // const itemsEjemplo = [
-        //     {
-        //         key: "producto_123",
-        //         descripcion: "Producto Ejemplo 1",
-        //         precio_venta: 50.00,
-        //         cantidad: 2,
-        //         stock: 10
-        //     },
-        //     {
-        //         key: "producto_456",
-        //         descripcion: "Producto Ejemplo 2",
-        //         precio_venta: 30.00,
-        //         cantidad: 1,
-        //         stock: 20
-        //     }
-        // ];
-        // this.carritoRef?.setCarrito(itemsEjemplo);
         this.renderCarrito();
         Dimensions.addEventListener("change", this.onChangeDimensions);
     }
@@ -93,14 +60,6 @@ export default class Main extends Component {
             />
         );
     }
-    // renderCarrito2() {
-    //     return (
-    //         <Carrito
-    //             ref={(ref) => (this.carritoRefModal = ref)}
-    //             onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
-    //         />
-    //     );
-    // }
     btnFlotante() {
         return (
             <SView col="xs-12 md-0 ">
@@ -119,15 +78,10 @@ export default class Main extends Component {
                         zIndex: 1000,
                     }}
                     onPress={() => {
-                        console.log("prin " + JSON.stringify(this.carritoRef?.carrito))
                         const productos = this.carritoRef?.carrito;
                         PopupCarritoFlotante.open({
                             productos: productos
                         })
-                        // this.setState({ showCarritoModal: true }, () => {
-                        //     this?.carritoRefModal?.setCarrito(productos);
-                        //     this.forceUpdate();
-                        // });
                     }}
                 >
                     <SIconApp name="carritoproducto" width={28} height={28} fill={STheme.color.text} />
@@ -135,50 +89,6 @@ export default class Main extends Component {
             </SView>
         );
     }
-    // renderCarritoModal() {
-    //     if (!this.state.showCarritoModal) return null;
-    //     let valor = this.carritoRef?.carrito.length ?? 0;
-    //     return (
-    //         <SView
-    //             col="xs-12"
-    //             height="100%"
-    //             center
-    //             style={{
-    //                 position: "absolute",
-    //                 top: 0,
-    //                 left: 0,
-    //                 right: 0,
-    //                 bottom: 0,
-    //                 backgroundColor: "rgba(0,0,0,0.6)",
-    //                 zIndex: 10000,
-    //             }}
-    //             onPress={() => {
-    //                 this.setState({ showCarritoModal: false });
-    //             }}
-    //         >
-    //             <SView
-    //                 width={350}
-    //                 height={500}
-    //                 backgroundColor={STheme.color.background}
-    //                 style={{
-    //                     borderRadius: 16,
-    //                     padding: 20,
-    //                     shadowColor: "#000",
-    //                     shadowOffset: { width: 0, height: 4 },
-    //                     shadowOpacity: 0.25,
-    //                     shadowRadius: 5,
-    //                     elevation: 5,
-    //                 }}
-    //                 onPress={(e) => e.stopPropagation()}
-    //             >
-    //                 <SText bold center fontSize={20} style={{ marginBottom: 10 }}>
-    //                     Carrito de Compras
-    //                 </SText>
-    //                 {this.renderCarrito2()}
-    //             </SView>
-    //         </SView>
-    //     );
-    // }
     getColSize() {
         const width = Dimensions.get('window').width;
         if (width >= 1200) return parseFloat((12 / 8).toFixed(2));
@@ -190,15 +100,12 @@ export default class Main extends Component {
             <SPage disableScroll hidden>
                 <Header onSelect={this.setSucursal} />
                 <SView col="xs-12" row flex
-                // backgroundColor={STheme.color.background}
                 >
                     <SView flex
                         col="xs-12 sm-12 md-4.5 lg-3.5"
                         style={{
                             display: this.getColSize() === 4 ? "none" : "flex",
                             padding: 8,
-                            // borderLeftWidth: 1,
-                            // borderLeftColor: STheme.color.card,
                             borderRightWidth: 1,
                             borderRightColor: STheme.color.card,
                         }}
@@ -222,7 +129,6 @@ export default class Main extends Component {
                         {this.cajaActiva && <Modelo
                             ref={(ref) => (this.modeloRef = ref)}
                             tipoKey={this.selectedTipoKey}
-                            // items={this.carritoRef?.carrito}
                             searchText={this.searchText}
                             onPressProducto={(producto) => {
                                 this.carritoRef?.addProducto(producto);
@@ -233,7 +139,6 @@ export default class Main extends Component {
                     </SView>
                 </SView>
                 {this.btnFlotante()}
-                {/* {this.renderCarritoModal()} */}
             </SPage>
         );
     }

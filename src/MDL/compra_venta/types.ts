@@ -23,4 +23,9 @@ export type Sucursal = {
 
 export type EventListener = {
     type: "handleChange"
+} | {
+    type: "venta_realizada"
+}| {
+    type: "conStock"
 }
+

@@ -31,12 +31,22 @@ export default class RegistroInventarios extends Component {
     async loadData() {
         if (this.key_conteoxxx) {
             const modelosByContador = await MDL.inventario.getByKey_reporte_conteo_inventario_detallado(this.key_conteoxxx);
+            // this.modelos = (modelosByContador || []).filter(m => m.tipo_producto?.tipo !== "servicio");
+
+            //   como hago para filtrar que sea diferernte a servicio
             this.modelos = modelosByContador;
+            // tipo_producto.tipo != "servicio"
         } else {
             const modelos = await MDL.inventario.getAllModeloStock(this.key_almacen);
+
+            // this.modelos = (modelos || []).filter(m => m.tipo_producto?.tipo !== "servicio");
+
+
             this.modelos = modelos;
         }
-        return this.modelos;
+        const api = (this.modelos || []).filter(m => m.tipo_producto?.tipo !== "servicio" && m.stock != 0);
+        console.log("📦 DATA COMPLETA:", JSON.stringify(api));
+        return api;
     }
 
     colorStock(cant_stock, cant_inv) {
@@ -137,6 +147,9 @@ export default class RegistroInventarios extends Component {
                 loadData={this.loadData.bind(this)}
             >
                 <DinamicTable.Col key="index" label="#" textStyle={{ color: STheme.color.lightGray }} width={40} data={(e) => e.index + 1} />
+
+                <DinamicTable.Col key="tipo_productos" label="Grupo" textStyle={{ color: STheme.color.text }} width={80} data={(e) => e.row?.tipo_producto?.tipo} />
+
                 <DinamicTable.Col key={"tipo_producto"} label='Tipo' width={150} data={(e) => e.row?.tipo_producto?.descripcion}
                     customComponent={e => <ImageLabel {...e}
                         src={SSocket.api.inventario + "tipo_producto/.128_" + e.row.key_tipo_producto + "?date=" + this.state.time}

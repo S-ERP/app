@@ -9,11 +9,12 @@ import FormularioModelo from '../Components/FormularioModelo';
 import FloatButtom from '../../../Components/FloatButtom';
 import FloatMenu from '../../../Components/FloatMenu';
 import SIconApp from '../../../Assets/SIconApp';
-import FormularioAgregarInventario from '../Components/FormularioAgregarInventario';
 import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
 import PopupDetalleModelo from '../Components/PopupDetalleModelo';
 import PopupDesglose from '../Components/PopupDesglose';
 import PopupModeloCardex from '../Components/PopupModeloCardex';
+// import PopupInfoProv from './Components/PopupInfoProv';
+import PopupCrearProveedor from './Components/PopupCrearProveedor';
 
 export default class table extends Component {
     constructor(props) {
@@ -220,18 +221,50 @@ export default class table extends Component {
                     data={(e) => (e.row.proveedores ?? []).map(p => p?.proveedor?.razon_social)}
                     customComponent={e => <SView row>
                         {(e.row.proveedores ?? []).map(p => {
-                            return <SView style={{
-                                padding: 2,
-                                borderWidth: 1,
-                                borderColor: STheme.color.lightGray,
-                                borderRadius: 4,
-                            }}>
+                            return <SView style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }}
+                                onPress={() => {
+
+                                    // console.log("todoooooooooooooooooooooooooo  " + JSON.stringify(e?.row))
+
+
+                                    // PopupCrearCliente.open({
+                                    //     editObject: p?.proveedor,
+                                    //     // key_empresa: cliente.key_empresa,
+                                    //     // onSuccess: async () => {
+                                    //     //     this.DinamicTable.loadData();
+                                    //     // },
+                                    // })
+                                    PopupCrearProveedor.open({
+                                        proveedor: p?.proveedor,
+                                        producto_key: e?.row?.key,
+                                        precio_compra: e?.row?.precio_compra,
+                                        producto_descripcion: e?.row?.descripcion,
+                                        key_empresa: e?.row?.key_empresa,
+
+                                        onSuccess: async () => {
+                                            this.table.loadData();
+                                        },
+
+                                    });
+
+
+                                }}
+
+                            //     PopupInfoProv.open({
+                            //         proveedor: p?.proveedor,
+                            //         producto_key: e?.row?.key,
+                            //         precio_compra : e?.row?.precio_compra,
+                            //         producto_descripcion : e?.row?.descripcion
+                            //     });
+                            // }}
+                            >
                                 <SText fontSize={10} numberOfLines={1} >{p?.proveedor?.razon_social}</SText>
                             </SView>
                         })}
                     </SView>
                     }
                 />
+
 
 
                 <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sd' width={150}
@@ -253,7 +286,7 @@ export default class table extends Component {
                         </View>
                     }}
                 />
-                <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row?.barcode} />
+                <DinamicTable.Col key={"barcode"} label='BarCodeqqqqq' width={100} data={(e) => e.row?.barcode} />
             </DinamicTable>
             <FloatButtom onPress={() => {
                 PopupDetalleModelo.open({
@@ -267,7 +300,7 @@ export default class table extends Component {
                     }
                 });
             }} />
-        </SPage>
+        </SPage >
     }
 }
 

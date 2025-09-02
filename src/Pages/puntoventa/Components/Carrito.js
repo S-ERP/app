@@ -7,13 +7,57 @@ import ResumenTotales from './Carrito/ResumenTotales';
 import TecladoNumerico from './Carrito/TecladoNumerico';
 import MDL from '../../../MDL';
 import FotoCliente from './Foto/FotoCliente';
+import item from '../../compra/item';
 export default class Carrito extends Component {
     carrito = [];
     descuentoManual = "";
     conFactura = false;
+    conStock = false;
     cliente = {};
+
+    ajustarCarrito = () => {
+        if (!this.conStock) return; // si no hay control de stock, no hacemos nada
+
+        this.carrito = this.carrito.filter(item => {
+            if (!item.stock || item.stock <= 0) {
+                SNotification.send({
+                    title: "Producto sin stock",
+                    body: `${item.descripcion} fue eliminado del carrito porque no tiene stock.`,
+                    color: STheme.color.danger,
+                    time: 3000
+                });
+                return false; // filtrar fuera del carrito
+            }
+
+            // Si la cantidad supera el stock, ajustamos
+            if (item.cantidad > item.stock) {
+                item.cantidad = item.stock;
+                SNotification.send({
+                    title: "Stock ajustado",
+                    body: `La cantidad de ${item.descripcion} se ajustó al stock disponible (${item.stock}).`,
+                    color: STheme.color.warning,
+                    time: 3000
+                });
+            }
+
+            return true; // mantener el item
+        });
+
+        this.forceUpdate();
+    };
+
+
     componentDidMount() {
         this.loadData()
+        this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
+            this.vaciarCarrito();
+            this.forceUpdate();
+        });
+    }
+    componentWillUnmount() {
+        if (this.evento) {
+            MDL.compra_venta.removeEventListener(this.evento);
+        }
     }
     async loadData() {
         const enviroments = await MDL.contabilidad.getEnviroment();
@@ -28,29 +72,82 @@ export default class Carrito extends Component {
         this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
         this.forceUpdate();
     }
+
     addProducto = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
-            this.carrito[index].cantidad += 1;
+            const item = this.carrito[index];
+            if (this.conStock) {
+                // Solo aumentar hasta el stock disponible
+                if (item.cantidad < item.stock) {
+                    item.cantidad += 1;
+                } else {
+                    SNotification.send({
+                        title: "Stock insuficiente",
+                        body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: ${item.stock} unidades.`,
+                        color: STheme.color.danger,
+                        time: 3000
+                    });
+                    return;
+                }
+            } else {
+                // Sin control de stock, aumentar sin límite
+                item.cantidad += 1;
+            }
+        } else {
+            // Nuevo producto, cantidad inicial = 1
+            this.carrito.push({ ...producto, cantidad: 1 });
         }
-        else this.carrito.push({ ...producto, cantidad: 1 });
         this.forceUpdate();
     };
+
     aumentarCantidad = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
-        if (index >= 0) {
-            this.carrito[index].cantidad += 1;
+        if (index < 0) return; // No existe
+
+        const item = this.carrito[index];
+        if (this.conStock) {
+            // Solo aumentar hasta el stock disponible
+            if (item.cantidad < item.stock) {
+                item.cantidad += 1;
+                this.forceUpdate();
+            } else {
+                SNotification.send({
+                    title: "Stock insuficiente",
+                    body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: ${item.stock} unidades.`,
+                    color: STheme.color.danger,
+                    time: 3000
+                });
+            }
+        } else {
+            // Sin control de stock, aumentar sin límite
+            item.cantidad += 1;
             this.forceUpdate();
         }
     };
+
     disminuirCantidad = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
-        if (index >= 0) {
-            this.carrito[index].cantidad -= 1;
-            if (this.carrito[index].cantidad <= 0) this.carrito.splice(index, 1);
-            this.forceUpdate();
+        if (index < 0) return; // No existe
+
+        const item = this.carrito[index];
+        item.cantidad -= 1;
+
+        if (item.cantidad <= 0) {
+            // Eliminar del carrito si la cantidad llega a 0
+            this.carrito.splice(index, 1);
+            SNotification.send({
+                title: "Producto eliminado",
+                body: `${item.descripcion} fue eliminado del carrito porque su cantidad llegó a 0.`,
+                color: STheme.color.warning,
+                time: 2000
+            });
         }
+
+        this.forceUpdate();
     };
+
+
     eliminarItem = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
@@ -58,9 +155,7 @@ export default class Carrito extends Component {
             this.forceUpdate();
         }
     };
-    static clean = () => {
-        this.vaciarCarrito();
-    };
+
     vaciarCarrito = () => {
         this.carrito = [];
         this.descuentoManual = "";
@@ -78,7 +173,6 @@ export default class Carrito extends Component {
         } else {
             return subtotal;
         }
-        this.forceUpdate()
     };
     calcularIVA = (subtotal) => {
         if (!this._enviromentsIva) return 0;
@@ -119,7 +213,8 @@ export default class Carrito extends Component {
                             <SView col={"xs-10 md-10"} row  >
                                 <SText fontSize={15} bold color={STheme.color.text}>Detalle venta</SText>
                             </SView>
-                            <SView col={"xs-2 md-2"} center onPress={() => this.vaciarCarrito()} style={{ alignItems: "flex-end" }} >
+                            <SView col={"xs-2 md-2"} center onPress={() => { MDL.compra_venta.vaciarAll(); }}
+                                style={{ alignItems: "flex-end" }} >
                                 <SView backgroundColor={STheme.color.card} border={STheme.color.text} style={{ borderRadius: 20, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4, height: 24, opacity: 0.6, alignItems: "flex-end" }}>
                                     <SText fontSize={12} center color={STheme.color.text}>Vaciar</SText>
                                 </SView>
@@ -146,22 +241,12 @@ export default class Carrito extends Component {
                         <SHr height={5} />
                         <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
                         <SView col={"xs-12"} row center   >
-                            <SView col={"md-12 xl-6"} height={70} border={"transparent"} >
+                            <SView col={"md-12 xl-6"} height={70}  >
                                 <SView col={"xs-10"} center  >
-                                    <SInput label={"Descuento VIP (Bs):"} disabled={true} height={40} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={this.descuentoManual > 0 ? "yellow" : STheme.color.card} style={{ backgroundColor: "transparent", borderRadius: 8 }}
+                                    <SInput label={"Descuento VIP (Bs):"} disabled={true} height={40} placeholder={"0"} defaultValue={this.descuentoManual ?? null} type='number' border={this.descuentoManual > 0 ? "yellow" : STheme.color.card} style={{ borderRadius: 8 }}
                                         value={this.descuentoManual?.toString()} // 🔑 importante para controlarlo
                                         onChangeText={(text) => {
                                             let valor = Number(text);
-                                            // if (valor > subtotal) {
-                                            //     SNotification.send({
-                                            //         title: "Descuento inválido",
-                                            //         body: `El descuento no puede superar el subtotal (${subtotal}).`,
-                                            //         type: "error",
-                                            //         color: STheme.color.error,
-                                            //         time: 5000,
-                                            //     });
-                                            //     return;
-                                            // }
                                             if (valor > subtotal) {
                                                 valor = subtotal;
                                             } else if (valor < 0) {
@@ -173,22 +258,36 @@ export default class Carrito extends Component {
                                     />
                                 </SView>
                             </SView>
-                            <SView col={"md-12 xl-6"} height={60} center border={"transparent"} >
-                                <SView col={"md-12"} center    >
-                                    <SInput label={"Con factura"} type='checkBox' defaultValue={this.conFactura}
+                            <SView col={"md-12 xl-6"} height={60} center row >
+                                <SView col={"md-6"} center    >
+                                    <SInput label={"Con factura"} type='checkBox' labelStyle={{ left: 12 }}
+                                        defaultValue={this.conFactura}
                                         onChangeText={(text) => {
                                             this.conFactura = text;
                                             this.forceUpdate();
                                         }}
                                     />
                                 </SView>
+                                <SView col={"md-6"} center    >
+                                    <SInput label={"Con Stock"} type='checkBox' labelStyle={{ left: 12 }} defaultValue={this.conStock}
+                                        onChangeText={(text) => {
+                                            const valor = MDL.compra_venta.conStock();
+
+                                            console.log("va llevando " + text)
+                                            this.conStock = text;
+
+                                            this.ajustarCarrito();
+                                            // this.forceUpdate();
+                                        }}
+                                    />
+                                </SView>
                             </SView>
+
                         </SView>
                         <SHr height={4} />
                         <SView col={"xs-12 md-0"} center backgroundColor={STheme.color.danger} border={STheme.color.card} style={{ height: 44, borderRadius: 2, margin: 2 }}>
                             <SView col={"xs-12"} center>
                                 <FotoCliente onReloadCliente={(cliente) => {
-                                    console.log("cheking 111111111 movil" + JSON.stringify(cliente))
                                     this.cliente = cliente;
                                     this.forceUpdate();
                                 }}  ></FotoCliente>
@@ -209,6 +308,7 @@ export default class Carrito extends Component {
                     conFactura={this.conFactura}
                     subtotal={subtotal}
                     onReload={() => { this.vaciarCarrito(); }}
+                    // estadostock={() => { this.estadostock(); }}
                     onReloadCliente={() => { this.cliente = null }}
                 />
             </>

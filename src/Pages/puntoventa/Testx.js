@@ -214,7 +214,6 @@ export default class Testx extends Component {
             <>
                 <SView col={"xs-0 sm-12"} row color={STheme.color.danger}   >
                     <SView col={"xs-4"
-
                     }>
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                             PopupConfirmaPago.open({

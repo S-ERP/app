@@ -7,10 +7,8 @@ import ReciboRollo from '../../../../Components/PDF/venta/ReciboRollo';
 import ReciboCarta from '../../../../Components/PDF/venta/ReciboCarta';
 import SelectTipoPago from '../../../caja2/components/SelectTipoPago';
 export default class PopupConfirmaPago extends Component {
-    // sucursal = null;
     async componentDidMount() {
         this.sucursal = await MDL.compra_venta.getSucursalSeleccionada();
-        // this.forceUpdate(); // Refresca para que aparezca la sucursal
     }
     static open(props) {
         SPopup.open({
@@ -30,8 +28,6 @@ export default class PopupConfirmaPago extends Component {
             )
         });
     }
-    // variableGlobal = "";
-    // totalDescuento = 0;
     dataFormateada({ sucursal = null, carrito = [], cliente = null, caja = null, vendedor = null }) {
         const carritoFormateado = carrito.map(item => ({
             key_modelo: item.key,
@@ -52,7 +48,6 @@ export default class PopupConfirmaPago extends Component {
     }
     renderButton(totalFinal, subtotal, descuento, conFactura, carrito, cliente) {
         const sucursal = this.sucursal;
-        // console.log("WWWWW")
         if (!this.tipos_pago) {
             SNotification.send({
                 title: "Error",
@@ -73,7 +68,6 @@ export default class PopupConfirmaPago extends Component {
             });
             return;
         }
-        // console.log("WWWWW 1")
         if (!this.sucursal || !this.sucursal.key_sucursal) {
             SNotification.send({
                 title: "Error",
@@ -84,7 +78,6 @@ export default class PopupConfirmaPago extends Component {
             });
             return;
         }
-        // console.log("WWWWW 2")
         const vendedor = Model.usuario.Action.getUsuarioLog();
         const caja = {
             subtotal: SMath.formatMoney(subtotal, 2),
@@ -110,7 +103,6 @@ export default class PopupConfirmaPago extends Component {
             type: "loading",
         })
         MDL.compra_venta.registrar(datos).then((res) => {
-            // this.forceUpdate();
             this.props?.onReload();
             this.props?.onReloadCliente?.(null); // Limpia cliente en FotoCliente
             ReciboRollo.imprimir(res.key)
@@ -120,22 +112,20 @@ export default class PopupConfirmaPago extends Component {
             this.tipos_pago = null;
             SNotification.remove("compra")
         }).catch(res => {
-            console.log("compra_venta registrado error " + res.error),
-                SNotification.send({
-                    key: "compra",
-                    title: "Error",
-                    body: res.error,
-                    type: "error",
-                    color: STheme.color.error,
-                    time: 5000
-                }
-                )
+            SNotification.send({
+                key: "compra",
+                title: "Error",
+                body: res.error,
+                type: "error",
+                color: STheme.color.error,
+                time: 5000
+            }
+            )
         })
     }
     render() {
         const sucursal = this.sucursal;
         const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura, carrito, cliente } = this.props;
-        console.log("traeido " + cliente)
         return (
             <SView col="xs-12" center>
                 <SView height={8} />
@@ -155,15 +145,13 @@ export default class PopupConfirmaPago extends Component {
                         autoFocus={true}
                         type="number"
                         border={STheme.color.card}
-                        style={{ backgroundColor: "transparent", borderRadius: 8 }}
+                        style={{ borderRadius: 8 }}
                         onChangeText={(text) => {
                             this.variableGlobal = parseFloat(text) || 0;
                             this.forceUpdate();
                         }}
                         onKeyPress={(e) => {
                             if (e.key === "Enter") {
-                                // this.props.onConfirm(this.variableGlobal);
-                                // console.log("AAAAA")
                                 this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito, cliente);
                             }
                         }}
@@ -213,8 +201,6 @@ export default class PopupConfirmaPago extends Component {
                                     montoMaximo: totalFinal,
                                     onSelect: (item) => {
                                         this.tipos_pago = item;
-                                        // this.handleSubmit(item.key_tipo_pago)
-                                        console.log("selecciono " + JSON.stringify(item))
                                         this.forceUpdate();
                                         SelectTipoPago.closePopup();
                                     }

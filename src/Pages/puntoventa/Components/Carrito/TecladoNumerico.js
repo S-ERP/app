@@ -16,7 +16,6 @@ export default class TecladoNumerico extends Component {
         super(props);
     }
     renderButton(totalFinal, subtotal, descuento, conFactura, carrito) {
-        // console.log("WWWWW")
         if (!this.tipos_pago) {
             SNotification.send({
                 title: "Error",
@@ -36,7 +35,6 @@ export default class TecladoNumerico extends Component {
                 time: 5000,
             });
             this.tipos_pago = null;
-            // this.forceUpdate();
             return;
         }
         const recibi = this.tipos_pago.efectivo || 0;
@@ -69,17 +67,13 @@ export default class TecladoNumerico extends Component {
             key_cajero,
             caja
         };
-        // console.log("basta....... " + JSON.stringify(datos))
         SNotification.send({
             key: "compra",
             title: "Esperando...",
             type: "loading",
         })
         MDL.compra_venta.registrar(datos).then((res) => {
-            // ReciboRollo.imprimir(res.key)
             ReciboCarta.imprimir(res.key)
-            // SPopup.close("popup_config_horario");
-            // SPopup.close("PopupPago");
             this.tipos_pago = null;
             SNotification.remove("compra");
             this.props?.onReload?.();
@@ -89,7 +83,6 @@ export default class TecladoNumerico extends Component {
         }).catch(res => {
             this.tipos_pago = null;
             this.forceUpdate();
-            console.log("compra_venta registrado error " + res.error)
             SNotification.send({
                 key: "compra",
                 title: "Error",
@@ -101,6 +94,12 @@ export default class TecladoNumerico extends Component {
             )
         })
     }
+
+    handleCalculatorPress(valor){
+
+        console.log("presiono "+valor)
+    }
+
     renderTecladoNumerico = () => {
         const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
         const style_text = {
@@ -121,9 +120,7 @@ export default class TecladoNumerico extends Component {
                     <SView col={"xs-4"}>
                         <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 40, borderRadius: 8, margin: 2 }}>
                             <FotoCliente onReloadCliente={(cliente) => {
-                                console.log("cheking 22222222222 web" + JSON.stringify(cliente))
                                 this.cliente = cliente;
-                                // this.forceUpdate();
                             }}  ></FotoCliente>
                         </SView>
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 8, margin: 2 }} onPress={() => {
@@ -132,10 +129,8 @@ export default class TecladoNumerico extends Component {
                                 SelectTipoPago.openPopup({
                                     key_punto_venta: MDL.caja.activa.key_punto_venta,
                                     montoMaximo: (subtotal - descuento),
-                                    // montoMaximo: totalFinal,
                                     onSelect: (item) => {
                                         this.tipos_pago = item;
-                                        console.log("selecciono " + JSON.stringify(item))
                                         this.forceUpdate();
                                         this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
                                         SelectTipoPago.closePopup();
@@ -158,7 +153,8 @@ export default class TecladoNumerico extends Component {
                                             height: 40, borderRadius: 8,
                                             overflow: "hidden", margin: 2
                                         }}
-                                        onPress={() => this.handleCalculatorPress(t)} >
+                                        onPress={() => this.handleCalculatorPress(t)} 
+                                        >
                                         <SText style={style_text}>{t}</SText>
                                     </SView>
                                 ))}
@@ -173,14 +169,10 @@ export default class TecladoNumerico extends Component {
                             SelectTipoPago.openPopup({
                                 key_punto_venta: MDL.caja.activa.key_punto_venta,
                                 montoMaximo: (subtotal - descuento),
-                                // montoMaximo: totalFinal,
                                 onSelect: (item) => {
                                     this.tipos_pago = item;
-                                    console.log("selecciono " + JSON.stringify(item))
                                     this.forceUpdate();
                                     this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
-                                    // SPopup.close("popup_config_horario");
-                                    // SPopup.close("PopupPago");
                                     this.tipos_pago = null;
                                     SNotification.remove("compra");
                                     this.props?.onReload?.();

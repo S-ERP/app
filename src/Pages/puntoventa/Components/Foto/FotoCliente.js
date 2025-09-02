@@ -3,6 +3,7 @@ import { SView, SText, STheme, SImage } from 'servisofts-component';
 import SIconApp from '../../../../Assets/SIconApp';
 import SSocket from 'servisofts-socket';
 import PopupCliente from '../Carrito/PopupCliente';
+import MDL from '../../../../MDL';
 export default class FotoCliente extends Component {
   state = {
     cliente: null,
@@ -15,14 +16,17 @@ export default class FotoCliente extends Component {
       },
     });
   };
-  // handleSelectCliente = () => {
-  //   PopupCliente.open({
-  //     onReloadCliente: (cliente) => {
-  //       this.setState({ cliente });
-  //       this.props.onReloadCliente?.(cliente);
-  //     },
-  //   });
-  // };
+  componentDidMount() {
+    this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
+      this.state.cliente = null;
+      this.forceUpdate();
+    });
+  }
+  componentWillUnmount() {
+    if (this.evento) {
+      MDL.compra_venta.removeEventListener(this.evento);
+    }
+  }
   render() {
     const { cliente } = this.state;
     const style_text = {
@@ -30,7 +34,7 @@ export default class FotoCliente extends Component {
       fontSize: 12,
       fontWeight: 'bold',
     };
-    const url = cliente?.key ? `${SSocket.api.crm}cliente/${cliente.key}` : null;
+    const url = cliente?.key ? `${SSocket.api.root}usuario/${cliente.key}` : null;
     return (
       <SView
         center
@@ -71,7 +75,7 @@ export default class FotoCliente extends Component {
               {cliente?.nombres || 'CLIENTE'}
             </SText>
             {cliente?.key ? (
-              <SText
+              <SText flex
                 style={{
                   ...style_text,
                   fontSize: 12,
@@ -79,7 +83,6 @@ export default class FotoCliente extends Component {
                   textTransform: 'uppercase',
                 }}
               >
-                CLIENTE
               </SText>
             ) : null}
           </SView>

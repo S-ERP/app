@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SView, SText, STheme, SMath, SNavigation, SPopup, SHr } from 'servisofts-component';
+import { SView, SText, STheme, SMath, SHr } from 'servisofts-component';
 export default class ResumenTotales extends Component {
     render() {
         const { subtotal, totalImpuesto, numeroIva, totalDescuento } = this.props;
