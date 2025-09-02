@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { SForm, SHr, SPopup, SText, STheme, SView } from 'servisofts-component';
-import PButtom from '../../../../Components/PButtom';
+// import PButtom from '../../../../Components/PButtom';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../../MDL';
 import Model from '../../../../Model';
@@ -85,13 +85,14 @@ export default class PopupCrearMoneda extends Component<Props> {
                         key_usuario: Model.usuario.Action.getKey(),
                         data: {
                             key_empresa: this.props.key_empresa,
-                            ...(this.props.editObject ?? {}),
+                            // key_usuario: Model.usuario.Action.getKey(),
                             ...data,
                         }
                     }).then(e => {
                         if (this.props.onSuccess) this.props.onSuccess(e)
-                        console.log("response", e);
+                         console.log("response", e);
                     }).catch(e => {
+                        if (this.props.onSuccess) this.props.onSuccess(e)
                         console.error("response", e);
                     })
                 }}

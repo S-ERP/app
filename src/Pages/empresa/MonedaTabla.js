@@ -7,177 +7,134 @@ import FloatButtom from '../../Components/FloatButtom';
 import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
-import PopupCrearSucursal from './config/Components/PopupCrearSucursal';
-// import MDL from '../../MDL';
-// import FloatButtom from '../../Components/FloatButtom';
-// import FloatMenu from '../../Components/FloatMenu';
-// import SIconApp from '../../Assets/SIconApp';
-// import Config from '../../Config';
-// import PopupCrearSucursal from './config/Components/PopupCrearSucursal';
-
+ import PopupCrearMoneda from './config/Components/PopupCrearMoneda';
 
 export default class MonedaTabla extends Component {
+
+
 
     constructor(props) {
         super(props);
         this.state = {};
     }
 
-
-
-
-
-    obtenerUbicacion = () => {
-        return new Promise((resolve, reject) => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    position => resolve({ lat: position.coords.latitude, lng: position.coords.longitude }),
-                    error => reject(error)
-                );
-
-                console.log("Lat:", pos.coords.latitude, "Lng:", pos.coords.longitude)
-
-            } else {
-                reject(new Error("Geolocalización no soportada"));
-            }
-        });
+    componentDidMount() {
+        this.loadInitialData();
     }
 
+    async loadInitialData() {
+        try {
+
+            const apiFull = await MDL.empresa.getFull();
+            if (!apiFull) return null;
+            return apiFull.monedas;
+            // this.forceUpdate();
+
+        } catch (error) {
+            console.error('Error loading initial data:', error);
+            return [];
+        }
+    }
 
     mostrarTabla() {
         return <DinamicTable
             key="tabla"
+            ref={ref => this.table = ref}
+            loadData={this.loadInitialData.bind(this)}
+
             {...Config.table.applyTheme()}
-            ref={ref => this.DinamicTable = ref}
+            // ref={ref => this.DinamicTable = ref}
             center
             language="es"
             selectType="single"
-
             onSelect={(e) => {
                 if (this.onSelect) {
-                    this.onSelect(e.row)
+                    this.onSelect(e.row);
                     SNavigation.goBack();
                     return;
                 }
 
                 FloatMenu.open({
                     e: e.evt,
-                    label: "Sucursal: " + e.row.descripcion,
+                    label: "Moneda: " + e.row.descripcion,
                     options: [
                         {
                             icon: <SIconApp name='Edit' />,
-                            label: "Actualizar Sucursal",
+                            label: "Actualizar Moneda",
                             onPress: () => {
-                                // let ubicacion = { lat: null, lng: null };
-                                // try {
-                                //     ubicacion = await this.obtenerUbicacion();
-                                // } catch (error) {
-                                //     console.warn("No se pudo obtener la ubicación:", error.message);
-                                // }
-                                const sucursal = {
-                                    ...e.row,
-                                    key_usuario: MDL.usuario.session?.key,
-                                }
-
-                                console.log("se esta editando sucursal " + JSON.stringify(sucursal))
-
-                                PopupCrearSucursal.open({
-                                    editObject: sucursal,
-                                    key_empresa: e.row.key_empresa,
-                                    onSuccess: (e) => {
-                                        this.DinamicTable.loadData();
+                                PopupCrearMoneda.open({
+                                    editObject: e?.row,
+                                    key_empresa: e?.row?.key_empresa,
+                                    onSuccess: () => {
+                                        console.log("onSuccess");
+                                        // this.table.loadData();
+                                        // this.forceUpdate();
+                                        // this.loadData.bind(this)
                                     }
                                 })
+                                // this.loadData.bind(this)
+
                             }
                         },
                         {
                             icon: <SIconApp name='Delete' />,
-                            label: "Eliminar Sucursal",
+                            label: "Eliminar Moneda",
                             onPress: () => {
                                 SPopup.confirm({
-                                    title: "Eliminar Sucursal",
-                                    message: "¿Estás seguro de eliminar esta sucursal?",
+                                    title: "Eliminar Moneda",
+                                    message: "¿Estás seguro de eliminar esta moneda?",
                                     onPress: () => {
-                                        const sucursal_ = {
+                                        const moneda_ = {
                                             ...e.row,
                                             estado: 0,
                                         }
                                         SSocket.sendPromise({
                                             service: "empresa",
-                                            component: "sucursal",
+                                            component: "moneda", // 🔥 corregido
                                             type: "editar",
-                                            data: sucursal_,
+                                            data: moneda_,
                                             key_usuario: MDL.usuario.session?.key,
-                                        }).then(e => {
-                                            this.DinamicTable.loadData();
-                                        }).catch(e => {
-                                            console.error("response", e);
+                                        }).then(() => {
+                                            this.table.loadData();
+                                            this.forceUpdate();
+                                        }).catch(err => {
+                                            console.error("response", err);
                                         })
-
                                     }
                                 })
-
                             }
                         }
                     ]
                 })
-
-
             }}
-
-            // loadInitialState={async () => {
-            //     return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
-            // }}
-
-            loadData={async () => {
-                const api = await MDL.empresa.getAllSucursales();
-
-                const empresa = MDL.empresa.select?.razon_social;
-                const keysUsuarios = Object.values(api).map(p => p.key_usuario).filter(Boolean);
-                const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
-                Object.values(api).forEach(itm => {
-                    itm.usuario = usuarios.find(u => u.key === itm.key_usuario);
-                    itm.razon_social = empresa
-                });
-
-                return api;
-            }}
-
+        // loadInitialState={async () => {
+        //     return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
+        // }}
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
+            <DinamicTable.Col key="descripcion" label="Moneda" width={120} data={(e) => e.row?.descripcion} />
+            <DinamicTable.Col key="observacion" label="Observación" width={120} data={(e) => e.row?.observacion} />
+            <DinamicTable.Col key="tipo_cambio" label="Tipo Cambio" width={120} data={(e) => e.row?.tipo_cambio} />
+            <DinamicTable.Col key="estado" label="Estado" width={150} data={(e) => e.row?.estado} />
 
-            <DinamicTable.Col key="sucursal" label="Sucursal" width={120} data={(e) => e.row?.key ?? ""}
-                customComponent={e => <>
-                    {(e.row?.key) ?
-                        <SView col={"xs-12"} row  >
-                            <SView style={{ width: 28 }}>
-                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                    <SImage src={`${SSocket.api.empresa}sucursal/${e.row?.key}?date=${new Date().getTime()}`} style={{ resizeMode: "cover" }} />
-                                </SView>
-                            </SView>
-                            <SView width={5} />
-                            <SText center color={STheme.color.text}>{e.row?.descripcion}</SText>
-                        </SView> : null}
-                </>}
+            <DinamicTable.Col
+                key={"fecha_on"}
+                label="F.Registro"
+                width={120}
+                dataType="date"
+                data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
+                textStyle={{ fontSize: 12, color: STheme.color.text }}
+                dateFormat="yyyy-MM-dd hh:mm"
             />
 
- 
-            <DinamicTable.Col key="observacion" label="Observación" width={120} data={(e) => e.row?.observacion} />
-            <DinamicTable.Col key="telefono" label="Teléfono" width={150} data={(e) => e.row?.telefono} />
-            <DinamicTable.Col key="direccion" label="Dirección" width={100} data={(e) => e.row?.direccion} />
-            <DinamicTable.Col key="municipio" label="Municipio" width={100} data={(e) => e.row?.municipio} />
-            <DinamicTable.Col key="correo" label="Correo" width={100} data={(e) => e.row?.correo} />
-            <DinamicTable.Col key="lat" label="Lat" width={40} data={(e) => e.row?.lat} />
-            <DinamicTable.Col key="lng" label="Lng" width={40} data={(e) => e.row?.lng} />
-            <DinamicTable.Col key="codigo_facturacion" label="Código facturación" width={130} data={(e) => e.row?.codigo_facturacion} />
-            {/* <DinamicTable.Col key="punto_venta" label="punto_venta" width={130} data={(e) => e.row?.punto_venta} /> */}
-
- 
-            <DinamicTable.Col key={"fecha_on"} label="F.Registro" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-            <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
+            <DinamicTable.Col
+                key="admin"
+                label="Admin"
+                width={90}
+                data={(e) => e.row?.usuario?.Nombres ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_usuario) ?
-                        <SView col={"xs-12"} center row  >
+                        <SView col={"xs-12"} center row>
                             <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                                 <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
                             </SView>
@@ -187,40 +144,38 @@ export default class MonedaTabla extends Component {
                 </>}
             />
 
-            <DinamicTable.Col key="empresa" label="Empresa" width={180} data={(e) => e.row?.key_empresa ?? ""}
+            <DinamicTable.Col
+                key="empresa"
+                label="Empresa"
+                width={60}
+                data={(e) => e.row?.key_empresa ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_empresa) ?
-                        <SView col={"xs-12"} row  >
+                        <SView col={"xs-12"} row center>
                             <SView style={{ width: 28 }}>
-
                                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                                     <SImage src={`${SSocket.api.empresa}empresa/${e.row?.key_empresa}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                             </SView>
-                            <SView width={5} />
-                            <SText center color={STheme.color.text} style={{ fontSize: 15, textTransform: "capitalize" }} >{e.row?.razon_social}</SText>
                         </SView> : null}
                 </>}
             />
-
         </DinamicTable>
     }
 
     render() {
         return (
-            <SPage title="Gestión de Sucursales" disableScroll>
+            <SPage title="Gestión de Monedas" disableScroll>
                 {this.mostrarTabla()}
                 <FloatButtom onPress={() => {
-                    PopupCrearSucursal.open({
+                    PopupCrearMoneda.open({
                         key_empresa: MDL.empresa.select?.key,
-                        onSuccess: (e) => {
-                            this.DinamicTable.loadData();
+                        onSuccess: () => {
+                            this.table.loadInitialState.bind(this);
                         }
                     })
                 }} />
             </SPage>
         );
     }
-
-
 }
