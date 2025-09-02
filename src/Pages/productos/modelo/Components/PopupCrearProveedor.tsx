@@ -62,13 +62,13 @@ export default class PopupCrearProveedor extends Component<Props> {
                                     style={{ width: 50, height: 50, }} />
                             </SView>,
                         },
-                        "nit": { label: "NIT", placeholder: "NIT", defaultValue: proveedor?.nit, col: "xs-12" },
+                        "nit": { label: "NIT", placeholder: "NIT", disabled: tre  defaultValue: proveedor?.nit, col: "xs-12" },
                         "nombre": { label: "Nombre del contacto", placeholder: "Nombre del contacto", defaultValue: proveedor?.nombre, col: "xs-12" },
                         "telefono": { label: "Teléfono", placeholder: "Teléfono", type: "telefono", defaultValue: proveedor?.telefono, col: "xs-12" },
 
 
-                        "producto_descripcion": { label: "Producto", placeholder: "Teléfono", defaultValue: producto_descripcion|| null, col: "xs-12" },
-                        "precio_compra": { label: "Precio",   defaultValue: precio_compra || "0", col: "xs-12" },
+                        "producto_descripcion": { label: "Producto", placeholder: "Producto", defaultValue: producto_descripcion || "0", col: "xs-12" },
+                        "precio_compra": { label: "Precio", defaultValue: precio_compra || "0", col: "xs-12" },
                     }}
                 // onSubmit={(val: any) => {
                 //     const data = {
@@ -133,8 +133,8 @@ export default class PopupCrearProveedor extends Component<Props> {
                 />
             </ScrollView>
             <SHr h={16} />
-            {/* <SView row col={"xs-12"}>
-                {this.props.onCancel && <>
+            <SView row col={"xs-12"}>
+                {/* {this.props.onCancel && <>
                     <Btn type='danger' label='CANCELAR' onPress={() => {
                         if (this.props.onCancel) this.props.onCancel()
                     }} />
@@ -142,8 +142,8 @@ export default class PopupCrearProveedor extends Component<Props> {
                 </>}
                 <Btn type='primary' label='GUARDAR' onPress={() => {
                     if (this.form) this.form.submit();
-                }} />
-            </SView> */}
+                }} /> */}
+            </SView>
         </SView>
     }
 }
