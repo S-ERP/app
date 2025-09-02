@@ -8,46 +8,22 @@ import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
 import PopupCrearMoneda from './config/Components/PopupCrearMoneda';
-
 export default class MonedaTabla extends Component {
     constructor(props) {
         super(props);
         this.state = {};
     }
-
-    // componentDidMount() {
-    //     this.loadInitialData();
-    //     this.table.loadData();
-    //     console.log("componentDidMount");
-    // }
-
     componentDidMount() {
         this.loadInitialData();
     }
-
     loadInitialData = async () => {
         const api = await MDL.empresa.getMonedas();
         return api;
     }
-
-
-
-    // async loadInitialData() {
-    //     try {
-    //         const apiFull = await MDL.empresa.getFull();
-    //         const monedas = apiFull.monedas;
-    //         return monedas;
-    //     } catch (error) {
-    //         console.error('Error loading initial data:', error);
-    //         return [];
-    //     }
-    // }
-
     mostrarTabla() {
         return <DinamicTable
             key="tabla"
             ref={ref => this.table = ref}
-
             {...Config.table.applyTheme()}
             center
             language="es"
@@ -58,7 +34,6 @@ export default class MonedaTabla extends Component {
                     SNavigation.goBack();
                     return;
                 }
-
                 FloatMenu.open({
                     e: e.evt,
                     label: "Moneda: " + e.row.descripcion,
@@ -71,13 +46,8 @@ export default class MonedaTabla extends Component {
                                     editObject: e?.row,
                                     key_empresa: e?.row?.key_empresa,
                                     onSuccess: () => {
-
                                         this.table.loadData();
                                         this.forceUpdate();
-                                        // this.componentDidMount();
-
-                                        // console.log("onSuccess");
-                                        // this.table.loadData();
                                     }
                                 })
                             }
@@ -94,7 +64,6 @@ export default class MonedaTabla extends Component {
                                             ...e.row,
                                             estado: 0,
                                         }
-
                                         MDL.empresa.editarMoneda(moneda_).then(() => {
                                             this.table.loadData();
                                             this.forceUpdate();
@@ -102,19 +71,6 @@ export default class MonedaTabla extends Component {
                                         ).catch(err => {
                                             console.error("response", err);
                                         })
-
-                                        // SSocket.sendPromise({
-                                        //     service: "empresa",
-                                        //     component: "empresa_moneda", // 🔥 corregido
-                                        //     type: "editar",
-                                        //     data: moneda_,
-                                        //     key_usuario: MDL.usuario.session?.key,
-                                        // }).then(() => {
-                                        //     this.table.loadData();
-                                        //     this.forceUpdate();
-                                        // }).catch(err => {
-                                        //     console.error("response", err);
-                                        // })
                                     }
                                 })
                             }
@@ -126,46 +82,30 @@ export default class MonedaTabla extends Component {
                 return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
             }}
             loadData={this.loadInitialData.bind(this)}
-
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
-            <DinamicTable.Col key="descripcion" label="Moneda" width={120} data={(e) => e.row?.descripcion} />
-            <DinamicTable.Col key="observacion" label="Observación" width={120} data={(e) => e.row?.observacion} />
-            <DinamicTable.Col key="tipo_cambio" label="Tipo Cambio" width={120} data={(e) => e.row?.tipo_cambio} />
-            <DinamicTable.Col key="estado" label="Estado" width={150} data={(e) => e.row?.estado} />
-
+            <DinamicTable.Col key="descripcion" label="Moneda" width={80} data={(e) => e.row?.descripcion} />
+            <DinamicTable.Col key="observacion" label="Observación" width={90} data={(e) => e.row?.observacion} />
+            <DinamicTable.Col key="tipo_cambio" label="Tipo Cambio" width={90} data={(e) => e.row?.tipo_cambio} />
+            <DinamicTable.Col key="estado" label="Estado" width={50} data={(e) => e.row?.estado} />
             <DinamicTable.Col
-                key={"fecha_on"}
-                label="F.Registro"
-                width={120}
-                dataType="date"
+                key={"fecha_on"} label="F.Registro" width={120} dataType="date"
                 data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
-                textStyle={{ fontSize: 12, color: STheme.color.text }}
-                dateFormat="yyyy-MM-dd hh:mm"
+                textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm"
             />
-
             <DinamicTable.Col
-                key="admin"
-                label="Admin"
-                width={90}
-                data={(e) => e.row?.usuario?.Nombres ?? ""}
+                key="admin" label="Admin" width={60} data={(e) => e.row?.usuario?.Nombres ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_usuario) ?
                         <SView col={"xs-12"} center row>
                             <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                                 <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
                             </SView>
-                            <SView width={5} />
-                            <SText color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
                         </SView> : null}
                 </>}
             />
-
             <DinamicTable.Col
-                key="empresa"
-                label="Empresa"
-                width={60}
-                data={(e) => e.row?.key_empresa ?? ""}
+                key="empresa" label="Empresa" width={60} data={(e) => e.row?.key_empresa ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_empresa) ?
                         <SView col={"xs-12"} row center>
@@ -179,7 +119,6 @@ export default class MonedaTabla extends Component {
             />
         </DinamicTable>
     }
-
     render() {
         return (
             <SPage title="Gestión de Monedas" disableScroll>

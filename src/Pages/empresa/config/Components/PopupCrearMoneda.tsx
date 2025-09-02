@@ -5,16 +5,13 @@ import SSocket from 'servisofts-socket';
 import Model from '../../../../Model';
 import Btn from './Btn';
 import MDL from '../../../../MDL';
-
 type Props = {
     key_empresa: string,
     editObject?: any,
     onCancel?: Function,
     onSuccess?: Function,
 }
-
 export default class PopupCrearMoneda extends Component<Props> {
-
     static open(props: Props) {
         SPopup.open({
             key: "PopupCrearMoneda",
@@ -36,7 +33,6 @@ export default class PopupCrearMoneda extends Component<Props> {
                         SPopup.close("PopupCrearMoneda")
                         if (props.onSuccess) props.onSuccess(e)
                     }}
-
                 />
             </SView>
         })
@@ -69,7 +65,6 @@ export default class PopupCrearMoneda extends Component<Props> {
                         col: "xs-7.5",
                         icon: <SView />,
                         defaultValue: (!this.props.editObject?.tipo_cambio ? "" : parseFloat(this.props.editObject?.tipo_cambio ?? 0).toFixed(2)),
-
                         label: "Tipo de cambio", placeholder: "Ingresa el tipo de cambio", type: "money", isRequired: true,
                         onSubmitEditing: () => {
                             if (this.form) this.form.submit();
@@ -77,10 +72,7 @@ export default class PopupCrearMoneda extends Component<Props> {
                     },
                 }}
                 onSubmit={(data: any) => {
-
-
                     if (this.props.editObject) {
-
                         MDL.empresa.editarMoneda({
                             ...this.props.editObject,
                             ...data,
@@ -102,11 +94,7 @@ export default class PopupCrearMoneda extends Component<Props> {
                         })
                         // crear
                     }
-
-
-
                 }}
-
             />
             <SHr h={16} />
             <SView row col={"xs-12"}>
@@ -116,11 +104,9 @@ export default class PopupCrearMoneda extends Component<Props> {
                     }} />
                     <SView width={8} />
                 </>}
-
                 <Btn type='primary' label='GUARDAR' onPress={() => {
                     if (this.form) this.form.submit();
                 }} />
-
             </SView>
         </SView>
     }
