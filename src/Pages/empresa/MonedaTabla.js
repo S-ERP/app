@@ -7,43 +7,48 @@ import FloatButtom from '../../Components/FloatButtom';
 import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
- import PopupCrearMoneda from './config/Components/PopupCrearMoneda';
+import PopupCrearMoneda from './config/Components/PopupCrearMoneda';
 
 export default class MonedaTabla extends Component {
-
-
-
     constructor(props) {
         super(props);
         this.state = {};
     }
 
+    // componentDidMount() {
+    //     this.loadInitialData();
+    //     this.table.loadData();
+    //     console.log("componentDidMount");
+    // }
+
     componentDidMount() {
         this.loadInitialData();
     }
 
-    async loadInitialData() {
-        try {
-
-            const apiFull = await MDL.empresa.getFull();
-            if (!apiFull) return null;
-            return apiFull.monedas;
-            // this.forceUpdate();
-
-        } catch (error) {
-            console.error('Error loading initial data:', error);
-            return [];
-        }
+    loadInitialData = async () => {
+        const api = await MDL.empresa.getMonedas();
+        return api;
     }
+
+
+
+    // async loadInitialData() {
+    //     try {
+    //         const apiFull = await MDL.empresa.getFull();
+    //         const monedas = apiFull.monedas;
+    //         return monedas;
+    //     } catch (error) {
+    //         console.error('Error loading initial data:', error);
+    //         return [];
+    //     }
+    // }
 
     mostrarTabla() {
         return <DinamicTable
             key="tabla"
             ref={ref => this.table = ref}
-            loadData={this.loadInitialData.bind(this)}
 
             {...Config.table.applyTheme()}
-            // ref={ref => this.DinamicTable = ref}
             center
             language="es"
             selectType="single"
@@ -66,14 +71,15 @@ export default class MonedaTabla extends Component {
                                     editObject: e?.row,
                                     key_empresa: e?.row?.key_empresa,
                                     onSuccess: () => {
-                                        console.log("onSuccess");
+
+                                        this.table.loadData();
+                                        this.forceUpdate();
+                                        // this.componentDidMount();
+
+                                        // console.log("onSuccess");
                                         // this.table.loadData();
-                                        // this.forceUpdate();
-                                        // this.loadData.bind(this)
                                     }
                                 })
-                                // this.loadData.bind(this)
-
                             }
                         },
                         {
@@ -88,18 +94,27 @@ export default class MonedaTabla extends Component {
                                             ...e.row,
                                             estado: 0,
                                         }
-                                        SSocket.sendPromise({
-                                            service: "empresa",
-                                            component: "moneda", // 🔥 corregido
-                                            type: "editar",
-                                            data: moneda_,
-                                            key_usuario: MDL.usuario.session?.key,
-                                        }).then(() => {
+
+                                        MDL.empresa.editarMoneda(moneda_).then(() => {
                                             this.table.loadData();
                                             this.forceUpdate();
-                                        }).catch(err => {
+                                        }
+                                        ).catch(err => {
                                             console.error("response", err);
                                         })
+
+                                        // SSocket.sendPromise({
+                                        //     service: "empresa",
+                                        //     component: "empresa_moneda", // 🔥 corregido
+                                        //     type: "editar",
+                                        //     data: moneda_,
+                                        //     key_usuario: MDL.usuario.session?.key,
+                                        // }).then(() => {
+                                        //     this.table.loadData();
+                                        //     this.forceUpdate();
+                                        // }).catch(err => {
+                                        //     console.error("response", err);
+                                        // })
                                     }
                                 })
                             }
@@ -107,9 +122,11 @@ export default class MonedaTabla extends Component {
                     ]
                 })
             }}
-        // loadInitialState={async () => {
-        //     return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
-        // }}
+            loadInitialState={async () => {
+                return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
+            }}
+            loadData={this.loadInitialData.bind(this)}
+
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
             <DinamicTable.Col key="descripcion" label="Moneda" width={120} data={(e) => e.row?.descripcion} />
@@ -171,7 +188,8 @@ export default class MonedaTabla extends Component {
                     PopupCrearMoneda.open({
                         key_empresa: MDL.empresa.select?.key,
                         onSuccess: () => {
-                            this.table.loadInitialState.bind(this);
+                            this.table.loadData();
+                            this.forceUpdate();
                         }
                     })
                 }} />
