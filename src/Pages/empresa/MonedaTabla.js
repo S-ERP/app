@@ -56,14 +56,9 @@ export default class MonedaTabla extends Component {
                             icon: <SIconApp name='Ajustes' />,
                             label: "Ver historial",
                             onPress: () => {
-                                // SNavigation.navigate("/empresa/moneda/historial");
                                 SNavigation.navigate("/empresa/moneda/historial", { key_moneda: e?.row?.key });
                             }
-
                         },
-
-
-
                         {
                             icon: <SIconApp name='Delete' />,
                             label: "Eliminar Moneda",

@@ -54,6 +54,24 @@ export default class Carrito extends Component {
             this.forceUpdate();
         });
     }
+
+    componentDidUpdate(prevProps) {
+        // Update carrito prices when selectedMoneda changes
+        if (prevProps.selectedMoneda !== this.props.selectedMoneda) {
+            this.carrito = this.carrito.map(item => {
+                const precio = this.props.selectedMoneda
+                    ? item.precio_venta_original / (this.props.selectedMoneda.tipo_cambio || 1)
+                    : item.precio_venta_original;
+                return {
+                    ...item,
+                    precio_venta: precio,
+                    monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : 'Bs',
+                };
+            });
+            this.forceUpdate();
+        }
+    }
+
     componentWillUnmount() {
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
@@ -68,38 +86,84 @@ export default class Carrito extends Component {
         this._key_cajero = activa?.key_usuario;
         this.forceUpdate();
     }
+    // setCarrito(nuevoCarrito) {
+    //     this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
+    //     this.forceUpdate();
+    // }
+
     setCarrito(nuevoCarrito) {
-        this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
+        this.carrito = Array.isArray(nuevoCarrito)
+            ? nuevoCarrito.map(item => ({
+                ...item,
+                precio_venta_original: item.precio_venta, // Store original price
+                precio_venta: this.props.selectedMoneda
+                    ? item.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
+                    : item.precio_venta,
+                monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : 'Bs',
+            }))
+            : [];
         this.forceUpdate();
     }
 
-    addProducto = (producto) => {
+
+    addProducto = producto => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
             const item = this.carrito[index];
             if (this.conStock) {
-                // Solo aumentar hasta el stock disponible
                 if (item.cantidad < item.stock) {
                     item.cantidad += 1;
                 } else {
                     SNotification.send({
-                        title: "Stock insuficiente",
+                        title: 'Stock insuficiente',
                         body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: ${item.stock} unidades.`,
                         color: STheme.color.danger,
-                        time: 3000
+                        time: 3000,
                     });
                     return;
                 }
             } else {
-                // Sin control de stock, aumentar sin límite
                 item.cantidad += 1;
             }
         } else {
-            // Nuevo producto, cantidad inicial = 1
-            this.carrito.push({ ...producto, cantidad: 1 });
+            this.carrito.push({
+                ...producto,
+                cantidad: 1,
+                precio_venta_original: producto.precio_venta, // Store original price
+                precio_venta: this.props.selectedMoneda
+                    ? producto.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
+                    : producto.precio_venta,
+                monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : 'Bs',
+            });
         }
         this.forceUpdate();
     };
+
+    // addProducto = (producto) => {
+    //     const index = this.carrito.findIndex(p => p.key === producto.key);
+    //     if (index >= 0) {
+    //         const item = this.carrito[index];
+    //         if (this.conStock) {
+    //             // Solo aumentar hasta el stock disponible
+    //             if (item.cantidad < item.stock) {
+    //                 item.cantidad += 1;
+    //             } else {
+    //                 SNotification.send({
+    //                     title: "Stock insuficiente",
+    //                     body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: ${item.stock} unidades.`,
+    //                     color: STheme.color.danger,
+    //                     time: 3000
+    //                 });
+    //                 return;
+    //             }
+    //         } else {
+    //             item.cantidad += 1;
+    //         }
+    //     } else {
+    //         this.carrito.push({ ...producto, cantidad: 1 });
+    //     }
+    //     this.forceUpdate();
+    // };
 
     aumentarCantidad = (producto) => {
         const index = this.carrito.findIndex(p => p.key === producto.key);
@@ -193,6 +257,8 @@ export default class Carrito extends Component {
         const totalImpuesto = this.calcularIVA(subtotal);
         const totalDescuento = this.descuentoManual || 0;
         const totalFinal = this.calcularTotalConDescuento(totalConIVA);
+        const monedaSymbol = this.carrito.length > 0 ? this.carrito[0].monedaSymbol || 'Bs' : 'Bs'; // Use first item's monedaSymbol
+
         return (
             <>
                 {subtotal <= 0 ?
@@ -239,7 +305,10 @@ export default class Carrito extends Component {
                             </SScrollView2>
                         </SView>
                         <SHr height={5} />
-                        <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}  ></ResumenTotales>
+                        <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}
+
+                            monedaSymbol={monedaSymbol}
+                        ></ResumenTotales>
                         <SView col={"xs-12"} row center   >
                             <SView col={"md-12 xl-6"} height={70}  >
                                 <SView col={"xs-10"} center  >
@@ -307,6 +376,8 @@ export default class Carrito extends Component {
                     totalFinal={totalFinal}
                     conFactura={this.conFactura}
                     subtotal={subtotal}
+                    monedaSymbol={monedaSymbol} // Pass monedaSymbol to TecladoNumerico
+
                     onReload={() => { this.vaciarCarrito(); }}
                     // estadostock={() => { this.estadostock(); }}
                     onReloadCliente={() => { this.cliente = null }}

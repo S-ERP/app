@@ -89,6 +89,13 @@ export default class Modelo extends Component {
     renderModelos() {
         const modelos = this.modelos || [];
         const tipoKey = this.props.tipoKey;
+
+        const selectedMoneda = this.props.selectedMoneda || null; // Get selected currency
+
+        console.log("modelos " + JSON.stringify(modelos));
+        // console.log("tipoKey " + JSON.stringify(tipoKey));
+        // console.log("this.props.searchText " + JSON.stringify(this.props.searchText));
+        // console.log("this.conStock " + JSON.stringify(this.conStock));
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
 
         productosFiltrados = productosFiltrados.filter(m => m.precio_venta > 0);
@@ -106,6 +113,17 @@ export default class Modelo extends Component {
                         <SView col={"xs-12"} row padding={5}>
                             {productosFiltrados.map((producto, index) => {
                                 const src = producto.key ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}` : productSinFoto;
+
+                                // Calculate price based on selected currency
+                                const precio = selectedMoneda
+                                    ? producto.precio_venta / (selectedMoneda.tipo_cambio || 1)
+                                    : producto.precio_venta;
+                                const monedaSymbol = selectedMoneda ? selectedMoneda.observacion : 'Bs';
+                                    // precio = parseFloat(precio.toFixed(2));
+                                console.log("precio " + JSON.stringify(precio));
+                                console.log("monedaSymbol " + JSON.stringify(monedaSymbol));
+                                console.log("selectedMoneda " + JSON.stringify(selectedMoneda));
+                                console.log("producto " + JSON.stringify(producto));
                                 return (
                                     <SView
                                         key={index}
@@ -114,13 +132,20 @@ export default class Modelo extends Component {
                                         style={{ minWidth: 120, borderRadius: 8, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3, borderWidth: 1, borderColor: STheme.color.card, overflow: "hidden", }}
                                         onPress={() => {
 
-                                            // if (producto.cantidad <= 3) {
-                                            //     alert("no puede")
-                                            //     // onAumentar
-                                            //     return
-                                            // }
-                                            this.props.onPressProducto?.({ ...producto }); // enviar copia actualizada
-                                            console.log("print "+JSON.stringify(producto))
+                                            if (producto.cantidad <= 3) {
+                                                alert("no puede")
+                                                // onAumentar
+                                                return
+                                            }
+                                            // si quiero cambiar el precio aca
+                                            const productoAjustado = { ...producto, precio: parseFloat(precio.toFixed(2)), monedaSymbol }; // Override precio_venta
+                                            // const productoAjustado = { ...producto, precio_venta: parseFloat(precio.toFixed(2)), monedaSymbol }; // Override precio_venta
+
+                                            this.props.onPressProducto?.(productoAjustado);
+
+                                            // this.props.onPressProducto?.({ ...producto, precio_venta: precio  , monedaSymbol }); // enviar copia actualizada
+                                            console.log('print', JSON.stringify(productoAjustado));
+                                            // console.log("print " + JSON.stringify(monedaSymbol))
 
 
                                             this.forceUpdate();  // ⬅️ Fuerza render para reflejar el cambio
@@ -133,7 +158,13 @@ export default class Modelo extends Component {
                                             <SView col={"xs-12"} height={40}><SText fontSize={14} bold color={STheme.color.text}>{producto.descripcion} </SText></SView>
                                             <SView col={"xs-12"} row>
                                                 <SView flex row >
-                                                    <SText fontSize={12} bold color={STheme.color.text}  >Bs {SMath.formatMoney(producto.precio_venta, 2)}</SText>
+                                                    <SText fontSize={12} bold color={STheme.color.text}  >
+                                                        {monedaSymbol} {SMath.formatMoney(precio, 2)}
+
+
+                                                        {/* Bs {SMath.formatMoney(producto.precio_venta, 2)} */}
+
+                                                    </SText>
                                                 </SView>
                                                 <SText fontSize={10} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"}>{producto?.stock} Und</SText>
                                             </SView>
