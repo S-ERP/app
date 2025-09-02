@@ -8,10 +8,7 @@ import DetalleItem from './DetalleItem';
 import MenuAcciones from './MenuAcciones';
 import Components from '../../../Components';
 import Model from '../../../Model';
-
-
 export default class Abierta extends Component {
-
     state = {
         movimientos: []
     }
@@ -35,7 +32,6 @@ export default class Abierta extends Component {
             this.setState({ movimientos });
         });
     }
-
     cerrar_caja() {
         const { caja } = this.props
         SNotification.send({
@@ -58,45 +54,35 @@ export default class Abierta extends Component {
             })
         })
     }
-
     mensaje() {
-
-        // this.data ={...this.props.caja};
-        this.data = {};
-
-        return <SView col={"xs-9"} center row >
-
+        return <SView col={"xs-11 sm-10 md-8 lg-6"} center row   >
             <SView col={"xs-12"} row>
-
-
                 <SView width={150} row center style={{
-                    backgroundColor: STheme.color.card,
-                    borderWidth: 1,
-                    borderColor: STheme.color.card,
+                    backgroundColor: STheme.color.card, borderWidth: 1, borderColor: STheme.color.card,
                     padding: 8,
                     borderRadius: 4,
                 }}
                 >
-                    <SText disabled={true} onPress={() => {
-                        SPopup.date("Selecciona ss la fecha", (a) => {
-                            console.log("devorame " + JSON.stringify(this.props.caja))
-                            // alert("tu creias " + JSON.stringify(data));
-                            Model.caja.Action.editar({
-                                data: {
-                                    ...data,
-                                    fecha: a.fecha + "T00:00:00"
-                                },
-                                key_usuario: Model.usuario.Action.getKey(),
-                            }).then(e => {
-                                console.log(e);
-                            }).catch(e => {
-                                console.error(e);
+                    <SText
+                        // disabled={true} 
+                        onPress={() => {
+                            SPopup.date("Selecciona ss la fecha", (a) => {
+                                console.log("devorame " + JSON.stringify(this.props.caja))
+                                Model.caja.Action.editar({
+                                    data: {
+                                        ...this.props.caja,
+                                        fecha: a.fecha + "T00:00:00"
+                                    },
+                                    key_usuario: Model.usuario.Action.getKey(),
+                                }).then(e => {
+                                    console.log(e);
+                                }).catch(e => {
+                                    console.error(e);
+                                })
                             })
-                        })
-                    }}>Cambiar fecha gestion</SText>
+                        }}>Cambiar fecha gestion</SText>
                 </SView>
             </SView>
-
             <SHr />
             <SHr />
             <SView col={"xs-12"} row>
@@ -110,22 +96,12 @@ export default class Abierta extends Component {
                     <Components.caja.QRCaja pk={this.props.caja.key} width={120} height={120} />
                 </SView>
             </SView>
-
         </SView >
-
     }
-
     render() {
         return (
             <SView col={"xs-12"} center flex>
-                {/* <SText>{JSON.stringify(this.props.caja)}</SText> */}
-
-                <FlatList
-                    style={{
-                        flex: 1,
-                        width: "100%",
-                    }}
-
+                <FlatList style={{ flex: 1, width: "100%", }}
                     data={this.state.movimientos}
                     ItemSeparatorComponent={() => <SHr />}
                     ListHeaderComponent={() => {
@@ -137,20 +113,17 @@ export default class Abierta extends Component {
                             </SView>
                             <SHr h={32} />
                         </SView>
-
                     }}
                     renderItem={({ item, index }) => {
                         return <SView col={"xs-12"} center>
-
                             {this.mensaje()}
-                            <SView col={"xs-11 sm-10 md-8 lg-6"} >
+                            <SHr h={32} />
+
+                            <SView col={"xs-11 sm-10 md-8 lg-6"} border={"pink"}  >
                                 <DetalleItem item={item} index={index} tipo_pago={this.state.tipo_pago} />
-                                {/* <DetalleItem item={item} index={index} tipo_pago={this.state.tipo_pago} gestio_abierot={}   /> */}
                             </SView>
                         </SView>
                     }} />
-
-
             </SView>
         );
     }

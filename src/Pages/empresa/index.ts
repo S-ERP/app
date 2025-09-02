@@ -19,6 +19,7 @@ import colores from "./colores";
 import portada from "./portada";
 import config from "./config";
 import config2 from "./config/config2";
+import MonedaTabla from "./MonedaTabla";
 const model = Model.empresa;
 
 export const Parent = {
@@ -46,5 +47,5 @@ export default SPage.combinePages(Parent.name, {
     "paso3": paso3,
     config,
     config2,
-    portada
+    "moneda":MonedaTabla,
 })
