@@ -8,17 +8,22 @@ import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
 import PopupCrearMoneda from './config/Components/PopupCrearMoneda';
-export default class MonedaTabla extends Component {
+export default class MonedaTablaHistorial extends Component {
     constructor(props) {
         super(props);
         this.state = {};
+        // this.onSelect = props.onSelect;
+        // this.key_moneda = props?.navigation?.getParam("key");
+        this.codigo_cuenta = SNavigation.getParam("key_moneda");
+
     }
     componentDidMount() {
         this.loadInitialData();
     }
     loadInitialData = async () => {
-        const api = await MDL.empresa.getMonedas();
-        return api;
+        const key_moneda = SNavigation.getParam("key_moneda");
+        const api = await MDL.empresa.getHistorialMoneda(this.codigo_cuenta);
+        return Object.values(api);
     }
     mostrarTabla() {
         return <DinamicTable
@@ -34,61 +39,49 @@ export default class MonedaTabla extends Component {
                     SNavigation.goBack();
                     return;
                 }
-                FloatMenu.open({
-                    e: e.evt,
-                    label: "Moneda: " + e.row.descripcion,
-                    options: [
-                        {
-                            icon: <SIconApp name='Edit' />,
-                            label: "Actualizar Moneda",
-                            onPress: () => {
-                                PopupCrearMoneda.open({
-                                    editObject: e?.row,
-                                    key_empresa: e?.row?.key_empresa,
-                                    onSuccess: () => {
-                                        this.table.loadData();
-                                        this.forceUpdate();
-                                    }
-                                })
-                            }
-                        },
-                        {
-                            icon: <SIconApp name='Ajustes' />,
-                            label: "Ver historial",
-                            onPress: () => {
-                                // SNavigation.navigate("/empresa/moneda/historial");
-                                SNavigation.navigate("/empresa/moneda/historial", { key_moneda: e?.row?.key });
-                            }
-
-                        },
-
-
-
-                        {
-                            icon: <SIconApp name='Delete' />,
-                            label: "Eliminar Moneda",
-                            onPress: () => {
-                                SPopup.confirm({
-                                    title: "Eliminar Moneda",
-                                    message: "¿Estás seguro de eliminar esta moneda?",
-                                    onPress: () => {
-                                        const moneda_ = {
-                                            ...e.row,
-                                            estado: 0,
-                                        }
-                                        MDL.empresa.editarMoneda(moneda_).then(() => {
-                                            this.table.loadData();
-                                            this.forceUpdate();
-                                        }
-                                        ).catch(err => {
-                                            console.error("response", err);
-                                        })
-                                    }
-                                })
-                            }
-                        }
-                    ]
-                })
+                // FloatMenu.open({
+                //     e: e.evt,
+                //     label: "Moneda: " + e.row.descripcion,
+                //     options: [
+                //         {
+                //             icon: <SIconApp name='Edit' />,
+                //             label: "Actualizar Moneda",
+                //             onPress: () => {
+                //                 PopupCrearMoneda.open({
+                //                     editObject: e?.row,
+                //                     key_empresa: e?.row?.key_empresa,
+                //                     onSuccess: () => {
+                //                         this.table.loadData();
+                //                         this.forceUpdate();
+                //                     }
+                //                 })
+                //             }
+                //         },
+                //         {
+                //             icon: <SIconApp name='Delete' />,
+                //             label: "Eliminar Moneda",
+                //             onPress: () => {
+                //                 SPopup.confirm({
+                //                     title: "Eliminar Moneda",
+                //                     message: "¿Estás seguro de eliminar esta moneda?",
+                //                     onPress: () => {
+                //                         const moneda_ = {
+                //                             ...e.row,
+                //                             estado: 0,
+                //                         }
+                //                         MDL.empresa.editarMoneda(moneda_).then(() => {
+                //                             this.table.loadData();
+                //                             this.forceUpdate();
+                //                         }
+                //                         ).catch(err => {
+                //                             console.error("response", err);
+                //                         })
+                //                     }
+                //                 })
+                //             }
+                //         }
+                //     ]
+                // })
             }}
             loadInitialState={async () => {
                 return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
@@ -96,7 +89,7 @@ export default class MonedaTabla extends Component {
             loadData={this.loadInitialData.bind(this)}
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
-            <DinamicTable.Col key="descripcion" label="Moneda" width={80} data={(e) => e.row?.descripcion} />
+            <DinamicTable.Col key="descripcion" label="Moneda" width={150} data={(e) => e.row?.descripcion} />
             <DinamicTable.Col key="observacion" label="Observación" width={90} data={(e) => e.row?.observacion} />
             <DinamicTable.Col key="tipo_cambio" label="Tipo Cambio" width={90} data={(e) => e.row?.tipo_cambio} />
             <DinamicTable.Col key="estado" label="Estado" width={50} data={(e) => e.row?.estado} />
@@ -133,7 +126,7 @@ export default class MonedaTabla extends Component {
     }
     render() {
         return (
-            <SPage title="Gestión de Monedas" disableScroll>
+            <SPage title="Historial registro de Moneda" disableScroll>
                 {this.mostrarTabla()}
                 <FloatButtom onPress={() => {
                     PopupCrearMoneda.open({

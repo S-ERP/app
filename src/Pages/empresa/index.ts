@@ -20,6 +20,7 @@ import portada from "./portada";
 import config from "./config";
 import config2 from "./config/config2";
 import MonedaTabla from "./MonedaTabla";
+import MonedaTablaHistorial from "./MonedaTablaHistorial";
 const model = Model.empresa;
 
 export const Parent = {
@@ -48,4 +49,5 @@ export default SPage.combinePages(Parent.name, {
     config,
     config2,
     "moneda":MonedaTabla,
+    "moneda/historial":MonedaTablaHistorial,
 })

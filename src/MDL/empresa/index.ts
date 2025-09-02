@@ -279,6 +279,29 @@ export default class empresa extends MDLAbstract<EventListener> {
     return resp.data;
   }
 
+  async getHistorialMoneda(key: any) {
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "empresa_moneda",
+      type: "getByKeyHistorialMoneda",
+      key: key,
+
+    });
+    console.log("jajajsssssss ", resp.data);
+    return resp.data;
+  }
+
+
+  // async getEmpresa(key: string) {
+  //   const resp: any = await SSocket.sendPromise({
+  //     service: "empresa",
+  //     component: "empresa",
+  //     type: "getByKey",
+  //     key: key,
+  //   });
+  //   return resp.data as Empresa;
+  // }
+
 
 
 
