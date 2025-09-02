@@ -2,7 +2,7 @@
 
 buildscript {
     ext {
-        buildToolsVersion = "30.0.3"
+        buildToolsVersion = "33.0.0"
         minSdkVersion = 23
         compileSdkVersion = 34
         targetSdkVersion = 34
@@ -12,13 +12,13 @@ buildscript {
     }
     repositories {
         google()
-        jcenter()
         mavenCentral()
+        gradlePluginPortal()
     }
 
   
     dependencies {
-        classpath("com.android.tools.build:gradle:7.3.1")
+        classpath("com.android.tools.build:gradle:7.4.1")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion") // Añadir esta línea
         classpath('com.google.gms:google-services:4.3.15')
@@ -27,16 +27,26 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url(new File(['node', '--print', "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), '../android'))
+        }
+        maven {
+            // Android JSC is installed from npm
+            url(new File(['node', '--print', "require.resolve('jsc-android/package.json')"].execute(null, rootDir).text.trim(), '../dist'))
+        }
+
         google()
         mavenCentral()
+        maven { url 'https://www.jitpack.io' }
     }
 }
 
-subprojects { subproject ->
-    if (project.name in ['servisofts-background-location', 'servisofts-component', 'servisofts-socket']) {
-        project.configurations { compile { } }
-    }
-}
+// subprojects { subproject ->
+//     if (project.name in ['servisofts-background-location', 'servisofts-component', 'servisofts-socket']) {
+//         project.configurations { compile { } }
+//     }
+// }
 
 // configurations.all {
 //     resolutionStrategy {

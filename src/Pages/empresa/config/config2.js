@@ -7,6 +7,7 @@ import SIconApp from "../../../Assets/SIconApp";
 import PopupCrearSucursal from "./Components/PopupCrearSucursal";
 import Pizarra from "../../../Components/Pizarra/Pizarra";
 import PizarraNodo from "../../../Components/Pizarra/PizarraNodo";
+import Puerto from "../../../Components/Pizarra/Puerto";
 
 export default class config2 extends React.Component {
 
@@ -31,18 +32,34 @@ export default class config2 extends React.Component {
                     alignItems: "center",
                     justifyContent: "center"
                 }}>
+
                     <SView style={{
                         width: 200,
                         height: 80,
-                        borderRadius: 32,
+                        borderRadius: 100,
                         borderWidth: 1,
                         borderColor: STheme.color.text,
                         alignItems: "center",
-                        justifyContent: "center"
-                    }}>
-                        <SText center bold>{empresa?.razon_social}</SText>
-                    </SView>
+                        justifyContent: "center",
+                        padding: 12
+                    }} row  >
 
+                        <SView width={50} height={50} style={{
+                            borderRadius: 100,
+                            overflow: "hidden"
+                        }}>
+                            <SImage src={SSocket.api.empresa + "empresa/" + empresa?.key} />
+                        </SView>
+                        <SView flex>
+                            <SText flex center bold>{empresa?.razon_social}</SText>
+                            <SText flex center fontSize={12} color={STheme.color.lightGray} >{empresa?.nit}</SText>
+                        </SView>
+                    </SView>
+                    <Puerto style={{
+                        position: "absolute",
+                        // top: 0,
+                        left: 0
+                    }} />
                 </PizarraNodo>
                 {(empresa.sucursales ?? []).map((sucursal, i) => {
                     return <>

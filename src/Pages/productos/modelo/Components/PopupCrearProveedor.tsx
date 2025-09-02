@@ -63,6 +63,9 @@ export default class PopupCrearProveedor extends Component<Props> {
                                     style={{ width: 50, height: 50, }} />
                             </SView>,
                         },
+                        "nit": { label: "NIT", placeholder: "NIT", disabled: true,  defaultValue: proveedor?.nit, col: "xs-12" },
+                        "nombre": { label: "Nombre del contacto", placeholder: "Nombre del contacto", defaultValue: proveedor?.nombre, col: "xs-12" },
+                        "telefono": { label: "Teléfono", placeholder: "Teléfono", type: "telefono", defaultValue: proveedor?.telefono, col: "xs-12" },
                         "nit": { label: "NIT", placeholder: "NIT", disabled: true, defaultValue: proveedor?.nit, col: "xs-12" },
                         "nombre": { label: "Nombre del contacto", disabled: true, placeholder: "Nombre del contacto", defaultValue: proveedor?.nombre, col: "xs-12" },
                         "telefono": { label: "Teléfono", placeholder: "Teléfono", disabled: true, type: "telefono", defaultValue: proveedor?.telefono, col: "xs-12" },
