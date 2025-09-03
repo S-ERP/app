@@ -100,6 +100,7 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
 
             Object.values(pizarra.nodos.current).forEach(nodo => {
                 if (nodo.selected.value) {
+                    if (nodo.panGesture?.context == null) return;
                     nodo.translateX.value = nodo.panGesture.context.startX + (event.translationX / pizarra.scale.value);
                     nodo.translateY.value = nodo.panGesture.context.startY + (event.translationY / pizarra.scale.value);
                 }
@@ -120,12 +121,12 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
             pizarra.unregisterNodo(id);
         };
     }, []);
-
+    pizarra.registerNodo({ id: id, translateX, translateY, selected, panGesture: panGesture, viewRef: viewRef });
     // si se actualiza el translateX o el translateY, llamamos a onChangePosition
-    translateX.addListener(1, (value: any) => {
+    translateX.addListener(999, (value: any) => {
         if (onChangePosition) onChangePosition({ x: value, y: translateY.value });
     });
-    translateY.addListener(1, (value: any) => {
+    translateY.addListener(999, (value: any) => {
         if (onChangePosition) onChangePosition({ x: translateX.value, y: value });
     });
     const animatedStyleSelect = useAnimatedStyle(() => {

@@ -8,15 +8,16 @@ import SIconApp from '../../../Assets/SIconApp';
 import TotalTipoPago from './TotalTipoPago';
 
 
-export default class DetalleItem extends Component<{ item: any, index: number, tipo_pago: any }> {
+export default class DetalleItem extends Component<{ item: any, index: number, tipo_pago: any, empresa: any }> {
 
 
     render() {
-        const { item, index } = this.props;
+        const { item, index, empresa } = this.props;
         let color = STheme.color.success;
         if (item.monto < 0) {
             color = STheme.color.danger;
         }
+        const moneda = empresa?.monedas?.find(e => e.key === item.key_moneda);
         return <SView key={index} row padding={4} style={{
             borderBottomWidth: 1,
             borderColor: STheme.color.card
@@ -103,8 +104,22 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         <SView width={4} />
                         <SText color={STheme.color.lightGray} fontSize={10}>{this?.props?.tipo_pago?.[item.key_tipo_pago]?.descripcion || item.key_tipo_pago}</SText>
                     </View>
-                    <SText color={STheme.color.lightGray} fontSize={10}>{item.tipo_cambio}</SText>
-                    <SText color={STheme.color.lightGray} fontSize={10}>{item.key_moneda}</SText>
+                      <SView width={8} />
+                    {moneda && <View style={{
+                        // backgroundColor: STheme.color.card,
+                        borderWidth: 1,
+                        borderColor: STheme.color.card,
+                        padding: 2,
+                        borderRadius: 4,
+                        flexDirection: "row",
+                        alignItems: "center"
+                    }}>
+                        <SText color={STheme.color.lightGray} fontSize={10}>{moneda?.descripcion}</SText>
+                        <SView width={4} />
+                        <SText color={STheme.color.lightGray} fontSize={10}>{item.tipo_cambio}</SText>
+                    </View>
+                    }
+
                 </SView>
             </SView>
             <SView style={{

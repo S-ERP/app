@@ -21,11 +21,15 @@ export default class Abierta extends Component {
         MDL.empresa.getTipoPago().then((tipo_pago) => {
             this.setState({ tipo_pago });
         })
+        MDL.empresa.getFull().then(empresa => {
+            this.setState({ empresa });
+        })
     }
     componentWillUnmount() {
         MDL.caja.removeEventListener(this.ondetallechange);
     }
     loadData() {
+
         MDL.caja.getDetalle(this.props.caja.key).then(movimientos => {
             movimientos.sort((a, b) => {
                 return new SDate(b.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime() - new SDate(a.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime();
@@ -122,7 +126,7 @@ export default class Abierta extends Component {
                     renderItem={({ item, index }) => {
                         return <SView col={"xs-12"} center>
                             <SView col={"xs-11 sm-10 md-8 lg-6"} >
-                                <DetalleItem item={item} index={index} tipo_pago={this.state.tipo_pago} />
+                                <DetalleItem item={item} index={index} empresa={this.state.empresa} tipo_pago={this.state.tipo_pago} />
                             </SView>
                         </SView>
                     }} />
