@@ -3,30 +3,13 @@ import { SHr, SInput, SInput2, SText, STheme, SView } from 'servisofts-component
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
 import { ScrollView } from 'react-native-gesture-handler';
-const categoriasEjemplo = [
-    { key: "frutas", descripcion: "Frutas" },
-    { key: "verduras", descripcion: "Verduras" },
-    { key: "lacteos", descripcion: "Lácteos" },
-    { key: "bebidas", descripcion: "Bebidas" },
-    { key: "panaderia", descripcion: "Panadería" },
-    { key: "carnes", descripcion: "Carnes" },
-    { key: "pescados", descripcion: "Pescados" },
-    { key: "snacks", descripcion: "Snacks" },
-    { key: "congelados", descripcion: "Congelados" },
-    { key: "limpieza", descripcion: "Limpieza" },
-    { key: "higiene", descripcion: "Higiene Personal" },
-    { key: "bebes", descripcion: "Productos para Bebés" },
-    { key: "electrodomesticos", descripcion: "Electrodomésticos" },
-    { key: "ropa", descripcion: "Ropa" },
-    { key: "papeleria", descripcion: "Papelería" },
-];
 export default class Categoria extends Component {
     constructor(props) {
         super(props);
         this.selectedCategory = this.props.selected || "all";
-        this.selectedMoneda = this.props.selectedMoneda || null; // Initialize selected currency
+        this.selectedMoneda = this.props.selectedMoneda || null; //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
         this.tipomodelos = [];
-        this.monedas = [];
+        this.monedas = []; //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
     }
     componentDidMount() {
         this.loadApis();
@@ -53,10 +36,9 @@ export default class Categoria extends Component {
     async loadData() {
         try {
             const data = await MDL.empresa.getFull();
-            this.monedas = data.monedas || []; // Fallback to empty array if undefined
-            // Set default moneda if none selected and monedas exist
+            this.monedas = data.monedas || []; //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
             if (!this.selectedMoneda && this.monedas.length > 0) {
-                this.selectedMoneda = this.monedas[0]; // Default to first currency
+                this.selectedMoneda = this.monedas[0];
                 this.props.onSelectMoneda?.(this.selectedMoneda);
             }
             this.forceUpdate();
@@ -66,27 +48,16 @@ export default class Categoria extends Component {
     }
 
 
-    // async loadData() {
-    //     const data = await MDL.empresa.getFull()
-    //     data.monedas.map((moneda) => {
-    //         console.log("money " + JSON.stringify(moneda.observacion));
-    //         this.monedas = moneda;
-    //     })
-    //     console.log("money " + JSON.stringify(this.monedas.observacion));
-    // }
 
-    handleMonedaChange(monedaKey) {
+    handleMonedaChange(monedaKey) {  //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
         const selectedMoneda = this.monedas.find(moneda => moneda.key === monedaKey) || null;
         this.selectedMoneda = selectedMoneda;
         this.props.onSelectMoneda?.(selectedMoneda);
-
-        console.log("selectedMoneda.................... " + JSON.stringify(this.selectedMoneda));
-
+        console.log("🎪CATEGORIA🎪. MONEDA " + JSON.stringify(this.selectedMoneda));
         this.forceUpdate();
     }
     renderCategorias() {
         const categorias = this.tipomodelos || [];
-        // const categoriasMoney = this.monedas || [];
         return (
             <SView col={"xs-12 md-12"} backgroundColor={STheme.color.darkGray} row center style={{ paddingHorizontal: 8, paddingVertical: 5 }} >
                 <SView col={"xs-12 md-12 lg-8.8"} row  >
@@ -109,26 +80,20 @@ export default class Categoria extends Component {
                     </ScrollView>
                 </SView>
 
-                {/* <SView col={"xs-12 md-12 lg-0.2"} height={14} /> */}
                 <SView flex height={14} />
-                {/* Currency Dropdown */}
                 <SView col={'xs-12 md-12 lg-8.8'} row>
-                    <SInput
+                    <SInput //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
                         type="select"
                         placeholder="Seleccionar Moneda"
                         value={this.selectedMoneda?.key || ''}
                         customStyle="calistenia"
                         style={{
-                            width: 200,
+                            width: 120,
                             height: 40,
                             backgroundColor: STheme.color.card,
                             borderRadius: 8,
                             paddingHorizontal: 8,
                         }}
-
-                        //  options={[{ key: "none", content: "-" }, ...columnasDetectadas.map(col => ({ key: col, content: col }))]}
-                        //         onChangeText={(val) => tempMapeo[campo] = val}
-                        //         style={{ textAlign: "center" }}
 
                         options={[
                             { key: "", content: "— Seleccionar —" },
@@ -140,7 +105,6 @@ export default class Categoria extends Component {
                         onChangeText={(val) => this.handleMonedaChange(val)}
                     />
                 </SView>
-
                 <SView flex height={14} />
 
 

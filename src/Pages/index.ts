@@ -17,6 +17,7 @@ import ajustes from "./ajustes";
 import banco from "./banco";
 import productos from "./productos";
 import test from "./test";
+import test2 from "./test2";
 import wiki from "./wiki";
 import compra from "./compra";
 import compra2 from "./compra2";
@@ -110,6 +111,7 @@ export default SPage.combinePages("/", {
   ...nota,
   widgets,
   test: test,
+  test2: test2,
   start: start,
   wiki: wiki,
 

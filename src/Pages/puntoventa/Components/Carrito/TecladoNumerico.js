@@ -96,7 +96,6 @@ export default class TecladoNumerico extends Component {
     }
 
     handleCalculatorPress(valor){
-
         console.log("presiono "+valor)
     }
 
@@ -164,11 +163,12 @@ export default class TecladoNumerico extends Component {
                 </SView >
                 {
                     this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-                        console.log("modo movil " + this.props.cliente)
+                        // console.log("modo movil " + this.props.cliente) 📱📱📱
                         if (!this.tipos_pago) {
                             SelectTipoPago.openPopup({
                                 key_punto_venta: MDL.caja.activa.key_punto_venta,
                                 montoMaximo: (subtotal - descuento),
+                                montoMaximoMoneda: (subtotal - descuento),
                                 onSelect: (item) => {
                                     this.tipos_pago = item;
                                     this.forceUpdate();

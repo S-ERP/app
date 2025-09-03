@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SImage, SInput, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SImage, SInput, SNavigation, SNotification, SText, STheme, SView } from 'servisofts-component';
 import SIconApp from '../../../Assets/SIconApp';
 import Model from '../../../Model';
 import FotoUsuario from './Foto/FotoUsuario';
@@ -21,10 +21,8 @@ export default class Header extends Component {
     async loadData() {
         const data = await MDL.empresa.getFull()
         data.monedas.map((moneda) => {
-            console.log("money " + JSON.stringify(moneda.observacion));
             this.monedas = moneda;
         })
-        console.log("money " + JSON.stringify(this.monedas.observacion));
     }
 
     cargarSucursalGuardada() {
@@ -35,7 +33,13 @@ export default class Header extends Component {
                 }
             })
             .catch(e => {
-                console.error("Error cargando sucursal guardada:", e);
+                SNotification.send({
+                    title: "Error HEADER",
+                    body: "No se pudo cargar la sucursal guardada",
+                    type: "error",
+                    color: STheme.color.error,
+                    time: 5000,
+                });
             });
     }
 

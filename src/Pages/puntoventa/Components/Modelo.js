@@ -1,33 +1,10 @@
 import React, { Component } from 'react';
 import { View, Text, Dimensions } from 'react-native';
-import { SImage, SMath, SScrollView2, SText, STheme, SView } from 'servisofts-component';
+import { SImage, SMath, SNotification, SScrollView2, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
 import FotoModelo from './Foto/FotoModelo';
 const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
-const listaProductoTest =
-    [
-        { "key": "p1", "descripcion": "Camisa Blanca Blanca Blanca", "precio_venta": 70.5, "stock": 15, "key_tipo_producto": "ropa" },
-        { "key": "p2", "descripcion": "Pantalón Jeans", "precio_venta": 120, "stock": 10, "key_tipo_producto": "ropa" },
-        { "key": "p3", "descripcion": "Zapatillas Urbanas", "precio_venta": 250, "stock": 8, "key_tipo_producto": "calzado" },
-        { "key": "p4", "descripcion": "Gorra Negra", "precio_venta": 35, "stock": 20, "key_tipo_producto": "accesorio" },
-        { "key": "p5", "descripcion": "Reloj Digital", "precio_venta": 150, "stock": 5, "key_tipo_producto": "accesorio" },
-        { "key": "p6", "descripcion": "Remera Deportiva", "precio_venta": 60, "stock": 12, "key_tipo_producto": "ropa" },
-        { "key": "p7", "descripcion": "Short Verano", "precio_venta": 55, "stock": 7, "key_tipo_producto": "ropa" },
-        { "key": "p8", "descripcion": "Zapatos Cuero", "precio_venta": 300, "stock": 3, "key_tipo_producto": "calzado" },
-        { "key": "p9", "descripcion": "Campera Invierno", "precio_venta": 500, "stock": 2, "key_tipo_producto": "ropa" },
-        { "key": "p10", "descripcion": "Bufanda Lana", "precio_venta": 45, "stock": 10, "key_tipo_producto": "accesorio" },
-        { "key": "p11", "descripcion": "Polera Manga Larga", "precio_venta": 80, "stock": 9, "key_tipo_producto": "ropa" },
-        { "key": "p12", "descripcion": "Medias Deportivas", "precio_venta": 20, "stock": 30, "key_tipo_producto": "ropa" },
-        { "key": "p13", "descripcion": "Lentes de Sol", "precio_venta": 100, "stock": 14, "key_tipo_producto": "accesorio" },
-        { "key": "p14", "descripcion": "Mochila Negra", "precio_venta": 180, "stock": 4, "key_tipo_producto": "accesorio" },
-        { "key": "p15", "descripcion": "Sandalias Playeras", "precio_venta": 90, "stock": 6, "key_tipo_producto": "calzado" },
-        { "key": "p16", "descripcion": "Cinturón Cuero", "precio_venta": 60, "stock": 11, "key_tipo_producto": "accesorio" },
-        { "key": "p17", "descripcion": "Camisa Cuadros", "precio_venta": 75, "stock": 5, "key_tipo_producto": "ropa" },
-        { "key": "p18", "descripcion": "Botines Fútbol", "precio_venta": 280, "stock": 6, "key_tipo_producto": "calzado" },
-        { "key": "p19", "descripcion": "Bolso Deportivo", "precio_venta": 160, "stock": 7, "key_tipo_producto": "accesorio" },
-        { "key": "p20", "descripcion": "Guantes Invierno", "precio_venta": 40, "stock": 10, "key_tipo_producto": "accesorio" }
-    ];
 export default class Modelo extends Component {
     constructor(props) {
         super(props);
@@ -38,16 +15,13 @@ export default class Modelo extends Component {
     componentDidMount() {
         this.loadApis();
 
-
-
-
         this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
             this.loadApis();
         });
 
         this.evento2 = MDL.compra_venta.addEventListener("conStock", () => {
             this.conStock = !this.conStock;
-            this.forceUpdate(); // Force re-render to reflect the change
+            this.forceUpdate();
         });
 
     }
@@ -62,7 +36,7 @@ export default class Modelo extends Component {
     }
     async loadApis() {
         if (!MDL.caja.activa) {
-            console.log("Caja no activa");
+            SNotification.send({ title: "MODELO Caja no aperturada", message: "Debes abrir la caja antes de continuar con las operaciones.", type: "danger", body: "⚠️Debe abrir caja⚠️", color: STheme.color.danger, time: 5000, })
             return;
         }
         const modelos = await MDL.inventario.getAllModeloStockBySucursal(MDL.caja.activa.key_sucursal);
@@ -90,14 +64,8 @@ export default class Modelo extends Component {
         const modelos = this.modelos || [];
         const tipoKey = this.props.tipoKey;
 
-        const selectedMoneda = this.props.selectedMoneda || null; // Get selected currency
-
-        console.log("modelos " + JSON.stringify(modelos));
-        // console.log("tipoKey " + JSON.stringify(tipoKey));
-        // console.log("this.props.searchText " + JSON.stringify(this.props.searchText));
-        // console.log("this.conStock " + JSON.stringify(this.conStock));
+        const selectedMoneda = this.props.selectedMoneda || null;
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
-
         productosFiltrados = productosFiltrados.filter(m => m.precio_venta > 0);
 
         if (this.conStock) {
@@ -115,15 +83,12 @@ export default class Modelo extends Component {
                                 const src = producto.key ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}` : productSinFoto;
 
                                 // Calculate price based on selected currency
-                                const precio = selectedMoneda
+                                const precio_venta_moneda = selectedMoneda
                                     ? producto.precio_venta / (selectedMoneda.tipo_cambio || 1)
                                     : producto.precio_venta;
-                                const monedaSymbol = selectedMoneda ? selectedMoneda.observacion : 'Bs';
-                                    // precio = parseFloat(precio.toFixed(2));
-                                console.log("precio " + JSON.stringify(precio));
-                                console.log("monedaSymbol " + JSON.stringify(monedaSymbol));
-                                console.log("selectedMoneda " + JSON.stringify(selectedMoneda));
-                                console.log("producto " + JSON.stringify(producto));
+                                const monedaSymbol = selectedMoneda ? selectedMoneda.observacion : 'Bs'; //🧧🧧🧧🧧🧧🧧🧧🧧🧧
+                                const moneda = selectedMoneda;
+
                                 return (
                                     <SView
                                         key={index}
@@ -133,21 +98,16 @@ export default class Modelo extends Component {
                                         onPress={() => {
 
                                             if (producto.cantidad <= 3) {
+                                                // if (producto.cantidad <= 0) {
                                                 alert("no puede")
                                                 // onAumentar
                                                 return
                                             }
-                                            // si quiero cambiar el precio aca
-                                            const productoAjustado = { ...producto, precio: parseFloat(precio.toFixed(2)), monedaSymbol }; // Override precio_venta
+                                            const productoAjustado = { ...producto, precio_venta_moneda: parseFloat(precio_venta_moneda.toFixed(2)), monedaSymbol, moneda }; // Override precio_venta
                                             // const productoAjustado = { ...producto, precio_venta: parseFloat(precio.toFixed(2)), monedaSymbol }; // Override precio_venta
 
+                                            console.log("productoAjustado", productoAjustado);
                                             this.props.onPressProducto?.(productoAjustado);
-
-                                            // this.props.onPressProducto?.({ ...producto, precio_venta: precio  , monedaSymbol }); // enviar copia actualizada
-                                            console.log('print', JSON.stringify(productoAjustado));
-                                            // console.log("print " + JSON.stringify(monedaSymbol))
-
-
                                             this.forceUpdate();  // ⬅️ Fuerza render para reflejar el cambio
                                         }}
                                     >
@@ -159,11 +119,8 @@ export default class Modelo extends Component {
                                             <SView col={"xs-12"} row>
                                                 <SView flex row >
                                                     <SText fontSize={12} bold color={STheme.color.text}  >
-                                                        {monedaSymbol} {SMath.formatMoney(precio, 2)}
-
-
+                                                        {monedaSymbol} {SMath.formatMoney(precio_venta_moneda, 2)}
                                                         {/* Bs {SMath.formatMoney(producto.precio_venta, 2)} */}
-
                                                     </SText>
                                                 </SView>
                                                 <SText fontSize={10} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"}>{producto?.stock} Und</SText>

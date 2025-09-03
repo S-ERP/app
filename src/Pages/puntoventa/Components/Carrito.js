@@ -21,7 +21,7 @@ export default class Carrito extends Component {
         this.carrito = this.carrito.filter(item => {
             if (!item.stock || item.stock <= 0) {
                 SNotification.send({
-                    title: "Producto sin stock",
+                    title: "CARRITO Producto sin stock",
                     body: `${item.descripcion} fue eliminado del carrito porque no tiene stock.`,
                     color: STheme.color.danger,
                     time: 3000
@@ -33,7 +33,7 @@ export default class Carrito extends Component {
             if (item.cantidad > item.stock) {
                 item.cantidad = item.stock;
                 SNotification.send({
-                    title: "Stock ajustado",
+                    title: "CARRITO Stock ajustado",
                     body: `La cantidad de ${item.descripcion} se ajustó al stock disponible (${item.stock}).`,
                     color: STheme.color.warning,
                     time: 3000
@@ -102,6 +102,7 @@ export default class Carrito extends Component {
                 monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : 'Bs',
             }))
             : [];
+
         this.forceUpdate();
     }
 
@@ -115,7 +116,7 @@ export default class Carrito extends Component {
                     item.cantidad += 1;
                 } else {
                     SNotification.send({
-                        title: 'Stock insuficiente',
+                        title: 'CARRITO Stock insuficiente',
                         body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: ${item.stock} unidades.`,
                         color: STheme.color.danger,
                         time: 3000,
@@ -126,10 +127,15 @@ export default class Carrito extends Component {
                 item.cantidad += 1;
             }
         } else {
+
+            // this.carrito.push({ ...producto, cantidad: 1 });
+
             this.carrito.push({
                 ...producto,
                 cantidad: 1,
                 precio_venta_original: producto.precio_venta, // Store original price
+                precio_venta_moneda: producto.precio_venta, // Store original price
+
                 precio_venta: this.props.selectedMoneda
                     ? producto.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
                     : producto.precio_venta,
@@ -177,7 +183,7 @@ export default class Carrito extends Component {
                 this.forceUpdate();
             } else {
                 SNotification.send({
-                    title: "Stock insuficiente",
+                    title: "CARRITO Stock insuficiente",
                     body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: ${item.stock} unidades.`,
                     color: STheme.color.danger,
                     time: 3000
@@ -305,10 +311,7 @@ export default class Carrito extends Component {
                             </SScrollView2>
                         </SView>
                         <SHr height={5} />
-                        <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal}
-
-                            monedaSymbol={monedaSymbol}
-                        ></ResumenTotales>
+                        <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal} monedaSymbol={monedaSymbol} ></ResumenTotales>
                         <SView col={"xs-12"} row center   >
                             <SView col={"md-12 xl-6"} height={70}  >
                                 <SView col={"xs-10"} center  >
@@ -341,10 +344,7 @@ export default class Carrito extends Component {
                                     <SInput label={"Con Stock"} type='checkBox' labelStyle={{ left: 12 }} defaultValue={this.conStock}
                                         onChangeText={(text) => {
                                             const valor = MDL.compra_venta.conStock();
-
-                                            console.log("va llevando " + text)
                                             this.conStock = text;
-
                                             this.ajustarCarrito();
                                             // this.forceUpdate();
                                         }}
@@ -375,7 +375,7 @@ export default class Carrito extends Component {
                     descuento={this.descuentoManual}
                     totalFinal={totalFinal}
                     conFactura={this.conFactura}
-                    subtotal={subtotal}
+                    subtotal={subtotal} //.......................................................
                     monedaSymbol={monedaSymbol} // Pass monedaSymbol to TecladoNumerico
 
                     onReload={() => { this.vaciarCarrito(); }}
