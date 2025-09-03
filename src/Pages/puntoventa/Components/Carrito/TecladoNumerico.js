@@ -134,16 +134,19 @@ export default class TecladoNumerico extends Component {
                                 console.log("montoTotal_ME", montoTotal_ME)
                                 console.log("monedal", this.props.moneda)
 
-                                // SelectTipoPago.openPopup({
-                                //     key_punto_venta: MDL.caja.activa.key_punto_venta,
-                                //     montoMaximo: (subtotal - descuento),
-                                //     onSelect: (item) => {
-                                //         this.tipos_pago = item;
-                                //         this.forceUpdate();
-                                //         this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
-                                //         SelectTipoPago.closePopup();
-                                //     }
-                                // });
+                                SelectTipoPago.openPopup({
+                                    key_punto_venta: MDL.caja.activa.key_punto_venta,
+                                    montoMaximo:montoTotal_MN,
+                                    montoMaximoMoneda: montoTotal_ME,
+                                    // montoMaximo: (subtotal - descuento),
+                                    // montoMaximoMoneda: (subtotal - descuento),
+                                    onSelect: (item) => {
+                                        this.tipos_pago = item;
+                                        this.forceUpdate();
+                                        this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
+                                        SelectTipoPago.closePopup();
+                                    }
+                                });
                             }
                         }}
                         >

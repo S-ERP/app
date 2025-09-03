@@ -153,8 +153,10 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
         return <SView flex col={"xs-12"} padding={4}>
             {this.props.montoMaximo && <>
                 <SView padding={4} row center>
-                    <SText color={STheme.color.lightGray}>{"Monto Maximo: "}</SText>
-                    <SText bold fontSize={16}>{parseFloat(this.props.montoMaximo ?? "0").toFixed(2)}</SText>
+                    <SText color={STheme.color.lightGray}>{"Monto Maximo nacional: "}</SText>
+                    <SText bold fontSize={16}>{this.props.montoMaximo}</SText>
+                    <SText color={STheme.color.lightGray}>{"Monto Extranjero: "}</SText>
+                    <SText bold fontSize={16}>{this.props.montoMaximoMoneda}</SText>
                 </SView>
             </>}
             {this.state.ready &&
