@@ -11,33 +11,51 @@ import ReciboCarta from '../../../../Components/PDF/venta/ReciboCarta';
 import PopupCarritoFlotante from './PopupCarritoFlotante';
 import Carrito from '../Carrito';
 import Main from '../../Main';
+
+
+
+// import React, { Component } from 'react';
+// import { SView, SText, STheme, SNavigation, SMath, SInput, SNotification, SHr, SIcon } from 'servisofts-component';
+// import Model from '../../../../Model';
+// import ResumenTotales from './ResumenTotales';
+// import PopupConfirmaPago from './PopupConfirmaPago';
+// import FotoCliente from '../Foto/FotoCliente';
+// import SelectTipoPago from '../../../caja2/components/SelectTipoPago';
+// import MDL from '../../../../MDL';
+// import ReciboRollo from '../../../../Components/PDF/venta/ReciboRollo';
+// import ReciboCarta from '../../../../Components/PDF/venta/ReciboCarta';
+// import PopupCarritoFlotante from './PopupCarritoFlotante';
+
 export default class TecladoNumerico extends Component {
     constructor(props) {
         super(props);
+        this.state = {};
     }
-    renderButton(totalFinal, subtotal, descuento, conFactura, carrito) {
+
+    renderButton(totalFinal, subtotal, subtotalMoneda, descuento, conFactura, carrito) {
         if (!this.tipos_pago) {
             SNotification.send({
                 title: "Error",
-                body: "No hay tipo de pago",
+                body: "No hay tipo de pago seleccionado",
                 type: "error",
                 color: STheme.color.error,
                 time: 5000,
             });
             return;
         }
-        // if (!this.tipos_pago.efectivo) {
-        //     SNotification.send({
-        //         title: "Error",
-        //         body: "Monto insuficiente para pagar",
-        //         type: "error",
-        //         color: STheme.color.error,
-        //         time: 5000,
-        //     });
-        //     this.tipos_pago = null;
-        //     return;
-        // }
+
         const recibi = this.tipos_pago.efectivo || 0;
+        if (recibi < totalFinal) {
+            SNotification.send({
+                title: "Error",
+                body: "El monto recibido es insuficiente para cubrir el total",
+                type: "error",
+                color: STheme.color.error,
+                time: 5000,
+            });
+            return;
+        }
+
         const key_sucursal = this.props?.key_sucursal;
         const key_cliente = this.cliente?.key;
         const cliente = this.cliente;
@@ -45,19 +63,20 @@ export default class TecladoNumerico extends Component {
         const detalle = carrito.map(item => ({
             key_modelo: item.key,
             descripcion: item.descripcion,
-            precio_unitario: item.precio_venta ?? 0,
+            precio_unitario: parseFloat(SMath.formatMoney(item.precio_venta_moneda, 2)), // Usar precio en moneda seleccionada
             cantidad: item.cantidad ?? 0,
         }));
         const caja = {
-            subtotal: SMath.formatMoney(subtotal, 2),
-            iva: SMath.formatMoney(descuento, 2),
+            subtotal: SMath.formatMoney(subtotalMoneda, 2),
+            iva: SMath.formatMoney(this.props.totalImpuesto, 2), // Corregido: Usar totalImpuesto
             descuento: SMath.formatMoney(descuento || 0, 2),
-            monto_total: SMath.formatMoney((subtotal - descuento), 2),
-            montoRecibido: SMath.formatMoney((recibi || 0), 2),
-            cambio: SMath.formatMoney((recibi - totalFinal), 2),
+            monto_total: SMath.formatMoney(totalFinal, 2), // Usar totalFinal directamente
+            montoRecibido: SMath.formatMoney(recibi, 2),
+            cambio: SMath.formatMoney(recibi - totalFinal, 2),
             conFactura: conFactura ? true : false,
             tipos_pago: this.tipos_pago,
-            monto_factura: conFactura ? SMath.formatMoney((subtotal - descuento), 2) : SMath.formatMoney(0, 2),
+            monto_factura: conFactura ? SMath.formatMoney(totalFinal, 2) : SMath.formatMoney(0, 2),
+            monedaSymbol: this.props.monedaSymbol || 'Bs', // Incluir el símbolo de la moneda
         };
         const datos = {
             key_sucursal,
@@ -65,42 +84,42 @@ export default class TecladoNumerico extends Component {
             key_cliente,
             cliente,
             key_cajero,
-            caja
+            caja,
         };
+
         SNotification.send({
             key: "compra",
-            title: "Esperando...",
+            title: "Procesando pago...",
             type: "loading",
-        })
+        });
         MDL.compra_venta.registrar(datos).then((res) => {
-            ReciboCarta.imprimir(res.key)
+            ReciboCarta.imprimir(res.key);
             this.tipos_pago = null;
             SNotification.remove("compra");
             this.props?.onReload?.();
-            this.props?.onReloadCliente?.(); // Limpia cliente en FotoCliente
+            this.props?.onReloadCliente?.();
             this.forceUpdate();
-            SNavigation.navigate("/caja2")
+            SNavigation.navigate("/caja2");
         }).catch(res => {
             this.tipos_pago = null;
             this.forceUpdate();
             SNotification.send({
                 key: "compra",
                 title: "Error",
-                body: res.error,
+                body: res.error || "Error al procesar el pago",
                 type: "error",
                 color: STheme.color.error,
-                time: 5000
-            }
-            )
-        })
+                time: 5000,
+            });
+        });
     }
 
-    handleCalculatorPress(valor){
-        console.log("presiono "+valor)
+    handleCalculatorPress(valor) {
+        console.log("Presionó: " + valor);
     }
 
     renderTecladoNumerico = () => {
-        const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
+        const { subtotal, subtotalMoneda, descuento, totalImpuesto, totalFinal, numeroIva, conFactura, monedaSymbol, carrito } = this.props;
         const style_text = {
             color: STheme.color.text,
             fontSize: 12,
@@ -112,7 +131,7 @@ export default class TecladoNumerico extends Component {
             ["7", "8", "9", "Precio"],
             ["+/-", "0", ".", "<"]
         ];
-        const carrito = this.props?.carrito || {};
+
         return (
             <>
                 <SView col={"xs-0 md-12"} row color={STheme.color.danger}>
@@ -120,27 +139,54 @@ export default class TecladoNumerico extends Component {
                         <SView center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ height: 40, borderRadius: 8, margin: 2 }}>
                             <FotoCliente onReloadCliente={(cliente) => {
                                 this.cliente = cliente;
-                            }}  ></FotoCliente>
+                            }} />
                         </SView>
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 8, margin: 2 }} onPress={() => {
-                            let carro = this.props?.carrito || {};
+
+                            //    let carro = this.props?.carrito || {};
+                            //     if (!this.tipos_pago) {
+                            //         SelectTipoPago.openPopup({
+                            //             key_punto_venta: MDL.caja.activa.key_punto_venta,
+                            //             montoMaximo: (subtotal - descuento),
+                            //             // montoMaximo: totalFinal,
+                            //             onSelect: (item) => {
+                            //                 this.tipos_pago = item;
+                            //                 console.log("selecciono " + JSON.stringify(item))
+                            //                 this.forceUpdate();
+                            //                 this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
+                            //                 SelectTipoPago.closePopup();
+                            //             }
+                            //         });
+                            //     }
+
                             if (!this.tipos_pago) {
+                                const key_punto_venta = MDL.caja.activa.key_punto_venta;
+                                const monedaSymbol = this.props.monedaSymbol || 'Bs';
+
+                                const montoTotal_MN = parseFloat(subtotal.toFixed(2));
+                                const montoTotal_ME = parseFloat(subtotalMoneda.toFixed(2));
+                                console.log("abrir popup WEB 🎭🎭🎭🎭🎭🎭🎭🎭🎭");
+                                console.log("key_punto_venta", key_punto_venta);
+                                console.log("montoTotal_MN", montoTotal_MN);
+                                console.log("montoTotal_ME", montoTotal_ME);
+                                console.log("monedaSymbol", monedaSymbol);
+
                                 SelectTipoPago.openPopup({
-                                    key_punto_venta: MDL.caja.activa.key_punto_venta,
-                                    montoMaximo: (subtotal - descuento),
+                                    key_punto_venta: key_punto_venta,
+                                    montoMaximo: montoTotal_MN, // Usar totalFinal
+                                    monedaSymbol: monedaSymbol,
                                     onSelect: (item) => {
                                         this.tipos_pago = item;
                                         this.forceUpdate();
-                                        this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
+                                        this.renderButton(totalFinal, subtotalMoneda, subtotal, descuento, conFactura, carrito);
                                         SelectTipoPago.closePopup();
-                                    }
+                                    },
                                 });
                             }
-                        }}
-                        >
+                        }}>
                             <SIcon name="iconRight" width={50} height={50} fill={STheme.color.background} />
                             <SHr height={5} />
-                            <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagare</SText>
+                            <SText style={{ ...style_text, textTransform: 'uppercase' }}>Pagar</SText>
                         </SView>
                     </SView>
                     <SView col={"xs-8"}>
@@ -149,47 +195,50 @@ export default class TecladoNumerico extends Component {
                                 {fila.map((t, j) => (
                                     <SView key={j} flex center backgroundColor={STheme.color.darkGray} border={STheme.color.card}
                                         style={{
-                                            height: 40, borderRadius: 8,
-                                            overflow: "hidden", margin: 2
+                                            height: 40,
+                                            borderRadius: 8,
+                                            overflow: "hidden",
+                                            margin: 2,
                                         }}
-                                        onPress={() => this.handleCalculatorPress(t)} 
-                                        >
+                                        onPress={() => this.handleCalculatorPress(t)}
+                                    >
                                         <SText style={style_text}>{t}</SText>
                                     </SView>
                                 ))}
                             </SView>
                         ))}
                     </SView>
-                </SView >
-                {
-                    this.props.subtotal ? <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
-                        // console.log("modo movil " + this.props.cliente) 📱📱📱
+                </SView>
+                {subtotal ? (
+                    <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                         if (!this.tipos_pago) {
-                            SelectTipoPago.openPopup({
-                                key_punto_venta: MDL.caja.activa.key_punto_venta,
-                                montoMaximo: (subtotal - descuento),
-                                montoMaximoMoneda: (subtotal - descuento),
-                                onSelect: (item) => {
-                                    this.tipos_pago = item;
-                                    this.forceUpdate();
-                                    this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
-                                    this.tipos_pago = null;
-                                    SNotification.remove("compra");
-                                    this.props?.onReload?.();
-                                    this.props?.onReloadCliente?.(); // Limpia cliente en FotoCliente
-                                    PopupCarritoFlotante.closePopup();
-                                    SelectTipoPago.closePopup();
-                                }
-                            });
+                            console.log("abrir popup");
+                            // SelectTipoPago.openPopup({
+                            //     key_punto_venta: MDL.caja.activa.key_punto_venta,
+                            //     montoMaximo: parseFloat(totalFinal.toFixed(2)),
+                            //     montoMaximoMoneda: parseFloat(totalFinal.toFixed(2)),
+                            //     monedaSymbol: monedaSymbol,
+                            //     onSelect: (item) => {
+                            //         this.tipos_pago = item;
+                            //         this.forceUpdate();
+                            //         this.renderButton(totalFinal, subtotal, subtotalMoneda, descuento, conFactura, carrito);
+                            //         this.tipos_pago = null;
+                            //         SNotification.remove("compra");
+                            //         this.props?.onReload?.();
+                            //         this.props?.onReloadCliente?.();
+                            //         // PopupCarritoFlotante.closePopup();
+                            //         SelectTipoPago.closePopup();
+                            //     },
+                            // });
                         }
                     }}>
-                        <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pagokkkkkkkkk</SText>
+                        <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pago</SText>
                     </SView>
-                        : null
-                }
+                ) : null}
             </>
         );
     };
+
     render() {
         return this.renderTecladoNumerico();
     }

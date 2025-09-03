@@ -11,6 +11,10 @@ type SelectTipoPagoProps = {
     montoMaximoPorTipo?: { [key: string]: number },
     onSelect?: (item: any) => void
 }
+ 
+
+
+ 
 export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
     static openPopup(props: SelectTipoPagoProps) {
         SPopup.open({
@@ -153,8 +157,12 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
         return <SView flex col={"xs-12"} padding={4}>
             {this.props.montoMaximo && <>
                 <SView padding={4} row center>
-                    <SText color={STheme.color.lightGray}>{"Monto Maximo: "}</SText>
-                    <SText bold fontSize={16}>{parseFloat(this.props.montoMaximo ?? "0").toFixed(2)}</SText>
+                    <SView col={"xs-6"} row center>
+                        <SText color={STheme.color.lightGray}>{"Monto Pagar: "}</SText><SText bold fontSize={16}>{parseFloat(this.props.montoMaximo ?? "0").toFixed(2)}</SText>
+                    </SView>
+                    <SView col={"xs-6"} row center>
+                        {/* <SText color={STheme.color.lightGray}>{"ss Modena: "}</SText><SText bold fontSize={16}> {this.props.moneda?.observacion}  {parseFloat(this.props.moneda?.tipo_cambio ?? "0").toFixed(2)}</SText> */}
+                    </SView>
                 </SView>
             </>}
             {this.state.ready &&
