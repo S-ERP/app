@@ -58,16 +58,16 @@ export default class PopupConfirmaPago extends Component {
             });
             return;
         }
-        if (!this.variableGlobal || this.variableGlobal < totalFinal) {
-            SNotification.send({
-                title: "Error",
-                body: "Monto insuficiente para pagar",
-                type: "error",
-                color: STheme.color.error,
-                time: 5000,
-            });
-            return;
-        }
+        // if (!this.variableGlobal || this.variableGlobal < totalFinal) {
+        //     SNotification.send({
+        //         title: "Error",
+        //         body: "Monto insuficiente para pagar",
+        //         type: "error",
+        //         color: STheme.color.error,
+        //         time: 5000,
+        //     });
+        //     return;
+        // }
         if (!this.sucursal || !this.sucursal.key_sucursal) {
             SNotification.send({
                 title: "Error",

@@ -10,7 +10,8 @@ import Components from '../../../Components';
 import Model from '../../../Model';
 export default class Abierta extends Component {
     state = {
-        movimientos: []
+        movimientos: [],
+        ready: false,
     }
     componentDidMount() {
         this.loadData();
@@ -29,7 +30,7 @@ export default class Abierta extends Component {
             movimientos.sort((a, b) => {
                 return new SDate(b.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime() - new SDate(a.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime();
             })
-            this.setState({ movimientos });
+            this.setState({ movimientos, ready: true });
         });
     }
     cerrar_caja() {
@@ -93,7 +94,7 @@ export default class Abierta extends Component {
                     <SText color={STheme.color.warning} fontSize={12}>{this.props.caja.fecha_cierre ? new SDate(this.props.caja.fecha_cierre).toString("DAY, dd de MONTH del yyyy a las hh:mm") : "La caja se encuentra abierta."}</SText>
                 </SView>
                 <SView>
-                    <Components.caja.QRCaja pk={this.props.caja.key} width={120} height={120} />
+                    {/* <Components.caja.QRCaja pk={this.props.caja.key} width={120} height={120} /> */}
                 </SView>
             </SView>
         </SView >
@@ -112,13 +113,14 @@ export default class Abierta extends Component {
                                 <MenuAcciones caja={this.props.caja} movimientos={this.state.movimientos} />
                             </SView>
                             <SHr h={32} />
+                            {this.mensaje()}
+                            <SHr h={32} />
+                            {(!this.state.ready) && <SText color={STheme.color.lightGray}>Cargando movimientos...</SText>}
+                            {(this.state.ready && this.state.movimientos.length <= 0) && <SText color={STheme.color.lightGray}>No hay movimientos</SText>}
                         </SView>
                     }}
                     renderItem={({ item, index }) => {
                         return <SView col={"xs-12"} center>
-                            {this.mensaje()}
-                            <SHr h={32} />
-
                             <SView col={"xs-11 sm-10 md-8 lg-6"} >
                                 <DetalleItem item={item} index={index} tipo_pago={this.state.tipo_pago} />
                             </SView>

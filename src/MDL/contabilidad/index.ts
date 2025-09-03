@@ -124,6 +124,31 @@ export default class contabilidad extends MDLAbstract<EventListener> {
     return this.cuentasCache.promise;
   }
 
+  getCuentasGrafo(cuentas: any[]) {
+    cuentas.map(c => {
+      // HIJAS: buscar solo las del nivel más cercano
+      const posiblesHijas = cuentas.filter(
+        h => h.codigo.startsWith(c.codigo) && h.codigo.length > c.codigo.length
+      );
+
+      // tomamos la longitud mínima entre las hijas
+      const minLen = Math.min(...posiblesHijas.map(h => h.codigo.length), Infinity);
+
+      const hijas = posiblesHijas.filter(h => h.codigo.length === minLen);
+
+      // PADRE: buscar solo el más cercano hacia arriba
+      const posiblesPadres = cuentas.filter(
+        h => h.codigo.length < c.codigo.length && c.codigo.startsWith(h.codigo)
+      );
+
+      // tomamos el padre con mayor longitud (el más cercano)
+      const padre = posiblesPadres.sort((a, b) => b.codigo.length - a.codigo.length)[0] || null;
+
+      c.parent = padre;
+      c.childrens = hijas;
+    });
+    return cuentas;
+  }
   agruparCuentas(cuentas: any) {
     const mapa: any = {};
     const raiz: any[] = [];
@@ -238,5 +263,5 @@ export default class contabilidad extends MDLAbstract<EventListener> {
   format_cuenta_to_string(cuenta: any) {
     return `${cuenta.codigo} - ${cuenta.descripcion}`;
   }
-  
+
 }

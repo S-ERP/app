@@ -16,9 +16,9 @@ export default class PopupCrearMoneda extends Component<Props> {
         SPopup.open({
             key: "PopupCrearMoneda",
             content: <SView style={{
-                maxWidth: "100%",
+                maxWidth: 500,
                 maxHeight: "100%",
-                width: 500,
+                width: "100%",
                 // height: 500,
                 borderRadius: 8,
                 borderColor: STheme.color.card,
@@ -46,7 +46,19 @@ export default class PopupCrearMoneda extends Component<Props> {
                     justifyContent: "space-between",
                 }}
                 inputs={{
+                    "tipo": {
+                        col: "xs-4",
+                        // icon: <SView />,
+                        type: "select2",
+                        defaultValue: this.props.editObject?.tipo || "",
+                        options: ["base", "referencial"],
+                        label: "Tipo", placeholder: "Ingresa el tipo", 
+                        onSubmitEditing: () => {
+                            if (this.form) this.form.focus("descripcion");
+                        }
+                    },
                     "descripcion": {
+                        col: "xs-7.5",
                         label: "Nombre de la moneda", placeholder: "Ingresa el nombre de la moneda", isRequired: true, autoFocus: true,
                         defaultValue: this.props.editObject?.descripcion,
                         onSubmitEditing: () => {

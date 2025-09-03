@@ -26,17 +26,17 @@ export default class TecladoNumerico extends Component {
             });
             return;
         }
-        if (!this.tipos_pago.efectivo) {
-            SNotification.send({
-                title: "Error",
-                body: "Monto insuficiente para pagar",
-                type: "error",
-                color: STheme.color.error,
-                time: 5000,
-            });
-            this.tipos_pago = null;
-            return;
-        }
+        // if (!this.tipos_pago.efectivo) {
+        //     SNotification.send({
+        //         title: "Error",
+        //         body: "Monto insuficiente para pagar",
+        //         type: "error",
+        //         color: STheme.color.error,
+        //         time: 5000,
+        //     });
+        //     this.tipos_pago = null;
+        //     return;
+        // }
         const recibi = this.tipos_pago.efectivo || 0;
         const key_sucursal = this.props?.key_sucursal;
         const key_cliente = this.cliente?.key;

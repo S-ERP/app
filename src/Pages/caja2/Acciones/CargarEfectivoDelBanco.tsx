@@ -58,6 +58,7 @@ export default class CargarEfectivoDelBanco extends React.Component<CargarEfecti
             "tipo": "ingreso_banco",
             "key_tipo_pago": "efectivo",
             "fecha": caja.fecha,
+            key_moneda: cuenta.key_moneda,
             key_cuenta_banco: cuenta.key,
         })
         console.log(data, cuenta);
@@ -80,12 +81,20 @@ export default class CargarEfectivoDelBanco extends React.Component<CargarEfecti
                         //         content: this.format_cuenta_to_string(c)
                         //     }
                         // })}
+                        onChangeText={e => {
+
+                            const cuenta = this.state.cuentas_bancos.find((c: any) => this.format_cuenta_to_string(c) == e);
+                            if (cuenta) {
+                                this.state.moneda = cuenta.key_moneda;
+                                this.forceUpdate();
+                            }
+                        }}
                         placeholder={"Selecciona el banco"}
                     />
                 </SView>
                 <SView width={10} />
                 <SView width={160} >
-                    <SInput label={"Monto"} type="money2" ref={ref => this._ref["monto"] = ref} />
+                    <SInput icon={<SText width={40} numberOfLines={1}>{this.state.moneda}</SText>} label={"Monto"} type="money2" ref={ref => this._ref["monto"] = ref} />
                 </SView>
             </SView>
             <SInput label={"Descripcion"} type="textArea" ref={ref => this._ref["descripcion"] = ref} />
@@ -96,12 +105,13 @@ export default class CargarEfectivoDelBanco extends React.Component<CargarEfecti
                     title: "Enviando"
                 })
                 this.submit().then(e => {
+                    SPopup.close("CargarEfectivoDelBanco");
                     SNotification.remove("enviar")
                 }).catch(e => {
                     SNotification.send({
                         key: "enviar",
                         title: "Error",
-                        body: e,
+                        body: e.error ?? JSON.stringify(e),
                         time: 5000
                     })
                 })

@@ -30,9 +30,10 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
         const suc = data.sucursales.find(suc => suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta));
         const pv = suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta);
         this.pvtp = pv.punto_venta_tipo_pago;
-        if(!this.pvtp) return [];
+        if (!this.pvtp) return [];
         this.pvtp = this.pvtp.map(item => {
             item.tipo_pago = this.tipo_pago[item.key_tipo_pago];
+            item.moneda = data.monedas.find(m => m.key == item.key_moneda);
             return item;
         });
 
@@ -53,9 +54,9 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
         return color;
     }
     renderItemTipoPago(item) {
-        const total = this.props.movimientos.filter(mov => mov.key_tipo_pago == item.key_tipo_pago).reduce((sum, mov) => sum + mov.monto, 0);
-        const totalIngresos = this.props.movimientos.filter(mov => mov.key_tipo_pago == item.key_tipo_pago && mov.monto > 0).reduce((sum, mov) => sum + mov.monto, 0);
-        const totalEgresos = this.props.movimientos.filter(mov => mov.key_tipo_pago == item.key_tipo_pago && mov.monto < 0).reduce((sum, mov) => sum + mov.monto, 0);
+        const total = this.props.movimientos.filter(mov => mov.key_tipo_pago == item.key_tipo_pago && mov.key_moneda == item.key_moneda).reduce((sum, mov) => sum + mov.monto, 0);
+        const totalIngresos = this.props.movimientos.filter(mov => mov.key_tipo_pago == item.key_tipo_pago && mov.key_moneda == item.key_moneda && mov.monto > 0).reduce((sum, mov) => sum + mov.monto, 0);
+        const totalEgresos = this.props.movimientos.filter(mov => mov.key_tipo_pago == item.key_tipo_pago && mov.key_moneda == item.key_moneda && mov.monto < 0).reduce((sum, mov) => sum + mov.monto, 0);
 
         return <SView style={{
             padding: 2,
@@ -86,10 +87,13 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
                         <SIconApp name={item?.tipo_pago?.icon || "Ajustes"} />
                     </View>
                     <SView width={4} />
-                    <SText flex key={item.key_tipo_pago} numberOfLines={1} fontSize={12} >{item.tipo_pago ? item.tipo_pago.descripcion : item.key_tipo_pago}</SText>
+                    <SView flex>
+                        <SText flex key={item.key_tipo_pago} numberOfLines={1} fontSize={12} >{item.tipo_pago ? item.tipo_pago.descripcion : item.key_tipo_pago}</SText>
+                        <SText numberOfLines={1} fontSize={10} color={STheme.color.lightGray} >{item.moneda?.descripcion}</SText>
+                    </SView>
                 </SView>
                 <SView flex col={"xs-12"} center >
-                    <SText bold color={this.getColor(total)} fontSize={20}>{SMath.formatMoney(total)}</SText>
+                    <SText bold color={this.getColor(total)} fontSize={20}>{item.moneda?.observacion} {SMath.formatMoney(total)}</SText>
                 </SView>
                 <SView flex col={"xs-12"} row style={{
                     borderTopWidth: 1,
@@ -99,14 +103,14 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
                         borderRightWidth: 1,
                         borderColor: STheme.color.card
                     }} >
-                        <SIconApp name='Ingreso' width={8} height={8}/>
+                        <SIconApp name='Ingreso' width={8} height={8} />
                         {/* <View style={{ width: 2 }} /> */}
-                        <SText numberOfLines={1} color={this.getColor(totalIngresos)} fontSize={10}>{SMath.formatMoney(totalIngresos, 1)}</SText>
+                        <SText numberOfLines={1} color={this.getColor(totalIngresos)} fontSize={10}>{item.moneda?.observacion} {SMath.formatMoney(totalIngresos, 1)}</SText>
                     </SView>
                     <SView flex center >
                         <SIconApp name='Egreso' width={8} height={8} />
                         {/* <View style={{ width: 2 }} /> */}
-                        <SText numberOfLines={1} color={this.getColor(totalEgresos)} fontSize={10}>{SMath.formatMoney(totalEgresos, 1)}</SText>
+                        <SText numberOfLines={1} color={this.getColor(totalEgresos)} fontSize={10}>{item.moneda?.observacion} {SMath.formatMoney(totalEgresos, 1)}</SText>
                     </SView>
                 </SView>
             </SView>
