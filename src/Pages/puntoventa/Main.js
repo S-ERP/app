@@ -14,7 +14,7 @@ export default class Main extends Component {
         super(props);
         this.selectedTipoKey = "all";
         this.searchText = "";
-        this.selectedMoneda = null; // 🔹 Add selectedMoneda
+        this.selectedMoneda = null; //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
 
         this.state = {
             showCarritoModal: false,
@@ -30,8 +30,9 @@ export default class Main extends Component {
         this.forceUpdate();
     };
 
-    setMoneda = moneda => { // 🔹 Add setMoneda method
+    setMoneda = moneda => { //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
         this.selectedMoneda = moneda;
+        console.log("🎂🎂🎂🎂 Main:", this.selectedMoneda);
         this.forceUpdate();
     };
 
@@ -65,7 +66,7 @@ export default class Main extends Component {
             <Carrito
                 ref={(ref) => (this.carritoRef = ref)}
                 onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
-                selectedMoneda={this.selectedMoneda} 
+                selectedMoneda={this.selectedMoneda} //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
             />
         );
     }
@@ -134,17 +135,14 @@ export default class Main extends Component {
                             selected={this.selectedTipoKey}
                             value={this.searchText}
                             onChangeText={this.setSearchText}
-
-                            selectedMoneda={this.selectedMoneda} // 🔹 Pass selectedMoneda
-                            onSelectMoneda={this.setMoneda} // 🔹 Pass setMoneda
-
+                            selectedMoneda={this.selectedMoneda} //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
+                            onSelectMoneda={this.setMoneda} //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
                         />
                         {this.cajaActiva && <Modelo
                             ref={(ref) => (this.modeloRef = ref)}
                             tipoKey={this.selectedTipoKey}
                             searchText={this.searchText}
-                            selectedMoneda={this.selectedMoneda} // 🔹 Pass selectedMoneda
-
+                            selectedMoneda={this.selectedMoneda} //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
                             onPressProducto={(producto) => {
                                 this.carritoRef?.addProducto(producto);
                                 this.carritoRefModal?.addProducto?.(producto);

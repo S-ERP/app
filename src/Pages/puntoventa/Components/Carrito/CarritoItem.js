@@ -6,15 +6,11 @@ export default class CarritoItem extends Component {
     render() {
         const { item, onAumentar, onDisminuir, onEliminar } = this.props;
 
-        const precio = item.selectedMoneda
+        const precioMoneda = item.selectedMoneda
             ? item.precio_venta / (item.selectedMoneda.tipo_cambio || 1)
             : item.precio_venta;
         const monedaSymbol = item.selectedMoneda ? item.selectedMoneda.observacion : 'Bs';
-        console.log("precio en carrito " + JSON.stringify(precio));
-        console.log("monedaSymbol en carrito " + JSON.stringify(monedaSymbol));
-        console.log("selectedMoneda en carrito " + JSON.stringify(item.selectedMoneda));
-        // si quiero cambiar el precio aca
-        // item.precio_venta = parseFloat(precio.toFixed(2));
+        const moneda = item.selectedMoneda ;
         return (
             <SView col={"xs-12"} row style={{ paddingVertical: 4, borderBottomWidth: 0.2, borderBottomColor: STheme.color.card }}>
                 <SView width={40} row center >
@@ -25,8 +21,7 @@ export default class CarritoItem extends Component {
                 <SView flex row center >
                     <SView col={"xs-12"} row >
                         <SText col={"xs-12"} fontSize={12}>{item.descripcion}</SText>
-                        {/* <SText col={"xs-12"} fontSize={12}>Bs {precio} / Und</SText> */}
-                        <SText col={"xs-12"} fontSize={12}>Bs {precio.toFixed(2)} / Und</SText>
+                        <SText col={"xs-12"} fontSize={12}>Bs {precioMoneda.toFixed(2)} / Und</SText>
                     </SView>
                 </SView>
                 <SView col={"md-5.5 lg-4.5 xl-3.5"} row center >
@@ -71,7 +66,6 @@ export default class CarritoItem extends Component {
                                     opacity: item.cantidad >= 120 ? 0.5 : 1 // Visual feedback para botón desactivado
                                 }}
                                 disabled={item.cantidad >= 120} // Deshabilitar si cantidad >= 120
-
                                 onPress={onAumentar}
                             >
                                 <SText fontSize={18} color={"#10B981"}>+</SText>
@@ -81,8 +75,7 @@ export default class CarritoItem extends Component {
                 </SView>
                 <SView col={"md-2 xl-2.5"} center >
                     <SView col={"xs-12"} style={{ justifyContent: "flex-start" }}>
-                        {/* <SText col={"xs-12"} fontSize={11} bold> Bs {(item.precio_venta * item.cantidad).toFixed(2)}</SText> */}
-                        <SText col={"xs-12"} fontSize={11} bold>{item.monedaSymbol || 'Bs'} {(precio * item.cantidad).toFixed(2)}</SText>
+                        <SText col={"xs-12"} fontSize={11} bold>{item.monedaSymbol || 'Bs'} {(precioMoneda * item.cantidad).toFixed(2)}</SText>
                     </SView>
                 </SView>
                 <SView width={20} height={20} center onPress={onEliminar} style={{ position: "absolute", right: -2, top: -1 }} >
