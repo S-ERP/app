@@ -40,6 +40,8 @@ export default function Puerto(props: PuertoProps) {
 
     React.useEffect(() => {
         pizarra.registerPuerto({ id: props.id, layout, nodo: nodo, onConnected, type: props.type ?? "input", props: props });
+
+
         return () => {
             pizarra.unregisterPuerto(props.id, nodo.id);
         };
@@ -109,10 +111,7 @@ export default function Puerto(props: PuertoProps) {
             line.y1.value = nodo.translateY.value + layout.value.y + (layout.value.height / 2);
             line.x2.value = port.nodo.translateX.value + port.layout.value.x + (port.layout.value.width / 2);
             line.y2.value = port.nodo.translateY.value + port.layout.value.y + (port.layout.value.height / 2);
-            pizarra.lineasRef.current?.drawLine({
-                 portA:pizarra.puertos.current[nodo.id + "_" + props.id],
-                 portB:port
-            });
+       
         }
     }
     const clearLine = () => {
@@ -184,8 +183,8 @@ export default function Puerto(props: PuertoProps) {
                 // @ts-ignore
                 cursor: "crosshair",
                 position: "absolute",
-                width: 20,
-                height: 20,
+                width: 16,
+                height: 16,
                 // backgroundColor: STheme.color.text,
                 // borderRadius: 100,
             }, props.style, styleAnimated]}>

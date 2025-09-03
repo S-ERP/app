@@ -3,6 +3,7 @@ import Animated, { SharedValue, useAnimatedProps, useAnimatedStyle, useSharedVal
 import { Path, Svg } from "react-native-svg";
 import { SDate, SPage, SText, STheme, SView } from "servisofts-component";
 import { usePizarra } from "./Pizarra";
+import { PuertoInstance } from "./Puerto";
 
 
 export type LineaProps = {
@@ -11,6 +12,9 @@ export type LineaProps = {
     y1?: number;
     x2?: number;
     y2?: number;
+    portA?: PuertoInstance;
+    portB?: PuertoInstance;
+    onCreate?: (e: LineaInstance) => void;
 }
 export type LineaInstance = {
     id: string;
@@ -36,16 +40,20 @@ const Linea = (props: LineaProps) => {
 
     React.useEffect(() => {
         pizarra.registerLinea({ id: props.id, x1, y1, x2, y2 });
+        if (props.onCreate) {
+            props.onCreate({ id: props.id, x1, y1, x2, y2 });
+        }
         return () => {
             pizarra.unregisterLinea(props.id);
         };
     }, []);
-
+    pizarra.registerLinea({ id: props.id, x1, y1, x2, y2 });
+    
     const styleAnimated = useAnimatedStyle(() => {
         const width = Math.abs(x2.value - x1.value);
         const height = Math.abs(y2.value - y1.value);
         return {
-            zIndex: 999,
+            zIndex: 1,
             opacity: width < 2 && height < 2 ? 0 : 1,
             position: "absolute",
             width: width + 4,
@@ -78,7 +86,7 @@ const Linea = (props: LineaProps) => {
             stroke: STheme.color.text,
             strokeWidth: 2,
             fill: "none",
-            d: `M ${startX} ${startY+1} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY+1}`,
+            d: `M ${startX} ${startY + 1} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY + 1}`,
         };
     });
 

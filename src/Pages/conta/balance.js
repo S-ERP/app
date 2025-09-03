@@ -84,6 +84,13 @@ export default class conta extends React.Component {
                     ref={(e) => this.dinamicTable = e}
                     {...Config.table.applyTheme()}
                     loadData={this.loadData.bind(this)}
+                    loadInitialState={async () => {
+                        return {
+                            sorters: [
+                                { key: "codigo", order: "asc", type: "string" }
+                            ]
+                        }
+                    }}
                     selectType="multiple"
                 >
                     <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{

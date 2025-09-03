@@ -8,6 +8,7 @@ import PopupCrearSucursal from "./Components/PopupCrearSucursal";
 import Pizarra from "../../../Components/Pizarra/Pizarra";
 import PizarraNodo from "../../../Components/Pizarra/PizarraNodo";
 import Puerto from "../../../Components/Pizarra/Puerto";
+import Recargar from "../../../Components/Recargar";
 
 export default class config2 extends React.Component {
 
@@ -28,11 +29,15 @@ export default class config2 extends React.Component {
         if (!empresa) return <SLoad />
         const space = 300;
         return <SPage title={"config2"} disableScroll>
+
             <Pizarra>
-                <PizarraNodo id={empresa?.key} x={0} y={-200} style={{
-                    alignItems: "center",
-                    justifyContent: "center"
-                }}>
+                <PizarraNodo
+                    id={empresa?.key}
+                    key={empresa?.key}
+                    y={0} x={-200} style={{
+                        alignItems: "center",
+                        justifyContent: "center"
+                    }}>
                     <SView style={{
                         width: 200,
                         height: 80,
@@ -69,7 +74,7 @@ export default class config2 extends React.Component {
                 </PizarraNodo>
                 {(empresa.sucursales ?? []).map((sucursal, i) => {
                     return <>
-                        <PizarraNodo id={sucursal.key} x={i * space} y={0} style={{
+                        <PizarraNodo id={sucursal.key} y={i * space } x={0} style={{
                             alignItems: "center",
                             justifyContent: "center"
                         }}>
@@ -97,6 +102,7 @@ export default class config2 extends React.Component {
                                     left: 4
                                 }} />
                             <Puerto id="key_sucursal"
+                                value={sucursal.key}
                                 type="output"
                                 style={{
                                     right: 0,
@@ -108,8 +114,8 @@ export default class config2 extends React.Component {
                             (sucursal.almacenes ?? []).map((almacen, j) => {
                                 return <PizarraNodo
                                     id={almacen.key}
-                                    x={i * space + j * 80}
-                                    y={100} style={{
+                                    y={i * space + j * 80}
+                                    x={100} style={{
                                         alignItems: "center",
                                         justifyContent: "center"
                                     }}>
@@ -130,8 +136,9 @@ export default class config2 extends React.Component {
                                     </SView>
                                     <SText style={{
                                         maxWidth: 50,
-                                    }}>{almacen.descripcion}</SText>
+                                    }} numberOfLines={1}>{almacen.descripcion}</SText>
                                     <Puerto id="key_sucursal"
+                                        value={almacen.key_sucursal}
                                         type="input"
                                         style={{
                                             width: 8,
@@ -143,7 +150,7 @@ export default class config2 extends React.Component {
                         }
                         {
                             (sucursal.puntos_venta ?? []).map((punto_venta, j) => {
-                                return <PizarraNodo id={punto_venta.key} x={i * space + j * 80} y={200} style={{
+                                return <PizarraNodo id={punto_venta.key} y={i * space + j * 80} x={200} style={{
                                     alignItems: "center",
                                     justifyContent: "center"
                                 }}>
@@ -161,8 +168,9 @@ export default class config2 extends React.Component {
                                     }}>
                                         <SIconApp name="Caja" fill={STheme.color.text} />
                                     </SView>
-                                    <SText>{punto_venta.descripcion}</SText>
+                                    <SText numberOfLines={1}>{punto_venta.descripcion}</SText>
                                     <Puerto id="key_sucursal"
+                                        value={punto_venta.key_sucursal}
                                         type="input"
                                         style={{
                                             width: 8,
@@ -175,6 +183,15 @@ export default class config2 extends React.Component {
                     </>
                 })}
             </Pizarra>
+            <SView style={{
+                position: "absolute",
+                left: 10,
+                bottom: 10,
+            }} >
+                <Recargar onFinish={() => {
+                    this.loadData();
+                }} />
+            </SView>
         </SPage >
     }
 }

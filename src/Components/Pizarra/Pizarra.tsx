@@ -11,7 +11,7 @@ import {
     PanGesture,
 } from "react-native-gesture-handler";
 import Nodo, { NodoInstance } from "./PizarraNodo";
-import { SGradient, SText, STheme, SView } from "servisofts-component";
+import { SGradient, SText, STheme, SThread, SView } from "servisofts-component";
 import PizarraMiniMapa from "./MiniMapa";
 import { PuertoInstance } from "./Puerto";
 import Linea, { LineaInstance, LineaProps } from "./Linea";
@@ -117,19 +117,17 @@ export default function Pizarra(props: PizarraProps) {
         Object.values(puertos.current).filter(e => e.id == puerto.id && e.type != puerto.type).forEach(otherPort => {
             if (!otherPort.props.value || !puerto.props.value) return;
             if (otherPort.props.value == puerto.props.value) {
-                puerto.onConnected.value = true;
-                otherPort.onConnected.value = true;
-                // setLinesState((prev) => {
-                //     const newLines = { ...prev };
-                //     newLines[puerto.nodo.id + "_" + puerto.id + "_" + otherPort.nodo.id + "_" + otherPort.id] = {
-                //         id: puerto.nodo.id + "_" + puerto.id + "_" + otherPort.nodo.id + "_" + otherPort.id,
-                //         x1: puerto.nodo.translateX.value + puerto.layout.value.x + (puerto.layout.value.width / 2),
-                //         y1: puerto.nodo.translateY.value + puerto.layout.value.y + (puerto.layout.value.height / 2),
-                //         x2: otherPort.nodo.translateX.value + otherPort.layout.value.x + (otherPort.layout.value.width / 2),
-                //         y2: otherPort.nodo.translateY.value + otherPort.layout.value.y + (otherPort.layout.value.height / 2),
-                //     };
-                //     return newLines;
-                // });
+                // puerto.onConnected.value = true;
+                // otherPort.onConnected.value = true;
+                lineasRef.current?.drawLine({
+                    portA: puerto,
+                    portB: otherPort
+                });
+         
+
+
+
+
             }
         });
 
@@ -283,28 +281,6 @@ export default function Pizarra(props: PizarraProps) {
             selectEndY.value = selectStartY.value;
         })
 
-    // const panSelected: PanGesture = Gesture.Pan()
-    //     .onBegin((e) => {
-
-    //         // selectStartX.value = 0;
-    //         // selectStartY.value = 0;
-    //         // selectEndX.value = 0;
-    //         // selectEndY.value = 0;
-    //         // selectTranslateX.value = ;
-    //         // selectTranslateY.value = 0;
-
-
-    //     }).onStart(e => {
-    //         panSelected.context = {
-    //             startX: selectTranslateX.value,
-    //             startY: selectTranslateY.value,
-    //         };
-    //     })
-    //     .onUpdate((event) => {
-    //         selectTranslateX.value = panSelected.context.startX + (event.translationX / scale.value);
-    //         selectTranslateY.value = panSelected.context.startY + (event.translationY / scale.value);
-    //     });
-
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [
             { translateX: translateX.value },
@@ -388,11 +364,12 @@ export default function Pizarra(props: PizarraProps) {
                     }, animatedStyle]} >
                         {/* <GestureDetector gesture={panSelected}> */}
                         <Animated.View style={[selectStyle]} />
+                        <Lineas ref={lineasRef} lineas={lineas} />
+
                         {/* </GestureDetector> */}
                         {props.children}
 
                         <Linea id={"select"} />
-                        <Lineas ref={lineasRef} lineas={lineas} />
 
                     </Animated.View>
                 </GestureDetector>
