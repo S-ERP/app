@@ -8,7 +8,6 @@ import Model from '../../Model';
 import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 import MDL from '../../MDL';
 import FloatMenu from '../../Components/FloatMenu';
-
 const proveedorEjemplo =
 {
     "estado": 1,
@@ -22,7 +21,6 @@ const proveedorEjemplo =
     "nombre": "",
     "key": "a314d6c0-872b-4c72-b1a9-167526f52286"
 }
-
 const clienteEjemplo = {
     "apellidos": "",
     "descripcion": "",
@@ -48,9 +46,7 @@ const clienteEjemplo = {
     "lat": "",
     "imgen": "https://i.pinimg.com/736x/d9/d8/8e/d9d88e3d1f74e2b8ced3df051cecb81d.jpg",
 }
-
 export default class tabla extends Component {
-
     renderUsuario(srcKey) {
         const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
             <SImage src={`${SSocket.api.root}usuario/${srcKey}`} style={{ resizeMode: "cover" }} />
@@ -58,7 +54,6 @@ export default class tabla extends Component {
         const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
         return srcKey ? pintar : nulo;
     };
-
     renderCliente(srcKey) {
         const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
             <SImage src={`${SSocket.api.crm}cliente/${srcKey}`} style={{ resizeMode: "cover" }} />
@@ -66,7 +61,6 @@ export default class tabla extends Component {
         const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
         return srcKey ? pintar : nulo;
     };
-
     renderSucursal(srcKey) {
         const pintar = <>
             <SView style={{ width: 60 }}>
@@ -79,27 +73,16 @@ export default class tabla extends Component {
         const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
         return srcKey ? pintar : nulo;
     };
-
     async loadInitialData() {
         try {
             console.log('Loading initial data... 🎈🎈🎈🎈');
-
             // 1. Obtener registros principales
-            // const registros = await MDL.compra_venta.getAll();
-
             const registros = await MDL.compra_venta.getTransaccion("venta", "2025-09-01", "2025-09-05");
-
             if (!registros) return [];
-
-            // console.log('🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈Registros fetched:', registros);
-            // return [];
-
             const empresa = MDL.empresa?.select || {};
             const sucursales = await MDL.empresa.getAllSucursales();
-
             // 2. Filtrar ventas
             const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
-
             // 3. Obtener usuarios únicos
             const keysUsuarios = [];
             ventas.forEach(cv => {
@@ -107,25 +90,19 @@ export default class tabla extends Component {
                     keysUsuarios.push(cv.key_usuario);
                 }
             });
-
             // 4. Cargar datos relacionados
             const proveedores = await MDL.inventario.proveedor.getAllProveedor();
             const clientes = await MDL.crm.cliente.getAll();
             const usuarios = await MDL.usuario.getByKeys(keysUsuarios) || {};
-
             // Normalizar usuarios en objeto { key: usuario }
             const usuariosMap = Array.isArray(usuarios)
                 ? Object.fromEntries(usuarios.map(u => [u.key, u]))
                 : usuarios;
-
             // 5. Totales de la primera venta
             const totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0].key }) || {};
-
-
             // 6. Enriquecer ventas con data relacionada
             const ventasEnriquecidas = await Promise.all(
                 ventas.map(async (cv) => {
-
                     return {
                         ...cv,
                         sucursal: sucursales.find(a => a?.key === cv?.key_sucursal) || {},
@@ -138,11 +115,9 @@ export default class tabla extends Component {
                     };
                 })
             );
-
             console.log('Initial data loaded successfully! 🎉🎉🎉🎉');
             console.log(ventasEnriquecidas);
             return ventasEnriquecidas;
-
         } catch (error) {
             console.error('Error in loadData:', error);
             SPopup.alert('Error loading data. Please try again.');
@@ -157,7 +132,6 @@ export default class tabla extends Component {
             </SView>
         </SView>
     }
-
     renderTipoPago(values) {
         const statesTipo = MDL.compra_venta.getTipoPago()[values];
         return <SView row center>
@@ -166,7 +140,6 @@ export default class tabla extends Component {
             </SView>
         </SView>
     }
-
     renderCodigo(codigo) {
         return <SView row center>
             <SView border={STheme.color.card} style={{ borderRadius: 8, padding: 6, borderWidth: 1 }}>
@@ -174,28 +147,19 @@ export default class tabla extends Component {
             </SView>
         </SView>
     }
-
     mostrarTabla() {
         return (
             <DinamicTable
-
-
-
-
                 ref={ref => (this.DinamicTable = ref)}
-
                 loadData={async () => {
                     return this.loadInitialData();
                 }}
-
-                // loadData={() => this.loadData()}
                 key="id"
                 language="es"
                 center
                 {...Config.table.applyTheme()}
                 selectType="single"
                 keyExtractor={(e) => e.key}
-                // keyExtractor={(e) => e.key_usuario}
                 onSelect={(e) => {
                     FloatMenu.open({
                         e: e.evt,
@@ -215,7 +179,6 @@ export default class tabla extends Component {
                                     ReciboCarta.imprimir(e?.row?.key)
                                 }
                             },
-
                         ]
                     });
                 }}
@@ -229,7 +192,6 @@ export default class tabla extends Component {
                         <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
                     </SView>} />
                 <DinamicTable.Col key={"codigo"} label='Código' width={90} center data={(e) => e?.row?.codigo ?? "AL790"} customComponent={(e) => this.renderCodigo(e.data)} />
-
                 <DinamicTable.Col key="sucursal" label="Sucursal" width={100} data={(e) => e.row?.sucursal?.descripcion}
                     customComponent={e => <>
                         {(e.row?.key_sucursal) ?
@@ -242,13 +204,10 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="tipo_pago" label="Tipo Pago" width={80} data={(e) => e.row?.tipo_pago ?? ""} customComponent={(e) => this.renderTipoPago(e?.data)} />
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e?.data)} />
                 <DinamicTable.Col key="descripcion" label="Descripción" width={100} data={(e) => e.row?.descripcion ?? ""} />
-                {/* <DinamicTable.Col key="key_asiento_contable" label="asiento" width={150} data={(e) => e.row?.key_asiento_contable ?? ""} /> */}
-
                 <DinamicTable.Col key="cliente" label="Cliente" width={180} data={(e) => `${SSocket.api.root}usuario/${e.row?.cliente.key}`}
                     customComponent={e => <>
                         {(e.row?.cliente?.key_usuario) ?
@@ -261,12 +220,8 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-
-
                 <DinamicTable.Col key="cuotas_cantidad" label="Cuotas" width={60} data={(e) => e.row?.cuotas.cantidad ?? ""} />
                 <DinamicTable.Col key="cuotas_total" label="Pagar" width={60} data={(e) => e.row?.cuotas.total ?? ""} />
-
-
                 <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.key_usuario) ?
@@ -279,14 +234,13 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-
             </DinamicTable>
         );
     }
     render() {
         return (
             <SPage title="Tabla Gestión de Ventas" disableScroll>
-                {/* <SView width={100} height={130}  ><SIconApp name='crmpdf' fill="blue"   /></SView> */}
+                {}
                 {this.mostrarTabla()}
                 <SHr height={20} />
             </SPage>

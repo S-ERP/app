@@ -7,7 +7,6 @@ import Config from '../../Config';
 import Model from '../../Model';
 import MDL from '../../MDL';
 import FloatMenu from '../../Components/FloatMenu';
-import ComprobanteCarta from '../../Components/PDF/compra/ComprobanteCarta';
 export default class tabla extends Component {
     renderUsuario = (srcKey) => (
         <SView style={{
@@ -47,9 +46,7 @@ export default class tabla extends Component {
         if (!registros) return [];
         const empresa = MDL.empresa?.select || {};
         const sucursales = await MDL.empresa.getAllSucursales();
-
         const ventas = Object.values(registros).filter(cv => cv.tipo === "compra");
-
         const keysUsuarios = [];
         ventas.forEach(cv => {
             if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
@@ -85,7 +82,6 @@ export default class tabla extends Component {
             </SView>
         </SView>
     }
-
     renderTipoPago(values) {
         const statesTipo = MDL.compra_venta.getTipoPago()[values];
         return <SView row center>
@@ -94,7 +90,6 @@ export default class tabla extends Component {
             </SView>
         </SView>
     }
-
     renderCodigo(codigo) {
         return <SView row center>
             <SView border={STheme.color.card} style={{ borderRadius: 16, padding: 6, borderWidth: 1 }}>
@@ -123,11 +118,6 @@ export default class tabla extends Component {
                                 icon: <SIconApp name='addTarea' fill="#e4e4e4ff" />,
                                 onPress: () => { SNavigation.navigate("/compra/profile", { pk: e?.row?.key }) }
                             },
-                            // {
-                            //     label: "Comprobante carta",
-                            //     icon: <SIconApp name='crmpdf' fill="#FF0000" />,
-                            //     onPress: () => { ComprobanteCarta.imprimir(e?.row?.key) }
-                            // },
                         ]
                     });
                 }}
@@ -142,13 +132,10 @@ export default class tabla extends Component {
                     </SView>} />
                 <DinamicTable.Col key={"fecha_on"} label="Fecha"
                     width={110} dataType="date"
-                    textStyle={{
-                        fontSize: 10
-                    }}
+                    textStyle={{ fontSize: 10 }}
                     data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
                     dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key={"codigo"} label='Código' width={80} center data={(e) => e?.row?.codigo ?? "AL790"} customComponent={(e) => this.renderCodigo(e.data)} />
-
                 <DinamicTable.Col key="sucursal" label="Sucursal" width={100} data={(e) => e.row?.sucursal?.descripcion}
                     customComponent={e => <>
                         {(e.row?.key_sucursal) ?
@@ -161,13 +148,9 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-
                 <DinamicTable.Col key="tipo_pago" label="Tipo de Pago" width={80} data={(e) => e.row?.tipo_pago ?? ""} customComponent={(e) => this.renderTipoPago(e?.data)} />
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e.data)} />
                 <DinamicTable.Col key="descripcion" label="Descripción" width={150} data={(e) => e.row?.descripcion ?? ""} />
-                {/* <DinamicTable.Col key="key_asiento_contable" label="asiento" width={150} data={(e) => e.row?.key_asiento_contable ?? ""} /> */}
-
-
                 <DinamicTable.Col key="proveedor" label="Proveedor" width={100} data={(e) => e.row?.proveedor?.razon_social ?? ""}
                     customComponent={e => <>
                         {(e.row?.proveedor?.key) ?
@@ -180,13 +163,8 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-
-
-
                 <DinamicTable.Col key="cuotas_cantidad" label="Cuotas" width={60} data={(e) => e.row?.cuotas.cantidad ?? ""} />
                 <DinamicTable.Col key="cuotas_total" label="Pagar" width={60} data={(e) => e.row?.cuotas.total ?? ""} />
-
-
                 <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.key_usuario) ?
