@@ -119,7 +119,7 @@ export default class Abierta extends Component {
                             {this.mensaje()}
                             <SHr h={32} />
 
-                            <SView col={"xs-11 sm-10 md-8 lg-6"} border={"pink"}  >
+                            <SView col={"xs-11 sm-10 md-8 lg-6"} >
                                 <DetalleItem item={item} index={index} tipo_pago={this.state.tipo_pago} />
                             </SView>
                         </SView>

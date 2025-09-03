@@ -30,6 +30,7 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
         const suc = data.sucursales.find(suc => suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta));
         const pv = suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta);
         this.pvtp = pv.punto_venta_tipo_pago;
+        if(!this.pvtp) return [];
         this.pvtp = this.pvtp.map(item => {
             item.tipo_pago = this.tipo_pago[item.key_tipo_pago];
             return item;

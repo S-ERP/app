@@ -8,7 +8,7 @@ import CargarEfectivoDelBanco from './caja2/Acciones/CargarEfectivoDelBanco';
 import ShaderEditor from '../Components/SThree/ShaderEditor2';
 import Pizarra from '../Components/Pizarra/Pizarra';
 import PizarraNodo from '../Components/Pizarra/PizarraNodo';
-
+import DatePickerCalendar from "servisofts-table/Components/DatePickerCalendar"
 export default class test extends Component {
   constructor(props) {
     super(props);
@@ -35,6 +35,8 @@ export default class test extends Component {
       >{"PopupConfig"}</SText>
       <SHr />
       <SInput width={100} type='money2' defaultValue={"14,544"} decimales={1} />
+
+
       {/* <SText>{JSON.stringify(MDL.caja.activa)}</SText> */}
       {/* <CargarEfectivoDelBanco/> */}
     </>
@@ -49,6 +51,18 @@ export default class test extends Component {
           padding: 8,
         }} x={-300} y={-300}>
           {this.cosasDeTest()}
+        </PizarraNodo>
+        <PizarraNodo style={{
+          backgroundColor: STheme.color.background,
+          borderRadius: 4,
+          padding: 8,
+        }} x={300} y={-300}>
+          <DatePickerCalendar color={"#fff"} accentColor={"#000"}
+            // defaultValue={}
+            onChange={e => {
+              // state.dateSelec = e
+
+            }} />
         </PizarraNodo>
         <Sucursal label="Sucursal 1" x={-100} />
         <Sucursal label="Sucursal 2" x={0} />
@@ -68,7 +82,7 @@ const Sucursal = ({ label = "", x = 0, y = 0 }) => {
     justifyContent: "center",
     alignItems: "center",
   }} x={x} y={y} onChangePosition={e => {
-    console.log(label,"onChangePosition", e)
+    console.log(label, "onChangePosition", e)
   }}>
     <SView width={50} height={50} padding={8}>
       <SIcon name='Marker' fill={STheme.color.text} />
