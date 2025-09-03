@@ -72,6 +72,7 @@ export default class tabla extends Component {
                 };
             })
         );
+        console.log("Compras enriquecidas", comprasEnriquecidas);
         return comprasEnriquecidas;
     }
     renderState(state) {
