@@ -62,7 +62,6 @@ export default class test extends Component {
             // defaultValue={}
             onChange={e => {
               // state.dateSelec = e
-
             }} />
         </PizarraNodo>
 

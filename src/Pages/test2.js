@@ -12,19 +12,11 @@ class test2 extends Component {
         search: "",
     }
 
-
-
     render() {
         // const sections = this.getDataGrouped();
         return (
             <SPage disableScroll>
-              
-
-                    <DateTimeBetween />
-
-                
-
-
+                <DateTimeBetween />
             </SPage>
         );
     }
