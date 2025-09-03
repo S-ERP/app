@@ -155,7 +155,7 @@ export default class table extends Component {
                                 icon: <SIcon name="Lock" fill={STheme.color.text} />,
                             },
                             {
-                                label: "Eliminar de la empresa",
+                                label: "Eliminar usuario",
                                 // icon: "Delete",
                                 icon: <SIcon name="Delete" fill={STheme.color.text} />,
                                 onPress: () => {
