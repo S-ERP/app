@@ -43,12 +43,13 @@ export default class tabla extends Component {
         </SView>
     );
     async loadData() {
-        // const registros = Model.compra_venta.Action.getAll();
-        const registros = await MDL.compra_venta.getAll();
+        const registros = await MDL.compra_venta.getTransaccion("compra", "2025-09-01", "2025-09-05");
         if (!registros) return [];
         const empresa = MDL.empresa?.select || {};
         const sucursales = await MDL.empresa.getAllSucursales();
+
         const ventas = Object.values(registros).filter(cv => cv.tipo === "compra");
+
         const keysUsuarios = [];
         ventas.forEach(cv => {
             if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
@@ -63,12 +64,9 @@ export default class tabla extends Component {
         const totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0].key }) || {};
         const comprasEnriquecidas = await Promise.all(
             ventas.map(async (cv) => {
-                const sucursal = cv.key_sucursal?.trim()
-                    ? sucursales.find(s => s.key === cv.key_sucursal) || {}
-                    : {};
                 return {
                     ...cv,
-                    sucursal,
+                    sucursal: sucursales.find(a => a?.key === cv?.key_sucursal) || {},
                     usuario: usuariosMap[cv.key_usuario] || {},
                     empresa,
                     proveedor: proveedores.find(a => a.key == cv.key_proveedor) || {},
@@ -182,6 +180,13 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
+
+
+
+                <DinamicTable.Col key="cuotas_cantidad" label="Cuotas" width={60} data={(e) => e.row?.cuotas.cantidad ?? ""} />
+                <DinamicTable.Col key="cuotas_total" label="Pagar" width={60} data={(e) => e.row?.cuotas.total ?? ""} />
+
+
                 <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.key_usuario) ?
