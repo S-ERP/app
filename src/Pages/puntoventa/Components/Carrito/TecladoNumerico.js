@@ -100,7 +100,7 @@ export default class TecladoNumerico extends Component {
     }
 
     renderTecladoNumerico = () => {
-        const { subtotal, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
+        const { subtotal, subtotalMoneda, descuento, totalImpuesto, totalDescuento, totalFinal, numeroIva, conFactura } = this.props;
         const style_text = {
             color: STheme.color.text,
             fontSize: 12,
@@ -128,8 +128,10 @@ export default class TecladoNumerico extends Component {
 
                                 console.log("abrir popup")
                                 console.log("key", MDL.caja.activa.key_punto_venta)
-                                const monto =  parseFloat((subtotal - descuento).toFixed(2));
-                                console.log("monto", monto)
+                                const montoTotal_MN = parseFloat((subtotal).toFixed(2));
+                                const montoTotal_ME = parseFloat((subtotalMoneda).toFixed(2));
+                                console.log("monto nacional", montoTotal_MN)
+                                console.log("montoTotal_ME", montoTotal_ME)
                                 console.log("monedal", this.props.moneda)
 
                                 // SelectTipoPago.openPopup({

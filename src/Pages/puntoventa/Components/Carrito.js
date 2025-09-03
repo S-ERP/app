@@ -55,8 +55,11 @@ export default class Carrito extends Component {
         });
     }
 
+
+
+
     componentDidUpdate(prevProps) {
-        // Update carrito prices when selectedMoneda changes
+
         if (prevProps.selectedMoneda !== this.props.selectedMoneda) {
             this.carrito = this.carrito.map(item => {
                 const precio = this.props.selectedMoneda
@@ -71,6 +74,27 @@ export default class Carrito extends Component {
             this.forceUpdate();
         }
     }
+
+
+    //     componentDidUpdate(prevProps) {
+    //     // Update carrito prices when selectedMoneda changes
+
+    //     console.log("Carrito did update", prevProps.selectedMoneda);
+
+    //     if (prevProps.selectedMoneda !== this.props.selectedMoneda) {
+    //         this.carrito = this.carrito.map(item => {
+    //             const precio = this.props.selectedMoneda
+    //                 ? item.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
+    //                 : item.precio_venta;
+    //             return {
+    //                 ...item,
+    //                 precio_venta: precio,
+    //                 monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : 'Bs',
+    //             };
+    //         });
+    //         this.forceUpdate();
+    //     }
+    // }
 
     componentWillUnmount() {
         if (this.evento) {
@@ -91,23 +115,24 @@ export default class Carrito extends Component {
     //     this.forceUpdate();
     // }
 
-    setCarrito(nuevoCarrito) {
-        this.carrito = Array.isArray(nuevoCarrito)
-            ? nuevoCarrito.map(item => ({
-                ...item,
-                precio_venta_original: item.precio_venta, // Store original price
-                precio_venta: this.props.selectedMoneda
-                    ? item.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
-                    : item.precio_venta,
-                monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : 'Bs',
-            }))
-            : [];
-
-        this.forceUpdate();
-    }
+    // setCarrito(nuevoCarrito) {
+    //     console.log("🎨🎨🎨🎨🎨🎨setCarrito", nuevoCarrito);
+    //     this.carrito = Array.isArray(nuevoCarrito)
+    //         ? nuevoCarrito.map(item => ({
+    //             ...item,
+    //             precio_venta_original: item.precio_venta, // Store original price
+    //             precio_venta: this.props.selectedMoneda
+    //                 ? item.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
+    //                 : item.precio_venta,
+    //             monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : 'Bs',
+    //         }))
+    //         : [];
+    //     this.forceUpdate();
+    // }
 
 
     addProducto = producto => {
+        console.log("🎪🎪🎪🎪🎪🎪🎪addProducto", producto);
         const index = this.carrito.findIndex(p => p.key === producto.key);
         if (index >= 0) {
             const item = this.carrito[index];
@@ -136,12 +161,10 @@ export default class Carrito extends Component {
             this.carrito.push({
                 ...producto,
                 cantidad: 1,
-                precio_venta_original: producto.precio_venta, // Store original price
-                precio_venta: producto.precio_venta, // Store original price
+                // precio_venta_original: producto.precio_venta, // Store original price
+                // precio_venta: producto.precio_venta, // Store original price
 
-                precio_venta_moneda: this.props.selectedMoneda
-                    ? producto.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
-                    : producto.precio_venta,
+                precio_venta_moneda: this.props.selectedMoneda ? producto.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1) : producto.precio_venta,
                 monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : 'Bs',
             });
         }
@@ -382,6 +405,7 @@ export default class Carrito extends Component {
                     totalFinal={totalFinal}
                     conFactura={this.conFactura}
                     subtotal={subtotal} //.......................................................
+                    subtotalMoneda={subtotalMoneda} //.......................................................
                     monedaSymbol={monedaSymbol} // Pass monedaSymbol to TecladoNumerico
 
                     onReload={() => { this.vaciarCarrito(); }}

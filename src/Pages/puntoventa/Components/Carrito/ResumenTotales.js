@@ -45,7 +45,7 @@ export default class ResumenTotales extends Component {
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4, padding: 3 }}>
                     <SText fontSize={18} color={STheme.color.text}>Total:</SText>
                     <SText fontSize={18} bold color={STheme.color.text}>
-                        {moneda?.observacion} {SMath.formatMoney((subtotal - (totalDescuento || 0)), 2)}
+                        {moneda?.observacion} {SMath.formatMoney((subtotalMoneda - (totalDescuento || 0)), 2)}
                     </SText>
                 </SView>
             </SView>
