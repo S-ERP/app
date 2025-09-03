@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SImage, SPage, SText, SView } from 'servisofts-component';
+import { SImage, SPage, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket'
 class QRCaja extends Component {
     constructor(props) {
@@ -10,7 +10,7 @@ class QRCaja extends Component {
     }
 
     getQR() {
-        var content = `https://darmotos.servisofts.com/caja?pk=${this.props?.pk}`;
+        var content = `https://serp.servisofts.com/caja?pk=${this.props?.pk}`;
         return SSocket.sendPromise({
             "service": "sqr",
             "component": "qr",
@@ -20,10 +20,10 @@ class QRCaja extends Component {
                 content,
                 key: this.props.pk,
                 "reponse_type": "image",
-                "image_src": "https://darmotos.servisofts.com/logo512.png",
+                // "image_src": "https://darmotos.servisofts.com/logo512.png",
                 "type_color": "solid",
-                "colorBody": "#000000",
-                "colorBackground": "#ffffff",
+                "colorBody": STheme.color.text,
+                // "colorBackground": "#ffffff",
                 "body": "DiamondConectVH",
                 "framework": "Rounded",
                 "header": "Circle"
