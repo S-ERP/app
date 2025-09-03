@@ -28,16 +28,16 @@ export default function PizarraMiniMapa({ children, style }: { children?: React.
             const positionPizarrax = (pizarra.width / 2) - (event.x / scale1)
             const positionPizarray = (pizarra.width / 2) - (event.y / scale1)
             console.log(event)
-            pizarra.translateX.value = positionPizarrax
-            pizarra.translateY.value = positionPizarray
+            pizarra.translateX.value = positionPizarrax * pizarra.scale.value;
+            pizarra.translateY.value = positionPizarray * pizarra.scale.value;
             // onDrag.value = false;
         })
         .onUpdate((event) => {
             const scale1 = size / pizarra.width;
             const positionPizarrax = (pizarra.width / 2) - (event.x / scale1);
             const positionPizarray = (pizarra.width / 2) - (event.y / scale1);
-            pizarra.translateX.value = positionPizarrax;
-            pizarra.translateY.value = positionPizarray;
+            pizarra.translateX.value = positionPizarrax * pizarra.scale.value;
+            pizarra.translateY.value = positionPizarray * pizarra.scale.value;
         })
         .onEnd(() => {
             // onDrag.value = false;
@@ -65,9 +65,9 @@ export default function PizarraMiniMapa({ children, style }: { children?: React.
         <View style={{
             position: "absolute",
             top: 4, right: 4,
-            borderRadius:4,
+            borderRadius: 4,
             width: size, height: size,
-            backgroundColor: STheme.color.background+"CC", 
+            backgroundColor: STheme.color.background + "CC",
             borderWidth: 1, borderColor: STheme.color.card,
             justifyContent: "center",
             alignItems: "center",

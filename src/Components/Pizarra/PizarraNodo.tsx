@@ -11,12 +11,29 @@ import {
 } from "react-native-gesture-handler";
 import { usePizarra } from "./Pizarra";
 import { SText, STheme, SUuid } from "servisofts-component";
-import no from "../../Pages/contabilidad/asientos_automaticos/no";
+import Nodo from "../SThree/ShaderEditor/Nodo";
+
+
+// export type NodoContextType = {
+//     id: string;
+//     viewRef: React.RefObject<Animated.View>;
+// }
+
+export const NodoContext = React.createContext<NodoInstance>({
+    id: "",
+    viewRef: React.createRef<Animated.View>(),
+    translateX: 0 as any,
+    translateY: 0 as any,
+    selected: false as any,
+});
+
+export const useNodo = () => React.useContext(NodoContext);
 
 type PizarraNodoProps = {
     children: React.ReactNode,
     style?: ViewStyle,
     id: string,
+    data: any,
     x: number, y: number,
     onChangePosition: (e: { x: number, y: number }) => void
 }
@@ -27,8 +44,11 @@ export type NodoInstance = {
     translateY: Animated.SharedValue<number>;
     selected: Animated.SharedValue<boolean>;
     panGesture?: any;
+    viewRef?: React.RefObject<Animated.View>;
 };
 export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(), onChangePosition }: PizarraNodoProps) {
+
+    const viewRef = React.useRef<Animated.View>(null);
 
     const layout = useSharedValue({ width: 0, height: 0 });
     // Posiciones acumuladas
@@ -95,7 +115,7 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
         });
 
     React.useEffect(() => {
-        pizarra.registerNodo({ id: id, translateX, translateY, selected, panGesture: panGesture });
+        pizarra.registerNodo({ id: id, translateX, translateY, selected, panGesture: panGesture, viewRef: viewRef });
         return () => {
             pizarra.unregisterNodo(id);
         };
@@ -165,6 +185,8 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
 
     const animatedStyle = useAnimatedStyle(() => {
         return {
+            zIndex: onDrag.value ? 9999 : 10,
+
             // opacity: onDrag.value ? 0.5 : 1,
             // opacity: !selected ? 0.5 : 1,
             cursor: onDrag.value ? "grabbing" : "pointer",
@@ -178,19 +200,24 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
 
 
 
-    return (
+    return (<>
         <GestureDetector gesture={(panGesture)}>
-            <Animated.View style={[{
-                position: "absolute",
-            }, style, animatedStyle, animatedStyleSelect]} onLayout={(event) => {
-                const { width, height } = event.nativeEvent.layout;
-                layout.value = { width, height };
-                // translateX.value = (width / 2);
-                // translateY.value = (height / 2);
-            }}>
-                {children}
+            <Animated.View
+                ref={viewRef}
+                style={[{
+                    position: "absolute",
+                }, style, animatedStyle, animatedStyleSelect]} onLayout={(event) => {
+                    const { width, height } = event.nativeEvent.layout;
+                    layout.value = { width, height };
+                    // translateX.value = (width / 2);
+                    // translateY.value = (height / 2);
+                }}>
+                <NodoContext.Provider value={{ id, viewRef: viewRef, translateX, translateY, selected }}>
+                    {children}
+                </NodoContext.Provider>
             </Animated.View>
         </GestureDetector>
+    </>
     );
 }
 

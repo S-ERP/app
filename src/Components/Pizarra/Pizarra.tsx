@@ -13,6 +13,9 @@ import {
 import Nodo, { NodoInstance } from "./PizarraNodo";
 import { SGradient, SText, STheme, SView } from "servisofts-component";
 import PizarraMiniMapa from "./MiniMapa";
+import { PuertoInstance } from "./Puerto";
+import Linea, { LineaInstance, LineaProps } from "./Linea";
+import Lineas from "./Lineas";
 
 type PizarraProps = {
     children: React.ReactNode;
@@ -27,10 +30,18 @@ const PizarraContext = React.createContext<{
     layoutWidth: any, layoutHeight: any,
     selectStartX: any, selectStartY: any, selectEndX: any, selectEndY: any,
     selectTranslateX: any, selectTranslateY: any,
+    ref: React.RefObject<any>,
     preventPan: any,
     registerNodo: (nodo: NodoInstance) => void,
     unregisterNodo: (key: string) => void,
-    nodos: React.MutableRefObject<Record<string, NodoInstance>>
+    nodos: React.MutableRefObject<Record<string, NodoInstance>>,
+    registerPuerto: (puerto: PuertoInstance) => void,
+    unregisterPuerto: (key: string, key_nodo: string) => void,
+    puertos: React.MutableRefObject<Record<string, PuertoInstance>>,
+    registerLinea: (linea: LineaInstance) => void,
+    unregisterLinea: (key: string) => void,
+    lineas: React.MutableRefObject<Record<string, LineaInstance>>,
+    lineasRef: React.MutableRefObject<Lineas | null>
 }>({
     width: 1000,
     scale: 1,
@@ -44,10 +55,18 @@ const PizarraContext = React.createContext<{
     selectEndY: 0,
     selectTranslateX: 0,
     selectTranslateY: 0,
+    ref: React.createRef<any>(),
     preventPan: false,
     registerNodo: () => { },
     unregisterNodo: () => { },
-    nodos: { current: {} }
+    nodos: { current: {} },
+    registerPuerto: () => { },
+    unregisterPuerto: () => { },
+    puertos: { current: {} },
+    registerLinea: () => { },
+    unregisterLinea: () => { },
+    lineas: { current: {} },
+    lineasRef: null as any,
 });
 
 
@@ -60,13 +79,13 @@ export const usePizarra = () => React.useContext(PizarraContext);
 export default function Pizarra(props: PizarraProps) {
     // Posiciones acumuladas
     const nodos = React.useRef<Record<string, NodoInstance>>({});
-
-
+    const puertos = React.useRef<Record<string, PuertoInstance>>({});
+    const lineas = React.useRef<Record<string, LineaInstance>>({});
     const config = React.useRef({ type: "select", height: 0 });
     const isMiddleDown = React.useRef(false);
     const ref = React.useRef<any>();
     const start = React.useRef({ x: 0, y: 0, tx: 0, ty: 0 });
-
+    const lineasRef = React.useRef<Lineas | null>(null);
     const width = 20000;
     const height = width;
 
@@ -91,6 +110,41 @@ export default function Pizarra(props: PizarraProps) {
         delete nodos.current[key];
     };
 
+    const registerPuerto = (puerto: PuertoInstance) => {
+        puertos.current[puerto.nodo.id + "_" + puerto.id] = puerto;
+
+
+        Object.values(puertos.current).filter(e => e.id == puerto.id && e.type != puerto.type).forEach(otherPort => {
+            if (!otherPort.props.value || !puerto.props.value) return;
+            if (otherPort.props.value == puerto.props.value) {
+                puerto.onConnected.value = true;
+                otherPort.onConnected.value = true;
+                // setLinesState((prev) => {
+                //     const newLines = { ...prev };
+                //     newLines[puerto.nodo.id + "_" + puerto.id + "_" + otherPort.nodo.id + "_" + otherPort.id] = {
+                //         id: puerto.nodo.id + "_" + puerto.id + "_" + otherPort.nodo.id + "_" + otherPort.id,
+                //         x1: puerto.nodo.translateX.value + puerto.layout.value.x + (puerto.layout.value.width / 2),
+                //         y1: puerto.nodo.translateY.value + puerto.layout.value.y + (puerto.layout.value.height / 2),
+                //         x2: otherPort.nodo.translateX.value + otherPort.layout.value.x + (otherPort.layout.value.width / 2),
+                //         y2: otherPort.nodo.translateY.value + otherPort.layout.value.y + (otherPort.layout.value.height / 2),
+                //     };
+                //     return newLines;
+                // });
+            }
+        });
+
+
+    };
+    const unregisterPuerto = (key: string, key_nodo: string) => {
+        delete puertos.current[key_nodo + "_" + key];
+    };
+
+    const registerLinea = (linea: LineaInstance) => {
+        lineas.current[linea.id] = linea;
+    };
+    const unregisterLinea = (key: string) => {
+        delete lineas.current[key];
+    };
 
     const zoomAdd = (porc: number) => {
         const limits = [0.2, 4];
@@ -314,7 +368,15 @@ export default function Pizarra(props: PizarraProps) {
                 preventPan: preventPan,
                 registerNodo: registerNodo,
                 unregisterNodo: unregisterNodo,
-                nodos: nodos
+                ref: ref,
+                nodos: nodos,
+                puertos: puertos,
+                registerPuerto: registerPuerto,
+                unregisterPuerto: unregisterPuerto,
+                lineas: lineas,
+                registerLinea: registerLinea,
+                unregisterLinea: unregisterLinea,
+                lineasRef: lineasRef
             }}>
                 <GestureDetector gesture={gesture}>
                     <Animated.View ref={ref} style={[{
@@ -328,6 +390,10 @@ export default function Pizarra(props: PizarraProps) {
                         <Animated.View style={[selectStyle]} />
                         {/* </GestureDetector> */}
                         {props.children}
+
+                        <Linea id={"select"} />
+                        <Lineas ref={lineasRef} lineas={lineas} />
+
                     </Animated.View>
                 </GestureDetector>
                 <PizarraMiniMapa />
