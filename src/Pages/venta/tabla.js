@@ -8,7 +8,47 @@ import Model from '../../Model';
 import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 import MDL from '../../MDL';
 import FloatMenu from '../../Components/FloatMenu';
-import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
+
+const proveedorEjemplo =
+{
+    "estado": 1,
+    "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+    "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+    "fecha_on": "2025-08-28T05:57:21.391",
+    "key_cuenta_contable": "",
+    "nit": "0",
+    "razon_social": "",
+    "telefono": "",
+    "nombre": "",
+    "key": "a314d6c0-872b-4c72-b1a9-167526f52286"
+}
+
+const clienteEjemplo = {
+    "apellidos": "",
+    "descripcion": "",
+    "distrito": "",
+    "estado": 1,
+    "key_usuario": "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
+    "lng": "",
+    "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+    "fecha_on": "2025-08-30T00:11:41.456",
+    "direccion": "",
+    "fecha_nacimiento": "",
+    "razon_social": "",
+    "provincia": "",
+    "currier": "",
+    "nombres": "SN",
+    "correo": "SC",
+    "nit": "0",
+    "departamento": "",
+    "sexo": "",
+    "telefono": "",
+    "key_servicio": "",
+    "key": "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
+    "lat": "",
+    "imgen": "https://i.pinimg.com/736x/d9/d8/8e/d9d88e3d1f74e2b8ced3df051cecb81d.jpg",
+}
+
 export default class tabla extends Component {
 
     renderUsuario(srcKey) {
@@ -40,18 +80,21 @@ export default class tabla extends Component {
         return srcKey ? pintar : nulo;
     };
 
-    async loadData() {
+    async loadInitialData() {
         try {
-            const registros = Model.compra_venta.Action.getAll();
+            console.log('Loading initial data... 🎈🎈🎈🎈');
+
+            // 1. Obtener registros principales
+            const registros = await MDL.compra_venta.getAll();
             if (!registros) return [];
-            // const empresa = MDL.empresa.select || {};
+
+            const empresa = MDL.empresa?.select || {};
             const sucursales = await MDL.empresa.getAllSucursales();
+
+            // 2. Filtrar ventas
             const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
-            if (!ventas.length) return [];
 
-            // Get unique user keys
-            // const keysUsuarios = [...new Set(ventas.map(cv => cv.key_usuario).filter(Boolean))];
-
+            // 3. Obtener usuarios únicos
             const keysUsuarios = [];
             ventas.forEach(cv => {
                 if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
@@ -59,31 +102,41 @@ export default class tabla extends Component {
                 }
             });
 
-            // Fetch users in parallel
+            // 4. Cargar datos relacionados
+            const proveedores = await MDL.inventario.proveedor.getAllProveedor();
+            const clientes = await MDL.crm.cliente.getAll();
             const usuarios = await MDL.usuario.getByKeys(keysUsuarios) || {};
+
+            // Normalizar usuarios en objeto { key: usuario }
             const usuariosMap = Array.isArray(usuarios)
                 ? Object.fromEntries(usuarios.map(u => [u.key, u]))
                 : usuarios;
 
-            // Create sucursales map
-            const sucursalesMap = Object.fromEntries(sucursales.map(s => [s.key, s]));
+            // 5. Totales de la primera venta
+            const totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0].key }) || {};
 
-            // Fetch all proveedores in parallel
-            const proveedorKeys = [...new Set(ventas.map(cv => cv.key_proveedor).filter(key => key?.trim()))];
-            const proveedores = await Promise.all(
-                proveedorKeys.map(key => MDL.inventario.proveedor.getByKey(key).then(data => [key, data || {}]))
+
+            // 6. Enriquecer ventas con data relacionada
+            const ventasEnriquecidas = await Promise.all(
+                ventas.map(async (cv) => {
+
+                    return {
+                        ...cv,
+                        sucursal: sucursales.find(a => a?.key === cv?.key_sucursal) || {},
+                        usuario: usuariosMap[cv?.key_usuario] || {},
+                        empresa,
+                        proveedor: proveedores.find(a => a.key == proveedorEjemplo?.key) || {},
+                        cliente: clientes.find(a => a?.key_usuario === clienteEjemplo?.key) || {},
+                        subtotal: totales?.subtotal || "0",
+                        descuento: totales?.descuento || "0",
+                    };
+                })
             );
-            const proveedoresMap = Object.fromEntries(proveedores);
 
-            // Enrich ventas without sequential awaits
-            const ventasEnriquecidas = ventas.map(cv => ({
-                ...cv,
-                proveedor: proveedoresMap[cv.key_proveedor] || {},
-                usuario: usuariosMap[cv.key_usuario] || {},
-                sucursal: sucursalesMap[cv.key_sucursal] || {},
-            }));
-
+            console.log('Initial data loaded successfully! 🎉🎉🎉🎉');
+            console.log(ventasEnriquecidas);
             return ventasEnriquecidas;
+
         } catch (error) {
             console.error('Error in loadData:', error);
             SPopup.alert('Error loading data. Please try again.');
@@ -124,7 +177,12 @@ export default class tabla extends Component {
 
 
                 ref={ref => (this.DinamicTable = ref)}
-                loadData={() => this.loadData()}
+
+                loadData={async () => {
+                    return this.loadInitialData();
+                }}
+
+                // loadData={() => this.loadData()}
                 key="id"
                 language="es"
                 center
@@ -144,20 +202,14 @@ export default class tabla extends Component {
                                     SNavigation.navigate("/venta/profile", { pk: e?.row?.key })
                                 }
                             },
-                            // {
-                            //     label: "Imprimir tamaño carta",
-                            //     icon: <SIcon name='imprimir' />,
-                            //     onPress: () => {
-                            //         ReciboCarta.imprimir(e?.row?.key)
-                            //     }
-                            // },
-                            // {
-                            //     label: "Imprimir tipo rollo",
-                            //     icon: <SIcon name='imprimir' stroke="#710505ff" fill='blue' />,
-                            //     onPress: () => {
-                            //         ReciboRollo.imprimir(e?.row?.key)
-                            //     }
-                            // },
+                            {
+                                label: "Imprimir tamaño carta",
+                                icon: <SIcon name='imprimir' />,
+                                onPress: () => {
+                                    ReciboCarta.imprimir(e?.row?.key)
+                                }
+                            },
+                             
                         ]
                     });
                 }}
@@ -189,17 +241,14 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="tipo_pago" label="Tipo Pago" width={80} data={(e) => e.row?.tipo_pago ?? ""} customComponent={(e) => this.renderTipoPago(e?.data)} />
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e?.data)} />
                 <DinamicTable.Col key="descripcion" label="Descripción" width={150} data={(e) => e.row?.descripcion ?? ""} />
-
                 <DinamicTable.Col key="key_asiento_contable" label="asiento" width={150} data={(e) => e.row?.key_asiento_contable ?? ""} />
 
-
-
-                <DinamicTable.Col key="cliente" label="Cliente" width={130} data={(e) => e.row?.cliente?.nombres ?? ""}
+                <DinamicTable.Col key="cliente" label="Cliente" width={180} data={(e) => `${SSocket.api.root}usuario/${e.row?.cliente.key}`}
                     customComponent={e => <>
-                        {(e.row?.cliente?.key) ?
+                        {(e.row?.cliente?.key_usuario) ?
                             <SView col={"xs-12"} center row  >
                                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                    <SImage src={`${SSocket.api.crm}cliente/${e.row?.cliente?.key}`} style={{ resizeMode: "cover" }} />
+                                    <SImage src={`${e.data}?date=${new Date().getTime()}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                                 <SView width={5} />
                                 <SText color={STheme.color.text}> {e.row?.cliente?.nombres}  </SText>
@@ -226,9 +275,7 @@ export default class tabla extends Component {
     render() {
         return (
             <SPage title="Tabla Gestión de Ventas" disableScroll>
-
                 {/* <SView width={100} height={130}  ><SIconApp name='crmpdf' fill="blue"   /></SView> */}
-                {/* <SIcon name='imprimir' stroke='red'fill='green'  ></SIcon> */}
                 {this.mostrarTabla()}
                 <SHr height={20} />
             </SPage>

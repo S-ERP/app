@@ -8,11 +8,6 @@ import FloatButtom from '../../Components/FloatButtom';
 import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
 import PopupCrearCliente from './Components/PopupCrearCliente';
-// import FormRegistroCliente from './Components/FormRegistroCliente';
-// import PButtom from '../../Components/PButtom';
-// import FloatButtom from '../../Components/FloatButtom';
-// import Config from '../../Config';
-// import FloatMenu from '../../Components/FloatMenu';
 
 const URL = "/crm/cliente";
 

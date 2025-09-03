@@ -147,4 +147,19 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       return null;
     }
   }
+
+
+  async getTransaccion(_tipo: any, fecha_inicio_: any, fecha_fin_: any) {
+
+    const resp: any = await SSocket.sendPromise({
+      service: "compra_venta",
+      component: "reporte",
+      type: "execute_function",
+      func: "_get_compras_ventas_alvarito",
+      params: ["'" + _tipo + "'", "'" + fecha_inicio_ + "'", "'" + fecha_fin_ + "'"],
+    });
+    return resp.data[0] || [];
+  }
+
+
 }
