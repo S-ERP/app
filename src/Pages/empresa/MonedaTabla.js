@@ -94,6 +94,7 @@ export default class MonedaTabla extends Component {
             <DinamicTable.Col key="descripcion" label="Moneda" width={80} data={(e) => e.row?.descripcion} />
             <DinamicTable.Col key="observacion" label="Observación" width={90} data={(e) => e.row?.observacion} />
             <DinamicTable.Col key="tipo_cambio" label="Tipo Cambio" width={90} data={(e) => e.row?.tipo_cambio} />
+            <DinamicTable.Col key="tipo" label="Tipo" width={90} data={(e) => e.row?.tipo} />
             <DinamicTable.Col key="estado" label="Estado" width={50} data={(e) => e.row?.estado} />
             <DinamicTable.Col
                 key={"fecha_on"} label="F.Registro" width={120} dataType="date"

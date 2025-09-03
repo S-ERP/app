@@ -274,7 +274,7 @@ export default class ReporteConteoInventario extends Component {
             <DinamicTable.Col key="total_perdida" label="T. Pérdidas" center width={80} data={(e) => e.row?.total_perdida || "0"}
                 cellStyle={{ backgroundColor: STheme.color.danger + "33" }}
                 textStyle={{ fontWeight: "bold" }}
-                customComponent={e => <SText center color={(e.row?.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_perdida}</SText>}
+                customComponent={e => <SText style={e.textStyle} center color={(e.row?.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_perdida}</SText>}
             />
             <DinamicTable.Col key="total_perdida_costo" label="Costo Pérdidas" center width={100} data={(e) => e.row?.total_perdida_costo || "0"}
                 cellStyle={{ backgroundColor: STheme.color.danger + "33" }}
@@ -284,7 +284,7 @@ export default class ReporteConteoInventario extends Component {
                         <SView col={"xs-12"} row center  >
                             <SIconApp name='Egreso' width={10} />
                             <SView width={8} />
-                            <SText color={(e.row.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}>{SMath.formatMoney(e.row.total_perdida_costo, 2, "Bs ", "bolivianos")}</SText>
+                            <SText style={e.textStyle} color={(e.row.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}>{SMath.formatMoney(e.row.total_perdida_costo, 2, "Bs ", "bolivianos")}</SText>
                         </SView>
                         : null);
                 }}
@@ -292,21 +292,21 @@ export default class ReporteConteoInventario extends Component {
             <DinamicTable.Col key="total_baja" label="T.Baja" width={80} data={(e) => e.row?.total_baja || "0"}
                 cellStyle={{ backgroundColor: STheme.color.warning + "33" }}
                 textStyle={{ fontWeight: "bold" }}
-                customComponent={e => <SText center color={(e.row.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_baja}</SText>}
+                customComponent={e => <SText style={e.textStyle} center color={(e.row.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_baja}</SText>}
             />
             <DinamicTable.Col key="total_baja_costo" label="T.Baja Costo" width={90} data={(e) => e.row?.total_baja_costo || "0"}
                 cellStyle={{ backgroundColor: STheme.color.warning + "33" }}
                 textStyle={{ fontWeight: "bold" }}
                 customComponent={(e) => {
                     return (e.row.total_baja_costo ?
-                        <SText color={(e.row.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}> {SMath.formatMoney(e.row.total_baja_costo, 2, "Bs ", "bolivianos")}  </SText>
+                        <SText style={e.textStyle} color={(e.row.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}> {SMath.formatMoney(e.row.total_baja_costo, 2, "Bs ", "bolivianos")}  </SText>
                         : null);
                 }}
             />
             <DinamicTable.Col key="total_excedente" label="T.Excedente" width={90} data={(e) => e.row?.total_excedente || "0"}
                 cellStyle={{ backgroundColor: STheme.color.success + "33" }}
                 textStyle={{ fontWeight: "bold" }}
-                customComponent={e => <SText center color={(e.row.total_excedente >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_excedente}</SText>}
+                customComponent={e => <SText style={e.textStyle} center color={(e.row.total_excedente >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_excedente}</SText>}
             />
             <DinamicTable.Col key="total_excedente_costo" label="T.Excedente Costo" width={110} data={(e) => e.row?.total_excedente_costo || "0"}
                 cellStyle={{ backgroundColor: STheme.color.success + "33" }}
@@ -315,12 +315,12 @@ export default class ReporteConteoInventario extends Component {
                     return <SView col={"xs-12"} row center  >
                         <SIconApp name='Ingreso' width={10} />
                         <SView width={8} />
-                        <SText color={(e.row.total_excedente_costo >= 1) ? STheme.color.text : STheme.color.lightGray}>{SMath.formatMoney(e.row.total_excedente_costo, 2, "Bs ", "bolivianos")}</SText>
+                        <SText style={e.textStyle} color={(e.row.total_excedente_costo >= 1) ? STheme.color.text : STheme.color.lightGray}>{SMath.formatMoney(e.row.total_excedente_costo, 2, "Bs ", "bolivianos")}</SText>
                     </SView>
                 }}
             />
 
-               <DinamicTable.Col
+            <DinamicTable.Col
                 key="estado"
                 label="Estado"
                 width={120}
@@ -330,12 +330,13 @@ export default class ReporteConteoInventario extends Component {
                     const estado = e.row?.fecha_confirmacion ? "CONFIRMADO" : "PENDIENTE";
                     return (
                         <SView col={"xs-12"} row center >
-                        <SView width={80} center style={{
+                            <SView width={80} center style={{
+                                ...e.textStyle,
                                 backgroundColor: this.colorEstado(estado) + "60" || STheme.color.card,
                                 borderWidth: 1, borderColor: this.colorEstado(estado) + "33" || STheme.color.card,
                                 paddingHorizontal: 2, paddingVertical: 3, borderRadius: 4
                             }}> <SText fontSize={11}> {estado} </SText>
-                        </SView>
+                            </SView>
                         </SView>
                     );
                 }}
@@ -343,9 +344,11 @@ export default class ReporteConteoInventario extends Component {
 
 
 
-            <DinamicTable.Col key="fecha_confirmacion" label="F. Confirmación" width={100} data={(e) => e.row?.fecha_confirmacion || null} textStyle={{ fontWeight: "bold" }}
+            <DinamicTable.Col key="fecha_confirmacion" label="F. Confirmación" width={100}
+                data={(e) => e.row?.fecha_confirmacion || null}
+                textStyle={{ fontWeight: "bold" }}
                 customComponent={(e) => {
-                    return (e.row?.fecha_confirmacion ? <SText fontSize={14} color={STheme.color.lightGray}> {e.row?.fecha_confirmacion}  </SText> : null);
+                    return (e.row?.fecha_confirmacion ? <SText style={e.textStyle} fontSize={14} color={STheme.color.lightGray}> {e.row?.fecha_confirmacion}  </SText> : null);
                 }}
             />
 
@@ -354,11 +357,11 @@ export default class ReporteConteoInventario extends Component {
 
             <DinamicTable.Col key="fecha" label="Fecha Creación" width={120} data={(e) => e.row?.fecha}
                 customComponent={e => <SView center row><SIconApp name='Evento' width={12} height={12} fill={STheme.color.lightGray} />
-                    <SText color={STheme.color.lightGray} > {e.row?.fecha}</SText></SView>}
+                    <SText style={e.textStyle} color={STheme.color.lightGray} > {e.row?.fecha}</SText></SView>}
             />
             <DinamicTable.Col key="hora" label="Hora Creación" width={80} data={(e) => e.row?.hora}
                 customComponent={e => <SView center row><SIconApp name='history' width={12} height={12} fill={STheme.color.lightGray} />
-                    <SText color={STheme.color.lightGray}> {e.row?.hora}</SText></SView>} />
+                    <SText style={e.textStyle} color={STheme.color.lightGray}> {e.row?.hora}</SText></SView>} />
             <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_usuario) ?
@@ -369,7 +372,7 @@ export default class ReporteConteoInventario extends Component {
                                 </SView>
                             </SView>
                             <SView width={5} />
-                            <SText center color={STheme.color.lightGray}>{e.row?.usuario?.Nombres}</SText>
+                            <SText  style={e.textStyle} center color={STheme.color.lightGray}>{e.row?.usuario?.Nombres}</SText>
                         </SView> : null}
                 </>}
             />

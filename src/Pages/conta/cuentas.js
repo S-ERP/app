@@ -53,8 +53,13 @@ export default class cuentas extends React.Component {
                     const arr = Object.values(resp);
                     // console.log("cuentas_agrupadas", MDL.contabilidad.agruparCuentas(arr));
                     const ajustes = await MDL.contabilidad.getAjustes();
+                    const empresa = await MDL.empresa.getFull();
+
                     this.setState({ ajustes: ajustes });
                     arr.map((cuenta) => {
+                        if (cuenta.key_moneda) {
+                            cuenta.moneda = empresa.monedas.find((m) => m.key == cuenta.key_moneda);
+                        }
                         cuenta.ajustes = ajustes.filter((ajuste) => ajuste?.ajuste_empresa?.key_cuenta_contable == cuenta.key);
                     })
                     // return arr;
@@ -107,9 +112,11 @@ export default class cuentas extends React.Component {
                                     {
                                         label: "Agregar Sub Cuenta", icon: <SIconApp name="Add" />, onPress: () => {
                                             console.log(e.dinamicTable.data);
-                                            const agrupadas = MDL.contabilidad.agruparCuentas(e.dinamicTable.data);
-                                            console.log("agrupadas", agrupadas, e.row);
-                                            const hijos = e.row.hijos || [];
+
+                                            const grafo = MDL.contabilidad.getCuentasGrafo(e.dinamicTable.data);
+                                            const cuenta = grafo.find(n => n.codigo === e.row.codigo);
+                                            console.log(grafo);
+                                            const hijos = cuenta.childrens || [];
                                             let index = "01";
                                             let childSize = 0;
                                             if (hijos.length > 0) {
@@ -125,12 +132,23 @@ export default class cuentas extends React.Component {
                                                 codigo = e.row.codigo + "." + "0".repeat(childSize - codigo.length) + index;
                                             }
 
+                                            let key_moneda = cuenta.key_moneda;
+                                            if (!key_moneda) {
+                                                let cc = cuenta;
+                                                while (cc.parent) {
+                                                    cc = cc.parent;
+                                                    key_moneda = cc.key_moneda;
+                                                    if (key_moneda) break;
+                                                }
+                                            }
+
                                             // const hermanas = e.dinamicTable.data.filter(r => r.codigo.startsWith(e.row.codigo + "."));
                                             CuentaContableForm.open({
                                                 cuenta_contable: {
                                                     tipo: e.row.tipo,
                                                     codigo: codigo,
                                                     descripcion: "",
+                                                    key_moneda: key_moneda,
                                                 },
                                                 onChange: (e) => {
                                                     this.loadData();
@@ -195,6 +213,23 @@ export default class cuentas extends React.Component {
                         };
                         return <SText clean style={{ ...e.textStyle, ...aditionalStyle }}>{e.data}</SText>
                     }}
+                />
+                <DinamicTable.Col key={"key_moneda"} label="Moneda" width={60} data={e => e.row?.moneda?.descripcion} cellStyle={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                }} textStyle={{
+                    fontSize: 10
+                }}
+                // customComponent={e => {
+                //     const aditionalStyle = {
+                //         borderWidth: 1,
+                //         borderColor: MDL.contabilidad.color_tipo[e.row.tipo],
+                //         backgroundColor: MDL.contabilidad.color_tipo[e.row.tipo] + "55",
+                //         padding: 3,
+                //         borderRadius: 4,
+                //     };
+                //     return <SText clean style={{ ...e.textStyle, ...aditionalStyle }}>{e.data}</SText>
+                // }}
                 />
                 <DinamicTable.Col key={"codigo"} label="Código" width={120} data={e => e.row.codigo} textStyle={{
                     fontWeight: "bold",

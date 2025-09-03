@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { SHr, SList, SLoad, SNavigation, SPopup, SSwitch, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../../Model';
 import Config from '../../../../Config';
+import MDL from '../../../../MDL';
 
 export default class PuntoVentaTipoPago extends Component {
     constructor(props) {
@@ -11,6 +12,14 @@ export default class PuntoVentaTipoPago extends Component {
         };
     }
 
+    componentDidMount() {
+        this.loadData();
+    }
+    async loadData() {
+        const empresa = await MDL.empresa.getFull();
+        const monedas = empresa.monedas;
+        this.setState({ monedas: monedas })
+    }
     getCuenta(select) {
         if (!select) return null;
         var cuenta_conta = Model.cuenta_contable.Action.getByKey(select?.key_cuenta_contable);
@@ -47,42 +56,14 @@ export default class PuntoVentaTipoPago extends Component {
         return <SList
             data={tipos_pago}
             render={(obj) => {
-                var select = Object.values(punto_venta_tipo_pago).find(o => o.key_punto_venta == this.props.key_punto_venta && o.key_tipo_pago == obj.key && o.estado != 0)
-                return <SView col={"xs-12"} card style={{ padding: 4, opacity: !select ? 0.6 : 1 }} row center onPress={() => {
-                    if (select) {
-                        SPopup.confirm({
-                            title: "Seguro de desactivar?",
-                            message: "Esta seguro de desactivar el tipo de pago para este punto de venta?",
-                            onPress: () => {
-                                Model.punto_venta_tipo_pago.Action.editar({
-                                    data: {
-                                        ...select,
-                                        estado: 0,
-                                    },
-                                    key_usuario: Model.usuario.Action.getKey()
-                                })
-                            }
-                        })
 
-                    } else {
-                        SNavigation.navigate("/contabilidad/cuentas", {
-                            // codigo: Config.cuenta_contable.punto_venta_tipo_pago.cuenta,
-                            onSelect: (cuenta) => {
-                                Model.punto_venta_tipo_pago.Action.registro({
-                                    data: {
-                                        key_punto_venta: this.props.key_punto_venta,
-                                        key_tipo_pago: obj.key,
-                                        key_cuenta_contable: cuenta.key,
-                                    },
-                                    key_usuario: Model.usuario.Action.getKey()
-                                })
-                                SNavigation.goBack();
-                            }
-                        })
-
-                    }
-
-                }}>
+                return <SView col={"xs-12"} card
+                    style={{
+                        padding: 4,
+                        // opacity: !select ? 0.6 : 1
+                    }}
+                    row center
+                >
                     <SView style={{ padding: 4 }}>
                         <SView width={40} height={40} card ></SView>
                     </SView>
@@ -90,7 +71,56 @@ export default class PuntoVentaTipoPago extends Component {
                         <SText>{obj.descripcion}</SText>
                         <SText fontSize={10} color={STheme.color.lightGray}>{obj.observacion}</SText>
                         <SHr height={4} />
-                        {this.getCuenta(select)}
+
+                        <SView row col={"xs-12"}>
+                            {(this.state.monedas ?? []).map(a => {
+                                var select = Object.values(punto_venta_tipo_pago).find(o => o.key_punto_venta == this.props.key_punto_venta
+                                    && o.key_tipo_pago == obj.key
+                                    && o.key_moneda == a.key
+                                    && o.estado != 0)
+                                return <SView padding={8} card margin={2}
+                                    style={{
+                                        opacity: !select ? 0.6 : 1
+                                    }} onPress={() => {
+                                        if (select) {
+                                            SPopup.confirm({
+                                                title: "Seguro de desactivar?",
+                                                message: "Esta seguro de desactivar el tipo de pago para este punto de venta?",
+                                                onPress: () => {
+                                                    Model.punto_venta_tipo_pago.Action.editar({
+                                                        data: {
+                                                            ...select,
+                                                            estado: 0,
+                                                        },
+                                                        key_usuario: Model.usuario.Action.getKey()
+                                                    })
+                                                }
+                                            })
+
+                                        } else {
+                                            SNavigation.navigate("/contabilidad/cuentas", {
+                                                // codigo: Config.cuenta_contable.punto_venta_tipo_pago.cuenta,
+                                                onSelect: (cuenta) => {
+                                                    Model.punto_venta_tipo_pago.Action.registro({
+                                                        data: {
+                                                            key_punto_venta: this.props.key_punto_venta,
+                                                            key_tipo_pago: obj.key,
+                                                            key_cuenta_contable: cuenta.key,
+                                                            key_moneda: a.key
+                                                        },
+                                                        key_usuario: Model.usuario.Action.getKey()
+                                                    })
+                                                    SNavigation.goBack();
+                                                }
+                                            })
+
+                                        }
+                                    }}>
+                                    <SText >{a.descripcion}</SText>
+                                    {this.getCuenta(select)}
+                                </SView>
+                            })}
+                        </SView>
                         {/* {this.getSwitch(select)} */}
                     </SView>
                 </SView>

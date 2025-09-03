@@ -15,6 +15,7 @@ export type CajaDetalle = {
   monto: number,
   tipo: "egreso_banco" | "ingreso_banco",
   key_tipo_pago: string,
+  key_moneda?:string,
   key_cuenta_banco?: string,
 }
 
