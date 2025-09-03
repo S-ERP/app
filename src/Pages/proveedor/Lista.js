@@ -8,34 +8,78 @@ import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
 import PopupCrearProveedor from './Components/PopupCrearProveedor';
+import PopupPagarDeuda from './Components/PopupPagarDeuda';
+import proveedor from '.';
 export default class Lista extends Component {
     onSelect = SNavigation.getParam("onSelect");
     constructor(props) {
         super(props);
         this.state = {};
     }
-    
+
+
     async loadInitialData() {
         try {
-            // siempre poner todas las apis en una funcion asi para que recargue rapido la tabla
+            // Cargar todos los proveedores
             const proveedores = await MDL.inventario.proveedor.getAllProveedor();
-            const keysUsuarios = Object.values(proveedores).map(p => p.key_usuario).filter(Boolean);
+            if (!proveedores || Object.keys(proveedores).length === 0) {
+                SNotification.send({
+                    title: "Advertencia",
+                    body: "No se encontraron proveedores.",
+                    time: 3000,
+                    color: STheme.color.warning,
+                });
+                return [];
+            }
+
+            // Obtener los keys de usuarios asociados a los proveedores
+            const keysUsuarios = Object.values(proveedores)
+                .map(p => p.key_usuario)
+                .filter(Boolean); // Filtra valores nulos o undefined
             const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
-            Object.values(proveedores).forEach(proveedor => {
-                proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario);
+            if (!usuarios || Object.keys(usuarios).length === 0) {
+                console.warn("No se encontraron usuarios para los proveedores.");
+            }
+
+            // Cargar todas las transacciones de tipo "compra" en el rango de fechas
+            const transacciones = await MDL.compra_venta.getTransaccion("compra", "2024-09-01", "2026-09-05");
+            if (!transacciones || transacciones.length === 0) {
+                SNotification.send({
+                    title: "Advertencia",
+                    body: "No se encontraron compras en el rango de fechas especificado.",
+                    time: 3000,
+                    color: STheme.color.warning,
+                });
+            }
+
+            // Asociar usuarios y compras a cada proveedor
+            const proveedoresConCompras = Object.values(proveedores).map(proveedor => {
+                // Asignar usuario correspondiente
+                proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario) || null;
+
+                // Filtrar transacciones por proveedor (asumiendo que cada transacción tiene un campo key_proveedor)
+                proveedor.compras = transacciones
+                    ? transacciones.filter(transaccion => transaccion.key_proveedor === proveedor.key)
+                    : [];
+
+
+                console.log("Compras para proveedor", proveedor);
+                return proveedor;
             });
-            return proveedores;
+
+            return proveedoresConCompras;
         } catch (error) {
             console.error('Error loading initial data:', error);
             SNotification.send({
                 title: "Error",
-                body: "No se pudo cargar la lista de proveedores.",
+                body: "No se pudo cargar la lista de proveedores y sus compras.",
                 time: 3000,
                 color: STheme.color.danger,
             });
             return [];
         }
     }
+
     mostrarTabla() {
         return <DinamicTable
             key="tabla"
@@ -77,6 +121,32 @@ export default class Lista extends Component {
                                 })
                             }
                         },
+                        {
+                            icon: <SIconApp name='addUser' />,
+                            label: "Pagar Deuda",
+                            onPress: () => {
+                                const proveedor = {
+                                    ...e.row,
+                                    key_usuario: MDL.usuario.session?.key,
+                                }
+
+
+
+
+
+
+                                PopupPagarDeuda.open({
+                                    editObject: proveedor,
+                                    key_empresa: proveedor.key_empresa,
+                                    onSuccess: async () => {
+                                        this.DinamicTable.loadData();
+                                    },
+                                })
+                            }
+                        },
+
+
+
                         {
                             icon: <SIconApp name='Delete' />,
                             label: "Eliminar Proveedor",
@@ -126,6 +196,18 @@ export default class Lista extends Component {
                 </SView>}
             />
             <DinamicTable.Col key="razon_social" label="Razón Social" width={200} data={(e) => e.row?.razon_social} />
+            <DinamicTable.Col key="compras" label="compras" width={50} data={(e) => e.row?.compras.length} />
+
+            {/* <DinamicTable.Col key="comprasas" label="compras" width={50} data={(e) => e.row?.compras.length} /> */}
+            {/* <DinamicTable.Col key="comprasas" label="compras" width={50} data={(e) => e.row?.compras.length} /> */}
+            {/* <DinamicTable.Col key="comprasas" label="compras" width={50} data={(e) => e.row?.compras.length} /> */}
+            {/* <DinamicTable.Col key="comprasas" label="compras" width={50} data={(e) => e.row?.compras.length} /> */}
+            {/* <DinamicTable.Col key="comprasas" label="compras" width={50} data={(e) => e.row?.compras.length} /> */}
+            {/* <DinamicTable.Col key="comprasas" label="compras" width={50} data={(e) => e.row?.compras.length} /> */}
+            {/* <DinamicTable.Col key="comprasas" label="compras" width={50} data={(e) => e.row?.compras.length} /> */}
+            {/* <DinamicTable.Col key="comprasas" label="compras" width={50} data={(e) => e.row?.compras.length} /> */}
+
+
             <DinamicTable.Col key="nit" label="NIT" width={150} data={(e) => e.row?.nit} />
             <DinamicTable.Col key="nombre" label="Nombre de Contacto" width={150} data={(e) => e.row?.nombre} />
             <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={(e) => e.row?.telefono} />

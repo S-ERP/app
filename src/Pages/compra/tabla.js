@@ -165,6 +165,7 @@ export default class tabla extends Component {
                 />
                 <DinamicTable.Col key="cuotas_cantidad" label="Cuotas" width={60} data={(e) => e.row?.cuotas.cantidad ?? ""} />
                 <DinamicTable.Col key="cuotas_total" label="Pagar" width={60} data={(e) => e.row?.cuotas.total ?? ""} />
+                <DinamicTable.Col key="monto_amortizado" label="Amortizado" width={100} data={(e) => e.row?.monto_amortizado ?? ""} />
                 <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.key_usuario) ?

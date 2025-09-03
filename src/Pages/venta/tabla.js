@@ -208,7 +208,7 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="tipo_pago" label="Tipo Pago" width={80} data={(e) => e.row?.tipo_pago ?? ""} customComponent={(e) => this.renderTipoPago(e?.data)} />
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e?.data)} />
                 <DinamicTable.Col key="descripcion" label="Descripción" width={100} data={(e) => e.row?.descripcion ?? ""} />
-                
+
                 <DinamicTable.Col key="cliente" label="Cliente" width={180} data={(e) => `${SSocket.api.root}usuario/${e.row?.key_cliente}`}
                     customComponent={e => <>
                         {(e.row?.cliente?.key_usuario) ?
@@ -225,6 +225,10 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="key_cliente" label="key_cliente" width={60} data={(e) => e.row?.key_cliente ?? ""} />
                 <DinamicTable.Col key="cuotas_cantidad" label="Cuotas" width={60} data={(e) => e.row?.cuotas.cantidad ?? ""} />
                 <DinamicTable.Col key="cuotas_total" label="Pagar" width={60} data={(e) => e.row?.cuotas.total ?? ""} />
+
+                <DinamicTable.Col key="monto_amortizado" label="Amortizado" width={100} data={(e) => e.row?.monto_amortizado ?? ""} />
+
+
                 <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.key_usuario) ?
@@ -243,7 +247,7 @@ export default class tabla extends Component {
     render() {
         return (
             <SPage title="Tabla Gestión de Ventas" disableScroll>
-                {}
+                { }
                 {this.mostrarTabla()}
                 <SHr height={20} />
             </SPage>
