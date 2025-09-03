@@ -9,6 +9,7 @@ import ShaderEditor from '../Components/SThree/ShaderEditor2';
 import Pizarra from '../Components/Pizarra/Pizarra';
 import PizarraNodo from '../Components/Pizarra/PizarraNodo';
 import DatePickerCalendar from "servisofts-table/Components/DatePickerCalendar"
+import DateTimeBetween from '../Components/DateTimeBetween';
 export default class test extends Component {
   constructor(props) {
     super(props);
@@ -63,6 +64,14 @@ export default class test extends Component {
               // state.dateSelec = e
 
             }} />
+        </PizarraNodo>
+
+        <PizarraNodo style={{
+          backgroundColor: STheme.color.background,
+          borderRadius: 4,
+          padding: 8,
+        }} x={-500} y={-100}>
+          <DateTimeBetween />
         </PizarraNodo>
         <Sucursal label="Sucursal 1" x={-100} />
         <Sucursal label="Sucursal 2" x={0} />
