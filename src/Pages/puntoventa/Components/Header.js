@@ -13,7 +13,20 @@ export default class Header extends Component {
     }
     componentDidMount() {
         this.cargarSucursalGuardada();
+        this.loadData()
     }
+
+
+
+    async loadData() {
+        const data = await MDL.empresa.getFull()
+        data.monedas.map((moneda) => {
+            console.log("money " + JSON.stringify(moneda.observacion));
+            this.monedas = moneda;
+        })
+        console.log("money " + JSON.stringify(this.monedas.observacion));
+    }
+
     cargarSucursalGuardada() {
         MDL.compra_venta.getSucursalSeleccionada()
             .then(sucursal => {
@@ -25,10 +38,11 @@ export default class Header extends Component {
                 console.error("Error cargando sucursal guardada:", e);
             });
     }
+
     render() {
         let usuario = Model.usuario.Action.getUsuarioLog();
         let empresa = Model.empresa.Action.getSelect();
-        let sucursal = this.state.sucursal;
+
         return (
             <SView col={"xs-12"} row center height={40} backgroundColor={STheme.color.background} style={{ borderBottomWidth: 1, borderColor: STheme.color.card }}>
                 <SView width={40} style={{ paddingBottom: 4 }} center height
@@ -48,8 +62,8 @@ export default class Header extends Component {
                     </SText>
                 </SView>
                 <SView flex />
-                <SView col={"xs-7 md-5 lg-3"} height row center  style={{ justifyContent: "flex-end" }}>
-                    <SView col={"xs-10 md-8"} row center  style={{
+                <SView col={"xs-7 md-5 lg-3"} height row center style={{ justifyContent: "flex-end" }}>
+                    <SView col={"xs-10 md-8"} row center style={{
                         borderRightColor: STheme.color.gray,
                         borderRightWidth: 1,
                     }}>
@@ -60,7 +74,7 @@ export default class Header extends Component {
                             {usuario?.Nombres}
                         </SText>
                     </SView>
-                      <SView flex />
+                    <SView flex />
                     <SView col={"xs-0 md-1"} >
                         <SIconApp name="Wifi" width={20} height={20} fill={"#19b121ff"} />
                     </SView>

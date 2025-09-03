@@ -53,7 +53,7 @@ export default class empresa extends MDLAbstract<EventListener> {
       };
       // STheme.repaint();
     }
-    if(MDL?.caja){
+    if (MDL?.caja) {
       MDL.caja.getActiva();
     }
     this.dispatchEvent({ type: "onChangeEmpresaSelect", data: empresa });
@@ -81,7 +81,7 @@ export default class empresa extends MDLAbstract<EventListener> {
 
   __tipo_pago: any = null;
   async getTipoPago(): Promise<Sucursal[]> {
-    if(this.__tipo_pago) return this.__tipo_pago;
+    if (this.__tipo_pago) return this.__tipo_pago;
     const resp: any = await SSocket.sendPromise({
       service: "empresa",
       component: "tipo_pago",
@@ -218,4 +218,92 @@ export default class empresa extends MDLAbstract<EventListener> {
     console.log("jajaj ", resp.data);
     return resp.data;
   }
+
+
+  // const moneda_ = {
+  //                                           ...e.row,
+  //                                           estado: 0,
+  //                                       }
+  //                                       SSocket.sendPromise({
+  //                                           service: "empresa",
+  //                                           component: "empresa_moneda", // 🔥 corregido
+  //                                           type: "editar",
+  //                                           data: moneda_,
+  //                                           key_usuario: MDL.usuario.session?.key,
+  //                                       }).then(() => {
+  //                                           this.table.loadData();
+  //                                           this.forceUpdate();
+  //                                       }).catch(err => {
+  //                                           console.error("response", err);
+  //                                       })
+
+
+
+  async getMonedas(): Promise<any> {
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "empresa",
+      type: "getByKeyFull",
+      key: MDL.empresa.select?.key,
+    });
+    return resp.data.monedas;
+  }
+
+  async registrarMoneda(data: any) {
+    data.key_usuario = MDL.usuario.session?.key;
+    data.key_empresa = MDL.empresa.select?.key;
+
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "empresa_moneda",
+      type: "registro",
+      key_turno: MDL.usuario.session?.key,
+      data: data,
+    });
+    console.log("jajajsssssss ", resp.data);
+    return resp;
+  }
+
+  async editarMoneda(data: any) {
+    data.key_usuario = MDL.usuario.session?.key;
+    data.key_empresa = MDL.empresa.select?.key;
+
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "empresa_moneda",
+      type: "editar",
+      key_turno: MDL.usuario.session?.key,
+      data: data,
+    });
+    console.log("jajajsssssss ", resp.data);
+    return resp.data;
+  }
+
+  async getHistorialMoneda(key: any) {
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "empresa_moneda",
+      type: "getByKeyHistorialMoneda",
+      key: key,
+
+    });
+    console.log("jajajsssssss ", resp.data);
+    return resp.data;
+  }
+
+
+  // async getEmpresa(key: string) {
+  //   const resp: any = await SSocket.sendPromise({
+  //     service: "empresa",
+  //     component: "empresa",
+  //     type: "getByKey",
+  //     key: key,
+  //   });
+  //   return resp.data as Empresa;
+  // }
+
+
+
+
+
 }

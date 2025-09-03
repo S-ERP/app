@@ -14,6 +14,8 @@ export default class Main extends Component {
         super(props);
         this.selectedTipoKey = "all";
         this.searchText = "";
+        this.selectedMoneda = null; // 🔹 Add selectedMoneda
+
         this.state = {
             showCarritoModal: false,
             carritoModalData: [],
@@ -27,6 +29,12 @@ export default class Main extends Component {
         this.searchText = text;
         this.forceUpdate();
     };
+
+    setMoneda = moneda => { // 🔹 Add setMoneda method
+        this.selectedMoneda = moneda;
+        this.forceUpdate();
+    };
+
     async checkCaja() {
         try {
             const activa = await MDL.caja.getActiva();
@@ -57,6 +65,7 @@ export default class Main extends Component {
             <Carrito
                 ref={(ref) => (this.carritoRef = ref)}
                 onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
+                selectedMoneda={this.selectedMoneda} 
             />
         );
     }
@@ -125,11 +134,17 @@ export default class Main extends Component {
                             selected={this.selectedTipoKey}
                             value={this.searchText}
                             onChangeText={this.setSearchText}
+
+                            selectedMoneda={this.selectedMoneda} // 🔹 Pass selectedMoneda
+                            onSelectMoneda={this.setMoneda} // 🔹 Pass setMoneda
+
                         />
                         {this.cajaActiva && <Modelo
                             ref={(ref) => (this.modeloRef = ref)}
                             tipoKey={this.selectedTipoKey}
                             searchText={this.searchText}
+                            selectedMoneda={this.selectedMoneda} // 🔹 Pass selectedMoneda
+
                             onPressProducto={(producto) => {
                                 this.carritoRef?.addProducto(producto);
                                 this.carritoRefModal?.addProducto?.(producto);

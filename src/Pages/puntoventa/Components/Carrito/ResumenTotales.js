@@ -2,7 +2,18 @@ import React, { Component } from 'react';
 import { SView, SText, STheme, SMath, SHr } from 'servisofts-component';
 export default class ResumenTotales extends Component {
     render() {
-        const { subtotal, totalImpuesto, numeroIva, totalDescuento } = this.props;
+        const { monedaSymbol,subtotal, totalImpuesto, numeroIva, totalDescuento } = this.props;
+
+
+        //     const precio = item.selectedMoneda
+        //     ? item.precio_venta / (item.selectedMoneda.tipo_cambio || 1)
+        //     : item.precio_venta;
+        // const monedaSymbol = item.selectedMoneda ? item.selectedMoneda.observacion : 'Bs';
+        console.log("precio en carrito " + JSON.stringify(monedaSymbol));
+        // console.log("monedaSymbol en carrito " + JSON.stringify(monedaSymbol));
+        // console.log("selectedMoneda en carrito " + JSON.stringify(item.selectedMoneda));
+        // si quiero cambiar el precio aca
+
         return (
             <SView
                 col={"xs-12"}
