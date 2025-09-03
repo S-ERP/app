@@ -11,7 +11,7 @@ import ReciboCarta from '../../../../Components/PDF/venta/ReciboCarta';
 import PopupCarritoFlotante from './PopupCarritoFlotante';
 import Carrito from '../Carrito';
 import Main from '../../Main';
- 
+
 
 
 // import React, { Component } from 'react';
@@ -142,20 +142,43 @@ export default class TecladoNumerico extends Component {
                             }} />
                         </SView>
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 8, margin: 2 }} onPress={() => {
+
+                            //    let carro = this.props?.carrito || {};
+                            //     if (!this.tipos_pago) {
+                            //         SelectTipoPago.openPopup({
+                            //             key_punto_venta: MDL.caja.activa.key_punto_venta,
+                            //             montoMaximo: (subtotal - descuento),
+                            //             // montoMaximo: totalFinal,
+                            //             onSelect: (item) => {
+                            //                 this.tipos_pago = item;
+                            //                 console.log("selecciono " + JSON.stringify(item))
+                            //                 this.forceUpdate();
+                            //                 this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
+                            //                 SelectTipoPago.closePopup();
+                            //             }
+                            //         });
+                            //     }
+
                             if (!this.tipos_pago) {
+                                const key_punto_venta = MDL.caja.activa.key_punto_venta;
+                                const monedaSymbol = this.props.monedaSymbol || 'Bs';
+
                                 const montoTotal_MN = parseFloat(subtotal.toFixed(2));
                                 const montoTotal_ME = parseFloat(subtotalMoneda.toFixed(2));
+                                console.log("abrir popup WEB 🎭🎭🎭🎭🎭🎭🎭🎭🎭");
+                                console.log("key_punto_venta", key_punto_venta);
+                                console.log("montoTotal_MN", montoTotal_MN);
+                                console.log("montoTotal_ME", montoTotal_ME);
+                                console.log("monedaSymbol", monedaSymbol);
 
-                                
                                 SelectTipoPago.openPopup({
-                                    key_punto_venta: MDL.caja.activa.key_punto_venta,
-                                    montoMaximo:  montoTotal_MN, // Usar totalFinal
-                                    montoMaximoMoneda: montoTotal_ME,
-                                    monedaSymbol: this.props.monedaSymbol || 'Bs',
+                                    key_punto_venta: key_punto_venta,
+                                    montoMaximo: montoTotal_MN, // Usar totalFinal
+                                    monedaSymbol: monedaSymbol,
                                     onSelect: (item) => {
                                         this.tipos_pago = item;
                                         this.forceUpdate();
-                                        this.renderButton(totalFinal, subtotal, subtotalMoneda, descuento, conFactura, carrito);
+                                        this.renderButton(totalFinal, subtotalMoneda, subtotal, descuento, conFactura, carrito);
                                         SelectTipoPago.closePopup();
                                     },
                                 });
@@ -189,23 +212,24 @@ export default class TecladoNumerico extends Component {
                 {subtotal ? (
                     <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
                         if (!this.tipos_pago) {
-                            SelectTipoPago.openPopup({
-                                key_punto_venta: MDL.caja.activa.key_punto_venta,
-                                montoMaximo: parseFloat(totalFinal.toFixed(2)),
-                                montoMaximoMoneda: parseFloat(totalFinal.toFixed(2)),
-                                monedaSymbol: monedaSymbol,
-                                onSelect: (item) => {
-                                    this.tipos_pago = item;
-                                    this.forceUpdate();
-                                    this.renderButton(totalFinal, subtotal, subtotalMoneda, descuento, conFactura, carrito);
-                                    this.tipos_pago = null;
-                                    SNotification.remove("compra");
-                                    this.props?.onReload?.();
-                                    this.props?.onReloadCliente?.();
-                                    // PopupCarritoFlotante.closePopup();
-                                    SelectTipoPago.closePopup();
-                                },
-                            });
+                            console.log("abrir popup");
+                            // SelectTipoPago.openPopup({
+                            //     key_punto_venta: MDL.caja.activa.key_punto_venta,
+                            //     montoMaximo: parseFloat(totalFinal.toFixed(2)),
+                            //     montoMaximoMoneda: parseFloat(totalFinal.toFixed(2)),
+                            //     monedaSymbol: monedaSymbol,
+                            //     onSelect: (item) => {
+                            //         this.tipos_pago = item;
+                            //         this.forceUpdate();
+                            //         this.renderButton(totalFinal, subtotal, subtotalMoneda, descuento, conFactura, carrito);
+                            //         this.tipos_pago = null;
+                            //         SNotification.remove("compra");
+                            //         this.props?.onReload?.();
+                            //         this.props?.onReloadCliente?.();
+                            //         // PopupCarritoFlotante.closePopup();
+                            //         SelectTipoPago.closePopup();
+                            //     },
+                            // });
                         }
                     }}>
                         <SText style={{ ...style_text, textTransform: 'uppercase' }}>Procesar Pago</SText>
