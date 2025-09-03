@@ -95,8 +95,8 @@ export default class TecladoNumerico extends Component {
         })
     }
 
-    handleCalculatorPress(valor){
-        console.log("presiono "+valor)
+    handleCalculatorPress(valor) {
+        console.log("presiono " + valor)
     }
 
     renderTecladoNumerico = () => {
@@ -125,16 +125,23 @@ export default class TecladoNumerico extends Component {
                         <SView center flex backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 8, margin: 2 }} onPress={() => {
                             let carro = this.props?.carrito || {};
                             if (!this.tipos_pago) {
-                                SelectTipoPago.openPopup({
-                                    key_punto_venta: MDL.caja.activa.key_punto_venta,
-                                    montoMaximo: (subtotal - descuento),
-                                    onSelect: (item) => {
-                                        this.tipos_pago = item;
-                                        this.forceUpdate();
-                                        this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
-                                        SelectTipoPago.closePopup();
-                                    }
-                                });
+
+                                console.log("abrir popup")
+                                console.log("key", MDL.caja.activa.key_punto_venta)
+                                const monto =  parseFloat((subtotal - descuento).toFixed(2));
+                                console.log("monto", monto)
+                                console.log("monedal", this.props.moneda)
+
+                                // SelectTipoPago.openPopup({
+                                //     key_punto_venta: MDL.caja.activa.key_punto_venta,
+                                //     montoMaximo: (subtotal - descuento),
+                                //     onSelect: (item) => {
+                                //         this.tipos_pago = item;
+                                //         this.forceUpdate();
+                                //         this.renderButton(totalFinal, subtotal, descuento, conFactura, carrito);
+                                //         SelectTipoPago.closePopup();
+                                //     }
+                                // });
                             }
                         }}
                         >
@@ -152,8 +159,8 @@ export default class TecladoNumerico extends Component {
                                             height: 40, borderRadius: 8,
                                             overflow: "hidden", margin: 2
                                         }}
-                                        onPress={() => this.handleCalculatorPress(t)} 
-                                        >
+                                        onPress={() => this.handleCalculatorPress(t)}
+                                    >
                                         <SText style={style_text}>{t}</SText>
                                     </SView>
                                 ))}

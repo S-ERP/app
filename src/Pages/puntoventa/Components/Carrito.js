@@ -130,13 +130,16 @@ export default class Carrito extends Component {
 
             // this.carrito.push({ ...producto, cantidad: 1 });
 
+
+            // aqui causa todo el problema
+
             this.carrito.push({
                 ...producto,
                 cantidad: 1,
                 precio_venta_original: producto.precio_venta, // Store original price
-                precio_venta_moneda: producto.precio_venta, // Store original price
+                precio_venta: producto.precio_venta, // Store original price
 
-                precio_venta: this.props.selectedMoneda
+                precio_venta_moneda: this.props.selectedMoneda
                     ? producto.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
                     : producto.precio_venta,
                 monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : 'Bs',
@@ -236,6 +239,8 @@ export default class Carrito extends Component {
         this.forceUpdate();
     };
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
+    calcularSubtotalMoneda = () => this.carrito.reduce((t, i) => t + i.precio_venta_moneda * i.cantidad, 0);
+
     calcularTotalConIVA = (subtotal) => {
         if (!this._enviromentsIva) return subtotal;
         if (this.conFactura) {
@@ -259,12 +264,13 @@ export default class Carrito extends Component {
     );
     renderCarrito = () => {
         const subtotal = this.calcularSubtotal();
+        const subtotalMoneda = this.calcularSubtotalMoneda();
         const totalConIVA = this.calcularTotalConIVA(subtotal);
         const totalImpuesto = this.calcularIVA(subtotal);
         const totalDescuento = this.descuentoManual || 0;
         const totalFinal = this.calcularTotalConDescuento(totalConIVA);
         const monedaSymbol = this.carrito.length > 0 ? this.carrito[0].monedaSymbol || 'Bs' : 'Bs'; // Use first item's monedaSymbol
-
+        const moneda = this.props.selectedMoneda;
         return (
             <>
                 {subtotal <= 0 ?
@@ -311,7 +317,7 @@ export default class Carrito extends Component {
                             </SScrollView2>
                         </SView>
                         <SHr height={5} />
-                        <ResumenTotales subtotal={subtotal} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal} monedaSymbol={monedaSymbol} ></ResumenTotales>
+                        <ResumenTotales subtotal={subtotal} subtotalMoneda={subtotalMoneda} totalImpuesto={totalImpuesto} numeroIva={this._numeroIva} totalDescuento={totalDescuento} totalFinal={totalFinal} moneda={moneda} ></ResumenTotales>
                         <SView col={"xs-12"} row center   >
                             <SView col={"md-12 xl-6"} height={70}  >
                                 <SView col={"xs-10"} center  >

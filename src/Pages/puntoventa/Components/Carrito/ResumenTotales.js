@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { SView, SText, STheme, SMath, SHr } from 'servisofts-component';
 export default class ResumenTotales extends Component {
     render() {
-        const { monedaSymbol, subtotal, totalImpuesto, numeroIva, totalDescuento } = this.props;
+        const { moneda, subtotal,subtotalMoneda, totalImpuesto, numeroIva, totalDescuento } = this.props;
         /**
          * Componente para mostrar un resumen de totales con subtotal, impuestos, descuentos y total.
          * @param {Object} props - Propiedades del componente.
@@ -21,7 +21,8 @@ export default class ResumenTotales extends Component {
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
                     <SText fontSize={13} color={STheme.color.text}>Subtotal:</SText>
                     <SText fontSize={13} bold color={STheme.color.text}>
-                        {monedaSymbol || 'Bs'} {SMath.formatMoney(subtotal, 2)}
+                        {/* {moneda?.observacion} {SMath.formatMoney(subtotal, 2)} */}
+                        {moneda?.observacion} {SMath.formatMoney(subtotalMoneda, 2)}
                     </SText>
                 </SView>
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
@@ -29,13 +30,13 @@ export default class ResumenTotales extends Component {
                         IVA ({numeroIva}%)
                     </SText>
                     <SText fontSize={13} color={STheme.color.text}>
-                        + {monedaSymbol || 'Bs'} {SMath.formatMoney(totalImpuesto, 2)}
+                        + {moneda?.observacion} {SMath.formatMoney(totalImpuesto, 2)}
                     </SText>
                 </SView>
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                     <SText fontSize={12} color={STheme.color.text}>Descuento:</SText>
                     <SText fontSize={13} color={STheme.color.text}>
-                        {monedaSymbol || 'Bs'} {SMath.formatMoney(totalDescuento || 0, 2)}
+                        {moneda?.observacion} {SMath.formatMoney(totalDescuento || 0, 2)}
                     </SText>
                 </SView>
                 <SHr height={3} />
@@ -44,7 +45,7 @@ export default class ResumenTotales extends Component {
                 <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4, padding: 3 }}>
                     <SText fontSize={18} color={STheme.color.text}>Total:</SText>
                     <SText fontSize={18} bold color={STheme.color.text}>
-                        {monedaSymbol || 'Bs'} {SMath.formatMoney((subtotal - (totalDescuento || 0)), 2)}
+                        {moneda?.observacion} {SMath.formatMoney((subtotal - (totalDescuento || 0)), 2)}
                     </SText>
                 </SView>
             </SView>
