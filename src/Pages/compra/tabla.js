@@ -149,6 +149,18 @@ export default class tabla extends Component {
                     </>}
                 />
                 <DinamicTable.Col key="tipo_pago" label="Tipo de Pago" width={80} data={(e) => e.row?.tipo_pago ?? ""} customComponent={(e) => this.renderTipoPago(e?.data)} />
+                <DinamicTable.Col key="estado_pago" label="Estado de Pago" width={80}
+                    data={(e) => {
+                        if (e.row?.cuotas_en_mora?.monto > 0) {
+                            return "En Mora";
+                        }
+                        if (e.row?.cuotas?.total <= e.row?.monto_amortizado) {
+                            return "Pagado";
+                        }
+                        return "Al Día";
+                    }}
+                // customComponent={(e) => this.renderEstadoPago(e?.data)}
+                />
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e.data)} />
                 <DinamicTable.Col key="descripcion" label="Descripción" width={150} data={(e) => e.row?.descripcion ?? ""} />
                 <DinamicTable.Col key="proveedor" label="Proveedor" width={100} data={(e) => e.row?.proveedor?.razon_social ?? ""}
@@ -166,6 +178,7 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="cuotas_cantidad" label="Cuotas" width={60} data={(e) => e.row?.cuotas.cantidad ?? ""} />
                 <DinamicTable.Col key="cuotas_total" label="Pagar" width={60} data={(e) => e.row?.cuotas.total ?? ""} />
                 <DinamicTable.Col key="monto_amortizado" label="Amortizado" width={100} data={(e) => e.row?.monto_amortizado ?? ""} />
+                <DinamicTable.Col key="en_mora" label="Mora" width={100} data={(e) => e.row?.cuotas_en_mora.monto ?? ""} />
                 <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.key_usuario) ?

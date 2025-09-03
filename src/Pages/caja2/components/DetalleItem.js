@@ -104,7 +104,7 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         <SView width={4} />
                         <SText color={STheme.color.lightGray} fontSize={10}>{this?.props?.tipo_pago?.[item.key_tipo_pago]?.descripcion || item.key_tipo_pago}</SText>
                     </View>
-                      <SView width={8} />
+                    <SView width={8} />
                     {moneda && <View style={{
                         // backgroundColor: STheme.color.card,
                         borderWidth: 1,
