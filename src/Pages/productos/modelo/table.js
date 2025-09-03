@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../../Config';
 import MDL from '../../../MDL';
@@ -68,10 +68,15 @@ export default class table extends Component {
                 // textStyle={Config.table.textStyle()}
                 selectType='single'
                 language='es'
+                listFooterComponent={() => {
+                    return <SHr height={100} />
+
+                }}
                 loadData={this.loadData.bind(this)}
                 onSelect={e => {
                     FloatMenu.open({
                         e: e.evt,
+                        height:330,
                         label: e.row.descripcion,
                         options: [
                             // {

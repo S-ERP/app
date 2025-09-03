@@ -39,10 +39,10 @@
     "crypto-browserify": "^3.12.0",
     "crypto-js": "^4.1.1",
     "events": "^3.3.0",
-    "expo": "48.0.21",
+    "expo": "48.0.8",
     "expo-file-system": "15.4.5",
     "expo-gl": "13.0.1",
-    "expo-modules-core": "^1.2.7",
+    "expo-modules-core": "1.2.6",
     "expo-three": "7.0.1",
     "firebase": "^9.6.11",
     "google-map-react": "^2.1.6",
@@ -155,7 +155,7 @@
     "react-native-webview": "13.10.5",
     "react-native-document-picker": "9.3.1",
     "react-native-svg": "15.1.0",
-    "expo": "48.0.21"
+    "expo": "48.0.8"
   },
   "browserslist": {
     "production": [

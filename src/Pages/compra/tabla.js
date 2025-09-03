@@ -108,6 +108,10 @@ export default class tabla extends Component {
                 {...Config.table.applyTheme()}
                 selectType="single"
                 keyExtractor={(e) => e.key}
+                listFooterComponent={() => {
+                    return <SHr height={100} />
+
+                }}
                 onSelect={(e) => {
                     FloatMenu.open({
                         e: e.evt,
@@ -246,7 +250,6 @@ export default class tabla extends Component {
         return (
             <SPage title="Tabla Gestión de Compras" disableScroll>
                 {this.mostrarTabla()}
-                <SHr height={20} />
             </SPage>
         );
     }

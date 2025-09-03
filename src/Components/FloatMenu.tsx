@@ -10,6 +10,7 @@ type Option = {
 type FloatMenuProps = {
     label?: string,
     e: GestureResponderEvent,
+    height?: number,
     options: Option[],
     onClose: () => void,
 }
@@ -19,15 +20,16 @@ export default class FloatMenu extends React.Component<FloatMenuProps> {
         const { e } = props;
 
         let top = e.nativeEvent.pageY;
-        if(top+200 > Dimensions.get("window").height) {
-            top = Dimensions.get("window").height - 200;
+        const h = props.height || 200;
+        if (top + h > Dimensions.get("window").height) {
+            top = Dimensions.get("window").height - h;
         }
 
         SPopup.open({
             key: "popup_menu_alvaro",
             type: "2",
             onClose: () => {
-                if(props.onClose) {
+                if (props.onClose) {
                     props.onClose();
                 }
             },

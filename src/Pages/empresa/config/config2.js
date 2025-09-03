@@ -39,8 +39,8 @@ export default class config2 extends React.Component {
                         justifyContent: "center"
                     }}>
                     <SView style={{
-                        width: 200,
-                        height: 80,
+                        width: 240,
+                        height: 100,
                         borderRadius: 100,
                         borderWidth: 1,
                         borderColor: STheme.color.text,
@@ -74,13 +74,13 @@ export default class config2 extends React.Component {
                 </PizarraNodo>
                 {(empresa.sucursales ?? []).map((sucursal, i) => {
                     return <>
-                        <PizarraNodo id={sucursal.key} y={i * space } x={0} style={{
+                        <PizarraNodo id={sucursal.key} y={i * space } x={100} style={{
                             alignItems: "center",
                             justifyContent: "center"
                         }}>
                             <SView style={{
-                                width: 120,
-                                height: 60,
+                                width: 150,
+                                height: 80,
                                 borderRadius: 4,
                                 borderWidth: 1,
                                 borderColor: STheme.color.text,
@@ -115,15 +115,15 @@ export default class config2 extends React.Component {
                                 return <PizarraNodo
                                     id={almacen.key}
                                     y={i * space + j * 80}
-                                    x={100} style={{
+                                    x={300} style={{
                                         alignItems: "center",
                                         justifyContent: "center"
                                     }}>
                                     <SView style={{
-                                        width: 50,
-                                        height: 50,
+                                        width: 80,
+                                        height: 80,
                                         borderRadius: 100,
-                                        padding: 15,
+                                        padding: 24,
                                         borderColor: STheme.color.text,
                                         backgroundColor: STheme.color.background,
                                         borderWidth: 1,
@@ -135,14 +135,14 @@ export default class config2 extends React.Component {
 
                                     </SView>
                                     <SText style={{
-                                        maxWidth: 50,
+                                        maxWidth: 80,
                                     }} numberOfLines={1}>{almacen.descripcion}</SText>
                                     <Puerto id="key_sucursal"
                                         value={almacen.key_sucursal}
                                         type="input"
                                         style={{
                                             width: 8,
-                                            top: 24,
+                                            top: 40,
                                             left: 4,
                                         }} />
                                 </PizarraNodo>
@@ -150,15 +150,15 @@ export default class config2 extends React.Component {
                         }
                         {
                             (sucursal.puntos_venta ?? []).map((punto_venta, j) => {
-                                return <PizarraNodo id={punto_venta.key} y={i * space + j * 80} x={200} style={{
+                                return <PizarraNodo id={punto_venta.key} y={i * space+10 + j * 110} x={320} style={{
                                     alignItems: "center",
                                     justifyContent: "center"
                                 }}>
                                     <SView style={{
-                                        width: 50,
-                                        height: 50,
+                                        width: 80,
+                                        height: 80,
                                         borderRadius: 10,
-                                        padding: 15,
+                                        padding: 24,
                                         borderColor: STheme.color.text,
                                         backgroundColor: STheme.color.background,
                                         borderWidth: 1,
@@ -168,13 +168,13 @@ export default class config2 extends React.Component {
                                     }}>
                                         <SIconApp name="Caja" fill={STheme.color.text} />
                                     </SView>
-                                    <SText numberOfLines={1}>{punto_venta.descripcion}</SText>
+                                    <SText fontSize={12} numberOfLines={1}>{punto_venta.descripcion}</SText>
                                     <Puerto id="key_sucursal"
                                         value={punto_venta.key_sucursal}
                                         type="input"
                                         style={{
                                             width: 8,
-                                            top: 24,
+                                            top: 40,
                                             left: 4
                                         }} />
                                 </PizarraNodo>

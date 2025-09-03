@@ -6,14 +6,24 @@ buildscript {
         minSdkVersion = 23
         compileSdkVersion = 34
         targetSdkVersion = 34
-        kotlinVersion = "1.8.10" 
+        kotlinVersion = "1.8.10"
         googlePlayServicesAuthVersion = "19.2.0"
         ndkVersion = "23.1.7779620"
     }
     repositories {
+        // gradlePluginPortal()
         google()
         mavenCentral()
-        gradlePluginPortal()
+        // maven { url new File(['node', '--print', "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../android/maven").absolutePath }
+//        maven { url "https://plugins.gradle.org/m2/" }
+        //  maven {
+        //     url new File(
+        //         ["node", "--print", "require.resolve('expo-modules-core/package.json')"]
+        //             .execute(null, rootDir)
+        //             .text.trim(),
+        //         "../android"
+        //     ).absolutePath
+        // }
     }
 
   
@@ -22,31 +32,46 @@ buildscript {
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion") // Añadir esta línea
         classpath('com.google.gms:google-services:4.3.15')
+        //   classpath("expo.modules:expo-module-gradle-plugin")
     }
 }
 
 allprojects {
     repositories {
-        maven {
-            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url(new File(['node', '--print', "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), '../android'))
-        }
-        maven {
-            // Android JSC is installed from npm
-            url(new File(['node', '--print', "require.resolve('jsc-android/package.json')"].execute(null, rootDir).text.trim(), '../dist'))
-        }
-
         google()
         mavenCentral()
-        maven { url 'https://www.jitpack.io' }
+        // maven {
+        //     // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+        //     url(new File(['node', '--print', "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), '../android'))
+        // }
+        // maven {
+        //     // Android JSC is installed from npm
+        //     url(new File(['node', '--print', "require.resolve('jsc-android/package.json')"].execute(null, rootDir).text.trim(), '../dist'))
+        // }
+        //  maven {
+        //      url new File(['node', '--print', "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../android/maven").absolutePath 
+        // }
+
+         maven {
+            url new File(
+                ["node", "--print", "require.resolve('expo-modules-core/package.json')"]
+                    .execute(null, rootDir)
+                    .text.trim(),
+                "../android"
+            ).absolutePath
+        }
+   
+
+      
+        // maven { url 'https://www.jitpack.io' }
     }
 }
 
-// subprojects { subproject ->
-//     if (project.name in ['servisofts-background-location', 'servisofts-component', 'servisofts-socket']) {
-//         project.configurations { compile { } }
-//     }
-// }
+ subprojects { subproject ->
+     if (project.name in ['servisofts-background-location', 'servisofts-component', 'servisofts-socket']) {
+         project.configurations { compile { } }
+     }
+ }
 
 // configurations.all {
 //     resolutionStrategy {
