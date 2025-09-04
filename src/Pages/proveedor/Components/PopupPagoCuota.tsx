@@ -2,14 +2,12 @@ import React, { Component } from 'react';
 import { ScrollView } from 'react-native';
 import { SNotification, SPopup, SText, STheme, SView, SInput, SIcon, SHr } from 'servisofts-component';
 import SIconApp from '../../../Assets/SIconApp';
-
 type Props = {
     key_empresa: string,
     editObject?: any,
     onCancel?: Function,
     onSuccess?: Function,
 };
-
 const _estiloBackgroundColor = STheme.color.success + '22';
 export default class PopupPagoCuota extends Component<Props> {
     static open(props: Props) {
@@ -44,7 +42,6 @@ export default class PopupPagoCuota extends Component<Props> {
             ),
         });
     }
-
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -52,58 +49,38 @@ export default class PopupPagoCuota extends Component<Props> {
             isLoading: false,
         };
     }
-
     Item = ({ cuota, index, onAjuste, compra }) => {
         const { montoPagar, isLoading } = this.state;
-        // Use moneda from editObject or default to 'S/'
         const monedaSymbol = this.props.editObject?.moneda || 'S/';
         const montoInput = montoPagar[cuota.numero] || '';
         const isPaid = cuota.estado === 'Pagado';
-
         return (<>
-
             <SView col={"xs-12"} style={{ backgroundColor: _estiloBackgroundColor, borderRadius: 8, padding: 16, borderWidth: 1, borderColor: STheme.color.success + '55', }}>
-
-
                 <SView row border={"pink"} >
-
                     <SView width={70} row><SText fontSize={14} bold color={STheme.color.primary}>Cuota #{cuota.numero}</SText></SView>
                     <SView width={70} row   >
                         <SView width={64} center style={{ backgroundColor: cuota.estado === 'Pendiente' ? STheme.color.danger : "#107003ff", borderRadius: 4, paddingHorizontal: 8, paddingVertical: 2 }}>
                             <SText fontSize={10} bold color={STheme.color.text}>{cuota.estado}</SText>
                         </SView>
                     </SView>
-
                 </SView>
-
                 <SHr height={8} />
-
-
-
                 <SView row center >
                     <SView flex row  >
                         <SText fontSize={12} color={STheme.color.primary}>Vencimiento: <SText color={STheme.color.primary}>{cuota.vencimiento}</SText></SText>
-
                     </SView>
                     <SView width={150} row style={{ justifyContent: 'flex-end' }} >
                         <SText fontSize={18} bold color={STheme.color.primary}>{monedaSymbol} {parseFloat(cuota.monto).toFixed(2)}</SText>
                     </SView>
                 </SView>
-
                 <SHr height={8} />
-
-
                 <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                     <SView flex row  >
-
                         {isPaid && (<SText fontSize={12} color={STheme.color.primary}>Pagado: <SText color={"#107003ff"}>{cuota.fechaPago}</SText></SText>)}
                     </SView>
-
-
                     {!isPaid && (
                         <SView row width={150} center >
                             <SView width={110} center  >
-
                                 <SInput
                                     style={{ height: 36, color: "red", }}
                                     type="money2"
@@ -136,18 +113,13 @@ export default class PopupPagoCuota extends Component<Props> {
                 </SView>
             </SView >
             <SHr height={12} />
-
         </>
-
         );
     };
-
     handlePagarDeuda = async (cuota) => {
         const { montoPagar, isLoading } = this.state;
         const monto = parseFloat(montoPagar[cuota.numero] || '0');
-
         if (isLoading) return;
-
         if (monto <= 0) {
             SNotification.send({
                 title: 'Error',
@@ -157,7 +129,6 @@ export default class PopupPagoCuota extends Component<Props> {
             });
             return;
         }
-
         if (monto > cuota.monto) {
             SNotification.send({
                 title: 'Error',
@@ -167,25 +138,19 @@ export default class PopupPagoCuota extends Component<Props> {
             });
             return;
         }
-
         this.setState({ isLoading: true });
-
         try {
-            // Simulating API call (replace with actual MDL.compra_venta.registrarPago)
             console.log(`Registrando pago: Compra ${this.props.editObject.id}, Cuota ${cuota.numero}, Monto ${monto}`);
             await new Promise(resolve => setTimeout(resolve, 1000)); // Mock async call
-
             SNotification.send({
                 title: 'Éxito',
                 body: 'Pago registrado correctamente.',
                 time: 3000,
                 color: STheme.color.success,
             });
-
             const newMontoPagar = { ...montoPagar };
             delete newMontoPagar[cuota.numero];
             this.setState({ montoPagar: newMontoPagar, isLoading: false });
-
             if (this.props.onSuccess) {
                 this.props.onSuccess({ cuota, monto });
             }
@@ -200,7 +165,6 @@ export default class PopupPagoCuota extends Component<Props> {
             this.setState({ isLoading: false });
         }
     };
-
     render() {
         const { editObject } = this.props;
         const compra = {
@@ -216,7 +180,6 @@ export default class PopupPagoCuota extends Component<Props> {
             ],
             moneda: editObject?.moneda || 'S/', // Pass moneda from parent or default
         };
-
         return (
             <SView col={'xs-12'} style={{ backgroundColor: STheme.color.white }}>
                 <SView
@@ -225,7 +188,6 @@ export default class PopupPagoCuota extends Component<Props> {
                         padding: 16,
                         borderBottomWidth: 1,
                         borderBottomColor: STheme.color.white,
-                        // borderBottomColor: STheme.color.primary + '33',
                         justifyContent: 'space-between',
                         alignItems: 'center',
                     }}
@@ -242,7 +204,6 @@ export default class PopupPagoCuota extends Component<Props> {
                         <SIcon name="Close" fill={STheme.color.primary} />
                     </SView>
                 </SView>
-
                 <ScrollView style={{ maxHeight: '80vh' }}>
                     <SView col={'xs-12'} style={{ padding: 16, gap: 24 }}>
                         <SView
@@ -288,11 +249,10 @@ export default class PopupPagoCuota extends Component<Props> {
                                     </SView>
                                     <SView width={70} row center>
                                         <SView width={64} center style={{ backgroundColor: compra.estado === 'Pendiente' ? STheme.color.danger : STheme.color.success, borderRadius: 4, paddingHorizontal: 8, paddingVertical: 2 }}>
-                                            {/* <SView width={64} center style={{ backgroundColor: "#dc2626", borderRadius: 4, paddingHorizontal: 8, paddingVertical: 2 }}> */}
+                                            {}
                                             <SText fontSize={10} bold color={STheme.color.text}>{compra.estado}</SText>
                                         </SView>
                                     </SView>
-
                                     {/* <SView
                                         style={{
                                             paddingHorizontal: 8,
@@ -308,11 +268,9 @@ export default class PopupPagoCuota extends Component<Props> {
                                 </SView>
                             </SView>
                         </SView>
-
                         <SView>
                             <SText fontSize={14} bold color={STheme.color.primary}>Cuotas de Pago</SText>
                             <SHr height={8} />
-
                             {compra.cuotasDetalle.length > 0 ? (
                                 compra.cuotasDetalle.map((cuota, index) => (
                                     <this.Item

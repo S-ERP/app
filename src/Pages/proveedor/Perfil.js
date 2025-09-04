@@ -27,7 +27,7 @@ export default class Perfil extends Component {
     }
     render() {
         return <SView col={"xs-12"} flex center>
-            {/* <SHr height={18} /> */}
+            {}
             <SView col={"xs-10"} center   >
                 <SView col={"xs-12"} row  >
                     <SView flex row >

@@ -1,10 +1,7 @@
-
-
 import React, { Component } from 'react';
 import { SView, SPage, SText, SHr, SScrollView2, STheme } from 'servisofts-component';
 import SIconApp from '../../Assets/SIconApp';
 import PopupPagoCuota from './Components/PopupPagoCuota';
-
 const data = {
     "proveedor": {
         "id": 1,
@@ -147,7 +144,6 @@ const data = {
         "metodosPago": ["Efectivo", "Transferencia", "Tarjeta de crédito", "Cheque"]
     }
 };
-
 export default class Pagos extends Component {
     header() {
         return (
@@ -158,7 +154,6 @@ export default class Pagos extends Component {
             </SView>
         );
     }
-
     resumen() {
         const { proveedor } = data;
         return (
@@ -173,7 +168,6 @@ export default class Pagos extends Component {
                             <SText color={STheme.color.primary} bold>{proveedor.nombre}</SText>
                         </SView>
                     </SView>
-
                     <SView col={"xs-12 md-3"} row center height={100}>
                         <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: "#fee2e2" }} center>
                             <SIconApp name='tpAf' width={24} height={24} fill={"#dc2626"} stroke='#fee2e2' />
@@ -183,7 +177,6 @@ export default class Pagos extends Component {
                             <SText bold color={"#dc2626"}>S/ {proveedor.deudaTotal.toLocaleString()}</SText>
                         </SView>
                     </SView>
-
                     <SView col={"xs-12 md-3"} row center>
                         <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: "#fef9c3" }} center>
                             <SIconApp name='pagotarjeta' width={24} height={24} fill={"#eab308"} />
@@ -193,7 +186,6 @@ export default class Pagos extends Component {
                             <SText bold color={"#eab308"}>S/ {proveedor.limiteCredito.toLocaleString()}</SText>
                         </SView>
                     </SView>
-
                     <SView col={"xs-12 md-3"} row center>
                         <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: "#fef9c3" }} center>
                             <SIconApp name='Evento' width={24} height={24} fill={"#eab308"} />
@@ -208,7 +200,6 @@ export default class Pagos extends Component {
             </SView>
         );
     }
-
     itemCard() {
         const { compras } = data;
         return (
@@ -241,9 +232,7 @@ export default class Pagos extends Component {
                                             </SView>
                                         </SView>
                                     </SView>
-
                                     <SHr h={24} />
-
                                     <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
                                         <SText color={STheme.color.primary}>Fecha:</SText>
                                         <SText color={STheme.color.primary}>{compra.fecha}</SText>
@@ -256,7 +245,6 @@ export default class Pagos extends Component {
                                         <SText color={STheme.color.primary}>Cuotas:</SText>
                                         <SText color={STheme.color.primary}>{`${compra.cuotas} cuotas`}</SText>
                                     </SView>
-
                                     <SView col={"xs-12"} style={{ marginTop: 12 }}>
                                         <SView
                                             center
@@ -284,7 +272,6 @@ export default class Pagos extends Component {
             </SView>
         );
     }
-
     render() {
         return (
             <SPage title={'Compras de Distribuidora Central S.A.'} center>

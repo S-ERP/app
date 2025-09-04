@@ -78,38 +78,14 @@ const ejemploProveedor = [
         "compras": [{ "descripcion": "Compra de repuestos automotrices", "state": "mora", "cuotas": { "total": 2400, "cantidad": 6 } }]
     }
 ];
-
 export default class Lista extends Component {
     onSelect = SNavigation.getParam("onSelect");
     constructor(props) {
         super(props);
         this.state = {};
     }
-
-
     async loadInitialData() {
         try {
-
-
-
-
-            // const proveedoresConCosmpras = ejemploProveedor.map(proveedor => {
-            //     // Asignar usuario (ya está presente en el objeto)
-            //     // Agregar monto_amortizado inicial como 0 si no existe
-            //     proveedor.compras = proveedor.compras.map(compra => ({
-            //         ...compra,
-            //         monto_amortizado: compra.monto_amortizado || 0,
-            //         key_proveedor: proveedor.key, // Añadir key_proveedor para vinculación
-            //     }));
-            //     console.log("Ejemplo Proveedor", proveedor.compras.cuotas);
-            //     return proveedor;
-            // });
-
-
-            // return proveedoresConCosmpras;
-
-
-            // Cargar todos los proveedores
             const proveedores = await MDL.inventario.proveedor.getAllProveedor();
             if (!proveedores || Object.keys(proveedores).length === 0) {
                 SNotification.send({
@@ -120,8 +96,6 @@ export default class Lista extends Component {
                 });
                 return [];
             }
-
-            // Obtener los keys de usuarios asociados a los proveedores
             const keysUsuarios = Object.values(proveedores)
                 .map(p => p.key_usuario)
                 .filter(Boolean); // Filtra valores nulos o undefined
@@ -129,8 +103,6 @@ export default class Lista extends Component {
             if (!usuarios || Object.keys(usuarios).length === 0) {
                 console.warn("No se encontraron usuarios para los proveedores.");
             }
-
-            // Cargar todas las transacciones de tipo "compra" en el rango de fechas
             const transacciones = await MDL.compra_venta.getTransaccion("compra", "2024-09-01", "2026-09-05");
             if (!transacciones || transacciones.length === 0) {
                 SNotification.send({
@@ -140,22 +112,14 @@ export default class Lista extends Component {
                     color: STheme.color.warning,
                 });
             }
-
-            // Asociar usuarios y compras a cada proveedor
             const proveedoresConCompras = Object.values(proveedores).map(proveedor => {
-                // Asignar usuario correspondiente
                 proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario) || null;
-
-                // Filtrar transacciones por proveedor (asumiendo que cada transacción tiene un campo key_proveedor)
                 proveedor.compras = transacciones
                     ? transacciones.filter(transaccion => transaccion.key_proveedor === proveedor.key)
                     : [];
-
-
                 console.log("Compras para proveedor", proveedor);
                 return proveedor;
             });
-
             return proveedoresConCompras;
         } catch (error) {
             console.error('Error loading initial data:', error);
@@ -168,7 +132,6 @@ export default class Lista extends Component {
             return [];
         }
     }
-
     renderState(state) {
         var statesInfo = Model.compra_venta.Action.getStateInfo()[state];
         return <SView row center>
@@ -185,7 +148,6 @@ export default class Lista extends Component {
             </SView>
         </SView>
     }
-
     mostrarTabla() {
         return <DinamicTable
             key="tabla"
@@ -235,12 +197,6 @@ export default class Lista extends Component {
                                     ...e.row,
                                     key_usuario: MDL.usuario.session?.key,
                                 }
-
-
-
-
-
-
                                 PopupPagoCuota.open({
                                     editObject: proveedor,
                                     key_empresa: proveedor.key_empresa,
@@ -250,9 +206,6 @@ export default class Lista extends Component {
                                 })
                             }
                         },
-
-
-
                         {
                             icon: <SIconApp name='Delete' />,
                             label: "Eliminar Proveedor",
@@ -302,13 +255,10 @@ export default class Lista extends Component {
                 </SView>}
             />
             <DinamicTable.Col key="razon_social" label="Razón Social" width={200} data={(e) => e.row?.razon_social} />
-
             <DinamicTable.Col key="compras" label="compras" width={50} data={(e) => e.row?.compras.length} />
             <DinamicTable.Col key="comprassdf" label="compdsaras" width={50} data={(e) => e.row?.compras?.cuotas_en_mora?.monto} />
-            {/* <DinamicTable.Col key="cuota_cantidad-" label="Cant. Cuotas" width={90} data={(e) => e.row?.compras?.cuotas} /> */}
-            {/* <DinamicTable.Col key="cuota_saldo" label="Saldo" width={50} data={(e) => e.row?.compras.cuotas.total} /> */}
-
-
+            {}
+            {}
             {/* <DinamicTable.Col key="admiadasdn" label="asssssss" width={120} data={(e) => e.row?.compras.length  ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_usuario) ?
@@ -317,8 +267,6 @@ export default class Lista extends Component {
                         </SView> : null}
                 </>}
             /> */}
-
-
             {/* <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={80}
                 data={(e) => {
                     if (e.row?.compras?.cuotas_en_mora?.monto > 0) {
@@ -342,12 +290,9 @@ export default class Lista extends Component {
                     </SView>
                 }}
             /> */}
-
             {/* <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" width={60} cellStyle={{
                     alignItems: "center"
                 }} data={(e) => e.row?.cuotas.cantidad ?? ""} /> */}
-
-
             {/* <DinamicTable.Col key="cuotas_total" label="Monto" width={60}
                     data={(e) => e.row?.cuotas.total ?? ""}
                     cellStyle={{
@@ -368,7 +313,6 @@ export default class Lista extends Component {
                         backgroundColor: STheme.color.warning + "33"
                     }}
                     format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
-
                 <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} cellStyle={{
                     alignItems: "center",
                     backgroundColor: STheme.color.danger + "33"
@@ -379,12 +323,9 @@ export default class Lista extends Component {
                     cellStyle={{
                         alignItems: "flex-end",
                         backgroundColor: STheme.color.danger + "33"
-
                     }}
                     format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
                 /> */}
-
-
             <DinamicTable.Col key="nit" label="NIT" width={150} data={(e) => e.row?.nit} />
             <DinamicTable.Col key="nombre" label="Nombre de Contacto" width={150} data={(e) => e.row?.nombre} />
             <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={(e) => e.row?.telefono} />
