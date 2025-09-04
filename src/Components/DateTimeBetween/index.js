@@ -13,6 +13,19 @@ export default class DateTimeBetween extends Component<TypeProps> {
         super(props);
     }
 
+    handleChange = () => {
+        // cuando cambien las fechas, avisamos al padre
+        if (this.props.onChange) {
+            this.props.onChange({
+                // fecha_inicio: this.state?.fecha_inicio_raw, // fecha en formato Date
+                // fecha_fin: this.state?.fecha_fin_raw, // fecha en formato Date
+
+                fecha_inicio: this.state?.fecha_inicio, // fecha en formato "yyyy-MM-dd"
+                fecha_fin: this.state?.fecha_fin, // fecha en formato "yyyy-MM-dd"
+            });
+        }
+    };
+
     render() {
         return (<SView row col={"xs-12"}  >
             <SView col={"xs-5.5"}>
@@ -55,7 +68,12 @@ export default class DateTimeBetween extends Component<TypeProps> {
                                         <SView width={5} />
                                         <SButtom style={{ height: 35 }} type={"outline"} onPress={() => {
                                             SPopup.close("popup-entre-fechas");
-                                            this.setState({ fecha_inicio: this.state.fecha_inicio_.toString("yyyy-MM-dd") });
+                                            // this.setState({ fecha_inicio: this.state.fecha_inicio_.toString("yyyy-MM-dd") });
+                                            this.setState(
+                                                { fecha_inicio: this.state.fecha_inicio_.toString("yyyy-MM-dd")},
+                                                // { fecha_inicio_raw : this.state.fecha_inicio_}, // fecha en formato Date
+                                                this.handleChange // ⬅️ avisamos al padre
+                                            );
                                             console.log("entro", this.state.fecha_inicio)
                                         }}>Aceptar</SButtom>
                                     </SView>
@@ -105,7 +123,12 @@ export default class DateTimeBetween extends Component<TypeProps> {
                                         <SView width={5} />
                                         <SButtom style={{ height: 35 }} type={"outline"} onPress={() => {
                                             SPopup.close("popup-entre-fechas");
-                                            this.setState({ fecha_fin: this.state.fecha_fin_.toString("yyyy-MM-dd") });
+                                            // this.setState({ fecha_fin: this.state.fecha_fin_.toString("yyyy-MM-dd") });
+                                            this.setState(
+                                                { fecha_fin: this.state.fecha_fin_.toString("yyyy-MM-dd") },
+                                                // { fecha_fin_raw : this.state.fecha_fin_.toString("yyyy-MM-dd")+ "T23:59:59"}, // fecha en formato Date
+                                                this.handleChange // ⬅️ avisamos al padre
+                                            );
                                             console.log("entro", this.state.fecha_fin)
                                         }}>Aceptar</SButtom>
                                     </SView>
