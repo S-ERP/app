@@ -113,6 +113,17 @@ export default class caja extends MDLAbstract<EventListener> {
     return resp.data
   }
 
+  async getAll(key: string) {
+
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "caja",
+      type: "getAll",
+      key_empresa: key,
+    })
+    return Object.values(resp.data)
+  }
+
 
   detalle_types = {
     "apertura": {

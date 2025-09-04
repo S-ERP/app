@@ -157,6 +157,7 @@ export default class Barra extends React.Component {
                     >
                         <Page label={"Icons"} url={"/icons"} />
                         <Page label={"Test"} url={"/test"} />
+                         <Page label={"Caja history"} url={"/caja/history"} />
                         <SText onPress={() => {
                             PopupEditarTema.open()
                         }}>{"Tema"}</SText>
