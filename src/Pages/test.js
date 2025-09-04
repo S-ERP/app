@@ -10,6 +10,7 @@ import Pizarra from '../Components/Pizarra/Pizarra';
 import PizarraNodo from '../Components/Pizarra/PizarraNodo';
 import DatePickerCalendar from "servisofts-table/Components/DatePickerCalendar"
 import DateTimeBetween from '../Components/DateTimeBetween';
+import SDate from 'servisofts-table/Components/SDate';
 export default class test extends Component {
   constructor(props) {
     super(props);
@@ -59,7 +60,8 @@ export default class test extends Component {
           padding: 8,
         }} x={300} y={-300}>
           <DatePickerCalendar color={"#fff"} accentColor={"#000"}
-            // defaultValue={}
+          language='es'
+            defaultValue={new SDate()}
             onChange={e => {
               // state.dateSelec = e
             }} />

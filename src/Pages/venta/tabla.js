@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
 import SIconApp from '../../Assets/SIconApp';
@@ -79,8 +79,8 @@ export default class tabla extends Component {
             // 1. Obtener registros principales
             const registros = await MDL.compra_venta.getTransaccion("venta", "2025-09-01", "2025-09-05");
             if (!registros) return [];
-            const empresa = MDL.empresa?.select || {};
-            const sucursales = await MDL.empresa.getAllSucursales();
+            const empresa = await MDL.empresa.getFull();
+            const sucursales = empresa.sucursales
             // 2. Filtrar ventas
             const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
             // 3. Obtener usuarios únicos
@@ -105,6 +105,7 @@ export default class tabla extends Component {
                 ventas.map(async (cv) => {
                     return {
                         ...cv,
+                        moneda: empresa.monedas.find(m => m.key === cv.key_moneda) || {},
                         sucursal: sucursales.find(a => a?.key === cv?.key_sucursal) || {},
                         usuario: usuariosMap[cv?.key_usuario] || {},
                         empresa,
@@ -207,28 +208,80 @@ export default class tabla extends Component {
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="tipo_pago" label="Tipo Pago" width={80} data={(e) => e.row?.tipo_pago ?? ""} customComponent={(e) => this.renderTipoPago(e?.data)} />
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e?.data)} />
-                <DinamicTable.Col key="descripcion" label="Descripción" width={100} data={(e) => e.row?.descripcion ?? ""} />
+                <DinamicTable.Col key="descripcion" label="Descripción" width={150} data={(e) => e.row?.descripcion ?? ""} />
 
-                <DinamicTable.Col key="cliente" label="Cliente" width={180} data={(e) => `${SSocket.api.root}usuario/${e.row?.key_cliente}`}
-                    customComponent={e => <>
-                        {(e.row?.cliente?.key_usuario) ?
-                            <SView col={"xs-12"} center row  >
-                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                    <SImage src={`${e.data}?date=${new Date().getTime()}`} style={{ resizeMode: "cover" }} />
-                                </SView>
-                                <SView width={5} />
-                                <SText color={STheme.color.text}> {e.row?.cliente?.nombres}  </SText>
-                            </SView> : null}
-                    </>}
+                <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={80}
+                    data={(e) => {
+                        if (e.row?.cuotas_en_mora?.monto > 0) {
+                            return "En Mora";
+                        }
+                        if (e.row?.cuotas?.total <= e.row?.monto_amortizado) {
+                            return "Pagado";
+                        }
+                        return "Al Día";
+                    }}
+                    customComponent={(e) => {
+                        const statesTipo = {
+                            "Al Día": { color: STheme.color.warning, label: "Al Día" },
+                            "En Mora": { color: STheme.color.danger, label: "En Mora" },
+                            "Pagado": { color: STheme.color.success, label: "Pagado" },
+                        }[e.data] || {};
+                        return <SView row center>
+                            <SView backgroundColor={statesTipo?.color} style={{ borderRadius: 4, padding: 5 }}>
+                                <SText color={STheme.color.text} fontSize={10}>{statesTipo?.label}</SText>
+                            </SView>
+                        </SView>
+                    }}
                 />
+                <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" width={60} cellStyle={{
+                    alignItems: "center"
+                }} data={(e) => e.row?.cuotas.cantidad ?? ""} />
+                <DinamicTable.Col key="moneda" label="Moneda" wrap width={60}
+                    data={(e) => e.row?.moneda?.descripcion ?? ""}
 
-                <DinamicTable.Col key="key_cliente" label="key_cliente" width={60} data={(e) => e.row?.key_cliente ?? ""} />
-                <DinamicTable.Col key="cuotas_cantidad" label="Cuotas" width={60} data={(e) => e.row?.cuotas.cantidad ?? ""} />
-                <DinamicTable.Col key="cuotas_total" label="Pagar" width={60} data={(e) => e.row?.cuotas.total ?? ""} />
+                />
+                <DinamicTable.Col key="cuotas_total" label="Monto" wrap width={60}
+                    data={(e) => ((e.row?.cuotas.total ?? 0) / (e.row.tipo_cambio ?? 1)) ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end"
+                    }}
+                    format={(e) => (e.row?.moneda?.observacion ?? "") + " " + SMath.formatMoney(e.data)}
+                />
+                <DinamicTable.Col key="cuotas_total_base" wrap label="Monto moneda base" width={60}
+                    data={(e) => e.row?.cuotas.total ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end"
+                    }}
+                    format={(e) => SMath.formatMoney(e.data)}
+                />
+                <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={60} data={(e) => e.row?.monto_amortizado ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end",
+                        backgroundColor: STheme.color.success + "33"
+                    }}
+                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+                <DinamicTable.Col key="monto_deuda" wrap label="Deuda total" width={60}
+                    data={(e) => (e.row?.cuotas?.total ?? 0) - (e.row?.monto_amortizado ?? 0) ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end",
+                        backgroundColor: STheme.color.warning + "33"
+                    }}
+                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
 
-                <DinamicTable.Col key="monto_amortizado" label="Amortizado" width={100} data={(e) => e.row?.monto_amortizado ?? ""} />
+                <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} cellStyle={{
+                    alignItems: "center",
+                    backgroundColor: STheme.color.danger + "33"
+                }}
+                    data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""}
+                />
+                <DinamicTable.Col wrap key="en_mora" label="Monto en Mora" width={60} data={(e) => e.row?.cuotas_en_mora.monto ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end",
+                        backgroundColor: STheme.color.danger + "33"
 
-
+                    }}
+                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
+                />
                 <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.key_usuario) ?
