@@ -89,7 +89,6 @@ export default class PopupPagoCuota extends Component<Props> {
                         <SText fontSize={18} bold color={STheme.color.primary}>{monedaSymbol} {parseFloat(cuota.monto).toFixed(2)}</SText>
                     </SView>
                 </SView>
-                {/* </SView> */}
 
                 <SHr height={8} />
 
@@ -100,7 +99,6 @@ export default class PopupPagoCuota extends Component<Props> {
                         {isPaid && (<SText fontSize={12} color={STheme.color.primary}>Pagado: <SText color={"#107003ff"}>{cuota.fechaPago}</SText></SText>)}
                     </SView>
 
-                    {/* <SText fontSize={18} bold color={STheme.color.primary}>{monedaSymbol} {parseFloat(cuota.monto).toFixed(2)}</SText> */}
 
                     {!isPaid && (
                         <SView row width={150} center >
