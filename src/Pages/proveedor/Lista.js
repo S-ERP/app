@@ -8,8 +8,9 @@ import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
 import PopupCrearProveedor from './Components/PopupCrearProveedor';
-import PopupPagarDeuda from './Components/PopupPagarDeuda';
+import PopupPagarDeuda from './Components/PopupPagoCuota';
 import proveedor from '.';
+import PopupPagoCuota from './Components/PopupPagoCuota';
 const ejemploProveedor = [
     {
         "key": "15843bf1-0ee2-467d-8052-aa394d2cf477",
@@ -240,7 +241,7 @@ export default class Lista extends Component {
 
 
 
-                                PopupPagarDeuda.open({
+                                PopupPagoCuota.open({
                                     editObject: proveedor,
                                     key_empresa: proveedor.key_empresa,
                                     onSuccess: async () => {
@@ -301,6 +302,7 @@ export default class Lista extends Component {
                 </SView>}
             />
             <DinamicTable.Col key="razon_social" label="Razón Social" width={200} data={(e) => e.row?.razon_social} />
+
             <DinamicTable.Col key="compras" label="compras" width={50} data={(e) => e.row?.compras.length} />
             <DinamicTable.Col key="comprassdf" label="compdsaras" width={50} data={(e) => e.row?.compras?.cuotas_en_mora?.monto} />
             {/* <DinamicTable.Col key="cuota_cantidad-" label="Cant. Cuotas" width={90} data={(e) => e.row?.compras?.cuotas} /> */}
@@ -317,7 +319,7 @@ export default class Lista extends Component {
             /> */}
 
 
-            <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={80}
+            {/* <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={80}
                 data={(e) => {
                     if (e.row?.compras?.cuotas_en_mora?.monto > 0) {
                         return "En Mora";
@@ -339,7 +341,7 @@ export default class Lista extends Component {
                         </SView>
                     </SView>
                 }}
-            />
+            /> */}
 
             {/* <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" width={60} cellStyle={{
                     alignItems: "center"
