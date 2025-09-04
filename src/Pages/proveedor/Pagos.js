@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 // import { SHr, SPage, SText, SView } from 'servisofts-component';
 import { SHr, SPage, SText, SView, SScrollView2, STheme } from 'servisofts-component';
 import SIconApp from '../../Assets/SIconApp';
+import PopupPagoCuota from './Components/PopupPagoCuota';
 
 
 
@@ -63,6 +64,8 @@ const data = {
             cuotas: 2
         }
     ]
+
+
 };
 
 export default class Pagos extends Component {
@@ -128,15 +131,7 @@ export default class Pagos extends Component {
                             <SText bold color={"#eab308"}>{proveedor.compras_pendientes}</SText>
                         </SView>
                     </SView>
-                    {/* <SView col={"xs-12 md-3"} row center>
-                        <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: "#dcfce7" }} center>
-                            <SIconApp name='Evento' width={24} height={24} fill={"#16a34a"} />
-                        </SView>
-                        <SView style={{ marginLeft: 8 }}>
-                            <SText color={STheme.color.lightGray} fontSize={12}>Compras Pendientes</SText>
-                            <SText bold color={"#16a34a"}>{proveedor.compras_pendientes}</SText>
-                        </SView>
-                    </SView> */}
+
                 </SView>
 
 
@@ -158,7 +153,7 @@ export default class Pagos extends Component {
                             {compras.map((compra, index) => (
                                 <SView
                                     key={index}
-                                    col={"xs-12 md-6 lg-6"}
+                                    col={"xs-12 md-4 lg-4"}
                                     margin={4}
                                     card
                                     style={{
@@ -174,43 +169,56 @@ export default class Pagos extends Component {
                                     }}
                                 >
                                     {/* Header de la compra */}
-                                    <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 8 }}>
-                                        <SView>
-                                            <SText fontSize={16} bold>{`Compra #${compra.id}`}</SText>
-                                            <SText color={"#666"}>{compra.descripcion}</SText>
+                                    <SView col={"xs-12"} row  >
+                                        <SView flex>
+                                            <SText color={STheme.color.primary} fontSize={16} bold>{`Compra #${compra.id}`}</SText>
+                                            <SText color={STheme.color.primary}>{compra.descripcion}</SText>
                                         </SView>
-                                        <SView style={{
-                                            backgroundColor: "#fee2e2",
-                                            borderRadius: 12,
-                                            paddingHorizontal: 8,
-                                            paddingVertical: 2,
-                                        }}>
-                                            <SText fontSize={12} bold color={"#991b1b"}>{compra.estado}</SText>
+
+                                        <SView width={70} row center >
+                                            <SView width={64} center style={{ backgroundColor: "#dc2626", borderRadius: 4, paddingHorizontal: 8, paddingVertical: 2, }}>
+                                                <SText fontSize={10} bold color={"#fee2e2"}>{compra.estado}</SText>
+                                            </SView>
                                         </SView>
                                     </SView>
 
+                                    <SHr h={24} />
+
                                     {/* Detalles de la compra */}
                                     <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
-                                        <SText color={"#666"}>{"Fecha:"}</SText>
-                                        <SText>{compra.fecha}</SText>
+                                        <SText color={STheme.color.primary}>{"Fecha:"}</SText>
+                                        <SText color={STheme.color.primary}>{compra.fecha}</SText>
                                     </SView>
                                     <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
-                                        <SText color={"#666"}>{"Total:"}</SText>
-                                        <SText bold>S/ {compra.total.toLocaleString()}</SText>
+                                        <SText color={STheme.color.primary}>{"Total:"}</SText>
+                                        <SText bold color={STheme.color.primary}>S/ {compra.total.toLocaleString()}</SText>
                                     </SView>
                                     <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
-                                        <SText color={"#666"}>{"Cuotas:"}</SText>
-                                        <SText>{`${compra.cuotas} cuotas`}</SText>
+                                        <SText color={STheme.color.primary}>{"Cuotas:"}</SText>
+                                        <SText color={STheme.color.primary}>{`${compra.cuotas} cuotas`}</SText>
                                     </SView>
 
                                     {/* Botón */}
                                     <SView col={"xs-12"} style={{ marginTop: 12 }}>
-                                        <SView center style={{
-                                            backgroundColor: "#f3f4f6",
-                                            borderRadius: 8,
-                                            padding: 8,
-                                        }}>
-                                            <SText color={"#374151"}>{"Ver Cuotas"}</SText>
+                                        <SView center border={STheme.color.card}
+                                            backgroundColor={STheme.color.lightGray + "60"}
+                                            style={{ borderRadius: 4, padding: 8, }}
+                                            onPress={() => {
+
+                                                console.log("pagaa " + JSON.stringify(compra))
+
+                                                PopupPagoCuota.open({
+                                                    editObject: compra,
+                                                    key_empresa: {},
+                                                    onSuccess: async () => {
+                                                        this.DinamicTable.loadData();
+                                                    },
+                                                })
+                                            }
+                                            }
+
+                                        >
+                                            <SText color={STheme.color.primary}>{"Ver Cuotas"}</SText>
                                         </SView>
                                     </SView>
                                 </SView>
