@@ -16,13 +16,14 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     // return;
     const formar = {
       key_usuario: data.key_cajero,
-      key_cliente: data?.cliente.key,
+      key_cliente: data?.cliente?.key,
       cliente: data?.cliente,
       key_cajero: data.key_cajero,
       key_caja: MDL.caja.activa?.key,
       tipos_pago: data?.caja?.tipos_pago,
       facturar: data?.caja?.conFactura,
       detalle: data.detalle,
+      key_moneda: data.key_moneda,
     };
 
     // console.log("dime quien " + JSON.stringify(formar));

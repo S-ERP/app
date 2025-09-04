@@ -44,17 +44,17 @@ export default class TecladoNumerico extends Component {
             return;
         }
 
-        const recibi = this.tipos_pago.efectivo || 0;
-        if (recibi < totalFinal) {
-            SNotification.send({
-                title: "Error",
-                body: "El monto recibido es insuficiente para cubrir el total",
-                type: "error",
-                color: STheme.color.error,
-                time: 5000,
-            });
-            return;
-        }
+        const recibi = 0;
+        // if (recibi < totalFinal) {
+        //     SNotification.send({
+        //         title: "Error",
+        //         body: "El monto recibido es insuficiente para cubrir el total",
+        //         type: "error",
+        //         color: STheme.color.error,
+        //         time: 5000,
+        //     });
+        //     return;
+        // }
 
         const key_sucursal = this.props?.key_sucursal;
         const key_cliente = this.cliente?.key;
@@ -63,7 +63,7 @@ export default class TecladoNumerico extends Component {
         const detalle = carrito.map(item => ({
             key_modelo: item.key,
             descripcion: item.descripcion,
-            precio_unitario: parseFloat(SMath.formatMoney(item.precio_venta_moneda, 2)), // Usar precio en moneda seleccionada
+            precio_unitario: parseFloat(SMath.formatMoney(item.precio_venta, 2)), // Usar precio en moneda seleccionada
             cantidad: item.cantidad ?? 0,
         }));
         const caja = {
@@ -83,6 +83,7 @@ export default class TecladoNumerico extends Component {
             detalle,
             key_cliente,
             cliente,
+            key_moneda: this.props?.moneda?.key,
             key_cajero,
             caja,
         };
@@ -119,7 +120,7 @@ export default class TecladoNumerico extends Component {
     }
 
     renderTecladoNumerico = () => {
-        const { subtotal, subtotalMoneda, descuento, totalImpuesto, totalFinal, numeroIva, conFactura, monedaSymbol, carrito } = this.props;
+        const { subtotal, subtotalMoneda, descuento, totalImpuesto, totalFinal, numeroIva, conFactura, monedaSymbol, carrito, moneda } = this.props;
         const style_text = {
             color: STheme.color.text,
             fontSize: 12,
@@ -173,6 +174,7 @@ export default class TecladoNumerico extends Component {
 
                                 SelectTipoPago.openPopup({
                                     key_punto_venta: key_punto_venta,
+                                    key_moneda: moneda?.key,
                                     montoMaximo: montoTotal_MN, // Usar totalFinal
                                     monedaSymbol: monedaSymbol,
                                     onSelect: (item) => {

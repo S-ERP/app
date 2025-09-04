@@ -90,16 +90,18 @@ export default class MonedaTabla extends Component {
             }}
             loadData={this.loadInitialData.bind(this)}
         >
-            <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
+            <DinamicTable.Col key="index" label="#" textStyle={{
+                color: STheme.color.lightGray
+            }} width={40} data={(e) => e.index + 1} />
             <DinamicTable.Col key="descripcion" label="Moneda" width={80} data={(e) => e.row?.descripcion} />
             <DinamicTable.Col key="observacion" label="Observación" width={90} data={(e) => e.row?.observacion} />
             <DinamicTable.Col key="tipo_cambio" label="Tipo Cambio" width={90} data={(e) => e.row?.tipo_cambio} />
             <DinamicTable.Col key="tipo" label="Tipo" width={90} data={(e) => e.row?.tipo} />
-            <DinamicTable.Col key="estado" label="Estado" width={50} data={(e) => e.row?.estado} />
+            {/* <DinamicTable.Col key="estado" label="Estado" width={50} data={(e) => e.row?.estado} /> */}
             <DinamicTable.Col
                 key={"fecha_on"} label="F.Registro" width={120} dataType="date"
                 data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
-                textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm"
+                textStyle={{ fontSize: 10, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm"
             />
             <DinamicTable.Col
                 key="admin" label="Admin" width={60} data={(e) => e.row?.usuario?.Nombres ?? ""}

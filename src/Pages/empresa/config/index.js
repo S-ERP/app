@@ -49,6 +49,7 @@ export default class config extends Component {
                 "service": "inventario",
                 "component": "almacen",
                 "type": "getAll",
+                "key_empresa": Model.empresa.Action.getKey(),
                 "key_usuario": Model.usuario.Action.getKey(),
             }).then(alm => {
                 if (e.data.sucursales) {

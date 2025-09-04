@@ -44,8 +44,8 @@ export default class tabla extends Component {
     async loadData() {
         const registros = await MDL.compra_venta.getTransaccion("compra", "2025-09-01", "2025-09-05");
         if (!registros) return [];
-        const empresa = MDL.empresa?.select || {};
-        const sucursales = await MDL.empresa.getAllSucursales();
+        const empresa = await MDL.empresa.getFull();
+        const sucursales = empresa.sucursales;
         const ventas = Object.values(registros).filter(cv => cv.tipo === "compra");
         const keysUsuarios = [];
         ventas.forEach(cv => {
@@ -63,6 +63,7 @@ export default class tabla extends Component {
             ventas.map(async (cv) => {
                 return {
                     ...cv,
+                    moneda: empresa.monedas.find(m => m.key === cv.key_moneda) || {},
                     sucursal: sucursales.find(a => a?.key === cv?.key_sucursal) || {},
                     usuario: usuariosMap[cv.key_usuario] || {},
                     empresa,
@@ -197,7 +198,18 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" width={60} cellStyle={{
                     alignItems: "center"
                 }} data={(e) => e.row?.cuotas.cantidad ?? ""} />
-                <DinamicTable.Col key="cuotas_total" label="Monto" width={60}
+                <DinamicTable.Col key="moneda" label="Moneda" wrap width={60}
+                    data={(e) => e.row?.moneda?.descripcion ?? ""}
+                  
+                />
+                <DinamicTable.Col key="cuotas_total" label="Monto" wrap width={60}
+                    data={(e) => ((e.row?.cuotas.total ?? 0) / (e.row.tipo_cambio ?? 1)) ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end"
+                    }}
+                    format={(e) => e.row?.moneda?.observacion + " " + SMath.formatMoney(e.data)}
+                />
+                <DinamicTable.Col key="cuotas_total_base" wrap label="Monto moneda base" width={60}
                     data={(e) => e.row?.cuotas.total ?? ""}
                     cellStyle={{
                         alignItems: "flex-end"

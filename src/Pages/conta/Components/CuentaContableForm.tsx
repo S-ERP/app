@@ -26,12 +26,12 @@ export default class CuentaContableForm extends React.Component<Props> {
     monedas: any = []
 
     monedaToString(a: any) {
-        return a.descripcion
+        return a?.descripcion
     }
     async loadData() {
         const empresa = await MDL.empresa.getFull();
         const monedas = empresa.monedas;
-        this.monedas = monedas;
+        this.monedas = monedas ?? [];
 
         const mob = this.monedas.find((a: any) => a.tipo == "base")
         this.state.base = this.monedaToString(mob);
