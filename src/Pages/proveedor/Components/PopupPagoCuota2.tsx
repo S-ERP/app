@@ -20,10 +20,10 @@ const COLOR_GRIS = "#9E9E9E";
 const _estiloBackgroundColor = STheme.color.success + '22';
 
 
-export default class PopupPagoCuota extends Component<Props> {
+export default class PopupPagoCuota2 extends Component<Props> {
     static open(props: Props) {
         SPopup.open({
-            key: 'PopupPagoCuota',
+            key: 'PopupPagoCuota2',
             content: (
                 <SView
                     style={{
@@ -44,14 +44,14 @@ export default class PopupPagoCuota extends Component<Props> {
                     }}
                     withoutFeedback
                 >
-                    <PopupPagoCuota
+                    <PopupPagoCuota2
                         {...props}
                         onCancel={() => {
-                            SPopup.close('PopupPagoCuota');
+                            SPopup.close('PopupPagoCuota2');
                             if (props.onCancel) props.onCancel();
                         }}
                         onSuccess={(e: any) => {
-                            SPopup.close('PopupPagoCuota');
+                            SPopup.close('PopupPagoCuota2');
                             if (props.onSuccess) props.onSuccess(e);
                         }}
                     />
@@ -78,8 +78,7 @@ export default class PopupPagoCuota extends Component<Props> {
             <>
                 <SView col={"xs-12"}
                     style={{
-                        // backgroundColor: STheme.color.card + "66",
-                        backgroundColor: cuota.__select ? STheme.color.card : STheme.color.lightGray + "55",
+                        backgroundColor: STheme.color.card,
                         borderRadius: 8,
                         padding: 16,
                         borderWidth: 1,
@@ -137,11 +136,51 @@ export default class PopupPagoCuota extends Component<Props> {
                     <SHr height={8} />
 
                     <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }} >
+
+
+
                         <SView flex row> {isPaid ?
                             (<SText fontSize={12} color={STheme.color.text}>Pagado: <SText color={STheme.color.success} bold>{cuota.fechaPago}</SText></SText>) :
                             (<SText fontSize={12} color={STheme.color.text}>Mora: <SText color={STheme.color.warning} bold>{cuota.vencimiento}</SText></SText>)}
                         </SView>
-                        {this.labelEstado2(cuota.estado)}
+                        {/* {this.labelEstado2(cuota.estado)} */}
+
+
+                        {!isPaid && (
+                            <SView row width={150} center>
+                                <SView width={110} center>
+                                    <SInput
+                                        style={{ height: 36, color: STheme.color.text }}
+                                        type="money2"
+                                        placeholder={`${monedaSymbol} 0.00`}
+                                        icon={<SIconApp name="pagoefectivo" width={24} />}
+                                        value={montoInput}
+                                        onChangeText={(value) => {
+                                            const newValue = parseFloat(value || '0');
+                                            if (newValue <= cuota.monto) {
+                                                this.setState({
+                                                    montoPagar: {
+                                                        ...montoPagar,
+                                                        [cuota.numero]: value,
+                                                    },
+                                                });
+                                            } else {
+                                                SNotification.send({
+                                                    title: 'Advertencia',
+                                                    body: `El monto no puede superar ${monedaSymbol} ${cuota.monto.toFixed(2)}.`,
+                                                    time: 3000,
+                                                    color: STheme.color.warning,
+                                                });
+                                            }
+                                        }}
+                                    />
+                                </SView>
+                                <SView width={4} />
+                                <SView width={36} height={36} center style={{ backgroundColor: STheme.color.card, borderRadius: 2 }} onPress={() => !isLoading && onAjuste(cuota)} >
+                                    <SIconApp name="crmeditar" fill={COLOR_VERDE_OSCURO} stroke='white' />
+                                </SView>
+                            </SView>
+                        )}
                     </SView>
                 </SView>
                 <SHr height={12} />
@@ -271,8 +310,6 @@ export default class PopupPagoCuota extends Component<Props> {
         // Normaliza el estado para manejar mayúsculas/minúsculas
         const estadoNormalizado = estado?.toLowerCase();
 
-        if (estadoNormalizado !== 'pendiente') return null;
-
         // Define colores según el estado
         const backgroundColor = estadoNormalizado === 'pendiente' ? COLOR_ROJO_CLARO : COLOR_VERDE_CLARO;
         const textoColor = estadoNormalizado === 'pendiente' ? COLOR_ROJO_OSCURO : COLOR_VERDE_OSCURO;
@@ -334,7 +371,7 @@ export default class PopupPagoCuota extends Component<Props> {
 
 
                     <SView col={"xs-12"} style={{ padding: 8 }} center>
-                        <SView col={"xs-12"} padding={16} style={{ backgroundColor: STheme.color.lightGray + "44", borderRadius: 8 }}  >
+                        <SView col={"xs-12"} padding={16} style={{ backgroundColor: STheme.color.card, borderRadius: 8 }}  >
                             <SView row  >
                                 <SText fontSize={14} bold color={STheme.color.text}   > Información de la Compra </SText>
                             </SView>
