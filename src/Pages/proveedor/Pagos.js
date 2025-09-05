@@ -2,160 +2,92 @@ import React, { Component } from 'react';
 import { SView, SPage, SText, SHr, SScrollView2, STheme } from 'servisofts-component';
 import SIconApp from '../../Assets/SIconApp';
 import PopupPagoCuota from './Components/PopupPagoCuota';
+
+
 const data = {
-    "proveedor": {
-        "id": 1,
-        "nombre": "Distribuidora Central S.A.",
-        "ruc": "20123456789",
-        "telefono": "+51 987 654 321",
-        "direccion": "Av. Principal 123 - Lima",
-        "deudaTotal": 98500.00,
-        "limiteCredito": 150000.00,
-        "comprasPendientes": 6,
-        "ultimoPago": {
-            "fecha": "2024-03-01",
-            "monto": 5000.00,
-            "referencia": "Transferencia bancaria BCP #123456"
+    proveedor: {
+        id: 1,
+        nombre: "Distribuidora Central S.A.",
+        ruc: "20123456789",
+        telefono: "+51 987 654 321",
+        direccion: "Av. Principal 123 - Lima",
+        deudaTotal: 98500.00,
+        limiteCredito: 150000.00,
+        comprasPendientes: 6,
+        ultimoPago: {
+            fecha: "2024-03-01",
+            monto: 5000.00,
+            referencia: "Transferencia bancaria BCP #123456"
         }
     },
-    "compras": [
+    compras: [
         {
-            "id": 101,
-            "descripcion": "Productos de limpieza y mantenimiento",
-            "fecha": "2024-01-14",
-            "total": 8500.00,
-            "estado": "Pendiente",
-            "cuotas": 3,
-            "metodoPago": "Transferencia",
-            "cuotasDetalle": [
-                {
-                    "numero": 1,
-                    "monto": 2833.33,
-                    "vencimiento": "2024-02-14",
-                    "fechaPago": "2024-02-13",
-                    "estado": "Pagado"
-                },
-                {
-                    "numero": 2,
-                    "monto": 2833.33,
-                    "vencimiento": "2024-03-14",
-                    "fechaPago": null,
-                    "estado": "Pendiente"
-                },
-                {
-                    "numero": 3,
-                    "monto": 2833.34,
-                    "vencimiento": "2024-04-14",
-                    "fechaPago": null,
-                    "estado": "Pendiente"
-                }
-            ]
-        },
-
-        {
-            "id": 102,
-            "descripcion": "Suministros de oficina",
-            "fecha": "2024-02-19",
-            "total": 7250.00,
-            "estado": "Pendiente",
-            "cuotas": 2,
-            "metodoPago": "Tarjeta de crédito",
-            "cuotasDetalle": [
-                {
-                    "numero": 1,
-                    "monto": 3625.00,
-                    "vencimiento": "2024-03-19",
-                    "fechaPago": null,
-                    "estado": "Pendiente"
-                },
-                {
-                    "numero": 2,
-                    "monto": 3625.00,
-                    "vencimiento": "2024-04-19",
-                    "fechaPago": null,
-                    "estado": "Pendiente"
-                }
+            id: 101,
+            descripcion: "Productos de limpieza y mantenimiento",
+            fecha: "2024-01-14",
+            total: 8500.00,
+            estado: "Pendiente",
+            cuotas: 5,
+            metodoPago: "Transferencia",
+            cuotasDetalle: [
+                { numero: 1, monto: 2833.33, vencimiento: "2024-02-14", fechaPago: "2024-02-13", estado: "Pagado" },
+                { numero: 2, monto: 2833.33, vencimiento: "2024-03-14", fechaPago: null, estado: "Pendiente" },
+                { numero: 3, monto: 2833.34, vencimiento: "2024-04-14", fechaPago: null, estado: "Pendiente" },
+                { numero: 4, monto: 2833.34, vencimiento: "2024-05-14", fechaPago: null, estado: "Pendiente" },
+                { numero: 5, monto: 2833.34, vencimiento: "2024-06-14", fechaPago: null, estado: "Pendiente" }
             ]
         },
         {
-            "id": 103,
-            "descripcion": "Muebles de oficina",
-            "fecha": "2024-02-25",
-            "total": 12000.00,
-            "estado": "Pagado",
-            "cuotas": 4,
-            "metodoPago": "Cheque",
-            "cuotasDetalle": [
-                {
-                    "numero": 1,
-                    "monto": 3000.00,
-                    "vencimiento": "2024-03-25",
-                    "fechaPago": "2024-03-25",
-                    "estado": "Pagado"
-                },
-                {
-                    "numero": 2,
-                    "monto": 3000.00,
-                    "vencimiento": "2024-04-25",
-                    "fechaPago": "2024-04-26",
-                    "estado": "Pagado"
-                },
-                {
-                    "numero": 3,
-                    "monto": 3000.00,
-                    "vencimiento": "2024-05-25",
-                    "fechaPago": "2024-05-24",
-                    "estado": "Pagado"
-                },
-                {
-                    "numero": 4,
-                    "monto": 3000.00,
-                    "vencimiento": "2024-06-25",
-                    "fechaPago": "2024-06-25",
-                    "estado": "Pagado"
-                }
+            id: 102,
+            descripcion: "Suministros de oficina",
+            fecha: "2024-02-19",
+            total: 7250.00,
+            estado: "Pendiente",
+            cuotas: 2,
+            metodoPago: "Tarjeta de crédito",
+            cuotasDetalle: [
+                { numero: 1, monto: 3625.00, vencimiento: "2024-03-19", fechaPago: null, estado: "Pendiente" },
+                { numero: 2, monto: 3625.00, vencimiento: "2024-04-19", fechaPago: null, estado: "Pendiente" }
             ]
         },
-
         {
-            "id": 109,
-            "descripcion": "Productos de limpieza y mantenimiento",
-            "fecha": "2024-01-14",
-            "total": 8500.00,
-            "estado": "Pendiente",
-            "cuotas": 3,
-            "metodoPago": "Transferencia",
-            "cuotasDetalle": [
-               
+            id: 103,
+            descripcion: "Muebles de oficina",
+            fecha: "2024-02-25",
+            total: 12000.00,
+            estado: "Pagado",
+            cuotas: 4,
+            metodoPago: "Cheque",
+            cuotasDetalle: [
+                { numero: 1, monto: 3000.00, vencimiento: "2024-03-25", fechaPago: "2024-03-25", estado: "Pagado" },
+                { numero: 2, monto: 3000.00, vencimiento: "2024-04-25", fechaPago: "2024-04-26", estado: "Pagado" },
+                { numero: 3, monto: 3000.00, vencimiento: "2024-05-25", fechaPago: "2024-05-24", estado: "Pagado" },
+                { numero: 4, monto: 3000.00, vencimiento: "2024-06-25", fechaPago: "2024-06-25", estado: "Pagado" }
             ]
         },
+        {
+            id: 109,
+            descripcion: "Productos de limpieza y mantenimiento",
+            fecha: "2024-01-14",
+            total: 8500.00,
+            estado: "Pendiente",
+            cuotas: 3,
+            metodoPago: "Transferencia",
+            cuotasDetalle: [
+                { numero: 1, monto: 2833.33, vencimiento: "2024-02-14", fechaPago: null, estado: "Pendiente" },
+                { numero: 2, monto: 2833.33, vencimiento: "2024-03-14", fechaPago: null, estado: "Pendiente" },
+                { numero: 3, monto: 2833.34, vencimiento: "2024-04-14", fechaPago: null, estado: "Pendiente" }
+            ]
+        }
     ],
-    "moneda": "S/",
-    "configuracion": {
-        "estados": {
-            "pendiente": {
-                "label": "Pendiente",
-                "color": "#EF4444",
-                "bgColor": "bg-red-100",
-                "textColor": "text-red-800",
-                "icon": "⏳"
-            },
-            "pagado": {
-                "label": "Pagado",
-                "color": "#10B981",
-                "bgColor": "bg-green-100",
-                "textColor": "text-green-800",
-                "icon": "✅"
-            },
-            "vencido": {
-                "label": "Vencido",
-                "color": "#F59E0B",
-                "bgColor": "bg-yellow-100",
-                "textColor": "text-yellow-800",
-                "icon": "⚠️"
-            }
+    moneda: "S/",
+    configuracion: {
+        estados: {
+            pendiente: { label: "Pendiente", color: "#EF4444", bgColor: "bg-red-100", textColor: "text-red-800", icon: "⏳" },
+            pagado: { label: "Pagado", color: "#10B981", bgColor: "bg-green-100", textColor: "text-green-800", icon: "✅" },
+            vencido: { label: "Vencido", color: "#F59E0B", bgColor: "bg-yellow-100", textColor: "text-yellow-800", icon: "⚠️" }
         },
-        "metodosPago": ["Efectivo", "Transferencia", "Tarjeta de crédito", "Cheque"]
+        metodosPago: ["Efectivo", "Transferencia", "Tarjeta de crédito", "Cheque"]
     }
 };
 
@@ -181,53 +113,60 @@ export default class Pagos extends Component {
         );
     }
 
-
     resumen() {
         const { proveedor } = data;
         return (
             <SView col={"xs-12"} style={{ paddingHorizontal: 12 }}>
-                <SView col={"xs-12"} row backgroundColor={STheme.color.card} style={{ borderRadius: 8, padding: 12, borderWidth: 1, borderColor: STheme.color.card }}>
-                    <SView col={"xs-12 md-3"} row center height={100}>
-                        <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: COLOR_VERDE_CLARO }} center>
+                <SView col={"xs-12"} row backgroundColor={STheme.color.card} style={{ borderRadius: 8, justifyContent: "space-between", borderWidth: 1, borderColor: STheme.color.card }}>
+                    <SHr height={30} />
+
+                    <SView col={"xs-12 md-3"} row center height={70} >
+
+ 
+                        <SView style={{ marginLeft: 24, width: 40, height: 40, borderRadius: 8, backgroundColor: COLOR_VERDE_CLARO }} center>
                             <SIconApp name='empresa' width={24} height={24} fill={COLOR_VERDE_OSCURO} />
                         </SView>
-                        <SView style={{ marginLeft: 8 }}>
-                            <SText color={STheme.color.text}>Proveedor</SText>
-                            <SText bold color={STheme.color.text} >{proveedor.nombre}</SText>
+                        <SView flex style={{ marginLeft: 8, }}>
+                            <SText color={STheme.color.text} fontSize={12}>Proveedor</SText>
+                            <SText bold color={STheme.color.text}>{proveedor.nombre}</SText>
                         </SView>
                     </SView>
-                    <SView col={"xs-12 md-3"} row center height={100}>
-                        <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: COLOR_ROJO_CLARO }} center>
+
+                    <SView col={"xs-12 md-3"} row center height={70} >
+                        <SView backgroundColor='blue' style={{ marginLeft: 24, width: 40, height: 40, borderRadius: 8, backgroundColor: COLOR_ROJO_CLARO }} center>
                             <SIconApp name='tpAf' width={24} height={24} fill={COLOR_ROJO_OSCURO} />
                         </SView>
-                        <SView style={{ marginLeft: 8 }}>
+                        <SView flex style={{ marginLeft: 8, }}>
                             <SText color={STheme.color.text} fontSize={12}>Deuda Total</SText>
-                            <SText bold color={COLOR_ROJO}>S/ {proveedor.deudaTotal.toLocaleString()}</SText>
+                            <SText bold color={COLOR_ROJO}>S/ {proveedor.deudaTotal.toFixed(2)}</SText>
                         </SView>
                     </SView>
-                    <SView col={"xs-12 md-3"} row center>
-                        <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: COLOR_NARANJA_CLARO }} center>
-                            <SIconApp name='pagotarjeta' width={24} height={24} fill={COLOR_NARANJA} stroke={"blue"} />
+                    <SView col={"xs-12 md-3"} row center height={70} >
+                        <SView style={{ marginLeft: 24, width: 40, height: 40, borderRadius: 8, backgroundColor: COLOR_NARANJA_CLARO }} center>
+                            <SIconApp name='pagotarjeta' width={24} height={24} fill={COLOR_NARANJA} />
                         </SView>
-                        <SView style={{ marginLeft: 8 }}>
+                        <SView flex style={{ marginLeft: 8, }}>
                             <SText color={STheme.color.text} fontSize={12}>Límite de Crédito</SText>
-                            <SText bold color={STheme.color.text}>S/ {proveedor.limiteCredito.toLocaleString()}</SText>
+                            <SText bold color={STheme.color.text}>S/ {proveedor.limiteCredito.toFixed(2)}</SText>
                         </SView>
                     </SView>
-                    <SView col={"xs-12 md-3"} row center>
-                        <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: COLOR_NARANJA_CLARO }} center>
+                    <SView col={"xs-12 md-3"} row center height={70} >
+                        <SView style={{ marginLeft: 24, width: 40, height: 40, borderRadius: 8, backgroundColor: COLOR_NARANJA_CLARO }} center>
                             <SIconApp name='Evento' width={24} height={24} fill={COLOR_NARANJA} />
                         </SView>
-                        <SView style={{ marginLeft: 8 }}>
+                        <SView flex style={{ marginLeft: 8, }}>
                             <SText color={STheme.color.text} fontSize={12}>Compras Pendientes</SText>
                             <SText bold color={STheme.color.text}>{proveedor.comprasPendientes}</SText>
                         </SView>
                     </SView>
+                    <SHr height={30} />
+
                 </SView>
-                <SHr h={24} />
             </SView>
         );
-    } itemCard() {
+    };
+
+    itemCard() {
         const { compras } = data;
         return (
             <SView col={"xs-12"} flex center>
