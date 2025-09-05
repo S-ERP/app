@@ -181,7 +181,7 @@ export default class table extends Component {
                                             }).catch(e => {
                                                 SNotification.error("Error al eliminar el usuario");
                                             })
-                                          
+
                                         }
                                     })
 
@@ -246,6 +246,11 @@ export default class table extends Component {
                     key='Apellidos'
                     label='Apellidos'
                     data={e => e.row.Apellidos}
+                    width={150} />
+                <DinamicTable.Col
+                    key='alias'
+                    label='Alias'
+                    data={e => e.row.empresa_usuario.alias}
                     width={150} />
                 <DinamicTable.Col
                     key='CI'
