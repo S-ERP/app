@@ -144,55 +144,70 @@ const data = {
         "metodosPago": ["Efectivo", "Transferencia", "Tarjeta de crédito", "Cheque"]
     }
 };
+
+const COLOR_VERDE = "#4CAF50";
+const COLOR_VERDE_CLARO = "#d8edd8";
+const COLOR_VERDE_OSCURO = "#4f8549ff";
+// const COLOR_VERDE_OSCURO = "#619f5a";
+const COLOR_NARANJA = "#FF9800";
+const COLOR_NARANJA_CLARO = "#eaf4d8";
+const COLOR_NARANJA_OSCURO = "#c1c32b";
+const COLOR_ROJO = "#F44336";
+const COLOR_ROJO_CLARO = "#ece3dd";
+const COLOR_ROJO_OSCURO = "#d93145";
+const COLOR_GRIS = "#9E9E9E";
+
 export default class Pagos extends Component {
     header() {
         return (
             <SView col={"xs-12"} style={{ paddingHorizontal: 12 }}>
                 <SHr h={16} />
-                <SText fontSize={16} color={STheme.color.lightGray}>Compras a crédito y pagos pendientes</SText>
+                <SText fontSize={16} color={STheme.color.text}>Compras a crédito y pagos pendientes</SText>
                 <SHr h={16} />
             </SView>
         );
     }
+
+
     resumen() {
         const { proveedor } = data;
         return (
             <SView col={"xs-12"} style={{ paddingHorizontal: 12 }}>
-                <SView col={"xs-12"} row backgroundColor={STheme.color.white} style={{ borderRadius: 8, padding: 12, borderWidth: 1, borderColor: STheme.color.lightGray }}>
+                <SView col={"xs-12"} row backgroundColor={STheme.color.card} style={{ borderRadius: 8, padding: 12, borderWidth: 1, borderColor: STheme.color.card }}>
                     <SView col={"xs-12 md-3"} row center height={100}>
-                        <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: "#16a34a" }} center>
-                            <SIconApp name='empresa' width={24} height={24} fill={"#00491bff"} />
+                        <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: COLOR_VERDE_CLARO }} center>
+                            <SIconApp name='empresa' width={24} height={24} fill={COLOR_VERDE_OSCURO} />
                         </SView>
                         <SView style={{ marginLeft: 8 }}>
                             <SText color={STheme.color.lightGray}>Proveedor</SText>
-                            <SText color={STheme.color.primary} bold>{proveedor.nombre}</SText>
+                            <SText color={STheme.color.text} style={{ fontWeight: "550" }}>{proveedor.nombre}</SText>
                         </SView>
                     </SView>
                     <SView col={"xs-12 md-3"} row center height={100}>
-                        <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: "#fee2e2" }} center>
-                            <SIconApp name='tpAf' width={24} height={24} fill={"#dc2626"} stroke='#fee2e2' />
+                        <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: COLOR_ROJO_CLARO }} center>
+                            <SIconApp name='tpAf' width={24} height={24} fill={COLOR_ROJO_OSCURO} />
                         </SView>
                         <SView style={{ marginLeft: 8 }}>
-                            <SText color={STheme.color.lightGray} fontSize={12}>Deuda Total</SText>
-                            <SText bold color={"#dc2626"}>S/ {proveedor.deudaTotal.toLocaleString()}</SText>
+                            <SText color={STheme.color.text} fontSize={12}>Deuda Total</SText>
+                            <SText bold color={COLOR_ROJO}>S/ {proveedor.deudaTotal.toLocaleString()}</SText>
                         </SView>
                     </SView>
                     <SView col={"xs-12 md-3"} row center>
-                        <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: "#fef9c3" }} center>
-                            <SIconApp name='pagotarjeta' width={24} height={24} fill={"#eab308"} />
+                        <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: COLOR_NARANJA_CLARO }} center>
+                            <SIconApp name='pagotarjeta' width={24} height={24} fill={COLOR_NARANJA} stroke={"blue"} />
                         </SView>
                         <SView style={{ marginLeft: 8 }}>
-                            <SText color={STheme.color.lightGray} fontSize={12}>Límite de Crédito</SText>
-                            <SText bold color={"#eab308"}>S/ {proveedor.limiteCredito.toLocaleString()}</SText>
+                            <SText color={STheme.color.text} fontSize={12}>Límite de Crédito</SText>
+                            <SText bold color={COLOR_NARANJA}>S/ {proveedor.limiteCredito.toLocaleString()}</SText>
                         </SView>
                     </SView>
                     <SView col={"xs-12 md-3"} row center>
-                        <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: "#fef9c3" }} center>
-                            <SIconApp name='Evento' width={24} height={24} fill={"#eab308"} />
+                        <SView style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: COLOR_NARANJA_CLARO }} center>
+                            <SIconApp name='Evento' width={24} height={24} fill={COLOR_NARANJA} />
                         </SView>
                         <SView style={{ marginLeft: 8 }}>
-                            <SText color={STheme.color.lightGray} fontSize={12}>Compras Pendientes</SText>
-                            <SText bold color={"#eab308"}>{proveedor.comprasPendientes}</SText>
+                            <SText color={STheme.color.text} fontSize={12}>Compras Pendientes</SText>
+                            <SText bold color={COLOR_NARANJA}>{proveedor.comprasPendientes}</SText>
                         </SView>
                     </SView>
                 </SView>
@@ -217,33 +232,33 @@ export default class Pagos extends Component {
                                         padding: 12,
                                         borderRadius: 8,
                                         borderWidth: 1,
-                                        borderColor: "#e5e7eb",
-                                        backgroundColor: "#fff",
+                                        borderColor: STheme.color.card,
+                                        backgroundColor: STheme.color.card,
                                     }}
                                 >
                                     <SView col={"xs-12"} row>
                                         <SView flex>
-                                            <SText color={STheme.color.primary} fontSize={16} bold>{`Compra #${compra.id}`}</SText>
-                                            <SText color={STheme.color.primary}>{compra.descripcion}</SText>
+                                            <SText color={STheme.color.text} fontSize={16} bold>{`Compra #${compra.id}`}</SText>
+                                            <SText color={STheme.color.text}>{compra.descripcion}</SText>
                                         </SView>
                                         <SView width={70} row center>
-                                            <SView width={64} center style={{ backgroundColor: "#dc2626", borderRadius: 4, paddingHorizontal: 8, paddingVertical: 2 }}>
+                                            <SView width={64} center style={{ backgroundColor: COLOR_ROJO, borderRadius: 4, paddingHorizontal: 8, paddingVertical: 2 }}>
                                                 <SText fontSize={10} bold color={"#fee2e2"}>{compra.estado}</SText>
                                             </SView>
                                         </SView>
                                     </SView>
                                     <SHr h={24} />
                                     <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
-                                        <SText color={STheme.color.primary}>Fecha:</SText>
-                                        <SText color={STheme.color.primary}>{compra.fecha}</SText>
+                                        <SText color={STheme.color.text}>Fecha:</SText>
+                                        <SText color={STheme.color.text}>{compra.fecha}</SText>
                                     </SView>
                                     <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
-                                        <SText color={STheme.color.primary}>Total:</SText>
-                                        <SText bold color={STheme.color.primary}>S/ {compra.total.toLocaleString()}</SText>
+                                        <SText color={STheme.color.text}>Total:</SText>
+                                        <SText bold color={STheme.color.text}>S/ {compra.total.toLocaleString()}</SText>
                                     </SView>
                                     <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
-                                        <SText color={STheme.color.primary}>Cuotas:</SText>
-                                        <SText color={STheme.color.primary}>{`${compra.cuotas} cuotas`}</SText>
+                                        <SText color={STheme.color.text}>Cuotas:</SText>
+                                        <SText color={STheme.color.text}>{`${compra.cuotas} cuotas`}</SText>
                                     </SView>
                                     <SView col={"xs-12"} style={{ marginTop: 12 }}>
                                         <SView
@@ -261,7 +276,7 @@ export default class Pagos extends Component {
                                                 });
                                             }}
                                         >
-                                            <SText color={STheme.color.primary}>Ver Cuotas</SText>
+                                            <SText color={STheme.color.text}>Ver Cuotas</SText>
                                         </SView>
                                     </SView>
                                 </SView>
