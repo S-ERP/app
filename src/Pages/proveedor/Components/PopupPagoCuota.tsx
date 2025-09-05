@@ -319,6 +319,8 @@ export default class PopupPagoCuota extends Component<Props> {
                                     </SText>
                                 </SView>
                             </SView>
+
+
                             <SView row style={{ gap: 16 }}>
 
 
@@ -332,9 +334,7 @@ export default class PopupPagoCuota extends Component<Props> {
                                         <SText fontSize={12} color={STheme.color.text}>Estado:</SText>
                                     </SView>
                                     <SView width={70} row center>
-                                        <SView
-                                            width={64}
-                                            center
+                                        <SView width={64} center
                                             style={{
                                                 backgroundColor: compra.estado === 'Pendiente' ? COLOR_ROJO_OSCURO : COLOR_VERDE_OSCURO,
                                                 borderRadius: 4,
