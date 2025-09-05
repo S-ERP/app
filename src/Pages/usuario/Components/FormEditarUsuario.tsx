@@ -7,6 +7,7 @@ import { SForm, SHr, SIcon, SNotification, SPopup, SText, STheme, SView } from '
 import PButtom from '../../../Components/PButtom';
 // import { Role } from '../../../MDL/role/types';
 import { Usuario } from '../../../MDL/usuario/types';
+import SSocket from 'servisofts-socket';
 
 
 type FormEditarType = {
@@ -34,6 +35,7 @@ export default class FormEditarUsuario extends Component<FormEditarType> {
     }
     form: any = null;
     render() {
+        console.log("DATA", this.props.data)
         return <SView center>
             <SText bold>{"Editar Usuario"}</SText>
             <SForm
@@ -55,6 +57,14 @@ export default class FormEditarUsuario extends Component<FormEditarType> {
                             if (this.form) this.form.focus("Apellidos");
                         }
                     },
+                    "alias": {
+                        label: "Alias", required: true,
+                        defaultValue: this.props.data?.empresa_usuario.alias,
+                        autoCorrect: false,
+                        onSubmitEditing: () => {
+                            if (this.form) this.form.focus("Apellidos");
+                        }
+                    },
                     "CI": {
                         label: "CI",
                         defaultValue: this.props.data.CI,
@@ -64,7 +74,7 @@ export default class FormEditarUsuario extends Component<FormEditarType> {
                             if (this.form) this.form.focus("CI");
                         }
                     },
-                     "Telefono": {
+                    "Telefono": {
                         label: "Telefono",
                         defaultValue: this.props.data.Telefono,
                         // type: "",
@@ -89,6 +99,19 @@ export default class FormEditarUsuario extends Component<FormEditarType> {
                         title: "Registrado el usuario",
                         type: "loading",
                     })
+
+                    SSocket.sendPromise({
+                        service: "empresa",
+                        component: "empresa_usuario",
+                        type: "editar",
+                        data: {
+                            key: this.props.data?.empresa_usuario.key,
+                            alias: e.alias
+                        }
+                    })
+
+                    delete e.alias;
+
                     MDL.usuario.editar({
                         ...e,
                         estado: this.props.data.estado,
