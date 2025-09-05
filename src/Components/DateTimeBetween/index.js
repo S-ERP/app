@@ -28,10 +28,12 @@ export default class DateTimeBetween extends Component<TypeProps> {
 
     render() {
         return (<SView row col={"xs-12"}  >
-            <SView col={"xs-5.5"}>
+            <SHr height={10} />
+            <SView col={"xs-5.5"} style={{ paddingStart: 5, paddingBottom: 5 }}>
                 <SInput
                     label={"Desde"}
                     ref={ref => this.inputRef = ref}
+                    customStyle={"erp"}
                     value={this.state?.fecha_inicio}
                     onChange={(e) => {
                         console.log("fecha_inicio_cambio", e);
@@ -49,8 +51,9 @@ export default class DateTimeBetween extends Component<TypeProps> {
                             SPopup.open({
                                 key: "popup-entre-fechas",
                                 style: {
-                                    width: 220, height: 340, Zindex: 9999,
+                                    width: 220, height: 345, Zindex: 9999,
                                     position: "absolute",
+                                    backgroundColor: STheme.color.background,
                                     left: x,                  // alineado al borde izquierdo del input
                                     top: y + height + 2,      // justo debajo del input (+ un margen)
                                 },
@@ -70,7 +73,7 @@ export default class DateTimeBetween extends Component<TypeProps> {
                                             SPopup.close("popup-entre-fechas");
                                             // this.setState({ fecha_inicio: this.state.fecha_inicio_.toString("yyyy-MM-dd") });
                                             this.setState(
-                                                { fecha_inicio: this.state.fecha_inicio_.toString("yyyy-MM-dd")},
+                                                { fecha_inicio: this.state.fecha_inicio_.toString("yyyy-MM-dd") },
                                                 // { fecha_inicio_raw : this.state.fecha_inicio_}, // fecha en formato Date
                                                 this.handleChange // ⬅️ avisamos al padre
                                             );
@@ -88,6 +91,7 @@ export default class DateTimeBetween extends Component<TypeProps> {
                 <SInput
                     label={"Hasta"}
                     ref={ref => this.inputRef_ = ref}
+                    customStyle={"erp"}
                     value={this.state?.fecha_fin}
                     onChange={(e) => {
                         console.log("fecha_fin_cambio", e);
@@ -104,7 +108,8 @@ export default class DateTimeBetween extends Component<TypeProps> {
                             SPopup.open({
                                 key: "popup-entre-fechas",
                                 style: {
-                                    width: 220, height: 340, Zindex: 9999,
+                                    width: 220, height: 345, Zindex: 9999,
+                                    backgroundColor: STheme.color.background,
                                     position: "absolute",
                                     left: x,                  // alineado al borde izquierdo del input
                                     top: y + height + 2,      // justo debajo del input (+ un margen)
