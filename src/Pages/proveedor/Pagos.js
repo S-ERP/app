@@ -145,13 +145,12 @@ const data = {
     }
 };
 
-const COLOR_VERDE = "#4CAF50";
 const COLOR_VERDE_CLARO = "#d8edd8";
 const COLOR_VERDE_OSCURO = "#4f8549ff";
-// const COLOR_VERDE_OSCURO = "#619f5a";
+
 const COLOR_NARANJA = "#FF9800";
 const COLOR_NARANJA_CLARO = "#eaf4d8";
-const COLOR_NARANJA_OSCURO = "#c1c32b";
+
 const COLOR_ROJO = "#F44336";
 const COLOR_ROJO_CLARO = "#ece3dd";
 const COLOR_ROJO_OSCURO = "#d93145";
@@ -179,8 +178,8 @@ export default class Pagos extends Component {
                             <SIconApp name='empresa' width={24} height={24} fill={COLOR_VERDE_OSCURO} />
                         </SView>
                         <SView style={{ marginLeft: 8 }}>
-                            <SText color={STheme.color.lightGray}>Proveedor</SText>
-                            <SText color={STheme.color.text} style={{ fontWeight: "550" }}>{proveedor.nombre}</SText>
+                            <SText color={STheme.color.text}>Proveedor</SText>
+                            <SText bold color={STheme.color.text} >{proveedor.nombre}</SText>
                         </SView>
                     </SView>
                     <SView col={"xs-12 md-3"} row center height={100}>
@@ -198,7 +197,7 @@ export default class Pagos extends Component {
                         </SView>
                         <SView style={{ marginLeft: 8 }}>
                             <SText color={STheme.color.text} fontSize={12}>Límite de Crédito</SText>
-                            <SText bold color={COLOR_NARANJA}>S/ {proveedor.limiteCredito.toLocaleString()}</SText>
+                            <SText bold color={STheme.color.text}>S/ {proveedor.limiteCredito.toLocaleString()}</SText>
                         </SView>
                     </SView>
                     <SView col={"xs-12 md-3"} row center>
@@ -207,15 +206,14 @@ export default class Pagos extends Component {
                         </SView>
                         <SView style={{ marginLeft: 8 }}>
                             <SText color={STheme.color.text} fontSize={12}>Compras Pendientes</SText>
-                            <SText bold color={COLOR_NARANJA}>{proveedor.comprasPendientes}</SText>
+                            <SText bold color={STheme.color.text}>{proveedor.comprasPendientes}</SText>
                         </SView>
                     </SView>
                 </SView>
                 <SHr h={24} />
             </SView>
         );
-    }
-    itemCard() {
+    } itemCard() {
         const { compras } = data;
         return (
             <SView col={"xs-12"} flex center>
@@ -243,7 +241,7 @@ export default class Pagos extends Component {
                                         </SView>
                                         <SView width={70} row center>
                                             <SView width={64} center style={{ backgroundColor: COLOR_ROJO, borderRadius: 4, paddingHorizontal: 8, paddingVertical: 2 }}>
-                                                <SText fontSize={10} bold color={"#fee2e2"}>{compra.estado}</SText>
+                                                <SText fontSize={10} bold color={STheme.color.text}>{compra.estado}</SText>
                                             </SView>
                                         </SView>
                                     </SView>
@@ -264,7 +262,7 @@ export default class Pagos extends Component {
                                         <SView
                                             center
                                             border={STheme.color.card}
-                                            backgroundColor={STheme.color.lightGray + "60"}
+                                            backgroundColor={STheme.color.lightGray + "33"}
                                             style={{ borderRadius: 4, padding: 8 }}
                                             onPress={() => {
                                                 PopupPagoCuota.open({
