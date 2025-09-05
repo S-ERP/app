@@ -51,6 +51,7 @@ const data = {
                 }
             ]
         },
+
         {
             "id": 102,
             "descripcion": "Suministros de oficina",
@@ -114,7 +115,20 @@ const data = {
                     "estado": "Pagado"
                 }
             ]
-        }
+        },
+
+        {
+            "id": 109,
+            "descripcion": "Productos de limpieza y mantenimiento",
+            "fecha": "2024-01-14",
+            "total": 8500.00,
+            "estado": "Pendiente",
+            "cuotas": 3,
+            "metodoPago": "Transferencia",
+            "cuotasDetalle": [
+               
+            ]
+        },
     ],
     "moneda": "S/",
     "configuracion": {

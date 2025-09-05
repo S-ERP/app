@@ -9,7 +9,7 @@ type Props = {
     onSuccess?: Function,
 };
 const COLOR_VERDE_CLARO = "#d8edd8";
-const COLOR_VERDE_OSCURO = "#4f8549ff";
+const COLOR_VERDE_OSCURO = "#107003ff";
 const COLOR_NARANJA = "#FF9800";
 const COLOR_NARANJA_CLARO = "#eaf4d8";
 const COLOR_ROJO = "#F44336";
@@ -94,13 +94,9 @@ export default class PopupPagoCuota extends Component<Props> {
                         </SView>
                         <SView width={70} row>
                             <SView
-                                width={64}
-                                center
+                                width={64} center
                                 style={{
-                                    backgroundColor:
-                                        cuota.estado === 'Pendiente'
-                                            ? STheme.color.danger
-                                            : "#107003ff",
+                                    backgroundColor: cuota.estado === 'Pendiente' ? STheme.color.danger : "#107003ff",
                                     borderRadius: 4,
                                     paddingHorizontal: 8,
                                     paddingVertical: 2,
@@ -268,113 +264,97 @@ export default class PopupPagoCuota extends Component<Props> {
 
         return (
             <SView col={"xs-12"}>
-                <SView style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: STheme.color.white, alignItems: 'center' }}
-                    row >
-                    <SView flex border={"blue"}  >
-                        <SText fontSize={18} bold color={STheme.color.text}>Registro de Cuotas - Compra #{compra.id}</SText>
-                    </SView>
-                    <SView width={50} style={{ alignItems: "flex-end", }} border={"red"} >
-                        <SView width={24} height={24} onPress={this.props.onCancel} style={{ opacity: 0.6 }} >
-                            <SIcon name="Close" fill={STheme.color.text} />
+                <SView row center>
+
+                    <SView col={"xs-12"} style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: STheme.color.white, alignItems: 'center' }} row >
+                        <SView flex border={"blue"}  >
+                            <SText fontSize={18} bold color={STheme.color.text}>Registro de Cuotas - Compra #{compra.id}</SText>
+                        </SView>
+                        <SView width={50} style={{ alignItems: "flex-end", }} border={"red"} >
+                            <SView width={24} height={24} onPress={this.props.onCancel} style={{ opacity: 0.6 }} >
+                                <SIcon name="Close" fill={STheme.color.text} />
+                            </SView>
                         </SView>
                     </SView>
-                </SView>
-
-                {/* Body */}
-                <ScrollView style={{ maxHeight: '80vh' }}>
+                    <SHr height={16} />
 
 
-                    <SView col={"xs-12"} style={{ padding: 16, gap: 24 }}>
-                        {/* Info de la compra */}
-                        <SView
-                            style={{
-                                backgroundColor: STheme.color.card,
-                                borderRadius: 8,
-                                padding: 16,
-                            }}
-                        >
-                            <SText
-                                fontSize={14}
-                                bold
-                                color={STheme.color.text}
-                                style={{ marginBottom: 12 }}
-                            >
-                                Información de la Compra
-                            </SText>
-                            <SView row style={{ marginBottom: 12, gap: 16 }}>
+                    <SView col={"xs-12"} style={{ padding: 8 }} center>
+                        <SView col={"xs-12"} padding={16} style={{ backgroundColor: STheme.color.card, borderRadius: 8 }}  >
+                            <SView row  >
+                                <SText fontSize={14} bold color={STheme.color.text}   > Información de la Compra </SText>
+                            </SView>
+                            <SHr height={16} />
+                            <SView row  >
                                 <SView flex>
-                                    <SText fontSize={12} color={STheme.color.text}>
-                                        Descripción:
-                                    </SText>
-                                    <SText fontSize={14} color={STheme.color.text}>
-                                        {compra.descripcion}
-                                    </SText>
+                                    <SText fontSize={12} color={STheme.color.text}>Descripción:</SText>
+                                    <SText fontSize={14} color={STheme.color.text}>{compra.descripcion}</SText>
                                 </SView>
                                 <SView flex>
-                                    <SText fontSize={12} color={STheme.color.text}>
-                                        Total:
-                                    </SText>
-                                    <SText fontSize={14} color={STheme.color.text}>
-                                        {compra.moneda} {compra.total.toFixed(2)}
-                                    </SText>
+                                    <SText fontSize={12} color={STheme.color.text}>Total:</SText>
+                                    <SText fontSize={14} color={STheme.color.text}>{compra.moneda} {compra.total.toFixed(2)}</SText>
                                 </SView>
                             </SView>
-
-
-                            <SView row style={{ gap: 16 }}>
-
-
+                            <SHr height={16} />
+                            <SView row  >
                                 <SView flex>
                                     <SText fontSize={12} color={STheme.color.text}>Fecha:</SText>
                                     <SText fontSize={14} color={STheme.color.text}>{compra.fecha}</SText>
                                 </SView>
 
-                                <SView flex row>
-                                    <SView width={50} row center>
-                                        <SText fontSize={12} color={STheme.color.text}>Estado:</SText>
+                                <SView flex row border={"yellow"} >
+                                    <SView width={50} row border={"blue"}>
+                                        <SText center fontSize={12} color={STheme.color.text}>Estado:</SText>
                                     </SView>
-                                    <SView width={70} row center>
+                                    <SView width={70} row center border={"pink"}>
                                         <SView width={64} center
                                             style={{
                                                 backgroundColor: compra.estado === 'Pendiente' ? COLOR_ROJO_OSCURO : COLOR_VERDE_OSCURO,
-                                                borderRadius: 4,
+                                                borderRadius: 2, paddingVertical: 2
                                             }}
                                         >
-                                            <SText fontSize={10} bold color={STheme.color.text}>{compra.estado}</SText>
+                                            <SText fontSize={10} bold color={STheme.color.text}>{compra.estado} </SText>
                                         </SView>
                                     </SView>
                                 </SView>
                             </SView>
                         </SView>
-
-                        {/* Cuotas */}
-                        <SView>
-                            <SText fontSize={14} bold color={STheme.color.text}>
-                                Cuotas de Pago
-                            </SText>
-                            <SHr height={8} />
-                            {compra.cuotasDetalle.length > 0 ? (
-                                compra.cuotasDetalle.map((cuota, index) => (
-                                    <this.Item
-                                        key={cuota.numero}
-                                        cuota={cuota}
-                                        index={index}
-                                        compra={compra}
-                                        onAjuste={this.handlePagarDeuda}
-                                    />
-                                ))
-                            ) : (
-                                <SText
-                                    fontSize={14}
-                                    color={STheme.color.text}
-                                    style={{ padding: 16 }}
-                                >
-                                    No hay cuotas asociadas a esta compra.
-                                </SText>
-                            )}
-                        </SView>
                     </SView>
-                </ScrollView>
+                    <SHr height={16} />
+
+                    {/* Body */}
+                    <ScrollView style={{ maxHeight: '70vh' }}>
+
+
+                        <SView col={"xs-12"} style={{ padding: 8 }}>
+                            {/* Info de la compra */}
+
+
+
+
+                            {/* Cuotas */}
+                            <SView>
+                                <SText fontSize={14} bold color={STheme.color.text}> Cuotas de Pago </SText>
+
+                                <SHr height={8} />
+
+                                {compra.cuotasDetalle.length > 0 ? (
+                                    compra.cuotasDetalle.map((cuota, index) => (
+                                        <this.Item
+                                            key={cuota.numero}
+                                            cuota={cuota}
+                                            index={index}
+                                            compra={compra}
+                                            onAjuste={this.handlePagarDeuda}
+                                        />
+                                    ))
+                                ) : (<SText  fontSize={14} color={STheme.color.text} style={{ padding: 16 }} > No hay cuotas asociadas a esta compra. </SText>)}
+                            </SView>
+                        </SView>
+
+
+                    </ScrollView>
+                </SView>
             </SView>
         );
     }
