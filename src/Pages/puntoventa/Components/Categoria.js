@@ -38,7 +38,7 @@ export default class Categoria extends Component {
             const data = await MDL.empresa.getFull();
             this.monedas = data.monedas || []; //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
             if (!this.selectedMoneda && this.monedas.length > 0) {
-                this.selectedMoneda = this.monedas[0];
+                this.selectedMoneda = this.monedas.find(e => e.tipo == "base") || this.monedas[0]
                 this.props.onSelectMoneda?.(this.selectedMoneda);
             }
             this.forceUpdate();

@@ -5,6 +5,7 @@ import Config from "./Config";
 import Model from "./Model";
 import DeviceKey from "./Firebase/DeviceKey"
 import packageInfo from "../package.json"
+import MDL from "./MDL";
 
 setProps(Config.socket);
 DeviceKey.init();
@@ -13,7 +14,7 @@ export default ({ store }) => {
     return <SSocket
         store={store}
         identificarse={(props) => {
-            
+
             let tags = {
                 platform: Platform.OS,
                 user_type: "undefined",
@@ -26,13 +27,14 @@ export default ({ store }) => {
                 tags["user_type"] = "admin"
             }
             var empresa = props?.state?.empresaReducer?.select;
-            if(empresa){
+            if (empresa) {
                 tags["key_empresa"] = empresa.key;
             }
 
 
             console.log();
             return {
+                listeners: MDL.erp.server_listeners,
                 data: usuario ? usuario : {},
                 deviceKey: DeviceKey.getKey(),
                 firebase: {

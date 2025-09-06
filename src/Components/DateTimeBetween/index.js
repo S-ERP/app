@@ -9,10 +9,10 @@ type TypeProps = {
     onChange: Function,
 }
 export default class DateTimeBetween extends Component<TypeProps> {
-    constructor(props) {
-        super(props);
+    state={
+        fecha_inicio:this.props.fecha_inicio,
+        fecha_fin:this.props.fecha_fin
     }
-
     handleChange = () => {
         // cuando cambien las fechas, avisamos al padre
         if (this.props.onChange) {

@@ -1,5 +1,5 @@
 import React from "react";
-import { SHr, SImage, SLoad, SNavigation, SPage, SText, STheme, SView } from "servisofts-component";
+import { SHr, SImage, SLoad, SNavigation, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../../MDL";
 import SSocket from "servisofts-socket";
 import FloatButtom from "../../../Components/FloatButtom";
@@ -9,11 +9,27 @@ import Pizarra from "../../../Components/Pizarra/Pizarra";
 import PizarraNodo from "../../../Components/Pizarra/PizarraNodo";
 import Puerto from "../../../Components/Pizarra/Puerto";
 import Recargar from "../../../Components/Recargar";
+import PopupCrearPuntoVenta from "./Components/PopupCrearPuntoVenta";
+import PopupCrearAlmacen from "../../inventario/almacen/Components/PopupCrearAlmacen";
 
 export default class config2 extends React.Component {
 
     componentDidMount() {
         this.loadData();
+        MDL.erp.addServerListener({
+            key: "config_2_almacen_editar",
+            component: "almacen",
+            type: "editar",
+            key_empresa: MDL.empresa.select?.key,
+            callback: (data) => {
+                this.loadData();
+            }
+        })
+    }
+    componentWillUnmount() {
+        MDL.erp.removeServerListener({
+            key: "config_2_almacen",
+        })
     }
     loadData = async () => {
         MDL.empresa._full = null;
@@ -30,16 +46,20 @@ export default class config2 extends React.Component {
         const space = 300;
         return <SPage title={"config2"} disableScroll>
 
-            <Pizarra>
+            <Pizarra id={"config_empresa"} scale={0.4}>
                 <PizarraNodo
                     id={empresa?.key}
                     key={empresa?.key}
                     y={0} x={-200} style={{
                         alignItems: "center",
                         justifyContent: "center"
-                    }}>
+                    }}
+                    onDoublePress={e => {
+                        console.log("Doble click en empresa");
+                    }}
+                >
                     <SView style={{
-                        width: 240,
+                        width: 350,
                         height: 100,
                         borderRadius: 100,
                         borderWidth: 1,
@@ -57,7 +77,7 @@ export default class config2 extends React.Component {
                             <SImage src={SSocket.api.empresa + "empresa/" + empresa?.key} />
                         </SView>
                         <SView flex>
-                            <SText flex center bold>{empresa?.razon_social}</SText>
+                            <SText flex center bold fontSize={29}>{empresa?.razon_social}</SText>
                             <SText flex center fontSize={12} color={STheme.color.lightGray} >{empresa?.nit}</SText>
                         </SView>
                     </SView>
@@ -71,15 +91,34 @@ export default class config2 extends React.Component {
                             right: 0,
                             // bottom: 0
                         }} />
+                    <SView style={{
+                        width: 25,
+                        height: 25,
+                        position: "absolute",
+                        right: -40,
+                    }}>
+                        <SIconApp name="Add"/>
+                    </SView>
                 </PizarraNodo>
                 {(empresa.sucursales ?? []).map((sucursal, i) => {
                     return <>
-                        <PizarraNodo id={sucursal.key} y={i * space } x={100} style={{
-                            alignItems: "center",
-                            justifyContent: "center"
-                        }}>
+                        <PizarraNodo
+                            key={sucursal.key}
+                            id={sucursal.key}
+                            y={i * space} x={100} style={{
+                                alignItems: "center",
+                                justifyContent: "center"
+                            }}
+                            onDoublePress={e => {
+                                PopupCrearSucursal.open({
+                                    key_empresa: empresa.key,
+                                    editObject: sucursal,
+                                    onSuccess: () => this.loadData(),
+                                })
+                            }}
+                        >
                             <SView style={{
-                                width: 150,
+                                width: 200,
                                 height: 80,
                                 borderRadius: 4,
                                 borderWidth: 1,
@@ -91,7 +130,7 @@ export default class config2 extends React.Component {
                                 <SView width={30} height={30} padding={4} >
                                     <SIconApp name="Marker" fill={STheme.color.text} />
                                 </SView>
-                                <SText flex>{sucursal.descripcion}</SText>
+                                <SText flex fontSize={20}>{sucursal.descripcion}</SText>
                             </SView>
                             <Puerto id="key_empresa"
                                 type="input"
@@ -113,12 +152,22 @@ export default class config2 extends React.Component {
                         {
                             (sucursal.almacenes ?? []).map((almacen, j) => {
                                 return <PizarraNodo
+                                    key={almacen.key}
                                     id={almacen.key}
                                     y={i * space + j * 80}
                                     x={300} style={{
                                         alignItems: "center",
                                         justifyContent: "center"
-                                    }}>
+                                    }}
+                                    onDoublePress={e => {
+                                        PopupCrearAlmacen.open({
+                                            key_empresa: empresa.key,
+                                            editObject: almacen,
+                                            onSuccess: () => this.loadData(),
+
+                                        })
+                                    }}
+                                >
                                     <SView style={{
                                         width: 80,
                                         height: 80,
@@ -140,6 +189,20 @@ export default class config2 extends React.Component {
                                     <Puerto id="key_sucursal"
                                         value={almacen.key_sucursal}
                                         type="input"
+                                        onConnect={e => {
+                                            if (e.value == almacen.key_sucursal) return;
+                                            MDL.inventario.saveAlmacen({
+                                                data: {
+                                                    key: almacen.key,
+                                                    key_sucursal: e.value
+                                                }
+                                            }).then(e => {
+                                                this.loadData();
+                                            }).catch(e => {
+                                                console.log(e)
+                                            })
+                                            console.log("onConnect", e)
+                                        }}
                                         style={{
                                             width: 8,
                                             top: 40,
@@ -150,10 +213,21 @@ export default class config2 extends React.Component {
                         }
                         {
                             (sucursal.puntos_venta ?? []).map((punto_venta, j) => {
-                                return <PizarraNodo id={punto_venta.key} y={i * space+10 + j * 110} x={320} style={{
-                                    alignItems: "center",
-                                    justifyContent: "center"
-                                }}>
+                                return <PizarraNodo
+                                    id={punto_venta.key}
+                                    key={punto_venta.key}
+                                    y={i * space + 10 + j * 110} x={320} style={{
+                                        alignItems: "center",
+                                        justifyContent: "center"
+                                    }}
+                                    onDoublePress={e => {
+                                        PopupCrearPuntoVenta.open({
+                                            key_sucursal: sucursal.key,
+                                            editObject: punto_venta,
+                                            onSuccess: () => this.loadData(),
+                                        })
+                                    }}
+                                >
                                     <SView style={{
                                         width: 80,
                                         height: 80,

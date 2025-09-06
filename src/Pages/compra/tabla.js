@@ -42,7 +42,7 @@ export default class tabla extends Component {
         </SView>
     );
     async loadData() {
-        const registros = await MDL.compra_venta.getTransaccion("compra", "2025-09-01", "2025-09-05");
+        const registros = await MDL.compra_venta.getTransaccion("compra", "2025-01-01", "2030-09-05");
         if (!registros) return [];
         const empresa = await MDL.empresa.getFull();
         const sucursales = empresa.sucursales;

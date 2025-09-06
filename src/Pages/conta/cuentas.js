@@ -32,6 +32,111 @@ export default class cuentas extends React.Component {
         if (!this.DinamicTable) return null;
         this.DinamicTable.loadData();
     }
+    handleSelect(e) {
+        FloatMenu.open({
+            e: e.evt,
+            label: e.row.codigo + "  " + e.row.descripcion,
+            style: {
+                maxWidth: 200,
+            },
+            onClose: () => {
+                e.dinamicTable.clearSelect()
+            },
+            options: [
+                {
+                    label: "Agregar Sub Cuenta", icon: <SIconApp name="Add" />, onPress: () => {
+                        const grafo = MDL.contabilidad.getCuentasGrafo(e.dinamicTable.data);
+                        const cuenta = grafo.find(n => n.codigo === e.row.codigo);
+                        const hijos = cuenta.childrens || [];
+
+                        let index = "01";
+                        let childSize = 0;
+                        if (hijos.length > 0) {
+                            index = hijos.length + 1
+                            if (index.length < 2) {
+                                index = "0" + index
+                            }
+                            childSize = hijos[0].codigo.length
+                        } else {
+                            // BHuscar
+
+                            const niveles = MDL.contabilidad.armarNiveles(e.dinamicTable.data);
+                            const lvlPadre = e.row.codigo.length;
+                            const indexLvl = niveles.findIndex(n => n == lvlPadre) + 1;
+                            if (indexLvl > 0 && niveles[indexLvl]) {
+                                childSize = niveles[indexLvl];
+                            }
+                            console.log("niveles", childSize)
+
+
+                        }
+                        let codigo = e.row.codigo + "." + index
+
+                        if (codigo.length < childSize) {
+                            codigo = e.row.codigo + "." + "0".repeat(childSize - codigo.length) + index;
+                        }
+
+                        let key_moneda = cuenta.key_moneda;
+                        if (!key_moneda) {
+                            let cc = cuenta;
+                            while (cc.parent) {
+                                cc = cc.parent;
+                                key_moneda = cc.key_moneda;
+                                if (key_moneda) break;
+                            }
+                        }
+
+                        // const hermanas = e.dinamicTable.data.filter(r => r.codigo.startsWith(e.row.codigo + "."));
+                        CuentaContableForm.open({
+                            cuenta_contable: {
+                                tipo: e.row.tipo,
+                                codigo: codigo,
+                                descripcion: "",
+                                key_moneda: key_moneda,
+                            },
+                            onChange: (e) => {
+                                this.loadData();
+                                // this.loadData();
+                            }
+                        })
+                    }
+                },
+                {
+                    label: "Editar", icon: <SIconApp name="Edit" />, onPress: () => {
+
+                        CuentaContableForm.open({
+                            cuenta_contable: e.row,
+                            onChange: (e) => {
+                                this.loadData();
+                                // this.loadData();
+                            }
+                        })
+                    }
+                },
+                {
+                    label: "Eliminar", icon: <SIconApp name="Delete" />, onPress: () => {
+                        SPopup.confirm({
+                            title: "Eliminar Cuenta Contable",
+                            message: "¿Estás seguro de eliminar la cuenta contable?",
+                            onPress: () => {
+                                MDL.contabilidad.cuenta_contable.save({
+                                    key: e.row.key,
+                                    estado: 0,
+                                }).then(e => {
+                                    this.loadData();
+                                }).catch(error => {
+                                    console.error("Error al eliminar cuenta contable:", error);
+
+                                })
+                            }
+                        })
+
+
+                    }
+                },
+            ]
+        })
+    }
     render() {
         return <SPage title={"Plan de cuentas"} disableScroll>
             <FiltroNiveles
@@ -46,7 +151,6 @@ export default class cuentas extends React.Component {
                 }} />
             <DinamicTable {...Config.table.applyTheme()}
                 ref={ref => this.DinamicTable = ref}
-                selectType="multiple"
                 keyExtractor={(e) => e.key}
                 loadData={async () => {
                     const resp = await MDL.contabilidad.getCuentas();
@@ -85,8 +189,11 @@ export default class cuentas extends React.Component {
                         ]
                     }
                 }}
+                selectType="single"
+
                 onSelect={(e) => {
 
+                    this.handleSelect(e);
                 }}
             >
                 {/* <DinamicTable.Col key={"key"} label="Key" width={50}
@@ -98,105 +205,18 @@ export default class cuentas extends React.Component {
                         return <SText fontSize={10}>{"open"}</SText>
                     }}
                 /> */}
-                <DinamicTable.Col key={"ajustes"} label="Ajustes" width={50}
+                {/* <DinamicTable.Col key={"ajustes"} label="Ajustes" width={50}
                     data={e => ""}
                     customComponent={(e) => {
                         return <SView style={{
                             height: 16,
                         }} center onPress={(evt) => {
-                            FloatMenu.open({
-                                e: evt,
-                                label: e.row.codigo + "  " + e.row.descripcion,
-                                options: [
 
-                                    {
-                                        label: "Agregar Sub Cuenta", icon: <SIconApp name="Add" />, onPress: () => {
-                                            console.log(e.dinamicTable.data);
-
-                                            const grafo = MDL.contabilidad.getCuentasGrafo(e.dinamicTable.data);
-                                            const cuenta = grafo.find(n => n.codigo === e.row.codigo);
-                                            console.log(grafo);
-                                            const hijos = cuenta.childrens || [];
-                                            let index = "01";
-                                            let childSize = 0;
-                                            if (hijos.length > 0) {
-                                                index = hijos.length + 1
-                                                if (index.length < 2) {
-                                                    index = "0" + index
-                                                }
-                                                childSize = hijos[0].codigo.length
-                                            }
-                                            let codigo = e.row.codigo + "." + index
-
-                                            if (codigo.length < childSize) {
-                                                codigo = e.row.codigo + "." + "0".repeat(childSize - codigo.length) + index;
-                                            }
-
-                                            let key_moneda = cuenta.key_moneda;
-                                            if (!key_moneda) {
-                                                let cc = cuenta;
-                                                while (cc.parent) {
-                                                    cc = cc.parent;
-                                                    key_moneda = cc.key_moneda;
-                                                    if (key_moneda) break;
-                                                }
-                                            }
-
-                                            // const hermanas = e.dinamicTable.data.filter(r => r.codigo.startsWith(e.row.codigo + "."));
-                                            CuentaContableForm.open({
-                                                cuenta_contable: {
-                                                    tipo: e.row.tipo,
-                                                    codigo: codigo,
-                                                    descripcion: "",
-                                                    key_moneda: key_moneda,
-                                                },
-                                                onChange: (e) => {
-                                                    this.loadData();
-                                                    // this.loadData();
-                                                }
-                                            })
-                                        }
-                                    },
-                                    {
-                                        label: "Editar", icon: <SIconApp name="Edit" />, onPress: () => {
-
-                                            CuentaContableForm.open({
-                                                cuenta_contable: e.row,
-                                                onChange: (e) => {
-                                                    this.loadData();
-                                                    // this.loadData();
-                                                }
-                                            })
-                                        }
-                                    },
-                                    {
-                                        label: "Eliminar", icon: <SIconApp name="Delete" />, onPress: () => {
-                                            SPopup.confirm({
-                                                title: "Eliminar Cuenta Contable",
-                                                message: "¿Estás seguro de eliminar la cuenta contable?",
-                                                onPress: () => {
-                                                    MDL.contabilidad.cuenta_contable.save({
-                                                        key: e.row.key,
-                                                        estado: 0,
-                                                    }).then(e => {
-                                                        this.loadData();
-                                                    }).catch(error => {
-                                                        console.error("Error al eliminar cuenta contable:", error);
-
-                                                    })
-                                                }
-                                            })
-
-
-                                        }
-                                    },
-                                ]
-                            })
                         }}>
                             <SIconApp name="ctaAjuste2" height={10} stroke={STheme.color.lightGray} />
                         </SView>
                     }}
-                />
+                /> */}
                 <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{
                     alignItems: "center",
                     justifyContent: "center",

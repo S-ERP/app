@@ -13,7 +13,13 @@ export default class libro_diario extends React.Component {
     }
     async loadData() {
         try {
+            const empresa = await MDL.empresa.getFull();
             const data = await MDL.contabilidad.reporte_libro_diario();
+            const monedabase = empresa.monedas.find(b => b.tipo == "base")
+            data.map(a => {
+                a.moneda = empresa.monedas.find(b => b.key == a.key_moneda)
+                a.moneda_base = monedabase
+            })
             return data;
         } catch (error) {
             console.log(error);
@@ -68,8 +74,9 @@ export default class libro_diario extends React.Component {
                         style={{
                             ...e.textStyle,
                             color: STheme.colorFromText(e.row.fecha_on)
-                            
+
                         }}
+                        numberOfLines={e.colData.wrap ? 0 : 1}
                         bold
                         onPress={() => {
                             // contabilidad/asiento_contable/profile?pk=5b8b2f0f-54f5-4cb0-9118-87bd0d91d459
@@ -116,36 +123,100 @@ export default class libro_diario extends React.Component {
                             if (e?.row?.codigo?.length == 1) {
                                 aditionalStyle.fontWeight = "bold";
                             }
-                            return <SText style={{ ...e.textStyle, paddingStart: space, ...aditionalStyle }}>{e.data}</SText>
+                            return <SText  numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, ...aditionalStyle }}>{e.data}</SText>
+                        }}
+                    />
+                    <DinamicTable.Col key="moneda" label="Moneda" data={e => e.row.moneda?.descripcion}
+                        cellStyle={{
+                            // backgroundColor: STheme.color.danger + "33"
+                            alignItems: "center"
+                        }}
+                        textStyle={{
+                            fontWeight: "bold"
                         }}
                     />
                     <DinamicTable.Col key="debe" label="Debe"
                         data={e => e.row.debe}
                         cellStyle={{
-                            backgroundColor: STheme.color.success + "33"
+                            backgroundColor: STheme.color.success + "33",
+                            alignItems: "flex-end"
                         }}
                         textStyle={{
-                            fontWeight:"bold"
+                            fontWeight: "bold"
                         }}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
-                            return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{SMath.formatMoney(e.data || "0")}</SText>
+                            return <SText  numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.row.moneda_base?.observacion} {SMath.formatMoney(e.data || "0")}</SText>
                             // return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.data || "0"}</SText>
                         }}
                     />
+
                     <DinamicTable.Col key="haber" label="Haber" data={e => e.row.haber}
                         cellStyle={{
-                            backgroundColor: STheme.color.danger + "33"
+                            backgroundColor: STheme.color.danger + "33",
+                            alignItems: "flex-end"
                         }}
                         textStyle={{
-                            fontWeight:"bold"
+                            fontWeight: "bold"
                         }}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
                             const val = e.data || "0"
-                            return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{SMath.formatMoney(val)}</SText>
+                            return <SText   numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{e.row.moneda_base?.observacion} {SMath.formatMoney(val)}</SText>
                             // return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{val}</SText>
                         }} />
+
+
+
+                    <DinamicTable.Col key="debe_me" label="Debe M/E"
+                        data={e => e.row.debe_me}
+                        cellStyle={{
+                            backgroundColor: STheme.color.success + "33",
+                            alignItems: "flex-end"
+                        }}
+                        customComponent={(e) => {
+                            const space = (e?.row?.codigo || "").length * 2;
+                            return <SText  numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.row.moneda?.observacion} {SMath.formatMoney(e.data || "0")}</SText>
+                            // return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.data || "0"}</SText>
+                        }}
+                    />
+                    <DinamicTable.Col key="haber_me" label="Haber M/E" data={e => e.row.haber_me}
+                        cellStyle={{
+                            backgroundColor: STheme.color.danger + "33",
+                            alignItems: "flex-end"
+                        }}
+                        customComponent={(e) => {
+                            const space = (e?.row?.codigo || "").length * 2;
+                            const val = e.data || "0"
+                            return <SText  numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{e.row.moneda?.observacion} {SMath.formatMoney(val)}</SText>
+                            // return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{val}</SText>
+                        }} />
+
+                    <DinamicTable.Col key="debe_sin_format" wrap label="Debe Sin Formato"
+                        data={e => e.row.debe}
+                        cellStyle={{
+                            alignItems: "flex-end"
+                        }}
+                    />
+                    <DinamicTable.Col key="haber_sin_format" wrap label="Haber Sin Formato" data={e => e.row.haber}
+                        cellStyle={{
+                            alignItems: "flex-end"
+                        }}
+
+                    />
+                    <DinamicTable.Col key="debe_me_sin_format" wrap label="Debe Moneda Extranjera Sin Formato"
+                        data={e => e.row.debe_me}
+                        cellStyle={{
+                            alignItems: "flex-end"
+                        }}
+                    />
+                    <DinamicTable.Col key="haber_me_sin_format" wrap label="Haber Moneda Extranjera Sin Formato"
+                        data={e => e.row.haber_me}
+                        cellStyle={{
+                            alignItems: "flex-end"
+                        }}
+
+                    />
                     {/* <DinamicTable.Col key="saldo" label="Saldo"
                         data={e => ["ACTIVO", "GASTO"].includes(e.row.tipo) ? ((e.row.debe || 0) - (e.row.haber || 0)) : ((e.row.haber || 0) - (e.row.debe || 0))}
                         customComponent={(e) => {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Dimensions, GestureResponderEvent, TouchableOpacityProps } from "react-native";
+import { Dimensions, GestureResponderEvent, TouchableOpacityProps, ViewStyle } from "react-native";
 import { SHr, SIcon, SPage, SPopup, SText, STheme, SView, SViewProps } from "servisofts-component";
 
 type Option = {
@@ -13,6 +13,7 @@ type FloatMenuProps = {
     height?: number,
     options: Option[],
     onClose: () => void,
+    style?:ViewStyle
 }
 export default class FloatMenu extends React.Component<FloatMenuProps> {
 
@@ -56,7 +57,7 @@ export default class FloatMenu extends React.Component<FloatMenuProps> {
         });
     }
     render() {
-        return <SView>
+        return <SView style={this.props.style}>
             <SText col={"xs-12"} numberOfLines={1} fontSize={11} bold>{this.props.label}</SText>
             <SHr />
             {this.props.options.map((option, index) => {

@@ -10,6 +10,8 @@ import compra_venta from "./compra_venta";
 import contabilidad from "./contabilidad"
 import punto_venta from "./punto_venta";
 import caja from "./caja";
+import pizarra from "./pizarra";
+import erp from "./erp";
 // import punto_venta from "../Model/empresa/punto_venta";
 export const MDL = {
   usuario: new usuario(),
@@ -23,7 +25,9 @@ export const MDL = {
   compra_venta: new compra_venta(),
   contabilidad: new contabilidad(),
   punto_venta: new punto_venta(),
-  caja: new caja()
+  caja: new caja(),
+  pizarra: new pizarra(),
+  erp: new erp(),
 };
 
 export const componentDidMount = async () => {
