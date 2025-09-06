@@ -8,6 +8,8 @@ import SSocket from "servisofts-socket";
 import CajaActiva from "./components/CajaActiva";
 import PopupEditarTema from "../../Pages/empresa/Components/PopupEditarTema";
 import BackgroundImage from "../BackgroundImage";
+import MDL from "../../MDL";
+import MenuEmpresa from "../../Components/empresa/menu_lista"
 
 
 export default class Barra extends React.Component {
@@ -47,6 +49,9 @@ export default class Barra extends React.Component {
         })
     }
     render() {
+        console.log("eee", this.state.closeWidth)
+        console.log("aae", this.state.openWidth)
+
 
         return <View style={{
             width: this.state.open ? this.state.openWidth : this.state.closeWidth,
@@ -55,10 +60,21 @@ export default class Barra extends React.Component {
             borderColor: STheme.color.card
         }}>
             <BackgroundImage />
-            <SView width={this.state.closeWidth} height={this.state.closeWidth} onPress={() => {
-                this.changeStatus()
-            }} padding={4}>
-                <SIconApp name="Menu" fill={STheme.color.text} />
+            <SView row>
+                <SView width={this.state.closeWidth} height={this.state.closeWidth} onPress={() => {
+                    this.changeStatus()
+                }} padding={4}>
+                    <SIconApp name="Menu" fill={STheme.color.text} />
+
+                </SView>
+                <SView center width={150} style={{
+                    display: this.state.open ? "flex" : "none",
+                    paddingTop: 3
+                }} onPress={() => {
+                    // this.changeStatus()
+                }}>
+                    <MenuEmpresa.root />
+                </SView>
             </SView>
             <SView col={"xs-12"} flex>
                 <ScrollView showsVerticalScrollIndicator={false} >
@@ -157,7 +173,7 @@ export default class Barra extends React.Component {
                     >
                         <Page label={"Icons"} url={"/icons"} />
                         <Page label={"Test"} url={"/test"} />
-                         <Page label={"Caja history"} url={"/caja/history"} />
+                        <Page label={"Caja history"} url={"/caja/history"} />
                         <SText onPress={() => {
                             PopupEditarTema.open()
                         }}>{"Tema"}</SText>

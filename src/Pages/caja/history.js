@@ -330,7 +330,7 @@ export default class history extends Component {
     }
     render() {
         return (
-            <SPage title="Tabla Gestión de Ventas" disableScroll>
+            <SPage title="Tabla Historial Caja" disableScroll>
                 <SView width={260} center>
                     <DateTimeBetween
                         onChange={({ fecha_inicio, fecha_fin }) => {

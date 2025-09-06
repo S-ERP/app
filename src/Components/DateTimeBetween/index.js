@@ -54,6 +54,7 @@ export default class DateTimeBetween extends Component<TypeProps> {
                                     width: 220, height: 345, Zindex: 9999,
                                     position: "absolute",
                                     backgroundColor: STheme.color.background,
+                                    borderRadius: 4,
                                     left: x,                  // alineado al borde izquierdo del input
                                     top: y + height + 2,      // justo debajo del input (+ un margen)
                                 },
@@ -110,6 +111,7 @@ export default class DateTimeBetween extends Component<TypeProps> {
                                 style: {
                                     width: 220, height: 345, Zindex: 9999,
                                     backgroundColor: STheme.color.background,
+                                    borderRadius: 4,
                                     position: "absolute",
                                     left: x,                  // alineado al borde izquierdo del input
                                     top: y + height + 2,      // justo debajo del input (+ un margen)
