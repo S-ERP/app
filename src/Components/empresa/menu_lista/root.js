@@ -7,13 +7,7 @@ import SSocket from 'servisofts-socket';
 import Model from '../../../Model';
 
 type indexPropsType = {
-    // key_sucursal: String,
-    // value?: any,
-    // defaultValue?: any,
-    // onChange?: () => any,
-    // disabled?: boolean
-
-
+    
 }
 export default class root extends Component<indexPropsType> {
     constructor(props) {
@@ -33,7 +27,6 @@ export default class root extends Component<indexPropsType> {
             // key_empresa: MDL.empresa.select.key,
             key_usuario: MDL.usuario.session.key
         }).then(em => {
-            // Model.empresa.Action.setEmpresa(em.data)
             console.log("empresasss", em);
             this.setState({ data: Object.values(em.data) })
         }).catch(em => {
@@ -49,15 +42,7 @@ export default class root extends Component<indexPropsType> {
     render() {
         let miEmpresa = MDL.empresa.select;
         console.log("miEmpresa", miEmpresa)
-        // if (!this.props.key_sucursal) return null;
-        // if (this.props.value) {
-        //     this.state.data = this.props.value
-        // }
-        // if (this.state.data) {
-        //     if (this.state.data.key_sucursal != this.props.key_sucursal) {
-        //         this.state.data = null;
-        //     }
-        // }
+      
         return (
             <SView col={"xs-12"} card onPress={() => {
                 SPopup.open({
@@ -67,8 +52,6 @@ export default class root extends Component<indexPropsType> {
                         position: "absolute",
                         backgroundColor: STheme.color.background,
                         borderRadius: 4,
-                        // left: x,                  // alineado al borde izquierdo del input
-                        // top: y + height + 2,      // justo debajo del input (+ un margen)
                         left: 40,
                         top: 37
                     },
@@ -78,7 +61,6 @@ export default class root extends Component<indexPropsType> {
                                 horizontal={false}
                                 showsVerticalScrollIndicator={true}
                                 data={this.state.data}
-                                // ItemSeparatorComponent={a => <SHr h={6} />}
                                 renderItem={({ item }) => <SView row center onPress={() => {
                                     Model.empresa.Action.setEmpresa(item.empresa);
                                     let time = Platform.select({ web: 400, native: 800 });
@@ -86,7 +68,6 @@ export default class root extends Component<indexPropsType> {
                                         SPopup.close("popup-lista-empresa")
                                         // SNavigation.goBack();
                                         SNavigation.reset("/");
-                                        // SNavigation.
                                     })
                                 }} style={{
                                     borderBottomColor: STheme.color.card,
@@ -118,7 +99,6 @@ export default class root extends Component<indexPropsType> {
                 </SView>
                 <SView width={3} />
                 <SText  bold center>{(miEmpresa?.razon_social.length > 15) ? (miEmpresa?.razon_social).substring(0, 15) + "..." : miEmpresa?.razon_social}</SText>
-                {/* <SText center>{miEmpresa?.razon_social}</SText> */}
             </SView>
         );
     }
