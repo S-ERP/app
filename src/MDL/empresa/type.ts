@@ -33,6 +33,7 @@ export type Empresa = {
   observacion: string;
   nit: string;
   theme?: any;
+  razon_social:string;
 };
 
 export type TurnoHorarioAtencion = {
