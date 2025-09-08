@@ -3,38 +3,6 @@ import { ScrollView } from 'react-native';
 import { SNotification, SPopup, SText, STheme, SView, SIcon, SHr } from 'servisofts-component';
 import SIconApp from '../../../Assets/SIconApp';
 
-// Tipos
-interface Cuota {
-    numero: number;
-    estado: string;
-    vencimiento: string;
-    fechaPago: string | null;
-    monto: number;
-    __select?: boolean;
-}
-
-interface Compra {
-    id: number;
-    descripcion: string;
-    estado: string;
-    fecha: string;
-    total: number;
-    cuotasDetalle: Cuota[];
-    moneda: string;
-}
-
-interface Props {
-    key_empresa: string;
-    editObject?: Partial<Compra>;
-    onCancel?: () => void;
-    onSuccess?: (e: { cuota: Cuota; monto: number }) => void;
-}
-
-interface State {
-    montoPagar: { [key: number]: string };
-    isLoading: boolean;
-}
-
 // Configuración (mismo objeto que en Pagos para consistencia)
 const data = {
     configuracion: {
@@ -52,16 +20,8 @@ const COLOR_TEXT = STheme.color.text;
 const COLOR_ACCENT = "#3B82F6";
 const COLOR_BORDER = STheme.color.white;
 
-
-// const COLOR_CARD = STheme.color.card;
-// const COLOR_TEXT = STheme.color.text;
-// const COLOR_ACCENT = STheme.color.lightGray + "66";
-// // const COLOR_BORDER = STheme.color.lightGray + "66";
-// // const COLOR_BORDER = STheme.color.lightGray +"50";
-// const COLOR_BORDER = STheme.color.lightGray + "30";
-
-export default class PopupPagoCuota3 extends Component<Props, State> {
-    static open(props: Props) {
+export default class PopupPagoCuota3 extends Component {
+    static open(props) {
         SPopup.open({
             key: 'PopupPagoCuota3',
             content: (
@@ -87,7 +47,7 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
                             SPopup.close('PopupPagoCuota3');
                             if (props.onCancel) props.onCancel();
                         }}
-                        onSuccess={(e: { cuota: Cuota; monto: number }) => {
+                        onSuccess={(e) => {
                             SPopup.close('PopupPagoCuota3');
                             if (props.onSuccess) props.onSuccess(e);
                         }}
@@ -97,20 +57,16 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
         });
     }
 
-    constructor(props: Props) {
+    constructor(props) {
         super(props);
         this.state = {
             montoPagar: {},
             isLoading: false,
+            selectedCuotas: {}, // Track selected cuotas by their numero
         };
-        if (this.props.editObject?.cuotasDetalle) {
-            this.props.editObject.cuotasDetalle.forEach((cuota) => {
-                cuota.__select = false;
-            });
-        }
     }
 
-    getCompraData = (): Compra => {
+    getCompraData = () => {
         const { editObject } = this.props;
         return {
             id: editObject?.id || 101,
@@ -128,37 +84,39 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
         };
     };
 
-    selectPreviousCuotas = (selectedCuota: Cuota) => {
+    selectPreviousCuotas = (selectedCuota) => {
         const compra = this.getCompraData();
         const selectedDate = new Date(selectedCuota.vencimiento);
+        const newSelectedCuotas = { ...this.state.selectedCuotas };
+
+        compra.cuotasDetalle.forEach((cuota) => {
+            if (cuota.estado !== 'Pagado') {
+                const cuotaDate = new Date(cuota.vencimiento);
+                newSelectedCuotas[cuota.numero] = cuotaDate <= selectedDate;
+            }
+        });
+
+        this.setState({ selectedCuotas: newSelectedCuotas });
+    };
+
+    deselectPreviousCuotas = (selectedCuota) => {
+        const compra = this.getCompraData();
+        const selectedDate = new Date(selectedCuota.vencimiento);
+        const newSelectedCuotas = { ...this.state.selectedCuotas };
+
         compra.cuotasDetalle.forEach((cuota) => {
             if (cuota.estado !== 'Pagado') {
                 const cuotaDate = new Date(cuota.vencimiento);
                 if (cuotaDate <= selectedDate) {
-                    cuota.__select = true;
-                } else {
-                    cuota.__select = false;
+                    newSelectedCuotas[cuota.numero] = false;
                 }
             }
         });
-        this.forceUpdate();
+
+        this.setState({ selectedCuotas: newSelectedCuotas });
     };
 
-    deselectPreviousCuotas = (selectedCuota: Cuota) => {
-        const compra = this.getCompraData();
-        const selectedDate = new Date(selectedCuota.vencimiento);
-        compra.cuotasDetalle.forEach((cuota) => {
-            if (cuota.estado !== 'Pagado') {
-                const cuotaDate = new Date(cuota.vencimiento);
-                if (cuotaDate <= selectedDate) {
-                    cuota.__select = false;
-                }
-            }
-        });
-        this.forceUpdate();
-    };
-
-    handlePagarDeuda = async (cuota: Cuota) => {
+    handlePagarDeuda = async (cuota) => {
         const { montoPagar, isLoading } = this.state;
         const monto = parseFloat(montoPagar[cuota.numero] || '0');
         if (isLoading) return;
@@ -214,14 +172,14 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
         }
     };
 
-    isCuotaVencida = (vencimiento: string): boolean => {
+    isCuotaVencida = (vencimiento) => {
         const today = new Date();
         const vencimientoDate = new Date(vencimiento);
         return vencimientoDate < today;
     };
 
-    Item = ({ cuota, index, compra }: { cuota: Cuota; index: number; compra: Compra }) => {
-        const { isLoading } = this.state;
+    Item = ({ cuota, index, compra }) => {
+        const { isLoading, selectedCuotas } = this.state;
         const monedaSymbol = compra.moneda || 'BOB';
         const isPaid = cuota.estado === 'Pagado';
         const isVencida = !isPaid && this.isCuotaVencida(cuota.vencimiento);
@@ -232,11 +190,8 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
                 key={`cuota-${cuota.numero}`}
                 col={'xs-12'}
                 style={{
-                    backgroundColor: cuota.__select ? STheme.color.card : STheme.color.lightGray + '55',
-                    borderColor: cuota.__select ? STheme.color.success : STheme.color.success + '55',
-
-                    // backgroundColor: cuota.__select ? estadoConfig.bgColor : COLOR_CARD,
-                    // borderColor: cuota.__select ? estadoConfig.color : COLOR_BORDER,
+                    backgroundColor: selectedCuotas[cuota.numero] ? STheme.color.card : STheme.color.lightGray + '55',
+                    borderColor: selectedCuotas[cuota.numero] ? STheme.color.success : STheme.color.success + '55',
                     borderRadius: 8,
                     padding: 16,
                     borderWidth: 1,
@@ -244,10 +199,12 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
                 }}
                 onPress={() => {
                     if (!isPaid) {
-                        if (cuota.__select) {
+                        const newSelectedCuotas = { ...this.state.selectedCuotas };
+                        if (selectedCuotas[cuota.numero]) {
                             this.deselectPreviousCuotas(cuota);
                         } else {
-                            cuota.__select = true;
+                            newSelectedCuotas[cuota.numero] = true;
+                            this.setState({ selectedCuotas: newSelectedCuotas });
                             this.selectPreviousCuotas(cuota);
                         }
                     }
@@ -292,7 +249,7 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
         );
     };
 
-    labelEstado = (estado: string, isVencida: boolean = false) => {
+    labelEstado = (estado, isVencida = false) => {
         const estadoNormalizado = isVencida ? 'vencido' : estado?.toLowerCase();
         const { color, bgColor, textColor, label, icon } = data.configuracion.estados[estadoNormalizado] || data.configuracion.estados.pendiente;
         return (
@@ -322,20 +279,32 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
         );
     };
 
-    botonEstado = (estado: string) => {
+    botonEstado = (estado) => {
         const estadoNormalizado = estado?.toLowerCase();
         if (estadoNormalizado !== 'pendiente') return null;
+
+        const compra = this.getCompraData();
+        const selectedCuotas = compra.cuotasDetalle.filter(
+            (c) => this.state.selectedCuotas[c.numero] && c.estado !== 'Pagado'
+        );
+        const isAnyCuotaSelected = selectedCuotas.length > 0;
+
         return (
             <SView
                 width={160}
                 row
                 center
-                // border={"pink"}
                 onPress={() => {
-                    const compra = this.getCompraData();
-                    const selectedCuotas = compra.cuotasDetalle.filter((c) => c.__select && c.estado !== 'Pagado');
-                    if (selectedCuotas.length > 0) {
+                    if (isAnyCuotaSelected) {
                         this.handlePagarDeuda(selectedCuotas[0]);
+                    } else {
+                        SNotification.send({
+                            title: 'Error',
+                            body: 'Por favor, selecciona al menos una cuota para pagar.',
+                            time: 3000,
+                            color: STheme.color.danger,
+                            position: 'top',
+                        });
                     }
                 }}
                 activeOpacity={0.7}
@@ -346,12 +315,11 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
                     row
                     center
                     style={{
-                        // backgroundColor: { c.__select ? "red" : "blue" },
-                        backgroundColor: COLOR_ACCENT,
+                        backgroundColor: isAnyCuotaSelected ? COLOR_ACCENT : STheme.color.gray,
                         borderRadius: 6,
                         padding: 12,
                         borderWidth: 1,
-                        borderColor: COLOR_ACCENT,
+                        borderColor: isAnyCuotaSelected ? COLOR_ACCENT : STheme.color.gray,
                     }}
                 >
                     <SIconApp name='pagotarjeta' width={16} height={16} fill={STheme.color.white} />
@@ -365,7 +333,7 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
     render() {
         const compra = this.getCompraData();
         const MontoSeleccionado = compra.cuotasDetalle
-            .filter((cuota) => cuota.__select && cuota.estado !== 'Pagado')
+            .filter((cuota) => this.state.selectedCuotas[cuota.numero] && cuota.estado !== 'Pagado')
             .reduce((sum, cuota) => sum + parseFloat(cuota.monto.toString()), 0)
             .toFixed(2);
         const MontoSaldo = compra.cuotasDetalle
@@ -374,7 +342,8 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
             .toFixed(2);
 
         return (
-            <SView col={'xs-12'} accessibilityLabel="Contenedor principal de gestión de cuotas">
+            <SView col={'xs-12'} flex style={{ flex: 1 }} accessibilityLabel="Contenedor principal de gestión de cuotas">
+                {/* Header */}
                 <SView row center style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: COLOR_BORDER }}>
                     <SView flex>
                         <SText fontSize={20} bold color={COLOR_TEXT}>
@@ -395,6 +364,8 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
                     </SView>
                 </SView>
                 <SHr h={16} />
+
+                {/* Detalles de la Compra */}
                 <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
                     <SView
                         col={'xs-12'}
@@ -447,12 +418,22 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
                     </SView>
                 </SView>
                 <SHr h={16} />
+
+                {/* Cuotas Pendientes Header */}
                 <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
                     <SText fontSize={16} bold color={COLOR_TEXT}>Cuotas Pendientes</SText>
                 </SView>
                 <SHr h={12} />
-                <ScrollView style={{ maxHeight: '60vh' }}>
-                    <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
+
+                {/* ScrollView for Cuotas */}
+                <SView col={'xs-12'} flex style={{ flex: 1, paddingHorizontal: 16 }}>
+                    <ScrollView
+                        style={{ width: '100%' }}
+                        contentContainerStyle={{
+                            flexGrow: 1,
+                            paddingBottom: 16,
+                        }}
+                    >
                         {compra.cuotasDetalle.length > 0 ? (
                             compra.cuotasDetalle.map((cuota, index) => (
                                 <this.Item
@@ -473,9 +454,8 @@ export default class PopupPagoCuota3 extends Component<Props, State> {
                                 No hay cuotas asociadas a esta compra.
                             </SText>
                         )}
-                        <SHr h={16} />
-                    </SView>
-                </ScrollView>
+                    </ScrollView>
+                </SView>
             </SView>
         );
     }
