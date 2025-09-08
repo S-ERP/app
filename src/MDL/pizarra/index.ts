@@ -22,12 +22,13 @@ export default class pizarra extends MDLAbstract<EventListener> {
     })
     return resp;
   }
-  async saveNodo(data: any) {
+  async saveNodo(data: any, instance_id: string) {
     const resp = await SSocket.sendPromise({
       component: "pizarra",
       type: "saveNodo",
       key_usuario: MDL.usuario.session?.key,
       key_empresa: MDL.empresa.select?.key,
+      instance_id,
       data
     })
     return resp;

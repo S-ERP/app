@@ -106,6 +106,7 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
             translateY.value = panGesture.context.startY + (event.translationY / pizarra.scale.value);
 
             Object.values(pizarra.nodos.current).forEach(nodo => {
+                if (nodo.id == id) return;
                 if (nodo.selected.value) {
                     if (nodo.panGesture?.context == null) return;
                     nodo.translateX.value = nodo.panGesture.context.startX + (event.translationX / pizarra.scale.value);
@@ -175,7 +176,7 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
                             && selectPosition.y < translateY.value - (layout.value.height / 2)
                             && (selectPosition.y + selectPosition.height) > (translateY.value + (layout.value.height / 2))
                         ) {
-                            console.log("Dentro de la selección");
+                            // console.log("Dentro de la selección");
                             return true;
                         }
                     }

@@ -11,7 +11,7 @@ import {
     PanGesture,
 } from "react-native-gesture-handler";
 import Nodo, { NodoInstance } from "./PizarraNodo";
-import { SGradient, SText, STheme, SThread, SView } from "servisofts-component";
+import { SGradient, SText, STheme, SThread, SUuid, SView } from "servisofts-component";
 import PizarraMiniMapa from "./MiniMapa";
 import { PuertoInstance } from "./Puerto";
 import Linea, { LineaInstance, LineaProps } from "./Linea";
@@ -101,7 +101,7 @@ export default function Pizarra(props: PizarraProps) {
     const nodos = React.useRef<Record<string, NodoInstance>>({});
     const puertos = React.useRef<Record<string, PuertoInstance>>({});
     const lineas = React.useRef<Record<string, LineaInstance>>({});
-    const config = React.useRef({ type: props.startType ?? "select", height: 0, });
+    const config = React.useRef({ type: props.startType ?? "select", height: 0, instance_id: SUuid() });
     const isMiddleDown = React.useRef(false);
     const ref = React.useRef<any>();
     const start = React.useRef({ x: 0, y: 0, tx: 0, ty: 0 });
@@ -125,49 +125,24 @@ export default function Pizarra(props: PizarraProps) {
 
 
     const registerNodo = (nodo: NodoInstance) => {
-        console.log("registerNodo", nodo.id)
+        // console.log("registerNodo", nodo.id)
         nodos.current[nodo.id] = nodo;
-        console.log(state)
+        // console.log(state)
         applyDataServer();
     };
     const unregisterNodo = (key: string) => {
-        console.log("unregisterNodo", key)
+        // console.log("unregisterNodo", key)
         if (!nodos.current[key]) return;
-        // nodos.current[key].translateX.value = 0;
-        // nodos.current[key].translateY.value = 0;
         delete nodos.current[key];
     };
 
     const registerPuerto = (puerto: PuertoInstance) => {
-        console.log("registerPuerto", puerto.nodo.id + "_" + puerto.id)
+        // console.log("registerPuerto", puerto.nodo.id + "_" + puerto.id)
         puertos.current[puerto.nodo.id + "_" + puerto.id] = puerto;
-        // setState({ ...state })
-        // Object.values(puertos.current).filter(e => e.id == puerto.id && e.type != puerto.type).forEach(otherPort => {
-        //     if (!otherPort.props.value || !puerto.props.value) return;
-        //     if (otherPort.props.value == puerto.props.value) {
-        //         lineasRef.current?.drawLine({
-        //             portA: puerto,
-        //             portB: otherPort
-        //         });
-        //     }
-        // });
-
     };
     const unregisterPuerto = (key: string, key_nodo: string) => {
-        console.log("unregisterPuerto", key_nodo + "_" + key)
+        // console.log("unregisterPuerto", key_nodo + "_" + key)
         delete puertos.current[key_nodo + "_" + key];
-        // setState({ ...state })
-        // if (!lineasRef.current) return;
-        // const ln: any = {};
-        // Object.values(lineasRef.current.state.lines).filter(l => {
-        //     if (!l.portA) return true;
-        //     if (!l.portB) return true;
-        //     if (l.portA.nodo.id + "_" + l.portA.id == key_nodo + "_" + key) return false;
-        //     if (l.portB.nodo.id + "_" + l.portB.id == key_nodo + "_" + key) return false;
-        //     ln[l.id] = l;
-        // });
-        // lineasRef.current.state.lines = ln;
-        // lineasRef.current.forceUpdate();
     };
 
     const registerLinea = (linea: LineaInstance) => {
@@ -185,7 +160,14 @@ export default function Pizarra(props: PizarraProps) {
             descripcion: "pizarra",
             nodes: nodes
         }
-        MDL.pizarra.saveNodo(data);
+        nodes.forEach(nodo => {
+            const nodoInstance = serverData.current.nodes.find((n: any) => n.id == nodo.id);
+            if (nodoInstance) {
+                nodoInstance.x = nodo.x;
+                nodoInstance.y = nodo.y;
+            }
+        })
+        MDL.pizarra.saveNodo(data, config.current.instance_id);
     }
 
     const saveChanges = () => {
@@ -197,11 +179,21 @@ export default function Pizarra(props: PizarraProps) {
             if (!nodo.toJSon) return null;
             return nodo.toJSon();
         })
+
+        const camera = {
+            x: translateX.value,
+            y: translateY.value,
+            scale: scale.value,
+            width: layoutWidth.value,
+            height: layoutHeight.value,
+        }
+        console.log(camera)
         return {
             id: props.id,
             key_empresa: MDL.empresa.select?.key,
             descripcion: "pizarra",
-            nodes: nodosarr
+            nodes: nodosarr,
+            camera
         };
 
     }
@@ -223,7 +215,7 @@ export default function Pizarra(props: PizarraProps) {
         serverData.current.nodes?.forEach((nodo: any) => {
             if (!nodos.current[nodo.id]) return;
             if (nodos.current[nodo.id].onDrag.value) return; // si el nodo se está moviendo, no actualizar su posición
-            console.log("applyDataServer", nodo.id)
+            // console.log("applyDataServer", nodo.id)
             nodos.current[nodo.id].translateX.value = nodo.x;
             nodos.current[nodo.id].translateY.value = nodo.y;
 
@@ -255,7 +247,9 @@ export default function Pizarra(props: PizarraProps) {
             type: "saveNodo",
             key_empresa: MDL.empresa.select?.key,
             callback: (data) => {
-                loadDataFromServer();
+                if (data.instance_id != config.current.instance_id) {
+                    loadDataFromServer();
+                }
             }
         })
         loadDataFromServer();
@@ -371,7 +365,7 @@ export default function Pizarra(props: PizarraProps) {
         .onUpdate((event) => {
             if (preventPan.value) return;
             if (config.current.type == "select" && event.numberOfPointers == 1) {
-                console.log(event.numberOfPointers)
+                // console.log(event.numberOfPointers)
                 selectEndX.value = selectStartX.value + (event.translationX / scale.value);
                 selectEndY.value = selectStartY.value + (event.translationY / scale.value);
                 return;
@@ -385,6 +379,7 @@ export default function Pizarra(props: PizarraProps) {
             selectStartY.value = 0
             selectEndX.value = selectStartX.value;
             selectEndY.value = selectStartY.value;
+
         })
 
 
