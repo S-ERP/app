@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SView, SPage, SText, SHr, SScrollView2, STheme } from 'servisofts-component';
+import { SView, SPage, SText, SHr, SScrollView2, STheme, SDate, SMath } from 'servisofts-component';
 import SIconApp from '../../Assets/SIconApp';
 import PopupPagoCuota from './Components/PopupPagoCuota3';
 import MDL from '../../MDL';
@@ -156,43 +156,246 @@ export default class Pagos extends Component {
 
 
 
-    async loadData() {
+    loadData() {
         const key_proveedor = '15843bf1-0ee2-467d-8052-aa394d2cf477';
-        const registros = await MDL.compra_venta.getTransaccionCuotas(key_proveedor);
-        if (!registros) return [];
-        const empresa = await MDL.empresa.getFull();
-        const sucursales = empresa.sucursales;
-        const ventas = Object.values(registros).filter(cv => cv.tipo === "compra");
-        const keysUsuarios = [];
-        ventas.forEach(cv => {
-            if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
-                keysUsuarios.push(cv.key_usuario);
-            }
-        });
-        const proveedores = await MDL.inventario.proveedor.getAllProveedor();
-        const usuarios = await MDL.usuario.getByKeys(keysUsuarios) || {};
-        const usuariosMap = Array.isArray(usuarios)
-            ? Object.fromEntries(usuarios.map(u => [u.key, u]))
-            : usuarios;
-        const totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0].key }) || {};
-        const comprasEnriquecidas = await Promise.all(
-            ventas.map(async (cv) => {
-                return {
-                    ...cv,
-                    moneda: empresa.monedas.find(m => m.key === cv.key_moneda) || {},
-                    sucursal: sucursales.find(a => a?.key === cv?.key_sucursal) || {},
-                    usuario: usuariosMap[cv.key_usuario] || {},
-                    empresa,
-                    proveedor: proveedores.find(a => a.key == cv.key_proveedor) || {},
-                    subtotal: totales?.subtotal || "0",
-                    descuento: totales?.descuento || "0",
-                };
+
+        return MDL.compra_venta.getTransaccionCuotas(key_proveedor)
+            .then(registros => {
+                // Validar si registros es válido
+                if (!registros || !Array.isArray(registros)) {
+                    return {
+                        cantidadTotalCompras: 0,
+                        pendientes: 0,
+                        deudaTotal: null,
+                        proveedor: {},
+                        compras: []
+                    };
+                }
+
+                // Calcular la cantidad total de compras
+                const cantidadTotalCompras = registros.length;
+
+                // Calcular la cantidad de compras con cuotas pendientes
+                let pendientes = 0;
+                for (let compra of registros) {
+                    if (compra.cuotas && compra.cuotas.cantidad > 0) {
+                        pendientes++;
+                    }
+                }
+
+                // Calcular el total a pagar por moneda (usando cuotas_en_mora.monto)
+                let deudaTotal = {};
+                for (let compra of registros) {
+                    if (compra.cuotas_en_mora && compra.cuotas_en_mora.monto !== null) {
+                        const moneda = compra.moneda || 'BOB';
+                        deudaTotal[moneda] = (deudaTotal[moneda] || 0) + compra.cuotas_en_mora.monto;
+                    }
+                }
+
+                // Convertir deudaTotal a null si no hay montos
+                if (Object.keys(deudaTotal).length === 0) {
+                    deudaTotal = null;
+                }
+
+                // Calcular monto amortizado por moneda (opcional, descomentar si es necesario)
+
+                let amortizadoTotal = {};
+                for (let compra of registros) {
+                    if (compra.monto_amortizado && compra.monto_amortizado !== null) {
+                        const moneda = compra.moneda || 'BOB';
+                        amortizadoTotal[moneda] = (amortizadoTotal[moneda] || 0) + compra.monto_amortizado;
+                    }
+                }
+                if (Object.keys(amortizadoTotal).length === 0) {
+                    amortizadoTotal = null;
+                }
+
+
+                // Obtener proveedores
+                return MDL.inventario.proveedor.getAllProveedor().then(proveedores => {
+                    const compras = Object.values(registros);
+
+                    // Crear el objeto de resultado
+                    const resultado = {
+                        cantidadTotalCompras,
+                        pendientes,
+                        deudaTotal,
+                        amortizadoTotal, // Descomentar si necesitas incluirlo
+                        proveedor: proveedores.find(prov => prov.key === key_proveedor) || {},
+                        compras
+                    };
+
+                    console.log("Resultados procesados:", resultado);
+                    return resultado;
+                });
             })
-        );
-        console.log("Compras enriquecidas", comprasEnriquecidas);
-        return comprasEnriquecidas;
+            .catch(error => {
+                console.error("Error in loadData:", error);
+                return {
+                    cantidadTotalCompras: 0,
+                    pendientes: 0,
+                    deudaTotal: null,
+                    proveedor: {},
+                    compras: []
+                };
+            });
     }
 
+    resumen() {
+        const data = this.data;
+        if (!data) return <SText>Loading...</SText>;
+
+        const { proveedor, cantidadTotalCompras, pendientes, deudaTotal, amortizadoTotal, compras } = data;
+        const monedaDefault = "BOB"; // Moneda por defecto
+
+        return (
+            <SView col={"xs-12"} style={{ paddingHorizontal: 16 }}>
+                <SView
+                    col={"xs-12"}
+                    row
+                    backgroundColor={COLOR_CARD}
+                    style={{
+                        borderRadius: 8,
+                        borderWidth: 1,
+                        borderColor: COLOR_BORDER,
+                        padding: 16,
+                    }}
+                >
+                    {/* Proveedor */}
+                    <SView col={"xs-12 md-3"} row center height={80}>
+                        <SView
+                            style={{
+                                width: 48,
+                                height: 48,
+                                borderRadius: 8,
+                                backgroundColor: data.configuracion?.estados?.pagado?.bgColor || "#DCFCE7",
+                                borderWidth: 1,
+                                borderColor: data.configuracion?.estados?.pagado?.color || "#22C55E",
+                            }}
+                            center
+                        >
+                            <SIconApp name="empresa" width={28} height={28} fill={data.configuracion?.estados?.pagado?.color || "#22C55E"} />
+                        </SView>
+                        <SView flex style={{ marginLeft: 12 }}>
+                            <SText fontSize={14} color={COLOR_TEXT}>Proveedor</SText>
+                            <SText fontSize={16} bold color={COLOR_TEXT}>
+                                {proveedor?.razon_social || "Sin nombre"}
+                            </SText>
+                        </SView>
+                    </SView>
+
+                    {/* Deuda Total */}
+                    <SView col={"xs-12 md-3"} row center height={80}>
+                        <SView
+                            style={{
+                                width: 48,
+                                height: 48,
+                                borderRadius: 8,
+                                backgroundColor: data.configuracion?.estados?.pendiente?.bgColor || "#FFF7ED",
+                                borderWidth: 1,
+                                borderColor: data.configuracion?.estados?.pendiente?.color || "#F97316",
+                            }}
+                            center
+                        >
+                            <SIconApp name="tpAf" width={28} height={28} fill={data.configuracion?.estados?.pendiente?.color || "#F97316"} />
+                        </SView>
+                        <SView flex style={{ marginLeft: 12 }}>
+                            <SText fontSize={14} color={COLOR_TEXT}>Deuda Total</SText>
+                            {deudaTotal ? (
+                                Object.entries(deudaTotal).map(([moneda, monto]) => (
+                                    <SText key={moneda} fontSize={16} bold color={data.configuracion?.estados?.pendiente?.color || "#F97316"}>
+                                        {moneda} {monto.toFixed(2)}
+                                    </SText>
+                                ))
+                            ) : (
+                                <SText fontSize={16} bold color={data.configuracion?.estados?.pendiente?.color || "#F97316"}>
+                                    {monedaDefault} 0.00
+                                </SText>
+                            )}
+                        </SView>
+                    </SView>
+
+                    {/* Límite de Crédito */}
+                    <SView col={"xs-12 md-3"} row center height={80}>
+                        <SView
+                            style={{
+                                width: 48,
+                                height: 48,
+                                borderRadius: 8,
+                                backgroundColor: data.configuracion?.estados?.vencido?.bgColor || "#FEF9C3",
+                                borderWidth: 1,
+                                borderColor: data.configuracion?.estados?.vencido?.color || "#EAB308",
+                            }}
+                            center
+                        >
+                            <SIconApp name="pagotarjeta" width={28} height={28} fill={data.configuracion?.estados?.vencido?.color || "#EAB308"} />
+                        </SView>
+                        <SView flex style={{ marginLeft: 12 }}>
+                            <SText fontSize={14} color={COLOR_TEXT}>Ya pagaste</SText>
+
+                            {amortizadoTotal ? (
+                                Object.entries(amortizadoTotal).map(([moneda, monto]) => (
+                                    <SText key={moneda} fontSize={16} bold color={data.configuracion?.estados?.pendiente?.color || "#F97316"}>
+                                        {moneda} {monto.toFixed(2)}
+                                    </SText>
+                                ))
+                            ) : (
+                                <SText fontSize={16} bold color={data.configuracion?.estados?.pendiente?.color || "#F97316"}>
+                                    {monedaDefault} 0.00
+                                </SText>
+                            )}
+
+                            {/* <SText fontSize={16} bold color={COLOR_TEXT}> */}
+                            {/* {monedaDefault} {proveedor?.amortizadoTotal?.toFixed(2) || "0.00"} */}
+                            {/* {monedaDefault} {proveedor?.limiteCredito?.toFixed(2) || "0.00"} */}
+                            {/* </SText> */}
+                        </SView>
+                    </SView>
+
+                    {/* Compras Pendientes */}
+                    <SView col={"xs-12 md-3"} row center height={80}>
+                        <SView
+                            style={{
+                                width: 48,
+                                height: 48,
+                                borderRadius: 8,
+                                backgroundColor: data.configuracion?.estados?.vencido?.bgColor || "#FEF9C3",
+                                borderWidth: 1,
+                                borderColor: data.configuracion?.estados?.vencido?.color || "#EAB308",
+                            }}
+                            center
+                        >
+                            <SIconApp name="Evento" width={28} height={28} fill={data.configuracion?.estados?.vencido?.color || "#EAB308"} />
+                        </SView>
+                        <SView flex style={{ marginLeft: 12 }}>
+                            <SText fontSize={14} color={COLOR_TEXT}>Compras Pendientes</SText>
+                            <SText fontSize={16} bold color={COLOR_TEXT}>{pendientes}</SText>
+                        </SView>
+                    </SView>
+                </SView>
+                <SHr h={24} />
+            </SView>
+        );
+    }
+
+    componentDidMount() {
+        this.loadData()
+            .then(data => {
+                this.data = data;
+                this.forceUpdate(); // Forzar re-renderizado para reflejar los datos
+            })
+            .catch(error => {
+                console.error("Error loading data:", error);
+                this.data = {
+                    cantidadTotalCompras: 0,
+                    pendientes: 0,
+                    deudaTotal: null,
+                    proveedor: {},
+                    compras: []
+                };
+                this.forceUpdate(); // Forzar re-renderizado en caso de error
+            });
+    }
     labelEstado = (estado) => {
         const estadoNormalizado = estado?.toLowerCase();
         const { color, bgColor, textColor, label } = data.configuracion.estados[estadoNormalizado] || data.configuracion.estados.pendiente;
@@ -233,142 +436,46 @@ export default class Pagos extends Component {
         );
     }
 
-    resumen() {
-        this.loadData();
-        
-        const { proveedor, compras, moneda } = data;
-        const comprasPendientes = compras.filter(compra => compra.estado.toLowerCase() === "pendiente").length;
-        const deudaTotalCalculada = compras
-            .filter(compra => compra.estado.toLowerCase() === "pendiente")
-            .reduce((sum, compra) => sum + compra.total, 0)
-            .toFixed(2);
 
-        return (
-            <SView col={"xs-12"} style={{ paddingHorizontal: 16 }}>
-                <SView
-                    col={"xs-12"}
-                    row
-                    backgroundColor={COLOR_CARD}
-                    style={{
-                        borderRadius: 8,
-                        borderWidth: 1,
-                        borderColor: COLOR_BORDER,
-                        padding: 16,
-                    }}
-                >
-                    {/* Proveedor */}
-                    <SView col={"xs-12 md-3"} row center height={80}>
-                        <SView
-                            style={{
-                                width: 48,
-                                height: 48,
-                                borderRadius: 8,
-                                backgroundColor: data.configuracion.estados.pagado.bgColor,
-                                borderWidth: 1,
-                                borderColor: data.configuracion.estados.pagado.color,
-                            }}
-                            center
-                        >
-                            <SIconApp name='empresa' width={28} height={28} fill={data.configuracion.estados.pagado.color} />
-                        </SView>
-                        <SView flex style={{ marginLeft: 12 }}>
-                            <SText fontSize={14} color={COLOR_TEXT}>Proveedor</SText>
-                            <SText fontSize={16} bold color={COLOR_TEXT}>{proveedor.nombre}</SText>
-                        </SView>
-                    </SView>
-
-                    {/* Deuda Total */}
-                    <SView col={"xs-12 md-3"} row center height={80}>
-                        <SView
-                            style={{
-                                width: 48,
-                                height: 48,
-                                borderRadius: 8,
-                                backgroundColor: data.configuracion.estados.pendiente.bgColor,
-                                borderWidth: 1,
-                                borderColor: data.configuracion.estados.pendiente.color,
-                            }}
-                            center
-                        >
-                            <SIconApp name='tpAf' width={28} height={28} fill={data.configuracion.estados.pendiente.color} />
-                        </SView>
-                        <SView flex style={{ marginLeft: 12 }}>
-                            <SText fontSize={14} color={COLOR_TEXT}>Deuda Total</SText>
-                            <SText fontSize={16} bold color={data.configuracion.estados.pendiente.color}>
-                                {moneda} {deudaTotalCalculada}
-                            </SText>
-                        </SView>
-                    </SView>
-
-                    {/* Límite de Crédito */}
-                    <SView col={"xs-12 md-3"} row center height={80}>
-                        <SView
-                            style={{
-                                width: 48,
-                                height: 48,
-                                borderRadius: 8,
-                                backgroundColor: data.configuracion.estados.vencido.bgColor,
-                                borderWidth: 1,
-                                borderColor: data.configuracion.estados.vencido.color,
-                            }}
-                            center
-                        >
-                            <SIconApp name='pagotarjeta' width={28} height={28} fill={data.configuracion.estados.vencido.color} />
-                        </SView>
-                        <SView flex style={{ marginLeft: 12 }}>
-                            <SText fontSize={14} color={COLOR_TEXT}>Límite de Crédito</SText>
-                            <SText fontSize={16} bold color={COLOR_TEXT}>
-                                {moneda} {proveedor.limiteCredito.toFixed(2)}
-                            </SText>
-                        </SView>
-                    </SView>
-
-                    {/* Compras Pendientes */}
-                    <SView col={"xs-12 md-3"} row center height={80}>
-                        <SView
-                            style={{
-                                width: 48,
-                                height: 48,
-                                borderRadius: 8,
-                                backgroundColor: data.configuracion.estados.vencido.bgColor,
-                                borderWidth: 1,
-                                borderColor: data.configuracion.estados.vencido.color,
-                            }}
-                            center
-                        >
-                            <SIconApp name='Evento' width={28} height={28} fill={data.configuracion.estados.vencido.color} />
-                        </SView>
-                        <SView flex style={{ marginLeft: 12 }}>
-                            <SText fontSize={14} color={COLOR_TEXT}>Compras Pendientes</SText>
-                            <SText fontSize={16} bold color={COLOR_TEXT}>{comprasPendientes}</SText>
-                        </SView>
-                    </SView>
-                </SView>
-                <SHr h={24} />
-            </SView>
-        );
-    }
+    // que pasa si hay deudas en dolares y otros en bolivianos
+    // como hacemos ?
 
     itemCard() {
-        const { compras, moneda } = data;
+        const compras = this.data?.compras;
+        const monedaDefault = this.data?.moneda || "BOB"; // Moneda por defecto desde this.data
+        if (!compras) return <SText>Loading...</SText>;
+
+
+        // const subtotal = compra.detalles.precio_unitario * compra.detalles.cantidad;
         return (
             <SView col={"xs-12"} flex center>
                 <SScrollView2 disableHorizontal>
                     <SView col={"xs-12"} style={{ padding: 16 }}>
                         <SView col={"xs-12"} row>
                             {compras.map((compra, index) => (
+
+
                                 <SView
                                     key={index}
-                                    col={"xs-12 md-4 lg-4"}
+                                    col={"xs-12 md-3 lg-3"}
                                     margin={8}
-                                    style={{ backgroundColor: COLOR_CARD, borderRadius: 8, borderWidth: 1, borderColor: COLOR_BORDER, padding: 16, }} >
-                                    <SView col={"xs-12"} row     >
-                                        <SView col={"xs-12"} row   >
-                                            <SView flex height={44} >
-                                                <SText fontSize={18} bold color={COLOR_TEXT} numberOfLines={1} >{`Compra #${compra.id}`}</SText>
+                                    style={{
+                                        backgroundColor: COLOR_CARD,
+                                        borderRadius: 8,
+                                        borderWidth: 1,
+                                        borderColor: COLOR_BORDER,
+                                        padding: 16,
+                                    }}
+                                >
+                                    <SView col={"xs-12"} row>
+                                        <SView col={"xs-12"} row>
+                                            <SView flex height={44}>
+                                                <SText fontSize={18} bold color={COLOR_TEXT} numberOfLines={1}>{`Compra #${index + 1}`}</SText>
                                                 <SText fontSize={14} color={COLOR_TEXT} numberOfLines={1}>{compra.descripcion}</SText>
                                             </SView>
-                                            {this.labelEstado(compra.estado)}
+
+
+                                            {this.labelEstado(compra.cuotas_en_mora.monto ? "pendiente" : "pagado")}
                                         </SView>
                                     </SView>
 
@@ -376,25 +483,60 @@ export default class Pagos extends Component {
 
                                     <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                                         <SText fontSize={14} color={COLOR_TEXT}>Fecha:</SText>
-                                        <SText fontSize={14} color={COLOR_TEXT}>{compra.fecha}</SText>
+                                        <SText fontSize={14} color={COLOR_TEXT}>{new SDate(compra.fecha_on).toString("yyyy-MM-dd")}</SText>
                                     </SView>
+                                    <SHr h={16} />
+
+                                    <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>Tipo pago:</SText>
+                                        <SText fontSize={14} color={COLOR_TEXT}>{compra.tipo_pago}</SText>
+                                    </SView>
+
+
+
                                     <SHr h={8} />
                                     <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
-                                        <SText fontSize={14} color={COLOR_TEXT}>Total:</SText>
-                                        <SText fontSize={16} bold color={COLOR_TEXT}>{moneda} {compra.total.toFixed(2)}</SText>
+                                        <SText fontSize={14} color={COLOR_TEXT}>Total compra:</SText>
+
+                                        {compra.detalles.map((item, index) => (
+
+                                            <SText fontSize={16} bold color={COLOR_TEXT}>
+                                                {SMath.formatMoney(item.precio_unitario * item.cantidad ?? 0)}
+                                                {/* // const subtotal = compra.detalles.precio_unitario * compra.detalles.cantidad; */}
+                                            </SText>))}
+
+
                                     </SView>
+
                                     <SHr h={8} />
+                                    {/* <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>Total pagado:</SText>
+                                        <SText fontSize={16} bold color={COLOR_TEXT}>
+                                            {compra.moneda || monedaDefault} {SMath.formatMoney(compra.monto_amortizado ?? 0)}
+                                        </SText>
+                                    </SView>
+                                    <SHr h={8} /> */}
                                     <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                                         <SText fontSize={14} color={COLOR_TEXT}>Cuotas:</SText>
-                                        <SText fontSize={14} color={COLOR_TEXT}>{`${compra.cuotas} cuotas`}</SText>
+                                        <SText fontSize={14} color={compra.cuotas_en_mora.cantidad ? "#EAB308" : COLOR_TEXT}>
+                                            {`${compra.cuotas_en_mora.cantidad} cuotas`}
+                                        </SText>
                                     </SView>
                                     <SHr h={16} />
                                     <SView col={"xs-12"} center>
-
-                                        <SView col={"xs-12"} center style={{ backgroundColor: COLOR_ACCENT, borderRadius: 4, padding: 10, borderWidth: 1, borderColor: COLOR_ACCENT }}
+                                        <SView
+                                            col={"xs-12"}
+                                            center
+                                            style={{
+                                                backgroundColor: COLOR_ACCENT,
+                                                borderRadius: 4,
+                                                padding: 10,
+                                                borderWidth: 1,
+                                                borderColor: COLOR_ACCENT,
+                                            }}
                                             onPress={() => {
                                                 PopupPagoCuota.open({
-                                                    editObject: { ...compra, moneda },
+                                                    editObject: { ...compra, moneda: compra.moneda || monedaDefault },
                                                     key_empresa: this.props.key_empresa || "",
                                                     onSuccess: () => {
                                                         console.log("Payment successful");
@@ -402,7 +544,9 @@ export default class Pagos extends Component {
                                                 });
                                             }}
                                         >
-                                            <SText fontSize={14} bold color={STheme.color.white}>Ver Cuotas</SText>
+                                                                                    
+
+                                             <SText fontSize={14} bold color={compra.cuotas_en_mora.cantidad ? "red" : "blue"}> <SIconApp name={compra.cuotas_en_mora.cantidad ? 'history' : 'Eyes'} width={12} height={12} fill={compra.cuotas_en_mora.cantidad ? "red" : "blue"} /> {compra.cuotas_en_mora.cantidad ? "ver cuotas" : "ver pagos"}</SText>
                                         </SView>
                                     </SView>
                                 </SView>
@@ -413,6 +557,7 @@ export default class Pagos extends Component {
             </SView>
         );
     }
+
 
     render() {
         return (
