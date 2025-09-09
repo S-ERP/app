@@ -3,7 +3,6 @@ import { SView, SPage, SText, SHr, SScrollView2, STheme } from 'servisofts-compo
 import SIconApp from '../../Assets/SIconApp';
 import PopupPagoCuota from './Components/PopupPagoCuota3';
 
-// Datos
 const data = {
     proveedor: {
         id: 1,
@@ -11,11 +10,11 @@ const data = {
         ruc: "20123456789",
         telefono: "+51 987 654 321",
         direccion: "Av. Principal 123 - Lima",
-        deudaTotal: 98500.00,
+        deudaTotal: 24233.31, // Sum of unpaid cuotas in 2025 (calculated below)
         limiteCredito: 150000.00,
-        comprasPendientes: 6,
+        comprasPendientes: 5, // 5 purchases with pending cuotas
         ultimoPago: {
-            fecha: "2024-03-01",
+            fecha: "2025-03-14",
             monto: 5000.00,
             referencia: "Transferencia bancaria BCP #123456"
         }
@@ -24,59 +23,111 @@ const data = {
         {
             id: 101,
             descripcion: "Productos de limpieza y mantenimiento",
-            fecha: "2024-01-14",
+            fecha: "2024-12-01",
             total: 8500.00,
             estado: "Pendiente",
-            cuotas: 5,
+            cuotas: 12,
             metodoPago: "Transferencia",
             cuotasDetalle: [
-                { numero: 1, monto: 2833.33, vencimiento: "2024-02-14", fechaPago: "2024-02-13", estado: "Pagado" },
-                { numero: 2, monto: 2833.33, vencimiento: "2024-03-14", fechaPago: null, estado: "Pendiente" },
-                { numero: 3, monto: 2833.34, vencimiento: "2024-04-14", fechaPago: null, estado: "Pendiente" },
-                { numero: 4, monto: 2833.34, vencimiento: "2024-05-14", fechaPago: null, estado: "Pendiente" },
-                { numero: 5, monto: 2833.34, vencimiento: "2024-06-14", fechaPago: null, estado: "Pendiente" }
+                { numero: 1, monto: 708.33, vencimiento: "2025-01-14", fechaPago: "2025-01-13", estado: "Pagado" },
+                { numero: 2, monto: 708.33, vencimiento: "2025-02-14", fechaPago: "2025-02-13", estado: "Pagado" },
+                { numero: 3, monto: 708.33, vencimiento: "2025-03-14", fechaPago: "2025-03-13", estado: "Pagado" },
+                { numero: 4, monto: 708.33, vencimiento: "2025-04-14", fechaPago: null, estado: "Vencido" },
+                { numero: 5, monto: 708.33, vencimiento: "2025-05-14", fechaPago: null, estado: "Vencido" },
+                { numero: 6, monto: 708.33, vencimiento: "2025-06-14", fechaPago: null, estado: "Vencido" },
+                { numero: 7, monto: 708.33, vencimiento: "2025-07-14", fechaPago: null, estado: "Pendiente" },
+                { numero: 8, monto: 708.33, vencimiento: "2025-08-14", fechaPago: null, estado: "Pendiente" },
+                { numero: 9, monto: 708.33, vencimiento: "2025-09-14", fechaPago: null, estado: "Pendiente" },
+                { numero: 10, monto: 708.33, vencimiento: "2025-10-14", fechaPago: null, estado: "Pendiente" },
+                { numero: 11, monto: 708.33, vencimiento: "2025-11-14", fechaPago: null, estado: "Pendiente" },
+                { numero: 12, monto: 708.37, vencimiento: "2025-12-14", fechaPago: null, estado: "Pendiente" } // Adjusted for rounding
             ]
         },
         {
             id: 102,
             descripcion: "Suministros de oficina",
-            fecha: "2024-02-19",
+            fecha: "2024-12-05",
             total: 7250.00,
             estado: "Pendiente",
-            cuotas: 2,
+            cuotas: 10,
             metodoPago: "Tarjeta de crédito",
             cuotasDetalle: [
-                { numero: 1, monto: 3625.00, vencimiento: "2024-03-19", fechaPago: null, estado: "Pendiente" },
-                { numero: 2, monto: 3625.00, vencimiento: "2024-04-19", fechaPago: null, estado: "Pendiente" }
+                { numero: 1, monto: 725.00, vencimiento: "2025-01-19", fechaPago: "2025-01-18", estado: "Pagado" },
+                { numero: 2, monto: 725.00, vencimiento: "2025-02-19", fechaPago: "2025-02-18", estado: "Pagado" },
+                { numero: 3, monto: 725.00, vencimiento: "2025-03-19", fechaPago: null, estado: "Vencido" },
+                { numero: 4, monto: 725.00, vencimiento: "2025-04-19", fechaPago: null, estado: "Vencido" },
+                { numero: 5, monto: 725.00, vencimiento: "2025-05-19", fechaPago: null, estado: "Vencido" },
+                { numero: 6, monto: 725.00, vencimiento: "2025-06-19", fechaPago: null, estado: "Vencido" },
+                { numero: 7, monto: 725.00, vencimiento: "2025-07-19", fechaPago: null, estado: "Pendiente" },
+                { numero: 8, monto: 725.00, vencimiento: "2025-08-19", fechaPago: null, estado: "Pendiente" },
+                { numero: 9, monto: 725.00, vencimiento: "2025-09-19", fechaPago: null, estado: "Pendiente" },
+                { numero: 10, monto: 725.00, vencimiento: "2025-10-19", fechaPago: null, estado: "Pendiente" }
             ]
         },
         {
             id: 103,
             descripcion: "Muebles de oficina",
-            fecha: "2024-02-25",
+            fecha: "2024-12-10",
             total: 12000.00,
-            estado: "Pagado",
-            cuotas: 4,
+            estado: "Pendiente",
+            cuotas: 8,
             metodoPago: "Cheque",
             cuotasDetalle: [
-                { numero: 1, monto: 3000.00, vencimiento: "2024-03-25", fechaPago: "2024-03-25", estado: "Pagado" },
-                { numero: 2, monto: 3000.00, vencimiento: "2024-04-25", fechaPago: "2024-04-26", estado: "Pagado" },
-                { numero: 3, monto: 3000.00, vencimiento: "2024-05-25", fechaPago: "2024-05-24", estado: "Pagado" },
-                { numero: 4, monto: 3000.00, vencimiento: "2024-06-25", fechaPago: "2024-06-25", estado: "Pagado" }
+                { numero: 1, monto: 1500.00, vencimiento: "2025-01-25", fechaPago: "2025-01-24", estado: "Pagado" },
+                { numero: 2, monto: 1500.00, vencimiento: "2025-02-25", fechaPago: "2025-02-24", estado: "Pagado" },
+                { numero: 3, monto: 1500.00, vencimiento: "2025-03-25", fechaPago: "2025-03-24", estado: "Pagado" },
+                { numero: 4, monto: 1500.00, vencimiento: "2025-04-25", fechaPago: null, estado: "Vencido" },
+                { numero: 5, monto: 1500.00, vencimiento: "2025-05-25", fechaPago: null, estado: "Vencido" },
+                { numero: 6, monto: 1500.00, vencimiento: "2025-06-25", fechaPago: null, estado: "Vencido" },
+                { numero: 7, monto: 1500.00, vencimiento: "2025-07-25", fechaPago: null, estado: "Pendiente" },
+                { numero: 8, monto: 1500.00, vencimiento: "2025-08-25", fechaPago: null, estado: "Pendiente" }
             ]
         },
         {
             id: 109,
-            descripcion: "Productos de limpieza y mantenimiento",
-            fecha: "2024-01-14",
-            total: 8500.00,
+            descripcion: "Software empresarial",
+            fecha: "2024-12-15",
+            total: 18000.00,
             estado: "Pendiente",
-            cuotas: 3,
+            cuotas: 15,
             metodoPago: "Transferencia",
             cuotasDetalle: [
-                { numero: 1, monto: 2833.33, vencimiento: "2024-02-14", fechaPago: null, estado: "Pendiente" },
-                { numero: 2, monto: 2833.33, vencimiento: "2024-03-14", fechaPago: null, estado: "Pendiente" },
-                { numero: 3, monto: 2833.34, vencimiento: "2024-04-14", fechaPago: null, estado: "Pendiente" }
+                { numero: 1, monto: 1200.00, vencimiento: "2025-01-30", fechaPago: "2025-01-29", estado: "Pagado" },
+                { numero: 2, monto: 1200.00, vencimiento: "2025-02-28", fechaPago: "2025-02-27", estado: "Pagado" },
+                { numero: 3, monto: 1200.00, vencimiento: "2025-03-30", fechaPago: null, estado: "Vencido" },
+                { numero: 4, monto: 1200.00, vencimiento: "2025-04-30", fechaPago: null, estado: "Vencido" },
+                { numero: 5, monto: 1200.00, vencimiento: "2025-05-30", fechaPago: null, estado: "Vencido" },
+                { numero: 6, monto: 1200.00, vencimiento: "2025-06-30", fechaPago: null, estado: "Vencido" },
+                { numero: 7, monto: 1200.00, vencimiento: "2025-07-30", fechaPago: null, estado: "Pendiente" },
+                { numero: 8, monto: 1200.00, vencimiento: "2025-08-30", fechaPago: null, estado: "Pendiente" },
+                { numero: 9, monto: 1200.00, vencimiento: "2025-09-30", fechaPago: null, estado: "Pendiente" },
+                { numero: 10, monto: 1200.00, vencimiento: "2025-10-30", fechaPago: null, estado: "Pendiente" },
+                { numero: 11, monto: 1200.00, vencimiento: "2025-11-30", fechaPago: null, estado: "Pendiente" },
+                { numero: 12, monto: 1200.00, vencimiento: "2025-12-30", fechaPago: null, estado: "Pendiente" },
+                { numero: 13, monto: 1200.00, vencimiento: "2026-01-30", fechaPago: null, estado: "Pendiente" },
+                { numero: 14, monto: 1200.00, vencimiento: "2026-02-28", fechaPago: null, estado: "Pendiente" },
+                { numero: 15, monto: 1200.00, vencimiento: "2026-03-30", fechaPago: null, estado: "Pendiente" }
+            ]
+        },
+        {
+            id: 110,
+            descripcion: "Materiales de construcción",
+            fecha: "2024-12-20",
+            total: 10000.00,
+            estado: "Pendiente",
+            cuotas: 10,
+            metodoPago: "Efectivo",
+            cuotasDetalle: [
+                { numero: 1, monto: 1000.00, vencimiento: "2025-01-31", fechaPago: "2025-01-30", estado: "Pagado" },
+                { numero: 2, monto: 1000.00, vencimiento: "2025-02-28", fechaPago: null, estado: "Vencido" },
+                { numero: 3, monto: 1000.00, vencimiento: "2025-03-31", fechaPago: null, estado: "Vencido" },
+                { numero: 4, monto: 1000.00, vencimiento: "2025-04-30", fechaPago: null, estado: "Vencido" },
+                { numero: 5, monto: 1000.00, vencimiento: "2025-05-31", fechaPago: null, estado: "Vencido" },
+                { numero: 6, monto: 1000.00, vencimiento: "2025-06-30", fechaPago: null, estado: "Vencido" },
+                { numero: 7, monto: 1000.00, vencimiento: "2025-07-31", fechaPago: null, estado: "Pendiente" },
+                { numero: 8, monto: 1000.00, vencimiento: "2025-08-31", fechaPago: null, estado: "Pendiente" },
+                { numero: 9, monto: 1000.00, vencimiento: "2025-09-30", fechaPago: null, estado: "Pendiente" },
+                { numero: 10, monto: 1000.00, vencimiento: "2025-10-31", fechaPago: null, estado: "Pendiente" }
             ]
         }
     ],
