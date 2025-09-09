@@ -323,6 +323,12 @@ export default class PopupPagoCuota3 extends Component {
     };
 
     render() {
+
+        const compras = this.props.editObject;
+        console.log("todo popu " + JSON.stringify(compras))
+
+        return <SText> hola {compras.descripcion}</SText>
+
         const compra = this.getCompraData();
         const { showPaidCuotas, showAllPendingCuotas } = this.state;
         const today = new Date('2025-09-08'); // Fixed to September 8, 2025
