@@ -14,7 +14,7 @@ const data = {
         }
     }
 };
-
+"15843bf1-0ee2-467d-8052-aa394d2cf477"
 // Colores
 const COLOR_CARD = STheme.color.lightGray + '44';
 const COLOR_TEXT = STheme.color.text;
@@ -31,9 +31,11 @@ export default class PopupPagoCuota3 extends Component {
                         width: "100%",
                         maxWidth: 600,
                         maxHeight: "90%",
-                        padding: 16,
+                        padding: 8,
+                        // padding: 16,
                         overflow: 'hidden',
-                        backgroundColor: STheme.color.background,
+                        backgroundColor: STheme.color.danger,
+                        // backgroundColor: STheme.color.background,
                         borderRadius: 12,
                         borderWidth: 1,
                         borderColor: COLOR_BORDER,
@@ -305,8 +307,7 @@ export default class PopupPagoCuota3 extends Component {
             // accessibilityLabel="Pagar compra completa"
             >
 
-                <SView row center
-                    style={{ borderRadius: 4, paddingVertical: 8, paddingHorizontal: 8, borderWidth: 1, backgroundColor: isAnyCuotaSelected ? COLOR_ACCENT : STheme.color.gray, borderColor: isAnyCuotaSelected ? COLOR_ACCENT : STheme.color.gray }}>
+                <SView row center style={{ borderRadius: 4, paddingVertical: 8, paddingHorizontal: 8, borderWidth: 1, backgroundColor: isAnyCuotaSelected ? COLOR_ACCENT : STheme.color.gray, borderColor: isAnyCuotaSelected ? COLOR_ACCENT : STheme.color.gray }}>
                     <SIconApp name='pagotarjeta' width={16} fill={STheme.color.white} /><SText fontSize={12} bold color={STheme.color.white}>  Pagar Ahora</SText>
                 </SView>
             </SView>
@@ -366,6 +367,7 @@ export default class PopupPagoCuota3 extends Component {
         return (
             <SView col={'xs-12'} flex style={{ flex: 1 }} accessibilityLabel="Contenedor principal de gestión de cuotas">
                 {/* Header */}
+                {/* <SView row center style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: COLOR_BORDER }}> */}
                 <SView row center style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: COLOR_BORDER }}>
                     <SView flex>
                         <SText col={'xs-12'} fontSize={20} bold color={COLOR_TEXT} numberOfLines={1}>Gestión de Cuotas - Compra #{compra.id}</SText>
@@ -396,42 +398,47 @@ export default class PopupPagoCuota3 extends Component {
                         style={{
                             backgroundColor: COLOR_CARD,
                             borderRadius: 8,
-                            padding: 16,
+                            padding: 8,
+                            // padding: 16,
                             borderWidth: 1,
                             borderColor: COLOR_BORDER,
                         }}
                     >
-                        <SView col={'xs-12'} backgroundColor='red'>
+                        <SView col={'xs-12'} >
+                            {/* <SView col={'xs-12'} backgroundColor='red'> */}
                             <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la Compra</SText>
                         </SView>
                         <SHr h={12} />
                         <SView col={'xs-12'} row  >
-                            <SView flex>
-                                <SText fontSize={14} color={COLOR_TEXT} numberOfLines={1} ellipsizeMode="tail">Descripción: {compra.descripcion}</SText>
-                                <SHr h={4} />
-                                <SText fontSize={14} color={COLOR_TEXT}>Total: <SText fontSize={16} bold color={COLOR_TEXT}>{compra.moneda} {compra.total.toFixed(2)}</SText></SText>
-                                <SHr h={4} />
-                                <SText fontSize={14} color={COLOR_TEXT}>Fecha: {compra.fecha}</SText>
-                                <SHr h={4} />
-                                <SText fontSize={14} color={COLOR_TEXT}>Estado: {this.labelEstado2(compra.estado)}</SText>
-                                <SHr h={8} />
-                                <SView col={'xs-12'} row>
-                                    <SView col={'xs-6'}>
-                                        <SText fontSize={14} color={COLOR_TEXT}>Saldo Pendiente: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSaldo}</SText></SText>
-                                    </SView>
-                                    <SView col={'xs-6'} >
-                                        <SText fontSize={14} color={COLOR_TEXT}>Monto Seleccionado: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSeleccionado}</SText></SText>
-                                    </SView>
+                            <SText fontSize={14} color={COLOR_TEXT} numberOfLines={1} ellipsizeMode="tail">Descripción: {compra.descripcion}</SText>
+                            <SHr h={4} />
+                            <SText fontSize={14} color={COLOR_TEXT}>Total: <SText fontSize={16} bold color={COLOR_TEXT}>{compra.moneda} {compra.total.toFixed(2)}</SText></SText>
+                            <SHr h={4} />
+                            <SText fontSize={14} color={COLOR_TEXT}>Fecha: {compra.fecha}</SText>
+                            <SHr h={4} />
+                            <SText fontSize={14} color={COLOR_TEXT}>Estado: {this.labelEstado2(compra.estado)}</SText>
+                            <SHr h={8} />
+                            <SView col={'xs-12'} row>
+                                <SView col={'xs-6'}>
+                                    <SText fontSize={14} color={COLOR_TEXT}>Saldo Pendiente: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSaldo}</SText></SText>
+                                </SView>
+                                <SView col={'xs-6'} >
+                                    <SText fontSize={14} color={COLOR_TEXT}>Monto Seleccionado: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSeleccionado}</SText></SText>
                                 </SView>
                             </SView>
-
-
                         </SView>
-                        <SView width={120} backgroundColor='yellow' style={{ position: "absolute", top: 16, right: 16 }}>
+                        {/* <SHr h={16} />
+                        <SView col={'xs-12'} row center>
+                            <SView flex>
+                                {this.botonEstado(compra.estado)}
+                            </SView>
+                        </SView> */}
+
+                        {/* <SView width={120} backgroundColor='yellow' style={{ position: "absolute", top: 16, right: 16 }}>
                             <SView width={120} height={40} backgroundColor='cyan' center >
                                 {this.botonEstado(compra.estado)}
                             </SView>
-                        </SView>
+                        </SView> */}
                     </SView>
                 </SView>
                 <SHr h={16} />
