@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { SView, SPage, SText, SHr, SScrollView2, STheme, SDate, SMath, SIcon } from 'servisofts-component';
-import PopupPagoCuota from './Components/PopupPagoCuota';
+import PopupPagoCuota from './Components/PopupPagoCuota2';
 import MDL from '../../MDL';
 import SIconApp from '../../Assets/SIconApp';
 
@@ -25,7 +25,7 @@ const dataConfig = {
     },
 };
 
-export default class Pagos extends Component {
+export default class Pagos2 extends Component {
     loadData() {
         const key_proveedor = '15843bf1-0ee2-467d-8052-aa394d2cf477';
         return MDL.compra_venta.getTransaccionCuotas(key_proveedor)

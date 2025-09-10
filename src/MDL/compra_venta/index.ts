@@ -181,4 +181,15 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     return resp.data || [];
   }
 
+  async getCuotasCompras(key_compra_venta: String) {
+    const resp: any = await SSocket.sendPromise({
+      service: "compra_venta",
+      component: "reporte",
+      type: "execute_function",
+      func: "_get_cuotas_compras",
+      params: ["'" + key_compra_venta + "'"],
+    });
+    return resp.data || [];
+  }
+
 }
