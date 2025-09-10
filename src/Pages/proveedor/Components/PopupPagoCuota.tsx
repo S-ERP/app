@@ -10,13 +10,11 @@ type Props = {
     onCancel?: Function,
     onSuccess?: Function,
 };
-
 const COLOR_VERDE_CLARO = "#d8edd8";
 const COLOR_VERDE_OSCURO = "#107003ff";
 const COLOR_ROJO_CLARO = "#ece3dd";
 const COLOR_ROJO_OSCURO = "#d93145";
-
-export default class PopupPagoCuota extends Component<Props> {
+ export default class PopupPagoCuota extends Component<Props> {
     // Método estático para abrir el popup
     static open(props: Props) {
         SPopup.open({
