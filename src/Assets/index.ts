@@ -277,6 +277,9 @@ import pagotransferencia, { ReactComponent as pagotransferenciaW, } from "./svg/
 import pagopagare, { ReactComponent as pagopagareW, } from "./svg/cajatipopagos/pagopagare.svg";
 import pagoqr, { ReactComponent as pagoqrW, } from "./svg/cajatipopagos/pagoqr.svg";
 
+import toolinfo, { ReactComponent as toolinfoW, } from "./svg/toolinfo.svg";
+import toolquestion, { ReactComponent as toolquestionW, } from "./svg/toolquestion.svg";
+
 
 export const svg = {
   Logo: { Native: Logo, Web: LogoW },
@@ -439,6 +442,9 @@ export const svg = {
   iconRight: { Native: iconRight, Web: iconRightW },
   iconAdd: { Native: iconAdd, Web: iconAddW },
   Muser: { Native: Muser, Web: MuserW },
+  
+  toolinfo: { Native: toolinfo, Web: toolinfoW },
+  toolquestion: { Native: toolquestion, Web: toolquestionW },
 
   ...blender,
 };
