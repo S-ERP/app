@@ -121,7 +121,6 @@ export default class PopupPagoCuota extends Component {
             const cuota = compra.cuotasDetalle[i];
             if (cuota.estado !== 'Pagado') {
                 const cuotaDate = new SDate(cuota.vencimiento, 'yyyy-MM-dd');
-                // Use isEqual or string comparison instead of equal
                 newSelectedCuotas[cuota.numero] = cuotaDate.isBefore(selectedDate) || cuotaDate.isEqual?.(selectedDate) || cuotaDate.toString('yyyy-MM-dd') === selectedDate.toString('yyyy-MM-dd');
             }
         }
@@ -139,7 +138,6 @@ export default class PopupPagoCuota extends Component {
             const cuota = compra.cuotasDetalle[i];
             if (cuota.estado !== 'Pagado') {
                 const cuotaDate = new SDate(cuota.vencimiento, 'yyyy-MM-dd');
-                // Use isEqual or string comparison instead of equal
                 if (cuotaDate.isBefore(selectedDate) || cuotaDate.isEqual?.(selectedDate) || cuotaDate.toString('yyyy-MM-dd') === selectedDate.toString('yyyy-MM-dd')) {
                     newSelectedCuotas[cuota.numero] = false;
                 }
@@ -357,21 +355,24 @@ export default class PopupPagoCuota extends Component {
                 }}
                 activeOpacity={0.7}
                 accessibilityLabel="Pagar compra completa"
+                style={{ width: 120, height: 40 }}
             >
                 <SView
                     row
                     center
                     style={{
-                        borderRadius: 4,
-                        paddingVertical: 8,
-                        paddingHorizontal: 8,
+                        borderRadius: 8,
+                        paddingVertical: 10,
+                        paddingHorizontal: 12,
                         borderWidth: 1,
                         backgroundColor: isAnyCuotaSelected ? COLOR_ACCENT : STheme.color.gray,
                         borderColor: isAnyCuotaSelected ? COLOR_ACCENT : STheme.color.gray,
+                        height: '100%',
                     }}
                 >
-                    <SIconApp name='pagotarjeta' width={16} fill={STheme.color.white} />
-                    <SText fontSize={12} bold color={STheme.color.white}> Pagar Ahora</SText>
+                    <SIconApp name='pagotarjeta' width={18} fill={STheme.color.white} />
+                    <SView width={8} />
+                    <SText fontSize={14} bold color={STheme.color.white}>Pagar Ahora</SText>
                 </SView>
             </SView>
         );
@@ -438,170 +439,127 @@ export default class PopupPagoCuota extends Component {
 
         return (
             <SView col={'xs-12'} flex style={{ flex: 1 }} accessibilityLabel="Contenedor principal de gestión de cuotas">
-                {/* Header */}
-                <SView row center style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: COLOR_BORDER }}>
-                    <SView flex>
-                        <SText col={'xs-12'} fontSize={20} bold color={COLOR_TEXT} numberOfLines={1}>
-                            Gestión de Cuotas - Compra #{compra.id}
-                        </SText>
-                    </SView>
-                    <SView width={40} style={{ overflow: "hidden", alignItems: "flex-end" }}>
-                        <SView
-                            width={24}
-                            height={24}
-                            onPress={this.props.onCancel}
-                            style={{ opacity: 0.6 }}
-                            accessibilityLabel="Cerrar popup"
-                            activeOpacity={0.7}
-                        >
-                            <SIcon name="Close" fill={COLOR_TEXT} width={24} height={24} />
+                <ScrollView
+                    style={{ width: '100%' }}
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        paddingBottom: 80, // Extra padding to avoid overlap with bottom bar
+                    }}
+                >
+                    {/* Header */}
+                    <SView row center style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: COLOR_BORDER }}>
+                        <SView flex>
+                            <SText col={'xs-12'} fontSize={20} bold color={COLOR_TEXT} numberOfLines={1}>
+                                Gestión de Cuotas - Compra #{compra.id}
+                            </SText>
                         </SView>
-                    </SView>
-                </SView>
-                <SHr h={16} />
-
-                {/* Detalles de la Compra */}
-                <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
-                    <SView
-                        col={'xs-12'}
-                        style={{
-                            backgroundColor: COLOR_CARD,
-                            borderRadius: 8,
-                            padding: 16,
-                            borderWidth: 1,
-                            borderColor: COLOR_BORDER,
-                        }}
-                    >
-                        <SView col={'xs-12'}>
-                            <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la Compra</SText>
-                        </SView>
-                        <SHr h={12} />
-                        <SView col={'xs-12'} row>
-                            <SText fontSize={14} color={COLOR_TEXT} numberOfLines={1} ellipsizeMode="tail">
-                                Descripción: {compra.descripcion}
-                            </SText>
-                            <SHr h={4} />
-                            <SText fontSize={14} color={COLOR_TEXT}>
-                                Total: <SText fontSize={16} bold color={COLOR_TEXT}>{compra.moneda} {compra.total.toFixed(2)}</SText>
-                            </SText>
-                            <SHr h={4} />
-                            <SText fontSize={14} color={COLOR_TEXT}>
-                                Fecha: {new SDate(compra.fecha, 'yyyy-MM-dd').toString('dd/MM/yyyy')}
-                            </SText>
-                            <SHr h={4} />
-                            <SText fontSize={14} color={COLOR_TEXT}>
-                                Estado: {this.labelEstado2(compra.estado)}
-                            </SText>
-                            <SHr h={8} />
-                            <SView col={'xs-12'} row>
-                                <SView col={'xs-6'}>
-                                    <SText fontSize={14} color={COLOR_TEXT}>
-                                        Saldo Pendiente: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSaldo}</SText>
-                                    </SText>
-                                </SView>
-                                <SView col={'xs-6'}>
-                                    <SText fontSize={14} color={COLOR_TEXT}>
-                                        Monto Seleccionado: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSeleccionado}</SText>
-                                    </SText>
-                                </SView>
-                                <SView col={'xs-4'}>
-                                    <SText fontSize={14} color={COLOR_TEXT}>
-                                        Cantidad cuotas: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.cuotas?.cantidad ?? 0}</SText>
-                                    </SText>
-                                </SView>
-                                <SView col={'xs-4'}>
-                                    <SText fontSize={14} color={COLOR_TEXT}>
-                                        Monto Total cuotas: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {compra.cuotas?.total?.toFixed(2) ?? 0}</SText>
-                                    </SText>
-                                </SView>
-                                <SView col={'xs-4'}>
-                                    <SText fontSize={14} color={COLOR_TEXT}>
-                                        Monto Total pagado: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {compra.monto_amortizado?.toFixed(2) ?? 0}</SText>
-                                    </SText>
-                                </SView>
-                                <SView col={'xs-4'}>
-                                    <SText fontSize={14} color={COLOR_TEXT}>
-                                        Cant cuotas Pendientes: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.cuotas_en_mora?.cantidad ?? 0}</SText>
-                                    </SText>
-                                </SView>
-                                <SView col={'xs-4'}>
-                                    <SText fontSize={14} color={COLOR_TEXT}>
-                                        Monto Total cuotas Pendientes: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {compra.cuotas_en_mora?.monto?.toFixed(2) ?? 0}</SText>
-                                    </SText>
-                                </SView>
-                                <SView col={'xs-4'}>
-                                    <SText fontSize={14} color={COLOR_TEXT}>
-                                        Fecha cuotas Pendientes: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.cuotas_en_mora?.min_fecha ? new SDate(compra.cuotas_en_mora.min_fecha).toString('dd/MM/yyyy') : '-'}</SText>
-                                    </SText>
-                                </SView>
+                        <SView width={40} style={{ overflow: "hidden", alignItems: "flex-end" }}>
+                            <SView
+                                width={24}
+                                height={24}
+                                onPress={this.props.onCancel}
+                                style={{ opacity: 0.6 }}
+                                accessibilityLabel="Cerrar popup"
+                                activeOpacity={0.7}
+                            >
+                                <SIcon name="Close" fill={COLOR_TEXT} width={24} height={24} />
                             </SView>
                         </SView>
                     </SView>
-                </SView>
-                <SHr h={16} />
+                    <SHr h={16} />
 
-                {/* Cuotas Pendientes Header and Buttons */}
-                <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
-                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                        <SView width={140} row>
-                            <SText fontSize={16} bold color={COLOR_TEXT}>Cuotas Pendientes</SText>
-                        </SView>
-                        <SView flex style={{ alignItems: "flex-end" }}>
-                            <SView row>
-                                {hasPaidCuotas && (
-                                    <SView
-                                        row
-                                        center
-                                        style={{
-                                            paddingVertical: 4,
-                                            paddingHorizontal: 8,
-                                            borderRadius: 4,
-                                            borderWidth: 1,
-                                            borderColor: COLOR_ACCENT + '80',
-                                            marginRight: 8,
-                                        }}
-                                        onPress={this.togglePaidCuotas}
-                                        activeOpacity={0.7}
-                                        accessibilityLabel={this.showPaidCuotas ? 'Ocultar anteriores' : 'Ver anteriores'}
-                                    >
-                                        <SText fontSize={12} color={COLOR_ACCENT}>
-                                            {this.showPaidCuotas ? '- Pagadas' : '+ Pagadas'}
+                    {/* Detalles de la Compra */}
+                    <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
+                        <SView
+                            col={'xs-12'}
+                            style={{
+                                backgroundColor: COLOR_CARD,
+                                borderRadius: 8,
+                                padding: 16,
+                                borderWidth: 1,
+                                borderColor: COLOR_BORDER,
+                            }}
+                        >
+                            <SView col={'xs-12'}>
+                                <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la Compra</SText>
+                            </SView>
+                            <SHr h={12} />
+                            <SView col={'xs-12'} row>
+                                <SText fontSize={14} color={COLOR_TEXT} numberOfLines={1} ellipsizeMode="tail">
+                                    Descripción: {compra.descripcion}
+                                </SText>
+                                <SHr h={4} />
+                                <SText fontSize={14} color={COLOR_TEXT}>
+                                    Total: <SText fontSize={16} bold color={COLOR_TEXT}>{compra.moneda} {compra.total.toFixed(2)}</SText>
+                                </SText>
+                                <SHr h={4} />
+                                <SText fontSize={14} color={COLOR_TEXT}>
+                                    Fecha: {new SDate(compra.fecha, 'yyyy-MM-dd').toString('dd/MM/yyyy')}
+                                </SText>
+                                <SHr h={4} />
+                                <SText fontSize={14} color={COLOR_TEXT}>
+                                    Estado: {this.labelEstado2(compra.estado)}
+                                </SText>
+                                <SHr h={8} />
+                                <SView col={'xs-12'} row>
+                                    <SView col={'xs-6'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Saldo Pendiente: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSaldo}</SText>
                                         </SText>
                                     </SView>
-                                )}
-                                {hasMoreThanTwoFuturePending && (
-                                    <SView
-                                        row
-                                        center
-                                        style={{
-                                            paddingVertical: 4,
-                                            paddingHorizontal: 8,
-                                            borderRadius: 4,
-                                            borderWidth: 1,
-                                            borderColor: COLOR_ACCENT + '80',
-                                        }}
-                                        onPress={this.toggleAllPendingCuotas}
-                                        activeOpacity={0.7}
-                                        accessibilityLabel="Ver más cuotas pendientes"
-                                    >
-                                        <SText fontSize={12} color={COLOR_ACCENT}>+ Pendientes</SText>
+                                    <SView col={'xs-6'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Monto Seleccionado: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSeleccionado}</SText>
+                                        </SText>
                                     </SView>
-                                )}
+                                    <SView col={'xs-4'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Cantidad cuotas: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.cuotas?.cantidad ?? 0}</SText>
+                                        </SText>
+                                    </SView>
+                                    <SView col={'xs-4'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Monto Total cuotas: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {compra.cuotas?.total?.toFixed(2) ?? 0}</SText>
+                                        </SText>
+                                    </SView>
+                                    <SView col={'xs-4'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Monto Total pagado: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {compra.monto_amortizado?.toFixed(2) ?? 0}</SText>
+                                        </SText>
+                                    </SView>
+                                    <SView col={'xs-4'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Cant cuotas Pendientes: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.cuotas_en_mora?.cantidad ?? 0}</SText>
+                                        </SText>
+                                    </SView>
+                                    <SView col={'xs-4'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Monto Total cuotas Pendientes: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {compra.cuotas_en_mora?.monto?.toFixed(2) ?? 0}</SText>
+                                        </SText>
+                                    </SView>
+                                    <SView col={'xs-4'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Fecha cuotas Pendientes: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.cuotas_en_mora?.min_fecha ? new SDate(compra.cuotas_en_mora.min_fecha).toString('dd/MM/yyyy') : '-'}</SText>
+                                        </SText>
+                                    </SView>
+                                </SView>
                             </SView>
                         </SView>
                     </SView>
-                </SView>
-                <SHr h={12} />
+                    <SHr h={16} />
 
-                {/* ScrollView for Cuotas */}
-                <SView col={'xs-12'} flex style={{ flex: 1, paddingHorizontal: 16 }}>
-                    <ScrollView
-                        style={{ width: '100%' }}
-                        contentContainerStyle={{
-                            flexGrow: 1,
-                            paddingBottom: 16,
-                        }}
-                    >
+                    {/* Cuotas Pendientes Header */}
+                    <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
+                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                            <SView width={140} row>
+                                <SText fontSize={16} bold color={COLOR_TEXT}>Cuotas Pendientes</SText>
+                            </SView>
+                        </SView>
+                    </SView>
+                    <SHr h={12} />
+
+                    {/* Cuotas */}
+                    <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
                         {filteredCuotas.length > 0 ? (
                             filteredCuotas.map((cuota) => (
                                 <this.Item
@@ -621,10 +579,71 @@ export default class PopupPagoCuota extends Component {
                                 No hay cuotas asociadas a esta compra.
                             </SText>
                         )}
-                    </ScrollView>
-                    <SView col={'xs-12'} row center style={{ paddingVertical: 16 }}>
-                        {this.botonEstado(compra.estado)}
                     </SView>
+                    <SHr h={16} />
+                </ScrollView>
+
+                {/* Bottom Button Bar */}
+                <SView
+                    col={'xs-12'}
+                    style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        backgroundColor: STheme.color.background,
+                        borderTopWidth: 1,
+                        borderTopColor: COLOR_BORDER,
+                        padding: 12,
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
+                    <SView row>
+                        {hasPaidCuotas && (
+                            <SView
+                                row
+                                center
+                                style={{
+                                    paddingVertical: 8,
+                                    paddingHorizontal: 12,
+                                    borderRadius: 8,
+                                    borderWidth: 1,
+                                    borderColor: COLOR_ACCENT,
+                                    marginRight: 8,
+                                    height: 40,
+                                }}
+                                onPress={this.togglePaidCuotas}
+                                activeOpacity={0.7}
+                                accessibilityLabel={this.showPaidCuotas ? 'Ocultar anteriores' : 'Ver anteriores'}
+                            >
+                                <SText fontSize={14} color={COLOR_ACCENT}>
+                                    {this.showPaidCuotas ? '- Pagadas' : '+ Pagadas'}
+                                </SText>
+                            </SView>
+                        )}
+                        {hasMoreThanTwoFuturePending && (
+                            <SView
+                                row
+                                center
+                                style={{
+                                    paddingVertical: 8,
+                                    paddingHorizontal: 12,
+                                    borderRadius: 8,
+                                    borderWidth: 1,
+                                    borderColor: COLOR_ACCENT,
+                                    height: 40,
+                                }}
+                                onPress={this.toggleAllPendingCuotas}
+                                activeOpacity={0.7}
+                                accessibilityLabel="Ver más cuotas pendientes"
+                            >
+                                <SText fontSize={14} color={COLOR_ACCENT}>+ Pendientes</SText>
+                            </SView>
+                        )}
+                    </SView>
+                    {this.botonEstado(compra.estado)}
                 </SView>
             </SView>
         );

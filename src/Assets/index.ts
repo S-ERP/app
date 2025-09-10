@@ -280,6 +280,8 @@ import pagoqr, { ReactComponent as pagoqrW, } from "./svg/cajatipopagos/pagoqr.s
 import toolinfo, { ReactComponent as toolinfoW, } from "./svg/toolinfo.svg";
 import toolquestion, { ReactComponent as toolquestionW, } from "./svg/toolquestion.svg";
 
+import bien, { ReactComponent as bienW, } from "./svg/bien.svg";
+
 
 export const svg = {
   Logo: { Native: Logo, Web: LogoW },
@@ -442,9 +444,10 @@ export const svg = {
   iconRight: { Native: iconRight, Web: iconRightW },
   iconAdd: { Native: iconAdd, Web: iconAddW },
   Muser: { Native: Muser, Web: MuserW },
-  
+
   toolinfo: { Native: toolinfo, Web: toolinfoW },
   toolquestion: { Native: toolquestion, Web: toolquestionW },
+  bien: { Native: bien, Web: bienW },
 
   ...blender,
 };
