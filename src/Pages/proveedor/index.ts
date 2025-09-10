@@ -3,6 +3,7 @@ import { SPage } from "servisofts-component";
 import Perfil from "./Perfil";
 import Pagos from "./Pagos";
 import Pagos3 from "./Pagos3";
+import Pagos2 from "./Pagos2";
 export const Parent = {
   name: "proveedor",
   path: `/proveedor`,
@@ -10,6 +11,7 @@ export const Parent = {
 export default SPage.combinePages(Parent.name, {
   "": Lista,
   "pagos": Pagos,
+  "pagos2": Pagos2,
   "pagos3": Pagos3,
   lista: Lista,
   perfil: Perfil,

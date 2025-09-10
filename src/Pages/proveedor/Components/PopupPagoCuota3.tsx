@@ -3,26 +3,65 @@ import { ScrollView } from 'react-native';
 import { SNotification, SPopup, SText, STheme, SView, SIcon, SHr } from 'servisofts-component';
 import SIconApp from '../../../Assets/SIconApp';
 
+// Tipos
+interface Cuota {
+    numero: number;
+    estado: string;
+    vencimiento: string;
+    fechaPago: string | null;
+    monto: number;
+    __select?: boolean;
+}
+
+interface Compra {
+    id: number;
+    descripcion: string;
+    estado: string;
+    fecha: string;
+    total: number;
+    cuotasDetalle: Cuota[];
+    moneda: string;
+}
+
+interface Props {
+    key_empresa: string;
+    editObject?: Partial<Compra>;
+    onCancel?: () => void;
+    onSuccess?: (e: { cuota: Cuota; monto: number }) => void;
+}
+
+interface State {
+    montoPagar: { [key: number]: string };
+    isLoading: boolean;
+}
+
 // Configuración (mismo objeto que en Pagos para consistencia)
 const data = {
     configuracion: {
         estados: {
-            pendiente: { label: "Pendiente", color: "#EAB308", bgColor: "#fef8c3", textColor: "#b58940", icon: "history" },
-            pagado: { label: "Pagado", color: "#22C55E", bgColor: "#dafce6", textColor: "#42b88f", icon: "Check" },
-            vencido: { label: "Vencido", color: "#F97316", bgColor: "#ee343b", textColor: "#eeccda", icon: "AlertOutline" }
-
+            pendiente: { label: "Pendiente", color: "#F97316", bgColor: "#FFF7ED", textColor: "#9A3412", icon: "Clock" },
+            pagado: { label: "Pagado", color: "#22C55E", bgColor: "#DCFCE7", textColor: "#166534", icon: "Check" },
+            vencido: { label: "Vencido", color: "#EAB308", bgColor: "#FEF9C3", textColor: "#854D0E", icon: "Warning" }
         }
     }
 };
-"15843bf1-0ee2-467d-8052-aa394d2cf477"
+
 // Colores
 const COLOR_CARD = STheme.color.lightGray + '44';
 const COLOR_TEXT = STheme.color.text;
 const COLOR_ACCENT = "#3B82F6";
 const COLOR_BORDER = STheme.color.white;
 
-export default class PopupPagoCuota3 extends Component {
-    static open(props) {
+
+// const COLOR_CARD = STheme.color.card;
+// const COLOR_TEXT = STheme.color.text;
+// const COLOR_ACCENT = STheme.color.lightGray + "66";
+// // const COLOR_BORDER = STheme.color.lightGray + "66";
+// // const COLOR_BORDER = STheme.color.lightGray +"50";
+// const COLOR_BORDER = STheme.color.lightGray + "30";
+
+export default class PopupPagoCuota3 extends Component<Props, State> {
+    static open(props: Props) {
         SPopup.open({
             key: 'PopupPagoCuota3',
             content: (
@@ -31,11 +70,9 @@ export default class PopupPagoCuota3 extends Component {
                         width: "100%",
                         maxWidth: 600,
                         maxHeight: "90%",
-                        padding: 8,
-                        // padding: 16,
+                        padding: 16,
                         overflow: 'hidden',
-                        backgroundColor: STheme.color.danger,
-                        // backgroundColor: STheme.color.background,
+                        backgroundColor: STheme.color.background,
                         borderRadius: 12,
                         borderWidth: 1,
                         borderColor: COLOR_BORDER,
@@ -50,7 +87,7 @@ export default class PopupPagoCuota3 extends Component {
                             SPopup.close('PopupPagoCuota3');
                             if (props.onCancel) props.onCancel();
                         }}
-                        onSuccess={(e) => {
+                        onSuccess={(e: { cuota: Cuota; monto: number }) => {
                             SPopup.close('PopupPagoCuota3');
                             if (props.onSuccess) props.onSuccess(e);
                         }}
@@ -60,76 +97,68 @@ export default class PopupPagoCuota3 extends Component {
         });
     }
 
-    constructor(props) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             montoPagar: {},
             isLoading: false,
-            selectedCuotas: {}, // Track selected cuotas by their numero
-            showPaidCuotas: false, // Toggle visibility of paid cuotas
-            showAllPendingCuotas: false, // Toggle visibility of all future pending cuotas
         };
+        if (this.props.editObject?.cuotasDetalle) {
+            this.props.editObject.cuotasDetalle.forEach((cuota) => {
+                cuota.__select = false;
+            });
+        }
     }
 
-    getCompraData = () => {
+    getCompraData = (): Compra => {
         const { editObject } = this.props;
         return {
             id: editObject?.id || 101,
             descripcion: editObject?.descripcion || 'Productos de limpieza y mantenimiento',
             estado: editObject?.estado || 'Pendiente',
-            fecha: editObject?.fecha || '2024-12-01',
+            fecha: editObject?.fecha || '2024-01-14',
             total: editObject?.total || 8500,
             cuotasDetalle: editObject?.cuotasDetalle || [
-                { numero: 1, estado: 'Pagado', vencimiento: '2025-01-14', fechaPago: '2025-01-13', monto: 708.33 },
-                { numero: 2, estado: 'Pagado', vencimiento: '2025-02-14', fechaPago: '2025-02-13', monto: 708.33 },
-                { numero: 3, estado: 'Pagado', vencimiento: '2025-03-14', fechaPago: '2025-03-13', monto: 708.33 },
-                { numero: 4, estado: 'Pendiente', vencimiento: '2025-04-14', fechaPago: null, monto: 708.33 }, // Vencida
-                { numero: 5, estado: 'Pendiente', vencimiento: '2025-05-14', fechaPago: null, monto: 708.33 }, // Vencida
-                { numero: 6, estado: 'Pendiente', vencimiento: '2025-06-14', fechaPago: null, monto: 708.33 }, // Vencida
-                { numero: 7, estado: 'Pendiente', vencimiento: '2025-07-14', fechaPago: null, monto: 708.33 }, // Vencida
-                { numero: 8, estado: 'Pendiente', vencimiento: '2025-08-14', fechaPago: null, monto: 708.33 }, // Vencida
-                { numero: 9, estado: 'Pendiente', vencimiento: '2025-09-14', fechaPago: null, monto: 708.33 }, // Future pending
-                { numero: 10, estado: 'Pendiente', vencimiento: '2025-10-14', fechaPago: null, monto: 708.33 }, // Future pending
-                { numero: 11, estado: 'Pendiente', vencimiento: '2025-11-14', fechaPago: null, monto: 708.33 }, // Future pending
-                { numero: 12, estado: 'Pendiente', vencimiento: '2025-12-14', fechaPago: null, monto: 708.37 }, // Future pending, adjusted for rounding
+                { numero: 1, estado: 'Pagado', vencimiento: '2024-02-14', fechaPago: '2024-02-13', monto: 2833.33 },
+                { numero: 2, estado: 'Pendiente', vencimiento: '2024-03-14', fechaPago: null, monto: 2833.33 },
+                { numero: 3, estado: 'Pendiente', vencimiento: '2024-04-14', fechaPago: null, monto: 2833.34 },
+                { numero: 4, estado: 'Pendiente', vencimiento: '2025-01-14', fechaPago: null, monto: 2833.34 },
             ],
             moneda: editObject?.moneda || 'BOB',
         };
     };
 
-    selectPreviousCuotas = (selectedCuota) => {
+    selectPreviousCuotas = (selectedCuota: Cuota) => {
         const compra = this.getCompraData();
         const selectedDate = new Date(selectedCuota.vencimiento);
-        const newSelectedCuotas = { ...this.state.selectedCuotas };
-
-        compra.cuotasDetalle.forEach((cuota) => {
-            if (cuota.estado !== 'Pagado') {
-                const cuotaDate = new Date(cuota.vencimiento);
-                newSelectedCuotas[cuota.numero] = cuotaDate <= selectedDate;
-            }
-        });
-
-        this.setState({ selectedCuotas: newSelectedCuotas });
-    };
-
-    deselectPreviousCuotas = (selectedCuota) => {
-        const compra = this.getCompraData();
-        const selectedDate = new Date(selectedCuota.vencimiento);
-        const newSelectedCuotas = { ...this.state.selectedCuotas };
-
         compra.cuotasDetalle.forEach((cuota) => {
             if (cuota.estado !== 'Pagado') {
                 const cuotaDate = new Date(cuota.vencimiento);
                 if (cuotaDate <= selectedDate) {
-                    newSelectedCuotas[cuota.numero] = false;
+                    cuota.__select = true;
+                } else {
+                    cuota.__select = false;
                 }
             }
         });
-
-        this.setState({ selectedCuotas: newSelectedCuotas });
+        this.forceUpdate();
     };
 
-    handlePagarDeuda = async (cuota) => {
+    deselectPreviousCuotas = (selectedCuota: Cuota) => {
+        const compra = this.getCompraData();
+        const selectedDate = new Date(selectedCuota.vencimiento);
+        compra.cuotasDetalle.forEach((cuota) => {
+            if (cuota.estado !== 'Pagado') {
+                const cuotaDate = new Date(cuota.vencimiento);
+                if (cuotaDate <= selectedDate) {
+                    cuota.__select = false;
+                }
+            }
+        });
+        this.forceUpdate();
+    };
+
+    handlePagarDeuda = async (cuota: Cuota) => {
         const { montoPagar, isLoading } = this.state;
         const monto = parseFloat(montoPagar[cuota.numero] || '0');
         if (isLoading) return;
@@ -185,14 +214,14 @@ export default class PopupPagoCuota3 extends Component {
         }
     };
 
-    isCuotaVencida = (vencimiento) => {
-        const today = new Date('2025-09-08'); // Fixed to September 8, 2025
+    isCuotaVencida = (vencimiento: string): boolean => {
+        const today = new Date();
         const vencimientoDate = new Date(vencimiento);
         return vencimientoDate < today;
     };
 
-    Item = ({ cuota, index, compra }) => {
-        const { isLoading, selectedCuotas } = this.state;
+    Item = ({ cuota, index, compra }: { cuota: Cuota; index: number; compra: Compra }) => {
+        const { isLoading } = this.state;
         const monedaSymbol = compra.moneda || 'BOB';
         const isPaid = cuota.estado === 'Pagado';
         const isVencida = !isPaid && this.isCuotaVencida(cuota.vencimiento);
@@ -203,8 +232,11 @@ export default class PopupPagoCuota3 extends Component {
                 key={`cuota-${cuota.numero}`}
                 col={'xs-12'}
                 style={{
-                    backgroundColor: selectedCuotas[cuota.numero] ? STheme.color.card : STheme.color.lightGray + '55',
-                    borderColor: selectedCuotas[cuota.numero] ? STheme.color.success : STheme.color.success + '55',
+                    backgroundColor: cuota.__select ? STheme.color.card : STheme.color.lightGray + '55',
+                    borderColor: cuota.__select ? STheme.color.success : STheme.color.success + '55',
+
+                    // backgroundColor: cuota.__select ? estadoConfig.bgColor : COLOR_CARD,
+                    // borderColor: cuota.__select ? estadoConfig.color : COLOR_BORDER,
                     borderRadius: 8,
                     padding: 16,
                     borderWidth: 1,
@@ -212,12 +244,10 @@ export default class PopupPagoCuota3 extends Component {
                 }}
                 onPress={() => {
                     if (!isPaid) {
-                        const newSelectedCuotas = { ...this.state.selectedCuotas };
-                        if (selectedCuotas[cuota.numero]) {
+                        if (cuota.__select) {
                             this.deselectPreviousCuotas(cuota);
                         } else {
-                            newSelectedCuotas[cuota.numero] = true;
-                            this.setState({ selectedCuotas: newSelectedCuotas });
+                            cuota.__select = true;
                             this.selectPreviousCuotas(cuota);
                         }
                     }
@@ -262,107 +292,80 @@ export default class PopupPagoCuota3 extends Component {
         );
     };
 
-    labelEstado = (estado, isVencida = false) => {
+    labelEstado = (estado: string, isVencida: boolean = false) => {
         const estadoNormalizado = isVencida ? 'vencido' : estado?.toLowerCase();
         const { color, bgColor, textColor, label, icon } = data.configuracion.estados[estadoNormalizado] || data.configuracion.estados.pendiente;
         return (
-            <SView width={80} row center accessibilityLabel={`Estado: ${label}`} >
-                <SView row center style={{ backgroundColor: bgColor, borderRadius: 4, paddingVertical: 4, paddingHorizontal: 8, borderWidth: 1, borderColor: color, }} >
-                    <SIconApp name={icon} width={14} height={14} fill={textColor} /><SView width={4} /><SText fontSize={12} bold color={textColor}>{label}</SText>
+            <SView
+                width={100}
+                row
+                center
+                accessibilityLabel={`Estado: ${label}`}
+            >
+                <SView
+                    row
+                    center
+                    style={{
+                        backgroundColor: bgColor,
+                        borderRadius: 4,
+                        paddingVertical: 4,
+                        paddingHorizontal: 8,
+                        borderWidth: 1,
+                        borderColor: color,
+                    }}
+                >
+                    <SIconApp name={icon} width={14} height={14} fill={textColor} />
+                    <SView width={4} />
+                    <SText fontSize={12} bold color={textColor}>{label}</SText>
                 </SView>
             </SView>
         );
     };
 
-    labelEstado2 = (estado, isVencida = false) => {
-        const estadoNormalizado = isVencida ? 'vencido' : estado?.toLowerCase();
-        const { color, bgColor, textColor, label, icon } = data.configuracion.estados[estadoNormalizado] || data.configuracion.estados.pendiente;
-        return (
-            // <SView width={80} row center accessibilityLabel={`Estado: ${label}`} >
-            <SView row center style={{ backgroundColor: bgColor, borderRadius: 4, padding: 4, borderWidth: 1, borderColor: color, }} >
-                <SIconApp name={icon} width={12} height={12} fill={textColor} /><SText fontSize={12} bold color={textColor}> {label}</SText>
-            </SView>
-            // </SView>
-        );
-    };
-
-    botonEstado = (estado) => {
+    botonEstado = (estado: string) => {
         const estadoNormalizado = estado?.toLowerCase();
         if (estadoNormalizado !== 'pendiente') return null;
-
-        const compra = this.getCompraData();
-        const selectedCuotas = compra.cuotasDetalle.filter(
-            (c) => this.state.selectedCuotas[c.numero] && c.estado !== 'Pagado'
-        );
-        const isAnyCuotaSelected = selectedCuotas.length > 0;
         return (
-            <SView onPress={() => {
-                if (isAnyCuotaSelected) {
-                    this.handlePagarDeuda(selectedCuotas[0]);
-                } else {
-                    SNotification.send({ title: 'Error', time: 3000, color: STheme.color.danger, body: 'Por favor, selecciona al menos una cuota para pagar.' });
-                }
-            }}
-            // activeOpacity={0.7}
-            // accessibilityLabel="Pagar compra completa"
+            <SView
+                width={160}
+                row
+                center
+                // border={"pink"}
+                onPress={() => {
+                    const compra = this.getCompraData();
+                    const selectedCuotas = compra.cuotasDetalle.filter((c) => c.__select && c.estado !== 'Pagado');
+                    if (selectedCuotas.length > 0) {
+                        this.handlePagarDeuda(selectedCuotas[0]);
+                    }
+                }}
+                activeOpacity={0.7}
+                accessibilityLabel="Pagar compra completa"
             >
-
-                <SView row center style={{ borderRadius: 4, paddingVertical: 8, paddingHorizontal: 8, borderWidth: 1, backgroundColor: isAnyCuotaSelected ? COLOR_ACCENT : STheme.color.gray, borderColor: isAnyCuotaSelected ? COLOR_ACCENT : STheme.color.gray }}>
-                    <SIconApp name='pagotarjeta' width={16} fill={STheme.color.white} /><SText fontSize={12} bold color={STheme.color.white}>  Pagar Ahora</SText>
+                <SView
+                    flex
+                    row
+                    center
+                    style={{
+                        // backgroundColor: { c.__select ? "red" : "blue" },
+                        backgroundColor: COLOR_ACCENT,
+                        borderRadius: 6,
+                        padding: 12,
+                        borderWidth: 1,
+                        borderColor: COLOR_ACCENT,
+                    }}
+                >
+                    <SIconApp name='pagotarjeta' width={16} height={16} fill={STheme.color.white} />
+                    <SView width={8} />
+                    <SText fontSize={14} bold color={STheme.color.white}>Pagar Ahora</SText>
                 </SView>
             </SView>
         );
-    };
-
-    togglePaidCuotas = () => {
-        this.setState({ showPaidCuotas: !this.state.showPaidCuotas });
-    };
-
-    toggleAllPendingCuotas = () => {
-        this.setState({ showAllPendingCuotas: !this.state.showAllPendingCuotas });
     };
 
     render() {
-
-        const compras = this.props.editObject;
-        console.log("todo popu " + JSON.stringify(compras))
-
-        return <SText> hola {compras.descripcion}</SText>
-
         const compra = this.getCompraData();
-        const { showPaidCuotas, showAllPendingCuotas } = this.state;
-        const today = new Date('2025-09-08'); // Fixed to September 8, 2025
-
-        // Filter cuotas based on state
-        const filteredCuotas = compra.cuotasDetalle.filter((cuota) => {
-            const isPaid = cuota.estado === 'Pagado';
-            const isVencida = !isPaid && this.isCuotaVencida(cuota.vencimiento);
-            const isFuturePending = !isPaid && !isVencida;
-
-            // Show paid cuotas only if showPaidCuotas is true
-            if (isPaid) {
-                return showPaidCuotas;
-            }
-            // Always show vencidas cuotas
-            if (isVencida) {
-                return true;
-            }
-            // Show future pending cuotas (numero <= 2) unless showAllPendingCuotas is true
-            if (isFuturePending) {
-                return showAllPendingCuotas || cuota.numero <= 2;
-            }
-            return false;
-        });
-
-        // Check if there are any paid cuotas
-        const hasPaidCuotas = compra.cuotasDetalle.some((cuota) => cuota.estado === 'Pagado');
-        // Check if there are more than two future pending cuotas
-        const hasMoreThanTwoFuturePending = compra.cuotasDetalle.filter(
-            (cuota) => cuota.estado !== 'Pagado' && !this.isCuotaVencida(cuota.vencimiento) && cuota.numero > 2
-        ).length > 0;
-
         const MontoSeleccionado = compra.cuotasDetalle
-            .filter((cuota) => this.state.selectedCuotas[cuota.numero] && cuota.estado !== 'Pagado')
+            .filter((cuota) => cuota.__select && cuota.estado !== 'Pagado')
             .reduce((sum, cuota) => sum + parseFloat(cuota.monto.toString()), 0)
             .toFixed(2);
         const MontoSaldo = compra.cuotasDetalle
@@ -371,23 +374,19 @@ export default class PopupPagoCuota3 extends Component {
             .toFixed(2);
 
         return (
-            <SView col={'xs-12'} flex style={{ flex: 1 }} accessibilityLabel="Contenedor principal de gestión de cuotas">
-                {/* Header */}
-                {/* <SView row center style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: COLOR_BORDER }}> */}
+            <SView col={'xs-12'} accessibilityLabel="Contenedor principal de gestión de cuotas">
                 <SView row center style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: COLOR_BORDER }}>
                     <SView flex>
-                        <SText col={'xs-12'} fontSize={20} bold color={COLOR_TEXT} numberOfLines={1}>Gestión de Cuotas - Compra #{compra.id}</SText>
+                        <SText fontSize={20} bold color={COLOR_TEXT}>
+                            Gestión de Cuotas - Compra #{compra.id}
+                        </SText>
                     </SView>
-
-                    <SView width={40} style={{ overflow: "hidden", alignItems: "flex-end" }}>
+                    <SView width={40}>
                         <SView
-
                             width={24}
                             height={24}
                             onPress={this.props.onCancel}
-                            style={{
-                                opacity: 0.6,
-                            }}
+                            style={{ opacity: 0.6 }}
                             accessibilityLabel="Cerrar popup"
                             activeOpacity={0.7}
                         >
@@ -396,132 +395,66 @@ export default class PopupPagoCuota3 extends Component {
                     </SView>
                 </SView>
                 <SHr h={16} />
-
-                {/* Detalles de la Compra */}
                 <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
                     <SView
                         col={'xs-12'}
                         style={{
                             backgroundColor: COLOR_CARD,
                             borderRadius: 8,
-                            padding: 8,
-                            // padding: 16,
+                            padding: 16,
                             borderWidth: 1,
                             borderColor: COLOR_BORDER,
                         }}
                     >
-                        <SView col={'xs-12'} >
-                            {/* <SView col={'xs-12'} backgroundColor='red'> */}
-                            <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la Compra</SText>
-                        </SView>
+                        <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la Compra</SText>
                         <SHr h={12} />
-                        <SView col={'xs-12'} row  >
-                            <SText fontSize={14} color={COLOR_TEXT} numberOfLines={1} ellipsizeMode="tail">Descripción: {compra.descripcion}</SText>
-                            <SHr h={4} />
-                            <SText fontSize={14} color={COLOR_TEXT}>Total: <SText fontSize={16} bold color={COLOR_TEXT}>{compra.moneda} {compra.total.toFixed(2)}</SText></SText>
-                            <SHr h={4} />
-                            <SText fontSize={14} color={COLOR_TEXT}>Fecha: {compra.fecha}</SText>
-                            <SHr h={4} />
-                            <SText fontSize={14} color={COLOR_TEXT}>Estado: {this.labelEstado2(compra.estado)}</SText>
-                            <SHr h={8} />
-                            <SView col={'xs-12'} row>
-                                <SView col={'xs-6'}>
-                                    <SText fontSize={14} color={COLOR_TEXT}>Saldo Pendiente: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSaldo}</SText></SText>
+                        <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
+                            <SView flex>
+                                <SText fontSize={14} color={COLOR_TEXT}>Descripción:</SText>
+                                <SText fontSize={14} color={COLOR_TEXT} numberOfLines={2} ellipsizeMode="tail">
+                                    {compra.descripcion}
+                                </SText>
+                                <SHr h={8} />
+                                <SText fontSize={14} color={COLOR_TEXT}>Total:</SText>
+                                <SText fontSize={16} bold color={COLOR_TEXT}>{compra.moneda} {compra.total.toFixed(2)}</SText>
+                                <SHr h={8} />
+                                <SText fontSize={14} color={COLOR_TEXT}>Fecha:</SText>
+                                <SText fontSize={14} color={COLOR_TEXT}>{compra.fecha}</SText>
+                                <SHr h={8} />
+                                <SView row>
+                                    <SText fontSize={14} color={COLOR_TEXT}>Estado:</SText>
+                                    <SView width={8} />
+                                    {this.labelEstado(compra.estado)}
                                 </SView>
-                                <SView col={'xs-6'} >
-                                    <SText fontSize={14} color={COLOR_TEXT}>Monto Seleccionado: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSeleccionado}</SText></SText>
+                                <SHr h={8} />
+                                <SView col={'xs-12'} row>
+                                    <SView col={'xs-6'} row>
+                                        <SText fontSize={14} color={COLOR_TEXT}>Saldo Pendiente:</SText>
+                                        <SView width={8} />
+                                        <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSaldo}</SText>
+                                    </SView>
+                                    <SView col={'xs-6'} row>
+                                        <SText fontSize={14} color={COLOR_TEXT}>Monto Seleccionado:</SText>
+                                        <SView width={8} />
+                                        <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSeleccionado}</SText>
+                                    </SView>
                                 </SView>
+                            </SView>
+                            <SView width={160} style={{ alignItems: 'flex-end' }}>
+                                {this.botonEstado(compra.estado)}
                             </SView>
                         </SView>
-                        {/* <SHr h={16} />
-                        <SView col={'xs-12'} row center>
-                            <SView flex>
-                                {this.botonEstado(compra.estado)}
-                            </SView>
-                        </SView> */}
-
-                        {/* <SView width={120} backgroundColor='yellow' style={{ position: "absolute", top: 16, right: 16 }}>
-                            <SView width={120} height={40} backgroundColor='cyan' center >
-                                {this.botonEstado(compra.estado)}
-                            </SView>
-                        </SView> */}
                     </SView>
                 </SView>
                 <SHr h={16} />
-
-                {/* Cuotas Pendientes Header and Buttons */}
                 <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
-                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-
-                        <SView width={140} row ><SText fontSize={16} bold color={COLOR_TEXT}>Cuotas Pendientes</SText></SView>
-
-                        <SView flex style={{ alignItems: "flex-end" }}>
-
-                            <SView row  >
-                                {/* Ver/Ocultar anteriores (only if there are paid cuotas) */}
-                                {hasPaidCuotas && (
-                                    <SView
-                                        row
-                                        center
-                                        style={{
-                                            paddingVertical: 4,
-                                            paddingHorizontal: 8,
-                                            borderRadius: 4,
-                                            borderWidth: 1,
-                                            borderColor: COLOR_ACCENT + '80',
-                                            marginRight: 8,
-                                        }}
-                                        onPress={this.togglePaidCuotas}
-                                        activeOpacity={0.7}
-                                        accessibilityLabel={this.state.showPaidCuotas ? 'Ocultar anteriores' : 'Ver anteriores'}
-                                    >
-                                        {/* <SIconApp name={this.state.showPaidCuotas ? 'Eyes' : 'history'} width={12} height={12} fill={COLOR_ACCENT} /> */}
-                                        {/* <SView width={4} /> */}
-                                        <SText fontSize={12} color={COLOR_ACCENT}>
-                                            {this.state.showPaidCuotas ? '- Pagadas' : '+ Pagadas'}
-                                        </SText>
-                                    </SView>
-                                )}
-                                {/* Ver más cuotas pendientes (only if there are future pending cuotas with numero > 2) */}
-                                {hasMoreThanTwoFuturePending && (
-                                    <SView
-                                        row
-                                        center
-                                        style={{
-                                            paddingVertical: 4,
-                                            paddingHorizontal: 8,
-                                            borderRadius: 4,
-                                            borderWidth: 1,
-                                            borderColor: COLOR_ACCENT + '80',
-                                        }}
-                                        onPress={this.toggleAllPendingCuotas}
-                                        activeOpacity={0.7}
-                                        accessibilityLabel="Ver más cuotas pendientes"
-                                    >
-                                        {/* <SIcon name="add1" width={12} height={12} fill={COLOR_ACCENT} /> */}
-                                        {/* <SView width={4} /> */}
-
-
-                                        <SText fontSize={12} color={COLOR_ACCENT}>+ Pendientes</SText>
-                                    </SView>
-                                )}
-                            </SView>
-                        </SView>
-                    </SView>
+                    <SText fontSize={16} bold color={COLOR_TEXT}>Cuotas Pendientes</SText>
                 </SView>
                 <SHr h={12} />
-
-                {/* ScrollView for Cuotas */}
-                <SView col={'xs-12'} flex style={{ flex: 1, paddingHorizontal: 16 }}>
-                    <ScrollView
-                        style={{ width: '100%' }}
-                        contentContainerStyle={{
-                            flexGrow: 1,
-                            paddingBottom: 16,
-                        }}
-                    >
-                        {filteredCuotas.length > 0 ? (
-                            filteredCuotas.map((cuota, index) => (
+                <ScrollView style={{ maxHeight: '60vh' }}>
+                    <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
+                        {compra.cuotasDetalle.length > 0 ? (
+                            compra.cuotasDetalle.map((cuota, index) => (
                                 <this.Item
                                     key={`cuota-item-${cuota.numero}`}
                                     cuota={cuota}
@@ -540,8 +473,9 @@ export default class PopupPagoCuota3 extends Component {
                                 No hay cuotas asociadas a esta compra.
                             </SText>
                         )}
-                    </ScrollView>
-                </SView>
+                        <SHr h={16} />
+                    </SView>
+                </ScrollView>
             </SView>
         );
     }
