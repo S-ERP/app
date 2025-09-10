@@ -16,9 +16,9 @@ export default class PopupCrearProveedor extends Component<Props> {
         SPopup.open({
             key: "PopupCrearProveedor",
             content: <SView style={{
-                maxWidth: "100%",
+                width: "100%",
                 maxHeight: "100%",
-                width: 500,
+                maxWidth: 500,
                 borderRadius: 8,
                 borderColor: STheme.color.card,
                 borderWidth: 1,
