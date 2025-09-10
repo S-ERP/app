@@ -5,13 +5,20 @@ import MDL from '../../MDL';
 import SIconApp from '../../Assets/SIconApp';
 
 // Paleta de colores mínima
-const COLOR_CARD = STheme.color.lightGray + '44';
+const COLOR_CARD = STheme.color.card;
 const COLOR_TEXT = STheme.color.text;
-const COLOR_ACCENT = STheme.color.card;
-const COLOR_BORDER = STheme.color.white;
+const COLOR_ACCENT = STheme.color.lightGray + "66";
+const COLOR_BORDER = STheme.color.lightGray + "30";
 const COLOR_PENDIENTE = '#EAB308';
 const COLOR_PAGADO = '#22C55E';
 const COLOR_VENCIDO = '#F97316';
+// const COLOR_CARD = STheme.color.lightGray + '44';
+// const COLOR_TEXT = STheme.color.text;
+// const COLOR_ACCENT = STheme.color.card;
+// const COLOR_BORDER = STheme.color.white;
+// const COLOR_PENDIENTE = '#EAB308';
+// const COLOR_PAGADO = '#22C55E';
+// const COLOR_VENCIDO = '#F97316';
 
 // Configuración de estados
 const dataConfig = {
@@ -123,7 +130,7 @@ export default class Pagos extends Component {
         const estadoNormalizado = estado?.toLowerCase() || 'pendiente';
         const { color, bgColor, textColor, label, icon } = dataConfig.configuracion.estados[estadoNormalizado];
         return (
-            <SView border={"pink"} row center accessibilityLabel={`Estado: ${label}`}>
+            <SView row center accessibilityLabel={`Estado: ${label}`}>
                 <SView
                     width={90}
                     center
@@ -171,6 +178,7 @@ export default class Pagos extends Component {
         const data = this.data;
         if (!data) return this.renderLoading();
 
+        console.log("suavesita "+JSON.stringify(data))
         const { proveedor, pendientes, deudaTotal, amortizadoTotal, monedaDefault = 'BOB' } = data;
 
         return (
@@ -225,7 +233,7 @@ export default class Pagos extends Component {
                             <SIcon name='tpAf' width={20} height={20} fill={COLOR_PENDIENTE} />
                         </SView>
                         <SView flex style={{ marginLeft: 8 }}>
-                            <SText fontSize={12} color={COLOR_TEXT}>Deuda Total</SText>
+                            <SText fontSize={12} color={COLOR_TEXT}>Deuda Total(cuotas_en_mora)</SText>
                             {this.renderMonto(deudaTotal, monedaDefault, COLOR_PENDIENTE)}
                         </SView>
                     </SView>
@@ -246,7 +254,7 @@ export default class Pagos extends Component {
                             <SIcon name='pagotarjeta' width={20} height={20} fill={COLOR_PAGADO} />
                         </SView>
                         <SView flex style={{ marginLeft: 8 }}>
-                            <SText fontSize={12} color={COLOR_TEXT}>Total Pagado</SText>
+                            <SText fontSize={12} color={COLOR_TEXT}>Total Pagado(amortizado)</SText>
                             {this.renderMonto(amortizadoTotal, monedaDefault, COLOR_PAGADO)}
                         </SView>
                     </SView>
@@ -364,12 +372,23 @@ export default class Pagos extends Component {
                             </SView>
                             <SHr h={4} />
                             <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
-                                <SText fontSize={12} color={COLOR_TEXT}>Cuotas pendientes:</SText>
+                                <SText fontSize={12} color={COLOR_TEXT}>Cuotas pendientes/mora:</SText>
                                 <SText
                                     fontSize={12}
                                     color={compra.cuotas_en_mora?.cantidad ? COLOR_VENCIDO : COLOR_TEXT}
                                 >
                                     {`${compra.cuotas_en_mora?.cantidad || 0} cuotas`}
+                                </SText>
+                            </SView>
+                          
+                            <SHr h={4} />
+                            <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
+                                <SText fontSize={12} color={COLOR_TEXT}>Cuotas total:</SText>
+                                <SText
+                                    fontSize={12}
+                                    color={compra.cuotas?.cantidad ? COLOR_VENCIDO : COLOR_TEXT}
+                                >
+                                    {`${compra.cuotas?.cantidad || 0} cuotas`}
                                 </SText>
                             </SView>
                             <SHr h={8} />
@@ -405,11 +424,8 @@ export default class Pagos extends Component {
                                             fill={compra.cuotas_en_mora?.cantidad ? COLOR_VENCIDO : COLOR_TEXT}
                                             style={{ marginRight: 4 }}
                                         />
-                                        <SText
-                                            fontSize={12}
-                                            bold
-                                            color={compra.cuotas_en_mora?.cantidad ? dataConfig.configuracion.estados.vencido.textColor : COLOR_TEXT}
-                                        >
+                                        <SText fontSize={12} bold color={COLOR_TEXT} >
+                                            {/* color={compra.cuotas_en_mora?.cantidad ? dataConfig.configuracion.estados.vencido.textColor : COLOR_TEXT} */}
                                             {compra.cuotas_en_mora?.cantidad ? 'Pagar Cuotas Pendientes' : 'Ver Historial de Pagos'}
                                         </SText>
                                     </SView>
