@@ -25,6 +25,7 @@ export const NodoContext = React.createContext<NodoInstance>({
     translateX: 0 as any,
     translateY: 0 as any,
     selected: false as any,
+    onDrag: false as any,
 });
 
 export const useNodo = () => React.useContext(NodoContext);
@@ -35,7 +36,8 @@ type PizarraNodoProps = {
     id: string,
     data: any,
     x: number, y: number,
-    onChangePosition: (e: { x: number, y: number }) => void
+    onChangePosition: (e: { x: number, y: number }) => void,
+    onDoublePress?: () => void,
 }
 
 export type NodoInstance = {
@@ -43,10 +45,12 @@ export type NodoInstance = {
     translateX: Animated.SharedValue<number>;
     translateY: Animated.SharedValue<number>;
     selected: Animated.SharedValue<boolean>;
+    onDrag: Animated.SharedValue<boolean>;
     panGesture?: any;
     viewRef?: React.RefObject<Animated.View>;
+    toJSon?: () => any;
 };
-export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(), onChangePosition }: PizarraNodoProps) {
+export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(), onChangePosition, onDoublePress }: PizarraNodoProps) {
 
     const viewRef = React.useRef<Animated.View>(null);
 
@@ -60,6 +64,9 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
     const onDrag = useSharedValue(false);
 
 
+    const doubleTapGesture: any = Gesture.Tap().numberOfTaps(2).onStart(() => {
+        if (onDoublePress) onDoublePress();
+    })
     const panGesture: any = Gesture.Pan()
         .onBegin(() => {
             // Guardamos la posición anterior
@@ -99,6 +106,7 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
             translateY.value = panGesture.context.startY + (event.translationY / pizarra.scale.value);
 
             Object.values(pizarra.nodos.current).forEach(nodo => {
+                if (nodo.id == id) return;
                 if (nodo.selected.value) {
                     if (nodo.panGesture?.context == null) return;
                     nodo.translateX.value = nodo.panGesture.context.startX + (event.translationX / pizarra.scale.value);
@@ -110,18 +118,32 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
             // pizarra.selectTranslateY.value = translateY.value;
         }).onEnd(() => {
             onDrag.value = false;
+            const canbios = Object.values(pizarra.nodos.current).filter(nodo => nodo.selected.value).map((nodo: any) => nodo.toJSon());
+            pizarra.saveChangeNodes(canbios);
+            pizarra.preventPan.value = false;
         }).onFinalize(() => {
             onDrag.value = false;
             pizarra.preventPan.value = false;
         });
 
+
+
+    const toJSon = () => {
+        return {
+            id: id,
+            x: translateX.value,
+            y: translateY.value,
+            selected: selected.value,
+        }
+    }
+
     React.useEffect(() => {
-        pizarra.registerNodo({ id: id, translateX, translateY, selected, panGesture: panGesture, viewRef: viewRef });
+        pizarra.registerNodo({ id: id, translateX, translateY, selected, onDrag, panGesture: panGesture, viewRef: viewRef, toJSon });
         return () => {
             pizarra.unregisterNodo(id);
         };
     }, []);
-    pizarra.registerNodo({ id: id, translateX, translateY, selected, panGesture: panGesture, viewRef: viewRef });
+    // pizarra.registerNodo({ id: id, translateX, translateY, selected, onDrag, panGesture: panGesture, viewRef: viewRef, toJSon });
     // si se actualiza el translateX o el translateY, llamamos a onChangePosition
     translateX.addListener(999, (value: any) => {
         if (onChangePosition) onChangePosition({ x: value, y: translateY.value });
@@ -154,7 +176,7 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
                             && selectPosition.y < translateY.value - (layout.value.height / 2)
                             && (selectPosition.y + selectPosition.height) > (translateY.value + (layout.value.height / 2))
                         ) {
-                            console.log("Dentro de la selección");
+                            // console.log("Dentro de la selección");
                             return true;
                         }
                     }
@@ -202,7 +224,7 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
 
 
     return (<>
-        <GestureDetector gesture={(panGesture)}>
+        <GestureDetector gesture={(Gesture.Simultaneous(panGesture, doubleTapGesture))}>
             <Animated.View
                 ref={viewRef}
                 style={[{
@@ -213,7 +235,7 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
                     // translateX.value = (width / 2);
                     // translateY.value = (height / 2);
                 }}>
-                <NodoContext.Provider value={{ id, viewRef: viewRef, translateX, translateY, selected }}>
+                <NodoContext.Provider value={{ id, viewRef: viewRef, onDrag, translateX, translateY, selected }}>
                     {children}
                 </NodoContext.Provider>
             </Animated.View>

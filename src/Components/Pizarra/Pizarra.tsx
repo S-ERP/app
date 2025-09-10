@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform, StyleSheet } from "react-native";
+import { Dimensions, Platform, StyleSheet, View } from "react-native";
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -11,14 +11,23 @@ import {
     PanGesture,
 } from "react-native-gesture-handler";
 import Nodo, { NodoInstance } from "./PizarraNodo";
-import { SGradient, SText, STheme, SThread, SView } from "servisofts-component";
+import { SGradient, SText, STheme, SThread, SUuid, SView } from "servisofts-component";
 import PizarraMiniMapa from "./MiniMapa";
 import { PuertoInstance } from "./Puerto";
 import Linea, { LineaInstance, LineaProps } from "./Linea";
 import Lineas from "./Lineas";
+import MenuType from "./MenuTypes";
+import MDL from "../../MDL";
+import SSocket from "servisofts-socket";
+import Conexion from "./Conexion";
 
 type PizarraProps = {
+    id: string;
     children: React.ReactNode;
+    hiddeMiniMapa?: boolean;
+    scale?: number;
+    startType?: "select" | "move";
+
 }
 
 
@@ -32,6 +41,7 @@ const PizarraContext = React.createContext<{
     selectTranslateX: any, selectTranslateY: any,
     ref: React.RefObject<any>,
     preventPan: any,
+    toJSon: () => any,
     registerNodo: (nodo: NodoInstance) => void,
     unregisterNodo: (key: string) => void,
     nodos: React.MutableRefObject<Record<string, NodoInstance>>,
@@ -41,7 +51,9 @@ const PizarraContext = React.createContext<{
     registerLinea: (linea: LineaInstance) => void,
     unregisterLinea: (key: string) => void,
     lineas: React.MutableRefObject<Record<string, LineaInstance>>,
-    lineasRef: React.MutableRefObject<Lineas | null>
+    lineasRef: React.MutableRefObject<Lineas | null>,
+    saveChanges: () => void,
+    saveChangeNodes: (node: any) => void,
 }>({
     width: 1000,
     scale: 1,
@@ -67,6 +79,9 @@ const PizarraContext = React.createContext<{
     unregisterLinea: () => { },
     lineas: { current: {} },
     lineasRef: null as any,
+    toJSon: () => { },
+    saveChanges: () => { },
+    saveChangeNodes: (node: any) => { },
 });
 
 
@@ -78,10 +93,15 @@ export const usePizarra = () => React.useContext(PizarraContext);
 
 export default function Pizarra(props: PizarraProps) {
     // Posiciones acumuladas
+    const [state, setState] = React.useState<any>({
+    })
+    const serverData = React.useRef<any>({
+    });
+
     const nodos = React.useRef<Record<string, NodoInstance>>({});
     const puertos = React.useRef<Record<string, PuertoInstance>>({});
     const lineas = React.useRef<Record<string, LineaInstance>>({});
-    const config = React.useRef({ type: "select", height: 0 });
+    const config = React.useRef({ type: props.startType ?? "select", height: 0, instance_id: SUuid() });
     const isMiddleDown = React.useRef(false);
     const ref = React.useRef<any>();
     const start = React.useRef({ x: 0, y: 0, tx: 0, ty: 0 });
@@ -91,7 +111,7 @@ export default function Pizarra(props: PizarraProps) {
 
     const layoutWidth = useSharedValue(0);
     const layoutHeight = useSharedValue(0);
-    const scale = useSharedValue(1);
+    const scale = useSharedValue(props.scale ?? 1);
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
 
@@ -103,37 +123,25 @@ export default function Pizarra(props: PizarraProps) {
     const selectTranslateY = useSharedValue(0);
     const preventPan = useSharedValue(false);
 
+
     const registerNodo = (nodo: NodoInstance) => {
+        // console.log("registerNodo", nodo.id)
         nodos.current[nodo.id] = nodo;
+        // console.log(state)
+        applyDataServer();
     };
     const unregisterNodo = (key: string) => {
+        // console.log("unregisterNodo", key)
+        if (!nodos.current[key]) return;
         delete nodos.current[key];
     };
 
     const registerPuerto = (puerto: PuertoInstance) => {
+        // console.log("registerPuerto", puerto.nodo.id + "_" + puerto.id)
         puertos.current[puerto.nodo.id + "_" + puerto.id] = puerto;
-
-
-        Object.values(puertos.current).filter(e => e.id == puerto.id && e.type != puerto.type).forEach(otherPort => {
-            if (!otherPort.props.value || !puerto.props.value) return;
-            if (otherPort.props.value == puerto.props.value) {
-                // puerto.onConnected.value = true;
-                // otherPort.onConnected.value = true;
-                lineasRef.current?.drawLine({
-                    portA: puerto,
-                    portB: otherPort
-                });
-         
-
-
-
-
-            }
-        });
-
-
     };
     const unregisterPuerto = (key: string, key_nodo: string) => {
+        // console.log("unregisterPuerto", key_nodo + "_" + key)
         delete puertos.current[key_nodo + "_" + key];
     };
 
@@ -144,45 +152,139 @@ export default function Pizarra(props: PizarraProps) {
         delete lineas.current[key];
     };
 
+
+    const saveChangeNodes = (nodes: any[]) => {
+        const data = {
+            id: props.id,
+            key_empresa: MDL.empresa.select?.key,
+            descripcion: "pizarra",
+            nodes: nodes
+        }
+        nodes.forEach(nodo => {
+            const nodoInstance = serverData.current.nodes.find((n: any) => n.id == nodo.id);
+            if (nodoInstance) {
+                nodoInstance.x = nodo.x;
+                nodoInstance.y = nodo.y;
+            }
+        })
+        MDL.pizarra.saveNodo(data, config.current.instance_id);
+    }
+
+    const saveChanges = () => {
+        const data: any = toJSon();
+        MDL.pizarra.save(data);
+    }
+    const toJSon = () => {
+        const nodosarr = Object.values(nodos.current).map(nodo => {
+            if (!nodo.toJSon) return null;
+            return nodo.toJSon();
+        })
+
+        const camera = {
+            x: translateX.value,
+            y: translateY.value,
+            scale: scale.value,
+            width: layoutWidth.value,
+            height: layoutHeight.value,
+        }
+        console.log(camera)
+        return {
+            id: props.id,
+            key_empresa: MDL.empresa.select?.key,
+            descripcion: "pizarra",
+            nodes: nodosarr,
+            camera
+        };
+
+    }
+
     const zoomAdd = (porc: number) => {
         const limits = [0.2, 4];
-
-        // Trabajamos en escala logarítmica
         const logMin = Math.log(limits[0]);
         const logMax = Math.log(limits[1]);
-
         let logScale = Math.log(scale.value);
-
-        // Movemos la escala en log
         logScale += porc * (logMax - logMin); // porc pequeño como 0.05 o -0.05
-
-        // Clamp
         if (logScale < logMin) logScale = logMin;
         if (logScale > logMax) logScale = logMax;
-
         const newScale = Math.exp(logScale);
-
-        const prevScale = scale.value;
         scale.value = newScale;
-        const scaleRatio = newScale / prevScale;
-
-        translateX.value = (translateX.value * scaleRatio)
-        translateY.value = (translateY.value * scaleRatio)
-
-
     };
 
+    const applyDataServer = () => {
+        if (!serverData.current) return null;
+        serverData.current.nodes?.forEach((nodo: any) => {
+            if (!nodos.current[nodo.id]) return;
+            if (nodos.current[nodo.id].onDrag.value) return; // si el nodo se está moviendo, no actualizar su posición
+            // console.log("applyDataServer", nodo.id)
+            nodos.current[nodo.id].translateX.value = nodo.x;
+            nodos.current[nodo.id].translateY.value = nodo.y;
 
+            // nodos.current[nodo.id].selected.value = nodo.selected;
+        })
+    }
+
+    const loadDataFromServer = () => {
+        if (!props.id) return;
+        MDL.pizarra.get(props.id).then(e => {
+            serverData.current = e
+            // setState({ ...state })
+            applyDataServer()
+
+        }).catch(e => {
+            console.log(e);
+        })
+    }
+
+    // ******* Component Did Mount *******
+    React.useEffect(() => {
+        if (!props.id) return;
+        setState({ ...state })
+        // state.serverData = null;
+
+        MDL.erp.addServerListener({
+            key: "pizarra_edit_" + props.id,
+            component: "pizarra",
+            type: "saveNodo",
+            key_empresa: MDL.empresa.select?.key,
+            callback: (data) => {
+                if (data.instance_id != config.current.instance_id) {
+                    loadDataFromServer();
+                }
+            }
+        })
+        loadDataFromServer();
+        // MDL.pizarra.pizarra_usuario_save({
+        //     id_pizarra: props.id,
+        //     active: true,
+        // })
+        // SSocket.removeEventListener()
+        // SSocket.addEventListener("onMessage", (e: any) => {
+        //     if (e.component != "pizarra") return;
+        //     if (e.type != "save") return;
+
+        //     loadDataFromServer();
+        // })
+
+        return () => {
+            MDL.erp.removeServerListener({
+                key: "pizarra_edit_" + props.id,
+                component: "pizarra",
+                type: "save",
+            })
+            // MDL.pizarra.pizarra_usuario_save({
+            //     id_pizarra: props.id,
+            //     active: false,
+            // })
+        }
+    }, []);
+
+
+    // ********  GESTURES  *********
 
     if (Platform.OS == "web") {
-
         const handleWheel = (e: any) => {
             e.preventDefault();
-
             zoomAdd(e.deltaY < 0 ? 0.02 : -0.02);
-
-
-
         };
         const handleMouseDown = (e: any) => {
             if (e.button === 1) { // rueda del mouse
@@ -200,8 +302,8 @@ export default function Pizarra(props: PizarraProps) {
         const handleMouseMove = (e: any) => {
             if (!isMiddleDown.current) return;
             e.preventDefault();
-            translateX.value = start.current.tx + (e.clientX - start.current.x);
-            translateY.value = start.current.ty + (e.clientY - start.current.y);
+            translateX.value = start.current.tx + ((e.clientX - start.current.x) / scale.value);
+            translateY.value = start.current.ty + ((e.clientY - start.current.y) / scale.value);
         };
 
         const handleMouseUp = (e: any) => {
@@ -238,9 +340,6 @@ export default function Pizarra(props: PizarraProps) {
 
     }
 
-
-
-
     // Pan gesture
     const panGesture: any = Gesture.Pan()
         .onBegin((e) => {
@@ -264,27 +363,47 @@ export default function Pizarra(props: PizarraProps) {
 
         })
         .onUpdate((event) => {
-            if (config.current.type == "select") {
+            if (preventPan.value) return;
+            if (config.current.type == "select" && event.numberOfPointers == 1) {
+                // console.log(event.numberOfPointers)
                 selectEndX.value = selectStartX.value + (event.translationX / scale.value);
                 selectEndY.value = selectStartY.value + (event.translationY / scale.value);
                 return;
             }
-            translateX.value = panGesture.context.startX + event.translationX;
-            translateY.value = panGesture.context.startY + event.translationY;
+            translateX.value = (panGesture.context.startX) + (event.translationX / scale.value);
+            translateY.value = (panGesture.context.startY) + (event.translationY / scale.value);
         }).onFinalize(e => {
-            console.log("entro en el finalize pizzarra");
             selectTranslateX.value = 0;
             selectTranslateY.value = 0;
             selectStartX.value = 0
             selectStartY.value = 0
             selectEndX.value = selectStartX.value;
             selectEndY.value = selectStartY.value;
+
         })
+
+
+    const pinchGesture: any = Gesture.Pinch()
+        .onStart((e) => {
+            pinchGesture.context = {
+                startScale: scale.value,
+                startX: translateX.value,
+                startY: translateY.value,
+            };
+        })
+        .onUpdate((event) => {
+            scale.value = pinchGesture.context.startScale * event.scale
+        });
+
+    const gesture = Gesture.Simultaneous(panGesture, pinchGesture);
+
+
+    // *********  STYLES  *********
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [
-            { translateX: translateX.value },
-            { translateY: translateY.value },
+            { translateX: translateX.value * scale.value },
+            { translateY: translateY.value * scale.value },
             { scale: scale.value },
         ],
     }));
@@ -300,27 +419,68 @@ export default function Pizarra(props: PizarraProps) {
             left: Math.min(selectStartX.value, selectEndX.value),
             top: Math.min(selectStartY.value, selectEndY.value),
             transform: [
-                { translateX: selectTranslateX.value },
-                { translateY: selectTranslateY.value },
+                { translateX: selectTranslateX.value * scale.value },
+                { translateY: selectTranslateY.value * scale.value },
                 // { scale: scale.value },
             ],
         })
     });
 
 
-    const pinchGesture: any = Gesture.Pinch()
-        .onStart(() => {
-            // Guardamos la posición anterior
-            pinchGesture.context = {
-                startScale: scale.value,
-            };
-        })
-        .onUpdate((event) => {
-            scale.value = pinchGesture.context.startScale * event.scale;
-        });
 
-    // const gesture = Gesture.Exclusive(panSelected, panGesture)
-    const gesture = Gesture.Simultaneous(panGesture, pinchGesture);
+    const encontrarLineas = () => {
+        const puertosEncontrados: any[] = [];
+        const buscarPuertosRecursive = (props: any, nodo?: any) => {
+            if (!props.children) return;
+            React.Children.forEach(props.children, (child: any) => {
+                if (!child) return;
+                if (child.type && (child.type.name == "PizarraNodo" || child.type.displayName == "PizarraNodo")) {
+                    console.log("Es el nodo")
+                    if (child.props) {
+                        buscarPuertosRecursive(child.props, child);
+                    }
+                    return;
+                }
+                if (child.type && (child.type.name == "Puerto" || child.type.displayName == "Puerto")) {
+                    // child.nodo = nodo;
+                    // console.log("Puerto encontrado", child, nodo)
+                    puertosEncontrados.push({ port: child, nodo: nodo });
+                    // @ts-ignore
+                    // console.log("Puerto encontrado", child.props.id, child.props.value, child.props.type)
+                }
+                if (child.props) {
+                    buscarPuertosRecursive(child.props, nodo);
+                }
+            });
+        }
+
+        buscarPuertosRecursive(props);
+
+        const conexiones: any = [];
+        const inputs = puertosEncontrados.filter(a => a.port.props.type == "input");
+        const outputs = puertosEncontrados.filter(a => a.port.props.type == "output");
+        inputs.map(inp => {
+            const { type, value, id } = inp.port.props;
+            outputs.map(out => {
+                if (!inp?.port?.props?.value) return false;
+                if (!out?.port?.props?.value) return false;
+                if (inp.port.props.value == out.port.props.value) {
+                    conexiones.push({
+                        id: inp.nodo.props.id + "_" + inp.port.props.id + "__" + out.nodo.props.id + "_" + out.port.props.value,
+                        inp: inp,
+                        out: out
+                    })
+                }
+            })
+
+        })
+        return conexiones;
+    }
+
+
+    const conexiones = encontrarLineas();
+    console.log("Puertos encontrados en Pizarra",)
+
     return (
 
         <GestureHandlerRootView style={{
@@ -334,6 +494,9 @@ export default function Pizarra(props: PizarraProps) {
         }}>
             <PizarraContext.Provider value={{
                 width: width, scale: scale, translateX: translateX, translateY: translateY, layoutWidth: layoutWidth,
+                toJSon: toJSon,
+                saveChanges: saveChanges,
+                saveChangeNodes: saveChangeNodes,
                 layoutHeight: layoutHeight,
                 selectStartX: selectStartX,
                 selectStartY: selectStartY,
@@ -364,8 +527,12 @@ export default function Pizarra(props: PizarraProps) {
                     }, animatedStyle]} >
                         {/* <GestureDetector gesture={panSelected}> */}
                         <Animated.View style={[selectStyle]} />
-                        <Lineas ref={lineasRef} lineas={lineas} />
-
+                        <Lineas ref={lineasRef} lineas={lineas} scale={scale} />
+                        {/* <View style={{ position: "absolute", width: "100%", height: 1, backgroundColor: STheme.color.card }} /> */}
+                        {/* <View style={{ position: "absolute", width: 1, height: "100%", backgroundColor: STheme.color.card }} /> */}
+                        {conexiones.map((con: any) => {
+                            return <Conexion key={con.id} id={con.id} inp={con.inp} out={con.out} />
+                        })}
                         {/* </GestureDetector> */}
                         {props.children}
 
@@ -373,38 +540,9 @@ export default function Pizarra(props: PizarraProps) {
 
                     </Animated.View>
                 </GestureDetector>
-                <PizarraMiniMapa />
-                <MenuType onChange={(type) => config.current.type = type} />
+                {!props.hiddeMiniMapa && <PizarraMiniMapa />}
+                {/* <MenuType type={config.current.type} onChange={(type) => config.current.type = type} /> */}
             </PizarraContext.Provider>
         </GestureHandlerRootView>
     );
-}
-
-
-const MenuType = ({ onChange }: { onChange: (type: "select" | "move") => void }) => {
-    const [selected, setSelected] = React.useState<"select" | "move">("select");
-    return <SView style={{
-        width: 120,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        padding: 10,
-        position: "absolute",
-        bottom: 0,
-        backgroundColor: STheme.color.background,
-    }}>
-        <SText card padding={8} style={{
-            fontWeight: selected === "select" ? "bold" : "normal",
-            opacity: selected === "select" ? 1 : 0.5,
-        }} onPress={() => {
-            setSelected("select");
-            onChange("select");
-        }}>{"select"}</SText>
-        <SText card padding={8} style={{
-            fontWeight: selected === "move" ? "bold" : "normal",
-            opacity: selected === "move" ? 1 : 0.5,
-        }} onPress={() => {
-            setSelected("move");
-            onChange("move");
-        }}>{"move"}</SText>
-    </SView>;
 }

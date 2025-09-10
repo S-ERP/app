@@ -46,28 +46,28 @@ export default class test extends Component {
   render() {
     return <SPage title={"Test"} disableScroll>
 
-      <Pizarra>
-        <PizarraNodo style={{
+      <Pizarra id='pizarra_test'>
+        <PizarraNodo id={"cosas"} style={{
           backgroundColor: STheme.color.background,
           borderRadius: 4,
           padding: 8,
         }} x={-300} y={-300}>
           {this.cosasDeTest()}
         </PizarraNodo>
-        <PizarraNodo style={{
+        <PizarraNodo id={"date_picker"} style={{
           backgroundColor: STheme.color.background,
           borderRadius: 4,
           padding: 8,
         }} x={300} y={-300}>
           <DatePickerCalendar color={"#fff"} accentColor={"#000"}
-          language='es'
+            language='es'
             defaultValue={new SDate()}
             onChange={e => {
               // state.dateSelec = e
             }} />
         </PizarraNodo>
 
-        <PizarraNodo style={{
+        <PizarraNodo id={"timeBetween"} style={{
           backgroundColor: STheme.color.background,
           borderRadius: 4,
           padding: 8,
@@ -91,7 +91,9 @@ const Sucursal = ({ label = "", x = 0, y = 0 }) => {
     padding: 8,
     justifyContent: "center",
     alignItems: "center",
-  }} x={x} y={y} onChangePosition={e => {
+  }} x={x} y={y}
+  id={'sucursal_' + label}
+  onChangePosition={e => {
     console.log(label, "onChangePosition", e)
   }}>
     <SView width={50} height={50} padding={8}>

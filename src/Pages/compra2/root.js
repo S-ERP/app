@@ -126,6 +126,7 @@ export default class root extends React.Component {
             const provValue = this.inputs["proveedor"].getValue();
             const proveedor = this.state.proveedores.find(a => a.razon_social === provValue);
 
+            console.log(this.selectedMoneda)
             const data = {
                 descripcion: "Compra rapida",
                 observacion: "Sin observacion",

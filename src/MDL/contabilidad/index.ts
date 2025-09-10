@@ -124,6 +124,15 @@ export default class contabilidad extends MDLAbstract<EventListener> {
     return this.cuentasCache.promise;
   }
 
+  armarNiveles(cuentas: any[]) {
+    const niveles:any = {};
+    cuentas.map(e => {
+      if (!e?.codigo) return;
+      const lvl = e.codigo.length
+      niveles[lvl] = true;
+    })
+    return  Object.keys(niveles).map(n => parseInt(n)).sort((a,b)=>a - b);
+  }
   getCuentasGrafo(cuentas: any[]) {
     cuentas.map(c => {
       // HIJAS: buscar solo las del nivel más cercano

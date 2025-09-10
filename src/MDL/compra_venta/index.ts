@@ -164,4 +164,21 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     return resp.data || [];
   }
 
+  async getTransaccionCuotas(_key_proveedor: String) {
+    //  @param {string} _key_usuario - Identificador único del usuario (cliente o proveedor).
+    // Si `_tipo` es **"compra"**, el `_key_usuario` será interpretado como `key_proveedor`.
+    // Si `_tipo` es **"venta"**, el `_key_usuario` será interpretado como `key_cliente` (en este caso, representa al acreditado).
+    // const key_empresa = MDL.empresa?.select?.key || {};
+    const resp: any = await SSocket.sendPromise({
+      service: "compra_venta",
+      component: "reporte",
+      type: "execute_function",
+      func: "_get_compras_proveedor",
+      params: ["'" + _key_proveedor + "'"],
+      // params: ["'" + 'f894ea35-5ad1-4b61-a2d0-9294965be169' + "'", "'" + '2025-09-01' + "'", "'" + '2025-09-06' + "'", "'" + 'venta' + "'"],
+    });
+    // console.log("🚀🚀🚀🚀🚀🚀 ~ file: indexresp:", resp.data)
+    return resp.data || [];
+  }
+
 }

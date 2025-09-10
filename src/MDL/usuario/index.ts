@@ -17,6 +17,8 @@ export default class usuario extends MDLAbstract<EventListener> {
 
     }
 
+
+
     _loadSessionFromStorage = async () => {
         const data = await SStorage.getItem("usr_log")
         const user = JSON.parse(data);
@@ -211,6 +213,9 @@ export default class usuario extends MDLAbstract<EventListener> {
         }
 
     }
+
+
+    
 
     // eliminar = async (key_usuario: string) => {
     //     try {
