@@ -249,14 +249,14 @@ export default class history extends Component {
                         options: [
                             {
                                 label: "Ver venta",
-                                icon: <SIconApp name='addTarea' fill="#e4e4e4ff" />,
+                                icon: <SIconApp name='addTarea' fill={STheme.color.text} />,
                                 onPress: () => {
                                     SNavigation.navigate("/venta/profile", { pk: e?.row?.key })
                                 }
                             },
                             {
                                 label: "Imprimir tamaño carta",
-                                icon: <SIcon name='imprimir' />,
+                                icon: <SIcon name='imprimir' fill={STheme.color.text} />,
                                 onPress: () => {
                                     ReciboCarta.imprimir(e?.row?.key)
                                 }

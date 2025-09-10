@@ -21,9 +21,12 @@ export default class PopupCrearSucursal extends Component<Props> {
         SPopup.open({
             key: "PopupCrearSucursal",
             content: <SView style={{
-                maxWidth: "100%",
+                
                 maxHeight: "100%",
-                width: 500,
+                // maxWidth: "100%",
+                width: "100%",
+                maxWidth: 500,
+                // width: 500,
                 // height: 500,
                 borderRadius: 8,
                 borderColor: STheme.color.card,

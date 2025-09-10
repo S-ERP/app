@@ -217,9 +217,9 @@ export default class root extends React.Component {
                             </SView>
                             {this.facturar && (
                                 <SView col={"xs-12"} padding={4} style={{ alignItems: "flex-end" }} height={30}>
-                                    <SView width={200} style={{ marginTop: 0 }}>
+                                    <SView width={200} style={{ marginTop: -10 }}>
                                         <SInput
-                                            label={"Entregar factura mas tarde"}
+                                            label={"La factura será entregada posteriormente"}
                                             type="checkBox"
                                             defaultValue={false}
                                             onChangeText={(text) => {
