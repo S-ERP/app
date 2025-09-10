@@ -11,7 +11,7 @@ const COLOR_ACCENT = STheme.color.lightGray + "66";
 const COLOR_BORDER = STheme.color.lightGray + "30";
 const COLOR_PENDIENTE = '#EAB308';
 const COLOR_PAGADO = '#22C55E';
-const COLOR_VENCIDO = '#F97316';
+const COLOR_VENCIDO = '#ee343b';
 // const COLOR_CARD = STheme.color.lightGray + '44';
 // const COLOR_TEXT = STheme.color.text;
 // const COLOR_ACCENT = STheme.color.card;
@@ -178,7 +178,7 @@ export default class Pagos extends Component {
         const data = this.data;
         if (!data) return this.renderLoading();
 
-        console.log("suavesita "+JSON.stringify(data))
+        console.log("suavesita " + JSON.stringify(data))
         const { proveedor, pendientes, deudaTotal, amortizadoTotal, monedaDefault = 'BOB' } = data;
 
         return (
@@ -380,16 +380,11 @@ export default class Pagos extends Component {
                                     {`${compra.cuotas_en_mora?.cantidad || 0} cuotas`}
                                 </SText>
                             </SView>
-                          
+
                             <SHr h={4} />
                             <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Cuotas total:</SText>
-                                <SText
-                                    fontSize={12}
-                                    color={compra.cuotas?.cantidad ? COLOR_VENCIDO : COLOR_TEXT}
-                                >
-                                    {`${compra.cuotas?.cantidad || 0} cuotas`}
-                                </SText>
+                                <SText fontSize={12} color={COLOR_TEXT} > {`${compra.cuotas?.cantidad || 0} cuotas`} </SText>
                             </SView>
                             <SHr h={8} />
                             <SView col={'xs-12'} center>
@@ -417,17 +412,8 @@ export default class Pagos extends Component {
                                     }}
                                 >
                                     <SView row center>
-                                        <SIcon
-                                            name={compra.cuotas_en_mora?.cantidad ? 'AlertOutline' : 'history'}
-                                            width={12}
-                                            height={12}
-                                            fill={compra.cuotas_en_mora?.cantidad ? COLOR_VENCIDO : COLOR_TEXT}
-                                            style={{ marginRight: 4 }}
-                                        />
-                                        <SText fontSize={12} bold color={COLOR_TEXT} >
-                                            {/* color={compra.cuotas_en_mora?.cantidad ? dataConfig.configuracion.estados.vencido.textColor : COLOR_TEXT} */}
-                                            {compra.cuotas_en_mora?.cantidad ? 'Pagar Cuotas Pendientes' : 'Ver Historial de Pagos'}
-                                        </SText>
+                                        {!compra.cuotas_en_mora?.cantidad ? <SIcon name={'Eyes'} width={12} height={12} fill={COLOR_TEXT} style={{ marginRight: 4 }} /> : null}
+                                        <SText fontSize={12} bold color={COLOR_TEXT} >{compra.cuotas_en_mora?.cantidad ? 'Pagar Cuotas Pendientes' : 'Ver Historial de Pagos'}</SText>
                                     </SView>
                                 </SView>
                             </SView>

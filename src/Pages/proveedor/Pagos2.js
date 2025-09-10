@@ -1,4 +1,4 @@
- import React, { Component } from 'react';
+import React, { Component } from 'react';
 import { SView, SPage, SText, SHr, SScrollView2, STheme, SDate, SMath, SIcon } from 'servisofts-component';
 import PopupPagoCuota from './Components/PopupPagoCuota';
 import MDL from '../../MDL';
@@ -161,14 +161,14 @@ export default class Pagos2 extends Component {
 
         const summaryItems = [
             {
-                icon: 'empresa',
+                icon: 'iconEdifcio',
                 color: COLORS.PAGADO,
                 bgColor: DATA_CONFIG.estados.pagado.bgColor,
                 label: 'Proveedor',
                 value: proveedor?.razon_social || 'Sin nombre',
             },
             {
-                icon: 'tpAf',
+                icon: 'iconPesos',
                 color: COLORS.PENDIENTE,
                 bgColor: DATA_CONFIG.estados.pendiente.bgColor,
                 label: 'Deuda Total',
