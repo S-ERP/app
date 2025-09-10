@@ -6,6 +6,7 @@ import cuentas_t from "./cuentas_t";
 import balance from "./balance";
 import dimension from "./dimension";
 import libro_diario from "./libro_diario";
+import report_config from "./report_config";
 
 export default SPage.combinePages("conta",{
     "":root,
@@ -13,5 +14,6 @@ export default SPage.combinePages("conta",{
     cuentas_t,
     dimension,
     balance,
-    libro_diario
+    libro_diario,
+    ...report_config
 })

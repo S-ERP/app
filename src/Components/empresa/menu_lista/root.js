@@ -18,7 +18,7 @@ export default class root extends Component<indexPropsType> {
     }
 
     componentDidMount() {
-
+        if(!MDL.usuario?.session?.key) return;
         SSocket.sendPromise({
 
             service: "empresa",
@@ -41,6 +41,7 @@ export default class root extends Component<indexPropsType> {
 
     render() {
         let miEmpresa = MDL.empresa.select;
+        if(!miEmpresa) return null;
         console.log("miEmpresa", miEmpresa)
       
         return (

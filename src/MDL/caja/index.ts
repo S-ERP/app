@@ -13,7 +13,7 @@ export default class caja extends MDLAbstract<EventListener> {
     try {
       await this.getActiva();
     } catch (error) {
-
+      console.error(error);
     }
   }
   setActiva(caja: Caja) {
