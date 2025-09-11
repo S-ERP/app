@@ -26,10 +26,10 @@ export default class table extends React.Component {
                     e: e.evt,
                     label: "Rol: " + e.row?.descripcion,
                     options: [
-                        { label: "Permisos", onPress: () => { SNavigation.navigate("/rol/permiso", { key_rol: e.row.key }) } },
+                        {  icon: <SIconApp name='permisos' fill={STheme.color.text} />, label: "Permisos",  onPress: () => { SNavigation.navigate("/rol/permiso", { key_rol: e.row.key }) } },
                         {
                             icon: <SIconApp name='Edit' />,
-                            label: "Actualizar Rol",
+                            label: "Editar Rol",
                             onPress: () => {
                                 const roles = {
                                     ...e.row,

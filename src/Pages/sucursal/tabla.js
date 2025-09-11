@@ -61,7 +61,7 @@ export default class tabla extends Component {
                     options: [
                         {
                             icon: <SIconApp name='Edit' />,
-                            label: "Actualizar Sucursal",
+                            label: "Editar Sucursal",
                             onPress: () => {
                                 // let ubicacion = { lat: null, lng: null };
                                 // try {
