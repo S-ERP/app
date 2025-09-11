@@ -1,36 +1,56 @@
 import React, { Component } from 'react';
 import { ScrollView } from 'react-native';
-import { SNotification, SPopup, SText, STheme, SView, SIcon, SHr } from 'servisofts-component';
+import { SNotification, SPopup, SText, STheme, SView, SIcon, SHr, SDate } from 'servisofts-component';
 import SIconApp from '../../../Assets/SIconApp';
-import PageAbstract from 'servisofts-page/PageAbstract';
+import MDL from '../../../MDL';
 
-type Props = {
-    key_empresa: string,
-    editObject?: any,
-    onCancel?: Function,
-    onSuccess?: Function,
+// Configuración
+const data = {
+    configuracion: {
+        estados: {
+            Pendiente: { label: "Pendiente", color: "#EAB308", bgColor: "#fef8c3", textColor: "#b58940", icon: "history" },
+            Pagado: { label: "Pagado", color: "#22C55E", bgColor: "#dafce6", textColor: "#42b88f", icon: "Check" },
+            Vencido: { label: "Vencido", color: "#F97316", bgColor: "#ee343b", textColor: "#eeccda", icon: "AlertOutline" }
+        }
+    }
 };
-const COLOR_VERDE_CLARO = "#d8edd8";
-const COLOR_VERDE_OSCURO = "#107003ff";
-const COLOR_ROJO_CLARO = "#ece3dd";
-const COLOR_ROJO_OSCURO = "#d93145";
- export default class PopupPagoCuota extends Component<Props> {
-    // Método estático para abrir el popup
-    static open(props: Props) {
+
+// Colores
+const COLOR_CARD = STheme.color.lightGray + '44';
+const COLOR_TEXT = STheme.color.text;
+const COLOR_ACCENT = "#3B82F6";
+const COLOR_BORDER = STheme.color.white;
+
+// Static JSON Data (fallback)
+const compraFallback = {
+    id: 101,
+    descripcion: 'Productos de limpieza y mantenimiento',
+    estado: 'Pendiente',
+    fecha: '2024-12-01',
+    total: 1416.66,
+    cuotasDetalle: [
+        { numero: 1, estado: 'Pagado', vencimiento: '2025-01-14', fechaPago: '2025-01-13', monto: 708.33 },
+        { numero: 2, estado: 'Pendiente', vencimiento: '2025-02-14', fechaPago: null, monto: 708.33 },
+    ],
+    moneda: 'BOB',
+};
+
+export default class PopupPagoCuota extends Component {
+    static open(props) {
         SPopup.open({
             key: 'PopupPagoCuota',
             content: (
                 <SView
                     style={{
                         width: "100%",
-                        maxWidth: 500,
-                        maxHeight: "100%",
-                        padding: 4,
+                        maxWidth: 600,
+                        maxHeight: "90%",
+                        padding: 8,
                         overflow: 'hidden',
                         backgroundColor: STheme.color.background,
-                        borderColor: STheme.color.background + '33',
+                        borderRadius: 12,
                         borderWidth: 1,
-                        borderRadius: 8,
+                        borderColor: COLOR_BORDER,
                     }}
                     withoutFeedback
                     closeOnTouchOutside
@@ -42,7 +62,7 @@ const COLOR_ROJO_OSCURO = "#d93145";
                             SPopup.close('PopupPagoCuota');
                             if (props.onCancel) props.onCancel();
                         }}
-                        onSuccess={(e: any) => {
+                        onSuccess={(e) => {
                             SPopup.close('PopupPagoCuota');
                             if (props.onSuccess) props.onSuccess(e);
                         }}
@@ -52,84 +72,85 @@ const COLOR_ROJO_OSCURO = "#d93145";
         });
     }
 
-    // Constructor y estado inicial
-    constructor(props: Props) {
+    constructor(props) {
         super(props);
-        this.state = {
-            montoPagar: {},
-            isLoading: false,
-        };
-        // Inicializar __select en false para todas las cuotas
-        if (this.props.editObject?.cuotasDetalle) {
-            this.props.editObject.cuotasDetalle.forEach((cuota) => {
-                cuota.__select = false;
-            });
-        }
+        this.cuotasCompras = [];
+        this.selectedCuotas = {};
+        this.montoPagar = {};
+        this.isLoading = false;
+        this.showPaidCuotas = false;
+        this.showAllPendingCuotas = false;
     }
 
-    // Obtener datos de la compra
-    getCompraData = () => {
-        const { editObject } = this.props;
-        return {
-            id: editObject?.id || 101,
-            descripcion: editObject?.descripcion || 'Productos de limpieza y mantenimiento',
-            estado: editObject?.estado || 'Pendiente',
-            fecha: editObject?.fecha || '2024-01-14',
-            total: editObject?.total || 8500,
-            cuotasDetalle: editObject?.cuotasDetalle || [
-                { numero: 1, estado: 'Pagado', vencimiento: '2024-02-14', fechaPago: '2024-02-13', monto: 2833.33 },
-                { numero: 2, estado: 'Pendiente', vencimiento: '2024-03-14', fechaPago: null, monto: 2833.33 },
-                { numero: 3, estado: 'Pendiente', vencimiento: '2024-04-14', fechaPago: null, monto: 2833.34 },
-                { numero: 4, estado: 'Pendiente', vencimiento: '2025-01-14', fechaPago: null, monto: 2833.34 }, // Cuota posterior añadida
-            ],
-            moneda: editObject?.moneda || 'S/',
-        };
+    loadData = async () => {
+        const key_compra_venta = this.props.editObject?.key || '1f30bf00-33ba-4466-813b-2870eec111dd';
+        try {
+            const registros = await MDL.compra_venta.getCuotasCompras(key_compra_venta);
+            return registros;
+        } catch (error) {
+            console.error('Error in loadData:', error);
+            return compraFallback.cuotasDetalle;
+        }
     };
 
-    // Seleccionar cuotas no pagadas con fechas menores o iguales y desmarcar posteriores
+    componentDidMount() {
+        this.loadData()
+            .then((resp) => {
+                this.cuotasCompras = resp;
+                this.forceUpdate();
+            })
+            .catch((error) => {
+                console.error('Error loading data:', error);
+                this.cuotasCompras = compraFallback.cuotasDetalle;
+                this.forceUpdate();
+            });
+    }
+
+    isCuotaVencida = (vencimiento) => {
+        const today = new SDate('2025-09-08', 'yyyy-MM-dd');
+        const vencimientoDate = new SDate(vencimiento, 'yyyy-MM-dd');
+        return vencimientoDate.isBefore(today);
+    };
+
     selectPreviousCuotas = (selectedCuota) => {
         const compra = this.getCompraData();
-        const selectedDate = new Date(selectedCuota.vencimiento);
+        const selectedDate = new SDate(selectedCuota.vencimiento, 'yyyy-MM-dd');
+        const newSelectedCuotas = { ...this.selectedCuotas };
 
-        // Marcar como seleccionadas las cuotas no pagadas hasta la fecha seleccionada
-        // y desmarcar las posteriores
-        compra.cuotasDetalle.forEach((cuota) => {
+        for (let i = 0; i < compra.cuotasDetalle.length; i++) {
+            const cuota = compra.cuotasDetalle[i];
             if (cuota.estado !== 'Pagado') {
-                const cuotaDate = new Date(cuota.vencimiento);
-                if (cuotaDate <= selectedDate) {
-                    cuota.__select = true;
-                } else {
-                    cuota.__select = false;
-                }
+                const cuotaDate = new SDate(cuota.vencimiento, 'yyyy-MM-dd');
+                newSelectedCuotas[cuota.numero] = cuotaDate.isBefore(selectedDate) || cuotaDate.isEqual?.(selectedDate) || cuotaDate.toString('yyyy-MM-dd') === selectedDate.toString('yyyy-MM-dd');
             }
-        });
+        }
 
+        this.selectedCuotas = newSelectedCuotas;
         this.forceUpdate();
     };
 
-    // Desmarcar cuotas no pagadas con fechas menores o iguales
     deselectPreviousCuotas = (selectedCuota) => {
         const compra = this.getCompraData();
-        const selectedDate = new Date(selectedCuota.vencimiento);
+        const selectedDate = new SDate(selectedCuota.vencimiento, 'yyyy-MM-dd');
+        const newSelectedCuotas = { ...this.selectedCuotas };
 
-        // Desmarcar todas las cuotas no pagadas hasta la fecha seleccionada
-        compra.cuotasDetalle.forEach((cuota) => {
+        for (let i = 0; i < compra.cuotasDetalle.length; i++) {
+            const cuota = compra.cuotasDetalle[i];
             if (cuota.estado !== 'Pagado') {
-                const cuotaDate = new Date(cuota.vencimiento);
-                if (cuotaDate <= selectedDate) {
-                    cuota.__select = false;
+                const cuotaDate = new SDate(cuota.vencimiento, 'yyyy-MM-dd');
+                if (cuotaDate.isBefore(selectedDate) || cuotaDate.isEqual?.(selectedDate) || cuotaDate.toString('yyyy-MM-dd') === selectedDate.toString('yyyy-MM-dd')) {
+                    newSelectedCuotas[cuota.numero] = false;
                 }
             }
-        });
+        }
 
+        this.selectedCuotas = newSelectedCuotas;
         this.forceUpdate();
     };
 
-    // Manejar el pago de una cuota
     handlePagarDeuda = async (cuota) => {
-        const { montoPagar, isLoading } = this.state as any;
-        const monto = parseFloat(montoPagar[cuota.numero] || '0');
-        if (isLoading) return;
+        const monto = parseFloat(this.montoPagar[cuota.numero] || '0');
+        if (this.isLoading) return;
         if (monto <= 0) {
             SNotification.send({
                 title: 'Error',
@@ -150,12 +171,13 @@ const COLOR_ROJO_OSCURO = "#d93145";
             });
             return;
         }
-        this.setState({ isLoading: true });
+        this.isLoading = true;
+        this.forceUpdate();
         try {
             console.log(
-                `Registrando pago: Compra ${this.props.editObject.id}, Cuota ${cuota.numero}, Monto ${monto}`
+                `Registrando pago: Compra ${this.props.editObject?.id}, Cuota ${cuota.numero}, Monto ${monto}`
             );
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // Mock async call
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             SNotification.send({
                 title: 'Éxito',
                 body: 'El pago se registró correctamente.',
@@ -163,16 +185,13 @@ const COLOR_ROJO_OSCURO = "#d93145";
                 color: STheme.color.success,
                 position: 'top',
             });
-            const newMontoPagar = { ...montoPagar };
+            const newMontoPagar = { ...this.montoPagar };
             delete newMontoPagar[cuota.numero];
-            this.setState({ montoPagar: newMontoPagar, isLoading: false });
+            this.montoPagar = newMontoPagar;
+            this.isLoading = false;
             if (this.props.onSuccess) {
                 this.props.onSuccess({ cuota, monto });
             }
-            // Opcional: Navegar a PageAbstract con las cuotas seleccionadas
-            const compra = this.getCompraData();
-            const selectedCuotas = compra.cuotasDetalle.filter((c) => c.__select && c.estado !== 'Pagado');
-            // PageAbstract.navigateToSomePage({ selectedCuotas }); // Descomentar si es necesario
         } catch (error) {
             console.error('Error al registrar el pago:', error);
             SNotification.send({
@@ -182,35 +201,64 @@ const COLOR_ROJO_OSCURO = "#d93145";
                 color: STheme.color.danger,
                 position: 'top',
             });
-            this.setState({ isLoading: false });
+            this.isLoading = false;
         }
+        this.forceUpdate();
     };
 
-    // Componente para renderizar cada cuota
-    Item = ({ cuota, index, onAjuste, compra }) => {
-        const { isLoading } = this.state as any;
-        const monedaSymbol = this.props.editObject?.moneda || 'S/';
+    getCompraData = () => {
+        const ____compra = this.props.editObject || compraFallback;
+        let totalCompra = 0;
+        if (____compra.detalles?.length) {
+            for (let i = 0; i < ____compra.detalles.length; i++) {
+                const item = ____compra.detalles[i];
+                totalCompra += item.precio_unitario * item.cantidad;
+            }
+        }
+        const estadoCompra = ____compra.cuotas_en_mora?.monto > 0 ? 'Pendiente' : 'Pagado';
+        const saldoCompra = ____compra.cuotas_en_mora?.monto || 0;
+        const cuotasDetalle = this.cuotasCompras.length > 0 ? this.cuotasCompras : compraFallback.cuotasDetalle;
+
+        return {
+            id: ____compra.id || compraFallback.id,
+            descripcion: ____compra.descripcion || compraFallback.descripcion,
+            estado: estadoCompra,
+            fecha: ____compra.fecha_on || compraFallback.fecha,
+            total: totalCompra || compraFallback.total,
+            cuotasDetalle: cuotasDetalle,
+            moneda: ____compra.moneda || compraFallback.moneda,
+            cuotas: ____compra.cuotas || { cantidad: 0, total: 0 },
+            monto_amortizado: ____compra.monto_amortizado || 0,
+            cuotas_en_mora: ____compra.cuotas_en_mora || { cantidad: 0, monto: 0, min_fecha: null },
+        };
+    };
+
+    Item = ({ cuota, compra }) => {
+        const monedaSymbol = compra.moneda;
         const isPaid = cuota.estado === 'Pagado';
+        const isVencida = !isPaid && this.isCuotaVencida(cuota.vencimiento);
+        const estadoConfig = data.configuracion.estados[isVencida ? 'Vencido' : cuota.estado] || data.configuracion.estados.Pendiente;
 
         return (
             <SView
                 key={`cuota-${cuota.numero}`}
                 col={'xs-12'}
                 style={{
-                    backgroundColor: cuota.__select ? STheme.color.card : STheme.color.lightGray + '55',
+                    backgroundColor: this.selectedCuotas[cuota.numero] ? STheme.color.card : STheme.color.lightGray + '55',
+                    borderColor: this.selectedCuotas[cuota.numero] ? STheme.color.success : STheme.color.success + '55',
                     borderRadius: 8,
                     padding: 16,
                     borderWidth: 1,
-                    borderColor: cuota.__select ? STheme.color.success : STheme.color.success + '55',
+                    marginBottom: 12,
                 }}
                 onPress={() => {
                     if (!isPaid) {
-                        if (cuota.__select) {
-                            // Si ya está seleccionada, desmarcar todas las cuotas hasta esta fecha
+                        const newSelectedCuotas = { ...this.selectedCuotas };
+                        if (this.selectedCuotas[cuota.numero]) {
                             this.deselectPreviousCuotas(cuota);
                         } else {
-                            // Marcar la cuota y seleccionar cuotas anteriores, desmarcando posteriores
-                            cuota.__select = true;
+                            newSelectedCuotas[cuota.numero] = true;
+                            this.selectedCuotas = newSelectedCuotas;
                             this.selectPreviousCuotas(cuota);
                         }
                     }
@@ -218,206 +266,194 @@ const COLOR_ROJO_OSCURO = "#d93145";
                 accessibilityLabel={`Cuota ${cuota.numero} - ${cuota.estado}`}
                 activeOpacity={0.7}
             >
-                <SView row>
+                <SView row style={{ justifyContent: "space-between" }}>
                     <SView flex row>
-                        <SView width={70} row backgroundColor=''>
-                            <SText fontSize={14} bold color={STheme.color.text}>
-                                Cuota #{cuota.numero}
-                            </SText>
-                        </SView>
-                        {this.labelEstado(cuota.estado)}
+                        <SText fontSize={16} bold color={COLOR_TEXT}>Cuota #{cuota.numero}</SText>
                     </SView>
-                    <SView flex style={{ alignItems: "flex-end" }}>
-                        {this.labelEstado2(cuota.estado)}
+                    <SView>
+                        {this.labelEstado(cuota.estado, isVencida)}
                     </SView>
                 </SView>
-                <SHr height={8} />
-                <SView row center>
-                    <SView flex row>
-                        <SText fontSize={12} color={STheme.color.text} accessibilityLabel={`Vencimiento cuota ${cuota.numero}`}>
-                            Vencimiento: <SText>{cuota.vencimiento}</SText>
-                        </SText>
-                    </SView>
-                    <SView width={150} row style={{ justifyContent: 'flex-end' }}>
-                        <SText fontSize={18} bold color={STheme.color.text}>
-                            {monedaSymbol} {parseFloat(cuota.monto).toFixed(2)}
-                        </SText>
-                    </SView>
-                </SView>
-                {isPaid && (
-                    <SView row style={{ justifyContent: 'flex-start' }}>
-                        <SText fontSize={12} color={STheme.color.text}>
-                            Pagado: <SText color={STheme.color.success} bold>{cuota.fechaPago}</SText>
-                        </SText>
-                    </SView>
-                )}
-                {!isPaid && (
-                    <>
-                        <SView row style={{ justifyContent: 'flex-start' }}>
-                            <SText fontSize={12} color={STheme.color.text}>
-
-                                {/* la idea es poner que la fecha se paso o esta en mora, dame consejos para que se vea mejor */}
-
-                                que me sugieres: <SText color={STheme.color.warning} bold>{cuota.fechaPago}</SText>
-                            </SText>
-                        </SView>
-                    </>
-                )}
-                <SHr height={12} />
-            </SView>
-        );
-    };
-
-    // Etiqueta de estado simple
-    labelEstado = (estado: any) => {
-        const estadoNormalizado = estado?.toLowerCase();
-        const backgroundColor = estadoNormalizado === 'pendiente' ? COLOR_ROJO_OSCURO : COLOR_VERDE_OSCURO;
-        const texto = estadoNormalizado === 'pendiente' ? 'Pendiente' : 'Pagado';
-        return (
-            <SView
-                width={70}
-                row
-                center
-                accessibilityLabel={`Estado: ${texto}`}
-            >
-                <SView
-                    width={64}
-                    center
-                    style={{
-                        backgroundColor,
-                        borderRadius: 2,
-                        paddingVertical: 2,
-                    }}
-                >
-                    <SText fontSize={10} bold color={STheme.color.text}>
-                        {texto}
+                <SHr h={12} />
+                <SView row style={{ justifyContent: "space-between" }}>
+                    <SText fontSize={14} color={COLOR_TEXT}>
+                        Vencimiento: <SText bold>{new SDate(cuota.vencimiento, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText>
+                    </SText>
+                    <SText fontSize={16} bold color={COLOR_TEXT}>
+                        {monedaSymbol} {parseFloat(cuota.monto).toFixed(2)}
                     </SText>
                 </SView>
+                <SHr h={8} />
+                {isPaid ? (
+                    <SView row>
+                        <SText fontSize={14} color={COLOR_TEXT}>
+                            Pagado: <SText bold color={data.configuracion.estados.Pagado.color}>{new SDate(cuota.fechaPago, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText>
+                        </SText>
+                    </SView>
+                ) : (
+                    <SView row>
+                        <SText fontSize={14} color={COLOR_TEXT}>
+                            Estado: <SText bold color={estadoConfig.color}>
+                                {isVencida ? 'En mora' : 'Pendiente de pago'}
+                            </SText>
+                        </SText>
+                    </SView>
+                )}
             </SView>
         );
     };
 
-    // Etiqueta de estado con ícono
-    labelEstado2 = (estado: any) => {
-        const estadoNormalizado = estado?.toLowerCase();
-        const backgroundColor = estadoNormalizado === 'pendiente' ? COLOR_ROJO_CLARO : COLOR_VERDE_CLARO;
-        const textoColor = estadoNormalizado === 'pendiente' ? COLOR_ROJO_OSCURO : COLOR_VERDE_OSCURO;
-        const texto = estadoNormalizado === 'pendiente' ? 'Pendiente' : 'Pagado';
-        const icono = estadoNormalizado === 'pendiente' ? 'revertir' : 'tareaclose';
+    labelEstado = (estado, isVencida = false) => {
+        const estadoNormalizado = isVencida ? 'Vencido' : estado;
+        const { color, bgColor, textColor, label, icon } = data.configuracion.estados[estadoNormalizado] || data.configuracion.estados.Pendiente;
         return (
-            <SView
-                width={84}
-                row
-                center
-                accessibilityLabel={`Estado: ${texto}`}
-            >
-                <SView
-                    row
-                    width={80}
-                    center
-                    style={{ backgroundColor, borderRadius: 2, padding: 2 }}
-                >
-                    <SView row>
-                        <SView width={18}>
-                            <SIconApp
-                                name={icono}
-                                fill={textoColor}
-                                width={14}
-                                height={14}
-                                stroke={backgroundColor}
-                            />
-                        </SView>
-                        <SView width={4} />
-                        <SView flex>
-                            <SText fontSize={10} color={textoColor}>{texto}</SText>
-                        </SView>
-                    </SView>
+            <SView width={80} row center accessibilityLabel={`Estado: ${label}`}>
+                <SView row center style={{ backgroundColor: bgColor, borderRadius: 4, paddingVertical: 4, paddingHorizontal: 8, borderWidth: 1, borderColor: color }}>
+                    <SIconApp name={icon} width={14} height={14} fill={textColor} /><SView width={4} /><SText fontSize={12} bold color={textColor}>{label}</SText>
                 </SView>
             </SView>
         );
     };
 
-    // Botón para pagar la compra completa
-    botonEstado = (estado: any) => {
+    labelEstado2 = (estado, isVencida = false) => {
+        const estadoNormalizado = isVencida ? 'Vencido' : estado;
+        const { color, bgColor, textColor, label, icon } = data.configuracion.estados[estadoNormalizado] || data.configuracion.estados.Pendiente;
+        return (
+            <SView row center style={{ backgroundColor: bgColor, borderRadius: 4, padding: 4, borderWidth: 1, borderColor: color }}>
+                <SIconApp name={icon} width={12} height={12} fill={textColor} /><SText fontSize={12} bold color={textColor}> {label}</SText>
+            </SView>
+        );
+    };
+
+    botonEstado = (estado) => {
         const estadoNormalizado = estado?.toLowerCase();
         if (estadoNormalizado !== 'pendiente') return null;
-        const texto = 'Pagar Ahora';
+
+        const compra = this.getCompraData();
+        const selectedCuotas = [];
+        for (let i = 0; i < compra.cuotasDetalle.length; i++) {
+            const c = compra.cuotasDetalle[i];
+            if (this.selectedCuotas[c.numero] && c.estado !== 'Pagado') {
+                selectedCuotas.push(c);
+            }
+        }
+        const isAnyCuotaSelected = selectedCuotas.length > 0;
+
         return (
             <SView
-                width={160}
-                row
-                center
                 onPress={() => {
-                    const compra = this.getCompraData();
-                    const selectedCuotas = compra.cuotasDetalle.filter((c) => c.__select && c.estado !== 'Pagado');
-                    if (selectedCuotas.length > 0) {
-                        this.handlePagarDeuda(selectedCuotas[0]); // Pagar la primera cuota seleccionada como ejemplo
+                    if (isAnyCuotaSelected) {
+                        this.handlePagarDeuda(selectedCuotas[0]);
+                    } else {
+                        SNotification.send({
+                            title: 'Error',
+                            time: 3000,
+                            color: STheme.color.danger,
+                            body: 'Por favor, selecciona al menos una cuota para pagar.',
+                        });
                     }
                 }}
                 activeOpacity={0.7}
                 accessibilityLabel="Pagar compra completa"
+                style={{ width: 120, height: 40 }}
             >
                 <SView
                     row
-                    width={150}
                     center
-                    style={{ backgroundColor: COLOR_ROJO_OSCURO, borderRadius: 2, padding: 4 }}
+                    style={{
+                        borderRadius: 8,
+                        paddingVertical: 10,
+                        paddingHorizontal: 12,
+                        borderWidth: 1,
+                        backgroundColor: isAnyCuotaSelected ? COLOR_ACCENT : STheme.color.gray,
+                        borderColor: isAnyCuotaSelected ? COLOR_ACCENT : STheme.color.gray,
+                        height: '100%',
+                    }}
                 >
-                    <SView row>
-                        <SView width={18}>
-                            <SIconApp
-                                name={'pagotarjeta'}
-                                fill={STheme.color.text}
-                                width={14}
-                                height={14}
-                                stroke={COLOR_ROJO_CLARO}
-                            />
-                        </SView>
-                        <SView width={4} />
-                        <SView flex>
-                            <SText fontSize={16} color={STheme.color.text}>{texto}</SText>
-                        </SView>
-                    </SView>
+                    <SIconApp name='pagotarjeta' width={18} fill={STheme.color.white} />
+                    <SView width={8} />
+                    <SText fontSize={14} bold color={STheme.color.white}>Pagar Ahora</SText>
                 </SView>
             </SView>
         );
     };
 
-    // Método principal de renderizado
+    togglePaidCuotas = () => {
+        this.showPaidCuotas = !this.showPaidCuotas;
+        this.forceUpdate();
+    };
+
+    toggleAllPendingCuotas = () => {
+        this.showAllPendingCuotas = !this.showAllPendingCuotas;
+        this.forceUpdate();
+    };
+
     render() {
         const compra = this.getCompraData();
+        const today = new SDate('2025-09-08', 'yyyy-MM-dd');
 
-        // Calcular MontoSeleccionado: suma de montos de cuotas seleccionadas y no pagadas
-        const MontoSeleccionado = compra.cuotasDetalle
-            .filter((cuota) => cuota.__select && cuota.estado !== 'Pagado')
-            .reduce((sum, cuota) => sum + parseFloat(cuota.monto), 0)
-            .toFixed(2);
+        // Calculate Monto Seleccionado and Monto Saldo without reduce
+        let MontoSeleccionado = 0;
+        let MontoSaldo = 0;
+        for (let i = 0; i < compra.cuotasDetalle.length; i++) {
+            const cuota = compra.cuotasDetalle[i];
+            if (cuota.estado !== 'Pagado') {
+                MontoSaldo += parseFloat(cuota.monto);
+                if (this.selectedCuotas[cuota.numero]) {
+                    MontoSeleccionado += parseFloat(cuota.monto);
+                }
+            }
+        }
+        MontoSeleccionado = MontoSeleccionado.toFixed(2);
+        MontoSaldo = MontoSaldo.toFixed(2);
 
-        // Calcular MontoSaldo: suma de montos de cuotas no pagadas
-        const MontoSaldo = compra.cuotasDetalle
-            .filter((cuota) => cuota.estado !== 'Pagado')
-            .reduce((sum, cuota) => sum + parseFloat(cuota.monto), 0)
-            .toFixed(2);
+        // Filter cuotas based on visibility toggles
+        const filteredCuotas = [];
+        for (let i = 0; i < compra.cuotasDetalle.length; i++) {
+            const cuota = compra.cuotasDetalle[i];
+            const isPaid = cuota.estado === 'Pagado';
+            const isVencida = !isPaid && this.isCuotaVencida(cuota.vencimiento);
+            const isFuturePending = !isPaid && !isVencida;
+
+            if (isPaid && this.showPaidCuotas) {
+                filteredCuotas.push(cuota);
+            } else if (isVencida) {
+                filteredCuotas.push(cuota);
+            } else if (isFuturePending && (this.showAllPendingCuotas || cuota.numero <= 2)) {
+                filteredCuotas.push(cuota);
+            }
+        }
+
+        // Check for toggle buttons
+        let hasPaidCuotas = false;
+        let hasMoreThanTwoFuturePending = false;
+        for (let i = 0; i < compra.cuotasDetalle.length; i++) {
+            const cuota = compra.cuotasDetalle[i];
+            if (cuota.estado === 'Pagado') {
+                hasPaidCuotas = true;
+            }
+            if (cuota.estado !== 'Pagado' && !this.isCuotaVencida(cuota.vencimiento) && cuota.numero > 2) {
+                hasMoreThanTwoFuturePending = true;
+            }
+        }
 
         return (
-            <SView col={'xs-12'} accessibilityLabel="Contenedor principal de gestión de cuotas">
-                <SView row center>
-                    <SView
-                        col={'xs-12'}
-                        style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: STheme.color.white, alignItems: 'center' }}
-                        row
-                    >
+            <SView col={'xs-12'} flex style={{ flex: 1 }} accessibilityLabel="Contenedor principal de gestión de cuotas">
+                <ScrollView
+                    style={{ width: '100%' }}
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        paddingBottom: 80, // Extra padding to avoid overlap with bottom bar
+                    }}
+                >
+                    {/* Header */}
+                    <SView row center style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: COLOR_BORDER }}>
                         <SView flex>
-                            <SText
-                                fontSize={18}
-                                bold
-                                color={STheme.color.text}
-                                accessibilityLabel="Título de gestión de cuotas"
-                            >
+                            <SText col={'xs-12'} fontSize={20} bold color={COLOR_TEXT} numberOfLines={1}>
                                 Gestión de Cuotas - Compra #{compra.id}
                             </SText>
                         </SView>
-                        <SView width={50} style={{ alignItems: 'flex-end' }}>
+                        <SView width={40} style={{ overflow: "hidden", alignItems: "flex-end" }}>
                             <SView
                                 width={24}
                                 height={24}
@@ -426,136 +462,188 @@ const COLOR_ROJO_OSCURO = "#d93145";
                                 accessibilityLabel="Cerrar popup"
                                 activeOpacity={0.7}
                             >
-                                <SIcon name="Close" fill={STheme.color.text} width={24} height={24} />
+                                <SIcon name="Close" fill={COLOR_TEXT} width={24} height={24} />
                             </SView>
                         </SView>
                     </SView>
-                    <SHr height={16} />
-                    <SView col={'xs-12'} style={{ padding: 8 }} center>
+                    <SHr h={16} />
+
+                    {/* Detalles de la Compra */}
+                    <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
                         <SView
                             col={'xs-12'}
-                            padding={16}
-                            style={{ backgroundColor: STheme.color.lightGray + '44', borderRadius: 8 }}
-                            accessibilityLabel="Detalles de la compra"
+                            style={{
+                                backgroundColor: COLOR_CARD,
+                                borderRadius: 8,
+                                padding: 16,
+                                borderWidth: 1,
+                                borderColor: COLOR_BORDER,
+                            }}
                         >
-                            <SText fontSize={14} bold color={STheme.color.text}>
-                                Detalles de la Compra
-                            </SText>
+                            <SView col={'xs-12'}>
+                                <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la Compra</SText>
+                            </SView>
+                            <SHr h={12} />
                             <SView col={'xs-12'} row>
-                                <SView flex>
-                                    <SHr height={8} />
-                                    <SView col={'xs-12'} row  >
-
-                                        <SText fontSize={12} color={STheme.color.text}>
-                                            Descripción:
+                                <SText fontSize={14} color={COLOR_TEXT} numberOfLines={1} ellipsizeMode="tail">
+                                    Descripción: {compra.descripcion}
+                                </SText>
+                                <SHr h={4} />
+                                <SText fontSize={14} color={COLOR_TEXT}>
+                                    Total: <SText fontSize={16} bold color={COLOR_TEXT}>{compra.moneda} {compra.total.toFixed(2)}</SText>
+                                </SText>
+                                <SHr h={4} />
+                                <SText fontSize={14} color={COLOR_TEXT}>
+                                    Fecha: {new SDate(compra.fecha, 'yyyy-MM-dd').toString('dd/MM/yyyy')}
+                                </SText>
+                                <SHr h={4} />
+                                <SText fontSize={14} color={COLOR_TEXT}>
+                                    Estado: {this.labelEstado2(compra.estado)}
+                                </SText>
+                                <SHr h={8} />
+                                <SView col={'xs-12'} row>
+                                    <SView col={'xs-6'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Saldo Pendiente: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSaldo}</SText>
                                         </SText>
                                     </SView>
-                                    <SText
-                                        fontSize={14}
-                                        color={STheme.color.text}
-                                        numberOfLines={2}
-                                        ellipsizeMode="tail"
-                                        accessibilityLabel="Descripción de la compra"
-                                    >
-                                        {compra.descripcion}
-                                    </SText>
-                                    <SHr height={8} />
-                                    <SText fontSize={12} color={STheme.color.text}>
-                                        Total:
-                                    </SText>
-                                    <SText
-                                        fontSize={14}
-                                        color={STheme.color.text}
-                                        accessibilityLabel="Total de la compra"
-                                    >
-                                        {compra.moneda} {compra.total.toFixed(2)}
-                                    </SText>
-                                    <SHr height={8} />
-                                    <SText fontSize={12} color={STheme.color.text}>
-                                        Fecha:
-                                    </SText>
-                                    <SText
-                                        fontSize={14}
-                                        color={STheme.color.text}
-                                        accessibilityLabel="Fecha de la compra"
-                                    >
-                                        {compra.fecha}
-                                    </SText>
-                                    <SHr height={8} />
-                                    <SText fontSize={12} color={STheme.color.text}>
-                                        Estado: {this.labelEstado(compra.estado)}
-                                    </SText>
-                                    <SHr height={8} />
-                                    <SView col={'xs-12'} row>
-                                        <SView col={'xs-6'} row>
-                                            <SText fontSize={12} color={STheme.color.text}>
-                                                Saldo Pendiente:
-                                            </SText>
-                                            <SText
-                                                fontSize={14}
-                                                color={STheme.color.text}
-                                                accessibilityLabel="Saldo pendiente"
-                                            >
-                                                {compra.moneda} {MontoSaldo}
-                                            </SText>
-                                        </SView>
-                                        <SView col={'xs-6'} row>
-                                            <SText fontSize={12} color={STheme.color.text}>
-                                                Monto Seleccionado:
-                                            </SText>
-                                            <SText
-                                                fontSize={14}
-                                                color={STheme.color.text}
-                                                accessibilityLabel="Monto seleccionado"
-                                            >
-                                                {compra.moneda} {MontoSeleccionado}
-                                            </SText>
-                                        </SView>
+                                    <SView col={'xs-6'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Monto Seleccionado: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {MontoSeleccionado}</SText>
+                                        </SText>
+                                    </SView>
+                                    <SView col={'xs-4'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Cantidad cuotas: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.cuotas?.cantidad ?? 0}</SText>
+                                        </SText>
+                                    </SView>
+                                    <SView col={'xs-4'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Monto Total cuotas: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {compra.cuotas?.total?.toFixed(2) ?? 0}</SText>
+                                        </SText>
+                                    </SView>
+                                    <SView col={'xs-4'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Monto Total pagado: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {compra.monto_amortizado?.toFixed(2) ?? 0}</SText>
+                                        </SText>
+                                    </SView>
+                                    <SView col={'xs-4'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Cant cuotas Pendientes: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.cuotas_en_mora?.cantidad ?? 0}</SText>
+                                        </SText>
+                                    </SView>
+                                    <SView col={'xs-4'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Monto Total cuotas Pendientes: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.moneda} {compra.cuotas_en_mora?.monto?.toFixed(2) ?? 0}</SText>
+                                        </SText>
+                                    </SView>
+                                    <SView col={'xs-4'}>
+                                        <SText fontSize={14} color={COLOR_TEXT}>
+                                            Fecha cuotas Pendientes: <SText fontSize={14} bold color={COLOR_TEXT}>{compra.cuotas_en_mora?.min_fecha ? new SDate(compra.cuotas_en_mora.min_fecha).toString('dd/MM/yyyy') : '-'}</SText>
+                                        </SText>
                                     </SView>
                                 </SView>
-                                {/* <SView width={200} style={{ alignItems: 'flex-end', position: "absolute", right: 66, bottom: 30 }}> */}
-                                <SView width={200} style={{ alignItems: 'flex-end', position: "absolute", right: -5, top: -20 }}>
-                                    {this.botonEstado(compra.estado)}
-                                </SView>
+                            </SView>
+                        </SView>
+                    </SView>
+                    <SHr h={16} />
 
+                    {/* Cuotas Pendientes Header */}
+                    <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
+                        <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                            <SView width={140} row>
+                                <SText fontSize={16} bold color={COLOR_TEXT}>Cuotas Pendientes</SText>
                             </SView>
                         </SView>
                     </SView>
-                    <SHr height={8} />
-                    <SView col={'xs-12'} style={{ paddingHorizontal: 8 }}>
-                        <SText fontSize={14} bold color={STheme.color.text}>
-                            Cuotas Pendientes
-                        </SText>
+                    <SHr h={12} />
+
+                    {/* Cuotas */}
+                    <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
+                        {filteredCuotas.length > 0 ? (
+                            filteredCuotas.map((cuota) => (
+                                <this.Item
+                                    key={`cuota-item-${cuota.numero}`}
+                                    cuota={cuota}
+                                    compra={compra}
+                                />
+                            ))
+                        ) : (
+                            <SText
+                                center
+                                fontSize={14}
+                                color={COLOR_TEXT}
+                                style={{ padding: 16 }}
+                                accessibilityLabel="Mensaje de cuotas no disponibles"
+                            >
+                                No hay cuotas asociadas a esta compra.
+                            </SText>
+                        )}
                     </SView>
-                    <SHr height={8} />
-                    <ScrollView style={{ maxHeight: '70vh' }}>
-                        <SView col={'xs-12'} style={{ paddingHorizontal: 8 }}>
-                            <SView>
-                                {compra.cuotasDetalle.length > 0 ? (
-                                    compra.cuotasDetalle.map((cuota, index) => (
-                                        <this.Item
-                                            key={`cuota-item-${cuota.numero}`}
-                                            cuota={cuota}
-                                            index={index}
-                                            compra={compra}
-                                            onAjuste={this.handlePagarDeuda}
-                                        />
-                                    ))
-                                ) : (
-                                    <SText
-                                        center
-                                        fontSize={14}
-                                        color={STheme.color.text}
-                                        style={{ padding: 16 }}
-                                        accessibilityLabel="Mensaje de cuotas no disponibles"
-                                    >
-                                        No hay cuotas asociadas a esta compra.
-                                    </SText>
-                                )}
-                                <SHr height={8} />
+                    <SHr h={16} />
+                </ScrollView>
+
+                {/* Bottom Button Bar */}
+                <SView
+                    col={'xs-12'}
+                    style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        backgroundColor: STheme.color.background,
+                        borderTopWidth: 1,
+                        borderTopColor: COLOR_BORDER,
+                        padding: 12,
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
+                    <SView row>
+                        {hasPaidCuotas && (
+                            <SView
+                                row
+                                center
+                                style={{
+                                    paddingVertical: 8,
+                                    paddingHorizontal: 12,
+                                    borderRadius: 8,
+                                    borderWidth: 1,
+                                    borderColor: COLOR_ACCENT,
+                                    marginRight: 8,
+                                    height: 40,
+                                }}
+                                onPress={this.togglePaidCuotas}
+                                activeOpacity={0.7}
+                                accessibilityLabel={this.showPaidCuotas ? 'Ocultar anteriores' : 'Ver anteriores'}
+                            >
+                                <SText fontSize={14} color={COLOR_ACCENT}>
+                                    {this.showPaidCuotas ? '- Pagadas' : '+ Pagadas'}
+                                </SText>
                             </SView>
-                        </SView>
-                    </ScrollView>
+                        )}
+                        {hasMoreThanTwoFuturePending && (
+                            <SView
+                                row
+                                center
+                                style={{
+                                    paddingVertical: 8,
+                                    paddingHorizontal: 12,
+                                    borderRadius: 8,
+                                    borderWidth: 1,
+                                    borderColor: COLOR_ACCENT,
+                                    height: 40,
+                                }}
+                                onPress={this.toggleAllPendingCuotas}
+                                activeOpacity={0.7}
+                                accessibilityLabel="Ver más cuotas pendientes"
+                            >
+                                <SText fontSize={14} color={COLOR_ACCENT}>+ Pendientes</SText>
+                            </SView>
+                        )}
+                    </SView>
+                    {this.botonEstado(compra.estado)}
                 </SView>
             </SView>
         );

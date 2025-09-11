@@ -16,9 +16,9 @@ export default class PopupCrearAlmacen extends Component<Props> {
         SPopup.open({
             key: "PopupCrearAlmacen",
             content: <SView style={{
-                maxWidth: "100%",
                 maxHeight: "100%",
-                width: 500,
+                width: "100%",
+                maxWidth: 500,
                 borderRadius: 8,
                 borderColor: STheme.color.card,
                 borderWidth: 1,

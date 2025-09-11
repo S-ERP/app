@@ -16,9 +16,9 @@ export default class PopupCrearRol extends Component<Props> {
         SPopup.open({
             key: "PopupCrearRol",
             content: <SView style={{
-                maxWidth: "100%",
+                width: "100%",
                 maxHeight: "100%",
-                width: 500,
+                maxWidth: 500,
                 borderRadius: 8,
                 borderColor: STheme.color.card,
                 borderWidth: 1,
@@ -45,7 +45,7 @@ export default class PopupCrearRol extends Component<Props> {
                 <SForm ref={(ref: any) => this.form = ref} row style={{ justifyContent: "space-between" }}
                     inputs={{
                         "descripcion": {
-                            label: "descripcion *", placeholder: "Ingresa la descripcion", isRequired: true, autoFocus: true, defaultValue: this.props.editObject?.descripcion,
+                            label: "Descripción *", placeholder: "Ingresa la descripción", isRequired: true, autoFocus: true, defaultValue: this.props.editObject?.descripcion,
                             onSubmitEditing: () => {
                                 if (this.form) this.form.submit();
                             },

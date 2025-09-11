@@ -40,7 +40,7 @@ export default class PopupCrearMoneda extends Component<Props> {
     form: SForm | undefined = undefined;
     render() {
         return <SView col={"xs-12"} center padding={16}>
-            <SText fontSize={16}>{this.props.editObject ? "Editar" : "Crear"}{" Crear Moneda"}</SText>
+            <SText fontSize={16}>{this.props.editObject ? "Editar" : "Crear"}{" Moneda"}</SText>
             <SForm ref={(ref: any) => this.form = ref} row
                 style={{
                     justifyContent: "space-between",

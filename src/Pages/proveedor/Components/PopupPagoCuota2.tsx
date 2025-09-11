@@ -1,48 +1,59 @@
 import React, { Component } from 'react';
 import { ScrollView } from 'react-native';
-import { SNotification, SPopup, SText, STheme, SView, SInput, SIcon, SHr } from 'servisofts-component';
+import { SPopup, SText, STheme, SView, SIcon, SHr, SDate } from 'servisofts-component';
 import SIconApp from '../../../Assets/SIconApp';
-type Props = {
-    key_empresa: string,
-    editObject?: any,
-    onCancel?: Function,
-    onSuccess?: Function,
+import MDL from '../../../MDL';
+
+// Configuración
+const data = {
+    configuracion: {
+        estados: {
+            Pendiente: { label: "Pendiente", color: "#EAB308", bgColor: "#fef8c3", textColor: "#b58940", icon: "history" },
+            Pagado: { label: "Pagado", color: "#22C55E", bgColor: "#dafce6", textColor: "#42b88f", icon: "Check" },
+            Vencido: { label: "Vencido", color: "#F97316", bgColor: "#ee343b", textColor: "#eeccda", icon: "AlertOutline" }
+        }
+    }
 };
-const COLOR_VERDE_CLARO = "#d8edd8";
-const COLOR_VERDE_OSCURO = "#107003ff";
-const COLOR_NARANJA = "#FF9800";
-const COLOR_NARANJA_CLARO = "#eaf4d8";
-const COLOR_ROJO = "#F44336";
-const COLOR_ROJO_CLARO = "#ece3dd";
-const COLOR_ROJO_OSCURO = "#d93145";
-const COLOR_GRIS = "#9E9E9E";
 
-const _estiloBackgroundColor = STheme.color.success + '22';
+// Colores
+const COLOR_CARD = STheme.color.lightGray + '44';
+const COLOR_TEXT = STheme.color.text;
+const COLOR_BORDER = STheme.color.white;
 
+// Static JSON Data (fallback)
+const compraFallback = {
+    id: 101,
+    descripcion: 'Productos de limpieza y mantenimiento',
+    estado: 'Pendiente',
+    fecha: '2024-12-01',
+    total: 1416.66,
+    cuotasDetalle: [
+        { numero: 1, estado: 'Pagado', vencimiento: '2025-01-14', fechaPago: '2025-01-13', monto: 708.33 },
+        { numero: 2, estado: 'Pendiente', vencimiento: '2025-02-14', fechaPago: null, monto: 708.33 },
+    ],
+    moneda: 'BOB',
+};
 
-export default class PopupPagoCuota2 extends Component<Props> {
-    static open(props: Props) {
+export default class PopupPagoCuota2 extends Component {
+    static open(props) {
         SPopup.open({
             key: 'PopupPagoCuota2',
             content: (
                 <SView
                     style={{
-                        // Dimensiones
                         width: "100%",
-                        maxWidth: 500,
-                        maxHeight: "100%",
-
-                        // Layout
-                        padding: 4,
+                        maxWidth: 600,
+                        maxHeight: "90%",
+                        padding: 8,
                         overflow: 'hidden',
-
-                        // Estilo visual
                         backgroundColor: STheme.color.background,
-                        borderColor: STheme.color.background + '33',
+                        borderRadius: 12,
                         borderWidth: 1,
-                        borderRadius: 8,
+                        borderColor: COLOR_BORDER,
                     }}
                     withoutFeedback
+                    closeOnTouchOutside
+                    accessibilityLabel="Popup de gestión de cuotas"
                 >
                     <PopupPagoCuota2
                         {...props}
@@ -50,424 +61,279 @@ export default class PopupPagoCuota2 extends Component<Props> {
                             SPopup.close('PopupPagoCuota2');
                             if (props.onCancel) props.onCancel();
                         }}
-                        onSuccess={(e: any) => {
-                            SPopup.close('PopupPagoCuota2');
-                            if (props.onSuccess) props.onSuccess(e);
-                        }}
                     />
                 </SView>
             ),
         });
     }
 
-    constructor(props: Props) {
+    constructor(props) {
         super(props);
-        this.state = {
-            montoPagar: {},
-            isLoading: false,
-        };
+        this.cuotasCompras = []; // Initialize as empty array
     }
 
-    Item = ({ cuota, index, onAjuste, compra }) => {
-        const { montoPagar, isLoading } = this.state as any;
-        const monedaSymbol = this.props.editObject?.moneda || 'S/';
-        const montoInput = montoPagar[cuota.numero] || '';
+    loadData = async () => {
+        const key_compra_venta = this.props.editObject?.key || '1f30bf00-33ba-4466-813b-2870eec111dd';
+        try {
+            const registros = await MDL.compra_venta.getCuotasCompras(key_compra_venta);
+            // Limit to two cuotas to prevent crashes
+            return registros.slice(0, 2);
+        } catch (error) {
+            console.error('Error in loadData:', error);
+            return compraFallback.cuotasDetalle; // Fallback to static cuotas
+        }
+    };
+
+    componentDidMount() {
+        this.loadData()
+            .then((resp) => {
+                this.cuotasCompras = resp;
+                this.forceUpdate();
+            })
+            .catch((error) => {
+                console.error('Error loading data:', error);
+                this.cuotasCompras = compraFallback.cuotasDetalle;
+                this.forceUpdate();
+            });
+    }
+
+    isCuotaVencida = (vencimiento) => {
+        const today = new SDate('2025-09-08', 'yyyy-MM-dd');
+        const vencimientoDate = new SDate(vencimiento, 'yyyy-MM-dd');
+        return vencimientoDate.isBefore(today);
+    };
+
+    Item = ({ cuota }) => {
+        const monedaSymbol = this.props.editObject?.moneda || compraFallback.moneda;
         const isPaid = cuota.estado === 'Pagado';
+        const isVencida = !isPaid && this.isCuotaVencida(cuota.vencimiento);
+        const estadoConfig = data.configuracion.estados[isVencida ? 'Vencido' : cuota.estado] || data.configuracion.estados.Pendiente;
 
         return (
-            <>
-                <SView col={"xs-12"}
-                    style={{
-                        backgroundColor: STheme.color.card,
-                        borderRadius: 8,
-                        padding: 16,
-                        borderWidth: 1,
-                        borderColor: cuota.__select ? STheme.color.success : STheme.color.success + '55',
-
-                    }}
-                    onPress={() => {
-                        cuota.__select = !cuota.__select
-                        this.forceUpdate()
-                    }}
-                >
-                    <SView row>
-                        <SView width={70} row>
-                            <SText fontSize={14} bold color={STheme.color.text}>
-                                Cuota #{cuota.numero}
-                            </SText>
-                        </SView>
-
-
-                        {this.labelEstado(cuota.estado)}
-
-                        {/* <SView width={70} row>
-                            <SView
-                                width={64} center
-                                style={{
-                                    backgroundColor: cuota.estado === 'Pendiente' ? STheme.color.danger : COLOR_VERDE_OSCURO,
-                                    borderRadius: 2,
-                                    // paddingHorizontal: 8,SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
-                                    paddingVertical: 4,
-                                }}
-                            >
-                                <SText fontSize={10} bold color={STheme.color.text}>
-                                    {cuota.estado}
-                                </SText>
-                            </SView>
-                        </SView> */}
+            <SView
+                key={`cuota-${cuota.numero}`}
+                col={'xs-12'}
+                style={{
+                    backgroundColor: STheme.color.lightGray + '55',
+                    borderColor: STheme.color.success + '55',
+                    borderRadius: 8,
+                    padding: 16,
+                    borderWidth: 1,
+                    marginBottom: 12,
+                }}
+                accessibilityLabel={`Cuota ${cuota.numero} - ${cuota.estado}`}
+            >
+                <SView row style={{ justifyContent: "space-between" }}>
+                    <SView flex row>
+                        <SText fontSize={16} bold color={COLOR_TEXT}>Cuota #{cuota.numero}</SText>
                     </SView>
-
-                    <SHr height={8} />
-
-                    <SView row center>
-                        <SView flex row>
-                            <SText fontSize={12} color={STheme.color.text}>
-                                Vencimiento:{' '}
-                                <SText color={STheme.color.text}>{cuota.vencimiento}</SText>
-                            </SText>
-                        </SView>
-                        <SView width={150} row style={{ justifyContent: 'flex-end' }}>
-                            <SText fontSize={18} bold color={STheme.color.text}>
-                                {monedaSymbol} {parseFloat(cuota.monto).toFixed(2)}
-                            </SText>
-                        </SView>
-                    </SView>
-
-                    <SHr height={8} />
-
-                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }} >
-
-
-
-                        <SView flex row> {isPaid ?
-                            (<SText fontSize={12} color={STheme.color.text}>Pagado: <SText color={STheme.color.success} bold>{cuota.fechaPago}</SText></SText>) :
-                            (<SText fontSize={12} color={STheme.color.text}>Mora: <SText color={STheme.color.warning} bold>{cuota.vencimiento}</SText></SText>)}
-                        </SView>
-                        {/* {this.labelEstado2(cuota.estado)} */}
-
-
-                        {!isPaid && (
-                            <SView row width={150} center>
-                                <SView width={110} center>
-                                    <SInput
-                                        style={{ height: 36, color: STheme.color.text }}
-                                        type="money2"
-                                        placeholder={`${monedaSymbol} 0.00`}
-                                        icon={<SIconApp name="pagoefectivo" width={24} />}
-                                        value={montoInput}
-                                        onChangeText={(value) => {
-                                            const newValue = parseFloat(value || '0');
-                                            if (newValue <= cuota.monto) {
-                                                this.setState({
-                                                    montoPagar: {
-                                                        ...montoPagar,
-                                                        [cuota.numero]: value,
-                                                    },
-                                                });
-                                            } else {
-                                                SNotification.send({
-                                                    title: 'Advertencia',
-                                                    body: `El monto no puede superar ${monedaSymbol} ${cuota.monto.toFixed(2)}.`,
-                                                    time: 3000,
-                                                    color: STheme.color.warning,
-                                                });
-                                            }
-                                        }}
-                                    />
-                                </SView>
-                                <SView width={4} />
-                                <SView width={36} height={36} center style={{ backgroundColor: STheme.color.card, borderRadius: 2 }} onPress={() => !isLoading && onAjuste(cuota)} >
-                                    <SIconApp name="crmeditar" fill={COLOR_VERDE_OSCURO} stroke='white' />
-                                </SView>
-                            </SView>
-                        )}
+                    <SView>
+                        {this.labelEstado(cuota.estado, isVencida)}
                     </SView>
                 </SView>
-                <SHr height={12} />
-            </>
-        );
-    };
-
-    handlePagarDeuda = async (cuota) => {
-        const { montoPagar, isLoading } = this.state as any;
-        const monto = parseFloat(montoPagar[cuota.numero] || '0');
-
-        if (isLoading) return;
-        if (monto <= 0) {
-            SNotification.send({
-                title: 'Error',
-                body: 'El monto a pagar debe ser mayor a 0.',
-                time: 3000,
-                color: STheme.color.danger,
-            });
-            return;
-        }
-        if (monto > cuota.monto) {
-            SNotification.send({
-                title: 'Error',
-                body: `El monto no puede exceder ${cuota.monto.toFixed(2)}.`,
-                time: 3000,
-                color: STheme.color.danger,
-            });
-            return;
-        }
-
-        this.setState({ isLoading: true });
-        try {
-            console.log(
-                `Registrando pago: Compra ${this.props.editObject.id}, Cuota ${cuota.numero}, Monto ${monto}`
-            );
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // Mock async call
-            SNotification.send({
-                title: 'Éxito',
-                body: 'Pago registrado correctamente.',
-                time: 3000,
-                color: STheme.color.success,
-            });
-
-            const newMontoPagar = { ...montoPagar };
-            delete newMontoPagar[cuota.numero];
-
-            this.setState({ montoPagar: newMontoPagar, isLoading: false });
-            if (this.props.onSuccess) {
-                this.props.onSuccess({ cuota, monto });
-            }
-        } catch (error) {
-            console.error('Error al registrar el pago:', error);
-            SNotification.send({
-                title: 'Error',
-                body: 'No se pudo registrar el pago.',
-                time: 3000,
-                color: STheme.color.danger,
-            });
-            this.setState({ isLoading: false });
-        }
-    };
-
-
-
-    labelEstado(estado: any) {
-        // Normaliza el estado para manejar mayúsculas/minúsculas
-        const estadoNormalizado = estado?.toLowerCase();
-
-        // Define colores según el estado
-        const backgroundColor = estadoNormalizado === 'pendiente' ? COLOR_ROJO_OSCURO : COLOR_VERDE_OSCURO;
-
-        // Define el texto que se mostrará
-        const texto = estadoNormalizado === 'pendiente' ? 'Pendiente' : 'Pagado';
-
-        return (
-            <SView width={70} row center border={"pink"}>
-
-                <SView
-                    width={64}
-                    center
-                    style={{
-                        backgroundColor,
-                        borderRadius: 2,
-                        paddingVertical: 2,
-                    }}
-                >
-                    <SText fontSize={10} bold color={STheme.color.text}>
-                        {texto}
+                <SHr h={12} />
+                <SView row style={{ justifyContent: "space-between" }}>
+                    <SText fontSize={14} color={COLOR_TEXT}>
+                        Vencimiento: <SText bold>{new SDate(cuota.vencimiento, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText>
+                    </SText>
+                    <SText fontSize={16} bold color={COLOR_TEXT}>
+                        {monedaSymbol} {parseFloat(cuota.monto).toFixed(2)}
                     </SText>
                 </SView>
+                <SHr h={8} />
+                {isPaid ? (
+                    <SView row>
+                        <SText fontSize={14} color={COLOR_TEXT}>
+                            Pagado: <SText bold color={data.configuracion.estados.Pagado.color}>{new SDate(cuota.fechaPago, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText>
+                        </SText>
+                    </SView>
+                ) : (
+                    <SView row>
+                        <SText fontSize={14} color={COLOR_TEXT}>
+                            Estado: <SText bold color={estadoConfig.color}>
+                                {isVencida ? 'En mora' : 'Pendiente de pago'}
+                            </SText>
+                        </SText>
+                    </SView>
+                )}
             </SView>
         );
-    }
+    };
 
-
-    labelEstado2(estado: any) {
-        // Normaliza el estado para manejar mayúsculas/minúsculas
-        const estadoNormalizado = estado?.toLowerCase();
-
-        // Define colores según el estado
-        const backgroundColor = estadoNormalizado === 'pendiente' ? COLOR_ROJO_CLARO : COLOR_VERDE_CLARO;
-        const textoColor = estadoNormalizado === 'pendiente' ? COLOR_ROJO_OSCURO : COLOR_VERDE_OSCURO;
-
-        // Define el texto e ícono que se mostrará
-        const texto = estadoNormalizado === 'pendiente' ? 'Pendiente' : 'Pagado';
-        const icono = estadoNormalizado === 'pendiente' ? 'revertir' : 'tareaclose';
-
+    labelEstado = (estado, isVencida = false) => {
+        const estadoNormalizado = isVencida ? 'Vencido' : estado;
+        const { color, bgColor, textColor, label, icon } = data.configuracion.estados[estadoNormalizado] || data.configuracion.estados.Pendiente;
         return (
-            <SView width={84} row center>
-                <SView row width={80} center style={{ backgroundColor, borderRadius: 2, padding: 2 }}>
-                    <SView row>
-                        <SView width={18}>
-                            <SIconApp name={icono} fill={textoColor} width={14} stroke={backgroundColor} />
-                        </SView>
-                        <SView width={4} /> {/* Separador */}
-                        <SView flex>
-                            <SText fontSize={10} color={textoColor}>{texto}</SText>
-                        </SView>
-                    </SView>
+            <SView width={80} row center accessibilityLabel={`Estado: ${label}`}>
+                <SView row center style={{ backgroundColor: bgColor, borderRadius: 4, paddingVertical: 4, paddingHorizontal: 8, borderWidth: 1, borderColor: color }}>
+                    <SIconApp name={icon} width={14} height={14} fill={textColor} /><SView width={4} /><SText fontSize={12} bold color={textColor}>{label}</SText>
                 </SView>
             </SView>
         );
-    }
+    };
 
-    botonEstado(estado: any) {
-        // Normaliza el estado para manejar mayúsculas/minúsculas
-        const estadoNormalizado = estado?.toLowerCase();
-
-        // Define colores según el estado
-        const backgroundColor = estadoNormalizado === 'pendiente' ? COLOR_ROJO_CLARO : COLOR_VERDE_CLARO;
-        const textoColor = estadoNormalizado === 'pendiente' ? COLOR_ROJO_OSCURO : COLOR_VERDE_OSCURO;
-
-        // Define el texto e ícono que se mostrará
-        const texto = estadoNormalizado === 'pendiente' ? 'Pagar Ahora' : 'Editar';
-        const icono = estadoNormalizado === 'pendiente' ? 'pagotarjeta' : 'Pencil';
-
+    labelEstado2 = (estado, isVencida = false) => {
+        const estadoNormalizado = isVencida ? 'Vencido' : estado;
+        const { color, bgColor, textColor, label, icon } = data.configuracion.estados[estadoNormalizado] || data.configuracion.estados.Pendiente;
         return (
-            <SView width={160} row center border={"cyan"}>
-                <SView row width={150} center style={{ backgroundColor: STheme.color.lightGray, borderRadius: 2, padding: 4 }}>
-                    <SView row>
-                        <SView width={18}>
-                            <SIconApp name={icono} fill={textoColor} width={14} stroke={backgroundColor} />
-                        </SView>
-                        <SView width={4} /> {/* Separador */}
-                        <SView flex>
-                            <SText fontSize={16} color={textoColor}>{texto}</SText>
-                        </SView>
-                    </SView>
-                </SView>
+            <SView row center style={{ backgroundColor: bgColor, borderRadius: 4, padding: 4, borderWidth: 1, borderColor: color }}>
+                <SIconApp name={icon} width={12} height={12} fill={textColor} /><SText fontSize={12} bold color={textColor}> {label}</SText>
             </SView>
         );
-    }
+    };
 
+    calculateCompraDetails = () => {
+        const ____compra = this.props.editObject || compraFallback;
+        console.log(`todo popu: id=${____compra.id}, totalCompra=${____totalCompra}, estadoCompra=${____estadoCompra}`);
 
+        let ____totalCompra = ____compra.detalles?.length ? ____compra.detalles.reduce((sum, item) => sum + (item.precio_unitario * item.cantidad), 0) : 0;
+        const ____estadoCompra = ____compra.cuotas_en_mora?.monto > 0 ? 'Pendiente' : 'Pagado';
+        const ____saldoCompra = ____compra.cuotas_en_mora?.monto || 0;
+
+        return { totalCompra: ____totalCompra, estadoCompra: ____estadoCompra, saldoCompra: ____saldoCompra };
+    };
 
     render() {
-        const { editObject } = this.props;
-        const compra = {
-            id: editObject?.id || 101,
-            descripcion: editObject?.descripcion || 'Productos de limpieza y mantenimiento',
-            estado: editObject?.estado || 'Pendiente',
-            fecha: editObject?.fecha || '2024-01-14',
-            total: editObject?.total || 8500,
-            cuotasDetalle: editObject?.cuotasDetalle || [
-                { numero: 1, estado: 'Pagado', vencimiento: '2024-02-14', fechaPago: '2024-02-13', monto: 2833.33 },
-                { numero: 2, estado: 'Pendiente', vencimiento: '2024-03-14', fechaPago: null, monto: 2833.33 },
-                { numero: 3, estado: 'Pendiente', vencimiento: '2024-04-14', fechaPago: null, monto: 2833.34 },
-            ],
-            moneda: editObject?.moneda || 'S/',
-        };
+        const ____compra = this.props.editObject || compraFallback;
+        const { totalCompra, estadoCompra, saldoCompra } = this.calculateCompraDetails();
+        const cuotasDetalle = this.cuotasCompras.length > 0 ? this.cuotasCompras : compraFallback.cuotasDetalle;
+
+        console.log(`todo popu: id=${____compra.id}, totalCompra=${totalCompra.toFixed(2)}, estadoCompra=${estadoCompra}`);
 
         return (
-            <SView col={"xs-12"}>
-                <SView row center>
-
-                    <SView col={"xs-12"} style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: STheme.color.white, alignItems: 'center' }} row >
-                        <SView flex    >
-                            <SText fontSize={18} bold color={STheme.color.text}>Registro de Cuotas - Compra #{compra.id}</SText>
+            <SView col={'xs-12'} flex style={{ flex: 1 }} accessibilityLabel="Contenedor principal de gestión de cuotas">
+                {/* Header */}
+                <SView row center style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: COLOR_BORDER }}>
+                    <SView flex>
+                        <SText col={'xs-12'} fontSize={20} bold color={COLOR_TEXT} numberOfLines={1}>
+                            Gestión de Cuotas - Compra #{____compra.id}
+                        </SText>
+                    </SView>
+                    <SView width={40} style={{ overflow: "hidden", alignItems: "flex-end" }}>
+                        <SView
+                            width={24}
+                            height={24}
+                            onPress={this.props.onCancel}
+                            style={{ opacity: 0.6 }}
+                            accessibilityLabel="Cerrar popup"
+                            activeOpacity={0.7}
+                        >
+                            <SIcon name="Close" fill={STheme.color.text} width={24} height={24} />
                         </SView>
-                        <SView width={50} style={{ alignItems: "flex-end", }} border={"red"} >
-                            <SView width={24} height={24} onPress={this.props.onCancel} style={{ opacity: 0.6 }} >
-                                <SIcon name="Close" fill={STheme.color.text} />
+                    </SView>
+                </SView>
+                <SHr h={16} />
+
+                {/* Detalles de la Compra */}
+                <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
+                    <SView
+                        col={'xs-12'}
+                        style={{
+                            backgroundColor: COLOR_CARD,
+                            borderRadius: 8,
+                            padding: 16,
+                            borderWidth: 1,
+                            borderColor: COLOR_BORDER,
+                        }}
+                    >
+                        <SView col={'xs-12'}>
+                            <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la Compra</SText>
+                        </SView>
+                        <SHr h={12} />
+                        <SView col={'xs-12'} row>
+                            <SText fontSize={14} color={COLOR_TEXT} numberOfLines={1} ellipsizeMode="tail">
+                                Descripción: {____compra.descripcion}
+                            </SText>
+                            <SHr h={4} />
+                            <SText fontSize={14} color={COLOR_TEXT}>
+                                Total: <SText fontSize={16} bold color={COLOR_TEXT}>{____compra.moneda} {totalCompra.toFixed(2)}</SText>
+                            </SText>
+                            <SHr h={4} />
+                            <SText fontSize={14} color={COLOR_TEXT}>
+                                Fecha: {new SDate(____compra.fecha_on || compraFallback.fecha, 'yyyy-MM-dd').toString('dd/MM/yyyy')}
+                            </SText>
+                            <SHr h={4} />
+                            <SText fontSize={14} color={COLOR_TEXT}>Estado: {this.labelEstado2(estadoCompra)}</SText>
+                            <SHr h={8} />
+                            <SView col={'xs-12'} row>
+                                <SView col={'xs-4'}>
+                                    <SText fontSize={14} color={COLOR_TEXT}>
+                                        Saldo Pendiente: <SText fontSize={14} bold color={COLOR_TEXT}>{____compra.moneda} {saldoCompra.toFixed(2)}</SText>
+                                    </SText>
+                                </SView>
+                                <SView col={'xs-4'}>
+                                    <SText fontSize={14} color={COLOR_TEXT}>
+                                        Cantidad cuotas: <SText fontSize={14} bold color={COLOR_TEXT}>{____compra.cuotas?.cantidad ?? 0}</SText>
+                                    </SText>
+                                </SView>
+                                <SView col={'xs-4'}>
+                                    <SText fontSize={14} color={COLOR_TEXT}>
+                                        Monto Total cuotas: <SText fontSize={14} bold color={COLOR_TEXT}>{____compra.moneda} {____compra.cuotas?.total?.toFixed(2) ?? 0}</SText>
+                                    </SText>
+                                </SView>
+                                <SView col={'xs-4'}>
+                                    <SText fontSize={14} color={COLOR_TEXT}>
+                                        Monto Total pagado: <SText fontSize={14} bold color={COLOR_TEXT}>{____compra.moneda} {____compra.monto_amortizado?.toFixed(2) ?? 0}</SText>
+                                    </SText>
+                                </SView>
+                                <SView col={'xs-4'}>
+                                    <SText fontSize={14} color={COLOR_TEXT}>
+                                        Cant cuotas Pendientes: <SText fontSize={14} bold color={COLOR_TEXT}>{____compra.cuotas_en_mora?.cantidad ?? 0}</SText>
+                                    </SText>
+                                </SView>
+                                <SView col={'xs-4'}>
+                                    <SText fontSize={14} color={COLOR_TEXT}>
+                                        Monto Total cuotas Pendientes: <SText fontSize={14} bold color={COLOR_TEXT}>{____compra.moneda} {____compra.cuotas_en_mora?.monto?.toFixed(2) ?? 0}</SText>
+                                    </SText>
+                                </SView>
+                                <SView col={'xs-4'}>
+                                    <SText fontSize={14} color={COLOR_TEXT}>
+                                        Fecha cuotas Pendientes: <SText fontSize={14} bold color={COLOR_TEXT}>{____compra.cuotas_en_mora?.min_fecha ? new SDate(____compra.cuotas_en_mora.min_fecha).toString('dd/MM/yyyy') : '-'}</SText>
+                                    </SText>
+                                </SView>
                             </SView>
                         </SView>
                     </SView>
-                    <SHr height={16} />
+                </SView>
+                <SHr h={16} />
 
-
-                    <SView col={"xs-12"} style={{ padding: 8 }} center>
-                        <SView col={"xs-12"} padding={16} style={{ backgroundColor: STheme.color.card, borderRadius: 8 }}  >
-                            <SView row  >
-                                <SText fontSize={14} bold color={STheme.color.text}   > Información de la Compra </SText>
-                            </SView>
-                            <SHr height={16} />
-                            <SView row  >
-                                <SView flex>
-                                    <SText fontSize={12} color={STheme.color.text}>Descripción:</SText>
-                                    <SText fontSize={14} color={STheme.color.text}>{compra.descripcion}</SText>
-                                </SView>
-                                <SView flex>
-                                    <SText fontSize={12} color={STheme.color.text}>Total:</SText>
-                                    <SText fontSize={14} color={STheme.color.text}>{compra.moneda} {compra.total.toFixed(2)}</SText>
-                                </SView>
-                            </SView>
-                            <SHr height={16} />
-                            <SView row  >
-                                <SView flex>
-                                    <SText fontSize={12} color={STheme.color.text}>Fecha:</SText>
-                                    <SText fontSize={14} color={STheme.color.text}>{compra.fecha}</SText>
-                                </SView>
-
-                                <SView flex row   >
-                                    <SView width={50} row  >
-                                        <SText center fontSize={12} color={STheme.color.text}>Estado:</SText>
-                                    </SView>
-
-                                    {this.labelEstado(compra.estado)}
-
-
-                                    {this.botonEstado(compra.estado)}
-
-
-                                    {/* <SView width={70} row center border={"pink"}>
-                                        <SView width={64} center
-                                            style={{
-                                                backgroundColor: compra.estado === 'Pendiente' ? COLOR_ROJO_OSCURO : COLOR_VERDE_OSCURO,
-                                                borderRadius: 2, paddingVertical: 2
-                                            }}
-                                        >
-                                            <SText fontSize={10} bold color={STheme.color.text}>{compra.estado} </SText>
-                                        </SView>
-                                    </SView> */}
-
-
-                                </SView>
-                            </SView>
+                {/* Cuotas Pendientes Header */}
+                <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
+                    <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                        <SView width={140} row>
+                            <SText fontSize={16} bold color={COLOR_TEXT}>Cuotas</SText>
                         </SView>
                     </SView>
+                </SView>
+                <SHr h={12} />
 
-                    <SHr height={16} />
-
-
-                    {/* cuando selecciono un abajo, todo que sea menor al item filtrar y poner en true  */}
-                    {/* para que me sume */}
-                    <SText>Total: {compra.cuotasDetalle
-                        .filter(a => !!a.__select)
-                        .reduce((sum, line) => sum + line.monto, 0)
-                    }</SText>
-                    <SView col={"xs-12"} style={{ padding: 8 }}  >
-                        <SText fontSize={14} bold color={STheme.color.text}> Cuotas de Pago </SText>
-                    </SView>
-                    <SHr height={8} />
-
-
-                    {/* Body */}
-                    <ScrollView style={{ maxHeight: '70vh' }}>
-
-
-                        <SView col={"xs-12"} style={{ padding: 8 }}>
-                            {/* Info de la compra */}
-
-
-
-
-                            {/* Cuotas */}
-                            <SView>
-
-
-                                {compra.cuotasDetalle.length > 0 ? (
-                                    compra.cuotasDetalle.map((cuota, index) => (
-                                        <this.Item
-                                            key={cuota.numero}
-                                            cuota={cuota}
-                                            index={index}
-                                            compra={compra}
-                                            onAjuste={this.handlePagarDeuda}
-                                        />
-                                    ))
-                                ) : (<SText center fontSize={14} color={STheme.color.text} style={{ padding: 16 }} > No hay cuotas asociadas a esta compra. </SText>)}
-
-                                <SHr height={8} />
-
-                            </SView>
-                        </SView>
-
-
+                {/* ScrollView for Cuotas */}
+                <SView col={'xs-12'} flex style={{ flex: 1, paddingHorizontal: 16 }}>
+                    <ScrollView
+                        style={{ width: '100%' }}
+                        contentContainerStyle={{
+                            flexGrow: 1,
+                            paddingBottom: 16,
+                        }}
+                    >
+                        {cuotasDetalle.length > 0 ? (
+                            cuotasDetalle.map((cuota) => (
+                                <this.Item
+                                    key={`cuota-item-${cuota.numero}`}
+                                    cuota={cuota}
+                                />
+                            ))
+                        ) : (
+                            <SText
+                                center
+                                fontSize={14}
+                                color={COLOR_TEXT}
+                                style={{ padding: 16 }}
+                                accessibilityLabel="Mensaje de cuotas no disponibles"
+                            >
+                                No hay cuotas asociadas a esta compra.
+                            </SText>
+                        )}
                     </ScrollView>
                 </SView>
             </SView>
