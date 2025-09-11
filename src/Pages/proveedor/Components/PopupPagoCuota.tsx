@@ -4,6 +4,7 @@ import { SNotification, SPopup, SText, STheme, SView, SIcon, SHr, SDate } from '
 import SIconApp from '../../../Assets/SIconApp';
 import MDL from '../../../MDL';
 import SelectTipoPago from '../../caja2/components/SelectTipoPago';
+import Model from '../../../Model';
 
 // Configuración
 const data = {
@@ -398,18 +399,49 @@ export default class PopupPagoCuota extends Component {
                                     // console.log("Cutoas seleccionadas, keys " +  obtener todas las keys)
 
 
+
                                     const cuotaKeys = selectedCuotas.map(cuota => cuota.key);
                                     console.log("Cuotas seleccionadas, keys: " + JSON.stringify(cuotaKeys));
-
-
+                                    const ___hoy = new SDate().toString('yyyy-MM-dd hh:mm:ss');
                                     console.log("key_tipo_pago " + Object.keys(item)[0])
                                     console.log("Monto " + item[Object.keys(item)[0]])
 
 
+                                    Model.cuota_amortizacion.Action.registro({
+                                        data: {
+                                            descripcion: "Amortizacion de cuota desde caja.",
+                                            observacion: "-ni una-",
+                                            monto: item[Object.keys(item)[0]],
+                                            fecha: ___hoy,
+                                            key_cuotas: cuotaKeys,
+                                            key_caja_detalle: activa?.key_punto_venta
+                                        },
+                                        key_usuario: Model.usuario.Action.getKey()
+                                    }).then(e => {
+                                        // var amortizacion = e.data;
+                                        obj.data.key_amortizacion = e.data?.key;
+                                        // obj.cuentas = Object.values(e.cuentas);
+                                        Model.caja_detalle.Action.editar({
+                                            data: obj,
+                                            key_empresa: Model.empresa.Action.getSelect()?.key,
+                                            key_usuario: Model.usuario.Action.getKey()
+                                        }).then((e) => {
+                                            console.log("exito "+JSON.stringify(e) )
+                                            // resolve("Editado con exito");
+                                        }).catch(e => {
+                                            console.log("eror "+JSON.stringify(e) )
+                                            // reject("Error al editar el movimiento de caja");
+                                        })
+                                    }).catch(e => {
+                                        // reject("Error al amortizar");
+                                        console.log("cathc "+JSON.stringify(e) )
+                                        console.error(e);
+                                    })
+
                                     // this.renderButton(totalFinal, subtotalMoneda, subtotal, descuento, conFactura, carrito);
                                     //aqui debo enviar algo
 
-                                    this.handlePagarDeuda(selectedCuotas[0]);
+                                    // this.handlePagarDeuda(selectedCuotas[0]);
                                 },
                             });
                         } catch (e) {
