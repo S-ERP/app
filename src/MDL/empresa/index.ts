@@ -53,9 +53,13 @@ export default class empresa extends MDLAbstract<EventListener> {
       };
       // STheme.repaint();
     }
-    if (MDL?.caja) {
-      MDL.caja.getActiva();
-    }
+    // if (MDL?.caja) {
+    //   try {
+    //     MDL.caja.getActiva();
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // }
     this.dispatchEvent({ type: "onChangeEmpresaSelect", data: empresa });
   }
 

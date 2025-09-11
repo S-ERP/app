@@ -21,7 +21,7 @@ export default {
     // roles_permisos: 'http://192.168.5.16:30016/',
 
     empresa: "https://empresa.servisofts.com/http/",
-    // empresa: 'http://192.168.2.1:30029/',
+    // empresa: 'http://192.168.3.1:30029/',
 
     inventario: "https://inventario.servisofts.com/http/",
     // inventario: 'http://192.168.2.1:30039/',

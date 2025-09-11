@@ -4,7 +4,7 @@ import { SIconType } from 'servisofts-component/Component/SIcon';
 import { IconNames } from 'servisofts-component/img';
 import { IconNamesApp } from '.';
 
-type AllIconNames = IconNames | IconNamesApp;
+export type AllIconNames = IconNames | IconNamesApp;
 
 
 export type SIconAppType = Omit<SIconType, "name"> & {

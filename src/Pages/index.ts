@@ -58,9 +58,9 @@ import drive from "./drive";
 import drive2 from "./drive2";
 import qr_reader from "./qr_reader";
 // Three js
-import three from './three';
-import mesh from './mesh';
-import scene from './scene';
+// import three from './three';
+// import mesh from './mesh';
+// import scene from './scene';
 
 import lote from "./lote";
 
@@ -154,9 +154,9 @@ export default SPage.combinePages("/", {
   ...mapa,
   ...drive,
   drive2,
-  ...scene,
-  ...mesh,
-  ...three,
+  // ...scene,
+  // ...mesh,
+  // ...three,
   ...qr,
   ...lote,
   ...whatsapp,

@@ -160,13 +160,17 @@ export default function Pizarra(props: PizarraProps) {
             descripcion: "pizarra",
             nodes: nodes
         }
-        nodes.forEach(nodo => {
-            const nodoInstance = serverData.current.nodes.find((n: any) => n.id == nodo.id);
-            if (nodoInstance) {
-                nodoInstance.x = nodo.x;
-                nodoInstance.y = nodo.y;
-            }
-        })
+        if (serverData?.current?.nodes) {
+
+            nodes.forEach(nodo => {
+                const nodoInstance = serverData.current.nodes.find((n: any) => n.id == nodo.id);
+                if (nodoInstance) {
+                    nodoInstance.x = nodo.x;
+                    nodoInstance.y = nodo.y;
+                }
+            })
+        }
+
         MDL.pizarra.saveNodo(data, config.current.instance_id);
     }
 

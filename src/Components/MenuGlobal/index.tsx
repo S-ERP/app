@@ -20,6 +20,8 @@ export default class MenuGlobal extends React.Component<MenuGlobalProps> {
         MenuGlobal.INSTACE = this;
         MDL.rolesPermisos.getPermisoAsync({ url: "/", permiso: "ver" }).then(() => {
             this.forceUpdate();
+        }).catch(e=>{
+            console.error(e);
         })
         SNavigation.addOnChangeListener(this.onNavigationChange.bind(this))
     }

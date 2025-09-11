@@ -9,6 +9,7 @@ import PopupCrearSucursal from './Components/PopupCrearSucursal';
 import PopupCrearPuntoVenta from './Components/PopupCrearPuntoVenta';
 import PopupCrearMoneda from './Components/PopupCrearMoneda';
 import MDL from '../../../MDL';
+import SIconEmpresa, { buildIconEmpresa } from '../../../Assets/SIconEmpresa';
 
 export default class config extends Component {
     constructor(props) {
@@ -661,7 +662,8 @@ const Item = ({ label, index, code, style, onPress, color, scale = 1, onAjuste, 
         {onAjuste && <>
             <SView width={8} />
             <SView width={16 * scale} height={16 * scale} center onPress={onAjuste} card >
-                <SIconApp name='Edit' fill={STheme.color.lightGray} />
+                {/* <SIconApp {...buildIconEmpresa('editar')} /> */}
+                <SIconEmpresa type='editar'/>
             </SView>
         </>}
     </SView>
