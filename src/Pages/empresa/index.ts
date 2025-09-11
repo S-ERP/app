@@ -19,6 +19,7 @@ import colores from "./colores";
 import portada from "./portada";
 import config from "./config";
 import config2 from "./config/config2";
+import configIcon from "./config/configIcon";
 import MonedaTabla from "./MonedaTabla";
 import MonedaTablaHistorial from "./MonedaTablaHistorial";
 const model = Model.empresa;
@@ -48,6 +49,7 @@ export default SPage.combinePages(Parent.name, {
     "paso3": paso3,
     config,
     config2,
+    configIcon,
     "moneda":MonedaTabla,
     "moneda/historial":MonedaTablaHistorial,
 })
