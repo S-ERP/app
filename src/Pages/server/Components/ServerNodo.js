@@ -17,9 +17,10 @@ export default class ServerNodo extends React.Component {
                     borderRadius: 100,
 
                 }} />
-                <Puerto type="input" id="key_servicio"  style={{
+                <Puerto type="input" id="key_servicio" style={{
                     left: -10,
-
+                    width: 20,
+                    height: 20
                 }} />
             </View>
         </PizarraNodo>
