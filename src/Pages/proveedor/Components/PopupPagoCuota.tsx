@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { ScrollView } from 'react-native';
-import { SNotification, SPopup, SText, STheme, SView, SIcon, SHr, SDate } from 'servisofts-component';
+import { ScrollView, Animated } from 'react-native';
+import { SNotification, SPopup, SText, STheme, SView, SIcon, SHr, SDate, SLoad } from 'servisofts-component';
 import SIconApp from '../../../Assets/SIconApp';
 import MDL from '../../../MDL';
 import SelectTipoPago from '../../caja2/components/SelectTipoPago';
@@ -22,6 +22,8 @@ const COLOR_CARD = STheme.color.lightGray + '44';
 const COLOR_TEXT = STheme.color.text;
 const COLOR_ACCENT = "#3B82F6";
 const COLOR_BORDER = STheme.color.white;
+const SKELETON_COLOR = STheme.color.lightGray + '88';
+const SKELETON_HIGHLIGHT = STheme.color.lightGray + 'CC';
 
 export default class PopupPagoCuota extends Component {
     static open(props) {
@@ -62,6 +64,10 @@ export default class PopupPagoCuota extends Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            loading: true,
+        };
+        this.fadeAnim = new Animated.Value(1); // Initial opacity for skeleton loader
         this.cuotasCompras = [];
         this.selectedCuotas = {};
         this.montoPagar = {};
@@ -92,12 +98,26 @@ export default class PopupPagoCuota extends Component {
         this.loadData()
             .then((resp) => {
                 this.cuotasCompras = resp;
-                this.forceUpdate();
+                Animated.timing(this.fadeAnim, {
+                    toValue: 0,
+                    duration: 300,
+                    useNativeDriver: true,
+                }).start(() => {
+                    this.setState({ loading: false });
+                    this.fadeAnim.setValue(1); // Reset for cuota items fade-in
+                });
             })
             .catch((error) => {
                 console.error('Error loading data:', error);
                 this.cuotasCompras = [];
-                this.forceUpdate();
+                Animated.timing(this.fadeAnim, {
+                    toValue: 0,
+                    duration: 300,
+                    useNativeDriver: true,
+                }).start(() => {
+                    this.setState({ loading: false });
+                    this.fadeAnim.setValue(1);
+                });
             });
     }
 
@@ -215,6 +235,40 @@ export default class PopupPagoCuota extends Component {
         };
     };
 
+    SkeletonCuota = () => {
+        return (
+            <Animated.View style={{ opacity: this.fadeAnim }}>
+                <SView
+                    col={'xs-12'}
+                    style={{
+                        backgroundColor: SKELETON_COLOR,
+                        borderRadius: 8,
+                        padding: 16,
+                        borderWidth: 1,
+                        borderColor: SKELETON_COLOR,
+                        marginBottom: 12,
+                    }}
+                >
+                    <SView row center style={{ justifyContent: "space-between" }} backgroundColor='transparent'>
+                        <SView flex row style={{ paddingTop: 4 }}>
+                            <SView height={16} width={80} style={{ backgroundColor: SKELETON_HIGHLIGHT, borderRadius: 4 }} />
+                        </SView>
+                        <SView width={80}>
+                            <SView height={20} width={60} style={{ backgroundColor: SKELETON_HIGHLIGHT, borderRadius: 4 }} />
+                        </SView>
+                    </SView>
+                    <SHr h={4} />
+                    <SView row style={{ justifyContent: "space-between" }}>
+                        <SView height={14} width={120} style={{ backgroundColor: SKELETON_HIGHLIGHT, borderRadius: 4 }} />
+                        <SView height={16} width={60} style={{ backgroundColor: SKELETON_HIGHLIGHT, borderRadius: 4 }} />
+                    </SView>
+                    <SHr h={4} />
+                    <SView height={14} width={100} style={{ backgroundColor: SKELETON_HIGHLIGHT, borderRadius: 4 }} />
+                </SView>
+            </Animated.View>
+        );
+    };
+
     Item = ({ cuota, compra }) => {
         const monedaSymbol = compra.moneda;
         const isPaid = cuota.estado === 'Pagado';
@@ -222,61 +276,63 @@ export default class PopupPagoCuota extends Component {
         const estadoConfig = data.configuracion.estados[isVencida ? 'Vencido' : cuota.estado] || data.configuracion.estados.Pendiente;
 
         return (
-            <SView
-                key={`cuota-${cuota.numero}`}
-                col={'xs-12'}
-                style={{
-                    backgroundColor: this.selectedCuotas[cuota.numero] ? STheme.color.card : STheme.color.lightGray + '55',
-                    borderColor: this.selectedCuotas[cuota.numero] ? STheme.color.success : STheme.color.success + '55',
-                    borderRadius: 8,
-                    padding: 16,
-                    borderWidth: 1,
-                    marginBottom: 12,
-                }}
-                onPress={() => {
-                    if (!isPaid) {
-                        const newSelectedCuotas = { ...this.selectedCuotas };
-                        if (this.selectedCuotas[cuota.numero]) {
-                            this.deselectPreviousCuotas(cuota);
-                        } else {
-                            newSelectedCuotas[cuota.numero] = true;
-                            this.selectedCuotas = newSelectedCuotas;
-                            this.selectPreviousCuotas(cuota);
+            <Animated.View style={{ opacity: this.fadeAnim }}>
+                <SView
+                    key={`cuota-${cuota.numero}`}
+                    col={'xs-12'}
+                    style={{
+                        backgroundColor: this.selectedCuotas[cuota.numero] ? STheme.color.card : STheme.color.lightGray + '55',
+                        borderColor: this.selectedCuotas[cuota.numero] ? STheme.color.success : STheme.color.success + '55',
+                        borderRadius: 8,
+                        padding: 16,
+                        borderWidth: 1,
+                        marginBottom: 12,
+                    }}
+                    onPress={() => {
+                        if (!isPaid) {
+                            const newSelectedCuotas = { ...this.selectedCuotas };
+                            if (this.selectedCuotas[cuota.numero]) {
+                                this.deselectPreviousCuotas(cuota);
+                            } else {
+                                newSelectedCuotas[cuota.numero] = true;
+                                this.selectedCuotas = newSelectedCuotas;
+                                this.selectPreviousCuotas(cuota);
+                            }
                         }
-                    }
-                }}
-                accessibilityLabel={`Cuota ${cuota.numero} - ${cuota.estado}`}
-                activeOpacity={0.7}
-            >
-                <SView row center style={{ justifyContent: "space-between" }} backgroundColor='transparent'>
-                    <SView flex row style={{ paddingTop: 4 }} >
-                        <SText fontSize={16} bold color={COLOR_TEXT}>Cuota #{cuota.numero}</SText>
+                    }}
+                    accessibilityLabel={`Cuota ${cuota.numero} - ${cuota.estado}`}
+                    activeOpacity={0.7}
+                >
+                    <SView row center style={{ justifyContent: "space-between" }} backgroundColor='transparent'>
+                        <SView flex row style={{ paddingTop: 4 }}>
+                            <SText fontSize={16} bold color={COLOR_TEXT}>Cuota #{cuota.numero}</SText>
+                        </SView>
+                        <SView>{this.labelEstado(cuota.estado, isVencida)}</SView>
                     </SView>
-                    <SView>{this.labelEstado(cuota.estado, isVencida)}</SView>
-                </SView>
-                <SHr h={4} />
-                <SView row style={{ justifyContent: "space-between" }}>
-                    <SText fontSize={14} color={COLOR_TEXT}>
-                        Vencimiento: <SText bold>{new SDate(cuota.vencimiento, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText>
-                    </SText>
-                    <SText fontSize={16} bold color={COLOR_TEXT}>
-                        {monedaSymbol} {parseFloat(cuota.monto).toFixed(2)}
-                    </SText>
-                </SView>
-                {isPaid ? (
-                    <SText fontSize={14} color={COLOR_TEXT}>
-                        Pagado: <SText bold color={data.configuracion.estados.Pagado.color}>
-                            {new SDate(cuota.fechaPago, 'yyyy-MM-dd').toString('dd/MM/yyyy')}
+                    <SHr h={4} />
+                    <SView row style={{ justifyContent: "space-between" }}>
+                        <SText fontSize={14} color={COLOR_TEXT}>
+                            Vencimiento: <SText bold>{new SDate(cuota.vencimiento, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText>
                         </SText>
-                    </SText>
-                ) : (
-                    <SText fontSize={14} color={COLOR_TEXT}>
-                        Estado: <SText bold color={estadoConfig.color}>
-                            {isVencida ? 'En mora' : 'Pendiente de pago'}
+                        <SText fontSize={16} bold color={COLOR_TEXT}>
+                            {monedaSymbol} {parseFloat(cuota.monto).toFixed(2)}
                         </SText>
-                    </SText>
-                )}
-            </SView>
+                    </SView>
+                    {isPaid ? (
+                        <SText fontSize={14} color={COLOR_TEXT}>
+                            Pagado: <SText bold color={data.configuracion.estados.Pagado.color}>
+                                {new SDate(cuota.fechaPago, 'yyyy-MM-dd').toString('dd/MM/yyyy')}
+                            </SText>
+                        </SText>
+                    ) : (
+                        <SText fontSize={14} color={COLOR_TEXT}>
+                            Estado: <SText bold color={estadoConfig.color}>
+                                {isVencida ? 'En mora' : 'Pendiente de pago'}
+                            </SText>
+                        </SText>
+                    )}
+                </SView>
+            </Animated.View>
         );
     };
 
@@ -592,6 +648,7 @@ export default class PopupPagoCuota extends Component {
     };
 
     render() {
+        const { loading } = this.state;
         const compra = this.getCompraData();
         const today = new SDate('2025-09-08', 'yyyy-MM-dd');
 
@@ -637,19 +694,31 @@ export default class PopupPagoCuota extends Component {
             }
         }
 
+        // Dynamic paddingBottom based on number of cuotas
+        const paddingBottom = filteredCuotas.length <= 1 ? 100 : 200;
+
         return (
             <SView col={'xs-12'} flex style={{ flex: 1 }} accessibilityLabel="Contenedor principal de gestión de cuotas">
                 <ScrollView
                     style={{ width: '100%' }}
                     contentContainerStyle={{
                         flexGrow: 1,
-                        paddingBottom: 400,
+                        // paddingBottom: paddingBottom,
+                        paddingBottom: 280,
                     }}
                 >
                     {this.cabecera(compra, MontoSaldo)}
                     <SHr h={12} />
                     <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
-                        {filteredCuotas.length > 0 ? (
+                        {loading ? (
+                            // Render skeleton loaders with fade-out animation
+                            <>
+                            <SLoad type='skeleton' style={{ width:"100%", height:50}}/>
+                                {/* <this.SkeletonCuota />
+                                <this.SkeletonCuota />
+                                <this.SkeletonCuota /> */}
+                            </>
+                        ) : filteredCuotas.length > 0 ? (
                             filteredCuotas.map((cuota) => (
                                 <this.Item
                                     key={`cuota-item-${cuota.numero}`}
@@ -658,15 +727,17 @@ export default class PopupPagoCuota extends Component {
                                 />
                             ))
                         ) : (
-                            <SText
-                                center
-                                fontSize={14}
-                                color={COLOR_TEXT}
-                                style={{ padding: 16 }}
-                                accessibilityLabel="Mensaje de cuotas no disponibles"
-                            >
-                                No hay cuotas asociadas a esta compra.
-                            </SText>
+                            <Animated.View style={{ opacity: this.fadeAnim }}>
+                                <SText
+                                    center
+                                    fontSize={14}
+                                    color={COLOR_TEXT}
+                                    style={{ padding: 16 }}
+                                    accessibilityLabel="Mensaje de cuotas no disponibles"
+                                >
+                                    No hay cuotas asociadas a esta compra.
+                                </SText>
+                            </Animated.View>
                         )}
                     </SView>
                     <SHr h={16} />
