@@ -76,6 +76,7 @@ import factura from "../Components/PDF/factura";
 import ricky from "./ricky";
 import crm from "./crm";
 import plantilla from "./crm/plantilla";
+import server from "./server"
 // import turno from "./Turnos";
 // import Proveedor from "../Components/compra_venta/Proveedor";
 // import RegistroInventario from "./inventario/almacen/RegistroInventarios";
@@ -166,6 +167,7 @@ export default SPage.combinePages("/", {
   "pdf/factura": factura,
   plantilla,
   Turnos,
+  ...server,
   ...proveedor,
   ...qr_reader,
   ...puntoventa,

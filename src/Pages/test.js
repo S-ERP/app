@@ -11,6 +11,7 @@ import PizarraNodo from '../Components/Pizarra/PizarraNodo';
 import DatePickerCalendar from "servisofts-table/Components/DatePickerCalendar"
 import DateTimeBetween from '../Components/DateTimeBetween';
 import SDate from 'servisofts-table/Components/SDate';
+import SSocket from 'servisofts-socket';
 export default class test extends Component {
   constructor(props) {
     super(props);
@@ -18,6 +19,9 @@ export default class test extends Component {
     };
   }
 
+  componentDidMount(){
+
+  }
   cosasDeTest() {
     return <>
       <SText onPress={() => {

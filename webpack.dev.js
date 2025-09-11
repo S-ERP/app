@@ -5,8 +5,8 @@ const webpack = require('webpack');
 
 module.exports = merge(common, {
     mode: 'development',
-    devtool: 'source-map',
-    // devtool: 'cheap-module-source-map',
+    // devtool: 'source-map',
+    devtool: 'cheap-module-source-map',
     cache: {
         type: "filesystem"
     },
@@ -37,8 +37,8 @@ module.exports = merge(common, {
     watchOptions: {
         aggregateTimeout: 200,
         // poll: 500,
-        // ignored: /node_modules|src\/Assets/,
-        ignored: /node_modules/,
+        ignored: /node_modules|src\/Assets/,
+        // ignored: /node_modules/,
     },
     // optimization: {
     //     splitChunks: {

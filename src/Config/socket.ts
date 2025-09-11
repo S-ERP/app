@@ -2,7 +2,7 @@ export default {
   // debug: false, //para que se vea los returns del server
   debug: true, //para que se vea los returns del server
   name: "serp",
-
+// 
   ssl: true,
   host: "serp.servisofts.com",
 
