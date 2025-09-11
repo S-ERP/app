@@ -30,7 +30,7 @@ export const inconParams: inconParamsTypes = {
 
 const iconConfigEmpresa: iconsConfigEmpresaTypes = {
     editar: {
-        name: "Pencil",
+        name: "Edit",
 
     },
     eliminar: {
