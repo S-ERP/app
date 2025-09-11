@@ -84,7 +84,7 @@ export default class root extends Component<indexPropsType> {
                                     </SView>
                                     <SView width={4} />
                                     <SView flex>
-                                        <SText justify >{(item.empresa.razon_social.length > 20) ? (item.empresa.razon_social).substring(0, 20) + "..." : item.empresa.razon_social}</SText>
+                                        <SText numberOfLines={1}  justify >{ item.empresa.razon_social}</SText>
                                     </SView>
 
                                 </SView>}
