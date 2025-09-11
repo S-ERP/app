@@ -283,6 +283,7 @@ import toolquestion, { ReactComponent as toolquestionW, } from "./svg/toolquesti
 import bien, { ReactComponent as bienW, } from "./svg/bien.svg";
 import iconEdifcio, { ReactComponent as iconEdifcioW, } from "./svg/iconEdifcio.svg";
 import iconPesos, { ReactComponent as iconPesosW, } from "./svg/iconPesos.svg";
+import permisos, { ReactComponent as permisosW, } from "./svg/permisos.svg";
 
 
 export const svg = {
@@ -452,6 +453,7 @@ export const svg = {
   bien: { Native: bien, Web: bienW },
   iconPesos: { Native: iconPesos, Web: iconPesosW },
   iconEdifcio: { Native: iconEdifcio, Web: iconEdifcioW },
+  permisos: { Native: permisos, Web: permisosW },
 
   ...blender,
 };

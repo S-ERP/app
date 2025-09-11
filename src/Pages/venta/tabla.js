@@ -175,7 +175,7 @@ export default class tabla extends Component {
                             },
                             {
                                 label: "Imprimir tamaño carta",
-                                icon: <SIcon name='imprimir' />,
+                                icon: <SIcon name='imprimir' fill={STheme.color.text}  />,
                                 onPress: () => {
                                     ReciboCarta.imprimir(e?.row?.key)
                                 }

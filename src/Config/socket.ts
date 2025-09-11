@@ -5,8 +5,10 @@ export default {
 
   // ssl: true,
   // host: "serp.servisofts.com",
+
   ssl: false,
   host: '192.168.2.1',
+  
   //   ssl: false,
   //host: '192.168.2.1',
 

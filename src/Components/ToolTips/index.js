@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
-import { Dimensions, Vibration } from 'react-native';
+import { Dimensions, ScrollView, Vibration } from 'react-native';
 import { SHr, SIcon, SLoad, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
+import SMD from '../../SMD';
 
 type ToolTips_props = {
     primary?: boolean,
     secondary?: boolean,
     danger?: boolean,
-    withe?: boolean,
-    outline?: boolean,
+    // outline?: boolean,
     onPress?: () => void,
     loading?: boolean,
     small?: boolean,
     style?: any,
     width?: number,
     height?: number,
-    children?: any,
+    // children?: any,
     type?: "info" | "question",
     flex?: number | boolean,
     color?: string,
@@ -37,14 +37,11 @@ export default class ToolTips extends Component<ToolTips_props> {
 
         var colorText = STheme.color.text;
         if (this.props.white) {
-            // bgColor = "#fff"
             bgColor = STheme.color.secondary;
             colorText = STheme.color.primary;
-            // colorText = "red";
         }
         var size = {
             width: this.props.width ?? "100%",
-            // width: this.props.width ?? 350,
             height: this.props.height ?? 40,
         }
         if (this.props.small) {
@@ -55,22 +52,6 @@ export default class ToolTips extends Component<ToolTips_props> {
             size.width = 300;
             size.height = 60;
         }
-
-        // switch (this.props.type) {
-        //     case "primary":
-        //         bgColor = STheme.color.primary;
-        //         colorText = STheme.color.text;
-        //         break;
-        //     case "secondary":
-        //         bgColor = STheme.color.secondary;
-        //         colorText = STheme.color.primary;
-        //         break;
-        //     case "danger":
-        //         bgColor = STheme.color.danger;
-        //         colorText = STheme.color.white;
-        //         break;
-        // }
-
 
         return (<SView
             {...this.props}
@@ -98,11 +79,9 @@ export default class ToolTips extends Component<ToolTips_props> {
                     let left = pageX - itemWidth + width;
                     if (this.props.loading) return;
                     if (this.props.type == "info") {
-                        // this.props.onPress();
                         SPopup.open({
                             content: <SView style={{
                                 borderRadius: 8,
-                                padding: 6,
                                 backgroundColor: bgColor,
                                 left: left,
                                 top: top,
@@ -111,23 +90,27 @@ export default class ToolTips extends Component<ToolTips_props> {
                                 position: "absolute",
                                 overflow: "hidden", // evita que el texto se desborde
                             }} center>
-                                <SView scroll>
-                                    <SText style={{
+                              
+                                    <ScrollView >
+                                        {/* <SText style={{
                                         textAlign: "center",
                                         flexWrap: "wrap",   // obliga a que el texto haga salto de línea
                                         overflow: "hidden", // evita que se salga
-                                    }} color={colorText} fontSize={14} center>{this.props.descripcion}</SText>
-                                </SView>
+                                    }} color={colorText} fontSize={14} center>{this.props.descripcion}</SText> */}
+
+                                        <SMD fontSize={12} padding={5} >{this.props.descripcion}</SMD>
+                                    </ScrollView>
+                               
+
                             </SView>,
                             key: "FormToolTips",
                             type: "2",
-                            // title: "Información",
-                            // message: this.props.descripcion,
+                          
                         });
 
                     }
                     if (this.props.type == "question") {
-                        SNavigation.navigate(this.props.url ?? "/" );
+                        SNavigation.navigate(this.props.url ?? "/");
                     }
                 })
             }} >

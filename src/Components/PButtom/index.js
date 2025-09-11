@@ -71,6 +71,7 @@ export default class PButtom extends Component<PButtom_props> {
                 borderRadius: 8,
                 width: "100%",
                 maxWidth: size.width,
+                ...(this.props.type === "primary" ? {borderColor: STheme.color.text, borderWidth: 1} : {}),
                 ...(this.props.outline ? { borderWidth: 1, borderColor: bgColor } : { backgroundColor: bgColor }),
                 ...(this.props.style ?? {}),
             }} center

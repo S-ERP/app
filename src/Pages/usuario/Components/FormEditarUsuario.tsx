@@ -148,7 +148,7 @@ export default class FormEditarUsuario extends Component<FormEditarType> {
 
                 <PButtom flex type='primary' onPress={() => {
                     if (this.form) this.form.submit();
-                }}>GUARDAR</PButtom>
+                }}>GUARDAR</PButtom> 
             </SView>
         </SView >
     }
