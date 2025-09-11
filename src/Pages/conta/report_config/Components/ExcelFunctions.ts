@@ -72,6 +72,7 @@ function parseNode(str: string, start = 0): [any[], number] {
             while ((attrMatch = attrRegex.exec(attrString)) !== null) {
                 attributes[attrMatch[1]] = attrMatch[2];
             }
+            
 
             i += openMatch[0].length;
 

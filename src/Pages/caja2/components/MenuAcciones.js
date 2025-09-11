@@ -43,6 +43,7 @@ export default class MenuAcciones extends Component<{ caja: any, movimientos: an
                 cheque: this.props.movimientos.filter(mov => mov.key_tipo_pago == "cheque").reduce((sum, mov) => sum + mov.monto, 0),
             },
             onSelect: (item) => {
+                console.log(item);
                 MDL.caja.registro_detalle({
                     key_caja: this.props.caja.key,
                     fecha: this.props.caja.fecha,
