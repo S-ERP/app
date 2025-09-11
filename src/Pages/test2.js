@@ -24,10 +24,10 @@ class test2 extends Component {
                     <ToolTips
                         type="info"
                         // descripcion="Este es un tooltip de información Este es un tooltip de información Este es un tooltip de información Este es un tooltip de información"
-                        descripcion="Este es un tooltip de información"
+                        descripcion="Este es un tooltip de información Este es un tooltip de información Este es un tooltip de información Este es un tooltip de información"
                         width={20}
                         height={20}
-                        itemWidth={150}
+                        itemWidth={280}
                         itemHeight={50}
                         color={STheme.color.warning}
                         icon={"toolinfo"}
