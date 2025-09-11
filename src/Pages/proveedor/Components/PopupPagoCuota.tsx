@@ -267,38 +267,20 @@ export default class PopupPagoCuota extends Component {
                 accessibilityLabel={`Cuota ${cuota.numero} - ${cuota.estado}`}
                 activeOpacity={0.7}
             >
-                <SView row style={{ justifyContent: "space-between" }}>
-                    <SView flex row>
-                        <SText fontSize={16} bold color={COLOR_TEXT}>Cuota #{cuota.numero}</SText>
-                    </SView>
-                    <SView>
-                        {this.labelEstado(cuota.estado, isVencida)}
-                    </SView>
+                <SView row center style={{ justifyContent: "space-between" }} backgroundColor='transparent'>
+                    <SView flex row style={{ paddingTop: 4 }} > <SText fontSize={16} bold color={COLOR_TEXT}>Cuota #{cuota.numero}</SText> </SView>
+                    <SView> {this.labelEstado(cuota.estado, isVencida)} </SView>
                 </SView>
-                <SHr h={12} />
+
+                <SHr h={4} />
                 <SView row style={{ justifyContent: "space-between" }}>
-                    <SText fontSize={14} color={COLOR_TEXT}>
-                        Vencimiento: <SText bold>{new SDate(cuota.vencimiento, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText>
-                    </SText>
-                    <SText fontSize={16} bold color={COLOR_TEXT}>
-                        {monedaSymbol} {parseFloat(cuota.monto).toFixed(2)}
-                    </SText>
+                    <SText fontSize={14} color={COLOR_TEXT}>Vencimiento: <SText bold>{new SDate(cuota.vencimiento, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText></SText>
+                    <SText fontSize={16} bold color={COLOR_TEXT}> {monedaSymbol} {parseFloat(cuota.monto).toFixed(2)} </SText>
                 </SView>
-                <SHr h={8} />
                 {isPaid ? (
-                    <SView row>
-                        <SText fontSize={14} color={COLOR_TEXT}>
-                            Pagado: <SText bold color={data.configuracion.estados.Pagado.color}>{new SDate(cuota.fechaPago, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText>
-                        </SText>
-                    </SView>
+                    <SText fontSize={14} color={COLOR_TEXT}>Pagado: <SText bold color={data.configuracion.estados.Pagado.color}>{new SDate(cuota.fechaPago, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText> </SText>
                 ) : (
-                    <SView row>
-                        <SText fontSize={14} color={COLOR_TEXT}>
-                            Estado: <SText bold color={estadoConfig.color}>
-                                {isVencida ? 'En mora' : 'Pendiente de pago'}
-                            </SText>
-                        </SText>
-                    </SView>
+                    <SText fontSize={14} color={COLOR_TEXT}>Estado: <SText bold color={estadoConfig.color}> {isVencida ? 'En mora' : 'Pendiente de pago'} </SText> </SText>
                 )}
             </SView>
         );
@@ -356,7 +338,7 @@ export default class PopupPagoCuota extends Component {
                 }}
                 activeOpacity={0.7}
                 accessibilityLabel="Pagar compra completa"
-                style={{ width: 120, height: 40 }}
+                style={{ width: 180, height: 40 }}
             >
                 <SView
                     row
