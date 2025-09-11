@@ -78,8 +78,9 @@ export default class PopupPagoCuota extends Component {
         this.selectedCuotas = {};
         this.montoPagar = {};
         this.isLoading = false;
-        this.showPaidCuotas = false;
+        this.showPaidCuotas = this.props.editObject.pagado ? true : false;
         this.showAllPendingCuotas = false;
+
     }
 
     loadData = async () => {
@@ -552,7 +553,7 @@ export default class PopupPagoCuota extends Component {
                     <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
                         <SView row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                             <SView width={140} row>
-                                <SText fontSize={16} bold color={COLOR_TEXT}>Cuotas Pendientes</SText>
+                                <SText fontSize={16} bold color={COLOR_TEXT}>{this.props.editObject.pagado ? "Cuotas Pagadas" : "Cuotas Pendientes"}</SText>
                             </SView>
                         </SView>
                     </SView>
