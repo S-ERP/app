@@ -46,7 +46,9 @@ export default {
     crm: "https://crm.servisofts.com/http/",
     // drive: "http://192.168.2.1:30017/",
     drive: "https://drive.servisofts.com/http/",
-    whatsapp: "http://192.168.2.1:3000",
+    // whatsapp: "http://192.168.2.1:3000",
+    whatsapp: "https://whatsapp.servisofts.com",
+    // cliente: "http",
     // crm: "http://192.168.2.1:30051/",
 
     // cliente: "https://cliente.servisofts.com/http/",

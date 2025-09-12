@@ -68,7 +68,9 @@ export default class root extends Component {
         if (status == "initializing") {
             status = "qr";
         }
-
+        if (status == "authenticated") {
+            // status = "ready";
+        }
         const SC = StatusComponents[status];
         if (SC) {
             return <SC device={this.state.device} />

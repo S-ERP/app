@@ -62,7 +62,7 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
     const selected = useSharedValue(false);
 
     const onDrag = useSharedValue(false);
-
+    const isRendondeado = true;
 
     const doubleTapGesture: any = Gesture.Tap().numberOfTaps(2).onStart(() => {
         if (onDoublePress) onDoublePress();
@@ -102,15 +102,25 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
 
         })
         .onUpdate((event) => {
+
+
             translateX.value = panGesture.context.startX + (event.translationX / pizarra.scale.value);
             translateY.value = panGesture.context.startY + (event.translationY / pizarra.scale.value);
 
+            if (pizarra.exponentDeRedondeoDeMovimiento.value > 1) {
+                translateX.value = Math.round(translateX.value / pizarra.exponentDeRedondeoDeMovimiento.value) * pizarra.exponentDeRedondeoDeMovimiento.value;
+                translateY.value = Math.round(translateY.value / pizarra.exponentDeRedondeoDeMovimiento.value) * pizarra.exponentDeRedondeoDeMovimiento.value;
+            }
             Object.values(pizarra.nodos.current).forEach(nodo => {
                 if (nodo.id == id) return;
                 if (nodo.selected.value) {
                     if (nodo.panGesture?.context == null) return;
                     nodo.translateX.value = nodo.panGesture.context.startX + (event.translationX / pizarra.scale.value);
                     nodo.translateY.value = nodo.panGesture.context.startY + (event.translationY / pizarra.scale.value);
+                    if (pizarra.exponentDeRedondeoDeMovimiento.value > 1) {
+                        nodo.translateX.value = Math.round(nodo.translateX.value / pizarra.exponentDeRedondeoDeMovimiento.value) * pizarra.exponentDeRedondeoDeMovimiento.value;
+                        nodo.translateY.value = Math.round(nodo.translateY.value / pizarra.exponentDeRedondeoDeMovimiento.value) * pizarra.exponentDeRedondeoDeMovimiento.value;
+                    }
                 }
             });
 
@@ -191,7 +201,6 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
         if (selected.value) {
             return {
                 backgroundColor: STheme.color.card,
-                padding: 8,
                 borderRadius: 4,
             }
         }
@@ -199,7 +208,6 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
 
         return {
             backgroundColor: "transparent",
-            padding: 8,
             borderRadius: 0,
             // opacity: onDrag.value ? 0.5 : 1,
             // opacity: !selected ? 0.5 : 1,
@@ -229,6 +237,7 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
                 ref={viewRef}
                 style={[{
                     position: "absolute",
+                    padding:8,
                 }, style, animatedStyle, animatedStyleSelect]} onLayout={(event) => {
                     const { width, height } = event.nativeEvent.layout;
                     layout.value = { width, height };

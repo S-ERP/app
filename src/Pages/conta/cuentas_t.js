@@ -57,7 +57,7 @@ export default class cuentas_t extends React.Component {
         }
         if (!this.state.data) return <SLoad />
         return <SPage title={"Cuentas T"} disableScroll>
-            <Pizarra id="cuentas_t" hiddeMiniMapa startType="select">
+            <Pizarra id="cuentas_t" hiddeMiniMapa startType="select" exponentDeRedondeoDeMovimiento={20}>
                 {this.state.data.map((detalle, i) => {
                     const cuenta = detalle[0].cuenta_contable
                     if (!indices[cuenta.tipo]) {
@@ -65,7 +65,10 @@ export default class cuentas_t extends React.Component {
                     } else {
                         indices[cuenta.tipo].x++;
                     }
-                    return <PizarraNodo id={cuenta.codigo} x={params.startX + (indices[cuenta.tipo].x * spaces.x)} y={params.startY + (indices[cuenta.tipo].y * spaces.y)} >
+                    return <PizarraNodo id={cuenta.codigo} x={params.startX + (indices[cuenta.tipo].x * spaces.x)} y={params.startY + (indices[cuenta.tipo].y * spaces.y)}
+                    style={{
+                        padding:0,
+                    }} >
                         <CuentaT detalle={detalle} />
                     </PizarraNodo>
                 })}

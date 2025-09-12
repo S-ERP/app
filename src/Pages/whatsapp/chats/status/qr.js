@@ -102,7 +102,7 @@ export default class qr extends Component {
                         }
 
 
-                        {(device?.session?.status != "qr" && device?.session?.status != "initializing") && <SView style={{
+                        {(device?.session?.status != "qr" ) && <SView style={{
                             backgroundColor: "#00000044",
                             padding: 16,
                             borderRadius: 8,

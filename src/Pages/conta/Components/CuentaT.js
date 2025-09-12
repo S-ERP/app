@@ -72,7 +72,7 @@ export default class CuentaT extends React.Component {
             // borderWidth: 1,
             borderRadius: 4,
             backgroundColor: STheme.color.card,
-            margin: 4,
+            // margin: 4,
             padding: 4
         }}>
             <SView col={"xs-12"} >

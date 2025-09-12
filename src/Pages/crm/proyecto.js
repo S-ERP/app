@@ -520,7 +520,8 @@ export default class proyecto extends Component {
                                                             label: "Editar Producto",
                                                             onPress: () => {
                                                                 SNavigation.navigate(
-                                                                    "/restaurante/producto/edit",
+                                                                    // "/restaurante/producto/edit",
+                                                                    "/productos/modelo/edit",
                                                                     { pk: prd?.producto?.key }
                                                                 );
                                                             },

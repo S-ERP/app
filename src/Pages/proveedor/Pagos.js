@@ -75,8 +75,8 @@ export default class Pagos extends Component {
 
             for (const compra of registros) {
 
-                console.log("monto "+compra?.cuotas?.monto ?? 0)
-                console.log("monto_amortizado "+compra?.monto_amortizado ?? 0)
+                // console.log("monto "+compra?.cuotas?.monto ?? 0)
+                // console.log("monto_amortizado "+compra?.monto_amortizado ?? 0)
 
                 if (compra.cuotas?.cantidad > 0) pendientes++;
                 if (compra.cuotas_en_mora?.monto) {
@@ -258,7 +258,7 @@ export default class Pagos extends Component {
 
     handleViewHistory(compra) {
         // Placeholder for viewing payment history
-        console.log('View history for compra:', compra);
+        // console.log('View history for compra:', compra);
         // Implement navigation or modal display for payment history
     }
 
@@ -267,7 +267,7 @@ export default class Pagos extends Component {
         PopupPagoCuota.open({
             editObject: { ...compra, id: (index + 1), moneda: compra.moneda || monedaDefault },
             onSuccess: () => {
-                console.log('Payment successful');
+                // console.log('Payment successful');
                 this.loadData().then((data) => {
                     this.data = data;
                     this.forceUpdate();
@@ -302,7 +302,7 @@ export default class Pagos extends Component {
         // const deudaTotal =
         // data={(e) => (compra?.cuotas?.total ?? 0) - (compra?.monto_amortizado ?? 0) ?? ""}
 
-        console.log("mostra todo " + JSON.stringify(compras))
+        // console.log("mostra todo " + JSON.stringify(compras))
         return (
             <SView col={'xs-12'} style={{ padding: 8 }}>
                 <SView col={'xs-12'} row style={{ flexWrap: 'wrap' }}>
@@ -398,7 +398,7 @@ export default class Pagos extends Component {
                                                     editObject: { ...compra, id: (index + 1), moneda: compra.moneda || monedaDefault },
                                                     onSuccess: () => {
 
-                                                        console.log('Payment successful');
+                                                        // console.log('Payment successful');
                                                         this.loadData().then((data) => {
                                                             this.data = data;
                                                             this.forceUpdate();
@@ -426,7 +426,7 @@ export default class Pagos extends Component {
                                                 PopupPagoCuota.open({
                                                     editObject: { ...compra, id: (index + 1), pagado: true, moneda: compra.moneda || monedaDefault },
                                                     onSuccess: () => {
-                                                        console.log('Payment successful ' + JSON.stringify(compra));
+                                                        // console.log('Payment successful ' + JSON.stringify(compra));
                                                         this.loadData().then((data) => {
                                                             this.data = data;
                                                             this.forceUpdate();

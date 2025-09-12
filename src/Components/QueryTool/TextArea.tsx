@@ -3,13 +3,13 @@ import { Text, View, TextInput, ScrollView, KeyboardAvoidingView, Platform, Text
 import React, { Component } from 'react'
 import { SList, SStorage, SText, STheme, SThread, SView } from 'servisofts-component'
 import ReservedWords from './ReservedWords';
-
+export type TextAreaTypes = keyof typeof ReservedWords;
 export type TextAreaProps = {
     pk?: string,
     defaultValue?: string,
-    type: keyof typeof ReservedWords,
+    type: TextAreaTypes,
     onChangeText?: (text: string) => void,
-    title?:string,
+    title?: string,
     style?: ViewStyle
 }
 export default class TextArea extends React.Component<TextAreaProps> {
