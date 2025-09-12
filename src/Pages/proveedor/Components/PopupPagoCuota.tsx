@@ -327,7 +327,7 @@ export default class PopupPagoCuota extends Component {
                     <SView row center style={{ justifyContent: "space-between" }} backgroundColor='transparent'>
                         <SView flex row style={{ paddingTop: 4 }}>
                             <SText fontSize={16} bold color={COLOR_TEXT}>Cuota #{cuota.numero}</SText>
-                        </SView>
+                         </SView>
                         <SView>{this.labelEstado(cuota.estado, isVencida)}</SView>
                     </SView>
                     <SHr h={4} />
@@ -397,6 +397,8 @@ export default class PopupPagoCuota extends Component {
                 <SView row center style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: COLOR_BORDER }}>
                     <SView flex>
                         <SText col={'xs-12'} fontSize={20} bold color={COLOR_TEXT} numberOfLines={1}>
+                            {/* Gestión de Cuotas - Compra #{this.props?.editObject?.numero} */}
+                            {/* Gestión de Cuotas - Compra #{this.props?.editObject?.id} */}
                             Gestión de Cuotas - Compra #{compra.id}
                         </SText>
                     </SView>
@@ -727,7 +729,7 @@ export default class PopupPagoCuota extends Component {
             }
         }
 
-        const paddingBottom = filteredCuotas.length <= 1 ? 100 : 200;
+        const paddingBottom = filteredCuotas.length <= 1 ? 240 : 320;
 
         return (
             <SView col={'xs-12'} flex style={{ flex: 1 }} accessibilityLabel="Contenedor principal de gestión de cuotas">
@@ -740,7 +742,7 @@ export default class PopupPagoCuota extends Component {
                 >
                     {this.cabecera(compra, MontoSaldo)}
                     <SHr h={12} />
-                    <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
+                    <SView col={'xs-12'} style={{ paddingHorizontal: 16, }}>
                         {loading ? (
 
                             <SLoad type='skeleton' style={{ width: "100%", height: 50 }} />

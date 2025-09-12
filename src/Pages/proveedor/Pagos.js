@@ -9,16 +9,12 @@ const COLORS = {
     CARD: STheme.color.card,
     TEXT: STheme.color.text,
     BORDER: STheme.color.lightGray + '30',
-
     PENDIENTE: '#b58940',
     PENDIENTE_BACKGROUNG: '#fef8c3',
-
     PAGADO: '#22C55E',
     PAGADO_BACKGROUNG: '#dafce6',
-
     VENCIDO: '#ee343b',
     VENCIDO_BACKGROUNG: '#eeccda',
-    // VENCIDO: '#F97316',
     ACCENT: '#3B82F6',
     ACCENT_BACKGROUNG: '#7da4e2ff',
 };
@@ -35,69 +31,138 @@ const TYPOGRAPHY = {
 // State configuration
 const DATA_CONFIG = {
     estados: {
-        pendiente: { label: 'Pendiente', color: COLORS.PENDIENTE, bgColor: '#fef8c3', textColor: '#b58940', icon: 'history' },
-        pagado: { label: 'Pagado', color: COLORS.PAGADO, bgColor: '#dafce6', textColor: '#42b88f', icon: 'bien' },
-        vencido: { label: 'Vencido', color: COLORS.VENCIDO, bgColor: '#ee343b', textColor: '#eeccda', icon: 'AlertOutline' },
+        pendiente: { label: 'Pendiente', color: COLORS.PENDIENTE, bgColor: COLORS.PENDIENTE_BACKGROUNG, textColor: COLORS.PENDIENTE, icon: 'history' },
+        pagado: { label: 'Pagado', color: COLORS.PAGADO, bgColor: COLORS.PAGADO_BACKGROUNG, textColor: COLORS.PAGADO, icon: 'bien' },
+        vencido: { label: 'Vencido', color: COLORS.VENCIDO, bgColor: COLORS.VENCIDO_BACKGROUNG, textColor: COLORS.VENCIDO, icon: 'AlertOutline' },
     },
     metodosPago: ['Efectivo', 'Transferencia', 'Tarjeta de crédito', 'Cheque'],
 };
+
+// Reusable UI component for info rows
+const InfoRow = ({ label, value, icon, iconColorFill, iconColorStroke, bgColor, subText, subTextColor }) => (
+    <SView col={'xs-12 sm-6 md-3'} row center height={90} style={{ padding: 8 }}>
+        <SView center style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: bgColor || STheme.color.lightGray }}>
+            <SIconApp name={icon} width={24} height={24} fill={iconColorFill || 'transparent'} stroke={iconColorStroke || STheme.color.lightBlack} />
+        </SView>
+        <SView flex style={{ marginLeft: 12 }}>
+            <SText {...TYPOGRAPHY.LABEL}>{label}</SText>
+            {typeof value === 'string' ? (
+                <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>{value}</SText>
+            ) : (
+                value
+            )}
+            {subText && <SText fontSize={10} color={subTextColor || COLORS.TEXT}>{subText}</SText>}
+        </SView>
+    </SView>
+);
 
 export default class Pagos extends Component {
     state = {
         data: null,
         loading: true,
         error: null,
+        showPaid: false,
     };
 
-    // callback = SNavigation.getParam("key_proveedor");
+    calculateCuotaSummary(cuotas, moneda) {
+        const today = new SDate();
+        const summary = {
+            cant_pendientes: 0,
+            cant_mora: 0,
+            cant_pagado: 0,
+            montototal_pendientes: 0,
+            montototal_mora: 0,
+            montototal_pagado: 0,
+            deudaTotal: 0,
+        };
+
+        cuotas.forEach(cuota => {
+            const saldoPendiente = parseFloat(cuota.monto || 0);
+            // if (saldoPendiente <= 0) {
+            // alvaro
+            if (cuota.estado == "Pagado") {
+                // luego lo vere // if (cuota.estado == "Pagado"   && cuota.monto == cuota.monto_total ) {
+                cuota.estado = 'Pagado';
+                summary.cant_pagado++;
+                summary.montototal_pagado += parseFloat(cuota.monto_total || 0);
+            } else {
+                const fechaVencimiento = new SDate(cuota.vencimiento, 'yyyy-MM-dd');
+                if (fechaVencimiento.isBefore(today)) {
+                    cuota.estado = 'Vencido';
+                    summary.cant_mora++;
+                    summary.montototal_mora += saldoPendiente;
+                    summary.deudaTotal += saldoPendiente;
+                } else {
+                    cuota.estado = 'Pendiente';
+                    summary.cant_pendientes++;
+                    summary.montototal_pendientes += saldoPendiente;
+                    summary.deudaTotal += saldoPendiente;
+                }
+            }
+        });
+
+        return {
+            ...summary,
+            montototal_pendientes: summary.montototal_pendientes.toFixed(2),
+            montototal_mora: summary.montototal_mora.toFixed(2),
+            montototal_pagado: summary.montototal_pagado.toFixed(2),
+            deudaTotal: summary.deudaTotal.toFixed(2),
+        };
+    }
 
     async loadData() {
         try {
-            // const key_proveedor = SNavigation.getParam("key_proveedor") ;
-            const key_proveedor = SNavigation.getParam("key_proveedor") || '15843bf1-0ee2-467d-8052-aa394d2cf477';
+            const key_proveedor = SNavigation.getParam('key_proveedor') || '15843bf1-0ee2-467d-8052-aa394d2cf477';
             const registros = await MDL.compra_venta.getTransaccionCuotas(key_proveedor);
-
             if (!registros || !Array.isArray(registros)) {
                 return this.getDefaultData();
             }
 
-            const cantidadTotalCompras = registros.length;
-            let pendientes = 0;
-            let deudaTotal = {};
-            let amortizadoTotal = {};
+            const cuotasPromises = registros.map(compra => MDL.compra_venta.getCuotasCompras(compra.key));
+            const cuotasResults = await Promise.all(cuotasPromises);
 
+            const globalSummary = {
+                cant_pendientes: 0,
+                cant_mora: 0,
+                cant_pagado: 0,
+                montototal_pendientes: 0,
+                montototal_mora: 0,
+                montototal_pagado: 0,
+                deudaTotal: {},
+            };
 
+            registros.forEach((compra, index) => {
+                const cuotas = cuotasResults[index] || [];
+                const moneda = compra.moneda || 'BOB';
+                compra.cuotasDetalle = cuotas;
+                compra.summary = this.calculateCuotaSummary(cuotas, moneda);
 
-            // {
-            // compras.map((compra, index) => (
-            // const deudaTotal = (compra?.cuotas?.monto ?? 0) - (compra?.monto_amortizado ?? 0)
+                globalSummary.cant_pendientes += compra.summary.cant_pendientes;
+                globalSummary.cant_mora += compra.summary.cant_mora;
+                globalSummary.cant_pagado += compra.summary.cant_pagado;
+                globalSummary.montototal_pendientes += parseFloat(compra.summary.montototal_pendientes);
+                globalSummary.montototal_mora += parseFloat(compra.summary.montototal_mora);
+                globalSummary.montototal_pagado += parseFloat(compra.summary.montototal_pagado);
+                globalSummary.deudaTotal[moneda] = (globalSummary.deudaTotal[moneda] || 0) + parseFloat(compra.summary.deudaTotal);
+            });
 
+            const proveedor = await MDL.inventario.proveedor.getByKey(key_proveedor) || {};
+            const monedaDefault = Object.keys(globalSummary.deudaTotal).length
+                ? Object.keys(globalSummary.deudaTotal).reduce((a, b) => globalSummary.deudaTotal[a] > globalSummary.deudaTotal[b] ? a : b, 'BOB')
+                : 'BOB';
 
-            for (const compra of registros) {
-
-                // console.log("monto "+compra?.cuotas?.monto ?? 0)
-                // console.log("monto_amortizado "+compra?.monto_amortizado ?? 0)
-
-                if (compra.cuotas?.cantidad > 0) pendientes++;
-                if (compra.cuotas_en_mora?.monto) {
-                    const moneda = compra.moneda || 'BOB';
-                    deudaTotal[moneda] = (deudaTotal[moneda] || 0) + (compra?.cuotas?.monto ?? 0) - (compra?.monto_amortizado ?? 0);
-                    // deudaTotal[moneda] = (deudaTotal[moneda] || 0) + compra.cuotas_en_mora.monto;
-                }
-                if (compra.monto_amortizado) {
-                    const moneda = compra.moneda || 'BOB';
-                    amortizadoTotal[moneda] = (amortizadoTotal[moneda] || 0) + compra.monto_amortizado;
-                }
-            }
-
-            const proveedores = await MDL.inventario.proveedor.getAllProveedor();
+            console.log("pinter  " + JSON.stringify(globalSummary))
             return {
-                cantidadTotalCompras,
-                pendientes,
-                deudaTotal: Object.keys(deudaTotal).length ? deudaTotal : null,
-                amortizadoTotal: Object.keys(amortizadoTotal).length ? amortizadoTotal : null,
-                proveedor: proveedores.find(prov => prov.key === key_proveedor) || {},
+                cant_pendientes: globalSummary.cant_pendientes,
+                cant_mora: globalSummary.cant_mora,
+                cant_pagado: globalSummary.cant_pagado,
+                montototal_pendientes: globalSummary.montototal_pendientes.toFixed(2),
+                montototal_mora: globalSummary.montototal_mora.toFixed(2),
+                montototal_pagado: globalSummary.montototal_pagado.toFixed(2),
+                deudaTotal: Object.keys(globalSummary.deudaTotal).length ? globalSummary.deudaTotal : null,
+                proveedor,
                 compras: registros,
+                monedaDefault,
             };
         } catch (error) {
             console.error('Error in loadData:', error);
@@ -107,12 +172,16 @@ export default class Pagos extends Component {
 
     getDefaultData() {
         return {
-            cantidadTotalCompras: 0,
-            pendientes: 0,
+            cant_pendientes: 0,
+            cant_mora: 0,
+            cant_pagado: 0,
+            montototal_pendientes: '0.00',
+            montototal_mora: '0.00',
+            montototal_pagado: '0.00',
             deudaTotal: null,
-            amortizadoTotal: null,
             proveedor: {},
             compras: [],
+            monedaDefault: 'BOB',
         };
     }
 
@@ -127,7 +196,7 @@ export default class Pagos extends Component {
     renderLoading() {
         return (
             <SView col={'xs-12'} center style={{ padding: 16 }}>
-                <SIcon name='Spinner' width={24} height={24} fill={COLORS.ACCENT} />
+                <SIcon name="Spinner" width={24} height={24} fill={COLORS.ACCENT} />
                 <SHr h={8} />
                 <SText {...TYPOGRAPHY.BODY}>Cargando datos...</SText>
             </SView>
@@ -136,20 +205,11 @@ export default class Pagos extends Component {
 
     labelEstado(estado) {
         const estadoNormalizado = estado?.toLowerCase() || 'pendiente';
-        const { color, bgColor, textColor, label, icon } = DATA_CONFIG.estados[estadoNormalizado];
+        const { color, bgColor, textColor, label, icon } = DATA_CONFIG.estados[estadoNormalizado] || DATA_CONFIG.estados.pendiente;
 
         return (
             <SView row center accessibilityLabel={`Estado: ${label}`}>
-                <SView
-                    style={{
-                        backgroundColor: bgColor,
-                        borderRadius: 4,
-                        paddingVertical: 4,
-                        paddingHorizontal: 8,
-                        borderWidth: 1,
-                        borderColor: color,
-                    }}
-                >
+                <SView style={{ backgroundColor: bgColor, borderRadius: 4, paddingVertical: 4, paddingHorizontal: 8, borderWidth: 1, borderColor: color }}>
                     <SView row center>
                         <SIconApp name={icon} width={12} height={12} fill={textColor} />
                         <SView width={4} />
@@ -160,137 +220,134 @@ export default class Pagos extends Component {
         );
     }
 
-    renderMonto(montoObj, monedaDefault, color) {
-        if (!montoObj) {
-            return <SText {...TYPOGRAPHY.VALUE} color={color}>{monedaDefault} 0.00</SText>;
-        }
-
-        return Object.entries(montoObj).map(([moneda, monto]) => (
-            <SView key={moneda} row style={{ marginTop: 4 }}>
-                <SText {...TYPOGRAPHY.VALUE} color={color}>
-                    {moneda} {SMath.formatMoney(monto)}
-                </SText>
-            </SView>
-        ));
+    renderMonto(monto, moneda, color) {
+        return <SText {...TYPOGRAPHY.VALUE} color={color}>{moneda} {SMath.formatMoney(monto)}</SText>;
     }
 
     resumen() {
-        const { data, loading } = this.state;
+        const { data, loading, showPaid } = this.state;
         if (loading || !data) return this.renderLoading();
 
-        const { proveedor, pendientes, deudaTotal, amortizadoTotal, monedaDefault = 'BOB' } = data;
+        const { proveedor, montototal_pendientes, montototal_mora, monedaDefault, compras } = data;
 
+        // Calculate filtered totals based on showPaid
+        const filteredCompras = showPaid
+            ? compras
+            : compras.filter(compra => compra.summary?.deudaTotal > 0 && compra.cuotasDetalle?.length > 0);
 
+        const totalPagado = showPaid
+            ? parseFloat(data.montototal_pagado)
+            : filteredCompras.reduce((sum, compra) => sum + parseFloat(compra.summary.montototal_pagado || 0), 0).toFixed(2);
 
+        const cantidadCompras = filteredCompras.length;
+
+        const cuotas = showPaid
+            ? {
+                cant_pendientes: data.cant_pendientes,
+                cant_mora: data.cant_mora,
+                cant_pagado: data.cant_pagado,
+            }
+            : filteredCompras.reduce(
+                (acc, compra) => ({
+                    cant_pendientes: acc.cant_pendientes + (compra.summary?.cant_pendientes || 0),
+                    cant_mora: acc.cant_mora + (compra.summary?.cant_mora || 0),
+                    cant_pagado: acc.cant_pagado + (compra.summary?.cant_pagado || 0),
+                }),
+                { cant_pendientes: 0, cant_mora: 0, cant_pagado: 0 }
+            );
+
+        const totalDeuda = (parseFloat(montototal_pendientes) + parseFloat(montototal_mora)).toFixed(2);
 
         return (
             <SView col={'xs-12'} style={{ padding: 16 }}>
-                <SView
-                    col={'xs-12'}
-                    row
-                    backgroundColor={COLORS.CARD}
-                    style={{
-                        borderRadius: 8,
-                        borderWidth: 1,
-                        borderColor: COLORS.BORDER,
-                        padding: 16,
-                        flexWrap: 'wrap',
-                    }}
-                >
+                <SView col={'xs-12'} row backgroundColor={COLORS.CARD} style={{ borderRadius: 8, borderWidth: 1, borderColor: COLORS.BORDER, padding: 12, flexWrap: 'wrap' }}>
 
 
 
+                    <InfoRow
+                        label="Proveedor"
+                        value={proveedor?.razon_social || 'Sin nombre'}
+                        icon="iconEdifcio"
+                        // iconColorFill={STheme.color.lightBlack}
+                        iconColorStroke={STheme.color.lightBlack}
+                    />
+                    <InfoRow
+                        label="Deuda Total"
+                        value={
+                            <SView>
+                                {this.renderMonto(totalDeuda, monedaDefault, COLORS.VENCIDO)}
+                                {/* <SText fontSize={10} color={COLORS.VENCIDO}>Mora: {monedaDefault} {SMath.formatMoney(montototal_mora)}</SText> */}
+                                {/* <SText fontSize={10} color={COLORS.PENDIENTE}>Pendiente: {monedaDefault} {SMath.formatMoney(montototal_pendientes)}</SText> */}
+                            </SView>
+                        }
+                        icon="iconPesos"
+                        iconColorStroke={COLORS.VENCIDO}
+                        bgColor={COLORS.VENCIDO_BACKGROUNG}
 
-                    <SView col={'xs-12 sm-6 md-3'} row center height={80} style={{ padding: 8 }} >
-                        <SView center style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: STheme.color.lightGray }}>
-                            <SIconApp name={"iconEdifcio"} width={24} height={24} fill={"transparent"} stroke={STheme.color.lightBlack} />
-                        </SView>
-                        <SView flex style={{ marginLeft: 12 }}><SText {...TYPOGRAPHY.LABEL}>Proveedor</SText>
-                            <SView> <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>{proveedor?.razon_social}</SText> </SView>
-                        </SView>
-                    </SView>
+                        subText={`(Mora ${montototal_mora} + Pend. ${montototal_pendientes})`}
 
-                    <SView col={'xs-12 sm-6 md-3'} row center height={80} style={{ padding: 8 }} >
-                        <SView center style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: COLORS.VENCIDO_BACKGROUNG }}>
-                            <SIconApp name={"iconPesos"} width={24} height={24} fill={"transparent"} stroke={COLORS.VENCIDO} />
-                        </SView>
-                        <SView flex style={{ marginLeft: 12 }}><SText {...TYPOGRAPHY.LABEL}>Deuda Total</SText>
-                            <SView> <SText {...TYPOGRAPHY.VALUE} color={COLORS.VENCIDO}>{this.renderMonto(deudaTotal, monedaDefault, COLORS.VENCIDO)}</SText> </SView>
-                            <SText fontSize={10}>(Cuotas en mora)</SText>
-                        </SView>
-                    </SView>
+                    // subText="(Mora + Pendiente)"
 
+                    />
+                    <InfoRow
+                        label="Total Pagado"
+                        value={this.renderMonto(totalPagado, monedaDefault, COLORS.TEXT)}
+                        icon="pagotarjeta"
 
-                    <SView col={'xs-12 sm-6 md-3'} row center height={80} style={{ padding: 8 }} >
-                        <SView center style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: COLORS.PAGADO_BACKGROUNG }}>
-                            <SIconApp name={"pagotarjeta"} width={24} height={24} fill={COLORS.PAGADO} stroke={COLORS.PAGADO} />
-                        </SView>
-                        <SView flex style={{ marginLeft: 12 }}><SText {...TYPOGRAPHY.LABEL}>Total Pagado</SText>
-                            {this.renderMonto(amortizadoTotal, monedaDefault, COLORS.TEXT)}
-                            <SText fontSize={10}>(Amortizado)</SText>
+                        iconColorFill={COLORS.PAGADO}
+                        iconColorStroke={COLORS.PAGADO}
 
-                        </SView>
-                    </SView>
+                        bgColor={COLORS.PAGADO_BACKGROUNG}
+                        subText="(Amortizado)"
+                    />
 
-                    <SView col={'xs-12 sm-6 md-3'} row center height={80} style={{ padding: 8 }} >
-                        <SView center style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: COLORS.PENDIENTE_BACKGROUNG }}>
-                            <SIconApp name={"iconLista"} width={24} height={24} fill={COLORS.PENDIENTE} stroke={COLORS.PENDIENTE} />
-                        </SView>
-                        <SView flex style={{ marginLeft: 12 }}><SText {...TYPOGRAPHY.LABEL}>Compras Pendientes</SText>
-                            <SView> <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>{pendientes}</SText> </SView>
-                        </SView>
-                    </SView>
+                    <InfoRow
+                        label="Total Compras"
+                        // label="Total Compras"
+                        value={
+                            <SView>
+                                <SText {...TYPOGRAPHY.BODY} color={COLORS.TEXT}>
+                                    {/* <SText color={COLORS.TEXT}>{cantidadCompras}</SText> */}
+                                    <SText color={COLORS.TEXT}>{`${cantidadCompras} ${(cantidadCompras) === 1 ? 'compra' : 'compras'}`}</SText>
+                                </SText>
+                            </SView>
+                        }
+                        icon="iconLista"
+                        iconColorFill={COLORS.PENDIENTE}
+                        iconColorStroke={COLORS.PENDIENTE}
+                        bgColor={COLORS.PENDIENTE_BACKGROUNG}
+                        subText={`(${cuotas.cant_mora + cuotas.cant_pendientes} ${(cuotas.cant_mora + cuotas.cant_pendientes) === 1 ? 'cuota' : 'cuotas'})`}
+                    />
 
 
+                    {/* <InfoRow
+                        label="Cantidad de Compras"
+                        value={`${cantidadCompras} ${cantidadCompras === 1 ? 'compra' : 'compras'}`}
+                        icon="iconLista"
+                        iconColorFill={COLORS.PENDIENTE}
+                        iconColorStroke={COLORS.PENDIENTE}
+                        bgColor={COLORS.PENDIENTE_BACKGROUNG}
+                    /> */}
                 </SView>
-                {/* <SHr h={16} /> */}
+
+                {this.botonMostrarPagadas()}
+
             </SView>
         );
     }
 
     header() {
         return (
-            <SView col={'xs-12'} style={{ padding: 16 }}>
-                <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}> Compras a Crédito y Pagos Pendientes </SText>
+            <SView col={'xs-12'} style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
+                <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}>Compras a Crédito y Pagos Pendientes</SText>
             </SView>
         );
     }
 
-    handleViewHistory(compra) {
-        // Placeholder for viewing payment history
-        // console.log('View history for compra:', compra);
-        // Implement navigation or modal display for payment history
-    }
-
-    handlePayPending(compra) {
-        // Assuming PopupPagoCuota is a component that handles payment
-        PopupPagoCuota.open({
-            editObject: { ...compra, id: (index + 1), moneda: compra.moneda || monedaDefault },
-            onSuccess: () => {
-                // console.log('Payment successful');
-                this.loadData().then((data) => {
-                    this.data = data;
-                    this.forceUpdate();
-                });
-            },
-        });
-
-        // PopupPagoCuota.open({
-        //     compra,
-        //     onSuccess: () => {
-        //         // Refresh data after successful payment
-        //         this.loadData().then(data => {
-        //             this.setState({ data, loading: false });
-        //         });
-        //     },
-        // });
-    }
-
     itemCard() {
-        const { data, loading } = this.state;
+        const { data, loading, showPaid } = this.state;
         if (loading || !data) return this.renderLoading();
-
-        const { compras, monedaDefault = 'BOB' } = data;
+        const { compras, monedaDefault } = data;
         if (!compras?.length) {
             return (
                 <SView col={'xs-12'} center style={{ padding: 16 }}>
@@ -299,166 +356,190 @@ export default class Pagos extends Component {
             );
         }
 
-        // const deudaTotal =
-        // data={(e) => (compra?.cuotas?.total ?? 0) - (compra?.monto_amortizado ?? 0) ?? ""}
+        const filteredCompras = showPaid
+            ? compras
+            : compras.filter(compra => compra.summary?.deudaTotal > 0 && compra.cuotasDetalle?.length > 0);
 
-        // console.log("mostra todo " + JSON.stringify(compras))
+        if (!filteredCompras.length) {
+            return (
+                <SView col={'xs-12'} center style={{ padding: 16 }}>
+                    <SText {...TYPOGRAPHY.BODY} />
+                    {showPaid ? 'No hay compras registradas.' : 'No hay compras con deudas o cuotas pendientes.'}
+                </SView>
+            );
+        }
+
         return (
             <SView col={'xs-12'} style={{ padding: 8 }}>
                 <SView col={'xs-12'} row style={{ flexWrap: 'wrap' }}>
-                    {compras.map((compra, index) => (
-                        <SView
-                            key={index}
-                            col={'xs-12 md-4 lg-3'}
-                            margin={4}
-                            style={{
-                                backgroundColor: COLORS.CARD,
-                                borderRadius: 6,
-                                borderWidth: 1,
-                                borderColor: COLORS.BORDER,
-                                padding: 16,
-                            }}
-                        >
-                            <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
-                                <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}>Compra #{index + 1}</SText>
-                                {this.labelEstado(compra.cuotas_en_mora?.monto ? 'pendiente' : 'pagado')}
-                            </SView>
-                            <SHr h={8} />
-                            <SText {...TYPOGRAPHY.BODY} color={COLORS.TEXT} numberOfLines={1}>
-                                {compra.descripcion || 'Sin descripción'}
-                            </SText>
-                            <SHr h={12} />
-                            <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
-                                <SText {...TYPOGRAPHY.LABEL}>Fecha:</SText>
-                                <SText {...TYPOGRAPHY.BODY}>
-                                    {new SDate(compra.fecha_on || new Date()).toString('yyyy-MM-dd')}
+                    {filteredCompras.map((compra, index) => {
+                        const totalCompra = compra.detalles?.reduce((sum, item) => sum + (item.precio_unitario || 0) * (item.cantidad || 0), 0) || 0;
+                        const { cant_mora, montototal_mora, montototal_pendiente, montototal_pagado, deudaTotal, cant_pendientes, cant_pagado } = compra.summary || {};
+
+                        return (
+                            <SView
+                                key={compra.key || `compra-${index}`}
+                                col={'xs-12 md-4 lg-3'}
+                                margin={4}
+                                style={{ backgroundColor: COLORS.CARD, borderRadius: 6, borderWidth: 1, borderColor: COLORS.BORDER, padding: 16 }}
+                            >
+                                <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
+                                    <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}>Compra #{(index + 1)}</SText>
+                                    {this.labelEstado(deudaTotal > 0 ? 'pendiente' : 'pagado')}
+                                </SView>
+                                <SHr h={8} />
+                                <SText {...TYPOGRAPHY.BODY} color={COLORS.TEXT} numberOfLines={1}>
+                                    {compra.descripcion || 'Sin descripción'}
                                 </SText>
-                            </SView>
-                            <SHr h={8} />
-                            <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
-                                <SText {...TYPOGRAPHY.LABEL}>Total compra:</SText>
-                                {compra.detalles?.map((item, idx) => (
-                                    <SText key={idx} {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>
-                                        {compra.moneda || monedaDefault} {SMath.formatMoney(item.precio_unitario * item.cantidad ?? 0)}
+                                <SHr h={12} />
+                                <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
+                                    <SText {...TYPOGRAPHY.LABEL}>Fecha:</SText>
+                                    <SText {...TYPOGRAPHY.BODY}>{new SDate(compra.fecha_on || new Date()).toString('dd/MM/yyyy')}</SText>
+                                </SView>
+                                <SHr h={8} />
+                                <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
+                                    <SText {...TYPOGRAPHY.LABEL}>Total compra:</SText>
+                                    <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>
+                                        {compra.moneda || monedaDefault} {SMath.formatMoney(totalCompra)}
                                     </SText>
-                                ))}
-                            </SView>
-                            <SHr h={8} />
-                            <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
-                                <SText {...TYPOGRAPHY.LABEL}>Cuotas pendientes:</SText>
-                                <SText
-                                    {...TYPOGRAPHY.BODY}
-                                    color={compra.cuotas_en_mora?.cantidad ? COLORS.VENCIDO : COLORS.TEXT}
-                                >
-                                    {`${compra.cuotas_en_mora?.cantidad || 0} cuotas`}
-                                </SText>
-                            </SView>
-                            <SHr h={8} />
+                                </SView>
+                                <SHr h={8} />
+                                <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
+                                    <SText {...TYPOGRAPHY.LABEL}>Cuotas pendientes:</SText>
+                                    <SView>
+                                        <SText {...TYPOGRAPHY.BODY} color={COLORS.TEXT}>
+                                            cuotas {(cant_pendientes + cant_mora) || 0}
+                                            {/* ({(cant_pendientes + cant_mora) || 0}) */}
+                                            {/* Pendientes: <SText color={COLORS.PENDIENTE}>{cant_pendientes || 0}</SText> | */}
+                                            {/* Mora: <SText color={COLORS.VENCIDO}>{cant_mora || 0}</SText> | */}
+                                            {/* Pagadas: <SText color={COLORS.PAGADO}>{cant_pagado || 0}</SText> */}
+                                        </SText>
+                                    </SView>
+                                </SView>
+                                <SHr h={8} />
+                                <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
+                                    <SText {...TYPOGRAPHY.LABEL}>Deuda total:</SText>
+                                    <SView>
+                                        <SText {...TYPOGRAPHY.BODY} color={deudaTotal > 0 ? COLORS.VENCIDO : COLORS.TEXT}>
+                                            {compra.moneda || monedaDefault} {SMath.formatMoney(deudaTotal)}
+                                        </SText>
 
-                            <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
-                                <SText {...TYPOGRAPHY.LABEL}>deuda:</SText>
-                                <SText
-                                    {...TYPOGRAPHY.BODY}
-                                    color={compra.cuotas_en_mora?.monto ? COLORS.VENCIDO : COLORS.TEXT}
-                                >
 
 
-                                    {compra.moneda || monedaDefault} {SMath.formatMoney((compra?.cuotas?.monto ?? 0) - (compra?.monto_amortizado ?? 0)) ?? ""}
-                                    {/* alvaro */}
-
-                                    {/* {`${compra.cuotas_en_mora?.monto || 0} cuotas`} */}
-                                </SText>
-                            </SView>
-                            <SHr h={8} />
-                            {/* <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
-                                <SText {...TYPOGRAPHY.LABEL}>Cuotas total:</SText>
-                                <SText
-                                    {...TYPOGRAPHY.BODY}
-                                    color={COLORS.TEXT}
-                                >
-                                    {`${compra.cuotas?.cantidad || 0} cuotas`}
-                                </SText>
-                            </SView> */}
-                            <SHr h={16} />
-                            <SView col={'xs-12'} center>
-                                <SView
-                                    col={'xs-12'}
-                                    style={{
-                                        paddingVertical: 12,
-                                        borderTopWidth: 1,
-                                        borderColor: STheme.color.lightGray + "66",
-                                        // borderColor: COLORS.ACCENT,
-                                    }}
-                                >
-                                    {compra.cuotas_en_mora?.cantidad ? (
-                                        <SView
-                                            col={'xs-12'}
-                                            onPress={() => {
-                                                PopupPagoCuota.open({
-                                                    editObject: { ...compra, id: (index + 1), moneda: compra.moneda || monedaDefault },
-                                                    onSuccess: () => {
-
-                                                        // console.log('Payment successful');
-                                                        this.loadData().then((data) => {
-                                                            this.data = data;
-                                                            this.forceUpdate();
-                                                        });
-                                                    },
-                                                });
-                                            }}
-                                            backgroundColor={COLORS.VENCIDO}
-                                            style={{
-                                                padding: 12,
-                                                borderRadius: 6,
-                                                borderWidth: 1,
-                                                borderColor: COLORS.VENCIDO + '33',
-                                            }}
-                                            center
-                                        >
-                                            <SView row center>
-                                                <SText {...TYPOGRAPHY.LABEL} color={COLORS.TEXT}>Pagar Cuotas Pendientes</SText>
+                                        {/* {montototal_mora > 0 && (
+                                            <SText fontSize={10} color={COLORS.VENCIDO}>
+                                                Mora: {compra.moneda || monedaDefault} {SMath.formatMoney(montototal_mora)}
+                                            </SText>
+                                        )}
+                                        {montototal_pendiente > 0 && (
+                                            <SText fontSize={10} color={COLORS.PENDIENTE}>
+                                                Pendiente: {compra.moneda || monedaDefault} {SMath.formatMoney(montototal_pendiente)}
+                                            </SText>
+                                        )} */}
+                                    </SView>
+                                </SView>
+                                {/* <SHr h={8} />
+                                <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
+                                    <SText {...TYPOGRAPHY.LABEL}>Pagado:</SText>
+                                    <SText {...TYPOGRAPHY.BODY} color={COLORS.PAGADO}>
+                                        {compra.moneda || monedaDefault} {SMath.formatMoney(montototal_pagado)}
+                                    </SText>
+                                </SView> */}
+                                <SHr h={16} />
+                                <SView col={'xs-12'} center>
+                                    <SView col={'xs-12'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
+                                        {deudaTotal > 0 ? (
+                                            <SView
+                                                col={'xs-12'}
+                                                onPress={() => {
+                                                    PopupPagoCuota.open({
+                                                        editObject: {
+                                                            ...compra,
+                                                            id: index + 1,
+                                                            // id: compra.key || (index + 1),
+                                                            moneda: compra.moneda || monedaDefault,
+                                                            cuotasDetalle: compra.cuotasDetalle || [],
+                                                            cuotas_en_mora: { cantidad: cant_mora, monto: montototal_mora },
+                                                            totalMora: montototal_mora,
+                                                            totalPendiente: montototal_pendiente,
+                                                            totalPagado: montototal_pagado,
+                                                        },
+                                                        onSuccess: () => {
+                                                            this.setState({ loading: true });
+                                                            this.loadData().then(data => this.setState({ data, loading: false }));
+                                                        },
+                                                    });
+                                                }}
+                                                backgroundColor={COLORS.VENCIDO}
+                                                style={{ padding: 12, borderRadius: 6, borderWidth: 1, borderColor: COLORS.ACCENT + '33' }}
+                                                center
+                                            >
+                                                <SView row center>
+                                                    <SIconApp name="pagotarjeta" width={16} height={16} fill={COLORS.TEXT} />
+                                                    <SView width={4} />
+                                                    <SText {...TYPOGRAPHY.LABEL} color={COLORS.TEXT}>Pagar Cuotas Pendientes</SText>
+                                                </SView>
                                             </SView>
-                                        </SView>
-                                    ) : (
-                                        <SView
-                                            col={'xs-12'}
-                                            onPress={() => {
-                                                PopupPagoCuota.open({
-                                                    editObject: { ...compra, id: (index + 1), pagado: true, moneda: compra.moneda || monedaDefault },
-                                                    onSuccess: () => {
-                                                        // console.log('Payment successful ' + JSON.stringify(compra));
-                                                        this.loadData().then((data) => {
-                                                            this.data = data;
-                                                            this.forceUpdate();
-                                                        });
-                                                    },
-                                                });
-                                            }}
-                                            backgroundColor={COLORS.CARD}
-                                            style={{
-                                                padding: 12,
-                                                borderRadius: 6,
-                                                borderWidth: 1,
-                                                borderColor: COLORS.ACCENT + '33',
-                                            }}
-                                            center
-                                        >
-                                            <SView row center  >
-                                                <SIcon col={'xs-0 sm-12'} name={'Eyes'} width={16} height={16} fill={COLORS.TEXT} />
-                                                <SText {...TYPOGRAPHY.LABEL} color={COLORS.TEXT}> Ver Historial de Pagos</SText>
+                                        ) : (
+                                            <SView
+                                                col={'xs-12'}
+                                                onPress={() => {
+                                                    PopupPagoCuota.open({
+                                                        editObject: {
+                                                            ...compra,
+                                                            id: compra.key || (index + 1),
+                                                            moneda: compra.moneda || monedaDefault,
+                                                            pagado: true,
+                                                            cuotasDetalle: compra.cuotasDetalle || [],
+                                                            cuotas_en_mora: { cantidad: 0, monto: 0 },
+                                                            totalMora: montototal_mora,
+                                                            totalPendiente: montototal_pendiente,
+                                                            totalPagado: montototal_pagado,
+                                                        },
+                                                        onSuccess: () => {
+                                                            this.setState({ loading: true });
+                                                            this.loadData().then(data => this.setState({ data, loading: false }));
+                                                        },
+                                                    });
+                                                }}
+                                                backgroundColor={COLORS.CARD}
+                                                style={{ padding: 12, borderRadius: 6, borderWidth: 1, borderColor: COLORS.CARD }}
+                                                center
+                                            >
+                                                <SView row center>
+                                                    <SIcon name="Eyes" width={16} height={16} fill={COLORS.TEXT} />
+                                                    <SView width={4} />
+                                                    <SText {...TYPOGRAPHY.LABEL} color={COLORS.TEXT}>Ver Historial de Pagos</SText>
+                                                </SView>
                                             </SView>
-                                        </SView>
-                                    )}
+                                        )}
+                                    </SView>
                                 </SView>
                             </SView>
-                        </SView>
-                    ))}
+                        );
+                    })}
                 </SView>
             </SView>
         );
     }
 
+    botonMostrarPagadas() {
+        const { showPaid } = this.state;
+
+        return <SView style={{ position: "absolute", right: 16, top: -14 }} >
+            <SView center row width={120} backgroundColor={STheme.color.card} style={{ borderRadius: 4, paddingVertical: 4 }}
+                onPress={() => this.setState({ showPaid: !showPaid })}>
+                <SIconApp name='Eyes' fill={COLORS.TEXT} height={10} width={10} /> <SView width={4} />
+                <SText {...TYPOGRAPHY.LABEL} color={COLORS.TEXT}>
+                    {showPaid ? 'Ocultar Pagadas' : 'Mostrar Pagadas'}
+                </SText>
+            </SView>
+        </SView>
+    }
+
+
     render() {
+        // const { showPaid } = this.state;
         return (
             <SPage title={'Compras de Distribuidora Central S.A.'} disableScroll>
                 <SScrollView2 disableHorizontal>
