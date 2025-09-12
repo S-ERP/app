@@ -11,25 +11,40 @@ export const urlToArrayBuffer = async (url: string): Promise<ArrayBuffer> => {
 }
 export const readFromUrl = async (url: string): Promise<ArrayBuffer> => {
     const arrayBuffer = await urlToArrayBuffer(url);
-    return readFromArrayBuffer(arrayBuffer);
+    const archives = await readFromArrayBuffer(arrayBuffer);
+    return archives;
 
 }
 
 export const readFromArrayBuffer = async (arrayBuffer: ArrayBuffer): Promise<any> => {
     const zip = await JSZip.loadAsync(arrayBuffer);
     console.log(zip.files)
-    if (zip.file("xl/styles.xml")) {
-        const stylesXML:any = await zip.file("xl/styles.xml")?.async("string");
-        console.log("excel-sheet", stylesXML)
-        const sheet = parseXmlToJson(stylesXML)
-        console.log("excel-sheet", sheet)
-    }
-    if (zip.file("xl/workbook.xml")) {
-        const sheetXML: any = await zip.file(`xl/worksheets/sheet1.xml`)?.async("string")
-        console.log("excel-sheet", sheetXML)
-        const sheet = parseXmlToJson(sheetXML)
-        console.log("excel-sheet", sheet)
-    }
+
+    const filePromises = Object.keys(zip.files).map(async (fileName) => {
+        const file = zip.file(fileName);
+        if (file) {
+            const content = await file.async("string"); // o "arraybuffer", "uint8array", etc.
+            return { name: fileName, content:parseXmlToJson(content) };
+            // return { name: fileName, content:content };
+        }
+        return null;
+    });
+
+    // Esperamos a que todas las promesas se resuelvan
+    const results = await Promise.all(filePromises);
+    return results;
+    // if (zip.file("xl/styles.xml")) {
+    //     const stylesXML:any = await zip.file("xl/styles.xml")?.async("string");
+    //     console.log("excel-sheet", stylesXML)
+    //     const sheet = parseXmlToJson(stylesXML)
+    //     console.log("excel-sheet", sheet)
+    // }
+    // if (zip.file("xl/workbook.xml")) {
+    //     const sheetXML: any = await zip.file(`xl/worksheets/sheet1.xml`)?.async("string")
+    //     console.log("excel-sheet", sheetXML)
+    //     const sheet = parseXmlToJson(sheetXML)
+    //     console.log("excel-sheet", sheet)
+    // }
 
 }
 
@@ -72,7 +87,7 @@ function parseNode(str: string, start = 0): [any[], number] {
             while ((attrMatch = attrRegex.exec(attrString)) !== null) {
                 attributes[attrMatch[1]] = attrMatch[2];
             }
-            
+
 
             i += openMatch[0].length;
 

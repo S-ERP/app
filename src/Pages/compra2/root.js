@@ -23,7 +23,7 @@ export default class root extends React.Component {
     selectedMoneda = this.props.selectedMoneda || null; // Moneda seleccionada
 
     state = {
-        sucursales: [],
+        almacenes: [],
         modelos: [],
         proveedores: [],
         detalle: [
@@ -54,7 +54,7 @@ export default class root extends React.Component {
             this.setState({ monedas: data.monedas || [] }, () => {
                 // Esto se ejecuta **después** de que monedas se cargaron
                 if (!this.selectedMoneda && this.state.monedas.length > 1) {
-                    this.selectedMoneda = this.state.monedas[1]; // segunda moneda
+                    this.selectedMoneda = this.state.monedas.find(a => a.tipo == "base"); // segunda moneda
                     this.props.onSelectMoneda?.(this.selectedMoneda);
                     this.forceUpdate();
                 }
@@ -100,15 +100,21 @@ export default class root extends React.Component {
     componentDidMount() {
         this.checkCaja();
 
-        MDL.empresa.getAllSucursales().then(sucursales => {
-            if (this.inputs["sucursal"]) this.inputs["sucursal"].setValue(sucursales[0]?.descripcion);
-            this.setState({ sucursales });
-        });
+        // MDL.empresa.getAllSucursales().then(sucursales => {
+        //     if (this.inputs["sucursal"]) this.inputs["sucursal"].setValue(sucursales[0]?.descripcion);
+        //     this.setState({ sucursales });
+        // });
         MDL.inventario.getAllModeloStock().then(modelos => {
             this.setState({ modelos });
         });
         MDL.inventario.proveedor.getAllProveedor().then(proveedores => {
             this.setState({ proveedores });
+        });
+        MDL.inventario.getAllAlmacen().then(almacenes => {
+            const arr = almacenes.filter(a => a.key_sucursal == MDL.caja?.activa?.key_sucursal);
+
+            if (this.inputs["almacen"]) this.inputs["almacen"].setValue(arr[0]?.descripcion)
+            this.setState({ almacenes: arr })
         });
     }
 
@@ -121,8 +127,20 @@ export default class root extends React.Component {
                 type: "loading",
             });
 
-            const sucValue = this.inputs["sucursal"].getValue();
-            const sucursal = this.state.sucursales.find(a => a.descripcion === sucValue);
+            const almacenVal = this.inputs["almacen"].getValue();
+            const almacen = this.state.almacenes.find(a => a.descripcion === almacenVal);
+            // if (!almacen) {
+            //     SNotification.send({
+            //         key: "compra_rapida",
+            //         title: "Error",
+            //         body: "Almacén no encontrado.",
+            //         color: STheme.color.danger,
+            //         time: 4000,
+            //     });
+            //     return;
+            // }
+            // data.
+
             const provValue = this.inputs["proveedor"].getValue();
             const proveedor = this.state.proveedores.find(a => a.razon_social === provValue);
 
@@ -135,6 +153,7 @@ export default class root extends React.Component {
                 facturar: this.facturar || false,
                 facturar_luego: this.facturar_luego || false,
                 key_caja: MDL.caja.activa.key,
+                key_almacen: almacen?.key,
                 tipos_pago: tipos_pago,
                 key_moneda: this.selectedMoneda?.key || this.state.monedas[0]?.key, // Enviar moneda seleccionada
             };
@@ -234,12 +253,12 @@ export default class root extends React.Component {
                             )}
                             <SView col={"xs-12 sm-6"} padding={2}>
                                 <SInput
-                                    ref={ref => (this.inputs["sucursal"] = ref)}
-                                    label={"Sucursal"}
+                                    ref={ref => (this.inputs["almacen"] = ref)}
+                                    label={"Almacen"}
                                     customStyle={"erp"}
                                     type="select2"
-                                    placeholder={"Seleccione una sucursal"}
-                                    options={this.state.sucursales.map(a => a.descripcion)}
+                                    placeholder={"Seleccione un almacen"}
+                                    options={this.state.almacenes.map(a => a.descripcion)}
                                 />
                             </SView>
                             <SView col={"xs-12 sm-6"} padding={2}>
