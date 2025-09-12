@@ -38,94 +38,134 @@ const DATA_CONFIG = {
     metodosPago: ['Efectivo', 'Transferencia', 'Tarjeta de crédito', 'Cheque'],
 };
 
+// Reusable UI component for info rows
+const InfoRow = ({ label, value, icon, iconColor, bgColor, subText, subTextColor }) => (
+    <SView col={'xs-12 sm-6 md-3'} row center height={90} style={{ padding: 8 }}>
+        <SView center style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: bgColor || STheme.color.lightGray }}>
+            <SIconApp name={icon} width={24} height={24} fill={iconColor || 'transparent'} stroke={iconColor || STheme.color.lightBlack} />
+        </SView>
+        <SView flex style={{ marginLeft: 12 }}>
+            <SText {...TYPOGRAPHY.LABEL}>{label}</SText>
+            {typeof value === 'string' ? (
+                <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>{value}</SText>
+            ) : (
+                value
+            )}
+            {subText && <SText fontSize={10} color={subTextColor || COLORS.TEXT}>{subText}</SText>}
+        </SView>
+    </SView>
+);
+
 export default class PagosSuper extends Component {
     state = {
         data: null,
         loading: true,
         error: null,
+        showPaid: false, // New state to toggle paid/no-debt/no-cuota purchases
     };
 
+    /**
+     * Calculates cuota summaries for a single compra
+     * @param {Object[]} cuotas - Array of cuota objects
+     * @param {string} moneda - Currency code
+     * @returns {Object} Summary of cuota counts and amounts
+     */
+    calculateCuotaSummary(cuotas, moneda) {
+        const today = new SDate();
+        const summary = {
+            cant_pendientes: 0,
+            cant_mora: 0,
+            cant_pagado: 0,
+            montototal_pendientes: 0,
+            montototal_mora: 0,
+            montototal_pagado: 0,
+            deudaTotal: 0,
+        };
+
+        cuotas.forEach(cuota => {
+            const saldoPendiente = parseFloat(cuota.monto || 0);
+            if (saldoPendiente <= 0) {
+                cuota.estado = 'Pagado';
+                summary.cant_pagado++;
+                summary.montototal_pagado += parseFloat(cuota.monto_total || 0);
+            } else {
+                const fechaVencimiento = new SDate(cuota.vencimiento, 'yyyy-MM-dd');
+                if (fechaVencimiento.isBefore(today)) {
+                    cuota.estado = 'Vencido';
+                    summary.cant_mora++;
+                    summary.montototal_mora += saldoPendiente;
+                    summary.deudaTotal += saldoPendiente;
+                } else {
+                    cuota.estado = 'Pendiente';
+                    summary.cant_pendientes++;
+                    summary.montototal_pendientes += saldoPendiente;
+                    summary.deudaTotal += saldoPendiente;
+                }
+            }
+        });
+
+        return {
+            ...summary,
+            montototal_pendientes: summary.montototal_pendientes.toFixed(2),
+            montototal_mora: summary.montototal_mora.toFixed(2),
+            montototal_pagado: summary.montototal_pagado.toFixed(2),
+            deudaTotal: summary.deudaTotal.toFixed(2),
+        };
+    }
+
+    /**
+     * Loads data for the component
+     * @returns {Object} Aggregated data for rendering
+     */
     async loadData() {
         try {
-            const key_proveedor = SNavigation.getParam("key_proveedor") || '15843bf1-0ee2-467d-8052-aa394d2cf477';
+            const key_proveedor = SNavigation.getParam('key_proveedor') || '15843bf1-0ee2-467d-8052-aa394d2cf477';
             const registros = await MDL.compra_venta.getTransaccionCuotas(key_proveedor);
-
             if (!registros || !Array.isArray(registros)) {
                 return this.getDefaultData();
             }
 
-            // const cantidadTotalCompras = registros.length;
-            // let pendientes = 0;
-            let deudaTotal = {};
-            // let amortizadoTotal = {};
+            const cuotasPromises = registros.map(compra => MDL.compra_venta.getCuotasCompras(compra.key));
+            const cuotasResults = await Promise.all(cuotasPromises);
 
+            const globalSummary = {
+                cant_pendientes: 0,
+                cant_mora: 0,
+                cant_pagado: 0,
+                montototal_pendientes: 0,
+                montototal_mora: 0,
+                montototal_pagado: 0,
+                deudaTotal: {},
+            };
 
-            let cant_pendientes = 0;
-            let cant_mora = 0;
-            let cant_pagado = 0;
-            let montototal_pendientes = 0;
-            let montototal_mora = 0;
-            let montototal_pagado = 0;
-
-            // Fetch cuotas for all compras and calculate summaries
-            const today = new SDate();
-            for (const compra of registros) {
-
-                const cuotas = await MDL.compra_venta.getCuotasCompras(compra.key) || [];
+            registros.forEach((compra, index) => {
+                const cuotas = cuotasResults[index] || [];
                 const moneda = compra.moneda || 'BOB';
-
-                // Calculate cuota summaries (aligned with PopupPagoCuota)
-                for (const cuota of cuotas) {
-                    const saldoPendiente = parseFloat(cuota.monto || 0);
-                    if (saldoPendiente <= 0) {
-                        cuota.estado = 'Pagado';
-                        cant_pagado++;
-                        montototal_pagado += parseFloat(cuota.monto_total || 0);
-                        // amortizadoTotal[moneda] = (amortizadoTotal[moneda] || 0) + parseFloat(cuota.monto_total || 0);
-                    } else {
-                        const fechaVencimiento = new SDate(cuota.vencimiento, 'yyyy-MM-dd');
-                        if (fechaVencimiento.isBefore(today)) {
-                            cuota.estado = 'Vencido';
-                            cant_mora++;
-                            montototal_mora += saldoPendiente;
-                            deudaTotal[moneda] = (deudaTotal[moneda] || 0) + saldoPendiente;
-                        } else {
-                            cuota.estado = 'Pendiente';
-                            cant_pendientes++;
-                            montototal_pendientes += saldoPendiente;
-                            deudaTotal[moneda] = (deudaTotal[moneda] || 0) + saldoPendiente;
-                        }
-                    }
-                }
-
-                // Count pending compras
-                // if (compra.cuotas_en_mora?.monto > 0 || (compra.cuotas?.monto || 0) > (compra.monto_amortizado || 0)) {
-                //     pendientes++;
-                // }
-
-                // Update compra with cuotas
                 compra.cuotasDetalle = cuotas;
-            }
+                compra.summary = this.calculateCuotaSummary(cuotas, moneda);
 
-            const proveedores = await MDL.inventario.proveedor.getAllProveedor();
-            const proveedor = proveedores.find(prov => prov.key === key_proveedor) || {};
-            const monedaDefault = Object.keys(deudaTotal).length > 0
-                ? Object.keys(deudaTotal).reduce((a, b) => deudaTotal[a] > deudaTotal[b] ? a : b, 'BOB')
+                globalSummary.cant_pendientes += compra.summary.cant_pendientes;
+                globalSummary.cant_mora += compra.summary.cant_mora;
+                globalSummary.cant_pagado += compra.summary.cant_pagado;
+                globalSummary.montototal_pendientes += parseFloat(compra.summary.montototal_pendientes);
+                globalSummary.montototal_mora += parseFloat(compra.summary.montototal_mora);
+                globalSummary.montototal_pagado += parseFloat(compra.summary.montototal_pagado);
+                globalSummary.deudaTotal[moneda] = (globalSummary.deudaTotal[moneda] || 0) + parseFloat(compra.summary.deudaTotal);
+            });
+
+            const proveedor = await MDL.inventario.proveedor.getByKey(key_proveedor) || {};
+            const monedaDefault = Object.keys(globalSummary.deudaTotal).length
+                ? Object.keys(globalSummary.deudaTotal).reduce((a, b) => globalSummary.deudaTotal[a] > globalSummary.deudaTotal[b] ? a : b, 'BOB')
                 : 'BOB';
 
             return {
-                // cantidadTotalCompras,
-                // pendientes,
-
-                cant_pendientes,
-                cant_mora,
-                cant_pagado,
-                montototal_pendientes: montototal_pendientes.toFixed(2),
-                montototal_mora: montototal_mora.toFixed(2),
-                montototal_pagado: montototal_pagado.toFixed(2),
-
-                // deudaTotal: Object.keys(deudaTotal).length ? deudaTotal : null,
-                // amortizadoTotal: Object.keys(amortizadoTotal).length ? amortizadoTotal : null,
+                cant_pendientes: globalSummary.cant_pendientes,
+                cant_mora: globalSummary.cant_mora,
+                cant_pagado: globalSummary.cant_pagado,
+                montototal_pendientes: globalSummary.montototal_pendientes.toFixed(2),
+                montototal_mora: globalSummary.montototal_mora.toFixed(2),
+                montototal_pagado: globalSummary.montototal_pagado.toFixed(2),
+                deudaTotal: Object.keys(globalSummary.deudaTotal).length ? globalSummary.deudaTotal : null,
                 proveedor,
                 compras: registros,
                 monedaDefault,
@@ -138,16 +178,13 @@ export default class PagosSuper extends Component {
 
     getDefaultData() {
         return {
-            cantidadTotalCompras: 0,
-            pendientes: 0,
             cant_pendientes: 0,
             cant_mora: 0,
             cant_pagado: 0,
-            montototal_pendientes: 0,
-            montototal_mora: 0,
-            montototal_pagado: 0,
+            montototal_pendientes: '0.00',
+            montototal_mora: '0.00',
+            montototal_pagado: '0.00',
             deudaTotal: null,
-            amortizadoTotal: null,
             proveedor: {},
             compras: [],
             monedaDefault: 'BOB',
@@ -165,7 +202,7 @@ export default class PagosSuper extends Component {
     renderLoading() {
         return (
             <SView col={'xs-12'} center style={{ padding: 16 }}>
-                <SIcon name='Spinner' width={24} height={24} fill={COLORS.ACCENT} />
+                <SIcon name="Spinner" width={24} height={24} fill={COLORS.ACCENT} />
                 <SHr h={8} />
                 <SText {...TYPOGRAPHY.BODY}>Cargando datos...</SText>
             </SView>
@@ -178,16 +215,7 @@ export default class PagosSuper extends Component {
 
         return (
             <SView row center accessibilityLabel={`Estado: ${label}`}>
-                <SView
-                    style={{
-                        backgroundColor: bgColor,
-                        borderRadius: 4,
-                        paddingVertical: 4,
-                        paddingHorizontal: 8,
-                        borderWidth: 1,
-                        borderColor: color,
-                    }}
-                >
+                <SView style={{ backgroundColor: bgColor, borderRadius: 4, paddingVertical: 4, paddingHorizontal: 8, borderWidth: 1, borderColor: color }}>
                     <SView row center>
                         <SIconApp name={icon} width={12} height={12} fill={textColor} />
                         <SView width={4} />
@@ -198,91 +226,54 @@ export default class PagosSuper extends Component {
         );
     }
 
-    renderMonto(montoObj, monedaDefault, color) {
-        if (!montoObj) {
-            return <SText {...TYPOGRAPHY.VALUE} color={color}>{monedaDefault} 0.00</SText>;
-        }
-
-        return (
-            <SView>
-                {Object.entries(montoObj).map(([moneda, monto]) => (
-                    <SText key={moneda} {...TYPOGRAPHY.VALUE} color={color}>
-                        {moneda} {SMath.formatMoney(monto)}
-                    </SText>
-                ))}
-            </SView>
-        );
+    renderMonto(monto, moneda, color) {
+        return <SText {...TYPOGRAPHY.VALUE} color={color}>{moneda} {SMath.formatMoney(monto)}</SText>;
     }
 
     resumen() {
         const { data, loading } = this.state;
         if (loading || !data) return this.renderLoading();
 
-        const { proveedor, pendientes, cant_pendientes, cant_mora, cant_pagado, montototal_pendientes, montototal_mora, montototal_pagado, deudaTotal, amortizadoTotal, monedaDefault, cantidadTotalCompras } = data;
+        const { proveedor, cant_pendientes, cant_mora, cant_pagado, montototal_pendientes, montototal_mora, montototal_pagado, monedaDefault } = data;
+        const totalDeuda = (parseFloat(montototal_pendientes) + parseFloat(montototal_mora)).toFixed(2);
 
         return (
             <SView col={'xs-12'} style={{ padding: 16 }}>
-                <SView
-                    col={'xs-12'}
-                    row
-                    backgroundColor={COLORS.CARD}
-                    style={{
-                        borderRadius: 8,
-                        borderWidth: 1,
-                        borderColor: COLORS.BORDER,
-                        padding: 12,
-                        flexWrap: 'wrap',
-                    }}
-                >
-                    <SView col={'xs-12 sm-6 md-3'} row center height={90} style={{ padding: 8 }}>
-                        <SView center style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: STheme.color.lightGray }}>
-                            <SIconApp name="iconEdifcio" width={24} height={24} fill="transparent" stroke={STheme.color.lightBlack} />
-                        </SView>
-                        <SView flex style={{ marginLeft: 12 }}>
-                            <SText {...TYPOGRAPHY.LABEL}>Proveedor</SText>
-                            <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>{proveedor?.razon_social || 'Sin nombre'}</SText>
-                        </SView>
-                    </SView>
-
-                    <SView col={'xs-12 sm-6 md-3'} row center height={90} style={{ padding: 8 }}>
-                        <SView center style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: COLORS.VENCIDO_BACKGROUNG }}>
-                            <SIconApp name="iconPesos" width={24} height={24} fill="transparent" stroke={COLORS.VENCIDO} />
-                        </SView>
-                        <SView flex style={{ marginLeft: 12 }}>
-                            <SText {...TYPOGRAPHY.LABEL}>Deuda Total</SText>
+                <SView col={'xs-12'} row backgroundColor={COLORS.CARD} style={{ borderRadius: 8, borderWidth: 1, borderColor: COLORS.BORDER, padding: 12, flexWrap: 'wrap' }}>
+                    <InfoRow
+                        label="Proveedor"
+                        value={proveedor?.razon_social || 'Sin nombre'}
+                        icon="iconEdifcio"
+                        iconColor={STheme.color.lightBlack}
+                    />
+                    <InfoRow
+                        label="Deuda Total"
+                        value={
                             <SView>
-                                <SText {...TYPOGRAPHY.VALUE} color={COLORS.VENCIDO}>
-                                    {monedaDefault} {SMath.formatMoney(parseFloat(montototal_pendientes) + parseFloat(montototal_mora))}
-                                </SText>
-                                <SText fontSize={10}>Mora: {monedaDefault} {SMath.formatMoney(montototal_mora)}</SText>
-                                <SText fontSize={10}>Pendiente: {monedaDefault} {SMath.formatMoney(montototal_pendientes)}</SText>
+                                {this.renderMonto(totalDeuda, monedaDefault, COLORS.VENCIDO)}
+                                <SText fontSize={10} color={COLORS.VENCIDO}>Mora: {monedaDefault} {SMath.formatMoney(montototal_mora)}</SText>
+                                <SText fontSize={10} color={COLORS.PENDIENTE}>Pendiente: {monedaDefault} {SMath.formatMoney(montototal_pendientes)}</SText>
                             </SView>
-                        </SView>
-                    </SView>
-
-                    <SView col={'xs-12 sm-6 md-3'} row center height={90} style={{ padding: 8 }}>
-                        <SView center style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: COLORS.PAGADO_BACKGROUNG }}>
-                            <SIconApp name="pagotarjeta" width={24} height={24} fill={COLORS.PAGADO} stroke={COLORS.PAGADO} />
-                        </SView>
-                        <SView flex style={{ marginLeft: 12 }}>
-                            <SText {...TYPOGRAPHY.LABEL}>Total Pagado</SText>
-                            <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>{monedaDefault} {SMath.formatMoney(montototal_pagado)}</SText>
-                            <SText fontSize={10}>(Amortizado)</SText>
-                        </SView>
-                    </SView>
-
-                    <SView col={'xs-12 sm-6 md-3'} row center height={90} style={{ padding: 8 }}>
-                        <SView center style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: COLORS.PENDIENTE_BACKGROUNG }}>
-                            <SIconApp name="iconLista" width={24} height={24} fill={COLORS.PENDIENTE} stroke={COLORS.PENDIENTE} />
-                        </SView>
-                        <SView flex style={{ marginLeft: 12 }}>
-                            <SText {...TYPOGRAPHY.LABEL}>Cuotas</SText>
-                            <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>
-                                Pendientes: {cant_pendientes} | Mora: {cant_mora} | Pagadas: {cant_pagado}
-                            </SText>
-                            <SText fontSize={10}>({pendientes} compras pendientes de {cantidadTotalCompras})</SText>
-                        </SView>
-                    </SView>
+                        }
+                        icon="iconPesos"
+                        iconColor={COLORS.VENCIDO}
+                        bgColor={COLORS.VENCIDO_BACKGROUNG}
+                    />
+                    <InfoRow
+                        label="Total Pagado"
+                        value={this.renderMonto(montototal_pagado, monedaDefault, COLORS.TEXT)}
+                        icon="pagotarjeta"
+                        iconColor={COLORS.PAGADO}
+                        bgColor={COLORS.PAGADO_BACKGROUNG}
+                        subText="(Amortizado)"
+                    />
+                    <InfoRow
+                        label="Cuotas"
+                        value={`Pendientes: ${cant_pendientes} | Mora: ${cant_mora} | Pagadas: ${cant_pagado}`}
+                        icon="iconLista"
+                        iconColor={COLORS.PENDIENTE}
+                        bgColor={COLORS.PENDIENTE_BACKGROUNG}
+                    />
                 </SView>
             </SView>
         );
@@ -297,9 +288,8 @@ export default class PagosSuper extends Component {
     }
 
     itemCard() {
-        const { data, loading } = this.state;
+        const { data, loading, showPaid } = this.state;
         if (loading || !data) return this.renderLoading();
-
         const { compras, monedaDefault } = data;
         if (!compras?.length) {
             return (
@@ -309,55 +299,38 @@ export default class PagosSuper extends Component {
             );
         }
 
+        // Filter compras based on showPaid state
+        const filteredCompras = showPaid
+            ? compras
+            : compras.filter(compra => compra.summary?.deudaTotal > 0 && compra.cuotasDetalle?.length > 0);
+
+        if (!filteredCompras.length) {
+            return (
+                <SView col={'xs-12'} center style={{ padding: 16 }}>
+                    <SText {...TYPOGRAPHY.BODY}>
+                        {showPaid ? 'No hay compras registradas.' : 'No hay compras con deudas o cuotas pendientes.'}
+                    </SText>
+                </SView>
+            );
+        }
+
         return (
             <SView col={'xs-12'} style={{ padding: 8 }}>
                 <SView col={'xs-12'} row style={{ flexWrap: 'wrap' }}>
-                    {compras.map((compra, index) => {
-                        // Calculate total purchase amount from detalles
-                        const totalCompra = compra.detalles?.reduce(
-                            (sum, item) => sum + (item.precio_unitario || 0) * (item.cantidad || 0),
-                            0
-                        ) || 0;
-
-                        // Calculate debt-related values from cuotasDetalle
-                        const ___totaldeudaa = compra.cuotasDetalle?.reduce(
-                            (sum, cuota) => sum + (cuota.estado !== 'Pagado' ? parseFloat(cuota.monto || 0) : 0),
-                            0
-                        ) || 0;
-
-                        const ___totalMora = compra.cuotasDetalle?.reduce(
-                            (sum, cuota) => sum + (cuota.estado === 'Vencido' ? parseFloat(cuota.monto || 0) : 0),
-                            0
-                        ) || 0;
-
-                        const ___totalPendiente = compra.cuotasDetalle?.reduce(
-                            (sum, cuota) => sum + (cuota.estado === 'Pendiente' ? parseFloat(cuota.monto || 0) : 0),
-                            0
-                        ) || 0;
-
-                        const ___totalPagado = compra.cuotasDetalle?.reduce(
-                            (sum, cuota) => sum + (cuota.estado === 'Pagado' ? parseFloat(cuota.monto_total || 0) : 0),
-                            0
-                        ) || 0;
-
-                        const cuotasEnMoraCantidad = compra.cuotasDetalle?.filter(cuota => cuota.estado === 'Vencido').length || 0;
+                    {filteredCompras.map((compra, index) => {
+                        const totalCompra = compra.detalles?.reduce((sum, item) => sum + (item.precio_unitario || 0) * (item.cantidad || 0), 0) || 0;
+                        const { cant_mora, montototal_mora, montototal_pendiente, montototal_pagado, deudaTotal } = compra.summary || {};
 
                         return (
                             <SView
                                 key={compra.key || `compra-${index}`}
                                 col={'xs-12 md-4 lg-3'}
                                 margin={4}
-                                style={{
-                                    backgroundColor: COLORS.CARD,
-                                    borderRadius: 6,
-                                    borderWidth: 1,
-                                    borderColor: COLORS.BORDER,
-                                    padding: 16,
-                                }}
+                                style={{ backgroundColor: COLORS.CARD, borderRadius: 6, borderWidth: 1, borderColor: COLORS.BORDER, padding: 16 }}
                             >
                                 <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
                                     <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}>Compra #{compra.key || (index + 1)}</SText>
-                                    {this.labelEstado(___totaldeudaa > 0 ? 'pendiente' : 'pagado')}
+                                    {this.labelEstado(deudaTotal > 0 ? 'pendiente' : 'pagado')}
                                 </SView>
                                 <SHr h={8} />
                                 <SText {...TYPOGRAPHY.BODY} color={COLORS.TEXT} numberOfLines={1}>
@@ -366,9 +339,7 @@ export default class PagosSuper extends Component {
                                 <SHr h={12} />
                                 <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
                                     <SText {...TYPOGRAPHY.LABEL}>Fecha:</SText>
-                                    <SText {...TYPOGRAPHY.BODY}>
-                                        {new SDate(compra.fecha_on || new Date()).toString('dd/MM/yyyy')}
-                                    </SText>
+                                    <SText {...TYPOGRAPHY.BODY}>{new SDate(compra.fecha_on || new Date()).toString('dd/MM/yyyy')}</SText>
                                 </SView>
                                 <SHr h={8} />
                                 <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
@@ -380,31 +351,25 @@ export default class PagosSuper extends Component {
                                 <SHr h={8} />
                                 <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
                                     <SText {...TYPOGRAPHY.LABEL}>Cuotas en mora:</SText>
-                                    <SText
-                                        {...TYPOGRAPHY.BODY}
-                                        color={cuotasEnMoraCantidad ? COLORS.VENCIDO : COLORS.TEXT}
-                                    >
-                                        {cuotasEnMoraCantidad} cuotas
+                                    <SText {...TYPOGRAPHY.BODY} color={cant_mora ? COLORS.VENCIDO : COLORS.TEXT}>
+                                        {cant_mora || 0} cuotas
                                     </SText>
                                 </SView>
                                 <SHr h={8} />
                                 <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
                                     <SText {...TYPOGRAPHY.LABEL}>Deuda:</SText>
                                     <SView>
-                                        <SText
-                                            {...TYPOGRAPHY.BODY}
-                                            color={___totaldeudaa > 0 ? COLORS.VENCIDO : COLORS.TEXT}
-                                        >
-                                            {compra.moneda || monedaDefault} {SMath.formatMoney(___totaldeudaa)}
+                                        <SText {...TYPOGRAPHY.BODY} color={deudaTotal > 0 ? COLORS.VENCIDO : COLORS.TEXT}>
+                                            {compra.moneda || monedaDefault} {SMath.formatMoney(deudaTotal)}
                                         </SText>
-                                        {___totalMora > 0 && (
+                                        {montototal_mora > 0 && (
                                             <SText fontSize={10} color={COLORS.VENCIDO}>
-                                                Mora: {compra.moneda || monedaDefault} {SMath.formatMoney(___totalMora)}
+                                                Mora: {compra.moneda || monedaDefault} {SMath.formatMoney(montototal_mora)}
                                             </SText>
                                         )}
-                                        {___totalPendiente > 0 && (
+                                        {montototal_pendiente > 0 && (
                                             <SText fontSize={10} color={COLORS.PENDIENTE}>
-                                                Pendiente: {compra.moneda || monedaDefault} {SMath.formatMoney(___totalPendiente)}
+                                                Pendiente: {compra.moneda || monedaDefault} {SMath.formatMoney(montototal_pendiente)}
                                             </SText>
                                         )}
                                     </SView>
@@ -412,24 +377,14 @@ export default class PagosSuper extends Component {
                                 <SHr h={8} />
                                 <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
                                     <SText {...TYPOGRAPHY.LABEL}>Pagado:</SText>
-                                    <SText
-                                        {...TYPOGRAPHY.BODY}
-                                        color={COLORS.PAGADO}
-                                    >
-                                        {compra.moneda || monedaDefault} {SMath.formatMoney(___totalPagado)}
+                                    <SText {...TYPOGRAPHY.BODY} color={COLORS.PAGADO}>
+                                        {compra.moneda || monedaDefault} {SMath.formatMoney(montototal_pagado)}
                                     </SText>
                                 </SView>
                                 <SHr h={16} />
                                 <SView col={'xs-12'} center>
-                                    <SView
-                                        col={'xs-12'}
-                                        style={{
-                                            paddingVertical: 12,
-                                            borderTopWidth: 1,
-                                            borderColor: STheme.color.lightGray + '66',
-                                        }}
-                                    >
-                                        {___totaldeudaa > 0 ? (
+                                    <SView col={'xs-12'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
+                                        {deudaTotal > 0 ? (
                                             <SView
                                                 col={'xs-12'}
                                                 onPress={() => {
@@ -439,29 +394,19 @@ export default class PagosSuper extends Component {
                                                             id: compra.key || (index + 1),
                                                             moneda: compra.moneda || monedaDefault,
                                                             cuotasDetalle: compra.cuotasDetalle || [],
-                                                            cuotas_en_mora: {
-                                                                cantidad: cuotasEnMoraCantidad,
-                                                                monto: ___totalMora,
-                                                            },
-                                                            totalMora: ___totalMora,
-                                                            totalPendiente: ___totalPendiente,
-                                                            totalPagado: ___totalPagado,
+                                                            cuotas_en_mora: { cantidad: cant_mora, monto: montototal_mora },
+                                                            totalMora: montototal_mora,
+                                                            totalPendiente: montototal_pendiente,
+                                                            totalPagado: montototal_pagado,
                                                         },
                                                         onSuccess: () => {
                                                             this.setState({ loading: true });
-                                                            this.loadData().then(data => {
-                                                                this.setState({ data, loading: false });
-                                                            });
+                                                            this.loadData().then(data => this.setState({ data, loading: false }));
                                                         },
                                                     });
                                                 }}
                                                 backgroundColor={COLORS.ACCENT}
-                                                style={{
-                                                    padding: 12,
-                                                    borderRadius: 6,
-                                                    borderWidth: 1,
-                                                    borderColor: COLORS.ACCENT + '33',
-                                                }}
+                                                style={{ padding: 12, borderRadius: 6, borderWidth: 1, borderColor: COLORS.ACCENT + '33' }}
                                                 center
                                             >
                                                 <SView row center>
@@ -482,25 +427,18 @@ export default class PagosSuper extends Component {
                                                             pagado: true,
                                                             cuotasDetalle: compra.cuotasDetalle || [],
                                                             cuotas_en_mora: { cantidad: 0, monto: 0 },
-                                                            totalMora: ___totalMora,
-                                                            totalPendiente: ___totalPendiente,
-                                                            totalPagado: ___totalPagado,
+                                                            totalMora: montototal_mora,
+                                                            totalPendiente: montototal_pendiente,
+                                                            totalPagado: montototal_pagado,
                                                         },
                                                         onSuccess: () => {
                                                             this.setState({ loading: true });
-                                                            this.loadData().then(data => {
-                                                                this.setState({ data, loading: false });
-                                                            });
+                                                            this.loadData().then(data => this.setState({ data, loading: false }));
                                                         },
                                                     });
                                                 }}
                                                 backgroundColor={COLORS.ACCENT}
-                                                style={{
-                                                    padding: 12,
-                                                    borderRadius: 6,
-                                                    borderWidth: 1,
-                                                    borderColor: COLORS.ACCENT + '33',
-                                                }}
+                                                style={{ padding: 12, borderRadius: 6, borderWidth: 1, borderColor: COLORS.ACCENT + '33' }}
                                                 center
                                             >
                                                 <SView row center>
@@ -521,11 +459,34 @@ export default class PagosSuper extends Component {
     }
 
     render() {
+        const { showPaid } = this.state;
         return (
             <SPage title={'Compras de Distribuidora Central S.A.'} disableScroll>
                 <SScrollView2 disableHorizontal>
                     <SView col={'xs-12'} center style={{ padding: 8 }}>
                         {this.header()}
+                        <SView col={'xs-12'} center style={{ padding: 8 }}>
+                            <SView
+                                col={'xs-12 sm-6 md-4'}
+                                onPress={() => this.setState({ showPaid: !showPaid })}
+                                backgroundColor={COLORS.ACCENT}
+                                style={{
+                                    padding: 12,
+                                    borderRadius: 8,
+                                    borderWidth: 1,
+                                    borderColor: COLORS.ACCENT + '33',
+                                    flexDirection: 'row',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <SIconApp name={showPaid ? 'EyeOff' : 'Eye'} width={16} height={16} fill={COLORS.TEXT} />
+                                <SView width={8} />
+                                <SText {...TYPOGRAPHY.LABEL} color={COLORS.TEXT}>
+                                    {showPaid ? 'Ocultar Pagadas' : 'Mostrar Pagadas'}
+                                </SText>
+                            </SView>
+                        </SView>
                         {this.resumen()}
                         {this.itemCard()}
                         <SHr h={16} />
