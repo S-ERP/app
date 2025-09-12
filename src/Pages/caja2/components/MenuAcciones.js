@@ -62,7 +62,7 @@ export default class MenuAcciones extends Component<{ caja: any, movimientos: an
 
     cargarEfectivoDelBanco() {
         CargarEfectivoDelBanco.open({})
-  
+
     }
     render() {
         return (
@@ -76,6 +76,11 @@ export default class MenuAcciones extends Component<{ caja: any, movimientos: an
                 {/* <SText card padding={8} margin={4} style={{ backgroundColor: STheme.color.danger }}>{"Pagar a Proveedores"}</SText> */}
                 <SText card padding={8} margin={4} onPress={this.enviarAlBanco.bind(this)}>{"Enviar al Banco"}</SText>
                 <SText card padding={8} margin={4} onPress={this.cerrar_caja.bind(this)} >{"Cerrar la Caja"}</SText>
+
+                <SText card padding={8} margin={4} onPress={() => { SNavigation.navigate("/proveedor") }}>{"Pagar a Proveedores"}</SText>
+                <SText card padding={8} margin={4} onPress={() => { SNavigation.navigate("/cliente") }}>{"Cobrar a Clientes"}</SText>
+
+
             </SView>
 
         );

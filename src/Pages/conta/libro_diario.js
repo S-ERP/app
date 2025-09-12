@@ -16,10 +16,17 @@ export default class libro_diario extends React.Component {
             const empresa = await MDL.empresa.getFull();
             const data = await MDL.contabilidad.reporte_libro_diario();
             const monedabase = empresa.monedas.find(b => b.tipo == "base")
+            let tagsKeys = {};
             data.map(a => {
                 a.moneda = empresa.monedas.find(b => b.key == a.key_moneda)
                 a.moneda_base = monedabase
+                if (a.tags) {
+                    tagsKeys = { ...tagsKeys, ...a.tags } 
+                }
             })
+            
+            console.log(Object.keys(tagsKeys))
+
             return data;
         } catch (error) {
             console.log(error);
@@ -40,6 +47,24 @@ export default class libro_diario extends React.Component {
                     ref={(e) => this.dinamicTable = e}
                     {...Config.table.applyTheme()}
                     loadData={this.loadData.bind(this)}
+                    loadInitialState={async () => {
+                        return {
+                            cols: {
+                                debe_sin_format: {
+                                    hidden: true,
+                                },
+                                haber_sin_format: {
+                                    hidden: true,
+                                },
+                                debe_me_sin_format: {
+                                    hidden: true,
+                                },
+                                haber_me_sin_format: {
+                                    hidden: true,
+                                },
+                            }
+                        }
+                    }}
                     keyExtractor={(e) => e.key}
                     selectType="multiple"
                 >
@@ -123,7 +148,7 @@ export default class libro_diario extends React.Component {
                             if (e?.row?.codigo?.length == 1) {
                                 aditionalStyle.fontWeight = "bold";
                             }
-                            return <SText  numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, ...aditionalStyle }}>{e.data}</SText>
+                            return <SText numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, ...aditionalStyle }}>{e.data}</SText>
                         }}
                     />
                     <DinamicTable.Col key="moneda" label="Moneda" data={e => e.row.moneda?.descripcion}
@@ -146,7 +171,7 @@ export default class libro_diario extends React.Component {
                         }}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
-                            return <SText  numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.row.moneda_base?.observacion} {SMath.formatMoney(e.data || "0")}</SText>
+                            return <SText numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.row.moneda_base?.observacion} {SMath.formatMoney(e.data || "0")}</SText>
                             // return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.data || "0"}</SText>
                         }}
                     />
@@ -162,7 +187,7 @@ export default class libro_diario extends React.Component {
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
                             const val = e.data || "0"
-                            return <SText   numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{e.row.moneda_base?.observacion} {SMath.formatMoney(val)}</SText>
+                            return <SText numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{e.row.moneda_base?.observacion} {SMath.formatMoney(val)}</SText>
                             // return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{val}</SText>
                         }} />
 
@@ -176,7 +201,7 @@ export default class libro_diario extends React.Component {
                         }}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
-                            return <SText  numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.row.moneda?.observacion} {SMath.formatMoney(e.data || "0")}</SText>
+                            return <SText numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.row.moneda?.observacion} {SMath.formatMoney(e.data || "0")}</SText>
                             // return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(e.data || "0") }}>{e.data || "0"}</SText>
                         }}
                     />
@@ -188,7 +213,7 @@ export default class libro_diario extends React.Component {
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
                             const val = e.data || "0"
-                            return <SText  numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{e.row.moneda?.observacion} {SMath.formatMoney(val)}</SText>
+                            return <SText numberOfLines={e.colData.wrap ? 0 : 1} style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{e.row.moneda?.observacion} {SMath.formatMoney(val)}</SText>
                             // return <SText style={{ ...e.textStyle, paddingStart: space, color: this.numberColor(val) }}>{val}</SText>
                         }} />
 
@@ -214,6 +239,16 @@ export default class libro_diario extends React.Component {
                         data={e => e.row.haber_me}
                         cellStyle={{
                             alignItems: "flex-end"
+                        }}
+
+                    />
+                    <DinamicTable.Col key="tags"
+                        wrap
+                        label="Tags"
+                        width={500}
+                        data={e => JSON.stringify(e.row?.tags, "\n", "\t")}
+                        cellStyle={{
+                            // alignItems: "flex-end"
                         }}
 
                     />

@@ -83,7 +83,7 @@ export default class configIcon extends React.Component {
                             </SView>
                             <SView col={"xs-0.5"} />
                             <SView col={"xs-2.5"} row card padding={10} style={{ marginBottom: 8 }}>
-                                <SText fontSize={14} bold capitalize justify>Por defecto:</SText>
+                                <SText fontSize={14} bold capitalize justify>Seleccionado:</SText>
                                 <SHr height={8} />
                                 <SView col={"xs-12"} center>
                                     <SView

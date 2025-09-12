@@ -5,6 +5,7 @@ import Animated, { SharedValue, useAnimatedStyle, useSharedValue } from "react-n
 import { usePizarra } from "./Pizarra";
 import { SText, STheme } from "servisofts-component";
 import { NodoInstance, useNodo } from "./PizarraNodo";
+import { PathProps } from "react-native-svg";
 
 export type PuertoProps = {
     id: string;
@@ -14,6 +15,10 @@ export type PuertoProps = {
     connectSpace?: number,
     value?: any
     onConnect?: (evt: any) => void,
+
+    lineType?: "line" | "curve"
+    lineProps?: PathProps & { zIndex?: number },
+    selectLineProps?: PathProps & { zIndex?: number },
 }
 
 export type PuertoInstance = {
@@ -45,7 +50,7 @@ export default function Puerto(props: PuertoProps) {
 
 
         return () => {
-            pizarra.unregisterPuerto(props.id, nodo.id);
+            pizarra.unregisterPuerto(props.id, nodo.id, props.type ?? "input");
         };
     }, []);
 
@@ -77,7 +82,7 @@ export default function Puerto(props: PuertoProps) {
                 y: ((puerto.nodo.translateY.value) - (puerto.layout.value.height / 2) - (puerto.layout.value.h / 2) + (puerto.layout.value.y))
             }
 
-            console.log(ppos.x, myPosition.x, puerto.layout.value.x)
+            // console.log(ppos.x, myPosition.x, puerto.layout.value.x)
             if (ppos.x - connectSpace < myPosition.x
                 && ppos.x + connectSpace + (puerto.layout.value.w) > myPosition.x
                 && ppos.y - connectSpace < myPosition.y
@@ -85,7 +90,7 @@ export default function Puerto(props: PuertoProps) {
                 // && ppos.y < nodo.translateY.value + myPosition.y + (myPosition.height / 2) + connectSpace
                 // && ppos.y + (puerto.layout.value.height + connectSpace) > nodo.translateY.value + myPosition.y + (myPosition.height / 2)
             ) {
-                console.log("Entro aca")
+                // console.log("Entro aca")
                 paintLineToTarget(puerto);
                 toTarget = true;
                 // if (puerto.onConnected.value) return;
@@ -116,7 +121,7 @@ export default function Puerto(props: PuertoProps) {
             line.y1.value = nodo.translateY.value + layout.value.y - (layout.value.height / 2);
             line.x2.value = line.x1.value + translateX.value;
             line.y2.value = line.y1.value + translateY.value;
-            console.log(line.x1.value, line.y1.value, line.x2.value, line.y2.value);
+            // console.log(line.x1.value, line.y1.value, line.x2.value, line.y2.value);
         }
     }
     const paintLineToTarget = (port: PuertoInstance) => {
@@ -154,7 +159,7 @@ export default function Puerto(props: PuertoProps) {
                 startY: e.translationY,
             };
 
-            console.log(layout.value)
+            // console.log(layout.value)
         })
         .onUpdate(e => {
             translateX.value = context.value.startX + (e.translationX / pizarra.scale.value);
@@ -162,7 +167,7 @@ export default function Puerto(props: PuertoProps) {
             callOtherPorts(false);
             // paintLine()
         }).onEnd(e => {
-            console.log("onEnd")
+            // console.log("onEnd")
             callOtherPorts(true);
             translateX.value = 0
             translateY.value = 0

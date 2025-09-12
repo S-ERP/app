@@ -5,6 +5,8 @@ import SIconApp from '../../../Assets/SIconApp';
 import MDL from '../../../MDL';
 import SelectTipoPago from '../../caja2/components/SelectTipoPago';
 import Model from '../../../Model';
+import { memoryUsage } from 'process';
+import pendiente_entrega from '../../inventario/almacen/profile/pendiente_entrega';
 
 // Configuración
 const data = {
@@ -25,10 +27,10 @@ const COLOR_BORDER = STheme.color.white;
 const SKELETON_COLOR = STheme.color.lightGray + '88';
 const SKELETON_HIGHLIGHT = STheme.color.lightGray + 'CC';
 
-export default class PopupPagoCuota extends Component {
+export default class PopupPagoCuotaLuegoLoVere extends Component {
     static open(props) {
         SPopup.open({
-            key: 'PopupPagoCuota',
+            key: 'PopupPagoCuotaLuegoLoVere',
             content: (
                 <SView
                     style={{
@@ -46,14 +48,14 @@ export default class PopupPagoCuota extends Component {
                     closeOnTouchOutside
                     accessibilityLabel="Popup de gestión de cuotas"
                 >
-                    <PopupPagoCuota
+                    <PopupPagoCuotaLuegoLoVere
                         {...props}
                         onCancel={() => {
-                            SPopup.close('PopupPagoCuota');
+                            SPopup.close('PopupPagoCuotaLuegoLoVere');
                             if (props.onCancel) props.onCancel();
                         }}
                         onSuccess={(e) => {
-                            SPopup.close('PopupPagoCuota');
+                            SPopup.close('PopupPagoCuotaLuegoLoVere');
                             if (props.onSuccess) props.onSuccess(e);
                         }}
                     />
@@ -211,10 +213,91 @@ export default class PopupPagoCuota extends Component {
     getCompraData = () => {
         const compra = this.props.editObject || {};
         let totalCompra = 0;
+        // let totalPendiente = 0;
+
+        // const valeeeeeeeeeeeeee = this.cuotasCompras;
+        // console.log("totales " + JSON.stringify(valeeeeeeeeeeeeee))
+
+        // cant_pendientes=
+        // cant_mora=
+        // cant_pagado=
+
+        // montototal_pendientes=
+        // montototal__mora=
+        // montototal__pagado=
+        // for (const compra of valeeeeeeeeeeeeee) {
+        //     if (compra.estado == "Pendiente") {
+        //           todos los estados pendiente 
+        //           tengo que cambiar el estado en decir que 
+        //           si compra.vencimiento < a la fecha de de hoy
+        //           se cambia a estado en mora 
+        //           en el caso si compra.vencimiento esta fuera de la fecha de hoy es estado pendiente_entrega
+        //     }
+        // }
+        // luego aqui voy a imprmir todos los datos
+
+
+        if (!this.cuotasCompras) return;
+
+        const hoy = new Date();
+
+        let cant_pendientes = 0;
+        let cant_mora = 0;
+        let cant_pagado = 0;
+
+        let montototal_pendientes = 0;
+        let montototal_mora = 0;
+        let montototal_pagado = 0;
+
+        // Recorremos cada cuota
+        // Recorremos cada cuota
+        // Recorremos cada cuota
+        // Recorremos cada cuota
+        // Recorremos cada cuota
+        // Recorremos cada cuota
+        for (const compra of this.cuotasCompras) {
+            // Calculamos saldo pendiente
+            const saldoPendiente = compra.monto; // ya viene calculado de la consulta SQL
+
+            // Actualizamos el estado según fecha y saldo pendiente
+            if (saldoPendiente <= 0) {
+                compra.estado = "Pagado";
+                cant_pagado++;
+                montototal_pagado += parseFloat(compra.monto_total);
+            } else {
+                const fechaVencimiento = new Date(compra.vencimiento);
+                if (fechaVencimiento < hoy) {
+                    compra.estado = "En Mora";
+                    cant_mora++;
+                    montototal_mora += parseFloat(saldoPendiente);
+                } else {
+                    compra.estado = "Pendiente_Entrega";
+                    cant_pendientes++;
+                    montototal_pendientes += parseFloat(saldoPendiente);
+                }
+            }
+        }
+
+        console.log("✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨Resumen de cuotas:");
+        console.log("Pendientes:", cant_pendientes, "Monto:", montototal_pendientes);
+        console.log("En Mora:", cant_mora, "Monto:", montototal_mora);
+        console.log("Pagadas:", cant_pagado, "Monto:", montototal_pagado);
+        // Recorremos cada cuota
+        // Recorremos cada cuota
+        // Recorremos cada cuota
+        // Recorremos cada cuota
+        // Recorremos cada cuota
+        // Recorremos cada cuota
+        // Recorremos cada cuota
+
+
+
         if (compra.detalles?.length) {
             for (let i = 0; i < compra.detalles.length; i++) {
                 const item = compra.detalles[i];
                 totalCompra += (item.precio_unitario || 0) * (item.cantidad || 0);
+                // totalPendiente += (item.precio_unitario || 0) * (item.cantidad || 0);
+
             }
         }
         const estadoCompra = compra.cuotas_en_mora?.monto > 0 ? 'Pendiente' : 'Pagado';
@@ -224,8 +307,9 @@ export default class PopupPagoCuota extends Component {
         return {
             id: compra.id || 'N/A',
             descripcion: compra.descripcion || 'Sin descripción',
-            estado: estadoCompra,
+            // estado: estadoCompra,
             fecha: compra.fecha_on || new SDate().toString('yyyy-MM-dd'),
+
             total: totalCompra || 0,
             cuotasDetalle: cuotasDetalle,
             moneda: compra.moneda || 'BOB',
@@ -692,6 +776,9 @@ export default class PopupPagoCuota extends Component {
             if (cuota.estado !== 'Pagado' && !this.isCuotaVencida(cuota.vencimiento) && cuota.numero > 2) {
                 hasMoreThanTwoFuturePending = true;
             }
+            // if (cuota.estado !== 'Pagado' && !this.isCuotaVencida(cuota.vencimiento) && cuota.numero > 2) {
+            //     hasMoreThanTwoFuturePending = true;
+            // }
         }
 
         // Dynamic paddingBottom based on number of cuotas
@@ -713,7 +800,7 @@ export default class PopupPagoCuota extends Component {
                         {loading ? (
                             // Render skeleton loaders with fade-out animation
                             <>
-                            <SLoad type='skeleton' style={{ width:"100%", height:50}}/>
+                                <SLoad type='skeleton' style={{ width: "100%", height: 50 }} />
                                 {/* <this.SkeletonCuota />
                                 <this.SkeletonCuota />
                                 <this.SkeletonCuota /> */}

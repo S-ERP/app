@@ -26,7 +26,10 @@ type PizarraProps = {
     children: React.ReactNode;
     hiddeMiniMapa?: boolean;
     scale?: number;
+    size?: number;
     startType?: "select" | "move";
+    exponentDeRedondeoDeMovimiento?: number;
+
 
 }
 
@@ -39,6 +42,7 @@ const PizarraContext = React.createContext<{
     layoutWidth: any, layoutHeight: any,
     selectStartX: any, selectStartY: any, selectEndX: any, selectEndY: any,
     selectTranslateX: any, selectTranslateY: any,
+    exponentDeRedondeoDeMovimiento:any,
     ref: React.RefObject<any>,
     preventPan: any,
     toJSon: () => any,
@@ -46,7 +50,7 @@ const PizarraContext = React.createContext<{
     unregisterNodo: (key: string) => void,
     nodos: React.MutableRefObject<Record<string, NodoInstance>>,
     registerPuerto: (puerto: PuertoInstance) => void,
-    unregisterPuerto: (key: string, key_nodo: string) => void,
+    unregisterPuerto: (key: string, key_nodo: string, type: string) => void,
     puertos: React.MutableRefObject<Record<string, PuertoInstance>>,
     registerLinea: (linea: LineaInstance) => void,
     unregisterLinea: (key: string) => void,
@@ -65,6 +69,7 @@ const PizarraContext = React.createContext<{
     selectStartY: 0,
     selectEndX: 0,
     selectEndY: 0,
+    exponentDeRedondeoDeMovimiento: 1,
     selectTranslateX: 0,
     selectTranslateY: 0,
     ref: React.createRef<any>(),
@@ -106,11 +111,12 @@ export default function Pizarra(props: PizarraProps) {
     const ref = React.useRef<any>();
     const start = React.useRef({ x: 0, y: 0, tx: 0, ty: 0 });
     const lineasRef = React.useRef<Lineas | null>(null);
-    const width = 20000;
+    const width = props.size ?? 15000;
     const height = width;
 
     const layoutWidth = useSharedValue(0);
     const layoutHeight = useSharedValue(0);
+    const exponentDeRedondeoDeMovimiento = useSharedValue(props.exponentDeRedondeoDeMovimiento ?? 1);
     const scale = useSharedValue(props.scale ?? 1);
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
@@ -138,11 +144,11 @@ export default function Pizarra(props: PizarraProps) {
 
     const registerPuerto = (puerto: PuertoInstance) => {
         // console.log("registerPuerto", puerto.nodo.id + "_" + puerto.id)
-        puertos.current[puerto.nodo.id + "_" + puerto.id] = puerto;
+        puertos.current[puerto.type + "_" + puerto.nodo.id + "_" + puerto.id] = puerto;
     };
-    const unregisterPuerto = (key: string, key_nodo: string) => {
+    const unregisterPuerto = (key: string, key_nodo: string, type: string) => {
         // console.log("unregisterPuerto", key_nodo + "_" + key)
-        delete puertos.current[key_nodo + "_" + key];
+        delete puertos.current[type + "_" + key_nodo + "_" + key];
     };
 
     const registerLinea = (linea: LineaInstance) => {
@@ -203,7 +209,7 @@ export default function Pizarra(props: PizarraProps) {
     }
 
     const zoomAdd = (porc: number) => {
-        const limits = [0.2, 4];
+        const limits = [0.1, 4];
         const logMin = Math.log(limits[0]);
         const logMax = Math.log(limits[1]);
         let logScale = Math.log(scale.value);
@@ -436,6 +442,7 @@ export default function Pizarra(props: PizarraProps) {
         const puertosEncontrados: any[] = [];
         const buscarPuertosRecursive = (props: any, nodo?: any) => {
             if (!props.children) return;
+            // console.log(props?.type?.name, props.children)
             React.Children.forEach(props.children, (child: any) => {
                 if (!child) return;
                 if (child.type && (child.type.name == "PizarraNodo" || child.type.displayName == "PizarraNodo")) {
@@ -447,7 +454,7 @@ export default function Pizarra(props: PizarraProps) {
                 }
                 if (child.type && (child.type.name == "Puerto" || child.type.displayName == "Puerto")) {
                     // child.nodo = nodo;
-                    // console.log("Puerto encontrado", child, nodo)
+                    console.log("Puerto encontrado", child, nodo)
                     puertosEncontrados.push({ port: child, nodo: nodo });
                     // @ts-ignore
                     // console.log("Puerto encontrado", child.props.id, child.props.value, child.props.type)
@@ -459,7 +466,7 @@ export default function Pizarra(props: PizarraProps) {
         }
 
         buscarPuertosRecursive(props);
-
+        console.log("peurtos encontrados", puertosEncontrados)
         const conexiones: any = [];
         const inputs = puertosEncontrados.filter(a => a.port.props.type == "input");
         const outputs = puertosEncontrados.filter(a => a.port.props.type == "output");
@@ -468,7 +475,8 @@ export default function Pizarra(props: PizarraProps) {
             outputs.map(out => {
                 if (!inp?.port?.props?.value) return false;
                 if (!out?.port?.props?.value) return false;
-                if (inp.port.props.value == out.port.props.value) {
+                // if (inp.port.props.value == out.port.props.value) {
+                if (inp.port.props.value.includes(out.port.props.value)) {
                     conexiones.push({
                         id: inp.nodo.props.id + "_" + inp.port.props.id + "__" + out.nodo.props.id + "_" + out.port.props.value,
                         inp: inp,
@@ -483,7 +491,7 @@ export default function Pizarra(props: PizarraProps) {
 
 
     const conexiones = encontrarLineas();
-    console.log("Puertos encontrados en Pizarra",)
+    console.log("Puertos encontrados en Pizarra", conexiones)
 
     return (
 
@@ -519,8 +527,10 @@ export default function Pizarra(props: PizarraProps) {
                 lineas: lineas,
                 registerLinea: registerLinea,
                 unregisterLinea: unregisterLinea,
-                lineasRef: lineasRef
+                lineasRef: lineasRef,
+                exponentDeRedondeoDeMovimiento
             }}>
+
                 <GestureDetector gesture={gesture}>
                     <Animated.View ref={ref} style={[{
                         width: width,
@@ -528,6 +538,7 @@ export default function Pizarra(props: PizarraProps) {
                         justifyContent: "center",
                         alignItems: "center",
                         borderWidth: 1,
+                        borderColor: STheme.color.card
                     }, animatedStyle]} >
                         {/* <GestureDetector gesture={panSelected}> */}
                         <Animated.View style={[selectStyle]} />
@@ -544,8 +555,9 @@ export default function Pizarra(props: PizarraProps) {
 
                     </Animated.View>
                 </GestureDetector>
-                {!props.hiddeMiniMapa && <PizarraMiniMapa />}
-                {/* <MenuType type={config.current.type} onChange={(type) => config.current.type = type} /> */}
+                {/* {!props.hiddeMiniMapa && <PizarraMiniMapa />} */}
+                {!props.hiddeMiniMapa && <PizarraMiniMapa >{props.children}</PizarraMiniMapa>}
+
             </PizarraContext.Provider>
         </GestureHandlerRootView>
     );

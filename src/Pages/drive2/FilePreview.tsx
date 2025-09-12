@@ -6,6 +6,7 @@ import SSocket from 'servisofts-socket';
 import SVideo from '../../Components/SVideo';
 import PDFViewer from '../drive/Components/PDFViewer';
 import Sounds from '../../Components/Sounds';
+import TextArea, { TextAreaTypes } from '../../Components/QueryTool/TextArea';
 
 
 
@@ -57,8 +58,30 @@ const PreviewDoc = ({ file }: { file: FileItemType }) => {
         </iframe >
     </>
 }
-const PreviewDefault = ({ file }: { file: FileItemType }) => {
-    return <SText>{"Degault"}</SText>
+const PreviewDefault = ({ file, type = "MD" }: { file: FileItemType, type: TextAreaTypes }) => {
+    const [value, setValue] = React.useState("");
+    React.useEffect(() => {
+        // @ts-ignore
+        const url = SSocket.api.drive + "/" + file.path;
+        fetch(url)
+            .then(e => e.text())
+            .then(e => setValue(e))
+            .catch(e => setValue(e.message))
+
+    }, [])
+    if (!value) return <SLoad />
+    return <TextArea type={type} defaultValue={value}>
+    </TextArea>
+    return <SText>{value}</SText>
+}
+const PreviewDefault_TEXT = (p: any) => {
+    return <PreviewDefault {...p} type='TEXT'/>
+}
+const PreviewDefault_MD = (p: any) => {
+    return <PreviewDefault {...p} type='MD'/>
+}
+const PreviewDefault_JS = (p: any) => {
+    return <PreviewDefault {...p} type='JS'/>
 }
 
 
@@ -73,8 +96,10 @@ const ExtencionPreview: any = [
     // Formatos de audio comunes
     [/\.(mp3|wav|ogg|flac|aac|m4a|wma|opus)$/i, PreviewSound],
     [/\.(pptx|ppt|docx|doc|rtf|xlsx|xls)$/i, PreviewDoc],
+    [/\.(js|jsx|ts|tsx)$/i, PreviewDefault_JS],
+    [/\.(md|markdown|MD|MARKDOWN)$/i,PreviewDefault_MD],
     // Otros: por defecto
-    [/.*/i, PreviewDefault]
+    [/.*/i, PreviewDefault_TEXT]
 ]
 
 
@@ -110,7 +135,7 @@ export default class FilePreview extends Component {
                 <SText color={STheme.color.lightGray} bold numberOfLines={1}>{this.state.file.path}</SText>
             </SView>
             <SView col={"xs-12"} flex backgroundColor={STheme.color.background}>
-                <CMP file={this.state.file} />
+                <CMP key={this.state.file.name} file={this.state.file} />
             </SView>
         </SView>
     }

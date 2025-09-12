@@ -257,8 +257,8 @@ export default class Lista extends Component {
             <DinamicTable.Col key="razon_social" label="Razón Social" width={200} data={(e) => e.row?.razon_social} />
             <DinamicTable.Col key="compras" label="compras" width={50} data={(e) => e.row?.compras.length} />
             <DinamicTable.Col key="comprassdf" label="compdsaras" width={50} data={(e) => e.row?.compras?.cuotas_en_mora?.monto} />
-            {}
-            {}
+            { }
+            { }
             {/* <DinamicTable.Col key="admiadasdn" label="asssssss" width={120} data={(e) => e.row?.compras.length  ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_usuario) ?
@@ -329,7 +329,7 @@ export default class Lista extends Component {
             <DinamicTable.Col key="nit" label="NIT" width={150} data={(e) => e.row?.nit} />
             <DinamicTable.Col key="nombre" label="Nombre de Contacto" width={150} data={(e) => e.row?.nombre} />
             <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={(e) => e.row?.telefono} />
-            <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
+            {/* <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
             <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_usuario) ?
@@ -343,7 +343,41 @@ export default class Lista extends Component {
                             <SText center color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
                         </SView> : null}
                 </>}
+            /> */}
+
+
+            <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
+            <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
+                customComponent={e => <>
+                    {(e.row?.key_usuario) ?
+                        <SView col={"xs-12"} row  >
+                            <SView style={{ width: 28 }}>
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
+                                </SView>
+                            </SView>
+                            <SView width={5} />
+                            <SText center color={STheme.color.lightGray} fontSize={12} >{e.row?.usuario?.Nombres}</SText>
+                        </SView> : null}
+                </>}
             />
+
+            <DinamicTable.Col key="pagos" label="Pagos" width={50} data={(e) => e.row?.compras?.length}
+                customComponent={e => <>
+                    {(e.row?.compras?.length > 0) ?
+                        <SView style={{ width: 28 }} center
+                            onPress={() => {
+                                SNavigation.navigate("/proveedor/pagos", { key_proveedor: e.row?.key })
+                            }}
+                        >
+                            <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                <SIconApp name='Carrito' width={24} />
+                            </SView>
+                        </SView>
+                        : null}
+                </>}
+            />
+
         </DinamicTable>
     }
     render() {
