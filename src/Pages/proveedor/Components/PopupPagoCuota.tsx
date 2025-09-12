@@ -108,8 +108,14 @@ export default class PopupPagoCuota extends Component {
         let montototal_pagado = 0;
 
         for (const item of cuotas) {
+
             const saldoPendiente = parseFloat(item.monto || 0);
-            if (saldoPendiente <= 0) {
+
+            // el mejor alvaro
+            if (item.estado == "Pagado" ) {
+            // luego lo vere if (item.estado == "Pagado" && item.monto == item.monto_total) {
+
+                // if (item.estado == "Pagado") {
                 item.estado = "Pagado";
                 cant_pagado++;
                 montototal_pagado += parseFloat(item.monto_total || 0);
@@ -200,7 +206,7 @@ export default class PopupPagoCuota extends Component {
             const cuota = compra.cuotasDetalle[i];
             if (cuota.estado !== 'Pagado') {
                 const cuotaDate = new SDate(cuota.vencimiento, 'yyyy-MM-dd');
-                if (cuotaDate.isBefore(selectedDate) || cuotaDate.isEqual(selectedDate)) {
+                if (cuotaDate.isBefore(selectedDate) || cuotaDate == selectedDate) {
                     newSelectedCuotas[cuota.numero] = false;
                 }
             }

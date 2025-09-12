@@ -61,15 +61,9 @@ export default class PagosSuper extends Component {
         data: null,
         loading: true,
         error: null,
-        showPaid: false, // New state to toggle paid/no-debt/no-cuota purchases
+        showPaid: false,
     };
 
-    /**
-     * Calculates cuota summaries for a single compra
-     * @param {Object[]} cuotas - Array of cuota objects
-     * @param {string} moneda - Currency code
-     * @returns {Object} Summary of cuota counts and amounts
-     */
     calculateCuotaSummary(cuotas, moneda) {
         const today = new SDate();
         const summary = {
@@ -84,7 +78,10 @@ export default class PagosSuper extends Component {
 
         cuotas.forEach(cuota => {
             const saldoPendiente = parseFloat(cuota.monto || 0);
-            if (saldoPendiente <= 0) {
+            // if (saldoPendiente <= 0) {
+            // alvaro
+            if (cuota.estado == "Pagado") {
+                // luego lo vere // if (cuota.estado == "Pagado"   && cuota.monto == cuota.monto_total ) {
                 cuota.estado = 'Pagado';
                 summary.cant_pagado++;
                 summary.montototal_pagado += parseFloat(cuota.monto_total || 0);
@@ -113,10 +110,6 @@ export default class PagosSuper extends Component {
         };
     }
 
-    /**
-     * Loads data for the component
-     * @returns {Object} Aggregated data for rendering
-     */
     async loadData() {
         try {
             const key_proveedor = SNavigation.getParam('key_proveedor') || '15843bf1-0ee2-467d-8052-aa394d2cf477';
@@ -231,10 +224,37 @@ export default class PagosSuper extends Component {
     }
 
     resumen() {
-        const { data, loading } = this.state;
+        const { data, loading, showPaid } = this.state;
         if (loading || !data) return this.renderLoading();
 
-        const { proveedor, cant_pendientes, cant_mora, cant_pagado, montototal_pendientes, montototal_mora, montototal_pagado, monedaDefault } = data;
+        const { proveedor, montototal_pendientes, montototal_mora, monedaDefault, compras } = data;
+
+        // Calculate filtered totals based on showPaid
+        const filteredCompras = showPaid
+            ? compras
+            : compras.filter(compra => compra.summary?.deudaTotal > 0 && compra.cuotasDetalle?.length > 0);
+
+        const totalPagado = showPaid
+            ? parseFloat(data.montototal_pagado)
+            : filteredCompras.reduce((sum, compra) => sum + parseFloat(compra.summary.montototal_pagado || 0), 0).toFixed(2);
+
+        const cantidadCompras = filteredCompras.length;
+
+        const cuotas = showPaid
+            ? {
+                cant_pendientes: data.cant_pendientes,
+                cant_mora: data.cant_mora,
+                cant_pagado: data.cant_pagado,
+            }
+            : filteredCompras.reduce(
+                (acc, compra) => ({
+                    cant_pendientes: acc.cant_pendientes + (compra.summary?.cant_pendientes || 0),
+                    cant_mora: acc.cant_mora + (compra.summary?.cant_mora || 0),
+                    cant_pagado: acc.cant_pagado + (compra.summary?.cant_pagado || 0),
+                }),
+                { cant_pendientes: 0, cant_mora: 0, cant_pagado: 0 }
+            );
+
         const totalDeuda = (parseFloat(montototal_pendientes) + parseFloat(montototal_mora)).toFixed(2);
 
         return (
@@ -261,7 +281,7 @@ export default class PagosSuper extends Component {
                     />
                     <InfoRow
                         label="Total Pagado"
-                        value={this.renderMonto(montototal_pagado, monedaDefault, COLORS.TEXT)}
+                        value={this.renderMonto(totalPagado, monedaDefault, COLORS.TEXT)}
                         icon="pagotarjeta"
                         iconColor={COLORS.PAGADO}
                         bgColor={COLORS.PAGADO_BACKGROUNG}
@@ -269,10 +289,25 @@ export default class PagosSuper extends Component {
                     />
                     <InfoRow
                         label="Cuotas"
-                        value={`Pendientes: ${cant_pendientes} | Mora: ${cant_mora} | Pagadas: ${cant_pagado}`}
+                        value={
+                            <SView>
+                                <SText {...TYPOGRAPHY.BODY} color={COLORS.TEXT}>
+                                    Pendientes: <SText color={COLORS.PENDIENTE}>{cuotas.cant_pendientes}</SText> |
+                                    Mora: <SText color={COLORS.VENCIDO}>{cuotas.cant_mora}</SText> |
+                                    Pagadas: <SText color={COLORS.PAGADO}>{cuotas.cant_pagado}</SText>
+                                </SText>
+                            </SView>
+                        }
                         icon="iconLista"
                         iconColor={COLORS.PENDIENTE}
                         bgColor={COLORS.PENDIENTE_BACKGROUNG}
+                    />
+                    <InfoRow
+                        label="Cantidad de Compras"
+                        value={`${cantidadCompras} ${cantidadCompras === 1 ? 'compra' : 'compras'}`}
+                        icon="iconLista"
+                        iconColor={COLORS.TEXT}
+                        bgColor={STheme.color.lightGray}
                     />
                 </SView>
             </SView>
@@ -299,7 +334,6 @@ export default class PagosSuper extends Component {
             );
         }
 
-        // Filter compras based on showPaid state
         const filteredCompras = showPaid
             ? compras
             : compras.filter(compra => compra.summary?.deudaTotal > 0 && compra.cuotasDetalle?.length > 0);
@@ -307,9 +341,8 @@ export default class PagosSuper extends Component {
         if (!filteredCompras.length) {
             return (
                 <SView col={'xs-12'} center style={{ padding: 16 }}>
-                    <SText {...TYPOGRAPHY.BODY}>
-                        {showPaid ? 'No hay compras registradas.' : 'No hay compras con deudas o cuotas pendientes.'}
-                    </SText>
+                    <SText {...TYPOGRAPHY.BODY} />
+                    {showPaid ? 'No hay compras registradas.' : 'No hay compras con deudas o cuotas pendientes.'}
                 </SView>
             );
         }
@@ -319,7 +352,7 @@ export default class PagosSuper extends Component {
                 <SView col={'xs-12'} row style={{ flexWrap: 'wrap' }}>
                     {filteredCompras.map((compra, index) => {
                         const totalCompra = compra.detalles?.reduce((sum, item) => sum + (item.precio_unitario || 0) * (item.cantidad || 0), 0) || 0;
-                        const { cant_mora, montototal_mora, montototal_pendiente, montototal_pagado, deudaTotal } = compra.summary || {};
+                        const { cant_mora, montototal_mora, montototal_pendiente, montototal_pagado, deudaTotal, cant_pendientes, cant_pagado } = compra.summary || {};
 
                         return (
                             <SView
@@ -350,10 +383,14 @@ export default class PagosSuper extends Component {
                                 </SView>
                                 <SHr h={8} />
                                 <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
-                                    <SText {...TYPOGRAPHY.LABEL}>Cuotas en mora:</SText>
-                                    <SText {...TYPOGRAPHY.BODY} color={cant_mora ? COLORS.VENCIDO : COLORS.TEXT}>
-                                        {cant_mora || 0} cuotas
-                                    </SText>
+                                    <SText {...TYPOGRAPHY.LABEL}>Cuotas:</SText>
+                                    <SView>
+                                        <SText {...TYPOGRAPHY.BODY} color={COLORS.TEXT}>
+                                            Pendientes: <SText color={COLORS.PENDIENTE}>{cant_pendientes || 0}</SText> |
+                                            Mora: <SText color={COLORS.VENCIDO}>{cant_mora || 0}</SText> |
+                                            Pagadas: <SText color={COLORS.PAGADO}>{cant_pagado || 0}</SText>
+                                        </SText>
+                                    </SView>
                                 </SView>
                                 <SHr h={8} />
                                 <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
