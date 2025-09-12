@@ -35,7 +35,7 @@ class lookicons extends Component {
         <View style={{ width: 50, padding: 2 }}>
             <View style={{ justifyContent: "center", alignItems: "center" }}>
                 <SView col="xs-12" colSquare style={{ padding: 4 }}>
-                    <SIconApp name={item.key} fill={this.state.fill ?? STheme.color.text} stroke={this.state.stroke??STheme.color.text} />
+                    <SIconApp name={item.key} fill={this.state.fill ?? STheme.color.text}  />
                 </SView>
                 <SText col="xs-12" fontSize={8} center numberOfLines={1}>{item.key}</SText>
             </View>
