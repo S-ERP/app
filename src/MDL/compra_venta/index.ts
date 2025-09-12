@@ -204,6 +204,8 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     // console.log("🚀🚀🚀🚀🚀🚀 ~ file: indexresp:", resp.data)
     return resp.data || [];
   }
+
+  
   
 
 }

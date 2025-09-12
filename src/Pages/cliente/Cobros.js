@@ -62,7 +62,7 @@ export default class Cobros extends Component {
         data: null,
         loading: true,
         error: null,
-        showPaid: false,
+        showPaid: true,
     };
 
     calculateCuotaSummary(cuotas, moneda) {
@@ -104,10 +104,10 @@ export default class Cobros extends Component {
 
         return {
             ...summary,
-            montototal_pendientes: summary.montototal_pendientes.toFixed(2),
-            montototal_mora: summary.montototal_mora.toFixed(2),
-            montototal_pagado: summary.montototal_pagado.toFixed(2),
-            deudaTotal: summary.deudaTotal.toFixed(2),
+            montototal_pendientes: summary?.montototal_pendientes.toFixed(2),
+            montototal_mora: summary?.montototal_mora.toFixed(2),
+            montototal_pagado: summary?.montototal_pagado.toFixed(2),
+            deudaTotal: summary?.deudaTotal.toFixed(2),
         };
     }
 
@@ -116,13 +116,15 @@ export default class Cobros extends Component {
             const key_cliente = SNavigation.getParam('key_cliente') || '268b0f66-3a65-4a30-b240-7a0fb88ca517';
 
 
-            const cliente = await MDL.crm.cliente.getByKey(key_cliente) || {};
-            const datos = Object.values(cliente)[0] || {}; // le puse "datos" para que sea más claro
+            // const cliente = await MDL.crm.cliente.getByKey(key_cliente) || {};
+            // const datos = Object.values(cliente)[0] || {}; // le puse "datos" para que sea más claro
 
-            console.log("correo: " + datos.correo);
-            console.log("nombres: " + datos.nombres);
-            console.log("razón social: " + datos.razon_social);
-            console.log("NIT: " + datos.nit);
+            // console.log("correo: " + datos.correo);
+            // console.log("nombres: " + datos.nombres);
+            // console.log("razón social: " + datos.razon_social);
+            // // console.log("NIT: " + datos.nit);
+
+            // console.log("NIT: " + datos.nit);
             // return;
             const registros = await MDL.compra_venta.getTransaccionCuotasVentas(key_cliente);
             if (!registros || !Array.isArray(registros)) {
@@ -131,6 +133,19 @@ export default class Cobros extends Component {
 
             const cuotasPromises = registros.map(compra => MDL.compra_venta.getCuotasCompras(compra.key));
             const cuotasResults = await Promise.all(cuotasPromises);
+            console.log("ostia: " + JSON.stringify(registros));
+            console.log("maria 🥽🥽🥽🥽🥽: " + JSON.stringify(cuotasResults));
+
+
+
+            // return;
+            // const registros = await MDL.compra_venta.getTransaccionCuotasVentas(key_cliente);
+            // if (!registros || !Array.isArray(registros)) {
+            //     return this.getDefaultData();
+            // }
+
+            // const cuotasPromises = registros.map(compra => MDL.compra_venta.getCuotasCompras(compra.key));
+            // const cuotasResults = await Promise.all(cuotasPromises);
 
             const globalSummary = {
                 cant_pendientes: 0,
@@ -157,7 +172,11 @@ export default class Cobros extends Component {
                 globalSummary.deudaTotal[moneda] = (globalSummary.deudaTotal[moneda] || 0) + parseFloat(compra.summary.deudaTotal);
             });
 
-            const proveedor = await MDL.inventario.proveedor.getByKey(key_proveedor) || {};
+            const ____api = await MDL.crm.cliente.getByKey(key_cliente) || {};
+            const cliente = Object.values(____api)[0] || {}; // le puse "datos" para que sea más claro
+
+
+            // const proveedor = await MDL.inventario.proveedor.getByKey(key_proveedor) || {};
             const monedaDefault = Object.keys(globalSummary.deudaTotal).length
                 ? Object.keys(globalSummary.deudaTotal).reduce((a, b) => globalSummary.deudaTotal[a] > globalSummary.deudaTotal[b] ? a : b, 'BOB')
                 : 'BOB';
@@ -171,7 +190,7 @@ export default class Cobros extends Component {
                 montototal_mora: globalSummary.montototal_mora.toFixed(2),
                 montototal_pagado: globalSummary.montototal_pagado.toFixed(2),
                 deudaTotal: Object.keys(globalSummary.deudaTotal).length ? globalSummary.deudaTotal : null,
-                proveedor,
+                cliente,
                 compras: registros,
                 monedaDefault,
             };
@@ -239,7 +258,7 @@ export default class Cobros extends Component {
         const { data, loading, showPaid } = this.state;
         if (loading || !data) return this.renderLoading();
 
-        const { proveedor, montototal_pendientes, montototal_mora, monedaDefault, compras } = data;
+        const { cliente, montototal_pendientes, montototal_mora, monedaDefault, compras } = data;
 
         // Calculate filtered totals based on showPaid
         const filteredCompras = showPaid
@@ -267,6 +286,7 @@ export default class Cobros extends Component {
                 { cant_pendientes: 0, cant_mora: 0, cant_pagado: 0 }
             );
 
+        console.log("bellaqueo " + JSON.stringify(data))
         const totalDeuda = (parseFloat(montototal_pendientes) + parseFloat(montototal_mora)).toFixed(2);
 
         return (
@@ -277,8 +297,11 @@ export default class Cobros extends Component {
 
                     <InfoRow
                         label="Cliente"
-                        value={proveedor?.razon_social || 'Sin nombre'}
+                        value={cliente?.nombres || 'Sin nombre'}
+                        // value={cliente?.razon_social || 'Sin nombre'}
                         icon="iconEdifcio"
+                        subText={`(RS: ${cliente?.razon_social} + Nit: ${cliente?.nit})`}
+
                         // iconColorFill={STheme.color.lightBlack}
                         iconColorStroke={STheme.color.lightBlack}
                     />
@@ -350,7 +373,7 @@ export default class Cobros extends Component {
     header() {
         return (
             <SView col={'xs-12'} style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
-                <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}>Compras a Crédito y Pagos Pendientes</SText>
+                <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}>Ventas a crédito y pagos pendientes</SText>
             </SView>
         );
     }
@@ -498,7 +521,8 @@ export default class Cobros extends Component {
                                                     PopupCobroCuota.open({
                                                         editObject: {
                                                             ...compra,
-                                                            id: compra.key || (index + 1),
+                                                            id: index + 1,
+                                                            // id: compra.key || (index + 1),
                                                             moneda: compra.moneda || monedaDefault,
                                                             pagado: true,
                                                             cuotasDetalle: compra.cuotasDetalle || [],

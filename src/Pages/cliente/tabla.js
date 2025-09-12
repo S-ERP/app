@@ -8,6 +8,7 @@ import FloatButtom from '../../Components/FloatButtom';
 import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
 import PopupCrearCliente from './Components/PopupCrearCliente';
+import SIconApp from '../../Assets/SIconApp';
 
 const URL = "/crm/cliente";
 
@@ -196,7 +197,7 @@ export default class tabla extends Component {
                 <DinamicTable.Col key={"sexo"} label='Sexo' width={80} data={(e) => e.row.sexo} />
                 <DinamicTable.Col key={"departamento"} label='Departamento' width={100} data={(e) => e.row.departamento} />
 
-                <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
+                {/* <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.key_usuario) ?
@@ -210,8 +211,39 @@ export default class tabla extends Component {
                                 <SText center color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
                             </SView> : null}
                     </>}
+                /> */}
+
+                <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
+                <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
+                    customComponent={e => <>
+                        {(e.row?.key_usuario) ?
+                            <SView col={"xs-12"} row  >
+                                <SView style={{ width: 28 }}>
+                                    <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                        <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
+                                    </SView>
+                                </SView>
+                                <SView width={5} />
+                                <SText center color={STheme.color.lightGray} fontSize={12} >{e.row?.usuario?.Nombres}</SText>
+                            </SView> : null}
+                    </>}
                 />
 
+                <DinamicTable.Col key="cobros" label="Pagos" width={50} data={(e) => e.row?.compras?.length}
+                    customComponent={e => <>
+                        {/* {(e.row?.compras?.length > 0) ? */}
+                            <SView style={{ width: 28 }} center
+                                onPress={() => {
+                                    SNavigation.navigate("/cliente/cobros", { key_cliente: e.row?.key })
+                                }}
+                            >
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SIconApp name='Carrito' width={24} />
+                                </SView>
+                            </SView>
+                            {/* : null} */}
+                    </>}
+                />
 
             </DinamicTable>
             {MDL.rolesPermisos.getPermiso({ url: URL, permiso: "new", }) &&

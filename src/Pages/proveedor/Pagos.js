@@ -487,7 +487,8 @@ export default class Pagos extends Component {
                                                     PopupPagoCuota.open({
                                                         editObject: {
                                                             ...compra,
-                                                            id: compra.key || (index + 1),
+                                                            id: index + 1,
+                                                            // id: compra.key || (index + 1),
                                                             moneda: compra.moneda || monedaDefault,
                                                             pagado: true,
                                                             cuotasDetalle: compra.cuotasDetalle || [],
