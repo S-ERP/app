@@ -58,6 +58,40 @@ export default class MonedaTabla extends Component {
                     })
                 }
 
+                if (MDL.rolesPermisos.getPermiso({ url: "/empresa/moneda", permiso: "delete" })) {
+                    MenuOptions.push({
+                        icon: <SIconApp name='delete' />,
+                        label: "Eliminar Moneda",
+                        onPress: () => {
+                            SPopup.confirm({
+                                title: "Eliminar Moneda",
+                                message: "¿Estás seguro de eliminar esta moneda?",
+                                onPress: () => {
+                                    const moneda_ = {
+                                        ...e.row,
+                                        estado: 0,
+                                    }
+                                    MDL.empresa.editarMoneda(moneda_).then(() => {
+                                        this.table.loadData();
+                                        this.forceUpdate();
+                                    }
+                                    ).catch(err => {
+                                        console.error("response", err);
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
+                if (MDL.rolesPermisos.getPermiso({ url: "/empresa/moneda", permiso: "ver" })) {
+                    MenuOptions.push({
+                        icon: <SIconApp name='ver' />,
+                        label: "Ver Historial",
+                        onPress: () => {
+                            SNavigation.navigate("/empresa/moneda/historial", { key_moneda: e?.row?.key });
+                        }
+                    })
+                }
 
                 MenuOptions.push({
                     icon: <SIconApp name='Ajustes' />,
@@ -94,10 +128,13 @@ export default class MonedaTabla extends Component {
                     label: "Moneda: " + e.row.descripcion,
                     options: MenuOptions
                 })
-            }}
+            }
+            }
+
             loadInitialState={async () => {
                 return { sorters: [{ key: "fecha_on", order: "asc", type: "date" }] }
             }}
+
             loadData={this.loadInitialData.bind(this)}
         >
             <DinamicTable.Col key="index" label="#" textStyle={{
