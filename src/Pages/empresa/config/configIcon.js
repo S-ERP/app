@@ -46,20 +46,50 @@ export default class configIcon extends React.Component {
         const empresa = this.empresa;
         if (!empresa) return <SLoad />
         const space = 300;
-        return <SPage title={"Configurar íconos"} center>
-            <SView col={"xs-11.5 sm-10 md-8"} >
-                <SHr height={40} />
-                <SText bold fontSize={14} >Elije los íconos de tu preferencia:</SText>
-                <SHr height={20} />
-                <SView col={"xs-12"}>
-                    {/* <SIconEmpresa type='editar' /> */}
-                    {Object.entries(inconParams).map(([categoria, items]) => (
-                        <SView col={"xs-12"} row >
-                            <SView col={"xs-9"} row card padding={10} style={{ marginBottom: 8 }}>
-                                <SText fontSize={15} bold capitalize>{categoria}</SText>
-                                <SHr height={8} />
-                                {items.map(item => (
-                                    <SView width={70} center>
+        return <SPage title={"Configurar íconos"} >
+            <SView col={"xs-12"} center row>
+                <SView col={"xs-11.5 sm-10 md-8"} >
+                    <SHr height={40} />
+                    <SText bold fontSize={14} >Elije los íconos de tu preferencia:</SText>
+                    <SHr height={20} />
+                    <SView col={"xs-12"}>
+                        {/* <SIconEmpresa type='editar' /> */}
+                        {Object.entries(inconParams).map(([categoria, items]) => (
+                            <SView col={"xs-12"} row >
+                                <SView col={"xs-9"} row card padding={10} style={{ marginBottom: 8 }}>
+                                    <SText fontSize={15} bold capitalize>{categoria}</SText>
+                                    <SHr height={8} />
+                                    {items.map(item => (
+                                        <SView width={75} center style={{
+                                            marginBottom: 8,
+                                        }}>
+                                            <SView
+                                                onPress={() => {
+
+                                                }}
+                                                row
+                                                width={40}
+                                                height={40}
+                                                center
+                                                backgroundColor={STheme.color.background}
+                                                style={{ borderRadius: 8 }}
+                                            >
+                                                {/* <SIconEmpresa type={item} />  */}
+                                                {/* <SIconApp name={buildIconEmpresa(item)} width={24} height={24} /> */}
+                                                {/* <SIcon name={item} width={24} height={24} fill={STheme.color.text} stroke={STheme.color.text} /> */}
+                                                <SIcon name={item} width={24} height={24} fill={STheme.color.text} />
+
+                                            </SView>
+                                            <SHr height={4} />
+                                            <SText col="xs-12" center numberOfLines={1} >{item}</SText>
+                                        </SView>
+                                    ))}
+                                </SView>
+                                <SView col={"xs-0.5"} />
+                                <SView col={"xs-2.5"} row card padding={10} style={{ marginBottom: 8 }}>
+                                    <SText fontSize={14} bold capitalize justify>Seleccionado:</SText>
+                                    <SHr height={8} />
+                                    <SView col={"xs-12"} center>
                                         <SView
                                             onPress={() => {
 
@@ -71,41 +101,17 @@ export default class configIcon extends React.Component {
                                             backgroundColor={STheme.color.background}
                                             style={{ borderRadius: 8 }}
                                         >
-                                            {/* <SIconEmpresa type={item} />  */}
-                                            {/* <SIconApp name={buildIconEmpresa(item)} width={24} height={24} /> */}
-                                            <SIcon name={item} width={24} height={24} fill={STheme.color.text} />
-
+                                            <SIconEmpresa type={categoria} />
                                         </SView>
-                                        <SHr height={4} />
-                                        <SText center>{item}</SText>
-                                    </SView>
-                                ))}
-                            </SView>
-                            <SView col={"xs-0.5"} />
-                            <SView col={"xs-2.5"} row card padding={10} style={{ marginBottom: 8 }}>
-                                <SText fontSize={14} bold capitalize justify>Seleccionado:</SText>
-                                <SHr height={8} />
-                                <SView col={"xs-12"} center>
-                                    <SView
-                                        onPress={() => {
-
-                                        }}
-                                        row
-                                        width={40}
-                                        height={40}
-                                        center
-                                        backgroundColor={STheme.color.background}
-                                        style={{ borderRadius: 8 }}
-                                    >
-                                        <SIconEmpresa  type={categoria} />
                                     </SView>
                                 </SView>
                             </SView>
-                        </SView>
-                    ))}
-                </SView>
+                        ))}
+                    </SView>
 
+                </SView>
             </SView>
+            <SHr height={30} />
         </SPage >
     }
 }
