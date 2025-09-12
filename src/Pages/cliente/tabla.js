@@ -229,19 +229,19 @@ export default class tabla extends Component {
                     </>}
                 />
 
-                <DinamicTable.Col key="cobros" label="Pagos" width={50} data={(e) => e.row?.compras?.length}
+                <DinamicTable.Col key="cobros" label="Cobros" width={50} center data={(e) => e.row?.compras?.length}
                     customComponent={e => <>
                         {/* {(e.row?.compras?.length > 0) ? */}
-                            <SView style={{ width: 28 }} center
-                                onPress={() => {
-                                    SNavigation.navigate("/cliente/cobros", { key_cliente: e.row?.key })
-                                }}
-                            >
-                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                    <SIconApp name='Carrito' width={24} />
-                                </SView>
+                        <SView style={{ width: 28 }} center
+                            onPress={() => {
+                                SNavigation.navigate("/cliente/cobros", { key_cliente: e.row?.key })
+                            }}
+                        >
+                            <SView center style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                <SIconApp name='pagoefectivo' fill='white' width={24} />
                             </SView>
-                            {/* : null} */}
+                        </SView>
+                        {/* : null}  */}
                     </>}
                 />
 

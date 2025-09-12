@@ -15,8 +15,8 @@ const COLORS = {
     PAGADO_BACKGROUNG: '#dafce6',
     VENCIDO: '#ee343b',
     VENCIDO_BACKGROUNG: '#eeccda',
-    ACCENT: '#3B82F6',
-    ACCENT_BACKGROUNG: '#7da4e2ff',
+    ACCENT: '#2c7bfaff',
+    ACCENT_BACKGROUNG: '#a7c9ffff',
 };
 
 // Typography configuration
@@ -44,14 +44,21 @@ const InfoRow = ({ label, value, icon, iconColorFill, iconColorStroke, bgColor, 
         <SView center style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: bgColor || STheme.color.lightGray }}>
             <SIconApp name={icon} width={24} height={24} fill={iconColorFill || 'transparent'} stroke={iconColorStroke || STheme.color.lightBlack} />
         </SView>
-        <SView flex style={{ marginLeft: 12 }}>
-            <SText {...TYPOGRAPHY.LABEL}>{label}</SText>
-            {typeof value === 'string' ? (
-                <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>{value}</SText>
-            ) : (
-                value
-            )}
-            {subText && <SText fontSize={10} color={subTextColor || COLORS.TEXT}>{subText}</SText>}
+        <SView style={{ marginLeft: 12 }}>
+            <SView flex  >
+                <SText numberOfLines={1} {...TYPOGRAPHY.LABEL}>{label}</SText>
+                {typeof value === 'string' ? (
+                    <SText numberOfLines={1} {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>{value}</SText>
+                ) : (
+                    value
+                )}
+                {/* <SView style={{ flexWrap: 'wrap', paddingHorizontal: 5, paddingVertical: 3, borderRadius: 5, backgroundColor: subTextColor + "88" || "transparent" }}>
+                    {subText && <SText numberOfLines={1} fontSize={10} color={COLORS.TEXT}>{subText}</SText>}
+                </SView> */}
+            </SView>
+            <SView col={'xs-0 lg-12'} style={{ paddingHorizontal: 5, paddingVertical: 3, borderRadius: 5, backgroundColor: subTextColor + "88" || "transparent" }}>
+                {subText && <SText numberOfLines={1} fontSize={10} color={COLORS.TEXT}>{subText}</SText>}
+            </SView>
         </SView>
     </SView>
 );
@@ -268,6 +275,8 @@ export default class Pagos extends Component {
                         label="Proveedor"
                         value={proveedor?.razon_social || 'Sin nombre'}
                         icon="iconEdifcio"
+                        subText={`(Nit: ${proveedor?.nit ?? 0})`}
+
                         // iconColorFill={STheme.color.lightBlack}
                         iconColorStroke={STheme.color.lightBlack}
                     />
@@ -275,16 +284,18 @@ export default class Pagos extends Component {
                         label="Deuda Total"
                         value={
                             <SView>
-                                {this.renderMonto(totalDeuda, monedaDefault, COLORS.VENCIDO)}
+                                {this.renderMonto(totalDeuda, monedaDefault, totalDeuda > 0 ? COLORS.VENCIDO : COLORS.TEXT)}
                                 {/* <SText fontSize={10} color={COLORS.VENCIDO}>Mora: {monedaDefault} {SMath.formatMoney(montototal_mora)}</SText> */}
                                 {/* <SText fontSize={10} color={COLORS.PENDIENTE}>Pendiente: {monedaDefault} {SMath.formatMoney(montototal_pendientes)}</SText> */}
                             </SView>
                         }
                         icon="iconPesos"
-                        iconColorStroke={COLORS.VENCIDO}
-                        bgColor={COLORS.VENCIDO_BACKGROUNG}
-
-                        subText={`(Mora ${montototal_mora} + Pend. ${montototal_pendientes})`}
+                        // iconColorStroke={totalDeuda ? COLORS.VENCIDO : COLORS.TEXT}
+                        iconColorStroke={totalDeuda > 0 ? COLORS.VENCIDO : COLORS.ACCENT}
+                        bgColor={totalDeuda > 0 ? COLORS.VENCIDO_BACKGROUNG : COLORS.ACCENT_BACKGROUNG}
+                        subTextColor={totalDeuda > 0 ? COLORS.VENCIDO : COLORS.CARD}
+                        // subText={`(Mora ${montototal_mora} + Pend. ${montototal_pendientes})`}
+                        subText={totalDeuda > 0 ? `(Mora ${montototal_mora} + Pend. ${montototal_pendientes})` : null}
 
                     // subText="(Mora + Pendiente)"
 
@@ -363,8 +374,13 @@ export default class Pagos extends Component {
         if (!filteredCompras.length) {
             return (
                 <SView col={'xs-12'} center style={{ padding: 16 }}>
-                    <SText {...TYPOGRAPHY.BODY} />
-                    {showPaid ? 'No hay compras registradas.' : 'No hay compras con deudas o cuotas pendientes.'}
+
+                    <SText {...TYPOGRAPHY.BODY}  >
+                        {showPaid ? 'No hay compras registradas.' : 'No hay compras con deudas o cuotas pendientes.'}
+                    </SText>
+
+                    {/* <SText {...TYPOGRAPHY.BODY} /> */}
+                    {/* {showPaid ? 'No hay compras registradas.' : 'No hay compras con deudas o cuotas pendientes.'} */}
                 </SView>
             );
         }
@@ -471,7 +487,7 @@ export default class Pagos extends Component {
                                                     });
                                                 }}
                                                 backgroundColor={COLORS.VENCIDO}
-                                                style={{ padding: 12, borderRadius: 6, borderWidth: 1, borderColor: COLORS.ACCENT + '33' }}
+                                                style={{ padding: 12, borderRadius: 6, borderWidth: 1, borderColor: COLORS.CARD   }}
                                                 center
                                             >
                                                 <SView row center>
@@ -527,7 +543,7 @@ export default class Pagos extends Component {
     botonMostrarPagadas() {
         const { showPaid } = this.state;
 
-        return <SView style={{ position: "absolute", right: 16, top: -14 }} >
+        return <SView style={{ position: "absolute", left: 16, top: -14 }} >
             <SView center row width={120} backgroundColor={STheme.color.card} style={{ borderRadius: 4, paddingVertical: 4 }}
                 onPress={() => this.setState({ showPaid: !showPaid })}>
                 <SIconApp name='Eyes' fill={COLORS.TEXT} height={10} width={10} /> <SView width={4} />
@@ -536,16 +552,28 @@ export default class Pagos extends Component {
                 </SText>
             </SView>
         </SView>
+
+        // return <SView style={{ position: "absolute", right: 16, top: -14 }} >
+        //     <SView center row width={120} backgroundColor={STheme.color.card} style={{ borderRadius: 4, paddingVertical: 4 }}
+        //         onPress={() => this.setState({ showPaid: !showPaid })}>
+        //         <SIconApp name='Eyes' fill={COLORS.TEXT} height={10} width={10} /> <SView width={4} />.
+
+        //         <SText {...TYPOGRAPHY.LABEL} color={COLORS.TEXT}>
+        //             {showPaid ? 'Ocultar Pagadas' : 'Mostrar Pagadas'}
+        //         </SText>
+        //     </SView>
+        // </SView>
     }
 
 
     render() {
         // const { showPaid } = this.state;
         return (
-            <SPage title={'Compras de Distribuidora Central S.A.'} disableScroll>
+            <SPage title={'Compras a crédito y pagos pendientes'} disableScroll>
                 <SScrollView2 disableHorizontal>
                     <SView col={'xs-12'} center style={{ padding: 8 }}>
-                        {this.header()}
+                        {/* {this.header()} */}
+                        <SHr h={16} />
                         {this.resumen()}
                         {this.itemCard()}
                         <SHr h={16} />
