@@ -8,9 +8,9 @@ import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
 import PopupCrearProveedor from './Components/PopupCrearProveedor';
-import PopupPagarDeuda from './Components/PopupPagoCuota';
-import proveedor from '.';
-import PopupPagoCuota from './Components/PopupPagoCuota';
+// import PopupPagarDeuda from './Components/PopupPagoCuota';
+// import proveedor from '.';
+// import PopupPagoCuota from './Components/PopupPagoCuota';
 const ejemploProveedor = [
     {
         "key": "15843bf1-0ee2-467d-8052-aa394d2cf477",
@@ -84,6 +84,7 @@ export default class Lista extends Component {
         super(props);
         this.state = {};
     }
+
     async loadInitialData() {
         try {
             const proveedores = await MDL.inventario.proveedor.getAllProveedor();
@@ -96,13 +97,16 @@ export default class Lista extends Component {
                 });
                 return [];
             }
+
             const keysUsuarios = Object.values(proveedores)
                 .map(p => p.key_usuario)
-                .filter(Boolean); // Filtra valores nulos o undefined
+                .filter(Boolean);
+
             const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
             if (!usuarios || Object.keys(usuarios).length === 0) {
                 console.warn("No se encontraron usuarios para los proveedores.");
             }
+
             const transacciones = await MDL.compra_venta.getTransaccion("compra", "2024-09-01", "2026-09-05");
             if (!transacciones || transacciones.length === 0) {
                 SNotification.send({
@@ -112,15 +116,27 @@ export default class Lista extends Component {
                     color: STheme.color.warning,
                 });
             }
+
+            const registros = await MDL.compra_venta.getCuotasResumenTotal();
+
             const proveedoresConCompras = Object.values(proveedores).map(proveedor => {
+                // Asignar usuario
                 proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario) || null;
+
+                // Asignar resumen de cuotas correspondiente
+                proveedor.resumen_cuota = registros.find(r => r.key_proveedor === proveedor.key) || null;
+
+                // Filtrar transacciones del proveedor
                 proveedor.compras = transacciones
-                    ? transacciones.filter(transaccion => transaccion.key_proveedor === proveedor.key)
+                    ? transacciones.filter(t => t.key_proveedor === proveedor.key)
                     : [];
+
                 console.log("Compras para proveedor", proveedor);
                 return proveedor;
             });
+
             return proveedoresConCompras;
+
         } catch (error) {
             console.error('Error loading initial data:', error);
             SNotification.send({
@@ -132,6 +148,8 @@ export default class Lista extends Component {
             return [];
         }
     }
+
+
     renderState(state) {
         var statesInfo = Model.compra_venta.Action.getStateInfo()[state];
         return <SView row center>
@@ -189,23 +207,19 @@ export default class Lista extends Component {
                                 })
                             }
                         },
+
+
                         {
-                            icon: <SIconApp name='addUser' />,
-                            label: "Pagar Deuda",
-                            onPress: () => {
-                                const proveedor = {
-                                    ...e.row,
-                                    key_usuario: MDL.usuario.session?.key,
+                            ...e.row.compras.length > 0 ? {
+                                icon: <SIconApp name='addUser' />,
+                                label: "Pagar Deuda",
+                                onPress: () => {
+                                    SNavigation.navigate("/caja/cuotas", { key_proveedor: e.row?.key })
                                 }
-                                PopupPagoCuota.open({
-                                    editObject: proveedor,
-                                    key_empresa: proveedor.key_empresa,
-                                    onSuccess: async () => {
-                                        this.DinamicTable.loadData();
-                                    },
-                                })
-                            }
+                            } : null
                         },
+
+
                         {
                             icon: <SIconApp name='Delete' />,
                             label: "Eliminar Proveedor",
@@ -241,7 +255,8 @@ export default class Lista extends Component {
                         }
                     ]
                 })
-            }}
+            }
+            }
             loadData={async () => {
                 return this.loadInitialData();
             }}
@@ -256,9 +271,7 @@ export default class Lista extends Component {
             />
             <DinamicTable.Col key="razon_social" label="Razón Social" width={200} data={(e) => e.row?.razon_social} />
             <DinamicTable.Col key="compras" label="compras" width={50} data={(e) => e.row?.compras.length} />
-            <DinamicTable.Col key="comprassdf" label="compdsaras" width={50} data={(e) => e.row?.compras?.cuotas_en_mora?.monto} />
-            { }
-            { }
+
             {/* <DinamicTable.Col key="admiadasdn" label="asssssss" width={120} data={(e) => e.row?.compras.length  ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_usuario) ?
@@ -329,23 +342,6 @@ export default class Lista extends Component {
             <DinamicTable.Col key="nit" label="NIT" width={150} data={(e) => e.row?.nit} />
             <DinamicTable.Col key="nombre" label="Nombre de Contacto" width={150} data={(e) => e.row?.nombre} />
             <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={(e) => e.row?.telefono} />
-            {/* <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-            <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
-                customComponent={e => <>
-                    {(e.row?.key_usuario) ?
-                        <SView col={"xs-12"} row  >
-                            <SView style={{ width: 28 }}>
-                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
-                                </SView>
-                            </SView>
-                            <SView width={5} />
-                            <SText center color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
-                        </SView> : null}
-                </>}
-            /> */}
-
-
             <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
             <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                 customComponent={e => <>
@@ -362,12 +358,107 @@ export default class Lista extends Component {
                 </>}
             />
 
+            {/* cuotas total
+cuotas cantidad
+
+
+cuotas_en_mora total
+cuotas_en_mora cantidad
+
+
+cuotas_amortizado	total				    
+cuotas_amortizado	cantidad				     */}
+
+
+            {/* <DinamicTable.Col key="cuotas_total_base" wrap label="Monto moneda base" width={60}
+                data={(e) => e.row?.cuotas.total ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end"
+                }}
+                format={(e) => SMath.formatMoney(e.data)}
+            /> */}
+
+
+            <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={60} data={(e) => e.row?.resumen_cuota?.monto_pagado ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.success + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+     
+            <DinamicTable.Col key="monto_amortizasdo" wrap label="Cuota Pagado" width={60} data={(e) => e.row?.resumen_cuota?.cantidad_pagada ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.success + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+           
+           
+            <DinamicTable.Col key="monto_amortisdfzasdo" wrap label="Motno Mora" width={60} data={(e) => e.row?.resumen_cuota?.monto_en_mora ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.danger + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+       
+            <DinamicTable.Col key="monto_amortisdasfzasdo" wrap label="Canti Mora" width={60} data={(e) => e.row?.resumen_cuota?.cantidad_en_mora ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.danger + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+      
+            <DinamicTable.Col key="monto_aamortisdaasfzasdo" wrap label="Canti Pen" width={60} data={(e) => e.row?.resumen_cuota?.cantidad_pendiente ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.warning + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+   
+            <DinamicTable.Col key="monto_amortisdaasfzasdo" wrap label="monto Pen" width={60} data={(e) => e.row?.resumen_cuota?.monto_pendiente ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.warning + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+
+            {/* <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={60} data={(e) => e.row?.monto_amortizado ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.success + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+
+
+            <DinamicTable.Col key="monto_deuda" wrap label="Deuda total" width={60}
+                data={(e) => (e.row?.cuotas?.total ?? 0) - (e.row?.monto_amortizado ?? 0) ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.warning + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+
+            <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} cellStyle={{
+                alignItems: "center",
+                backgroundColor: STheme.color.danger + "33"
+            }}
+                data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""}
+            />
+            <DinamicTable.Col wrap key="en_mora" label="Monto en Mora" width={60} data={(e) => e.row?.cuotas_en_mora.monto ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.danger + "33"
+
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
+            /> */}
+
             <DinamicTable.Col key="pagos" label="Pagos" width={50} data={(e) => e.row?.compras?.length}
                 customComponent={e => <>
                     {(e.row?.compras?.length > 0) ?
                         <SView style={{ width: 28 }} center
                             onPress={() => {
-                                SNavigation.navigate("/proveedor/pagos", { key_proveedor: e.row?.key })
+                                SNavigation.navigate("/caja/cuotas", { key_proveedor: e.row?.key })
                             }}
                         >
                             <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
@@ -378,7 +469,7 @@ export default class Lista extends Component {
                 </>}
             />
 
-        </DinamicTable>
+        </DinamicTable >
     }
     render() {
         return (

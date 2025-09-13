@@ -175,7 +175,7 @@ export default class tabla extends Component {
                             },
                             {
                                 label: "Imprimir tamaño carta",
-                                icon: <SIcon name='imprimir' fill={STheme.color.text}  />,
+                                icon: <SIcon name='imprimir' fill={STheme.color.text} />,
                                 onPress: () => {
                                     ReciboCarta.imprimir(e?.row?.key)
                                 }
@@ -205,6 +205,23 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
+
+
+
+                <DinamicTable.Col key="cliente" label="Cliente" width={100} data={(e) => e.row?.cliente?.nombres ?? ""}
+                    customComponent={e => <>
+                        {(e.row?.cliente?.key) ?
+                            <SView col={"xs-12"} center row  >
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SImage src={`${SSocket.api.root}usuario/${e.row?.cliente?.key}`} style={{ resizeMode: "cover" }} />
+                                </SView>
+                                <SView width={5} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.cliente?.nombres}</SText>
+                            </SView> : null}
+                    </>}
+                />
+
+
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="tipo_pago" label="Tipo Pago" width={80} data={(e) => e.row?.tipo_pago ?? ""} customComponent={(e) => this.renderTipoPago(e?.data)} />
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e?.data)} />

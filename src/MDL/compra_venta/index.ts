@@ -164,7 +164,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     return resp.data || [];
   }
 
-  async getTransaccionCuotas(_key_proveedor: String) {
+  async getTransaccionCuotasCompras(_key_proveedor: String) {
     //  @param {string} _key_usuario - Identificador único del usuario (cliente o proveedor).
     // Si `_tipo` es **"compra"**, el `_key_usuario` será interpretado como `key_proveedor`.
     // Si `_tipo` es **"venta"**, el `_key_usuario` será interpretado como `key_cliente` (en este caso, representa al acreditado).
@@ -191,5 +191,36 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
+
+
+  async getTransaccionCuotasVentas(_key_cliente: String) {
+    const resp: any = await SSocket.sendPromise({
+      service: "compra_venta",
+      component: "reporte",
+      type: "execute_function",
+      func: "_get_ventas_cliente",
+      params: ["'" + _key_cliente + "'"],
+    });
+    // console.log("🚀🚀🚀🚀🚀🚀 ~ file: indexresp:", resp.data)
+    return resp.data || [];
+  }
+
+
+
+
+  async getCuotasResumenTotal() {
+    const resp: any = await SSocket.sendPromise({
+      service: "compra_venta",
+      component: "reporte",
+      type: "execute_function",
+      func: "_get_cuotas_resumen_total",
+      params: ["'" + Model.empresa.Action.getKey() + "'"],
+    });
+    // console.log("🚀🚀🚀🚀🚀🚀 ~ file: indexresp:", resp.data)
+    return resp.data || [];
+  }
+
+
+
 
 }

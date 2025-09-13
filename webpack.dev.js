@@ -37,7 +37,7 @@ module.exports = merge(common, {
     watchOptions: {
         aggregateTimeout: 200,
         // poll: 500,
-        ignored: /node_modules|src\/Assets/,
+        // ignored: /node_modules|src\/Assets/,
         // ignored: /node_modules/,
     },
     // optimization: {
