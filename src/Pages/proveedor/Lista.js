@@ -84,6 +84,7 @@ export default class Lista extends Component {
         super(props);
         this.state = {};
     }
+
     async loadInitialData() {
         try {
             const proveedores = await MDL.inventario.proveedor.getAllProveedor();
@@ -96,13 +97,16 @@ export default class Lista extends Component {
                 });
                 return [];
             }
+
             const keysUsuarios = Object.values(proveedores)
                 .map(p => p.key_usuario)
-                .filter(Boolean); // Filtra valores nulos o undefined
+                .filter(Boolean);
+
             const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
             if (!usuarios || Object.keys(usuarios).length === 0) {
                 console.warn("No se encontraron usuarios para los proveedores.");
             }
+
             const transacciones = await MDL.compra_venta.getTransaccion("compra", "2024-09-01", "2026-09-05");
             if (!transacciones || transacciones.length === 0) {
                 SNotification.send({
@@ -112,15 +116,27 @@ export default class Lista extends Component {
                     color: STheme.color.warning,
                 });
             }
+
+            const registros = await MDL.compra_venta.getCuotasResumenTotal();
+
             const proveedoresConCompras = Object.values(proveedores).map(proveedor => {
+                // Asignar usuario
                 proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario) || null;
+
+                // Asignar resumen de cuotas correspondiente
+                proveedor.resumen_cuota = registros.find(r => r.key_proveedor === proveedor.key) || null;
+
+                // Filtrar transacciones del proveedor
                 proveedor.compras = transacciones
-                    ? transacciones.filter(transaccion => transaccion.key_proveedor === proveedor.key)
+                    ? transacciones.filter(t => t.key_proveedor === proveedor.key)
                     : [];
+
                 console.log("Compras para proveedor", proveedor);
                 return proveedor;
             });
+
             return proveedoresConCompras;
+
         } catch (error) {
             console.error('Error loading initial data:', error);
             SNotification.send({
@@ -132,6 +148,8 @@ export default class Lista extends Component {
             return [];
         }
     }
+
+
     renderState(state) {
         var statesInfo = Model.compra_venta.Action.getStateInfo()[state];
         return <SView row center>
@@ -339,6 +357,101 @@ export default class Lista extends Component {
                         </SView> : null}
                 </>}
             />
+
+            {/* cuotas total
+cuotas cantidad
+
+
+cuotas_en_mora total
+cuotas_en_mora cantidad
+
+
+cuotas_amortizado	total				    
+cuotas_amortizado	cantidad				     */}
+
+
+            {/* <DinamicTable.Col key="cuotas_total_base" wrap label="Monto moneda base" width={60}
+                data={(e) => e.row?.cuotas.total ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end"
+                }}
+                format={(e) => SMath.formatMoney(e.data)}
+            /> */}
+
+
+            <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={60} data={(e) => e.row?.resumen_cuota?.monto_pagado ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.success + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+     
+            <DinamicTable.Col key="monto_amortizasdo" wrap label="Cuota Pagado" width={60} data={(e) => e.row?.resumen_cuota?.cantidad_pagada ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.success + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+           
+           
+            <DinamicTable.Col key="monto_amortisdfzasdo" wrap label="Motno Mora" width={60} data={(e) => e.row?.resumen_cuota?.monto_en_mora ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.danger + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+       
+            <DinamicTable.Col key="monto_amortisdasfzasdo" wrap label="Canti Mora" width={60} data={(e) => e.row?.resumen_cuota?.cantidad_en_mora ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.danger + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+      
+            <DinamicTable.Col key="monto_aamortisdaasfzasdo" wrap label="Canti Pen" width={60} data={(e) => e.row?.resumen_cuota?.cantidad_pendiente ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.warning + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+   
+            <DinamicTable.Col key="monto_amortisdaasfzasdo" wrap label="monto Pen" width={60} data={(e) => e.row?.resumen_cuota?.monto_pendiente ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.warning + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+
+            {/* <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={60} data={(e) => e.row?.monto_amortizado ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.success + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+
+
+            <DinamicTable.Col key="monto_deuda" wrap label="Deuda total" width={60}
+                data={(e) => (e.row?.cuotas?.total ?? 0) - (e.row?.monto_amortizado ?? 0) ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.warning + "33"
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+
+            <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} cellStyle={{
+                alignItems: "center",
+                backgroundColor: STheme.color.danger + "33"
+            }}
+                data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""}
+            />
+            <DinamicTable.Col wrap key="en_mora" label="Monto en Mora" width={60} data={(e) => e.row?.cuotas_en_mora.monto ?? ""}
+                cellStyle={{
+                    alignItems: "flex-end",
+                    backgroundColor: STheme.color.danger + "33"
+
+                }}
+                format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
+            /> */}
 
             <DinamicTable.Col key="pagos" label="Pagos" width={50} data={(e) => e.row?.compras?.length}
                 customComponent={e => <>

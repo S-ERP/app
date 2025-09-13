@@ -193,19 +193,34 @@ export default class compra_venta extends MDLAbstract<EventListener> {
   }
 
 
-    async getTransaccionCuotasVentas(_key_cliente: String) {
+  async getTransaccionCuotasVentas(_key_cliente: String) {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
       component: "reporte",
       type: "execute_function",
       func: "_get_ventas_cliente",
       params: ["'" + _key_cliente + "'"],
-     });
+    });
     // console.log("🚀🚀🚀🚀🚀🚀 ~ file: indexresp:", resp.data)
     return resp.data || [];
   }
 
-  
-  
+
+
+
+  async getCuotasResumenTotal() {
+    const resp: any = await SSocket.sendPromise({
+      service: "compra_venta",
+      component: "reporte",
+      type: "execute_function",
+      func: "_get_cuotas_resumen_total",
+      params: ["'" + Model.empresa.Action.getKey() + "'"],
+    });
+    // console.log("🚀🚀🚀🚀🚀🚀 ~ file: indexresp:", resp.data)
+    return resp.data || [];
+  }
+
+
+
 
 }
