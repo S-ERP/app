@@ -367,7 +367,7 @@ export default class Lista extends Component {
                     {(e.row?.compras?.length > 0) ?
                         <SView style={{ width: 28 }} center
                             onPress={() => {
-                                SNavigation.navigate("/proveedor/pagos", { key_proveedor: e.row?.key })
+                                SNavigation.navigate("/caja/cuotas", { key_proveedor: e.row?.key })
                             }}
                         >
                             <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
