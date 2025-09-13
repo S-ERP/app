@@ -18,7 +18,6 @@ const COLORS = {
     ACCENT_BACKGROUNG: '#a7c9ffff',
 };
 
-// Typography configuration
 const TYPOGRAPHY = {
     TITLE: { fontSize: 18, bold: true },
     SUBTITLE: { fontSize: 14, bold: true },
@@ -27,7 +26,6 @@ const TYPOGRAPHY = {
     VALUE: { fontSize: 14, bold: true },
 };
 
-// State configuration
 const DATA_CONFIG = {
     estados: {
         pendiente: { label: 'Pendiente', color: COLORS.PENDIENTE, bgColor: COLORS.PENDIENTE_BACKGROUNG, textColor: COLORS.PENDIENTE, icon: 'history' },
@@ -37,23 +35,19 @@ const DATA_CONFIG = {
     metodosPago: ['Efectivo', 'Transferencia', 'Tarjeta de crédito', 'Cheque'],
 };
 
-// Reusable UI component for info rows
 const InfoRow = ({ label, value, icon, iconColorFill, iconColorStroke, bgColor, subText, subTextColor }) => (
     <SView col={'xs-12 sm-6 md-3'} row center height={90} style={{ padding: 8 }}>
         <SView center style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: bgColor || STheme.color.lightGray }}>
             <SIconApp name={icon} width={24} height={24} fill={iconColorFill || 'transparent'} stroke={iconColorStroke || STheme.color.lightBlack} />
         </SView>
         <SView style={{ marginLeft: 12 }}>
-            <SView flex  >
+            <SView flex>
                 <SText numberOfLines={1} {...TYPOGRAPHY.LABEL}>{label}</SText>
                 {typeof value === 'string' ? (
                     <SText numberOfLines={1} {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>{value}</SText>
                 ) : (
                     value
                 )}
-                {/* <SView style={{ flexWrap: 'wrap', paddingHorizontal: 5, paddingVertical: 3, borderRadius: 5, backgroundColor: subTextColor + "88" || "transparent" }}>
-                    {subText && <SText numberOfLines={1} fontSize={10} color={COLORS.TEXT}>{subText}</SText>}
-                </SView> */}
             </SView>
             <SView col={'xs-0 lg-12'} style={{ paddingHorizontal: 5, paddingVertical: 3, borderRadius: 5, backgroundColor: subTextColor + "88" || "transparent" }}>
                 {subText && <SText numberOfLines={1} fontSize={10} color={COLORS.TEXT}>{subText}</SText>}
@@ -82,12 +76,15 @@ export default class Cuotas extends Component {
             deudaTotal: 0,
         };
 
+        if (!Array.isArray(cuotas)) {
+            console.warn('Cuotas no es un array válido');
+            return summary;
+        }
+
         cuotas.forEach(cuota => {
+            if (!cuota || !cuota.vencimiento) return;
             const saldoPendiente = parseFloat(cuota.monto || 0);
-            // if (saldoPendiente <= 0) {
-            // alvaro
-            if (cuota.estado == "Pagado") {
-                // luego lo vere // if (cuota.estado == "Pagado"   && cuota.monto == cuota.monto_total ) {
+            if (cuota.estado === "Pagado") {
                 cuota.estado = 'Pagado';
                 summary.cant_pagado++;
                 summary.montototal_pagado += parseFloat(cuota.monto_total || 0);
@@ -116,89 +113,123 @@ export default class Cuotas extends Component {
         };
     }
 
- async loadData() {
-    try {
-        this.key_proveedor = SNavigation.getParam('key_proveedor') || '';
-        this.key_cliente = SNavigation.getParam('key_cliente') || '';
+    async loadData() {
+        try {
+            // Validar parámetros de entrada
+            this.key_proveedor = SNavigation.getParam('key_proveedor') || '';
+            this.key_cliente = SNavigation.getParam('key_cliente') || '';
 
-        let registros = [];
-        if (this.key_proveedor) {
-            registros = await MDL.compra_venta.getTransaccionCuotas(this.key_proveedor);
-        } else if (this.key_cliente) {
-            registros = await MDL.compra_venta.getTransaccionCuotasVentas(this.key_cliente);
-        }
+            if (!this.key_proveedor && !this.key_cliente) {
+                console.warn('No se proporcionaron key_proveedor ni key_cliente');
+                return this.getDefaultData();
+            }
 
-        if (!Array.isArray(registros) || registros.length === 0) {
+            // Inicializar registros
+            let registros = [];
+            if (this.key_proveedor) {
+                registros = await MDL.compra_venta.getTransaccionCuotasCompras(this.key_proveedor);
+            } else if (this.key_cliente) {
+                registros = await MDL.compra_venta.getTransaccionCuotasVentas(this.key_cliente);
+            }
+
+            // Validar registros
+            if (!Array.isArray(registros)) {
+                console.warn('Registros no es un array válido:', registros);
+                return this.getDefaultData();
+            }
+
+            if (registros.length === 0) {
+                return this.getDefaultData();
+            }
+
+            // Limitar consultas simultáneas para evitar sobrecarga
+            const BATCH_SIZE = 10;
+            const cuotasResults = [];
+            for (let i = 0; i < registros.length; i += BATCH_SIZE) {
+                const batch = registros.slice(i, i + BATCH_SIZE);
+                const results = await Promise.all(
+                    batch.map(compra =>
+                        MDL.compra_venta.getCuotasCompras(compra.key).catch(err => {
+                            console.error(`Error al obtener cuotas para compra ${compra.key}:`, err);
+                            return [];
+                        })
+                    )
+                );
+                cuotasResults.push(...results);
+            }
+
+            // Inicializar resumen global
+            const globalSummary = {
+                cant_pendientes: 0,
+                cant_mora: 0,
+                cant_pagado: 0,
+                montototal_pendientes: 0,
+                montototal_mora: 0,
+                montototal_pagado: 0,
+                deudaTotal: {},
+            };
+
+            // Procesar compras y cuotas
+            registros.forEach((compra, index) => {
+                if (!compra || !compra.key) {
+                    console.warn(`Compra inválida en índice ${index}`);
+                    return;
+                }
+
+                const cuotas = Array.isArray(cuotasResults[index]) ? cuotasResults[index] : [];
+                const moneda = compra.moneda || 'BOB';
+                compra.cuotasDetalle = cuotas;
+                compra.summary = this.calculateCuotaSummary(cuotas, moneda);
+
+                globalSummary.cant_pendientes += compra.summary.cant_pendientes || 0;
+                globalSummary.cant_mora += compra.summary.cant_mora || 0;
+                globalSummary.cant_pagado += compra.summary.cant_pagado || 0;
+                globalSummary.montototal_pendientes += parseFloat(compra.summary.montototal_pendientes || 0);
+                globalSummary.montototal_mora += parseFloat(compra.summary.montototal_mora || 0);
+                globalSummary.montototal_pagado += parseFloat(compra.summary.montototal_pagado || 0);
+                globalSummary.deudaTotal[moneda] = (globalSummary.deudaTotal[moneda] || 0) + parseFloat(compra.summary.deudaTotal || 0);
+            });
+
+            // Obtener proveedor o cliente
+            const [proveedor, clienteData] = await Promise.all([
+                this.key_proveedor ? MDL.inventario.proveedor.getByKey(this.key_proveedor).catch(err => {
+                    console.error('Error al obtener proveedor:', err);
+                    return {};
+                }) : Promise.resolve({}),
+                this.key_cliente ? MDL.crm.cliente.getByKey(this.key_cliente).catch(err => {
+                    console.error('Error al obtener cliente:', err);
+                    return {};
+                }) : Promise.resolve({})
+            ]);
+
+            const cliente = Object.values(clienteData)[0] || {};
+
+            // Determinar moneda por defecto
+            const monedaDefault = Object.keys(globalSummary.deudaTotal).length
+                ? Object.keys(globalSummary.deudaTotal).reduce(
+                      (a, b) => (globalSummary.deudaTotal[a] > globalSummary.deudaTotal[b] ? a : b),
+                      'BOB'
+                  )
+                : 'BOB';
+
+            return {
+                cant_pendientes: globalSummary.cant_pendientes,
+                cant_mora: globalSummary.cant_mora,
+                cant_pagado: globalSummary.cant_pagado,
+                montototal_pendientes: globalSummary.montototal_pendientes.toFixed(2),
+                montototal_mora: globalSummary.montototal_mora.toFixed(2),
+                montototal_pagado: globalSummary.montototal_pagado.toFixed(2),
+                deudaTotal: Object.keys(globalSummary.deudaTotal).length ? globalSummary.deudaTotal : null,
+                proveedor: proveedor || {},
+                cliente: cliente || {},
+                compras: registros,
+                monedaDefault,
+            };
+        } catch (error) {
+            console.error('Error crítico en loadData:', error);
             return this.getDefaultData();
         }
-
-        // Obtener todas las cuotas en paralelo
-        const cuotasResults = await Promise.all(
-            registros.map(compra => MDL.compra_venta.getCuotasCompras(compra.key))
-        );
-
-        // Inicializar resumen global
-        const globalSummary = {
-            cant_pendientes: 0,
-            cant_mora: 0,
-            cant_pagado: 0,
-            montototal_pendientes: 0,
-            montototal_mora: 0,
-            montototal_pagado: 0,
-            deudaTotal: {},
-        };
-
-        registros.forEach((compra, index) => {
-            const cuotas = cuotasResults[index] || [];
-            const moneda = compra.moneda || 'BOB';
-            compra.cuotasDetalle = cuotas;
-            compra.summary = this.calculateCuotaSummary(cuotas, moneda);
-
-            globalSummary.cant_pendientes += compra.summary.cant_pendientes;
-            globalSummary.cant_mora += compra.summary.cant_mora;
-            globalSummary.cant_pagado += compra.summary.cant_pagado;
-            globalSummary.montototal_pendientes += parseFloat(compra.summary.montototal_pendientes || 0);
-            globalSummary.montototal_mora += parseFloat(compra.summary.montototal_mora || 0);
-            globalSummary.montototal_pagado += parseFloat(compra.summary.montototal_pagado || 0);
-            globalSummary.deudaTotal[moneda] = (globalSummary.deudaTotal[moneda] || 0) + parseFloat(compra.summary.deudaTotal || 0);
-        });
-
-        const proveedor = this.key_proveedor
-            ? await MDL.inventario.proveedor.getByKey(this.key_proveedor) || {}
-            : {};
-
-        const clienteData = this.key_cliente
-            ? await MDL.crm.cliente.getByKey(this.key_cliente) || {}
-            : {};
-        const cliente = Object.values(clienteData)[0] || {};
-
-        // Moneda por defecto: la que tenga la mayor deuda
-        const monedaDefault = Object.keys(globalSummary.deudaTotal).length
-            ? Object.keys(globalSummary.deudaTotal).reduce(
-                (a, b) => (globalSummary.deudaTotal[a] > globalSummary.deudaTotal[b] ? a : b)
-              )
-            : 'BOB';
-
-        return {
-            cant_pendientes: globalSummary.cant_pendientes,
-            cant_mora: globalSummary.cant_mora,
-            cant_pagado: globalSummary.cant_pagado,
-            montototal_pendientes: globalSummary.montototal_pendientes.toFixed(2),
-            montototal_mora: globalSummary.montototal_mora.toFixed(2),
-            montototal_pagado: globalSummary.montototal_pagado.toFixed(2),
-            deudaTotal: Object.keys(globalSummary.deudaTotal).length ? globalSummary.deudaTotal : null,
-            proveedor,
-            cliente,
-            compras: registros,
-            monedaDefault,
-        };
-
-    } catch (error) {
-        console.error('Error in loadData:', error);
-        return this.getDefaultData();
     }
-}
-
 
     getDefaultData() {
         return {
@@ -210,6 +241,7 @@ export default class Cuotas extends Component {
             montototal_pagado: '0.00',
             deudaTotal: null,
             proveedor: {},
+            cliente: {},
             compras: [],
             monedaDefault: 'BOB',
         };
@@ -219,6 +251,7 @@ export default class Cuotas extends Component {
         this.loadData().then(data => {
             this.setState({ data, loading: false });
         }).catch(error => {
+            console.error('Error en componentDidMount:', error);
             this.setState({ error, loading: false, data: this.getDefaultData() });
         });
     }
@@ -260,12 +293,9 @@ export default class Cuotas extends Component {
 
         const { cliente, proveedor, montototal_pendientes, montototal_mora, monedaDefault, compras } = data;
 
-        // Calculate filtered totals based on showPaid
         const filteredCompras = showPaid
             ? compras
             : compras.filter(compra => compra.summary?.deudaTotal > 0 && compra.cuotasDetalle?.length > 0);
-
-
 
         const totalPagado = showPaid
             ? parseFloat(data.montototal_pagado)
@@ -290,26 +320,18 @@ export default class Cuotas extends Component {
 
         const totalDeuda = (parseFloat(montototal_pendientes) + parseFloat(montototal_mora)).toFixed(2);
 
-        if (totalDeuda < 1) {
-            this.setState({ showPaid: true })
+        if (totalDeuda < 1 && !showPaid) {
+            this.setState({ showPaid: true });
         }
-
-
 
         return (
             <SView col={'xs-12'} style={{ padding: 16 }}>
                 <SView col={'xs-12'} row backgroundColor={COLORS.CARD} style={{ borderRadius: 8, borderWidth: 1, borderColor: COLORS.BORDER, padding: 12, flexWrap: 'wrap' }}>
-
-
-
                     <InfoRow
                         label={this.key_proveedor ? "Proveedor" : "Cliente"}
                         value={this.key_proveedor ? proveedor?.razon_social || 'Sin nombre' : cliente?.nombres || 'Sin nombre'}
                         icon="iconEdifcio"
-                        // subText={`(Nit: ${proveedor?.nit ?? 0})`}
-                        subText={this.key_proveedor ? `(Nit: ${proveedor?.nit ?? 0})` : `(RS: ${cliente?.razon_social ?? "S/R"} + Nit: ${cliente?.nit ?? 0})`}
-
-                        // iconColorFill={STheme.color.lightBlack}
+                        subText={this.key_proveedor ? `(Nit: ${proveedor?.nit ?? 0})` : `(RS: ${cliente?.razon_social ?? "S/R"} | Nit: ${cliente?.nit ?? 0})`}
                         iconColorStroke={STheme.color.lightBlack}
                     />
                     <InfoRow
@@ -317,40 +339,29 @@ export default class Cuotas extends Component {
                         value={
                             <SView>
                                 {this.renderMonto(totalDeuda, monedaDefault, totalDeuda > 0 ? COLORS.VENCIDO : COLORS.TEXT)}
-                                {/* <SText fontSize={10} color={COLORS.VENCIDO}>Mora: {monedaDefault} {SMath.formatMoney(montototal_mora)}</SText> */}
-                                {/* <SText fontSize={10} color={COLORS.PENDIENTE}>Pendiente: {monedaDefault} {SMath.formatMoney(montototal_pendientes)}</SText> */}
                             </SView>
                         }
                         icon="iconPesos"
-                        // iconColorStroke={totalDeuda ? COLORS.VENCIDO : COLORS.TEXT}
                         iconColorStroke={totalDeuda > 0 ? COLORS.VENCIDO : COLORS.ACCENT}
                         bgColor={totalDeuda > 0 ? COLORS.VENCIDO_BACKGROUNG : COLORS.ACCENT_BACKGROUNG}
-                        subTextColor={totalDeuda > 0 ? COLORS.VENCIDO : COLORS.CARD}
-                        // subText={`(Mora ${montototal_mora} + Pend. ${montototal_pendientes})`}
                         subText={totalDeuda > 0 ? `(Mora ${montototal_mora} + Pend. ${montototal_pendientes})` : null}
-
-                    // subText="(Mora + Pendiente)"
-
+                        subTextColor={totalDeuda > 0 ? COLORS.VENCIDO : COLORS.CARD}
                     />
                     <InfoRow
                         label="Total Pagado"
                         value={this.renderMonto(totalPagado, monedaDefault, COLORS.TEXT)}
                         icon="pagotarjeta"
-
                         iconColorFill={COLORS.PAGADO}
                         iconColorStroke={COLORS.PAGADO}
-
                         bgColor={COLORS.PAGADO_BACKGROUNG}
                         subText="(Amortizado)"
                     />
-
                     <InfoRow
                         label={this.key_proveedor ? "Total Compras" : "Total Ventas"}
-                        // label="Total Compras"
                         value={
                             <SView>
                                 <SText {...TYPOGRAPHY.BODY} color={COLORS.TEXT}>
-                                    <SText color={COLORS.TEXT}>{this.key_proveedor ? `${cantidadCompras} ${(cantidadCompras) === 1 ? 'compra' : 'compras'}` : `${cantidadCompras} ${(cantidadCompras) === 1 ? 'venta' : 'ventas'}`}</SText>
+                                    {this.key_proveedor ? `${cantidadCompras} ${cantidadCompras === 1 ? 'compra' : 'compras'}` : `${cantidadCompras} ${cantidadCompras === 1 ? 'venta' : 'ventas'}`}
                                 </SText>
                             </SView>
                         }
@@ -358,22 +369,10 @@ export default class Cuotas extends Component {
                         iconColorFill={COLORS.PENDIENTE}
                         iconColorStroke={COLORS.PENDIENTE}
                         bgColor={COLORS.PENDIENTE_BACKGROUNG}
-                        subText={`(${cuotas.cant_mora + cuotas.cant_pendientes} ${(cuotas.cant_mora + cuotas.cant_pendientes) === 1 ? 'cuota' : 'cuotas'})`}
+                        subText={`(${cuotas.cant_mora + cuotas.cant_pendientes} ${cuotas.cant_mora + cuotas.cant_pendientes === 1 ? 'cuota' : 'cuotas'})`}
                     />
-
-
-                    {/* <InfoRow
-                        label="Cantidad de Compras"
-                        value={`${cantidadCompras} ${cantidadCompras === 1 ? 'compra' : 'compras'}`}
-                        icon="iconLista"
-                        iconColorFill={COLORS.PENDIENTE}
-                        iconColorStroke={COLORS.PENDIENTE}
-                        bgColor={COLORS.PENDIENTE_BACKGROUNG}
-                    /> */}
                 </SView>
-
                 {this.botonMostrarPagadas()}
-
             </SView>
         );
     }
@@ -381,7 +380,9 @@ export default class Cuotas extends Component {
     header() {
         return (
             <SView col={'xs-12'} style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
-                <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}>Compras a Crédito y Pagos Pendientes</SText>
+                <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}>
+                    {this.key_proveedor ? 'Compras a crédito y pagos pendientes' : 'Ventas a crédito y pagos pendientes'}
+                </SText>
             </SView>
         );
     }
@@ -390,10 +391,12 @@ export default class Cuotas extends Component {
         const { data, loading, showPaid } = this.state;
         if (loading || !data) return this.renderLoading();
         const { compras, monedaDefault } = data;
-        if (!compras?.length) {
+        if (!Array.isArray(compras) || !compras.length) {
             return (
                 <SView col={'xs-12'} center style={{ padding: 16 }}>
-                    <SText {...TYPOGRAPHY.TITLE} color={STheme.color.lightGray} >No se encontraron compras para el cliente o proveedor seleccionado.</SText>
+                    <SText {...TYPOGRAPHY.TITLE} color={STheme.color.lightGray}>
+                        No se encontraron {this.key_proveedor ? 'compras' : 'ventas'} para el cliente o proveedor seleccionado.
+                    </SText>
                 </SView>
             );
         }
@@ -405,13 +408,9 @@ export default class Cuotas extends Component {
         if (!filteredCompras.length) {
             return (
                 <SView col={'xs-12'} center style={{ padding: 16 }}>
-
-                    <SText {...TYPOGRAPHY.BODY}  >
-                        {showPaid ? 'No hay compras registradas.' : 'No hay compras con deudas o cuotas pendientes.'}
+                    <SText {...TYPOGRAPHY.BODY}>
+                        {showPaid ? `No hay ${this.key_proveedor ? 'compras' : 'ventas'} registradas.` : `No hay ${this.key_proveedor ? 'compras' : 'ventas'} con deudas o cuotas pendientes.`}
                     </SText>
-
-                    {/* <SText {...TYPOGRAPHY.BODY} /> */}
-                    {/* {showPaid ? 'No hay compras registradas.' : 'No hay compras con deudas o cuotas pendientes.'} */}
                 </SView>
             );
         }
@@ -420,7 +419,7 @@ export default class Cuotas extends Component {
             <SView col={'xs-12'} style={{ padding: 8 }}>
                 <SView col={'xs-12'} row style={{ flexWrap: 'wrap' }}>
                     {filteredCompras.map((compra, index) => {
-                        const totalCompra = compra.detalles?.reduce((sum, item) => sum + (item.precio_unitario || 0) * (item.cantidad || 0), 0) || 0;
+                        const totalCompra = compra.detalles?.reduce((sum, item) => sum + (parseFloat(item.precio_unitario || 0) * parseFloat(item.cantidad || 0)), 0) || 0;
                         const { cant_mora, montototal_mora, montototal_pendiente, montototal_pagado, deudaTotal, cant_pendientes, cant_pagado } = compra.summary || {};
 
                         return (
@@ -431,8 +430,7 @@ export default class Cuotas extends Component {
                                 style={{ backgroundColor: COLORS.CARD, borderRadius: 6, borderWidth: 1, borderColor: COLORS.BORDER, padding: 16 }}
                             >
                                 <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
-                                    <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}>{this.key_proveedor ? "Compra #" + (index + 1) : "Venta #" + (index + 1)} </SText>
-                                    {/* <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}>Compra #{(index + 1)}</SText> */}
+                                    <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}>{this.key_proveedor ? `Compra #${index + 1}` : `Venta #${index + 1}`}</SText>
                                     {this.labelEstado(deudaTotal > 0 ? 'pendiente' : 'pagado')}
                                 </SView>
                                 <SHr h={8} />
@@ -456,11 +454,7 @@ export default class Cuotas extends Component {
                                     <SText {...TYPOGRAPHY.LABEL}>Cuotas pendientes:</SText>
                                     <SView>
                                         <SText {...TYPOGRAPHY.BODY} color={COLORS.TEXT}>
-                                            cuotas {(cant_pendientes + cant_mora) || 0}
-                                            {/* ({(cant_pendientes + cant_mora) || 0}) */}
-                                            {/* Pendientes: <SText color={COLORS.PENDIENTE}>{cant_pendientes || 0}</SText> | */}
-                                            {/* Mora: <SText color={COLORS.VENCIDO}>{cant_mora || 0}</SText> | */}
-                                            {/* Pagadas: <SText color={COLORS.PAGADO}>{cant_pagado || 0}</SText> */}
+                                            {(cant_pendientes + cant_mora) || 0} {((cant_pendientes + cant_mora) || 0) === 1 ? 'cuota' : 'cuotas'}
                                         </SText>
                                     </SView>
                                 </SView>
@@ -471,28 +465,8 @@ export default class Cuotas extends Component {
                                         <SText {...TYPOGRAPHY.BODY} color={deudaTotal > 0 ? COLORS.VENCIDO : COLORS.TEXT}>
                                             {compra.moneda || monedaDefault} {SMath.formatMoney(deudaTotal)}
                                         </SText>
-
-
-
-                                        {/* {montototal_mora > 0 && (
-                                            <SText fontSize={10} color={COLORS.VENCIDO}>
-                                                Mora: {compra.moneda || monedaDefault} {SMath.formatMoney(montototal_mora)}
-                                            </SText>
-                                        )}
-                                        {montototal_pendiente > 0 && (
-                                            <SText fontSize={10} color={COLORS.PENDIENTE}>
-                                                Pendiente: {compra.moneda || monedaDefault} {SMath.formatMoney(montototal_pendiente)}
-                                            </SText>
-                                        )} */}
                                     </SView>
                                 </SView>
-                                {/* <SHr h={8} />
-                                <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
-                                    <SText {...TYPOGRAPHY.LABEL}>Pagado:</SText>
-                                    <SText {...TYPOGRAPHY.BODY} color={COLORS.PAGADO}>
-                                        {compra.moneda || monedaDefault} {SMath.formatMoney(montototal_pagado)}
-                                    </SText>
-                                </SView> */}
                                 <SHr h={16} />
                                 <SView col={'xs-12'} center>
                                     <SView col={'xs-12'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
@@ -504,7 +478,6 @@ export default class Cuotas extends Component {
                                                         editObject: {
                                                             ...compra,
                                                             id: index + 1,
-                                                            // id: compra.key || (index + 1),
                                                             moneda: compra.moneda || monedaDefault,
                                                             cuotasDetalle: compra.cuotasDetalle || [],
                                                             cuotas_en_mora: { cantidad: cant_mora, monto: montototal_mora },
@@ -536,7 +509,6 @@ export default class Cuotas extends Component {
                                                         editObject: {
                                                             ...compra,
                                                             id: index + 1,
-                                                            // id: compra.key || (index + 1),
                                                             moneda: compra.moneda || monedaDefault,
                                                             pagado: true,
                                                             cuotasDetalle: compra.cuotasDetalle || [],
@@ -574,37 +546,25 @@ export default class Cuotas extends Component {
 
     botonMostrarPagadas() {
         const { showPaid } = this.state;
-
-        return <SView style={{ position: "absolute", left: 16, top: -14 }} >
-            <SView center row width={120} backgroundColor={STheme.color.card} style={{ borderRadius: 4, paddingVertical: 4 }}
-                onPress={() => this.setState({ showPaid: !showPaid })}>
-                <SIconApp name='Eyes' fill={COLORS.TEXT} height={10} width={10} /> <SView width={4} />
-                <SText {...TYPOGRAPHY.LABEL} color={COLORS.TEXT}>
-                    {showPaid ? 'Ocultar Pagadas' : 'Mostrar Pagadas'}
-                </SText>
+        return (
+            <SView style={{ position: "absolute", left: 16, top: -14 }}>
+                <SView center row width={120} backgroundColor={STheme.color.card} style={{ borderRadius: 4, paddingVertical: 4 }}
+                    onPress={() => this.setState({ showPaid: !showPaid })}>
+                    <SIconApp name='Eyes' fill={COLORS.TEXT} height={10} width={10} />
+                    <SView width={4} />
+                    <SText {...TYPOGRAPHY.LABEL} color={COLORS.TEXT}>
+                        {showPaid ? 'Ocultar Pagadas' : 'Mostrar Pagadas'}
+                    </SText>
+                </SView>
             </SView>
-        </SView>
-
-        // return <SView style={{ position: "absolute", right: 16, top: -14 }} >
-        //     <SView center row width={120} backgroundColor={STheme.color.card} style={{ borderRadius: 4, paddingVertical: 4 }}
-        //         onPress={() => this.setState({ showPaid: !showPaid })}>
-        //         <SIconApp name='Eyes' fill={COLORS.TEXT} height={10} width={10} /> <SView width={4} />.
-
-        //         <SText {...TYPOGRAPHY.LABEL} color={COLORS.TEXT}>
-        //             {showPaid ? 'Ocultar Pagadas' : 'Mostrar Pagadas'}
-        //         </SText>
-        //     </SView>
-        // </SView>
+        );
     }
 
-
     render() {
-        // const { showPaid } = this.state;
         return (
-            <SPage title={this.key_proveedor ? 'Compras a crédito y pagos pendientes' : "Ventas a crédito y pagos pendientes"} disableScroll>
+            <SPage title={this.key_proveedor ? 'Compras a crédito y pagos pendientes' : 'Ventas a crédito y pagos pendientes'} disableScroll>
                 <SScrollView2 disableHorizontal>
                     <SView col={'xs-12'} center style={{ padding: 8 }}>
-                        {/* {this.header()} */}
                         <SHr h={16} />
                         {this.resumen()}
                         {this.itemCard()}

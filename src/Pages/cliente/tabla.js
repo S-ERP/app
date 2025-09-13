@@ -146,6 +146,18 @@ export default class tabla extends Component {
                         })
                     }
 
+
+                    if (e.row.ventas.length > 0) {
+                        options.push({
+                            icon: <SIconApp name='addUser' />,
+                            label: "Pagar Deuda",
+                            onPress: () => {
+                                SNavigation.navigate("/caja/cuotas", { key_cliente: e.row?.key })
+                            }
+                        })
+                    }
+
+
                     if (MDL.rolesPermisos.getPermiso({
                         url: URL,
                         permiso: "delete",

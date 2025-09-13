@@ -164,7 +164,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     return resp.data || [];
   }
 
-  async getTransaccionCuotas(_key_proveedor: String) {
+  async getTransaccionCuotasCompras(_key_proveedor: String) {
     //  @param {string} _key_usuario - Identificador único del usuario (cliente o proveedor).
     // Si `_tipo` es **"compra"**, el `_key_usuario` será interpretado como `key_proveedor`.
     // Si `_tipo` es **"venta"**, el `_key_usuario` será interpretado como `key_cliente` (en este caso, representa al acreditado).
