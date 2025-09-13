@@ -63,7 +63,7 @@ export default class TecladoNumerico extends Component {
         const detalle = carrito.map(item => ({
             key_modelo: item.key,
             descripcion: item.descripcion,
-            precio_unitario: parseFloat(SMath.formatMoney(item.precio_venta, 2)), // Usar precio en moneda seleccionada
+            precio_unitario: item.precio_venta, // Usar precio en moneda seleccionada
             cantidad: item.cantidad ?? 0,
         }));
         const caja = {

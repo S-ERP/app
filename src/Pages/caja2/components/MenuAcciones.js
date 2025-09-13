@@ -50,7 +50,7 @@ export default class MenuAcciones extends Component<{ caja: any, movimientos: an
                     descripcion: "Envio al banco",
                     monto: item.efectivo * -1,
                     tipo: "egreso_banco",
-                    key_tipo_pago: "efectivo"
+                    tipo_pago: item
                 }).then(e => {
                     SelectTipoPago.closePopup();
                 }).catch(e => {

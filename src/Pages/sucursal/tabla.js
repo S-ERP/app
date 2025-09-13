@@ -141,7 +141,7 @@ export default class tabla extends Component {
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
 
-            <DinamicTable.Col key="sucursal" label="Sucursal" width={120} data={(e) => e.row?.key ?? ""}
+            <DinamicTable.Col key="sucursal" label="Sucursal" width={150} data={(e) => e.row?.key ?? ""}
                 customComponent={e => <>
                     {(e.row?.key) ?
                         <SView col={"xs-12"} row  >
@@ -151,12 +151,12 @@ export default class tabla extends Component {
                                 </SView>
                             </SView>
                             <SView width={5} />
-                            <SText center color={STheme.color.text}>{e.row?.descripcion}</SText>
+                            <SText flex color={STheme.color.text} numberOfLines={e.colData.wrap ? 0 : 1}>{e.row?.descripcion}</SText>
                         </SView> : null}
                 </>}
             />
 
- 
+
             <DinamicTable.Col key="observacion" label="Observación" width={120} data={(e) => e.row?.observacion} />
             <DinamicTable.Col key="telefono" label="Teléfono" width={150} data={(e) => e.row?.telefono} />
             <DinamicTable.Col key="direccion" label="Dirección" width={100} data={(e) => e.row?.direccion} />
@@ -167,7 +167,7 @@ export default class tabla extends Component {
             <DinamicTable.Col key="codigo_facturacion" label="Código facturación" width={130} data={(e) => e.row?.codigo_facturacion} />
             {/* <DinamicTable.Col key="punto_venta" label="punto_venta" width={130} data={(e) => e.row?.punto_venta} /> */}
 
- 
+
             <DinamicTable.Col key={"fecha_on"} label="F.Registro" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
             <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                 customComponent={e => <>

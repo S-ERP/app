@@ -53,7 +53,7 @@ export default class CuentaContableForm extends React.Component<Props> {
             tipo: this._ref.tipo.getValue(),
             codigo: this._ref.codigo.getValue(),
             descripcion: this._ref.descripcion.getValue(),
-            key_moneda: moneda?.key,
+            key_moneda: moneda?.key ?? "",
         };
         console.log("CuentaContableForm.submit", cuenta_contable);
         MDL.contabilidad.cuenta_contable.save(cuenta_contable).then(e => {

@@ -97,8 +97,7 @@ export default class ToolTips extends Component<ToolTips_props> {
                                         flexWrap: "wrap",   // obliga a que el texto haga salto de línea
                                         overflow: "hidden", // evita que se salga
                                     }} color={colorText} fontSize={14} center>{this.props.descripcion}</SText> */}
-
-                                        <SMD fontSize={12} padding={5} >{this.props.descripcion}</SMD>
+                                        <SMD fontSize={12} padding={2} space={1} >{this.props.descripcion}</SMD>
                                     </ScrollView>
                                
 

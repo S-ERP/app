@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { SHr, SInput, SMath, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
@@ -32,7 +32,11 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                 userSelect: "text",
 
             }} withoutFeedback>
-                <SelectTipoPago {...props} />
+                <ScrollView style={{
+                    flex:1,
+                }}>
+                    <SelectTipoPago {...props} />
+                </ScrollView>
             </SView>
         })
     }
@@ -58,7 +62,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
         const suc = data.sucursales.find(suc => suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta));
         const pv = suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta);
         this.moneda = data.monedas.find(a => a.key == this.props.key_moneda);
-
+        this.moneda_base = data.monedas.find(a => a.tipo == "base");
         this.pvtp = pv.punto_venta_tipo_pago;
         this.pvtp = this.pvtp.map(item => {
             item.moneda = data.monedas.find(a => a.key == item.key_moneda)
@@ -99,13 +103,18 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                 const selecteds = this.pvtp.filter(a => !!a.__select);
                 if (!this.props.montoMaximoPorTipo) {
                     // item.monto = this.props.montoMaximoPorTipo[item.key_tipo_pago];
+                    let total = 0;
                     selecteds.forEach(pv => {
                         console.log(pv)
                         pv.monto = (this.props.montoMaximo || 0) / selecteds.length;
+                        total += parseFloat(pv.monto);
                         if (pv.__ref) {
-                            pv.__ref.setValue((pv.monto / pv.moneda.tipo_cambio).toFixed(2));
+                            pv.__ref.setValue((pv.monto / pv.moneda.tipo_cambio));
                         }
                     });
+
+                    // if (total != this.props.montoMaximo) {
+                    // Ajuste por tipo cambio
                 }
 
                 this.forceUpdate();
@@ -152,19 +161,37 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     <SView flex col={"xs-12"} center >
 
                         <SView col={"xs-12"} withoutFeedback>
-                            <SInput autoFocus ref={ref => item.__ref = ref} type='money2' defaultValue={(parseFloat(item.monto ?? "0") / parseFloat(item.moneda?.tipo_cambio ?? 1)).toFixed(2)} required
+                            <SInput
+                                autoFocus
+                                ref={ref => item.__ref = ref}
+                                type='money2'
+                                customStyle={"erp"}
+                                decimales={2}
+                                icon={<SText fontSize={10}>{item.moneda.observacion}</SText>}
+                                defaultValue={(parseFloat(item.monto ?? "0") / parseFloat(item.moneda?.tipo_cambio ?? 1)).toFixed(2)} required
                                 onChangeText={(e) => {
 
                                     item.monto = e;
                                     if (e > 0) {
                                         item.monto = (e * parseFloat(item.moneda?.tipo_cambio ?? 1)).toFixed(2);
-                                        this.forceUpdate();
+                                        if (item.__ref_extranjera) {
+                                            item.__ref_extranjera.setValue(item.monto);
+                                        }
+                                        // this.forceUpdate();
                                     }
                                 }}
                             />
+                            <SHr />
+                            {(item.moneda.tipo_cambio != 1) && < SInput
+                                customStyle={"erp"}
+                                ref={ref => item.__ref_extranjera = ref} type='money2' decimales={2}
+                                defaultValue={parseFloat(item.monto ?? "0")} required
+                                icon={<SText fontSize={10}>{this.moneda_base?.observacion}</SText>}
+
+                            />}
                         </SView>
-                        <SHr h={4} />
-                        <SText fontSize={10} color={STheme.color.lightGray}>{item.monto}</SText>
+                        {/* <SHr h={4} /> */}
+                        {/* <SText fontSize={10} color={STheme.color.lightGray}>{item.monto}</SText> */}
                     </SView>
                 </>}
             </SView>
@@ -189,7 +216,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
             }}>
                 <SText color={STheme.color.lightGray}>{"Monto Insertado: "}</SText>
                 <SView width={4} />
-                <SText bold fontSize={16}>{(this.pvtp ?? []).map(item => item.monto).reduce((a, b) => parseFloat(a) + parseFloat(b), 0)}</SText>
+                {/* <SText bold fontSize={16}>{((this.pvtp ?? []).map(item => parseFloat(item.monto) ?? 0).reduce((a, b) => a + b, 0))}</SText> */}
                 <SView width={16} />
                 <SText>{this.moneda?.descripcion}</SText>
             </SView>
@@ -214,9 +241,13 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     const elm = {};
                     const selecteds = this.pvtp.filter(a => !!a.__select);
                     selecteds.forEach(item => {
-                        elm[item.key] = parseFloat(item.monto).toFixed(2);
+                        console.log(item);
+                        elm[item.key] = {
+                            monto_nacional: parseFloat(item.monto),
+                            monto_extranjera: (parseFloat(item.monto) / parseFloat(item.moneda.tipo_cambio ?? 1))
+                        }
                         // montoTotal += SMath.formatMoney((item.monto+2000), 2);
-                        montoTotal += parseFloat(item.monto).toFixed(2);
+                        montoTotal += parseFloat(item.monto)
                     });
                     // Object.keys(this._select).forEach(key => {
                     //     console.log(this.pvtp)
