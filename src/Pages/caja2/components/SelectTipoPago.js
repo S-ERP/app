@@ -44,6 +44,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
         this.state = {
             ready: false,
         };
+        this.pvtp = [];
     }
 
     componentDidMount() {
@@ -59,7 +60,11 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
         const pv = suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta);
         this.moneda = data.monedas.find(a => a.key == this.props.key_moneda);
 
-        this.pvtp = pv.punto_venta_tipo_pago;
+        this.pvtp = pv?.punto_venta_tipo_pago;
+        console.log("PVTP ",this.pvtp)
+        if (!this.pvtp) this.pvtp = [];
+        // if (this.pvtp.length <= 0) {
+        //si no tiene tipos de pago asignados, asignar todos los tipos de pago
         this.pvtp = this.pvtp.map(item => {
             item.moneda = data.monedas.find(a => a.key == item.key_moneda)
             item.tipo_pago = this.tipo_pago[item.key_tipo_pago];
@@ -69,6 +74,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
             }
             return { ...item };
         });
+        // }
         if (this.props.solo_para_caja) {
             this.pvtp = this.pvtp.filter(a => a.tipo_pago?.pasa_por_caja);
         }

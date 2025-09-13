@@ -28,7 +28,11 @@ export default class root extends Component<indexPropsType> {
             key_usuario: MDL.usuario.session.key
         }).then(em => {
             console.log("empresasss", em);
-            this.setState({ data: Object.values(em.data) })
+            this.setState({
+                data: Object.values(em.data).sort((a, b) => {
+                    return new Date(b.fecha_ultima_visita) - new Date(a.fecha_ultima_visita);
+                })
+            });
         }).catch(em => {
             console.error(em);
         })
@@ -57,22 +61,26 @@ export default class root extends Component<indexPropsType> {
                         horizontal={false}
                         showsVerticalScrollIndicator={true}
                         data={this.state.data}
-                        renderItem={({ item }) => <SView row center onPress={() => {
-                            Model.empresa.Action.setEmpresa(item.empresa);
-                            let time = Platform.select({ web: 400, native: 800 });
-                            new SThread(time, "aaa").start(() => {
-                                SPopup.close("popup-lista-empresa")
-                                // SNavigation.goBack();
-                                SNavigation.reset("/");
-                            })
-                        }} style={{
-                            width: "100%",
-                            borderBottomColor: STheme.color.card,
-                            borderBottomWidth: 1,
-                            paddingTop: 6,
-                            paddingBottom: 6,
-                            backgroundColor: (MDL.empresa.select.key == item.empresa.key) ? STheme.color.card : null
-                        }}>
+                        renderItem={({ item }) => <SView row center
+                            onPress={() => {
+                                Model.empresa.Action.setEmpresa(item.empresa)
+
+                                let time = Platform.select({ web: 400, native: 800 });
+                                new SThread(time, "aaa").start(() => {
+                                    SPopup.close("popup-lista-empresa")
+                                    // SNavigation.goBack();
+                                    // this.componentDidMount();
+                                    SNavigation.reset("/");
+                                })
+                            }}
+                            style={{
+                                width: "100%",
+                                borderBottomColor: STheme.color.card,
+                                borderBottomWidth: 1,
+                                paddingTop: 6,
+                                paddingBottom: 6,
+                                backgroundColor: (MDL.empresa.select.key == item.empresa.key) ? STheme.color.card : null
+                            }}>
                             <SView width={28} height={28} style={{ padding: 4 }}>
                                 <SView flex height card style={{ borderRadius: 100, overflow: "hidden" }}>
                                     <SImage src={SSocket.api.empresa + "empresa/" + item.empresa.key} />
@@ -97,14 +105,16 @@ export default class root extends Component<indexPropsType> {
         return (
             <SView col={"xs-12"} card onPress={() => {
                 this.openPopup();
-            }} row>
+            }} row center>
                 <SView width={30} height={30} style={{ padding: 4 }}>
                     <SView flex height card style={{ borderRadius: 100, overflow: "hidden" }}>
                         <SImage src={SSocket.api.empresa + "empresa/" + MDL.empresa.select.key} />
                     </SView>
                 </SView>
                 <SView width={3} />
-                <SText bold center>{(miEmpresa?.razon_social.length > 15) ? (miEmpresa?.razon_social).substring(0, 15) + "..." : miEmpresa?.razon_social}</SText>
+                <SView flex justify >
+                    <SText bold fontSize={12} numberOfLines={1}>{miEmpresa?.razon_social}</SText>
+                </SView>
             </SView>
         );
     }
