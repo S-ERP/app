@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SDate, SHr, SIcon, SImage, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from "servisofts-socket";
 import MDL from '../../MDL';
@@ -58,11 +58,12 @@ export default class tabla extends Component {
                     color: STheme.color.warning,
                 });
             }
+            const registros = await MDL.compra_venta.getCuotasResumenTotal_ventas();
 
 
             Object.values(clientes).forEach(item => {
                 item.usuario = usuarios.find(u => u.key === item.key_usuario);
-
+                item.resumen_cuota = registros.find(r => r.key_cliente === item.key) || null;
                 item.ventas = transacciones ? transacciones.filter(transaccion => transaccion.key_cliente === item.key) : [];
             });
 
@@ -71,7 +72,7 @@ export default class tabla extends Component {
             console.error('Error loading initial data:', error);
             SNotification.send({
                 title: "Error",
-                body: "No se pudo cargar la lista de proveedores.",
+                body: "No se pudo cargar la lista de clientes.",
                 time: 3000,
                 color: STheme.color.danger,
             });
@@ -225,7 +226,7 @@ export default class tabla extends Component {
                     </SView>}
                 />
 
-                <DinamicTable.Col key={"nombres"} label='Nombre completo' width={180} data={(e) => e.row.nombres} />
+                <DinamicTable.Col key={"nombres"} label='Nombre completo' width={120} data={(e) => e.row.nombres} />
                 <DinamicTable.Col key={"telefono"} label='Teléfono' width={120} data={(e) => e.row.telefono} />
                 <DinamicTable.Col key={"correo"} label='Correo' width={150} data={(e) => e.row.correo} />
                 <DinamicTable.Col key={"nit"} label='Nit' width={90} data={(e) => e.row.nit} />
@@ -237,21 +238,91 @@ export default class tabla extends Component {
                 <DinamicTable.Col key={"sexo"} label='Sexo' width={80} data={(e) => e.row.sexo} />
                 <DinamicTable.Col key={"departamento"} label='Departamento' width={100} data={(e) => e.row.departamento} />
 
-                {/* <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-                <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
-                    customComponent={e => <>
-                        {(e.row?.key_usuario) ?
-                            <SView col={"xs-12"} row  >
-                                <SView style={{ width: 28 }}>
-                                    <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                        <SImage src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`} style={{ resizeMode: "cover" }} />
-                                    </SView>
+                <DinamicTable.Col key="cuota_1" wrap sumExcel label="Monto Pagado" width={90} data={(e) => e.row?.resumen_cuota?.monto_pagado ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end",
+                        backgroundColor: STheme.color.success + "33"
+                    }}
+                    format={(e) => !e.data ? "" : "Bs " + SMath.formatMoney(e.data)} />
+                <DinamicTable.Col key="cuota_2" wrap label="Cuotas Pagadas" width={60} data={(e) => e.row?.resumen_cuota?.cantidad_pagada ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end",
+                        backgroundColor: STheme.color.success + "33"
+                    }}
+                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+
+
+                <DinamicTable.Col key="cuota_3" wrap label="Monto Mora" width={90} data={(e) => e.row?.resumen_cuota?.monto_en_mora ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end",
+                        backgroundColor: STheme.color.danger + "33"
+                    }}
+                    format={(e) => !e.data ? "" : "Bs " + SMath.formatMoney(e.data)} />
+
+
+                <DinamicTable.Col key="cuota_4" wrap label="Cuotas Mora" width={60} data={(e) => e.row?.resumen_cuota?.cantidad_en_mora ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end",
+                        backgroundColor: STheme.color.danger + "33"
+                    }}
+                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+
+
+                <DinamicTable.Col key="cuota_5" wrap label="Monto Pendiente" width={90} data={(e) => e.row?.resumen_cuota?.monto_pendiente ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end",
+                        backgroundColor: STheme.color.warning + "33"
+                    }}
+                    format={(e) => !e.data ? "" : "Bs " + SMath.formatMoney(e.data)} />
+
+                <DinamicTable.Col key="cuota_6" wrap label="Cuotas Pendientes" width={60} data={(e) => e.row?.resumen_cuota?.cantidad_pendiente ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end",
+                        backgroundColor: STheme.color.warning + "33"
+                    }}
+                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+
+
+                <DinamicTable.Col
+                    key="estado_pago"
+                    wrap
+                    label="Estado de Pago"
+                    width={80}
+                    data={(e) => {
+                        const resumen = e.row?.resumen_cuota;
+                        if (!resumen) {
+                            return "Sin Deuda"; // Caso en que no hay resumen de cuotas
+                        }
+                        if (resumen.cantidad_en_mora > 0 || resumen.monto_en_mora > 0) {
+                            return "En Mora";
+                        }
+                        if (resumen.monto_pendiente <= 0) {
+                            return "Pagado";
+                        }
+                        return "Al Día";
+                    }}
+                    customComponent={(e) => {
+                        const statesTipo = {
+                            "Sin Deuda": { color: STheme.color.gray, label: "Sin Deuda" },
+                            "Al Día": { color: STheme.color.warning, label: "Al Día" },
+                            "En Mora": { color: STheme.color.danger, label: "En Mora" },
+                            "Pagado": { color: STheme.color.success, label: "Pagado" },
+                        }[e.data] || { color: STheme.color.gray, label: "Desconocido" };
+                        return (
+                            <SView row center>
+                                <SView
+                                    backgroundColor={statesTipo.color}
+                                    style={{ borderRadius: 4, padding: 5 }}
+                                >
+                                    <SText color={STheme.color.text} fontSize={10}>
+                                        {statesTipo.label}
+                                    </SText>
                                 </SView>
-                                <SView width={5} />
-                                <SText center color={STheme.color.text}>{e.row?.usuario?.Nombres}</SText>
-                            </SView> : null}
-                    </>}
-                /> */}
+                            </SView>
+                        );
+                    }}
+                />
+
 
                 <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
