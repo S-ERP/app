@@ -164,6 +164,8 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     return resp.data || [];
   }
 
+
+  // esto igual revisar
   async getTransaccionCuotasCompras(_key_proveedor: String) {
     //  @param {string} _key_usuario - Identificador único del usuario (cliente o proveedor).
     // Si `_tipo` es **"compra"**, el `_key_usuario` será interpretado como `key_proveedor`.
@@ -181,6 +183,9 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     return resp.data || [];
   }
 
+
+
+  // voy a revisar
   async getCuotasCompras(key_compra_venta: String) {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
@@ -193,6 +198,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
   }
 
 
+  // esto igual verlo
   async getTransaccionCuotasVentas(_key_cliente: String) {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
