@@ -11,73 +11,7 @@ import PopupCrearProveedor from './Components/PopupCrearProveedor';
 // import PopupPagarDeuda from './Components/PopupPagoCuota';
 // import proveedor from '.';
 // import PopupPagoCuota from './Components/PopupPagoCuota';
-const ejemploProveedor = [
-    {
-        "key": "15843bf1-0ee2-467d-8052-aa394d2cf477",
-        "razon_social": "CBN",
-        "nit": "12345678",
-        "nombre": "Juan Pérez",
-        "telefono": "+591 76543210",
-        "estado": 1,
-        "key_usuario": "11111111-aaaa-bbbb-cccc-111111111111",
-        "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-        "fecha_on": "2025-09-01T09:15:30.000",
-        "usuario": { "Nombres": "Ricardo" },
-        "compras": [{ "descripcion": "Compra rápida de insumos", "state": "mora", "cuotas": { "total": 720, "cantidad": 6 } }]
-    },
-    {
-        "key": "25843bf1-0ee2-467d-8052-aa394d2cf411",
-        "razon_social": "Tech Import",
-        "nit": "87654321",
-        "nombre": "María García",
-        "telefono": "+591 78912345",
-        "estado": 1,
-        "key_usuario": "22222222-aaaa-bbbb-cccc-222222222222",
-        "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-        "fecha_on": "2025-08-20T13:47:11.000",
-        "usuario": { "Nombres": "Ana" },
-        "compras": [{ "descripcion": "Compra de laptops", "state": "mora", "cuotas": { "total": 3600, "cantidad": 6 } }]
-    },
-    {
-        "key": "35843bf1-0ee2-467d-8052-aa394d2cf422",
-        "razon_social": "Distribuidora Santa Cruz",
-        "nit": "99887766",
-        "nombre": "Carlos López",
-        "telefono": "+591 70011223",
-        "estado": 1,
-        "key_usuario": "33333333-aaaa-bbbb-cccc-333333333333",
-        "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-        "fecha_on": "2025-09-03T07:27:50.000",
-        "usuario": { "Nombres": "Luis" },
-        "compras": [{ "descripcion": "Compra de bebidas", "state": "mora", "cuotas": { "total": 900, "cantidad": 6 } }]
-    },
-    {
-        "key": "45843bf1-0ee2-467d-8052-aa394d2cf433",
-        "razon_social": "OfiMuebles SRL",
-        "nit": "44556677",
-        "nombre": "Lucía Fernández",
-        "telefono": "+591 76500011",
-        "estado": 1,
-        "key_usuario": "44444444-aaaa-bbbb-cccc-444444444444",
-        "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-        "fecha_on": "2025-07-25T10:00:00.000",
-        "usuario": { "Nombres": "Marcos" },
-        "compras": [{ "descripcion": "Compra de muebles de oficina", "state": "mora", "cuotas": { "total": 6000, "cantidad": 6 } }]
-    },
-    {
-        "key": "55843bf1-0ee2-467d-8052-aa394d2cf444",
-        "razon_social": "AutoRepuestos Bolivia",
-        "nit": "22334455",
-        "nombre": "Miguel Torres",
-        "telefono": "+591 78889999",
-        "estado": 1,
-        "key_usuario": "55555555-aaaa-bbbb-cccc-555555555555",
-        "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-        "fecha_on": "2025-09-02T15:45:00.000",
-        "usuario": { "Nombres": "José" },
-        "compras": [{ "descripcion": "Compra de repuestos automotrices", "state": "mora", "cuotas": { "total": 2400, "cantidad": 6 } }]
-    }
-];
+
 export default class Lista extends Component {
     onSelect = SNavigation.getParam("onSelect");
     constructor(props) {

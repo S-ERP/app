@@ -1,8 +1,8 @@
 // @ts-nocheck
-import { Text, View, TextInput, ScrollView, KeyboardAvoidingView, Platform, TextStyle, ViewStyle } from 'react-native'
+import { Text, View, TextInput, ScrollView, KeyboardAvoidingView, Platform, TextStyle, ViewStyle, FlatList, Pressable } from 'react-native'
 import React, { Component } from 'react'
 import { SList, SStorage, SText, STheme, SThread, SView } from 'servisofts-component'
-import ReservedWords from './ReservedWords';
+import ReservedWords, { ReservedWord } from './ReservedWords';
 export type TextAreaTypes = keyof typeof ReservedWords;
 export type TextAreaProps = {
     pk?: string,
@@ -10,7 +10,9 @@ export type TextAreaProps = {
     type: TextAreaTypes,
     onChangeText?: (text: string) => void,
     title?: string,
-    style?: ViewStyle
+    style?: ViewStyle,
+    backgroundColor?: string,
+    reservedWords?: ReservedWord[],
 }
 export default class TextArea extends React.Component<TextAreaProps> {
     inp;
@@ -82,6 +84,14 @@ export default class TextArea extends React.Component<TextAreaProps> {
         if (Platform.OS == "web") {
             window.removeEventListener('keydown', this.handleKey);
         }
+    }
+    setValue(value) {
+        this.state.value = value;
+        this.setState({ value: this.state.value })
+        // if(this.inp){
+        // this.inp.setValue(value)
+        // }
+
     }
     getValue() {
         return this.state.value;
@@ -178,8 +188,8 @@ export default class TextArea extends React.Component<TextAreaProps> {
             this.props.onChangeText(text);
         }
         new SThread(500, "sad", true).start(() => {
-            console.log("fuardo el elmento")
             if (!this.props.pk) return;
+            console.log("fuardo el elmento")
             SStorage.setItem("sql_tap_" + this.props.pk, this.state.value)
         })
 
@@ -195,27 +205,48 @@ export default class TextArea extends React.Component<TextAreaProps> {
 
         return color;
     }
+    handleOnPress(evt) {
+        if (!this.wordMatch) return;
+        const { offsetX, offsetY } = evt.nativeEvent
+        this.wordMatch.filter(a => a.onPress).map(a => {
+            if (!a.layout) return;
+            if (a.layout.x < offsetX && a.layout.x + a.layout.width > offsetX && a.layout.y < offsetY && a.layout.y + a.layout.height > offsetY) {
+                console.log(a, offsetX, offsetY)
+                a.onPress(a.word)
+            }
+        })
+    }
 
+    wordMatch = []
+    wordPositions = {}
     buildWords(style) {
 
         // console.log(mayusc)
 
         let palabrasReservadasValue = ReservedWords[this.props.type ?? "SQL"];
+        if (this.props.reservedWords) {
+            palabrasReservadasValue = {
+                ...palabrasReservadasValue,
+                ...this.props.reservedWords
+            }
+        }
+
         // let palabrasReservadas = Object.keys(palabrasReservadasValue);
 
-        let wordMatch = []
+        this.wordMatch = []
         palabrasReservadasValue.forEach((palabra) => {
             let regex = palabra.regex
             let match;
             while ((match = regex.exec(this.state.value)) !== null) {
-                console.log(match)
+                // console.log(match)
                 let wordReserved = {
                     word: match[0],
                     indexStart: match.index,
                     indexEnd: match.index + match[0].length,
-                    color: palabra.color
+                    layout: this.wordPositions[match.index + ":" + (match.index + match[0].length)],
+                    ...palabra
                 }
-                wordMatch.push(wordReserved);
+                this.wordMatch.push(wordReserved);
             }
         })
         // });
@@ -226,15 +257,26 @@ export default class TextArea extends React.Component<TextAreaProps> {
         // }} />
         let index = 0;
         let ARRAY = [];
-        wordMatch.sort((a, b) => a.indexStart - b.indexStart).map(a => {
+
+        // this.wordPositions = {}
+        this.wordMatch.sort((a, b) => a.indexStart - b.indexStart).map(a => {
             if (index > a.indexStart) return;
             ARRAY.push(this.state.value.substring(index, a.indexStart))
-            ARRAY.push(<Text style={[style, { color: a.color }]}>{a.word}</Text>)
+            ARRAY.push(<Text
+                key={a.indexStart + ":" + a.indexEnd}
+                style={[style, a.style]}
+                onLayout={e => {
+                    a.layout = e.nativeEvent.layout;
+                    this.wordPositions[a.indexStart + ":" + a.indexEnd] = e.nativeEvent.layout
+                }}
+
+            >{a.word}{a.render?"":""}{a.render ? a.render(a.word) : null}</Text>)
             index = a.indexEnd;
         })
         ARRAY.push(this.state.value.substring(index, this.state.value.length))
         return <Text style={[style]}>{ARRAY}</Text>
     }
+
     render() {
         let textStyle: TextStyle = {
             fontSize: 12,
@@ -248,16 +290,18 @@ export default class TextArea extends React.Component<TextAreaProps> {
             color: "#d0eefeff",
             padding: 0,
             margin: 0,
+            ...this?.props?.style,
 
         }
         let style = {
             borderWidth: 0,
             overflow: "hidden",
             outline: "none",
-            ...textStyle
+            ...textStyle,
+
         }
         return (
-            <SView col={"xs-12"} flex backgroundColor='#171717' onLayout={e => {
+            <SView col={"xs-12"} flex backgroundColor={this.props.backgroundColor ?? "#171717"} onLayout={e => {
                 this.state.layout = e.nativeEvent.layout
                 this.setState({ ...this.state })
             }}>
@@ -280,14 +324,16 @@ export default class TextArea extends React.Component<TextAreaProps> {
                         <SView col={"xs-12"} row flex >
                             <SView width={10} ></SView>
                             <SView width={30} >
-                                <SList space={0}
+                                <FlatList space={0}
                                     scrollEnabled={false}
-                                    data={this.state.value.split("\n")} render={(o, k, i) => <Text style={{
+                                    data={this.state.value.split("\n")}
+
+                                    renderItem={({ item, index }) => <Text style={{
                                         ...textStyle,
                                         color: "#666",
                                         fontSize: textStyle.fontSize - 2,
 
-                                    }}>{((i + 1) + "").padStart(4, " ")}</Text>} />
+                                    }}>{((index + 1) + "").padStart(4, " ")}</Text>} />
                             </SView>
                             <SView width={20} style={{
                                 borderRightWidth: 1,
@@ -303,60 +349,64 @@ export default class TextArea extends React.Component<TextAreaProps> {
                                     <SView row style={{
                                         width: Math.max(500, (this.state?.layout?.width ?? 100) - 80),
                                         // width: 3000,
-                                        height: Math.max(parseFloat(this.state?.height ?? 0), this.state?.layout?.height ?? 100),
+                                        height: Math.max(parseFloat(this.state?.height ?? 0), this.state?.layout?.height ?? 400),
                                     }}>
                                         <View style={{ position: "absolute", top: 0, right: 0, width: "100%", height: "100%" }} >
-                                            <TextInput
-                                                ref={ref => this.inp = ref}
-                                                value={this.state.value}
-                                                onLayout={(evt) => {
-                                                    // console.log(evt);/
-                                                }}
-                                                cursorColor={"#000000"}
-                                                // allowFontScaling={false}
-                                                scrollEnabled={false}
-                                                style={{
-                                                    ...style,
-                                                    paddingTop: 0,//No quitar son para IOS
-                                                    marginTop: 0,//No quitar son para IOS
-                                                    padding: 0,
-                                                    margin: 0,
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    // color: "#ffffff",
-                                                }}
-                                                autoCorrect={false}
-                                                autoFocus
-                                                multiline={true}
-                                                rows={1000}
-                                                onKeyPress={this.handleOnKeyPress.bind(this)}
-                                                onChangeText={this.handleOnChangeText.bind(this)}
-                                                onFocus={(evt) => {
-                                                    // this.scrollViewVertical.scrollTo({ x: 0, y: 0, animated: false })
-                                                }}
-                                                onSubmitEditing={e => {
+                                            <Pressable style={{
+                                                flex: 1,
+                                            }} onPress={e => this.handleOnPress(e)}>
+                                                <TextInput
+                                                    ref={ref => this.inp = ref}
+                                                    value={this.state.value}
+                                                    onLayout={(evt) => {
+                                                        // console.log(evt);/
+                                                    }}
+                                                    cursorColor={"#000000"}
+                                                    // allowFontScaling={false}
+                                                    scrollEnabled={false}
+                                                    style={{
+                                                        ...style,
+                                                        paddingTop: 0,//No quitar son para IOS
+                                                        marginTop: 0,//No quitar son para IOS
+                                                        padding: 0,
+                                                        margin: 0,
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        // color: "#ffffff",
+                                                    }}
+                                                    autoCorrect={false}
+                                                    autoFocus
+                                                    multiline={true}
+                                                    rows={1000}
+                                                    onKeyPress={this.handleOnKeyPress.bind(this)}
+                                                    onChangeText={this.handleOnChangeText.bind(this)}
+                                                    onFocus={(evt) => {
+                                                        // this.scrollViewVertical.scrollTo({ x: 0, y: 0, animated: false })
+                                                    }}
 
-                                                }}
-                                                onContentSizeChange={(event) => {
-                                                    this.state.width = event.nativeEvent.contentSize.width;
-                                                    if (this.state.height != event.nativeEvent.contentSize.height) {
-                                                        this.state.height = event.nativeEvent.contentSize.height;
-                                                        this.setState({ ...this.state })
+                                                    onSubmitEditing={e => {
 
-                                                    }
-                                                }}
-                                                onSelectionChange={(e) => {
-                                                    if (this.state.event == "tab" || this.state.event == "comment") {
-                                                        this.state.event = "onSelectionChange";
-                                                        // this.setState({ ...this.state })
-                                                        return;
-                                                    }
-                                                    this.state.selection = e.nativeEvent.selection;
-                                                    // this.setState({ selection:this.state.se })
+                                                    }}
+                                                    onContentSizeChange={(event) => {
+                                                        this.state.width = event.nativeEvent.contentSize.width;
+                                                        if (this.state.height != event.nativeEvent.contentSize.height) {
+                                                            this.state.height = event.nativeEvent.contentSize.height;
+                                                            this.setState({ ...this.state })
+                                                        }
+                                                        // if(this.props.onChangeText)
+                                                    }}
+                                                    onSelectionChange={(e) => {
+                                                        if (this.state.event == "tab" || this.state.event == "comment") {
+                                                            this.state.event = "onSelectionChange";
+                                                            // this.setState({ ...this.state })
+                                                            return;
+                                                        }
+                                                        this.state.selection = e.nativeEvent.selection;
+                                                        // this.setState({ selection:this.state.se })
 
-                                                }}
-                                            />
-
+                                                    }}
+                                                />
+                                            </Pressable>
                                         </View>
 
                                         <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", width: "100%", }} >

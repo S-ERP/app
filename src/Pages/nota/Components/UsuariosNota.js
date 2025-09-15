@@ -103,8 +103,6 @@ export default class UsuariosNota extends Component {
                     return this.TypeAdd(o);
             }
         }
-        console.log("OOOOOOO")
-        console.log(o)
         return <SView onPress={() => {
             // SNavigation.navigate("/chat/profile", { pk: data.key })
             SPopup.open({ key: "menuNotasUsuario", content: <Popups.BoxNotas datas={o} /> });

@@ -15,17 +15,35 @@ export default class erp extends MDLAbstract<EventListener> {
     server_listeners: ServerListener[] = []
 
 
+    compare(a: any, b: any, lvl = 0) {
+        const keys = Object.keys(a);
+        for (let i = 0; i < keys.length; i++) {
+            const k = keys[i];
+            if (k == "key" && lvl == 0) continue;
+            if (k == "callback" && lvl == 0) continue;
+
+            // Compraramos si a[k] es json
+            if (typeof a[k] == "object" && typeof b[k] == "object" && a[k] != null && b[k] != null) {
+                if (!this.compare(a[k], b[k], lvl + 1)) return false;
+                continue;
+            }
+            if (a[k] != b[k]) return false;
+        }
+
+        // .forEach(k => {
+        //     if (k == "key") return;
+        //     if (k == "callback") return;
+        //     if (e[k] == (listener as any)[k]) return;
+        //     valid = false;
+        // })
+        return true;
+    }
     async componentDidMount() {
         SSocket.addEventListener("onMessage", (e: any) => {
             if (this.server_listeners) {
-                this.server_listeners.forEach((listener:any) => {
-                    let valid = true
-                    Object.keys(listener).forEach(k => {
-                        if (k == "key") return;
-                        if (k == "callback") return;
-                        if (e[k] == (listener as any)[k]) return;
-                        valid = false;
-                    })
+                this.server_listeners.forEach((listener: any) => {
+                    let valid = this.compare(listener, e)
+
                     if (valid) {
                         if (listener.callback) listener.callback(e);
                     }
@@ -34,7 +52,7 @@ export default class erp extends MDLAbstract<EventListener> {
         })
     }
 
-    addServerListener(listener: ServerListener & { callback: (data: any) => void, } & {[k: string]: any}) {
+    addServerListener(listener: ServerListener & { callback: (data: any) => void, } & { [k: string]: any }) {
         const exists: any = this.server_listeners.find((a) => {
             return a.key == listener.key
         })

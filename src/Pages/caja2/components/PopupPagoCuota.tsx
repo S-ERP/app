@@ -111,8 +111,8 @@ export default class PopupPagoCuota extends Component {
             const saldoPendiente = parseFloat(item.monto || 0);
 
             // el mejor alvaro
-            if (item.estado == "Pagado" ) {
-            // luego lo vere if (item.estado == "Pagado" && item.monto == item.monto_total) {
+            if (item.estado == "Pagado") {
+                // luego lo vere if (item.estado == "Pagado" && item.monto == item.monto_total) {
 
                 // if (item.estado == "Pagado") {
                 item.estado = "Pagado";
@@ -326,7 +326,7 @@ export default class PopupPagoCuota extends Component {
                     <SView row center style={{ justifyContent: "space-between" }} backgroundColor='transparent'>
                         <SView flex row style={{ paddingTop: 4 }}>
                             <SText fontSize={16} bold color={COLOR_TEXT}>Cuota #{cuota.numero}</SText>
-                         </SView>
+                        </SView>
                         <SView>{this.labelEstado(cuota.estado, isVencida)}</SView>
                     </SView>
                     <SHr h={4} />
@@ -588,40 +588,14 @@ export default class PopupPagoCuota extends Component {
                                         data: {
                                             descripcion: "Amortización de cuota desde caja.",
                                             observacion: "-ni una-",
-                                            monto: monto,
                                             fecha: hoy,
+                                            tipo_pago: item,
                                             key_cuotas: cuotaKeys,
                                             key_caja_detalle: activa?.key_punto_venta
                                         },
                                         key_usuario: Model.usuario.Action.getKey()
                                     }).then(e => {
                                         const obj = { data: { key_amortizacion: e.data?.key } };
-                                        Model.caja_detalle.Action.editar({
-                                            data: obj,
-                                            key_empresa: Model.empresa.Action.getSelect()?.key,
-                                            key_usuario: Model.usuario.Action.getKey()
-                                        }).then((e) => {
-                                            console.log("Éxito:", JSON.stringify(e));
-                                            SNotification.send({
-                                                title: 'Éxito',
-                                                body: 'Pago registrado correctamente.',
-                                                time: 3000,
-                                                color: STheme.color.success,
-                                                position: 'top',
-                                            });
-                                            this.props.onSuccess?.({ cuotas: selectedCuotas, monto });
-                                            const summary = this.calculateCuotaSummary(this.cuotasCompras);
-                                            this.setState(summary);
-                                        }).catch(e => {
-                                            console.error("Error al editar el movimiento de caja:", e);
-                                            SNotification.send({
-                                                title: 'Error',
-                                                body: 'No se pudo registrar el movimiento de caja.',
-                                                time: 3000,
-                                                color: STheme.color.danger,
-                                                position: 'top',
-                                            });
-                                        });
                                     }).catch(e => {
                                         console.error("Error al amortizar:", e);
                                         SNotification.send({

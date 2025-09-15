@@ -8,21 +8,51 @@ import Model from '../../Model';
 import UsuariosNota from './Components/UsuariosNota';
 import ChangeColor from './Components/ChangeColor';
 import PButtom3 from '../../Components/PButtom3';
+import MDL from '../../MDL';
+import TextArea from '../../Components/QueryTool/TextArea';
+import ReservedWords from '../../Components/QueryTool/ReservedWords';
+import DropZoneWeb from '../../Components/InputFoto/DropZoneWeb';
 
 
 export default class root extends Component {
+    windowID = SUuid();
+    pk = SNavigation.getParam("pk")
     constructor(props) {
         super(props);
         this.state = {
         };
-        this.pk = SNavigation.getParam("pk", SUuid())
     }
 
     componentDidMount() {
         this.isClose = false;
         this.loadData();
-        this.hilo();
+        // this.hilo();
+
+        MDL.erp.addServerListener({
+            key: "nota_edit_" + this.pk,
+            component: "nota",
+            type: "editar",
+            key_empresa: MDL.empresa.select?.key,
+            data: {
+                key: this.pk
+            },
+            callback: (response) => {
+                if (response.windowID == this.windowID) return;
+                console.log("nota_edit_" + this.pk, response);
+                this.setState({
+                    data: {
+                        ...this.state.data,
+                        ...response.data
+                    }
+                })
+                if (this.inp) this.inp.setValue(response.data?.observacion ?? "")
+                // if (data.instance_id != config.current.instance_id) {
+                // loadDataFromServer();
+                // }
+            }
+        })
     }
+
     loadData() {
         SSocket.sendPromise({
             component: "nota",
@@ -30,13 +60,13 @@ export default class root extends Component {
             key: this.pk
         }).then(e => {
             this.setState({ data: e.data[this.pk] })
-            this.inp.setValue(e?.data[this.pk]?.observacion)
+            this.inp.setValue(e?.data[this.pk]?.observacion ?? "")
         }).catch(e => {
             console.error(e);
         })
     }
     hilo() {
-        new SThread(5000, "hilo_nota", false).start(() => {
+        new SThread(2000, "hilo_nota", false).start(() => {
             if (this.isClose) return;
             this.hilo();
             if (this.onEdit) return;
@@ -45,7 +75,11 @@ export default class root extends Component {
         })
     }
     componentWillUnmount() {
+        MDL.erp.removeServerListener({
+            key: "nota_edit_" + this.pk,
+        })
         if (this.inp) {
+            if (!this.inp.getValue()) return;
             this.save(this.inp.getValue());
         }
         this.isClose = true;
@@ -53,9 +87,9 @@ export default class root extends Component {
     }
     save(val) {
         if (this.isClose) return;
-        if (!val) return;
+        // if (!val) return;
         if (this?.state?.data?.observacion == val) return;
-        if (!this.state.data) {
+        if (!this.pk) {
             this.setState({ cargando: true })
             Model.nota.Action.registro({
                 data: {
@@ -70,11 +104,13 @@ export default class root extends Component {
             })
         } else {
 
+            this.state.data.observacion = val;
             Model.nota.Action.editar({
                 data: {
                     ...this.state.data,
                     observacion: val,
                 },
+                windowID: this.windowID,
                 key_empresa: Model.empresa.Action.getKey(),
                 key_usuario: Model.usuario.Action.getKey(),
             }).then(e => {
@@ -87,7 +123,35 @@ export default class root extends Component {
     menu() {
         if (!this.state.data) return;
         return <SView col={"xs-12"} row >
-            <SHr height={15} />
+            <SHr height={8} />
+            <SView style={{ width: 100, height: 40 }}>
+                <SInput
+                    style={{
+                        color: "#000",
+                        height: 30
+                    }}
+                    type='select2'
+                    customStyle={"erp"}
+                    value={this.state?.data?.type ?? "TEXT"}
+                    label={"type"} options={Object.keys(ReservedWords)}
+                    onChangeText={e => {
+                        if (!e) return;
+                        if (!ReservedWords[e]) return;
+                        this.state.data.type = e;
+                        this.setState({ ...this.state })
+                        Model.nota.Action.editar({
+                            data: {
+                                ...this.state.data,
+                                type: e,
+                            },
+                            key_empresa: Model.empresa.Action.getKey(),
+                            key_usuario: Model.usuario.Action.getKey(),
+                        }).then(e => {
+
+                        })
+                    }}
+                />
+            </SView>
             <ChangeColor value={this.state?.data?.color} onChange={(color => {
                 this.state.data.color = color;
                 this.setState({ ...this.state })
@@ -160,8 +224,35 @@ export default class root extends Component {
             <SView flex col={"xs-12"} backgroundColor={this.state?.data?.color ?? "#E9E389"}>
                 {!this.state?.data ? null : <UsuariosNota key_nota={this.pk} />}
                 {this.menu()}
+                <SView flex col={"xs-12"}>
+                    <DropZoneWeb handleDropFiles={(files,evt) => {
+                        console.log(files, evt);
+                    }}>
+                        <TextArea
+                            key={this.pk}
+                            style={{
+                                color: "#000",
+                                caretColor: "#000",
+                                font: "Roboto",
+                                fontFamily: "Roboto",
+                                fontSize: 14,
+                            }} backgroundColor='transparent'
+                            type={(!!this.state?.data?.type && !!ReservedWords[this.state?.data?.type]) ? this.state?.data?.type : "TEXT"}
+                            ref={ref => this.inp = ref}
+                            defaultValue={this.state?.data?.observacion ?? ""}
+                            onChangeText={e => {
+                                if (e == this.state?.data?.observacion) return;
+                                this.onEdit = true;
+                                new SThread(500, "nota_change", true).start(a => {
+                                    this.onEdit = false;
+                                    this.save(e);
+                                })
+                            }}
+                        />
+                    </DropZoneWeb>
 
-                <SInput ref={ref => this.inp = ref}
+
+                    {/* <SInput ref={ref => this.inp = ref}
                     type={"textArea"}
                     customStyle={"clean"}
                     width={"100%"}
@@ -171,7 +262,7 @@ export default class root extends Component {
                     multiline
                     style={{
                         color: "#000",
-                        flex:1,
+                        flex: 1,
                         // backgroundColor:"#f0f",
                         padding: 6,
                         textAlignVertical: 'top'
@@ -179,17 +270,11 @@ export default class root extends Component {
                         // alignItems:"flex-start",
                         // textAlign:"left"
                     }}
+                    placeholderTextColor={"#999"}
                     placeholder={"¡Hola! Escribe tu mensaje y no te preocupes por guardarlo. \n¡se guardará automáticamente en unos segundos!"}
-                    onChangeText={e => {
-                        if (e == this.state?.data?.observacion) return;
-                        this.onEdit = true;
-                        new SThread(3000, "nota_change", true).start(a => {
-                            this.onEdit = false;
-                            this.save(e);
-                        })
-                    }}
-                />
-
+                    
+                /> */}
+                </SView>
             </SView>
 
             {/* <SView height={50} backgroundColor={STheme.color.danger} style={{position:"relative", bottom:0, right:0}}>

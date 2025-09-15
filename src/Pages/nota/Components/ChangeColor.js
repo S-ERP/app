@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SView } from 'servisofts-component';
+import { STheme, SView } from 'servisofts-component';
 
 export default class ChangeColor extends Component {
     constructor(props) {
@@ -36,8 +36,9 @@ export default class ChangeColor extends Component {
             this.state.value = this.props.value;
         }
         return <SView row >
+            {this.Color({ color: STheme.color.background }) /*AMARILLO*/}
             {this.Color({ color: "#E7E28D" }) /*AMARILLO*/}
-            {this.Color({ color: "#D2E9E1" }) /*CELESTE*/} 
+            {this.Color({ color: "#D2E9E1" }) /*CELESTE*/}
             {this.Color({ color: "#D5EDB9" }) /*VERDE*/}
             {this.Color({ color: "#F0C1CA" }) /*ROSADO*/}
             {this.Color({ color: "#DCCBED" }) /*LILA*/}

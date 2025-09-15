@@ -3,7 +3,7 @@ import { GestureResponderEvent, TouchableOpacity, UIManager, ViewStyle } from "r
 import { SImage, SText, SUuid } from "servisofts-component";
 
 
-export default class DropZoneWeb extends React.Component<{ children: any, handleDropFiles?: (files: File[]) => void }> {
+export default class DropZoneWeb extends React.Component<{ children: any, handleDropFiles?: (files: File[], evt:any) => void }> {
     key: string = SUuid();
     componentDidMount(): void {
         // @ts-ignore
@@ -26,8 +26,8 @@ export default class DropZoneWeb extends React.Component<{ children: any, handle
         dropzone.addEventListener('drop', () => dropzone.classList.remove('hover'));
         dropzone.addEventListener('drop', (e: any) => {
             const files = e.dataTransfer.files;
-            if(this.props.handleDropFiles) {
-                this.props.handleDropFiles(Array.from(files));
+            if (this.props.handleDropFiles) {
+                this.props.handleDropFiles(Array.from(files), e);
             }
         });
     }
