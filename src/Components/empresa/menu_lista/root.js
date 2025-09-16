@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, FlatList, Platform } from 'react-native';
-import { SHr, SImage, SNavigation, SPopup, SText, STheme, SThread, SView } from 'servisofts-component';
+import { SDate, SHr, SImage, SNavigation, SPopup, SText, STheme, SThread, SView } from 'servisofts-component';
 import Components from '../..';
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
@@ -30,9 +30,12 @@ export default class root extends Component<indexPropsType> {
             console.log("empresasss", em);
             this.setState({
                 data: Object.values(em.data).sort((a, b) => {
+                    console.log("ENTRO")
                     return new Date(b.fecha_ultima_visita) - new Date(a.fecha_ultima_visita);
                 })
             });
+            console.log("ENTROOOO")
+
         }).catch(em => {
             console.error(em);
         })
@@ -64,13 +67,18 @@ export default class root extends Component<indexPropsType> {
                         renderItem={({ item }) => <SView row center
                             onPress={() => {
                                 Model.empresa.Action.setEmpresa(item.empresa)
-
-                                let time = Platform.select({ web: 400, native: 800 });
-                                new SThread(time, "aaa").start(() => {
-                                    SPopup.close("popup-lista-empresa")
+                                SNavigation.reset("/loby", { dateLoad: new SDate().toString("yyyy-MM-dd hh:mm:ss") });
+                                // let time = Platform.select({ web: 400, native: 800 });
+                                SPopup.close("popup-lista-empresa")
+                                new SThread(1000, "aaa").start(() => {
+                                    // 
                                     // SNavigation.goBack();
-                                    // this.componentDidMount();
-                                    SNavigation.reset("/");
+                                    this.componentDidMount();
+                                    // SNavigation.reset("/");
+                                    // SNavigation.reset("/loby", { dateLoad: new SDate().toString("yyyy-MM-dd hh:mm:ss") });
+
+
+
                                 })
                             }}
                             style={{
@@ -101,7 +109,7 @@ export default class root extends Component<indexPropsType> {
     render() {
         let miEmpresa = MDL.empresa.select;
         if (!miEmpresa) return null;
-
+        console.log("DATA EMPRESAS", this.state.data);
         return (
             <SView col={"xs-12"} card onPress={() => {
                 this.openPopup();
