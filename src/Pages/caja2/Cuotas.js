@@ -114,122 +114,83 @@ export default class Cuotas extends Component {
     }
 
     async loadData() {
-        try {
-            // Validar parámetros de entrada
-            this.key_proveedor = SNavigation.getParam('key_proveedor') || '';
-            this.key_cliente = SNavigation.getParam('key_cliente') || '';
+    try {
+        // Obtener parámetros de entrada
+        const key_proveedor = SNavigation.getParam('key_proveedor') || '';
+        const key_cliente = SNavigation.getParam('key_cliente') || '';
 
-            if (!this.key_proveedor && !this.key_cliente) {
-                console.warn('No se proporcionaron key_proveedor ni key_cliente');
-                return this.getDefaultData();
-            }
-
-            // Inicializar registros
-            let registros = [];
-            if (this.key_proveedor) {
-                registros = await MDL.compra_venta.getTransaccionCuotasCompras(this.key_proveedor);
-            } else if (this.key_cliente) {
-                registros = await MDL.compra_venta.getTransaccionCuotasVentas(this.key_cliente);
-            }
-
-            // Validar registros
-            if (!Array.isArray(registros)) {
-                console.warn('Registros no es un array válido:', registros);
-                return this.getDefaultData();
-            }
-
-            if (registros.length === 0) {
-                return this.getDefaultData();
-            }
-
-            // Limitar consultas simultáneas para evitar sobrecarga
-            const BATCH_SIZE = 10;
-            const cuotasResults = [];
-            for (let i = 0; i < registros.length; i += BATCH_SIZE) {
-                const batch = registros.slice(i, i + BATCH_SIZE);
-                const results = await Promise.all(
-                    batch.map(compra =>
-                        MDL.compra_venta.getCuotasCompras(compra.key).catch(err => {
-                            console.error(`Error al obtener cuotas para compra ${compra.key}:`, err);
-                            return [];
-                        })
-                    )
-                );
-                cuotasResults.push(...results);
-            }
-
-            // Inicializar resumen global
-            const globalSummary = {
-                cant_pendientes: 0,
-                cant_mora: 0,
-                cant_pagado: 0,
-                montototal_pendientes: 0,
-                montototal_mora: 0,
-                montototal_pagado: 0,
-                deudaTotal: {},
-            };
-
-            // Procesar compras y cuotas
-            registros.forEach((compra, index) => {
-                if (!compra || !compra.key) {
-                    console.warn(`Compra inválida en índice ${index}`);
-                    return;
-                }
-
-                const cuotas = Array.isArray(cuotasResults[index]) ? cuotasResults[index] : [];
-                const moneda = compra.moneda || 'BOB';
-                compra.cuotasDetalle = cuotas;
-                compra.summary = this.calculateCuotaSummary(cuotas, moneda);
-
-                globalSummary.cant_pendientes += compra.summary.cant_pendientes || 0;
-                globalSummary.cant_mora += compra.summary.cant_mora || 0;
-                globalSummary.cant_pagado += compra.summary.cant_pagado || 0;
-                globalSummary.montototal_pendientes += parseFloat(compra.summary.montototal_pendientes || 0);
-                globalSummary.montototal_mora += parseFloat(compra.summary.montototal_mora || 0);
-                globalSummary.montototal_pagado += parseFloat(compra.summary.montototal_pagado || 0);
-                globalSummary.deudaTotal[moneda] = (globalSummary.deudaTotal[moneda] || 0) + parseFloat(compra.summary.deudaTotal || 0);
-            });
-
-            // Obtener proveedor o cliente
-            const [proveedor, clienteData] = await Promise.all([
-                this.key_proveedor ? MDL.inventario.proveedor.getByKey(this.key_proveedor).catch(err => {
-                    console.error('Error al obtener proveedor:', err);
-                    return {};
-                }) : Promise.resolve({}),
-                this.key_cliente ? MDL.crm.cliente.getByKey(this.key_cliente).catch(err => {
-                    console.error('Error al obtener cliente:', err);
-                    return {};
-                }) : Promise.resolve({})
-            ]);
-
-            const cliente = Object.values(clienteData)[0] || {};
-
-            // Determinar moneda por defecto
-            const monedaDefault = Object.keys(globalSummary.deudaTotal).length
-                ? Object.keys(globalSummary.deudaTotal).reduce(
-                      (a, b) => (globalSummary.deudaTotal[a] > globalSummary.deudaTotal[b] ? a : b),
-                      'BOB'
-                  )
-                : 'BOB';
-
-            return {
-                cant_pendientes: globalSummary.cant_pendientes,
-                cant_mora: globalSummary.cant_mora,
-                cant_pagado: globalSummary.cant_pagado,
-                montototal_pendientes: globalSummary.montototal_pendientes.toFixed(2),
-                montototal_mora: globalSummary.montototal_mora.toFixed(2),
-                montototal_pagado: globalSummary.montototal_pagado.toFixed(2),
-                deudaTotal: Object.keys(globalSummary.deudaTotal).length ? globalSummary.deudaTotal : null,
-                proveedor: proveedor || {},
-                cliente: cliente || {},
-                compras: registros,
-                monedaDefault,
-            };
-        } catch (error) {
-            console.error('Error crítico en loadData:', error);
+        if (!key_proveedor && !key_cliente) {
+            console.warn('No se proporcionaron key_proveedor ni key_cliente');
             return this.getDefaultData();
         }
+
+        // Obtener registros según el tipo
+        const registros = key_proveedor
+            ? await MDL.compra_venta.getTransaccionCuotasCompras(key_proveedor)
+            : await MDL.compra_venta.getTransaccionCuotasVentas(key_cliente);
+
+        if (!Array.isArray(registros) || registros.length === 0) {
+            console.warn('No hay registros válidos');
+            return this.getDefaultData();
+        }
+
+        // Calcular resumen global usando reduce
+        const globalSummary = registros.reduce((acc, item) => {
+            const moneda = item.moneda || 'BOB';
+
+            acc.cant_pendientes += item.cuotas_en_pendientes?.cantidad || 0;
+            acc.cant_mora += item.cuotas_en_mora?.cantidad || 0;
+            acc.cant_pagado += item.cuotas_en_amortizacion?.cantidad || 0;
+
+            const montoPend = parseFloat(item.cuotas_en_pendientes?.monto || 0);
+            const montoMora = parseFloat(item.cuotas_en_mora?.monto || 0);
+            const montoPag = parseFloat(item.cuotas_en_amortizacion?.monto || 0);
+
+            acc.total_pendientes += montoPend;
+            acc.total_mora += montoMora;
+            acc.total_pagado += montoPag;
+
+            acc.deudaTotal[moneda] = (acc.deudaTotal[moneda] || 0) + montoPend + montoMora + montoPag;
+
+            return acc;
+        }, {
+            cant_pendientes: 0,
+            cant_mora: 0,
+            cant_pagado: 0,
+            total_pendientes: 0,
+            total_mora: 0,
+            total_pagado: 0,
+            deudaTotal: {},
+        });
+
+        // Obtener proveedor y cliente
+        const [proveedorData, clienteData] = await Promise.all([
+            key_proveedor ? MDL.inventario.proveedor.getByKey(key_proveedor).catch(() => ({})) : Promise.resolve({}),
+            key_cliente ? MDL.crm.cliente.getByKey(key_cliente).catch(() => ({})) : Promise.resolve({})
+        ]);
+
+        const cliente = Object.values(clienteData)[0] || {};
+
+        // Retornar resultado final
+        return {
+            cant_pendientes: globalSummary.cant_pendientes,
+            cant_mora: globalSummary.cant_mora,
+            cant_pagado: globalSummary.cant_pagado,
+            montototal_pendientes: globalSummary.total_pendientes.toFixed(2),
+            montototal_mora: globalSummary.total_mora.toFixed(2),
+            montototal_pagado: globalSummary.total_pagado.toFixed(2),
+            deudaTotal: Object.keys(globalSummary.deudaTotal).length ? globalSummary.deudaTotal : null,
+            proveedor: proveedorData,
+            cliente,
+            compras: registros,
+        };
+    } catch (error) {
+        console.error('Error crítico en loadData:', error);
+        return this.getDefaultData();
     }
+}
+
+
 
     getDefaultData() {
         return {
@@ -291,15 +252,12 @@ export default class Cuotas extends Component {
         const { data, loading, showPaid } = this.state;
         if (loading || !data) return this.renderLoading();
 
+        console.log("todo " + JSON.stringify(data))
         const { cliente, proveedor, montototal_pendientes, montototal_mora, monedaDefault, compras } = data;
 
-        const filteredCompras = showPaid
-            ? compras
-            : compras.filter(compra => compra.summary?.deudaTotal > 0 && compra.cuotasDetalle?.length > 0);
+        const filteredCompras = showPaid ? compras : compras.filter(compra => compra.summary?.deudaTotal > 0 && compra.cuotasDetalle?.length > 0);
 
-        const totalPagado = showPaid
-            ? parseFloat(data.montototal_pagado)
-            : filteredCompras.reduce((sum, compra) => sum + parseFloat(compra.summary.montototal_pagado || 0), 0).toFixed(2);
+        const totalPagado = showPaid ? parseFloat(data.montototal_pagado) : filteredCompras.reduce((sum, compra) => sum + parseFloat(compra.summary.montototal_pagado || 0), 0).toFixed(2);
 
         const cantidadCompras = filteredCompras.length;
 
