@@ -85,9 +85,9 @@ export default class Barra extends React.Component {
                     >
                         <Page label={"Perfil"} url={"/empresa"} permiso={"ver"} />
                         <Page label={"Sucursales"} url={"/sucursal"} permiso={"ver"} />
-                        <Page label={"Configurar íconos"} url={"/empresa/configIcon"} permiso={"edit"} permiso_url="/empresa" />
-                        <Page label={"Config"} url={"/empresa/config"} permiso={"edit"} permiso_url="/empresa" />
-                        <Page label={"Config2"} url={"/empresa/config2"} permiso={"edit"} permiso_url="/empresa" />
+                        <Page label={"Configurar íconos"} url={"/empresa/configIcon"} permiso={"edit"} permiso_url="/empresa/configIcon" />
+                        <Page label={"Config"} url={"/empresa/config"} permiso={"edit"} permiso_url="/empresa/config" />
+                        <Page label={"Config2"} url={"/empresa/config2"} permiso={"edit"} permiso_url="/empresa/config2" />
                         <Page label={"Moneda"} url={"/empresa/moneda"} permiso={"ver"} permiso_url="/empresa/moneda" />
                     </Page>
                     <Page label={"Contabilidad"}
@@ -106,7 +106,7 @@ export default class Barra extends React.Component {
 
                         <Page label={"Balance general"} url={"/conta/balance"} permiso="ver" />
                         <Page label={"Libro Diario"} url={"/conta/libro_diario"} permiso="ver" />
-                        <Page label={"Cuentas T"} url={"/conta/cuentas_t"} permiso_url={"/conta/cuentas"} permiso="ver" />
+                        <Page label={"Cuentas T"} url={"/conta/cuentas_t"} permiso_url={"/conta/cuentas_t"} permiso="ver" />
                         <Page label={"Sistema Antiguo"} url={"/contabilidad"} permiso="ver" />
 
                         {/* </Page> */}
@@ -116,8 +116,8 @@ export default class Barra extends React.Component {
                         icon={<ImagePage key_page="c50a9c4a-429c-426e-9ebf-c6874da14062" />}
                     >
                         <Page label={"Almacenes"} url={"/inventario"} permiso="ver" />
-                        <Page label={"Tipos de productos"} url={"/productos/tipo_producto/table"} permiso="ver" permiso_url="/inventario" />
-                        <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" permiso_url="/inventario" />
+                        <Page label={"Tipos de productos"} url={"/productos/tipo_producto/table"} permiso="ver" permiso_url="/productos/tipo_producto/table" />
+                        <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" permiso_url="/productos/modelo/table" />
                         <Page label={"Conteos"} url={"/productos/reporte_conteo_inventario"} permiso="ver" permiso_url="/productos/reporte_conteo_inventario" />
                         <Page label={"Sistema antiguo"} url={"/productos"} permiso="ver" />
                     </Page>
@@ -147,14 +147,28 @@ export default class Barra extends React.Component {
                         <Page label={"Ventas Rapida"} url={"/puntoventa"} permiso="ver" permiso_url="/venta" />
                         <Page label={"Tabla"} url={"/venta/tabla"} permiso="ver" permiso_url="/venta" />
                     </Page>
-                    <Page label={"Facturacion"} url={"/facturacion"}
-                        permiso="ver"
+
+                    <Page label={"Facturacion"} 
                         icon={<ImagePage key_page="a122ab1e-bf18-4831-8136-befa06e406d3" />}
-                    />
-                    <Page label={"CRM"} url={"/crm"}
-                        permiso="page"
+                    >
+                        <Page label={"Emitir"} url={"/facturacion/create"} permiso="edit" />
+                        <Page label={"Libro de Ventas"} url={"/facturacion/libro_ventas"} permiso="ver" />
+                        <Page label={"Anular CUF"} url={"/facturacion/anular_cuf"} permiso="edit" />
+                        <Page label={"Ajustes"} url={"/facturacion/ajustes"} permiso="edit" />
+                    </Page>
+
+                    <Page label={"CRM"} 
+                      
                         icon={<ImagePage key_page="9b5de113-c6e9-4bef-b686-5732056f71fb" />}
-                    />
+                    >
+                        <Page label={"Lista de Clientes"} url={"/crm/cliente"} permiso="ver" />
+                        <Page label={"Dashboard General"} url={"/crm/dashboard"} permiso="ver" />
+                        <Page label={"Leads"} url={"/crm/lead"} permiso="ver" />
+                        <Page label={"Llamar"} url={"/crm/llamar"} permiso="ver" />
+                        <Page label={"Proyectos"} url={"/crm/proyecto"} permiso="ver" />
+                        <Page label={"Reportes"} url={"/crm/report"} permiso="ver" />
+                        <Page label={"Configuracion de Leads"} url={"/crm/tipoMovimientoLead"} permiso="edit" />
+                    </Page>
                     <Page label={"whatsapp"} url={"/whatsapp"}
                         permiso="page"
                         icon={<ImagePage key_page="5cb364bf-bcd1-4263-8079-654a17e02767" />}
