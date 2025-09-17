@@ -107,7 +107,7 @@ export default class FormRegistroTipoMovimientoLead extends Component<FormRegist
                 </>}
 
 
-                <PButtom flex type="secondary" onPress={() => this.form?.submit()}>{defaultData ? "ACTUALIZAR" : "ACEPTAR"}</PButtom>
+                <PButtom flex type="primary" onPress={() => this.form?.submit()}>{defaultData ? "ACTUALIZAR" : "ACEPTAR"}</PButtom>
 
             </SView>
         </SView >

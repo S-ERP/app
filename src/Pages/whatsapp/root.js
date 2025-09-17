@@ -8,6 +8,7 @@ import Config from '../../Config';
 import Model from '../../Model';
 import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
+import PButtom from '../../Components/PButtom';
 
 
 
@@ -255,19 +256,19 @@ class WhatsappDevices extends Component {
                     /> */}
                     <SHr height={32} />
                     <SView row center>
-                        <SButtom
+                        <PButtom flex
                             type={"danger"}
                             onPress={() => {
                                 SPopup.close("formulario_dispositivo");
                             }}
                         >
                             {"Cancelar"}
-                        </SButtom>
+                        </PButtom>
                         <SView width={16} />
-                        <SButtom type={isEdit ? "outline" : "outline"} onPress={handleSubmit}>
+                        <PButtom flex type={isEdit ? "primary" : "primary"} onPress={handleSubmit}>
 
                             {isEdit ? "Actualizar" : "Registrar"}
-                        </SButtom>
+                        </PButtom>
                     </SView>
                     <SView col={"xs-12"} />
                 </SView>

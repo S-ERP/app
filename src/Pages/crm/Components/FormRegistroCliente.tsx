@@ -159,7 +159,7 @@ export default class FormRegistroCliente extends Component<FormRegistroType & { 
                 </>}
 
 
-                <PButtom flex type="secondary" onPress={() => this.form?.submit()}>{defaultData ? "ACTUALIZAR" : "ACEPTAR"}</PButtom>
+                <PButtom flex type="primary" onPress={() => this.form?.submit()}>{defaultData ? "ACTUALIZAR" : "ACEPTAR"}</PButtom>
 
             </SView>
         </SView >
