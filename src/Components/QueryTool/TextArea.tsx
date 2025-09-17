@@ -270,7 +270,7 @@ export default class TextArea extends React.Component<TextAreaProps> {
                     this.wordPositions[a.indexStart + ":" + a.indexEnd] = e.nativeEvent.layout
                 }}
 
-            >{a.word}{a.render?"":""}{a.render ? a.render(a.word) : null}</Text>)
+            >{a.word}{a.render ? "" : ""}{a.render ? a.render(a.word) : null}</Text>)
             index = a.indexEnd;
         })
         ARRAY.push(this.state.value.substring(index, this.state.value.length))
@@ -301,10 +301,12 @@ export default class TextArea extends React.Component<TextAreaProps> {
 
         }
         return (
-            <SView col={"xs-12"} flex backgroundColor={this.props.backgroundColor ?? "#171717"} onLayout={e => {
-                this.state.layout = e.nativeEvent.layout
-                this.setState({ ...this.state })
-            }}>
+            <SView col={"xs-12"} flex
+                // backgroundColor={this.props.backgroundColor ?? "#171717"}
+                onLayout={e => {
+                    this.state.layout = e.nativeEvent.layout
+                    this.setState({ ...this.state })
+                }}>
                 <KeyboardAvoidingView
                     // keyboardVerticalOffset={20}
                     keyboardVerticalOffset={Platform.select({ ios: 50, android: 20 })}
@@ -315,7 +317,8 @@ export default class TextArea extends React.Component<TextAreaProps> {
                     <ScrollView style={{ flex: 1, height: "100%" }}
                         ref={ref => this.scrollViewVertical = ref}
                         contentContainerStyle={{
-                            minHeight: "100%"
+                            minHeight: "100%",
+
                         }}
                         onContentSizeChange={() => {
                             // this.scrollViewVertical.scrollToEnd({ animated: false })

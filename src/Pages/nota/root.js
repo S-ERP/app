@@ -225,9 +225,9 @@ export default class root extends Component {
                 {!this.state?.data ? null : <UsuariosNota key_nota={this.pk} />}
                 {this.menu()}
                 <SView flex col={"xs-12"}>
-                    <DropZoneWeb handleDropFiles={(files,evt) => {
+                    {/* <DropZoneWeb handleDropFiles={(files,evt) => {
                         console.log(files, evt);
-                    }}>
+                    }}> */}
                         <TextArea
                             key={this.pk}
                             style={{
@@ -249,7 +249,7 @@ export default class root extends Component {
                                 })
                             }}
                         />
-                    </DropZoneWeb>
+                    {/* </DropZoneWeb> */}
 
 
                     {/* <SInput ref={ref => this.inp = ref}

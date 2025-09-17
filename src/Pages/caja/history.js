@@ -34,17 +34,17 @@ export default class history extends Component {
         const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
         return srcKey ? pintar : nulo;
     };
-    renderSucursal(srcKey) {
-        const pintar = <>
-            <SView style={{ width: 60 }}>
+    renderSucursal(suc, a) {
+        if (!suc) return <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
+        return <>
+            <SView row center>
                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                    <SImage src={`${SSocket.api.empresa}sucursal/${srcKey}`} style={{ resizeMode: "cover" }} />
+                    <SImage src={`${SSocket.api.empresa}sucursal/${suc.key}`} style={{ resizeMode: "cover" }} />
                 </SView>
-                <SText color='red'> sucursal </SText>
+                <SView width={4} />
+                <SText flex numberOfLines={a.colData.wrap ? 0 : 1} style={a.textStyle}>{suc?.descripcion}</SText>
             </SView>
         </>
-        const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
-        return srcKey ? pintar : nulo;
     };
 
     toISO(dateString) {
@@ -92,15 +92,22 @@ export default class history extends Component {
     async loadInitialData() {
         try {
             const history = await MDL.caja.getAll(MDL.empresa?.select?.key);
+            const empresa = await MDL.empresa.getFull();
+
             console.log("history", history);
-            console.log('Loading initial data... 🎈🎈🎈🎈');
-
-            const empresa = MDL.empresa?.select || {};
-            const sucursales = await MDL.empresa.getAllSucursales();
+            console.log('Loading initial data... 🎈🎈🎈🎈', empresa);
 
 
-            console.log('Initial data loaded successfully! 🎉🎉🎉🎉');
-            console.log(history);
+            history.map(caja => {
+                caja.sucursal = empresa.sucursales.find(a => a.key == caja.key_sucursal);
+                empresa.sucursales.map(suc => {
+                    const pv = suc.puntos_venta.find(a => a.key == caja.key_punto_venta);
+                    if (pv) {
+                        caja.punto_venta = pv;
+                    }
+                })
+            })
+
             // Aplicar filtro por fechas si existen
             const { fecha_inicio, fecha_fin } = this.state;
             const filteredHistory = this.filtrarPorFechas(history, fecha_inicio, fecha_fin);
@@ -175,9 +182,19 @@ export default class history extends Component {
                 }}
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
-                <DinamicTable.Col key="key" label="Key" width={100} data={(e) => e.row?.key ?? ""} />
+                <DinamicTable.Col key="key" label="Key" width={60} textStyle={{
+                    color: STheme.color.lightGray,
+                    fontSize: 10
+                }} data={(e) => e.row?.key ?? ""} />
+                <DinamicTable.Col key="sucursal" label="Sucursal" width={100} data={(e) => e.row?.sucursal?.descripcion ?? ""} customComponent={a => this.renderSucursal(a.row.sucursal, a)} />
+                <DinamicTable.Col key="punto_venta" label="Punto venta" width={100} data={(e) => e.row?.punto_venta?.descripcion ?? ""} />
+                <DinamicTable.Col key="key_usuario" label="Usuario" width={50} data={(e) => e.row?.key_usuario ?? ""} customComponent={a => this.renderUsuario(a.data)} />
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-               
+                <DinamicTable.Col key={"fecha_on_since"} label="Hace" width={120}
+                    data={e => "Hace " + new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}
+                    textStyle={{ fontSize: 12, color: STheme.color.text }}
+                />
+
             </DinamicTable>
         );
     }
@@ -187,6 +204,7 @@ export default class history extends Component {
                 <SView width={260} center>
                     <DateTimeBetween
                         fecha_inicio='2024-01-01'
+                        fecha_fin={new SDate().toString("yyyy-MM-dd")}
                         onChange={({ fecha_inicio, fecha_fin }) => {
                             console.log("Fechas seleccionadas:", fecha_inicio, fecha_fin);
                             this.setState({ fecha_inicio, fecha_fin }); // si lo quieres en el padre

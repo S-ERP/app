@@ -78,7 +78,7 @@ export default class empresa extends MDLAbstract<EventListener> {
       service: "empresa",
       component: "sucursal",
       type: "getByKeyEmpresa",
-      key_empresa: Model.empresa.Action.getKey(),
+      key_empresa: MDL.empresa.select?.key,
     });
     return Object.values(resp.data);
   }
@@ -90,10 +90,20 @@ export default class empresa extends MDLAbstract<EventListener> {
       service: "empresa",
       component: "tipo_pago",
       type: "getAll",
-      key_empresa: Model.empresa.Action.getKey(),
+      key_empresa: MDL.empresa.select?.key,
     });
     this.__tipo_pago = resp.data;
     return this.__tipo_pago;
+  }
+
+  async getAllPuntoVentaTipoPago(): Promise<Sucursal[]> {
+    const resp: any = await SSocket.sendPromise({
+      service: "empresa",
+      component: "punto_venta_tipo_pago",
+      type: "getAll",
+      key_empresa: MDL.empresa.select?.key,
+    });
+    return resp.data;
   }
   async getByKeyFull(): Promise<any> {
     const resp: any = await SSocket.sendPromise({
@@ -105,19 +115,38 @@ export default class empresa extends MDLAbstract<EventListener> {
     return resp.data;
   }
 
+  _getFullCache: any = {
+    data: null,
+    key_empresa: "",
+    promise: null
+  }
   _full: any = null;
   async getFull(): Promise<any> {
-    if (this._full) {
-      if (this._full.key === this.select?.key) return this._full;
+    if (this._getFullCache.key_empresa != this.select?.key) {
+      this._getFullCache.data = null;
+      this._getFullCache.promise = null;
+      this._getFullCache.key_empresa = this.select?.key;
     }
-    const resp: any = await SSocket.sendPromise({
+    if (this._getFullCache.data) return this._getFullCache.data;
+    if (this._getFullCache.promise) return this._getFullCache.promise;
+    // if (this._full) {
+    //   if (this._full.key === this.select?.key) return this._full;
+    // }
+    this._getFullCache.promise = SSocket.sendPromise({
       service: "empresa",
       component: "empresa",
       type: "getByKeyFull",
       key: this.select?.key,
-    });
-    this._full = resp.data;
-    return resp.data;
+    }).then(e => {
+      this._getFullCache.data = e.data;  // Guardamos en caché
+      this._getFullCache.promise = null;     // Limpiamos la promesa en curso
+      return this._getFullCache.data;
+    }).catch(e => {
+      this._getFullCache.promise = null;     // Limpiar para futuros intentos
+      throw e;
+    })
+    return this._getFullCache.promise;
+
   }
   setUsuarioLog(data: {
     url: string;
@@ -307,7 +336,32 @@ export default class empresa extends MDLAbstract<EventListener> {
   // }
 
 
-
+  async saveTipoPago(tipo_pago: any) {
+    tipo_pago.key_empresa = MDL.empresa.select?.key;
+    if (tipo_pago.key) {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "empresa",
+        component: "punto_venta_tipo_pago",
+        type: "editar",
+        data: tipo_pago,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    } else {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "empresa",
+        component: "punto_venta_tipo_pago",
+        type: "registro",
+        data: tipo_pago,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    }
+  }
 
 
 }

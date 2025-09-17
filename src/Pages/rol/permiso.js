@@ -168,8 +168,8 @@ class PermisoSwitch extends React.Component<{ permiso: string, key_rol: string }
                 small
                 color={STheme.color.text}
                 descripcion={permiso.info.descripcion}
-                itemWidth={200}
-                itemHeight={200}
+                // itemWidth={200}
+                itemHeight={300}
             />}
             <SView width={4} />
             <SView style={{

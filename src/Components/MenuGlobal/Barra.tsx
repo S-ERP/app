@@ -89,6 +89,9 @@ export default class Barra extends React.Component {
                         <Page label={"Config"} url={"/empresa/config"} permiso={"edit"} permiso_url="/empresa/config" />
                         <Page label={"Config2"} url={"/empresa/config2"} permiso={"edit"} permiso_url="/empresa/config2" />
                         <Page label={"Moneda"} url={"/empresa/moneda"} permiso={"ver"} permiso_url="/empresa/moneda" />
+                        <Page label={"Tipos de pagos"} url={"/empresa/tipo_pago"}
+                            // permiso={"ver"} permiso_url="/empresa/moneda"
+                        />
                     </Page>
                     <Page label={"Contabilidad"}
                         icon={<ImagePage key_page="fd0c2bfe-0f13-4e81-a967-213cc0adb299" />}
@@ -116,7 +119,7 @@ export default class Barra extends React.Component {
                         icon={<ImagePage key_page="c50a9c4a-429c-426e-9ebf-c6874da14062" />}
                     >
                         <Page label={"Almacenes"} url={"/inventario"} permiso="ver" />
-                        <Page label={"Tipos de productos"} url={"/productos/tipo_producto/table"} permiso="ver" permiso_url="/productos/tipo_producto/table" />
+                        <Page label={"Tipos de productos"} url={"/productos/tipo_producto/table"} permiso="ver" permiso_url="/productos/tipo_producto" />
                         <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" permiso_url="/productos/modelo/table" />
                         <Page label={"Conteos"} url={"/productos/reporte_conteo_inventario"} permiso="ver" permiso_url="/productos/reporte_conteo_inventario" />
                         <Page label={"Sistema antiguo"} url={"/productos"} permiso="ver" />
@@ -148,7 +151,7 @@ export default class Barra extends React.Component {
                         <Page label={"Tabla"} url={"/venta/tabla"} permiso="ver" permiso_url="/venta" />
                     </Page>
 
-                    <Page label={"Facturacion"} 
+                    <Page label={"Facturacion"}
                         icon={<ImagePage key_page="a122ab1e-bf18-4831-8136-befa06e406d3" />}
                     >
                         <Page label={"Emitir"} url={"/facturacion/create"} permiso="edit" />
@@ -157,8 +160,8 @@ export default class Barra extends React.Component {
                         <Page label={"Ajustes"} url={"/facturacion/ajustes"} permiso="edit" />
                     </Page>
 
-                    <Page label={"CRM"} 
-                      
+                    <Page label={"CRM"}
+
                         icon={<ImagePage key_page="9b5de113-c6e9-4bef-b686-5732056f71fb" />}
                     >
                         <Page label={"Lista de Clientes"} url={"/crm/cliente"} permiso="ver" />

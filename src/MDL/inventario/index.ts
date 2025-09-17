@@ -13,7 +13,11 @@ export default class inventario extends MDLAbstract<EventListener> {
     {
       key: "inventario",
       cuentas: ["key_cuenta_contable", "key_cuenta_contable_ganancia", "key_cuenta_contable_costo"]
-    }, {
+    },
+    {
+      key: "consumible",
+      cuentas: ["key_cuenta_contable_ganancia", "key_cuenta_contable_costo"]
+    },{
       key: "activo_fijo",
       cuentas: ["key_cuenta_contable", "key_cuenta_contable_ganancia", "key_cuenta_contable_costo", "key_cuenta_contable_depreciacion_activo", "key_cuenta_contable_depreciacion_gasto"]
     }, {

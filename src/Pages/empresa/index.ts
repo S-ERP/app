@@ -22,6 +22,7 @@ import config2 from "./config/config2";
 import configIcon from "./config/configIcon";
 import MonedaTabla from "./MonedaTabla";
 import MonedaTablaHistorial from "./MonedaTablaHistorial";
+import tipo_pago from "./tipo_pago";
 const model = Model.empresa;
 
 export const Parent = {
@@ -52,4 +53,5 @@ export default SPage.combinePages(Parent.name, {
     configIcon,
     "moneda":MonedaTabla,
     "moneda/historial":MonedaTablaHistorial,
+    tipo_pago
 })

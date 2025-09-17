@@ -76,13 +76,18 @@ export default class ToolTips extends Component<ToolTips_props> {
                 e.currentTarget.measure((x, y, width, height, pageX, pageY) => {
                     const key_popup = "popupkey";
                     const windowheight = Dimensions.get("window").height
-                    const itemWidth = this.props.itemWidth ?? 200;
-                    const itemHeight = this.props.itemHeight ?? 50;
-                    let top = pageY ;
+                    const itemWidth = this.props.itemWidth ?? 240;
+                    const itemHeight = this.props.itemHeight ?? 100;
+                    let top = pageY;
                     if (itemHeight + top > windowheight) {
                         top = windowheight - itemHeight;
                     }
+
                     let left = pageX - itemWidth + width;
+
+                    if (left < 0) {
+                        left = 0;
+                    }
                     if (this.props.loading) return;
                     if (this.props.type == "info") {
                         SPopup.open({
@@ -103,7 +108,7 @@ export default class ToolTips extends Component<ToolTips_props> {
                                         flexWrap: "wrap",   // obliga a que el texto haga salto de línea
                                         overflow: "hidden", // evita que se salga
                                     }} color={colorText} fontSize={14} center>{this.props.descripcion}</SText> */}
-                                    <SMD fontSize={12} padding={2} space={1} >{this.props.descripcion}</SMD>
+                                    <SMD fontSize={12} padding={8} space={2} >{this.props.descripcion}</SMD>
                                 </ScrollView>
 
 
@@ -119,7 +124,7 @@ export default class ToolTips extends Component<ToolTips_props> {
                     }
                 })
             }} >
-            {this.props.loading ? <SLoad /> : <SIcon name={this.props.icon ?? icon} fill={this.props.color} width={this.props.width} height={this.props.height} />}
+            {this.props.loading ? <SLoad /> : <SIcon name={this.props.icon ?? icon} fill={this.props.color ?? STheme.color.text} width={this.props.width} height={this.props.height} />}
         </SView>);
     }
 }
