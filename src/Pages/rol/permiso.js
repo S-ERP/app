@@ -1,9 +1,13 @@
 import React from "react";
-import { SImage, SInput, SNavigation, SNotification, SPage, SSwitch, SText, STheme, SView } from "servisofts-component";
+import { SIcon, SImage, SInput, SNavigation, SNotification, SPage, SSwitch, SText, STheme, SThread, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import { DinamicTable } from "servisofts-table";
 import Config from "../../Config";
 import SSocket from "servisofts-socket";
+import SIconApp from "../../Assets/SIconApp";
+import TextArea from "../../Components/QueryTool/TextArea";
+import TextAreaPopup from "../../Components/QueryTool/TextAreaPopup";
+import ToolTips from "../../Components/ToolTips";
 
 export default class permiso extends React.Component {
 
@@ -13,11 +17,14 @@ export default class permiso extends React.Component {
         const pages = await MDL.rolesPermisos.getAllPage();
         const permisos = await MDL.rolesPermisos.getAllPermiso();
         const rolPermiso = await MDL.rolesPermisos.getAllRolPermiso(this.key_rol);
+        const permiso_info = await MDL.rolesPermisos.getAllPermisoInfo();
+
         const arrPages = Object.values(pages);
         arrPages.map(page => {
             page.permisos = Object.values(permisos).filter(permiso => permiso.key_page === page.key);
             page.permisos.map(permiso => {
                 permiso.rolPermiso = Object.values(rolPermiso).find(rp => rp.key_permiso === permiso.key);
+                permiso.info = permiso_info[permiso.key]
             })
         })
 
@@ -47,7 +54,7 @@ export default class permiso extends React.Component {
                                 borderLeftColor: STheme.color.card
                             }} />
                         })}
-                        <SText flex numberOfLines={1}  fontSize={12} style={{
+                        <SText flex numberOfLines={1} fontSize={12} style={{
                         }}>{e.data}</SText>
                     </SView>
                 }} />,
@@ -155,6 +162,59 @@ class PermisoSwitch extends React.Component<{ permiso: string, key_rol: string }
             }} />
             <SView width={4} />
             <SText fontSize={12}  >{permiso.descripcion}</SText>
+            <SView width={4} />
+            {permiso?.info?.descripcion && <ToolTips
+                type="info"
+                small
+                color={STheme.color.text}
+                descripcion={permiso.info.descripcion}
+                itemWidth={200}
+                itemHeight={200}
+            />}
+            <SView width={4} />
+            <SView style={{
+                width: 20,
+                height: 20
+            }} onPress={() => {
+                TextAreaPopup.open({
+                    type: "MD",
+                    title: permiso.descripcion,
+                    defaultValue: permiso.info?.descripcion,
+                    onChangeText: (e) => {
+                        const k = "editando";
+                        new SThread(1000, k, true).start(() => {
+                            SNotification.send({
+                                key: k,
+                                title: "Guardando",
+                                type: "loading",
+                            })
+                            SSocket.sendPromise({
+                                service: "roles_permisos",
+                                component: "permisoInfo",
+                                type: "save",
+                                data: {
+                                    key_permiso: permiso.key,
+                                    descripcion: e,
+                                }
+                            }).then(a => {
+                                permiso.info = a.data;
+                                this.forceUpdate()
+                                SNotification.remove(k)
+                            }).catch(e => {
+                                SNotification.send({
+                                    key: k,
+                                    title: "Error",
+                                    body: e?.error,
+                                    color: STheme.color.danger,
+                                    time: 5000
+                                })
+                            })
+                        })
+                    }
+                })
+            }}>
+                <SIconApp name="Edit" />
+            </SView>
         </SView >
     }
 }
