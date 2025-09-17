@@ -95,13 +95,13 @@ export default class configIcon extends React.Component {
 
                                             }}
                                             row
-                                            width={40}
-                                            height={40}
+                                            width={50}
+                                            height={50}
                                             center
                                             backgroundColor={STheme.color.background}
-                                            style={{ borderRadius: 8 }}
+                                            style={{ borderRadius: 8, padding: 6 }}
                                         >
-                                            <SIconEmpresa type={categoria} />
+                                            <SIconEmpresa type={categoria}   />
                                         </SView>
                                     </SView>
                                 </SView>

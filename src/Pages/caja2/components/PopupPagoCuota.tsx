@@ -424,7 +424,8 @@ export default class PopupPagoCuota extends Component {
                             padding: 12,
                         }}
                     >
-                        <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la Compra</SText>
+                        <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la {this.props?.editObject?.pagado?"venta":"compra"}</SText>
+                        {/* <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la Compra</SText> */}
                         <SHr h={4} />
                         <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }} backgroundColor='transparent'>
                             <SView col={'xs-9'}>
@@ -657,6 +658,10 @@ export default class PopupPagoCuota extends Component {
 
     render() {
         const { loading } = this.state;
+
+
+
+        // sssssssssssssssssssss
         const compra = this.getCompraData();
         const today = new SDate('2025-09-08', 'yyyy-MM-dd');
 
@@ -715,6 +720,9 @@ export default class PopupPagoCuota extends Component {
                 >
                     {this.cabecera(compra, MontoSaldo)}
                     <SHr h={12} />
+
+{/* ssssssssssssssssssssssss */}
+
                     <SView col={'xs-12'} style={{ paddingHorizontal: 16, }}>
                         {loading ? (
 

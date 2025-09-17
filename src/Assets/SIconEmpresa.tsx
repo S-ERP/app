@@ -1,12 +1,16 @@
 import React from "react"
 import MDL from "../MDL"
 import SIconApp, { AllIconNames, SIconAppType } from "./SIconApp"
+import { STheme } from "servisofts-component"
 
 type iconstTypes = "editar" | "eliminar" | "ver" | "adicionar" | "Ajustes" | "Usuario" | "menu" | "productos" | "permisos" | "Pagos" | "imagenes" | "salir" | "reportes" | "direccion" | "alertas" | "llamadas" | "otros"
 
 
 type inconParamsTypes = { [key in iconstTypes]: AllIconNames[] }
 type iconsConfigEmpresaTypes = { [key in iconstTypes]: SIconAppType }
+type PIcon_props = {
+    primary?: boolean,
+}
 
 
 export const inconParams: inconParamsTypes = {
@@ -266,8 +270,8 @@ export const buildIconEmpresa = (name: keyof typeof inconParams) => {
 
 const SIconEmpresa = ({ type }: { type: keyof typeof inconParams }) => {
 
-    return <SIconApp
-        {...buildIconEmpresa(type)} />
+    return <SIconApp 
+        {...buildIconEmpresa(type)} fill={STheme.color.text} />
 
 }
 export default SIconEmpresa
