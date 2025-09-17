@@ -180,7 +180,7 @@ export default class FormRegistroLead extends Component<FormRegistroType & { def
                 </>}
 
 
-                <PButtom flex type="secondary" onPress={() => this.form?.submit()}>{defaultData ? "ACTUALIZAR" : "ACEPTAR"}</PButtom>
+                <PButtom flex type="primary" onPress={() => this.form?.submit()}>{defaultData ? "ACTUALIZAR" : "ACEPTAR"}</PButtom>
 
             </SView>
         </SView >
