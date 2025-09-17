@@ -35,6 +35,8 @@ export default class ToolTips extends Component<ToolTips_props> {
     render() {
         var bgColor = this.props.primary ? STheme.color.primary : this.props.secondary ? STheme.color.secondary : this.props.danger ? STheme.color.danger : STheme.color.primary;
 
+        let icon = "";
+
         var colorText = STheme.color.text;
         if (this.props.white) {
             bgColor = STheme.color.secondary;
@@ -45,12 +47,16 @@ export default class ToolTips extends Component<ToolTips_props> {
             height: this.props.height ?? 40,
         }
         if (this.props.small) {
-            size.width = 200;
-            size.height = 40;
+            size.width = 20;
+            size.height = 20;
         }
         if (this.props.medium) {
             size.width = 300;
             size.height = 60;
+        }
+        icon = 'toolinfo';
+        if (this.props.type == "question") {
+            icon = 'toolquestion';
         }
 
         return (<SView
@@ -58,8 +64,8 @@ export default class ToolTips extends Component<ToolTips_props> {
             height={size.height} flex={this.props.flex} style={{
                 borderRadius: 8,
                 width: "100%",
-                maxWidth: size.width,
-                paddingLeft: 10,
+                width: size.width,
+                // paddingLeft: 10,
                 // ...(this.props.outline ? { borderWidth: 1, borderColor: bgColor } : { backgroundColor: bgColor }),
                 ...(this.props.style ?? {}),
             }} center
@@ -72,7 +78,7 @@ export default class ToolTips extends Component<ToolTips_props> {
                     const windowheight = Dimensions.get("window").height
                     const itemWidth = this.props.itemWidth ?? 200;
                     const itemHeight = this.props.itemHeight ?? 50;
-                    let top = pageY - (height * 2.6);
+                    let top = pageY ;
                     if (itemHeight + top > windowheight) {
                         top = windowheight - itemHeight;
                     }
@@ -90,21 +96,21 @@ export default class ToolTips extends Component<ToolTips_props> {
                                 position: "absolute",
                                 overflow: "hidden", // evita que el texto se desborde
                             }} center>
-                              
-                                    <ScrollView >
-                                        {/* <SText style={{
+
+                                <ScrollView >
+                                    {/* <SText style={{
                                         textAlign: "center",
                                         flexWrap: "wrap",   // obliga a que el texto haga salto de línea
                                         overflow: "hidden", // evita que se salga
                                     }} color={colorText} fontSize={14} center>{this.props.descripcion}</SText> */}
-                                        <SMD fontSize={12} padding={2} space={1} >{this.props.descripcion}</SMD>
-                                    </ScrollView>
-                               
+                                    <SMD fontSize={12} padding={2} space={1} >{this.props.descripcion}</SMD>
+                                </ScrollView>
+
 
                             </SView>,
                             key: "FormToolTips",
                             type: "2",
-                          
+
                         });
 
                     }
@@ -113,7 +119,7 @@ export default class ToolTips extends Component<ToolTips_props> {
                     }
                 })
             }} >
-            {this.props.loading ? <SLoad /> : <SIcon name={this.props.icon} fill={this.props.color} width={this.props.width} height={this.props.height} />}
+            {this.props.loading ? <SLoad /> : <SIcon name={this.props.icon ?? icon} fill={this.props.color} width={this.props.width} height={this.props.height} />}
         </SView>);
     }
 }
