@@ -92,6 +92,9 @@ export default class permiso extends React.Component {
                 selectType="multiple"
                 loadInitialState={async () => {
                     return {
+                        filters:[
+                            {col:"descripcion",type:"string",value:"(OLD)", operator:"nocontains"}
+                        ],
                         sorters: [
                             { key: "url", order: "asc", type: "string" },
                         ]
