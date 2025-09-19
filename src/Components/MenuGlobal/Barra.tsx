@@ -89,9 +89,7 @@ export default class Barra extends React.Component {
                         <Page label={"Config"} url={"/empresa/config"} permiso={"edit"} permiso_url="/empresa/config" />
                         <Page label={"Config2"} url={"/empresa/config2"} permiso={"edit"} permiso_url="/empresa/config2" />
                         <Page label={"Moneda"} url={"/empresa/moneda"} permiso={"ver"} permiso_url="/empresa/moneda" />
-                        <Page label={"Tipos de pagos"} url={"/empresa/tipo_pago"}
-                        // permiso={"ver"} permiso_url="/empresa/moneda"
-                        />
+                        <Page label={"Tipos de pagos"} url={"/empresa/tipo_pago"} permiso={"ver"}/>
                     </Page>
                     <Page label={"Contabilidad"}
                         icon={<ImagePage key_page="fd0c2bfe-0f13-4e81-a967-213cc0adb299" />}
@@ -118,7 +116,7 @@ export default class Barra extends React.Component {
                     <Page label={"Inventario"}
                         icon={<ImagePage key_page="c50a9c4a-429c-426e-9ebf-c6874da14062" />}
                     >
-                        <Page label={"Almacenes"} url={"/inventario"} permiso="ver" />
+                        <Page label={"Almacenes"} url={"/inventario"}  permiso="ver" permiso_url="/inventario/almacen"/>
                         <Page label={"Tipos de productos"} url={"/productos/tipo_producto/table"} permiso="ver" permiso_url="/productos/tipo_producto" />
                         <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" permiso_url="/productos/modelo/table" />
                         <Page label={"Conteos"} url={"/productos/reporte_conteo_inventario"} permiso="ver" permiso_url="/productos/reporte_conteo_inventario" />

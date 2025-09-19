@@ -12,7 +12,38 @@ export default class tabla extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            permiso_de_crear: false,
+            permiso_de_editar: false,
+            permiso_de_eliminar:false,
         };
+    }
+    componentDidMount() {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/inventario/almacen", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        }).catch(e => {
+            console.error(e);
+        })
+        MDL.rolesPermisos.getPermisoAsync({ url: "/inventario/almacen", permiso: "new" }).then((permit) => {
+            this.state.permiso_de_crear = permit;
+            this.forceUpdate();
+        }).catch(e => {
+            console.error(e);
+        })
+        MDL.rolesPermisos.getPermisoAsync({ url: "/inventario/almacen", permiso: "edit" }).then((permit) => {
+            this.state.permiso_de_editar = permit;
+            this.forceUpdate();
+        }).catch(e => {
+            console.error(e);
+        })
+        MDL.rolesPermisos.getPermisoAsync({ url: "/inventario/almacen", permiso: "delete" }).then((permit) => {
+            this.state.permiso_de_eliminar = permit;
+            this.forceUpdate();
+        }).catch(e => {
+            console.error(e);
+        })
     }
     verificar(estado) {
         return <SView col={"xs-12"} center row>
@@ -54,96 +85,102 @@ export default class tabla extends Component {
                     SNavigation.goBack();
                     return;
                 }
+                const Menu = [];
+                Menu.push({
+                    icon: <SIconApp name='producto' fill='#d1d1cdff' stroke='#8b8b8a25' width={20} />,
+                    label: "Ver Productos",
+                    onPress: () => {
+                        SNavigation.navigate("/inventario/almacen/profile/productos", { pk: e.row?.key })
+                    }
+                })
+                Menu.push({
+                    icon: <SIconApp name='carritoproducto' fill='#d1d1cdff' stroke='#8b8b8a25' width={20} />,
+                    label: "Ver Recepcion compra",
+                    onPress: () => {
+                        SNavigation.navigate("/inventario/almacen/profile/recepcion_compra", { pk: e.row?.key })
+                    }
+                })
+                Menu.push({
+                    icon: <SIconApp name='Favorito' fill='#ffffff6e' stroke='#d1d1cdff' width={20} />,
+                    label: "Ver Pend. de entrega",
+                    onPress: () => {
+                        SNavigation.navigate("/inventario/almacen/profile/pendiente_entrega", { pk: e.row?.key })
+                    }
+                })
+                Menu.push({
+                    icon: <SIconApp name='Favorito' fill='#ffffff6e' stroke='#d1d1cdff' width={20} />,
+                    label: "Realizar Conteo de stock",
+                    onPress: () => {
+                        SNavigation.navigate("/inventario/almacen/profile/registro_inventario", { pk: e.row?.key })
+                    }
+                })
+                // {
+                //     icon: <SIconApp name='confirmar' fill='#8b8b8a25' stroke='#8b8b8a' width={16} />,
+                //     label: "Importar Inventario",
+                //     onPress: () => {
+                //         alert("trabjandolo...")
+                //     }
+                // },
+                if (this.state.permiso_de_editar) {
+                    Menu.push({
+                        icon: <SIconApp name='crmeditar' fill='#8b8b8a25' stroke='#a8a89fff' width={20} />,
+                        label: "Editar Almacen",
+                        onPress: () => {
+                            const sucursal = {
+                                ...e.row,
+                                key_usuario: MDL.usuario.session?.key,
+                            }
+                            PopupCrearAlmacen.open({
+                                editObject: sucursal,
+                                key_empresa: sucursal.key_empresa,
+                                onSuccess: async () => {
+                                    this.DinamicTable.loadData();
+                                },
+                            })
+                        }
+                    })
+                }
+                if (this.state.permiso_de_eliminar) {
+
+                    Menu.push({
+                        icon: <SIconApp name='crmeliminar' fill='#ed3a4318' stroke='#ed3a43' width={20} />,
+                        label: "Eliminar Almacen",
+                        onPress: () => {
+                            SPopup.confirm({
+                                title: "Eliminar Sucursal",
+                                message: "¿Estás seguro de eliminar esta sucursal?",
+                                onPress: () => {
+                                    const data = {
+                                        ...e.row,
+                                        estado: 0,
+                                    }
+                                    MDL.inventario.saveAlmacen({ data }).then((resp) => {
+                                        this.DinamicTable.loadData();
+                                        SNotification.send({
+                                            title: "Almacen Elimninada",
+                                            body: "Almacen se ha Elimninado correctamente.",
+                                            time: 3000,
+                                            color: STheme.color.success,
+                                        });
+                                    }).catch((e) => {
+                                        console.error("Error al guardar la Almacen:", e);
+                                        SNotification.send({
+                                            title: "Error",
+                                            body: "No se pudo guardar la Almacen.",
+                                            time: 3000,
+                                            color: STheme.color.danger,
+                                        });
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
+
                 FloatMenu.open({
                     e: e.evt,
                     label: "Almacén: " + e.row?.descripcion,
-                    options: [
-                        {
-                            icon: <SIconApp name='producto' fill='#d1d1cdff' stroke='#8b8b8a25' width={20} />,
-                            label: "Ver Productos",
-                            onPress: () => {
-                                SNavigation.navigate("/inventario/almacen/profile/productos", { pk: e.row?.key })
-                            }
-                        },
-                        {
-                            icon: <SIconApp name='carritoproducto' fill='#d1d1cdff' stroke='#8b8b8a25' width={20} />,
-                            label: "Ver Recepcion compra",
-                            onPress: () => {
-                                SNavigation.navigate("/inventario/almacen/profile/recepcion_compra", { pk: e.row?.key })
-                            }
-                        },
-                        {
-                            icon: <SIconApp name='Favorito' fill='#ffffff6e' stroke='#d1d1cdff' width={20} />,
-                            label: "Ver Pend. de entrega",
-                            onPress: () => {
-                                SNavigation.navigate("/inventario/almacen/profile/pendiente_entrega", { pk: e.row?.key })
-                            }
-                        },
-                        {
-                            icon: <SIconApp name='Favorito' fill='#ffffff6e' stroke='#d1d1cdff' width={20} />,
-                            label: "Realizar Conteo de stock",
-                            onPress: () => {
-                                SNavigation.navigate("/inventario/almacen/profile/registro_inventario", { pk: e.row?.key })
-                            }
-                        },
-                        // {
-                        //     icon: <SIconApp name='confirmar' fill='#8b8b8a25' stroke='#8b8b8a' width={16} />,
-                        //     label: "Importar Inventario",
-                        //     onPress: () => {
-                        //         alert("trabjandolo...")
-                        //     }
-                        // },
-                        {
-                            icon: <SIconApp name='crmeditar' fill='#8b8b8a25' stroke='#a8a89fff' width={20} />,
-                            label: "Editar Almacen",
-                            onPress: () => {
-                                const sucursal = {
-                                    ...e.row,
-                                    key_usuario: MDL.usuario.session?.key,
-                                }
-                                PopupCrearAlmacen.open({
-                                    editObject: sucursal,
-                                    key_empresa: sucursal.key_empresa,
-                                    onSuccess: async () => {
-                                        this.DinamicTable.loadData();
-                                    },
-                                })
-                            }
-                        },
-                        {
-                            icon: <SIconApp name='crmeliminar' fill='#ed3a4318' stroke='#ed3a43' width={20} />,
-                            label: "Eliminar Almacen",
-                            onPress: () => {
-                                SPopup.confirm({
-                                    title: "Eliminar Sucursal",
-                                    message: "¿Estás seguro de eliminar esta sucursal?",
-                                    onPress: () => {
-                                        const data = {
-                                            ...e.row,
-                                            estado: 0,
-                                        }
-                                        MDL.inventario.saveAlmacen({ data }).then((resp) => {
-                                            this.DinamicTable.loadData();
-                                            SNotification.send({
-                                                title: "Almacen Elimninada",
-                                                body: "Almacen se ha Elimninado correctamente.",
-                                                time: 3000,
-                                                color: STheme.color.success,
-                                            });
-                                        }).catch((e) => {
-                                            console.error("Error al guardar la Almacen:", e);
-                                            SNotification.send({
-                                                title: "Error",
-                                                body: "No se pudo guardar la Almacen.",
-                                                time: 3000,
-                                                color: STheme.color.danger,
-                                            });
-                                        })
-                                    }
-                                })
-                            }
-                        }
-                    ]
+                    options: Menu
                 })
             }}
             loadInitialState={async () => {
@@ -225,13 +262,14 @@ export default class tabla extends Component {
         return (
             <SPage title="Gestión lista de almacenes" disableScroll>
                 {this.mostrarTabla()}
-                <FloatButtom onPress={() => {
+                {this.state.permiso_de_crear && <FloatButtom onPress={() => {
                     PopupCrearAlmacen.open({
                         onSuccess: async () => {
                             this.DinamicTable.loadData();
                         },
                     });
                 }} />
+                }
             </SPage>
         );
     }
