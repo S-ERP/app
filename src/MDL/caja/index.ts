@@ -125,6 +125,102 @@ export default class caja extends MDLAbstract<EventListener> {
   }
 
 
+  async tipo_pago_getAll() {
+
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "tipo_pago",
+      type: "getAll",
+    })
+    return resp.data
+  }
+
+  async empresa_tipo_pago_save(tipo_pago: any) {
+    tipo_pago.key_empresa = MDL.empresa.select?.key;
+    if (tipo_pago.key) {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "caja",
+        component: "empresa_tipo_pago",
+        type: "editar",
+        data: tipo_pago,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    } else {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "caja",
+        component: "empresa_tipo_pago",
+        type: "registro",
+        data: tipo_pago,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    }
+  }
+  async empresa_tipo_pago_getAll(p?: { key_punto_venta?: string }) {
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "empresa_tipo_pago",
+      type: "getAll",
+      key_empresa: MDL.empresa.select?.key,
+      key_punto_venta: p?.key_punto_venta
+    })
+    return resp.data
+  }
+
+  async empresa_tipo_pago_punto_venta_getAll() {
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "empresa_tipo_pago_punto_venta",
+      type: "getAll",
+      key_empresa: MDL.empresa.select?.key,
+    })
+    return Object.values(resp.data);
+  }
+
+  async empresa_tipo_pago_punto_venta_registro(data: any): Promise<any[]> {
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "empresa_tipo_pago_punto_venta",
+      type: "registro",
+      data: data,
+      key_empresa: MDL.empresa.select?.key,
+    });
+    return resp.data;
+  }
+
+  async empresa_tipo_pago_punto_venta_eliminar(data: { key_punto_venta: string, key_empresa_tipo_pago: string }): Promise<any[]> {
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "empresa_tipo_pago_punto_venta",
+      type: "eliminar",
+      data: data,
+      key_empresa: MDL.empresa.select?.key,
+    });
+    return resp.data;
+  }
+
+  async traspaso(data: {
+    key_empresa_tipo_pago_origen: string,
+    key_empresa_tipo_pago_destino: string,
+    monto_origen: number,
+    monto_destino: number, descripcion: string
+  }) {
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "caja_detalle",
+      type: "traspaso",
+      data: data,
+      key_empresa: MDL.empresa.select?.key,
+    });
+    this.dispatchEvent({ type: "onDetalleChange" })
+    return resp;
+  }
+
   detalle_types = {
     "apertura": {
       "label": "Apertura",
@@ -147,4 +243,7 @@ export default class caja extends MDLAbstract<EventListener> {
       "color": "#9b59b6"
     }
   }
+
+
+
 }

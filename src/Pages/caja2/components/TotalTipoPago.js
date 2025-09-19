@@ -24,16 +24,23 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
     }
 
     async loadData() {
-        this.tipo_pago = await MDL.empresa.getTipoPago()
+        this.tipo_pago = await MDL.caja.tipo_pago_getAll()
+        const empresa_tipo_pago = await MDL.caja.empresa_tipo_pago_getAll({ key_punto_venta: this.props.key_punto_venta })
         const data = await MDL.empresa.getFull()
-        console.log(data);
-        const suc = data.sucursales.find(suc => suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta));
-        const pv = suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta);
-        this.pvtp = pv.punto_venta_tipo_pago;
-        if (!this.pvtp) return [];
+        // console.log(data);
+        const cuentas = await MDL.contabilidad.getCuentasCache();
+        // const suc = data.sucursales.find(suc => suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta));
+        // const pv = suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta);
+        const moneda_base = data.monedas.find(a => a.tipo == "base");
+        //"
+        this.pvtp = Object.values(empresa_tipo_pago)
+        // if (!this.pvtp) return [];
         this.pvtp = this.pvtp.map(item => {
+            item.cuenta = cuentas[item.key_cuenta_contable]
+            const moneda = data.monedas.find(a => a.key == item?.cuenta?.key_moneda);
+
+            item.moneda = moneda ?? moneda_base;
             item.tipo_pago = this.tipo_pago[item.key_tipo_pago];
-            item.moneda = data.monedas.find(m => m.key == item.key_moneda);
             return item;
         });
 
@@ -54,9 +61,9 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
         return color;
     }
     renderItemTipoPago(item) {
-        const total = this.props.movimientos.filter(mov => mov.key_tipo_pago == item.key_tipo_pago && mov.key_moneda == item.key_moneda).reduce((sum, mov) => sum + mov.monto, 0);
-        const totalIngresos = this.props.movimientos.filter(mov => mov.key_tipo_pago == item.key_tipo_pago && mov.key_moneda == item.key_moneda && mov.monto > 0).reduce((sum, mov) => sum + mov.monto, 0);
-        const totalEgresos = this.props.movimientos.filter(mov => mov.key_tipo_pago == item.key_tipo_pago && mov.key_moneda == item.key_moneda && mov.monto < 0).reduce((sum, mov) => sum + mov.monto, 0);
+        const total = this.props.movimientos.filter(mov => mov.key_empresa_tipo_pago == item.key).reduce((sum, mov) => sum + mov.monto, 0);
+        const totalIngresos = this.props.movimientos.filter(mov => mov.key_empresa_tipo_pago == item.key && mov.monto > 0).reduce((sum, mov) => sum + mov.monto, 0);
+        const totalEgresos = this.props.movimientos.filter(mov => mov.key_empresa_tipo_pago == item.key && mov.monto < 0).reduce((sum, mov) => sum + mov.monto, 0);
 
         return <SView style={{
             padding: 2,
@@ -88,7 +95,8 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
                     </View>
                     <SView width={4} />
                     <SView flex>
-                        <SText flex key={item.key_tipo_pago} numberOfLines={1} fontSize={12} >{item.tipo_pago ? item.tipo_pago.descripcion : item.key_tipo_pago}</SText>
+                        <SText flex key={item.key_tipo_pago} numberOfLines={1} fontSize={12} >{item.descripcion}</SText>
+                        <SText flex key={item.key_tipo_pago} numberOfLines={1} fontSize={10} color={STheme.color.lightGray} >{item.tipo_pago ? item.tipo_pago.descripcion : item.key_tipo_pago}</SText>
                         <SText numberOfLines={1} fontSize={10} color={STheme.color.lightGray} >{item.moneda?.descripcion}</SText>
                     </SView>
                 </SView>

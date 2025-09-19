@@ -15,6 +15,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     // console.log("se esta registrando todo " + JSON.stringify(data))
     // return;
     const formar = {
+      descripcion:"Venta desde punto de venta",
       key_usuario: data.key_cajero,
       key_cliente: data?.cliente?.key,
       cliente: data?.cliente,
@@ -29,12 +30,12 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     // console.log("dime quien " + JSON.stringify(formar));
     // return;
     const resp: any = await SSocket.sendPromise({
-      service: "compra_venta",
-      component: "compra_venta",
-      type: "ventaRapida",
+      service: "caja",
+      component: "caja_detalle",
+      type: "venta",
       data: formar,
-      key_cliente: data?.key_cliente,
-      cliente: data?.cliente,
+      // key_cliente: data?.key_cliente,
+      // cliente: data?.cliente,
     });
     MDL.caja.dispatchEvent({ type: "onDetalleChange" })
     this.dispatchEvent({ type: "venta_realizada" })

@@ -90,7 +90,7 @@ export default class Barra extends React.Component {
                         <Page label={"Config2"} url={"/empresa/config2"} permiso={"edit"} permiso_url="/empresa/config2" />
                         <Page label={"Moneda"} url={"/empresa/moneda"} permiso={"ver"} permiso_url="/empresa/moneda" />
                         <Page label={"Tipos de pagos"} url={"/empresa/tipo_pago"}
-                            // permiso={"ver"} permiso_url="/empresa/moneda"
+                        // permiso={"ver"} permiso_url="/empresa/moneda"
                         />
                     </Page>
                     <Page label={"Contabilidad"}
@@ -193,9 +193,12 @@ export default class Barra extends React.Component {
                         <Page label={"Test"} url={"/test"} />
                         <Page label={"Test2"} url={"/test2"} />
                         <Page label={"Caja history"} url={"/caja/history"} />
-                        <SText onPress={() => {
+                        <Page label={"Tema"} onPress={() => {
                             PopupEditarTema.open()
-                        }}>{"Tema"}</SText>
+                        }} />
+                        {/* <SText onPress={() => {
+
+                        }}>{"Tema"}</SText> */}
                     </Page>
                     {/* <Page label={"Iconos"} url={"/icons"} /> */}
                     <SHr h={100} />

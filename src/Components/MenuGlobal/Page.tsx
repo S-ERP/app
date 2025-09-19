@@ -11,6 +11,7 @@ import MenuGlobal from ".";
 type PageProps = {
     label: string,
     url?: string,
+    onPress?: () => void,
     params?: any,
     icon?: React.ReactNode,
     children?: React.ReactNode;
@@ -125,6 +126,10 @@ export default class Page extends React.Component<PageProps> {
                 alignItems: "center",
                 backgroundColor: this.state.active ? STheme.color.card : "transparent",
             }} onPress={() => {
+                if(this.props.onPress){
+                    this.props.onPress();
+                    return;
+                }
                 if (this.props.url) {
                     SNavigation.navigate(this.props.url, this.props.params);
                 } else {

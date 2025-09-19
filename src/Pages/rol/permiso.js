@@ -59,7 +59,7 @@ export default class permiso extends React.Component {
                     </SView>
                 }} />,
             ...this.comuns.map(com => {
-                return <DinamicTable.Col key={com} label={com} width={100}
+                return <DinamicTable.Col key={com} label={com} width={140}
                     data={e => e.row.permisos.find(permiso => permiso.type == com)?.descripcion}
                     customComponent={e => {
                         if (!e.data) return;
@@ -108,57 +108,100 @@ export default class permiso extends React.Component {
 }
 
 class PermisoSwitch extends React.Component<{ permiso: string, key_rol: string }> {
+    handleEdit = () => {
+        const { permiso, key_rol } = this.props;
+        TextAreaPopup.open({
+            type: "MD",
+            title: permiso.descripcion,
+            defaultValue: permiso.info?.descripcion,
+            onChangeText: (e) => {
+                const k = "editando";
+                new SThread(1000, k, true).start(() => {
+                    SNotification.send({
+                        key: k,
+                        title: "Guardando",
+                        type: "loading",
+                    })
+                    SSocket.sendPromise({
+                        service: "roles_permisos",
+                        component: "permisoInfo",
+                        type: "save",
+                        data: {
+                            key_permiso: permiso.key,
+                            descripcion: e,
+                        }
+                    }).then(a => {
+                        permiso.info = a.data;
+                        this.forceUpdate()
+                        SNotification.remove(k)
+                    }).catch(e => {
+                        SNotification.send({
+                            key: k,
+                            title: "Error",
+                            body: e?.error,
+                            color: STheme.color.danger,
+                            time: 5000
+                        })
+                    })
+                })
+            }
+        })
+    }
+    handleOnChange(e) {
+        const { permiso, key_rol } = this.props;
+        SNotification.send({
+            key: "edit_permiso_" + permiso.key,
+            title: "Cargando",
+            body: permiso.descripcion,
+            type: "loading",
+
+        })
+        if (permiso.rolPermiso) {
+            // Editar
+            MDL.rolesPermisos.editarRolPermiso({
+                ...permiso.rolPermiso,
+                estado: 0,
+            }).then(e => {
+                SNotification.remove("edit_permiso_" + permiso.key)
+                permiso.rolPermiso = null;
+                this.forceUpdate();
+            }).catch(e => {
+                SNotification.send({
+                    key: "edit_permiso_" + permiso.key,
+                    title: "Error",
+                    body: e?.error,
+                    color: STheme.color.danger,
+                    time: 5000
+                })
+                console.log(e);
+            })
+        } else {
+            // registart
+            MDL.rolesPermisos.registrarRolPermiso({
+                key_rol: key_rol,
+                key_permiso: permiso.key,
+            }).then(e => {
+                SNotification.remove("edit_permiso_" + permiso.key)
+                permiso.rolPermiso = e;
+                this.forceUpdate();
+            }).catch(e => {
+                SNotification.send({
+                    key: "edit_permiso_" + permiso.key,
+                    title: "Error",
+                    body: e?.error,
+                    color: STheme.color.danger,
+                    time: 5000
+                })
+                console.log(e);
+            })
+        }
+    }
     render() {
         const { permiso, key_rol } = this.props;
         return <SView row padding={2} style={{ alignItems: "center", marginRight: 8 }
         }>
             <SSwitch scale={2} size={12} value={!!permiso.rolPermiso} onChange={e => {
-                SNotification.send({
-                    key: "edit_permiso_" + permiso.key,
-                    title: "Cargando",
-                    body: permiso.descripcion,
-                    type: "loading",
-
-                })
-                if (permiso.rolPermiso) {
-                    // Editar
-                    MDL.rolesPermisos.editarRolPermiso({
-                        ...permiso.rolPermiso,
-                        estado: 0,
-                    }).then(e => {
-                        SNotification.remove("edit_permiso_" + permiso.key)
-                        permiso.rolPermiso = null;
-                        this.forceUpdate();
-                    }).catch(e => {
-                        SNotification.send({
-                            key: "edit_permiso_" + permiso.key,
-                            title: "Error",
-                            body: e?.error,
-                            color: STheme.color.danger,
-                            time: 5000
-                        })
-                        console.log(e);
-                    })
-                } else {
-                    // registart
-                    MDL.rolesPermisos.registrarRolPermiso({
-                        key_rol: key_rol,
-                        key_permiso: permiso.key,
-                    }).then(e => {
-                        SNotification.remove("edit_permiso_" + permiso.key)
-                        permiso.rolPermiso = e;
-                        this.forceUpdate();
-                    }).catch(e => {
-                        SNotification.send({
-                            key: "edit_permiso_" + permiso.key,
-                            title: "Error",
-                            body: e?.error,
-                            color: STheme.color.danger,
-                            time: 5000
-                        })
-                        console.log(e);
-                    })
-                }
+                this.handleOnChange(e);
             }} />
             <SView width={4} />
             <SText fontSize={12}  >{permiso.descripcion}</SText>
@@ -166,54 +209,19 @@ class PermisoSwitch extends React.Component<{ permiso: string, key_rol: string }
             {permiso?.info?.descripcion && <ToolTips
                 type="info"
                 small
-                color={STheme.color.text}
+                color={STheme.color.warning}
                 descripcion={permiso.info.descripcion}
                 // itemWidth={200}
                 itemHeight={300}
             />}
             <SView width={4} />
             <SView style={{
-                width: 20,
-                height: 20
+                width: 14,
+                height: 14
             }} onPress={() => {
-                TextAreaPopup.open({
-                    type: "MD",
-                    title: permiso.descripcion,
-                    defaultValue: permiso.info?.descripcion,
-                    onChangeText: (e) => {
-                        const k = "editando";
-                        new SThread(1000, k, true).start(() => {
-                            SNotification.send({
-                                key: k,
-                                title: "Guardando",
-                                type: "loading",
-                            })
-                            SSocket.sendPromise({
-                                service: "roles_permisos",
-                                component: "permisoInfo",
-                                type: "save",
-                                data: {
-                                    key_permiso: permiso.key,
-                                    descripcion: e,
-                                }
-                            }).then(a => {
-                                permiso.info = a.data;
-                                this.forceUpdate()
-                                SNotification.remove(k)
-                            }).catch(e => {
-                                SNotification.send({
-                                    key: k,
-                                    title: "Error",
-                                    body: e?.error,
-                                    color: STheme.color.danger,
-                                    time: 5000
-                                })
-                            })
-                        })
-                    }
-                })
+                this.handleEdit();
             }}>
-                <SIconApp name="Edit" />
+                <SIconApp name="Pencil" fill={STheme.color.lightGray} />
             </SView>
         </SView >
     }

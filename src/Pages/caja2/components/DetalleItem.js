@@ -105,6 +105,23 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         <SText color={STheme.color.lightGray} fontSize={10}>{this?.props?.tipo_pago?.[item.key_tipo_pago]?.descripcion || item.key_tipo_pago}</SText>
                     </View>
                     <SView width={8} />
+                    <View style={{
+                        // backgroundColor: STheme.color.card,
+                        borderWidth: 1,
+                        borderColor: STheme.color.card,
+                        padding: 2,
+                        borderRadius: 4,
+                        flexDirection: "row",
+                        alignItems: "center"
+                    }}>
+                        {/* <SView width={16} height={16}> */}
+                            {/* {this?.props?.tipo_pago?.[item.key_tipo_pago] && <SIconApp name={this?.props?.tipo_pago?.[item.key_tipo_pago].icon} />} */}
+                        {/* </SView> */}
+                        {/* <SView width={4} /> */}
+                        <SText color={STheme.color.lightGray} fontSize={10}>{item.empresa_tipo_pago?.descripcion}</SText>
+                        {/* <SText color={STheme.color.lightGray} fontSize={10}>{item.key_punto_venta_tipo_pago}</SText> */}
+                    </View>
+                    <SView width={8} />
                     {moneda && <View style={{
                         // backgroundColor: STheme.color.card,
                         borderWidth: 1,
@@ -126,7 +143,7 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                 alignItems: "flex-end"
             }}>
                 <SView row center>
-                    <SText fontSize={18} bold color={color}>{SMath.formatMoney(item.monto)}</SText>
+                    <SText fontSize={18} bold color={color}>{moneda?.observacion} {SMath.formatMoney(item.monto)}</SText>
                     {/* <SView width={4} /> */}
 
                 </SView>

@@ -16,9 +16,17 @@ const cuentaToText = (c: any) => {
     if (!c) return "";
     return `${c.codigo} - ${c.descripcion}`
 }
+const monedaToText = (c: any) => {
+    if (!c) return "";
+    return `${c.descripcion}`
+}
 const findCuentaText = (arr: any[], text: string) => {
     const cuenta = arr.find(c => cuentaToText(c) === text);
     return cuenta ? cuenta : null;
+}
+const findMonedaText = (arr: any[], text: string) => {
+    const moneda = arr.find(c => monedaToText(c) === text);
+    return moneda ? moneda : null;
 }
 export default class PopupCrearTipoPago extends Component<Props> {
     static open(props: Props) {
@@ -49,10 +57,11 @@ export default class PopupCrearTipoPago extends Component<Props> {
     _ref: any = {}
     state: any = {
         tipo_pago: [], // inicializamos vacio,
-        cuentas: []
+        cuentas: [],
+        monedas: []
     }
     componentDidMount(): void {
-        MDL.empresa.getTipoPago().then(item => {
+        MDL.caja.tipo_pago_getAll().then(item => {
             this.state.tipo_pago = Object.values(item);
             this.forceUpdate();
             if (this.form) {
@@ -68,6 +77,10 @@ export default class PopupCrearTipoPago extends Component<Props> {
             // });
         }).catch(e => console.error(e));
 
+        MDL.empresa.getFull().then(empresa => {
+            this.state.monedas = empresa.monedas;
+            this.forceUpdate();
+        })
         MDL.contabilidad.getCuentas().then(cuentas => {
             const arrCuentas = Object.values(cuentas)
             arrCuentas.map((cuenta: any) => {
@@ -111,7 +124,7 @@ export default class PopupCrearTipoPago extends Component<Props> {
                                 fontSize: 10,
                             },
                             // autoFocus:true,
-                            
+
                             options: this.state.tipo_pago.map(a => a.descripcion),   // siempre array
                             defaultValue: this.state.tipo_pago.find(a => a.key == this.props.editObject?.key_tipo_pago)?.descripcion,
                             isRequired: true,
@@ -125,7 +138,7 @@ export default class PopupCrearTipoPago extends Component<Props> {
                                 fontSize: 10,
                             },
                             label: "Nombre del tipo de pago", placeholder: "Ingresa el nombre del tipo de pago",
-                            isRequired: true, 
+                            isRequired: true,
 
                             defaultValue: this.props.editObject?.descripcion,
                             onSubmitEditing: () => {
@@ -153,14 +166,31 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0).map(cuentaToText),
                             isRequired: true,
 
+                        },
+                        "key_moneda": {
+                            col: "xs-12",
+                            type: "select2",
+                            label: "Moneda",
+                            style: { paddingStart: 0, fontSize: 10 },
+                            labelStyle: { top: -10, },
+                            inputStyle: { paddingStart: 8, fontSize: 10 },
+                            selectStyle: {
+                                fontSize: 10,
+                            },
+                            defaultValue: monedaToText(this.state.monedas.find(c => c.key == this.props.editObject?.key_moneda)),
+                            options: this.state.monedas.map(monedaToText),
+                            isRequired: true,
+
                         }
                     }}
                     onSubmit={(data: any) => {
                         data.key = this.props.editObject?.key;
                         const cuenta = findCuentaText(this.state.cuentas, data.key_cuenta_contable);
+                        const moneda = findMonedaText(this.state.monedas, data.key_moneda);
                         data.key_cuenta_contable = cuenta?.key;
                         data.key_tipo_pago = this.state.tipo_pago.find(a => a.descripcion == data.key_tipo_pago)?.key;
-
+                        data.key_moneda = moneda?.key;
+                        console.log(data);
                         SNotification.send({
                             key: "tipo_pago",
                             title: "Tipo de pago",
@@ -169,7 +199,7 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             type: "loading",
                             // color: STheme.color.success,
                         });
-                        MDL.empresa.saveTipoPago(data).then((resp: any) => {
+                        MDL.caja.empresa_tipo_pago_save(data).then((resp: any) => {
                             if (this.props.onSuccess) this.props.onSuccess(resp)
 
                             // if (this._ref.image_sucursal) {

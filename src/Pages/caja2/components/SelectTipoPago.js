@@ -33,7 +33,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
 
             }} withoutFeedback>
                 <ScrollView style={{
-                    flex:1,
+                    flex: 1,
                 }}>
                     <SelectTipoPago {...props} />
                 </ScrollView>
@@ -57,19 +57,24 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
     }
 
     async loadData() {
-        this.tipo_pago = await MDL.empresa.getTipoPago()
+        this.tipo_pago = await MDL.caja.tipo_pago_getAll()
         const data = await MDL.empresa.getFull()
         console.log(data);
-        const suc = data.sucursales.find(suc => suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta));
-        const pv = suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta);
+        const cuentas = await MDL.contabilidad.getCuentasCache();
+        // const suc = data.sucursales.find(suc => suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta));
+        // const pv = suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta);
         this.moneda = data.monedas.find(a => a.key == this.props.key_moneda);
         this.moneda_base = data.monedas.find(a => a.tipo == "base");
-        this.pvtp = pv.punto_venta_tipo_pago;
+        const empresa_tipo_pago = await MDL.caja.empresa_tipo_pago_getAll({ key_punto_venta: this.props.key_punto_venta })
+        this.pvtp = Object.values(empresa_tipo_pago)
         if (!this.pvtp) this.pvtp = [];
         // if (this.pvtp.length <= 0) {
         //si no tiene tipos de pago asignados, asignar todos los tipos de pago
         this.pvtp = this.pvtp.map(item => {
-            item.moneda = data.monedas.find(a => a.key == item.key_moneda)
+            item.cuenta = cuentas[item.key_cuenta_contable]
+            const moneda = data.monedas.find(a => a.key == item?.cuenta?.key_moneda);
+            item.moneda = moneda ?? this.moneda_base;
+            // item.moneda = data.monedas.find(a => a.key == item.key_moneda)
             item.tipo_pago = this.tipo_pago[item.key_tipo_pago];
             item.monto = this.props.montoMaximo ?? 0;
             if (this.props.montoMaximoPorTipo && this.props.montoMaximoPorTipo[item.key_tipo_pago]) {

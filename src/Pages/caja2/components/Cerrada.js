@@ -16,8 +16,8 @@ export default class Cerrada extends Component {
     MDL.caja.getLast({ key_punto_venta: e.key }).then((caja) => {
       this.state.lastCaja = caja;
       if (!caja?.key_usuario) {
-          this.setState({ lastCaja: this.state.lastCaja });
-          return;
+        this.setState({ lastCaja: this.state.lastCaja });
+        return;
       }
       MDL.usuario.getByKeys([caja.key_usuario]).then((usuarios) => {
         if (!this.state.lastCaja) return;
@@ -46,6 +46,7 @@ export default class Cerrada extends Component {
       SNotification.send({
         key: "caja_abrir",
         title: "Error al abrir caja",
+        body: e?.error ?? JSON.stringify(e),
         color: STheme.color.danger,
         time: 5000
       })

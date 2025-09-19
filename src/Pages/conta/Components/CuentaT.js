@@ -65,9 +65,9 @@ export default class CuentaT extends React.Component {
 
         const saldo = totalDebe - totalHaber;
         const saldoME = totalDebeME - totalHaberME;
-        const saldo_correcto = saldoME * moneda.tipo_cambio
+        const saldo_correcto = Math.round((saldoME * moneda.tipo_cambio) * 100) / 100;
         return <SView style={{
-            width: saldoME != 0 ? 400 : 300,
+            width: moneda.tipo != "base" ? 400 : 300,
 
             // borderWidth: 1,
             borderRadius: 4,
@@ -94,7 +94,7 @@ export default class CuentaT extends React.Component {
                 <SView flex>
                     <SText fontSize={10} color={STheme.color.lightGray} center>{"Debe"}</SText>
                     <SView row col={"xs-12"}>
-                        {saldoME != 0 && <SView flex center>
+                        {moneda.tipo != "base" && <SView flex center>
                             <SText fontSize={10} color={STheme.color.lightGray} center>{"Extrangera"}</SText>
                         </SView>
                         }
@@ -114,7 +114,7 @@ export default class CuentaT extends React.Component {
                         <SView flex center>
                             <SText fontSize={10} color={STheme.color.lightGray} center>{"Nacional"}</SText>
                         </SView>
-                        {saldoME != 0 && <SView flex center>
+                        {moneda.tipo != "base" && <SView flex center>
                             <SText fontSize={10} color={STheme.color.lightGray} center>{"Extranjera"}</SText>
                         </SView>}
                     </SView>
@@ -131,7 +131,7 @@ export default class CuentaT extends React.Component {
                     minHeight: "100%"
                 }}>
                 <SView col={"xs-12"} row flex>
-                    {saldoME != 0 && <SView flex style={{
+                    {moneda.tipo != "base" && <SView flex style={{
                         alignItems: "flex-end",
 
                     }}>
@@ -174,7 +174,7 @@ export default class CuentaT extends React.Component {
                         <SHr h={50} />
 
                     </SView>
-                    {saldoME != 0 && <SView flex style={{
+                    {moneda.tipo != "base" && <SView flex style={{
                         alignItems: "flex-end",
                     }} >
                         {detalleHaber.map(a => {
@@ -193,7 +193,7 @@ export default class CuentaT extends React.Component {
             <SHr h={1} color={STheme.color.card} />
             <SHr h={2} />
             <SView col={"xs-12"} row >
-                {saldoME != 0 && <SView flex style={{
+                {moneda.tipo != "base" && <SView flex style={{
                     alignItems: "flex-end",
                     // paddingRight: 4,
                 }}>
@@ -215,7 +215,7 @@ export default class CuentaT extends React.Component {
                 }} >
                     <SText fontSize={12} color={STheme.color.text}>{SMath.formatMoney(totalHaber ?? 0)} {moneda_base?.observacion}</SText>
                 </SView>
-                {saldoME != 0 && <SView flex style={{
+                {moneda.tipo != "base" && <SView flex style={{
                     alignItems: "flex-end",
                 }} >
                     <SText fontSize={12} color={STheme.color.text}>{SMath.formatMoney(totalHaberME ?? 0)} {moneda?.observacion}</SText>
@@ -225,7 +225,7 @@ export default class CuentaT extends React.Component {
             <SHr h={1} color={STheme.color.card} />
             <SHr h={2} />
             <SView col={"xs-12"} row >
-                {saldoME != 0 && <SView flex style={{
+                {moneda.tipo != "base" && <SView flex style={{
                     alignItems: "flex-end",
                     // paddingRight: 4,
                 }}>
@@ -252,7 +252,7 @@ export default class CuentaT extends React.Component {
                     backgroundColor: STheme.color.card,
                     height: "100%"
                 }} />
-                {saldoME != 0 && <SView flex style={{
+                {moneda.tipo != "base" && <SView flex style={{
                     alignItems: "flex-end",
                 }} >
                     {totalHaberME > totalDebeME && <SText fontSize={12} color={STheme.color.text}>{SMath.formatMoney(totalHaberME - totalDebeME)} {moneda?.observacion}</SText>}
@@ -261,7 +261,7 @@ export default class CuentaT extends React.Component {
             <SHr h={2} />
             <SHr h={1} color={STheme.color.card} />
             <SHr h={2} />
-            {saldo_correcto > 0 && <SView col={"xs-12"} row >
+            {((saldo_correcto != saldo) && saldoME != 0) && <SView col={"xs-12"} row >
                 <SView flex style={{
                     alignItems: "flex-end",
                     // paddingRight: 4,

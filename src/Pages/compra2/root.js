@@ -168,11 +168,17 @@ export default class root extends React.Component {
             }));
 
             const compraResp = await SSocket.sendPromise({
-                service: "compra_venta",
-                component: "compra_venta",
-                type: "compraRapida",
+                service: "caja",
+                component: "caja_detalle",
+                type: "compra",
                 data: data,
             });
+            // const compraResp = await SSocket.sendPromise({
+            //     service: "compra_venta",
+            //     component: "compra_venta",
+            //     type: "compraRapida",
+            //     data: data,
+            // });
 
             SelectTipoPago.closePopup();
             SNavigation.goBack();

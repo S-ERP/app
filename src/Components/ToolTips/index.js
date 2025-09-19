@@ -47,8 +47,8 @@ export default class ToolTips extends Component<ToolTips_props> {
             height: this.props.height ?? 40,
         }
         if (this.props.small) {
-            size.width = 20;
-            size.height = 20;
+            size.width = 14;
+            size.height = 14;
         }
         if (this.props.medium) {
             size.width = 300;

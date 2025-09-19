@@ -18,12 +18,18 @@ export default class MenuGlobal extends React.Component<MenuGlobalProps> {
     }
     componentDidMount(): void {
         MenuGlobal.INSTACE = this;
+        MDL.rolesPermisos.addEventListener("change", (e) => {
+            this.loadData();
+        })
+        this.loadData();
+        SNavigation.addOnChangeListener(this.onNavigationChange.bind(this))
+    }
+    loadData() {
         MDL.rolesPermisos.getPermisoAsync({ url: "/", permiso: "ver" }).then(() => {
             this.forceUpdate();
-        }).catch(e=>{
+        }).catch(e => {
             console.error(e);
         })
-        SNavigation.addOnChangeListener(this.onNavigationChange.bind(this))
     }
     onNavigationChange(e: Route<any>) {
         // @ts-ignore

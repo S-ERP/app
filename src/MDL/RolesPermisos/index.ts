@@ -40,6 +40,7 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
         }
         state.usuarioPageReducer.data = resp.data;
         state.usuarioPageReducer.roles = resp.rol;
+        this.dispatchEvent({ type: "change", session: state.usuarioPageReducer })
         return resp.data;
     }
 

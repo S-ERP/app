@@ -5,6 +5,9 @@ export type Caja = {
   fecha_on: string;
   estado: number;
   fecha:string;
+  key_punto_venta?: string;
+  key_sucursal?: string;
+  fraccionar_moneda?: boolean;
 };
 
 export type CajaDetalle = {

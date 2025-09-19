@@ -105,6 +105,28 @@ export default class empresa extends MDLAbstract<EventListener> {
     });
     return resp.data;
   }
+  // async punto_venta_tipo_pago_asignado_registro(data: any): Promise<any[]> {
+  //   const resp: any = await SSocket.sendPromise({
+  //     service: "empresa",
+  //     component: "punto_venta_tipo_pago_asignado",
+  //     type: "registro",
+  //     data: data,
+  //     key_empresa: MDL.empresa.select?.key,
+  //   });
+  //   return resp.data;
+  // }
+
+  // async punto_venta_tipo_pago_asignado_eliminar(data: { key_punto_venta: string, key_punto_venta_tipo_pago: string }): Promise<any[]> {
+  //   const resp: any = await SSocket.sendPromise({
+  //     service: "empresa",
+  //     component: "punto_venta_tipo_pago_asignado",
+  //     type: "eliminar",
+  //     data: data,
+  //     key_empresa: MDL.empresa.select?.key,
+  //   });
+  //   return resp.data;
+  // }
+
   async getByKeyFull(): Promise<any> {
     const resp: any = await SSocket.sendPromise({
       service: "empresa",
@@ -336,31 +358,42 @@ export default class empresa extends MDLAbstract<EventListener> {
   // }
 
 
-  async saveTipoPago(tipo_pago: any) {
-    tipo_pago.key_empresa = MDL.empresa.select?.key;
-    if (tipo_pago.key) {
-      const resp: any = await SSocket.sendPromise({
-        version: "1.0",
-        service: "empresa",
-        component: "punto_venta_tipo_pago",
-        type: "editar",
-        data: tipo_pago,
-        key_empresa: MDL.empresa.select?.key,
-        key_usuario: MDL.usuario.session?.key,
-      });
-      return resp.data;
-    } else {
-      const resp: any = await SSocket.sendPromise({
-        version: "1.0",
-        service: "empresa",
-        component: "punto_venta_tipo_pago",
-        type: "registro",
-        data: tipo_pago,
-        key_empresa: MDL.empresa.select?.key,
-        key_usuario: MDL.usuario.session?.key,
-      });
-      return resp.data;
-    }
+
+
+
+
+  async tipo_pagoGetFullCaja(key_punto_venta: any) {
+    const tipo_pago = await MDL.caja.tipo_pago_getAll()
+    const data = await MDL.empresa.getFull()
+    const cuentas = await MDL.contabilidad.getCuentasCache();
+    // const suc = data.sucursales.find((suc: any) => suc.puntos_venta.find(pv => pv.key == key_punto_venta));
+    // const pv = suc.puntos_venta.find((pv: any) => pv.key == key_punto_venta);
+    // this.moneda = data.monedas.find(a => a.key == this.props.key_moneda);
+    const moneda_base = data.monedas.find(a => a.tipo == "base");
+    let pvtp = await MDL.caja.empresa_tipo_pago_getAll({ key_punto_venta: key_punto_venta })
+    pvtp = Object.values(pvtp);
+    // if (this.pvtp.length <= 0) {
+    //si no tiene tipos de pago asignados, asignar todos los tipos de pago
+    pvtp = pvtp.map(item => {
+      item.cuenta = cuentas[item.key_cuenta_contable]
+      const moneda = data.monedas.find(a => a.key == item?.cuenta?.key_moneda);
+      item.moneda = moneda ?? moneda_base;
+      // item.moneda = data.monedas.find(a => a.key == item.key_moneda)
+      item.tipo_pago = tipo_pago[item.key_tipo_pago];
+      // item.monto = this.props.montoMaximo ?? 0;
+      // if (this.props.montoMaximoPorTipo && this.props.montoMaximoPorTipo[item.key_tipo_pago]) {
+      // item.monto = this.props.montoMaximoPorTipo[item.key_tipo_pago];
+      // }
+      return { ...item };
+    });
+    // }
+    // if (this.props.solo_para_caja) {
+    // this.pvtp = this.pvtp.filter(a => a.tipo_pago?.pasa_por_caja);
+    // }
+    pvtp.sort((a, b) => {
+      return a.tipo_pago?.orden - b.tipo_pago?.orden
+    })
+    return pvtp;
   }
 
 

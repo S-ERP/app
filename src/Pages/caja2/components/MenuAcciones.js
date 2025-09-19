@@ -6,6 +6,7 @@ import SelectTipoPago from './SelectTipoPago';
 import TotalTipoPago from './TotalTipoPago';
 import DetalleItem from './DetalleItem';
 import CargarEfectivoDelBanco from '../Acciones/CargarEfectivoDelBanco';
+import Transferencia from '../Acciones/Transferencia';
 
 
 export default class MenuAcciones extends Component<{ caja: any, movimientos: any[] }> {
@@ -62,23 +63,30 @@ export default class MenuAcciones extends Component<{ caja: any, movimientos: an
 
     cargarEfectivoDelBanco() {
         CargarEfectivoDelBanco.open({})
-
+    }
+    transferir() {
+        Transferencia.open({})
+        // CargarEfectivoDelBanco.open({})
     }
     render() {
         return (
 
             <SView row >
                 {/* <SText card style={{ backgroundColor: STheme.color.danger }} padding={8} margin={4}>{"Cobrar a Clientes"}</SText> */}
-                <SText card padding={8} margin={4} onPress={this.cargarEfectivoDelBanco.bind(this)}>{"Cargar efectivo desde Banco"}</SText>
+                <SText card padding={8} margin={4} onPress={this.transferir.bind(this)}>{"Transferir"}</SText>
+                {/* <SText card padding={8} margin={4} onPress={this.cargarEfectivoDelBanco.bind(this)}>{"Cargar efectivo desde Banco"}</SText> */}
                 <SText card padding={8} margin={4} onPress={() => { SNavigation.navigate("/puntoventa") }}>{"Vender Productos"}</SText>
                 {/* <SText card padding={8} margin={4} style={{ backgroundColor: STheme.color.danger }} >{"Otros Ingresos"}</SText> */}
                 <SText card padding={8} margin={4} onPress={() => { SNavigation.navigate("/compra2") }}>{"Comprar Productos"}</SText>
                 {/* <SText card padding={8} margin={4} style={{ backgroundColor: STheme.color.danger }}>{"Pagar a Proveedores"}</SText> */}
-                <SText card padding={8} margin={4} onPress={this.enviarAlBanco.bind(this)}>{"Enviar al Banco"}</SText>
-                <SText card padding={8} margin={4} onPress={this.cerrar_caja.bind(this)} >{"Cerrar la Caja"}</SText>
+                {/* <SText card padding={8} margin={4} onPress={this.enviarAlBanco.bind(this)}>{"Enviar al Banco"}</SText> */}
 
                 <SText card padding={8} margin={4} onPress={() => { SNavigation.navigate("/proveedor") }}>{"Pagar a Proveedores"}</SText>
                 <SText card padding={8} margin={4} onPress={() => { SNavigation.navigate("/cliente") }}>{"Cobrar a Clientes"}</SText>
+
+                <SText card padding={8} style={{
+                    backgroundColor: STheme.color.danger,
+                }} margin={4} onPress={this.cerrar_caja.bind(this)} >{"Cerrar la Caja"}</SText>
 
 
             </SView>

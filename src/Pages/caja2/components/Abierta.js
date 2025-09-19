@@ -18,9 +18,7 @@ export default class Abierta extends Component {
         this.ondetallechange = MDL.caja.addEventListener("onDetalleChange", () => {
             this.loadData();
         })
-        MDL.empresa.getTipoPago().then((tipo_pago) => {
-            this.setState({ tipo_pago });
-        })
+
         MDL.empresa.getFull().then(empresa => {
             this.setState({ empresa });
         })
@@ -28,14 +26,17 @@ export default class Abierta extends Component {
     componentWillUnmount() {
         MDL.caja.removeEventListener(this.ondetallechange);
     }
-    loadData() {
-
-        MDL.caja.getDetalle(this.props.caja.key).then(movimientos => {
-            movimientos.sort((a, b) => {
-                return new SDate(b.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime() - new SDate(a.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime();
-            })
-            this.setState({ movimientos, ready: true });
-        });
+    async loadData() {
+        const movimientos = await MDL.caja.getDetalle(this.props.caja.key)
+        const tipo_pago = await MDL.caja.tipo_pago_getAll()
+        const empresa_tipo_pago = await MDL.caja.empresa_tipo_pago_getAll();
+        movimientos.sort((a, b) => {
+            return new SDate(b.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime() - new SDate(a.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime();
+        })
+        movimientos.map((m) => {
+            m.empresa_tipo_pago = empresa_tipo_pago[m.key_empresa_tipo_pago]
+        })
+        this.setState({ movimientos, tipo_pago, ready: true });
     }
     cerrar_caja() {
         const { caja } = this.props
@@ -126,7 +127,7 @@ export default class Abierta extends Component {
                     renderItem={({ item, index }) => {
                         return <SView col={"xs-12"} center>
                             <SView col={"xs-11 sm-10 md-8 lg-6"} >
-                                <DetalleItem item={item} index={index} empresa={this.state.empresa} tipo_pago={this.state.tipo_pago} />
+                                <DetalleItem item={item} index={this.state.movimientos.length - index} empresa={this.state.empresa} tipo_pago={this.state.tipo_pago} />
                             </SView>
                         </SView>
                     }} />
