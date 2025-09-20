@@ -10,6 +10,15 @@ export default class libro_diario extends React.Component {
     dinamicTable: DinamicTable<any>;
     componentDidMount() {
 
+        MDL.rolesPermisos.getPermisoAsync({ url: "/conta/libro_diario", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        }).catch(e => {
+            console.error(e);
+        })
+
     }
     async loadData() {
         try {
@@ -21,10 +30,10 @@ export default class libro_diario extends React.Component {
                 a.moneda = empresa.monedas.find(b => b.key == a.key_moneda)
                 a.moneda_base = monedabase
                 if (a.tags) {
-                    tagsKeys = { ...tagsKeys, ...a.tags } 
+                    tagsKeys = { ...tagsKeys, ...a.tags }
                 }
             })
-            
+
             console.log(Object.keys(tagsKeys))
 
             return data;

@@ -21,6 +21,16 @@ export default class config extends Component {
     key_empresa = Model.empresa.Action.getKey()
 
     componentDidMount() {
+
+        MDL.rolesPermisos.getPermisoAsync({ url: "/empresa/config", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        }).catch(e => {
+            console.error(e);
+        })
+
         SSocket.sendPromise({
             service: "empresa",
             component: "empresa",
@@ -663,7 +673,7 @@ const Item = ({ label, index, code, style, onPress, color, scale = 1, onAjuste, 
             <SView width={8} />
             <SView width={16 * scale} height={16 * scale} center onPress={onAjuste} card >
                 {/* <SIconApp {...buildIconEmpresa('editar')} /> */}
-                <SIconEmpresa type='editar'/>
+                <SIconEmpresa type='editar' />
             </SView>
         </>}
     </SView>

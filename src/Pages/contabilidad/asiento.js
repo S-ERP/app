@@ -4,6 +4,7 @@ import { SHr, SIcon, SNavigation, SPage, SText, STheme, SView } from 'servisofts
 import { AsientoContable2 } from 'servisofts-rn-contabilidad';
 import Container from '../../Components/Container';
 import Model from '../../Model';
+import MDL from '../../MDL';
 
 class index extends Component {
     constructor(props) {
@@ -14,11 +15,20 @@ class index extends Component {
         this.clone = SNavigation.getParam("clone")
         this.key_gestion = SNavigation.getParam("key_gestion", Model.gestion.Action.getSelect()?.key)
     }
-
+    componentDidMount() {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/contabilidad/asiento", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        }).catch(e => {
+            console.error(e);
+        })
+    }
 
     render() {
         return (
-            <SPage title={"Asiento contable"} disableScroll center>
+            <SPage title={"Asientos contables"} disableScroll center>
                 <SView col={"xs-11.5 sm-10 md-8"} height>
                     <AsientoContable2 key_gestion={this.key_gestion} key_asiento_contable={this.pk} clone={this.clone} />
                 </SView>

@@ -16,6 +16,16 @@ import SIconEmpresa, { buildIconEmpresa, inconParams } from "../../../Assets/SIc
 export default class configIcon extends React.Component {
 
     componentDidMount() {
+
+        MDL.rolesPermisos.getPermisoAsync({ url: "/empresa/configIcon", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        }).catch(e => {
+            console.error(e);
+        })
+
         this.loadData();
         MDL.erp.addServerListener({
             key: "config_2_almacen_editar",
@@ -101,7 +111,7 @@ export default class configIcon extends React.Component {
                                             backgroundColor={STheme.color.background}
                                             style={{ borderRadius: 8, padding: 6 }}
                                         >
-                                            <SIconEmpresa type={categoria}   />
+                                            <SIconEmpresa type={categoria} />
                                         </SView>
                                     </SView>
                                 </SView>

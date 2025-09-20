@@ -1,5 +1,5 @@
 import React from "react";
-import { SDate, SHr, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SDate, SHr, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import SSocket from "servisofts-socket";
 import { DinamicTable } from "servisofts-table";
 import MDL from "../../MDL";
@@ -21,7 +21,16 @@ import FiltroNiveles from "./Components/FiltroNiveles";
 
 export default class cuentas extends React.Component {
 
-
+    componentDidMount() {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/conta/cuentas", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        }).catch(e => {
+            console.error(e);
+        })
+    }
     len = 1;
     eq = "Desde";
 
