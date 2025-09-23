@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SForm, SHr, SIcon, SLoad, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SForm, SHr, SIcon, SLoad, SNavigation, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
 import { Container } from '../../Components';
@@ -31,6 +31,12 @@ export default class ajustes extends Component {
         };
     }
     componentDidMount() {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/facturacion/ajustes", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        });
         // SSocket.sendPromise({
         //     service: "facturacion",
         //     component: "siat",

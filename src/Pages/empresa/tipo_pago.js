@@ -70,30 +70,34 @@ export default class tipo_pago extends Component {
 
     render() {
         return <SPage title={"Tipo Pago"} disableScroll>
+
             <DinamicTable
                 ref={ref => this.DinamicTable = ref}
                 {...Config.table.applyTheme()}
                 selectType='single'
                 loadData={this.loadData.bind(this)}
                 onSelect={e => {
-                    FloatMenu.open({
-                        e: e.evt,
-                        label: e.row.descripcion,
-                        options: [
-                            {
-                                label: "Editar", icon: <SIconApp name='Edit' />,
-                                onPress: () => {
-                                    PopupCrearTipoPago.open({
-                                        editObject: e.row,
-                                        onSuccess: async () => {
-                                            this.DinamicTable.loadData();
-                                        }
-                                    })
+                    if (MDL.rolesPermisos.getPermiso({ url: "/empresa/tipo_pago", permiso: 'edit' })) {
+                        FloatMenu.open({
+                            e: e.evt,
+                            label: e.row.descripcion,
+                            options: [
+                                {
+                                    label: "Editar", icon: <SIconApp name='Edit' />,
+                                    onPress: () => {
+                                        PopupCrearTipoPago.open({
+                                            editObject: e.row,
+                                            onSuccess: async () => {
+                                                this.DinamicTable.loadData();
+                                            }
+                                        })
+                                    }
                                 }
-                            }
-                        ]
-                    })
-                }}
+                            ]
+                        })
+                    }
+                }
+                }
             >
                 <DinamicTable.Col key={"key"} label='Key'
                     width={50} data={e => e.row.key}
@@ -199,6 +203,7 @@ export default class tipo_pago extends Component {
                     />}
                 />
             </DinamicTable>
+
             <FloatButtom onPress={() => {
                 PopupCrearTipoPago.open({
                     onSuccess: async () => {

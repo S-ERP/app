@@ -52,97 +52,109 @@ export default class cuentas extends React.Component {
                 e.dinamicTable.clearSelect()
             },
             options: [
-                {
-                    label: "Agregar Sub Cuenta", icon: <SIconApp name="Add" />, onPress: () => {
-                        const grafo = MDL.contabilidad.getCuentasGrafo(e.dinamicTable.data);
-                        const cuenta = grafo.find(n => n.codigo === e.row.codigo);
-                        const hijos = cuenta.childrens || [];
+                ... (MDL.rolesPermisos.getPermiso({ url: "/conta/cuentas", permiso: 'new' }) ? [
+                    {
+                        label: "Agregar Sub Cuenta", icon: <SIconApp name="Add" />, onPress: () => {
+                            const grafo = MDL.contabilidad.getCuentasGrafo(e.dinamicTable.data);
+                            const cuenta = grafo.find(n => n.codigo === e.row.codigo);
+                            const hijos = cuenta.childrens || [];
 
-                        let index = "01";
-                        let childSize = 0;
-                        if (hijos.length > 0) {
-                            index = hijos.length + 1
-                            if (index.length < 2) {
-                                index = "0" + index
+                            let index = "01";
+                            let childSize = 0;
+                            if (hijos.length > 0) {
+                                index = hijos.length + 1
+                                if (index.length < 2) {
+                                    index = "0" + index
+                                }
+                                childSize = hijos[0].codigo.length
+                            } else {
+                                // BHuscar
+
+                                const niveles = MDL.contabilidad.armarNiveles(e.dinamicTable.data);
+                                const lvlPadre = e.row.codigo.length;
+                                const indexLvl = niveles.findIndex(n => n == lvlPadre) + 1;
+                                if (indexLvl > 0 && niveles[indexLvl]) {
+                                    childSize = niveles[indexLvl];
+                                }
+                                console.log("niveles", childSize)
                             }
-                            childSize = hijos[0].codigo.length
-                        } else {
-                            // BHuscar
+                            let codigo = e.row.codigo + "." + index
 
-                            const niveles = MDL.contabilidad.armarNiveles(e.dinamicTable.data);
-                            const lvlPadre = e.row.codigo.length;
-                            const indexLvl = niveles.findIndex(n => n == lvlPadre) + 1;
-                            if (indexLvl > 0 && niveles[indexLvl]) {
-                                childSize = niveles[indexLvl];
+                            if (codigo.length < childSize) {
+                                codigo = e.row.codigo + "." + "0".repeat(childSize - codigo.length) + index;
                             }
-                            console.log("niveles", childSize)
 
-
-                        }
-                        let codigo = e.row.codigo + "." + index
-
-                        if (codigo.length < childSize) {
-                            codigo = e.row.codigo + "." + "0".repeat(childSize - codigo.length) + index;
-                        }
-
-                        let key_moneda = cuenta.key_moneda;
-                        if (!key_moneda) {
-                            let cc = cuenta;
-                            while (cc.parent) {
-                                cc = cc.parent;
-                                key_moneda = cc.key_moneda;
-                                if (key_moneda) break;
+                            let key_moneda = cuenta.key_moneda;
+                            if (!key_moneda) {
+                                let cc = cuenta;
+                                while (cc.parent) {
+                                    cc = cc.parent;
+                                    key_moneda = cc.key_moneda;
+                                    if (key_moneda) break;
+                                }
                             }
-                        }
 
-                        // const hermanas = e.dinamicTable.data.filter(r => r.codigo.startsWith(e.row.codigo + "."));
-                        CuentaContableForm.open({
-                            cuenta_contable: {
-                                tipo: e.row.tipo,
-                                codigo: codigo,
-                                descripcion: "",
-                                key_moneda: key_moneda,
-                            },
-                            onChange: (e) => {
-                                this.loadData();
-                                // this.loadData();
-                            }
-                        })
-                    }
-                },
-                {
-                    label: "Editar", icon: <SIconApp name="Edit" />, onPress: () => {
-
-                        CuentaContableForm.open({
-                            cuenta_contable: e.row,
-                            onChange: (e) => {
-                                this.loadData();
-                                // this.loadData();
-                            }
-                        })
-                    }
-                },
-                {
-                    label: "Eliminar", icon: <SIconApp name="Delete" />, onPress: () => {
-                        SPopup.confirm({
-                            title: "Eliminar Cuenta Contable",
-                            message: "¿Estás seguro de eliminar la cuenta contable?",
-                            onPress: () => {
-                                MDL.contabilidad.cuenta_contable.save({
-                                    key: e.row.key,
-                                    estado: 0,
-                                }).then(e => {
+                            // const hermanas = e.dinamicTable.data.filter(r => r.codigo.startsWith(e.row.codigo + "."));
+                            CuentaContableForm.open({
+                                cuenta_contable: {
+                                    tipo: e.row.tipo,
+                                    codigo: codigo,
+                                    descripcion: "",
+                                    key_moneda: key_moneda,
+                                },
+                                onChange: (e) => {
                                     this.loadData();
-                                }).catch(error => {
-                                    console.error("Error al eliminar cuenta contable:", error);
-
-                                })
-                            }
-                        })
-
-
+                                    // this.loadData();
+                                }
+                            })
+                        }
                     }
-                },
+                ] : []),
+
+
+                ...(MDL.rolesPermisos.getPermiso({ url: "/conta/cuentas", permiso: 'edit' }) ? [
+
+
+
+                    {
+                        label: "Editar", icon: <SIconApp name="Edit" />, onPress: () => {
+
+                            CuentaContableForm.open({
+                                cuenta_contable: e.row,
+                                onChange: (e) => {
+                                    this.loadData();
+                                    // this.loadData();
+                                }
+                            })
+                        }
+                    }
+
+                ] : [])
+
+                ,
+                ...(MDL.rolesPermisos.getPermiso({ url: "/conta/cuentas", permiso: 'delete' }) ? [
+                    {
+                        label: "Eliminar", icon: <SIconApp name="Delete" />, onPress: () => {
+                            SPopup.confirm({
+                                title: "Eliminar Cuenta Contable",
+                                message: "¿Estás seguro de eliminar la cuenta contable?",
+                                onPress: () => {
+                                    MDL.contabilidad.cuenta_contable.save({
+                                        key: e.row.key,
+                                        estado: 0,
+                                    }).then(e => {
+                                        this.loadData();
+                                    }).catch(error => {
+                                        console.error("Error al eliminar cuenta contable:", error);
+
+                                    })
+                                }
+
+                            })
+                        }
+                    }
+                ] : []),
+
             ]
         })
     }
