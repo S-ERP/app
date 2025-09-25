@@ -117,6 +117,8 @@ export default class Modelo extends Component {
                                             overflow: "hidden",
                                         }}
                                         onPress={() => {
+
+                                            console.log("pinnnnn " + JSON.stringify(producto))
                                             if (producto.stock <= 0) {
                                                 SNotification.send({
                                                     title: "Sin stock",
@@ -142,6 +144,7 @@ export default class Modelo extends Component {
                                         <SView col={"xs-12"} padding={4}>
                                             <SView col={"xs-12"} height={40}>
                                                 <SText fontSize={14} bold color={STheme.color.text}>{producto.descripcion}</SText>
+                                                <SText fontSize={8} bold color={"green"}>{producto.tipo_producto.descripcion}</SText>
                                             </SView>
                                             <SView col={"xs-12"} row>
                                                 <SView flex row>
