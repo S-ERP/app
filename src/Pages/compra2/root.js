@@ -19,6 +19,7 @@ import SelectTipoPago from "../caja2/components/SelectTipoPago";
 // import SelectTipoPago from "../caja2/components/SelectTipoPago";
 
 export default class root extends React.Component {
+
     cajaActiva = false; // Bandera sin usar state
     selectedMoneda = this.props.selectedMoneda || null; // Moneda seleccionada
 
@@ -98,6 +99,15 @@ export default class root extends React.Component {
 
     inputs = {};
     componentDidMount() {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/compra2", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        }).catch(e => {
+            console.error(e);
+        })
+
         this.checkCaja();
 
         // MDL.empresa.getAllSucursales().then(sucursales => {

@@ -12,6 +12,14 @@ export default class cuentas_t extends React.Component {
         data: null
     }
     componentDidMount() {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/conta/cuentas_t", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        }).catch(e => {
+            console.error(e);
+        })
         this.loadData();
     }
     async loadData() {
@@ -66,9 +74,9 @@ export default class cuentas_t extends React.Component {
                         indices[cuenta.tipo].x++;
                     }
                     return <PizarraNodo id={cuenta.codigo} x={params.startX + (indices[cuenta.tipo].x * spaces.x)} y={params.startY + (indices[cuenta.tipo].y * spaces.y)}
-                    style={{
-                        padding:0,
-                    }} >
+                        style={{
+                            padding: 0,
+                        }} >
                         <CuentaT detalle={detalle} />
                     </PizarraNodo>
                 })}

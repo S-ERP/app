@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, Linking, Dimensions } from 'react-native';
-import { SButtom, SDate, SHr, SIcon, SMath, SNotification, SPage, STable, STable2, SText, STheme, SView } from 'servisofts-component';
+import { SButtom, SDate, SHr, SIcon, SMath, SNavigation, SNotification, SPage, STable, STable2, SText, STheme, SView } from 'servisofts-component';
 import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
@@ -20,6 +20,17 @@ export default class libro_ventas extends Component {
         };
     }
     componentDidMount() {
+
+
+        MDL.rolesPermisos.getPermisoAsync({ url: "/facturacion/libro_ventas", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        }).catch(e => {
+            console.error(e);
+        })
+
 
         MDL.factura.getParametrica({ ambiente: MDL.factura.ambiente, parametrica: "motivoAnulacion" }).then((res) => {
             this.state.parametricas.motivoAnulacion = res;
@@ -146,8 +157,8 @@ export default class libro_ventas extends Component {
                     console.log("onSelect", e);
 
                 }}
-                listFooterComponent={()=>{
-                    return <SHr h={200}/>
+                listFooterComponent={() => {
+                    return <SHr h={200} />
                 }}
             >
                 <DinamicTable.Col

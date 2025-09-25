@@ -14,11 +14,11 @@ export default class tabla extends Component {
         this.state = {
             permiso_de_crear: false,
             permiso_de_editar: false,
-            permiso_de_eliminar:false,
+            permiso_de_eliminar: false,
         };
     }
     componentDidMount() {
-        MDL.rolesPermisos.getPermisoAsync({ url: "/inventario/almacen", permiso: "ver" }).then((permit) => {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/inventario", permiso: "ver" }).then((permit) => {
             if (!permit) {
                 SNavigation.goBack();
                 return;
@@ -26,19 +26,19 @@ export default class tabla extends Component {
         }).catch(e => {
             console.error(e);
         })
-        MDL.rolesPermisos.getPermisoAsync({ url: "/inventario/almacen", permiso: "new" }).then((permit) => {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/inventario", permiso: "new" }).then((permit) => {
             this.state.permiso_de_crear = permit;
             this.forceUpdate();
         }).catch(e => {
             console.error(e);
         })
-        MDL.rolesPermisos.getPermisoAsync({ url: "/inventario/almacen", permiso: "edit" }).then((permit) => {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/inventario", permiso: "edit" }).then((permit) => {
             this.state.permiso_de_editar = permit;
             this.forceUpdate();
         }).catch(e => {
             console.error(e);
         })
-        MDL.rolesPermisos.getPermisoAsync({ url: "/inventario/almacen", permiso: "delete" }).then((permit) => {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/inventario", permiso: "delete" }).then((permit) => {
             this.state.permiso_de_eliminar = permit;
             this.forceUpdate();
         }).catch(e => {

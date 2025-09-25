@@ -1,5 +1,5 @@
 import React from "react";
-import { SDate, SHr, SNotification, SPage, SText, STheme, SUuid, SView } from "servisofts-component";
+import { SDate, SHr, SNavigation, SNotification, SPage, SText, STheme, SUuid, SView } from "servisofts-component";
 import SelectSucursalPuntoVenta from "./SelectSucursalPuntoVenta";
 import { Factura } from "../../../MDL/factura/type";
 import Model from "../../../Model";
@@ -82,6 +82,13 @@ export default class index extends React.Component {
     }
 
     componentDidMount(): void {
+
+        MDL.rolesPermisos.getPermisoAsync({ url: "/facturacion/create", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        });
         MDL.factura.getParametrica({ ambiente: this.state.ambiente, parametrica: "tipoDocumentoIdentidad" }).then((parametricas) => {
             this.parametricas.tipoDocumentoIdentidad = parametricas as Parametricas["tipoDocumentoIdentidad"];
             this.setState({ ...this.state })

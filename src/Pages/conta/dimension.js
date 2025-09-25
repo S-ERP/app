@@ -1,11 +1,27 @@
 import React from "react";
-import { SPage, SPopup, SText, STheme } from "servisofts-component";
+import { SNavigation, SPage, SPopup, SText, STheme } from "servisofts-component";
 import SPageConta from "./Components/SPageConta";
 import Pizarra from "../../Components/Pizarra/Pizarra";
 import PizarraNodo from "../../Components/Pizarra/PizarraNodo";
 import { StyleSheet, View } from "react-native";
+import MDL from "../../MDL";
 
 export default class dimension extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        };
+    }
+    componentDidMount() {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/conta/dimension", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        }).catch(e => {
+            console.error(e);
+        })
+    }
     render() {
         return <SPage title={"Contabilidad - dimension"} disableScroll>
             <Pizarra id="contabilidad_dimension">
@@ -17,9 +33,9 @@ export default class dimension extends React.Component {
 }
 
 const NodoDimension = ({ id, label }) => {
-    return <PizarraNodo id={id} x={0} y={0} onDoublePress={()=>{
+    return <PizarraNodo id={id} x={0} y={0} onDoublePress={() => {
         SPopup.confirm({
-            title:label
+            title: label
         })
     }}>
         <View style={styles.nodoDimension}>

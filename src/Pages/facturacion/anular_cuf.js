@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SInput, SPage, SText } from 'servisofts-component';
+import { SHr, SInput, SNavigation, SPage, SText } from 'servisofts-component';
 import { Container } from '../../Components';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
@@ -17,6 +17,12 @@ export default class anular_cuf extends Component {
     }
 
     componentDidMount() {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/facturacion/anular_cuf", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        });
         MDL.factura.getParametrica({ ambiente: MDL.factura.ambiente, parametrica: "motivoAnulacion" }).then((res) => {
             this.state.parametricas.motivoAnulacion = res;
             this.setState({ ...this.state })

@@ -1,5 +1,5 @@
 import React from "react";
-import { SInput, SMath, SPage, SText, STheme, SView } from "servisofts-component";
+import { SInput, SMath, SPage, SText, STheme, SView, SNavigation } from "servisofts-component";
 import SPageConta from "./Components/SPageConta";
 import SSocket from "servisofts-socket";
 import MDL from "../../MDL";
@@ -7,17 +7,33 @@ import { DinamicTable } from "servisofts-table";
 import Config from "../../Config";
 
 export default class conta extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        };
+    }
     dinamicTable: DinamicTable<any>;
     nivelLen = 1;
     nivelEQ = "Hasta";
     componentDidMount() {
+
+        MDL.rolesPermisos.getPermisoAsync({ url: "/conta/balance", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        })
+
+
         MDL.contabilidad.getNivelesPlanCuentas().then((niveles) => {
             this.niveles = niveles;
             this.nivelLen = niveles[0].len ?? 1;
             this.dinamicTable.loadData();
             this.forceUpdate();
         })
+
     }
+
     async loadData() {
         try {
 

@@ -2,21 +2,24 @@ import DPA, { connect } from 'servisofts-page';
 import { Parent } from "."
 import Model from '../../../Model';
 import item from './item';
+import MDL from '../../../MDL';
+import { SNavigation } from 'servisofts-component';
 
 class index extends DPA.list {
     constructor(props) {
         super(props, {
             Parent: Parent,
-            title:"Lista de almacenes",
+            title: "Lista de almacenes",
             excludes: ["key", "fecha_on", "key_usuario", "estado", "key_servicio", "key_sucursal"],
             item: item,
-            onRefresh:(resolve)=>{
+            onRefresh: (resolve) => {
                 Model.almacen.Action.CLEAR();
                 Model.sucursal.Action.CLEAR();
                 resolve();
             }
         });
     }
+
     $allowNew() {
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "new" });
     }

@@ -8,6 +8,21 @@ import Model from '../../Model';
 import MDL from '../../MDL';
 import FloatMenu from '../../Components/FloatMenu';
 export default class tabla extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        };
+    }
+    componentDidMount() {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/compra/tabla", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        }).catch(e => {
+            console.error(e);
+        })
+    }
     renderUsuario = (srcKey) => (
         <SView style={{
             width: 24,
