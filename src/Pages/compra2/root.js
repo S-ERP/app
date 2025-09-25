@@ -159,7 +159,8 @@ export default class root extends React.Component {
             };
             data.detalle = this.state.detalle.map(item => ({
                 cantidad: item.cantidad,
-                precio_unitario: item.precio / item.cantidad,
+                precio_unitario: Math.round((item.precioConvertido / item.cantidad) * 100) / 100,
+                precio_unitario_base: Math.round((item.precio / item.cantidad) * 100) / 100,
                 detalle: item.detalle,
                 descuento: 0,
                 descripcion: item.producto,
@@ -167,6 +168,9 @@ export default class root extends React.Component {
                 moneda: item.moneda?.key || this.selectedMoneda?.key, // Añadir moneda al detalle
             }));
 
+            console.log(data);
+
+            // return;
             const compraResp = await SSocket.sendPromise({
                 service: "caja",
                 component: "caja_detalle",
@@ -409,11 +413,13 @@ class Detalle extends React.Component {
     updatePrecio = (actualizarInput = true) => {
         const { data, selectedMoneda } = this.props;
         const precioBase = data.modelo?.precio_compra || data.precio || 0;
-        const precioConvertido = this.convertPrice(precioBase, data.moneda || selectedMoneda, selectedMoneda) * (data.cantidad || 1);
-        data.precioConvertido = precioConvertido;
-        this.setState({ precioConvertido });
+        // const precioConvertido = this.convertPrice(precioBase, data.moneda || selectedMoneda, selectedMoneda) * (data.cantidad || 1);
+        const tc = selectedMoneda?.tipo_cambio ?? 1
+        data.precioConvertido = precioBase / tc;
+        // this.setState({ precioConvertido });
         if (actualizarInput && this.inputs["precio"]) {
-            this.inputs["precio"].setValue(precioConvertido.toString());
+            const vl = Math.round((data.precioConvertido * (data.cantidad || 1)) * 100) / 100
+            this.inputs["precio"].setValue(vl.toString());
         }
     };
 
@@ -466,14 +472,16 @@ class Detalle extends React.Component {
                                         time: 4000,
                                     });
                                 } else {
+                                    const tc = this.props.selectedMoneda.tipo_cambio
                                     this.props.data.modelo = producto;
                                     this.props.data.precio = producto.precio_compra || 0;
                                     this.props.data.moneda = this.props.selectedMoneda; // Actualizar moneda al seleccionar producto
-                                    this.props.data.precioConvertido = this.convertPrice(producto.precio_compra || 0, this.props.selectedMoneda, this.props.selectedMoneda),
-                                        this.setState({
-                                            precioConvertido: this.props.data.precioConvertido
-                                        });
-                                    this.inputs["precio"].setValue((parseFloat(producto.precio_compra || 0) * parseFloat(this.props.data.cantidad)).toString());
+                                    this.props.data.precioConvertido =  producto.precio_compra / tc;
+                                    // console.log(this.props.data, this.props.selectedMoneda);
+                                    // this.setState({
+                                    //     precioConvertido: this.props.data.precioConvertido
+                                    // });
+                                    this.inputs["precio"].setValue((parseFloat(this.props.data.precioConvertido || 0) * parseFloat(this.props.data.cantidad)).toString());
                                 }
                             });
                         }}
@@ -515,13 +523,15 @@ class Detalle extends React.Component {
                             placeholder={`Precio (${moneda.descripcion})`}
                             customStyle={"erp"}
                             label={"Precio"}
-                            value={`${this.precio_compra_moneda}`}
+                            // value={`${this.precio_compra_moneda}`}
 
                             // value={{this.props.selectedMoneda?.observacion}+" " precioConvertido}
                             onChangeText={e => {
                                 const nuevoPrecio = parseFloat(e) || 0;
-                                this.props.data.precio = nuevoPrecio;
-                                this.updatePrecio(false); // No actualizar el input, solo recalcular precio interno
+                                this.props.data.precioConvertido = nuevoPrecio;
+                                const tc = this.props.selectedMoneda?.tipo_cambio ?? 1
+                                this.props.data.precio = nuevoPrecio * tc;
+                                // this.updatePrecio(false); // No actualizar el input, solo recalcular precio interno
 
                                 // this.updatePrecio(); // recalcula al cambiar manualmente
                             }}

@@ -2,7 +2,7 @@ import { SPage } from "servisofts-component";
 import root from "./root";
 import reporte from "./reporte";
 import mispagos from "./mispagos";
-
+import table from "./table"
 
 export const Parent = {
     name: "solicitud_qr",
@@ -11,5 +11,6 @@ export const Parent = {
 export default SPage.combinePages(Parent.name, {
     "": root,
     reporte,
-    mispagos
+    mispagos,
+    table
 })

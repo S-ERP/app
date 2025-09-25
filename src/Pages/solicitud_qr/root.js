@@ -16,10 +16,12 @@ export default class root extends Component {
     render() {
         return <SPage title={"Solicitudes QR"} disableScroll>
             <Container>
-                <SHr />
+                <SHr h={32} />
                 <SText bold underLine onPress={() => SNavigation.navigate("/solicitud_qr/mispagos")}>{"MIS PAGOS"}</SText>
-                <SHr />
+                <SHr h={32} />
                 <SText bold underLine onPress={() => SNavigation.navigate("/solicitud_qr/reporte")}>{"TODOS LOS PAGOS"}</SText>
+                <SHr h={32} />
+                <SText bold underLine onPress={() => SNavigation.navigate("/solicitud_qr/table")}>{"TODOS LOS PAGOS NUEVA TABLA"}</SText>
             </Container>
         </SPage>
     }

@@ -22,7 +22,7 @@ export default class TextAreaPopup extends Component<TextAreaProps> {
         }} height={"100%"} padding={16}>
             <SView col={"xs-12"} height={"100%"} style={{
                 borderRadius: 8,
-                backgroundColor: STheme.color.background,
+                backgroundColor: this.props.backgroundColor ?? STheme.color.background,
                 overflow: "hidden",
                 // padding: 8,
             }} withoutFeedback>

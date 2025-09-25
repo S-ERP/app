@@ -117,6 +117,7 @@ class PermisoSwitch extends React.Component<{ permiso: string, key_rol: string }
             type: "MD",
             title: permiso.descripcion,
             defaultValue: permiso.info?.descripcion,
+            backgroundColor:"#171717",
             onChangeText: (e) => {
                 const k = "editando";
                 new SThread(1000, k, true).start(() => {

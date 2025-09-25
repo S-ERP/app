@@ -60,10 +60,12 @@ export default class TecladoNumerico extends Component {
         const key_cliente = this.cliente?.key;
         const cliente = this.cliente;
         const key_cajero = this.props?.key_cajero;
+        console.log(carrito);
         const detalle = carrito.map(item => ({
             key_modelo: item.key,
             descripcion: item.descripcion,
-            precio_unitario: item.precio_venta, // Usar precio en moneda seleccionada
+            precio_unitario: MDL.contabilidad.round(item.precio_venta_moneda), // Usar precio en moneda seleccionada
+            precio_unitario_base: item.precio_venta, // Usar precio en moneda seleccionada
             cantidad: item.cantidad ?? 0,
         }));
         const caja = {

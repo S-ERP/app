@@ -16,6 +16,11 @@ export default class contabilidad extends MDLAbstract<EventListener> {
   async componentDidMount() {
     this.cuenta_contable.componentDidMount();
   }
+
+  round(val: number) {
+    if (isNaN(val)) return 0;
+    return Math.round(val * 100) / 100;
+  }
   async saveAjusteEmpresa(ajuste: any) {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
@@ -125,13 +130,13 @@ export default class contabilidad extends MDLAbstract<EventListener> {
   }
 
   armarNiveles(cuentas: any[]) {
-    const niveles:any = {};
+    const niveles: any = {};
     cuentas.map(e => {
       if (!e?.codigo) return;
       const lvl = e.codigo.length
       niveles[lvl] = true;
     })
-    return  Object.keys(niveles).map(n => parseInt(n)).sort((a,b)=>a - b);
+    return Object.keys(niveles).map(n => parseInt(n)).sort((a, b) => a - b);
   }
   getCuentasGrafo(cuentas: any[]) {
     cuentas.map(c => {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Dimensions, ScrollView, Vibration } from 'react-native';
-import { SHr, SIcon, SLoad, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SLoad, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SMD from '../../SMD';
 
 type ToolTips_props = {
@@ -101,14 +101,14 @@ export default class ToolTips extends Component<ToolTips_props> {
                                 position: "absolute",
                                 overflow: "hidden", // evita que el texto se desborde
                             }} center>
-
+                                {SPage.backgroundComponent}
                                 <ScrollView >
                                     {/* <SText style={{
                                         textAlign: "center",
                                         flexWrap: "wrap",   // obliga a que el texto haga salto de línea
                                         overflow: "hidden", // evita que se salga
                                     }} color={colorText} fontSize={14} center>{this.props.descripcion}</SText> */}
-                                    <SMD fontSize={12} padding={8} space={2} >{this.props.descripcion}</SMD>
+                                    <SMD fontSize={12} padding={8} space={2} textColor={STheme.color.text} >{this.props.descripcion}</SMD>
                                 </ScrollView>
 
 

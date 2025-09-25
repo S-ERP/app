@@ -253,24 +253,25 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="cuotas_cantidad" label="# Cuotas" width={60} cellStyle={{
                     alignItems: "center"
                 }} data={(e) => e.row?.cuotas.cantidad ?? ""} />
+                <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} cellStyle={{
+                    alignItems: "center",
+                    backgroundColor: STheme.color.danger + "33"
+                }}
+                    data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""}
+                />
                 <DinamicTable.Col key="moneda" label="Moneda" wrap width={60}
                     data={(e) => e.row?.moneda?.descripcion ?? ""}
 
                 />
                 <DinamicTable.Col key="cuotas_total" label="Monto" wrap width={60}
-                    data={(e) => ((e.row?.cuotas.total ?? 0) / (e.row.tipo_cambio ?? 1)) ?? ""}
+                    data={(e) => ((e.row?.cuotas.total ?? 0) ) ?? ""}
                     cellStyle={{
                         alignItems: "flex-end"
                     }}
-                    format={(e) => (e.row?.moneda?.observacion ?? "") + " " + SMath.formatMoney(e.data)}
+                    format={(e) => e.row?.moneda?.observacion + " " + SMath.formatMoney(e.data)}
                 />
-                <DinamicTable.Col key="cuotas_total_base" wrap label="Monto moneda base" width={60}
-                    data={(e) => e.row?.cuotas.total ?? ""}
-                    cellStyle={{
-                        alignItems: "flex-end"
-                    }}
-                    format={(e) => SMath.formatMoney(e.data)}
-                />
+
+
                 <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={60} data={(e) => e.row?.monto_amortizado ?? ""}
                     cellStyle={{
                         alignItems: "flex-end",
@@ -285,12 +286,7 @@ export default class tabla extends Component {
                     }}
                     format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
 
-                <DinamicTable.Col wrap key="cuotas_cantidad_mora" label="# Cuotas en Mora" width={60} cellStyle={{
-                    alignItems: "center",
-                    backgroundColor: STheme.color.danger + "33"
-                }}
-                    data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""}
-                />
+
                 <DinamicTable.Col wrap key="en_mora" label="Monto en Mora" width={60} data={(e) => e.row?.cuotas_en_mora.monto ?? ""}
                     cellStyle={{
                         alignItems: "flex-end",
@@ -299,6 +295,36 @@ export default class tabla extends Component {
                     }}
                     format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
                 />
+
+                <DinamicTable.Col key="cuotas_total_base" wrap label="Monto Base" width={60}
+                    data={(e) => e.row?.cuotas.total_base ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end"
+                    }}
+                    format={(e) => SMath.formatMoney(e.data)}
+                />
+                <DinamicTable.Col key="monto_amortizado_base" wrap label="Monto Pagado Base" width={60} data={(e) => e.row?.monto_amortizado_base ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end",
+                        backgroundColor: STheme.color.success + "33"
+                    }}
+                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+                <DinamicTable.Col key="monto_deuda_base" wrap label="Deuda total Base" width={60}
+                    data={(e) => (e.row?.cuotas?.total_base ?? 0) - (e.row?.monto_amortizado_base ?? 0) ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end",
+                        backgroundColor: STheme.color.warning + "33"
+                    }}
+                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)} />
+                <DinamicTable.Col wrap key="en_mora_base" label="Monto en Mora Base" width={60} data={(e) => e.row?.cuotas_en_mora.monto_base ?? ""}
+                    cellStyle={{
+                        alignItems: "flex-end",
+                        backgroundColor: STheme.color.danger + "33"
+
+                    }}
+                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
+                />
+
                 <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>
                         {(e.row?.key_usuario) ?

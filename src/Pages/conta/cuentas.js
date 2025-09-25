@@ -185,7 +185,8 @@ export default class cuentas extends React.Component {
                 loadInitialState={async () => {
                     return {
                         sorters: [
-                            { key: "codigo", order: "asc", type: "string" }
+                            { key: "codigo_s", order: "asc", type: "number" },
+                            { key: "codigo", order: "asc", type: "string" },
                         ]
                     }
                 }}
@@ -251,10 +252,15 @@ export default class cuentas extends React.Component {
                 //     return <SText clean style={{ ...e.textStyle, ...aditionalStyle }}>{e.data}</SText>
                 // }}
                 />
-                <DinamicTable.Col key={"codigo"} label="Código" width={120} data={e => e.row.codigo} textStyle={{
-                    fontWeight: "bold",
-                    letterSpacing: 1.1
-                }} />
+                <DinamicTable.Col key={"codigo_s"} label="Código Start" width={30} 
+                data={e => parseFloat((e.row?.codigo ?? "").split(".")?.[0])}
+                    dataType="number"
+                />
+                <DinamicTable.Col key={"codigo"} label="Código" width={120} data={e => e.row.codigo}
+                    textStyle={{
+                        fontWeight: "bold",
+                        letterSpacing: 1.1
+                    }} />
                 <DinamicTable.Col key={"descripcion"} label="Descripción" width={350}
                     data={e => e.row.descripcion}
                     customComponent={(e) => {

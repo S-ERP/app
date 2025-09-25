@@ -526,7 +526,7 @@ export default class PopupPagoCuota extends Component {
 
     botonFooterPagar = (estado, MontoSeleccionado, moneda) => {
         const estadoNormalizado = estado?.toLowerCase();
-        if (estadoNormalizado !== 'pendiente') return null;
+        // if (estadoNormalizado !== 'pendiente') return null;
 
         const compra = this.getCompraData();
         const selectedCuotas = [];
@@ -584,29 +584,29 @@ export default class PopupPagoCuota extends Component {
                                     const hoy = new SDate().toString('yyyy-MM-dd hh:mm:ss');
                                     const keyTipoPago = Object.keys(item)[0];
                                     const monto = item[keyTipoPago];
-
-                                    Model.cuota_amortizacion.Action.registro({
-                                        data: {
-                                            descripcion: "Amortización de cuota desde caja.",
-                                            observacion: "-ni una-",
-                                            fecha: hoy,
-                                            tipo_pago: item,
-                                            key_cuotas: cuotaKeys,
-                                            key_caja_detalle: activa?.key_punto_venta
-                                        },
-                                        key_usuario: Model.usuario.Action.getKey()
-                                    }).then(e => {
-                                        const obj = { data: { key_amortizacion: e.data?.key } };
-                                    }).catch(e => {
-                                        console.error("Error al amortizar:", e);
-                                        SNotification.send({
-                                            title: 'Error',
-                                            body: 'No se pudo registrar el pago.',
-                                            time: 3000,
-                                            color: STheme.color.danger,
-                                            position: 'top',
-                                        });
-                                    });
+                                    
+                                    // Model.cuota_amortizacion.Action.registro({
+                                    //     data: {
+                                    //         descripcion: "Amortización de cuota desde caja.",
+                                    //         observacion: "-ni una-",
+                                    //         fecha: hoy,
+                                    //         tipo_pago: item,
+                                    //         key_cuotas: cuotaKeys,
+                                    //         key_caja_detalle: activa?.key_punto_venta
+                                    //     },
+                                    //     key_usuario: Model.usuario.Action.getKey()
+                                    // }).then(e => {
+                                    //     const obj = { data: { key_amortizacion: e.data?.key } };
+                                    // }).catch(e => {
+                                    //     console.error("Error al amortizar:", e);
+                                    //     SNotification.send({
+                                    //         title: 'Error',
+                                    //         body: 'No se pudo registrar el pago.',
+                                    //         time: 3000,
+                                    //         color: STheme.color.danger,
+                                    //         position: 'top',
+                                    //     });
+                                    // });
                                 },
                             });
                         } catch (e) {

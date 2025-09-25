@@ -68,7 +68,6 @@ import restaurante from "./restaurante";
 import whatsapp from "./whatsapp";
 
 import testTable from "./testTable";
-import qr from "./qr";
 import icons from "./icons";
 
 import factura from "../Components/PDF/factura";
@@ -158,7 +157,6 @@ export default SPage.combinePages("/", {
   // ...scene,
   // ...mesh,
   // ...three,
-  ...qr,
   ...lote,
   ...whatsapp,
   testTable,

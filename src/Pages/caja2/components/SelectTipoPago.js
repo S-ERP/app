@@ -76,7 +76,8 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
             item.moneda = moneda ?? this.moneda_base;
             // item.moneda = data.monedas.find(a => a.key == item.key_moneda)
             item.tipo_pago = this.tipo_pago[item.key_tipo_pago];
-            item.monto = this.props.montoMaximo ?? 0;
+
+            item.monto = MDL.contabilidad.round(this.props.montoMaximo ?? 0)
             if (this.props.montoMaximoPorTipo && this.props.montoMaximoPorTipo[item.key_tipo_pago]) {
                 item.monto = this.props.montoMaximoPorTipo[item.key_tipo_pago];
             }
@@ -116,10 +117,10 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     let total = 0;
                     selecteds.forEach(pv => {
                         console.log(pv)
-                        pv.monto = (this.props.montoMaximo || 0) / selecteds.length;
+                        pv.monto = Math.round(((this.props.montoMaximo || 0) / selecteds.length) * 100) / 100;
                         total += parseFloat(pv.monto);
                         if (pv.__ref) {
-                            pv.__ref.setValue((pv.monto / pv.moneda.tipo_cambio));
+                            pv.__ref.setValue(Math.round((pv.monto / pv.moneda.tipo_cambio) * 100) / 100);
                         }
                     });
 
@@ -178,16 +179,16 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                                 customStyle={"erp"}
                                 decimales={2}
                                 icon={<SText fontSize={10}>{item.moneda.observacion}</SText>}
-                                defaultValue={(parseFloat(item.monto ?? "0") / parseFloat(item.moneda?.tipo_cambio ?? 1)).toFixed(2)} required
+                                defaultValue={MDL.contabilidad.round(parseFloat(item.monto ?? "0") / parseFloat(item.moneda?.tipo_cambio ?? 1))} required
                                 onChangeText={(e) => {
 
                                     item.monto = e;
                                     if (e > 0) {
-                                        item.monto = (e * parseFloat(item.moneda?.tipo_cambio ?? 1)).toFixed(2);
+                                        item.monto = MDL.contabilidad.round(e * parseFloat(item.moneda?.tipo_cambio ?? 1))
                                         if (item.__ref_extranjera) {
                                             item.__ref_extranjera.setValue(item.monto);
                                         }
-                                        // this.forceUpdate();
+                                        this.forceUpdate();
                                     }
                                 }}
                             />
@@ -221,12 +222,13 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     <SText>{this.moneda?.descripcion}</SText>
                 </SView>
             </>}
+            {/* <SText bold fontSize={16}>{"Base"} {(parseFloat(this.props.montoMaximo ?? "0")).toFixed(2)}</SText> */}
             <SView padding={4} row style={{
                 alignItems: "center",
             }}>
                 <SText color={STheme.color.lightGray}>{"Monto Insertado: "}</SText>
                 <SView width={4} />
-                {/* <SText bold fontSize={16}>{((this.pvtp ?? []).map(item => parseFloat(item.monto) ?? 0).reduce((a, b) => a + b, 0))}</SText> */}
+                <SText bold fontSize={16}>{((this.pvtp ?? []).filter(a => a.__select).map(item => parseFloat(item.monto) ?? 0).reduce((a, b) => a + b, 0))}</SText>
                 <SView width={16} />
                 <SText>{this.moneda?.descripcion}</SText>
             </SView>
@@ -254,7 +256,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                         console.log(item);
                         elm[item.key] = {
                             monto_nacional: parseFloat(item.monto),
-                            monto_extranjera: (parseFloat(item.monto) / parseFloat(item.moneda.tipo_cambio ?? 1))
+                            monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda.tipo_cambio ?? 1)))
                         }
                         // montoTotal += SMath.formatMoney((item.monto+2000), 2);
                         montoTotal += parseFloat(item.monto)

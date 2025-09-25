@@ -209,6 +209,9 @@ export default class table extends Component {
                         srcPreview={SSocket.api.inventario + "modelo/" + e.row.key + "?date=" + this.state.time}
                     />}
                 />
+                <DinamicTable.Col key={"observacion"} label='Observacion' width={200} data={(e) => e.row.observacion}
+               
+                />
                 <DinamicTable.Col key={"precio_compra"} label='P. Compra' width={70}
                     textStyle={{ color: STheme.color.danger }}
                     data={(e) => e.row.precio_compra && SMath.formatMoney(e.row.precio_compra)}

@@ -4,8 +4,9 @@ import { SDate, SMath, SPage, STheme } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import { DinamicTable } from 'servisofts-table';
 import Model from '../../Model';
+import Config from '../../Config';
 
-export default class root extends Component {
+export default class table extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -23,6 +24,7 @@ export default class root extends Component {
   render() {
     return <SPage title={"QR"} disableScroll>
       <DinamicTable
+        {...Config.table.applyTheme()}
         loadData={this.loadData.bind(this)}
         loadInitialState={async () => {
           return {
