@@ -82,10 +82,21 @@ export default class Modelo extends Component {
             productosFiltrados = productosFiltrados.filter(m => m.stock > 0);
         }
 
+        // if (this.props.searchText) {
+        //     const search = this.props.searchText.toLowerCase();
+        //     productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search));
+        // }
+
         if (this.props.searchText) {
             const search = this.props.searchText.toLowerCase();
-            productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search));
+            productosFiltrados = productosFiltrados.filter(p =>
+                p.descripcion?.toLowerCase().includes(search) ||
+                p.tipo_producto?.descripcion?.toLowerCase().includes(search) ||
+                p.marca?.descripcion?.toLowerCase().includes(search) ||
+                p.observacion?.toLowerCase().includes(search)
+            );
         }
+
 
         const colSize = this.getColSize();
         return (
@@ -117,6 +128,8 @@ export default class Modelo extends Component {
                                             overflow: "hidden",
                                         }}
                                         onPress={() => {
+
+                                            console.log("pinnnnn " + JSON.stringify(producto))
                                             if (producto.stock <= 0) {
                                                 SNotification.send({
                                                     title: "Sin stock",
@@ -140,8 +153,9 @@ export default class Modelo extends Component {
                                             <FotoModelo data={producto} />
                                         </SView>
                                         <SView col={"xs-12"} padding={4}>
-                                            <SView col={"xs-12"} height={40}>
-                                                <SText fontSize={14} bold color={STheme.color.text}>{producto.descripcion}</SText>
+                                            <SView col={"xs-12"} height={38}  >
+                                                <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1}>{producto.descripcion}</SText>
+                                                <SText fontSize={11} clean color={STheme.color.lightGray} numberOfLines={1}>{producto.marca.descripcion}, {producto.tipo_producto.descripcion}, {producto.observacion}</SText>
                                             </SView>
                                             <SView col={"xs-12"} row>
                                                 <SView flex row>
