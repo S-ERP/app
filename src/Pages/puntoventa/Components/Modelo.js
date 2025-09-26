@@ -82,10 +82,21 @@ export default class Modelo extends Component {
             productosFiltrados = productosFiltrados.filter(m => m.stock > 0);
         }
 
+        // if (this.props.searchText) {
+        //     const search = this.props.searchText.toLowerCase();
+        //     productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search));
+        // }
+
         if (this.props.searchText) {
             const search = this.props.searchText.toLowerCase();
-            productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search));
+            productosFiltrados = productosFiltrados.filter(p =>
+                p.descripcion?.toLowerCase().includes(search) ||
+                p.tipo_producto?.descripcion?.toLowerCase().includes(search) ||
+                p.marca?.descripcion?.toLowerCase().includes(search) ||
+                p.observacion?.toLowerCase().includes(search)
+            );
         }
+
 
         const colSize = this.getColSize();
         return (
@@ -143,8 +154,11 @@ export default class Modelo extends Component {
                                         </SView>
                                         <SView col={"xs-12"} padding={4}>
                                             <SView col={"xs-12"} height={40}>
-                                                <SText fontSize={14} bold color={STheme.color.text}>{producto.descripcion}</SText>
-                                                <SText fontSize={8} bold color={"green"}>{producto.tipo_producto.descripcion}</SText>
+                                                <SText fontSize={8} bold color={STheme.color.text}>{producto.descripcion}</SText>
+                                                {/* <SText fontSize={14} bold color={STheme.color.text}>{producto.descripcion}</SText> */}
+                                                <SText fontSize={8} bold color={"green"}>tipo {producto.tipo_producto.descripcion}</SText>
+                                                <SText fontSize={8} bold color={"cyan"}>Marca {producto.marca.descripcion}</SText>
+                                                <SText fontSize={8} bold color={"blue"}>obs {producto.observacion}</SText>
                                             </SView>
                                             <SView col={"xs-12"} row>
                                                 <SView flex row>

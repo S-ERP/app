@@ -74,7 +74,7 @@ export default class Categoria extends Component {
                                     borderWidth: 1,
                                     borderColor: this.selectedCategory === cat.key ? STheme.color.text : STheme.color.lightGray,
                                 }} >
-                                <SText fontSize={12} color={this.selectedCategory === cat.key ? STheme.color.primary : STheme.color.text}> {cat.label} </SText>
+                                <SText fontSize={12} color={this.selectedCategory === cat.key ? STheme.color.background : STheme.color.text}> {cat.label} </SText>
                             </SView>
                         ))}
                     </ScrollView>
