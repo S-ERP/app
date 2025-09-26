@@ -93,10 +93,10 @@ export default class FormRegistroLead extends Component<FormRegistroType & { def
                         required: true,
                         autoFocus: true,
                         defaultValue: defaultData?.telefono,
-                        iconR:<SView width={30} height={30} center onPress={()=>{
+                        iconR: <SView width={30} height={30} center onPress={() => {
                             this.hanldeEditTelefono();
                         }}>
-                            <SIconApp name='Search' fill={STheme.color.lightGray}/>
+                            <SIconApp name='Search' fill={STheme.color.lightGray} />
                         </SView>,
                         //   type: "phone",
                         onChangeText: (text: string) => {
@@ -140,7 +140,7 @@ export default class FormRegistroLead extends Component<FormRegistroType & { def
                         col: "xs-12",
                         label: "Proyecto / Campaña",
                         type: "select",
-                        options: this.state.campanas || [],
+                        options: ["", ...(this.state?.campanas || [])],
                         required: true,
                         defaultValue: defaultData?.departamento,
                         onSubmitEditing: () => this.form?.focus("nit"),
