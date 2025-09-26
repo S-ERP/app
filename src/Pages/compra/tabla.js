@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SMath } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SMath, SIcon } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
 import SIconApp from '../../Assets/SIconApp';
@@ -7,6 +7,8 @@ import Config from '../../Config';
 import Model from '../../Model';
 import MDL from '../../MDL';
 import FloatMenu from '../../Components/FloatMenu';
+import ComprobanteRollo from '../../Components/PDF/compra/ComprobanteRollo';
+import ComprobanteCarta from '../../Components/PDF/compra/ComprobanteCarta';
 export default class tabla extends Component {
     constructor(props) {
         super(props);
@@ -139,6 +141,20 @@ export default class tabla extends Component {
                                 icon: <SIconApp name='addTarea' fill="#e4e4e4ff" />,
                                 onPress: () => { SNavigation.navigate("/compra/profile", { pk: e?.row?.key }) }
                             },
+                            {
+                                label: "Imprimir tamaño rollo",
+                                icon: <SIcon name='imprimir' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    ComprobanteRollo.imprimir(e.row?.key)
+                                }
+                            },
+                            {
+                                label: "Imprimir tamaño carta",
+                                icon: <SIcon name='imprimir' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    ComprobanteCarta.imprimir(e?.row?.key)
+                                }
+                            },
                         ]
                     });
                 }}
@@ -147,7 +163,7 @@ export default class tabla extends Component {
                 }}
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
-                <DinamicTable.Col key={"-keyprofile"} label='Ver' width={40} data={(e) => e.row?.key}
+                <DinamicTable.Col key={"-keyprofile"} label='Verwwwwww' width={40} data={(e) => e.row?.key}
                     customComponent={e => <SView row center card padding={2} onPress={() => { SNavigation.navigate("/compra/profile", { pk: e.row.key }) }}>
                         <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
                     </SView>} />
@@ -224,7 +240,7 @@ export default class tabla extends Component {
 
                 />
                 <DinamicTable.Col key="cuotas_total" label="Monto" wrap width={60}
-                    data={(e) => ((e.row?.cuotas.total ?? 0) ) ?? ""}
+                    data={(e) => ((e.row?.cuotas.total ?? 0)) ?? ""}
                     cellStyle={{
                         alignItems: "flex-end"
                     }}
