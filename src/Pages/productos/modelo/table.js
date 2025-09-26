@@ -294,7 +294,7 @@ export default class table extends Component {
                         </View>
                     }}
                 />
-                <DinamicTable.Col key={"barcode"} label='BarCodeqqqqq' width={100} data={(e) => e.row?.barcode} />
+                <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row?.barcode} />
             </DinamicTable>
             <FloatButtom onPress={() => {
                 PopupDetalleModelo.open({
