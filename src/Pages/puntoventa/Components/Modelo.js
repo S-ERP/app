@@ -153,12 +153,9 @@ export default class Modelo extends Component {
                                             <FotoModelo data={producto} />
                                         </SView>
                                         <SView col={"xs-12"} padding={4}>
-                                            <SView col={"xs-12"} height={40}>
-                                                <SText fontSize={8} bold color={STheme.color.text}>{producto.descripcion}</SText>
-                                                {/* <SText fontSize={14} bold color={STheme.color.text}>{producto.descripcion}</SText> */}
-                                                <SText fontSize={8} bold color={"green"}>tipo {producto.tipo_producto.descripcion}</SText>
-                                                <SText fontSize={8} bold color={"cyan"}>Marca {producto.marca.descripcion}</SText>
-                                                <SText fontSize={8} bold color={"blue"}>obs {producto.observacion}</SText>
+                                            <SView col={"xs-12"} height={38}  >
+                                                <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1}>{producto.descripcion}</SText>
+                                                <SText fontSize={11} clean color={STheme.color.lightGray} numberOfLines={1}>{producto.marca.descripcion}, {producto.tipo_producto.descripcion}, {producto.observacion}</SText>
                                             </SView>
                                             <SView col={"xs-12"} row>
                                                 <SView flex row>
