@@ -8,6 +8,7 @@ import Model from '../../Model';
 import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 import MDL from '../../MDL';
 import FloatMenu from '../../Components/FloatMenu';
+import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
 const proveedorEjemplo =
 {
     "estado": 1,
@@ -173,6 +174,14 @@ export default class tabla extends Component {
                                     SNavigation.navigate("/venta/profile", { pk: e?.row?.key })
                                 }
                             },
+                            {
+                                label: "Imprimir tamaño rollo",
+                                icon: <SIcon name='imprimir' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    ReciboRollo.imprimir(e.row?.key)
+                                }
+                            },
+                         
                             {
                                 label: "Imprimir tamaño carta",
                                 icon: <SIcon name='imprimir' fill={STheme.color.text} />,
