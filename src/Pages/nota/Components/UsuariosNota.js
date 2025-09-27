@@ -38,8 +38,8 @@ export default class UsuariosNota extends Component {
     }
 
     usuarioItem = ({ key_usuario, usuario, onPress }) => {
-        return <SView width={80} height={80} center >
-            <SView style={{ width: 60, height: 60, borderRadius: 100, }} onPress={onPress}>
+        return <SView width={50} height={50} center >
+            <SView style={{ width: 35, height: 35, borderRadius: 100, }} onPress={onPress}>
                 <SView style={{
                     width: "100%",
                     height: "100%",
@@ -59,8 +59,8 @@ export default class UsuariosNota extends Component {
         </SView>
     }
     TypeAdd(o) {
-        return <SView width={80} height={80} center>
-            <SView style={{ width: 60, height: 60, borderRadius: 100, }} center onPress={() => {
+        return <SView width={50} height={50} center>
+            <SView style={{ width: 35, height: 35, borderRadius: 100, }} center onPress={() => {
                 SNavigation.navigate("/usuario", {
                     onSelect: (usuario) => {
                         SSocket.sendPromise({
@@ -84,10 +84,10 @@ export default class UsuariosNota extends Component {
                     borderRadius: 100,
                     borderWidth: 2,
                     borderColor: STheme.color.card,
-                    backgroundColor: STheme.color.barColor,
+                    // backgroundColor: STheme.color.barColor,
                     overflow: "hidden"
                 }}>
-                    <SIcon name='addUser' fill={STheme.color.secondary} width={35} height={35} />
+                    <SIcon name='addUser' fill={STheme.color.secondary} width={20} height={20} />
                 </SView>
             </SView>
             <SText col={"xs-12"} underLine color={STheme.color.danger} fontSize={10} center row height={13} style={{
@@ -112,16 +112,16 @@ export default class UsuariosNota extends Component {
 
     }
     render() {
-        return <SView col={"xs-12"} height={100} >
+        return <SView col={"xs-12"} height={60} >
             <SView style={{ position: "absolute", top: 5, right: 5, overflow: "hidden" }}>
                 <SIcon name={"pinchito"} width={28} height={50} />
             </SView>
-            <SHr h={10} />
+            <SHr h={4} />
             <SList
                 horizontal
-                
+
                 data={{
-                    "add": { type: "add", estado:1 },
+                    "add": { type: "add", estado: 1 },
                     ...this.state.data
                 }}
                 space={0}

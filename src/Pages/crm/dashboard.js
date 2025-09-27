@@ -309,7 +309,7 @@ export default class Dashboard extends Component {
         return (
             <GestureHandlerRootView style={{ flex: 1, }}>
                 <SPage title={'Dashboard ' + this.dashboardType} disableScroll>
-                    <SView col={"xs-12"} style={{ padding: 2, height: HEADER_HEIGHT, backgroundColor: STheme.color.background, alignItems: "center" }} row >
+                    <SView col={"xs-12"} style={{ padding: 2, height: HEADER_HEIGHT, alignItems: "center" }} row >
                         <SView width={8} />
                         {MDL.rolesPermisos.getPermiso({
                             url: URL,
