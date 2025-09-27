@@ -15,7 +15,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     // console.log("se esta registrando todo " + JSON.stringify(data))
     // return;
     const formar = {
-      descripcion:"Venta desde punto de venta",
+      descripcion: "Venta desde punto de venta",
       key_usuario: data.key_cajero,
       key_cliente: data?.cliente?.key,
       cliente: data?.cliente,
@@ -103,28 +103,26 @@ export default class compra_venta extends MDLAbstract<EventListener> {
   }
 
   async getByKeyComraVenta(value: any) {
-    console.log("printtttttt "+value)
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
       component: "reporte",
       type: "execute_function",
       func: "_pdf",
-      // func: "_get_compraventa_byalvaro",
       params: ["'" + value + "'"],
     });
     return resp.data[0] || [];
   }
 
-  async getByKeyDetalle(value: any) {
-    const resp: any = await SSocket.sendPromise({
-      service: "compra_venta",
-      component: "reporte",
-      type: "execute_function",
-      func: "_get_compraventa_byalvaro",
-      params: ["'" + value + "'"],
-    });
-    return resp.data[0].detalle || [];
-  }
+  // async getByKeyDetalle(value: any) {
+  //   const resp: any = await SSocket.sendPromise({
+  //     service: "compra_venta",
+  //     component: "reporte",
+  //     type: "execute_function",
+  //     func: "_get_compraventa_byalvaro",
+  //     params: ["'" + value + "'"],
+  //   });
+  //   return resp.data[0].detalle || [];
+  // }
 
 
   setSucursalSeleccionada(sucursal: any) {

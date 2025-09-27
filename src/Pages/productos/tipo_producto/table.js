@@ -87,22 +87,24 @@ export default class table extends Component {
             >
                 <DinamicTable.Col key={"tipo"} label="Tipo" data={e => e.row.tipo}
                     cellStyle={{
-                        // alignItems: "center",
+                        alignItems: "center",
                         justifyContent: "flex-start",
                         flexDirection: "row"
                     }}
-                    width={120}
+                    width={100}
                     customComponent={e => {
-                        return <View style={{
-                            padding: 2,
-                            borderRadius: 4,
-                            backgroundColor: STheme.colorFromText(e.row.tipo) + "44",
-                            borderWidth: 1,
-                            borderColor: STheme.colorFromText(e.row.tipo)
-                        }}>
-                            <SText fontSize={10}>{e.row.tipo}</SText>
-                        </View>
+                        return <SView col={"xs-12"} row center >
+                            <SView center style={{
+                                padding:4,
+                                borderRadius: 4,
+                                backgroundColor: STheme.colorFromText(e.row.tipo) + "44",
+                                borderWidth: 1,
+                                borderColor: STheme.colorFromText(e.row.tipo),
+                            }}><SText fontSize={10}>{(e.row.tipo).toUpperCase()}</SText></SView>
+                        </SView>
                     }} />
+
+
                 <DinamicTable.Col key={"descripcion"} wrap label="Descripcion" data={e => e.row.descripcion} width={300}
                     customComponent={e => <ImageLabel {...e}
                         src={SSocket.api.inventario + "tipo_producto/.128_" + e.row.key + "?date=" + this.state.time}
