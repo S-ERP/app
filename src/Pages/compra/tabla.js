@@ -239,8 +239,8 @@ export default class tabla extends Component {
                     data={(e) => e.row?.moneda?.descripcion ?? ""}
 
                 />
-                <DinamicTable.Col key="cuotas_total" label="Monto" wrap width={60}
-                    data={(e) => ((e.row?.cuotas.total ?? 0)) ?? ""}
+                <DinamicTable.Col key="cuotas_total" label="Monto" wrap width={70}
+                    data={(e) => (e.row?.cuotas.total ? e.row.cuotas.total : "0")}
                     cellStyle={{
                         alignItems: "flex-end"
                     }}
@@ -273,7 +273,7 @@ export default class tabla extends Component {
                 />
 
                 <DinamicTable.Col key="cuotas_total_base" wrap label="Monto Base" width={60}
-                    data={(e) => e.row?.cuotas.total_base ?? ""}
+                    data={(e) => (e.row?.cuotas.total_base ? e.row.cuotas.total_base : "0")}
                     cellStyle={{
                         alignItems: "flex-end"
                     }}

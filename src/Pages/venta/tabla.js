@@ -8,7 +8,6 @@ import Model from '../../Model';
 import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 import MDL from '../../MDL';
 import FloatMenu from '../../Components/FloatMenu';
-import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
 const proveedorEjemplo =
 {
     "estado": 1,
@@ -175,14 +174,6 @@ export default class tabla extends Component {
                                 }
                             },
                             {
-                                label: "Imprimir tamaño rollo",
-                                icon: <SIcon name='imprimir' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    ReciboRollo.imprimir(e.row?.key)
-                                }
-                            },
-                         
-                            {
                                 label: "Imprimir tamaño carta",
                                 icon: <SIcon name='imprimir' fill={STheme.color.text} />,
                                 onPress: () => {
@@ -275,10 +266,8 @@ export default class tabla extends Component {
 
                 />
                 <DinamicTable.Col key="cuotas_total" label="Monto" wrap width={60}
-                    data={(e) => ((e.row?.cuotas.total ?? 0) ) ?? ""}
-                    cellStyle={{
-                        alignItems: "flex-end"
-                    }}
+                    data={(e) => (e.row?.cuotas.total ? e.row.cuotas.total : "0")}
+                    cellStyle={{ alignItems: "flex-end" }}
                     format={(e) => e.row?.moneda?.observacion + " " + SMath.formatMoney(e.data)}
                 />
 
@@ -308,7 +297,7 @@ export default class tabla extends Component {
                 />
 
                 <DinamicTable.Col key="cuotas_total_base" wrap label="Monto Base" width={60}
-                    data={(e) => e.row?.cuotas.total_base ?? ""}
+                    data={(e) => (e.row?.cuotas.total_base ? e.row.cuotas.total_base : "0")}
                     cellStyle={{
                         alignItems: "flex-end"
                     }}
