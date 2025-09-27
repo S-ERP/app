@@ -53,12 +53,25 @@ import itema, { ReactComponent as itemaW } from "./svg/itema.svg";
 import Heart, { ReactComponent as HeartW } from "./svg/social/Heart.svg";
 import Clock, { ReactComponent as ClockW } from "./svg/empresa/clock.svg";
 import Comment, { ReactComponent as CommentW } from "./svg/social/Comment.svg";
+import redesFacebook, { ReactComponent as redesFacebookW } from "./svg/social/redesFacebook.svg";
+import redesInstagram, { ReactComponent as redesInstagramW } from "./svg/social/redesInstagram.svg";
+import redesTiktok, { ReactComponent as redesTiktokW } from "./svg/social/redesTiktok.svg";
+import redesWhatsapp, { ReactComponent as redesWhatsappW } from "./svg/social/redesWhatsapp.svg";
+
+import redesSociales, { ReactComponent as redesSocialesW } from "./svg/social/redesSociales.svg";
+import iconCall, { ReactComponent as iconCallW } from "./svg/social/iconCall.svg";
+import iconHome, { ReactComponent as iconHomeW } from "./svg/social/iconHome.svg";
+import iconUbicacion, { ReactComponent as iconUbicacionW } from "./svg/social/iconUbicacion.svg";
+import iconMail, { ReactComponent as iconMailW } from "./svg/social/iconMail.svg";
+
 import Comment2, {
   ReactComponent as Comment2W,
 } from "./svg/social/Comment2.svg";
 import addPublicacion, {
   ReactComponent as addPublicacionW,
 } from "./svg/social/addPublicacion.svg";
+
+
 
 import tareaUser, { ReactComponent as tareaUserW } from "./svg/tarea/user.svg";
 import tarea_engranaje, {
@@ -321,7 +334,18 @@ export const svg = {
   itema: { Native: itema, Web: itemaW },
 
   Heart: { Native: Heart, Web: HeartW },
-  Comment: { Native: Comment, Web: CommentW },
+  redesSociales: { Native: redesSociales, Web: redesSocialesW },
+  redesFacebook: { Native: redesFacebook, Web: redesFacebookW },
+  redesInstagram: { Native: redesInstagram, Web: redesInstagramW },
+  redesTiktok: { Native: redesTiktok, Web: redesTiktokW },
+  redesWhatsapp: { Native: redesWhatsapp, Web: redesWhatsappW },
+
+  iconCall: { Native: iconCall, Web: iconCallW },
+  iconHome: { Native: iconHome, Web: iconHomeW },
+  iconUbicacion: { Native: iconUbicacion, Web: iconUbicacionW },
+  iconMail: { Native: iconMail, Web: iconMailW },
+
+  
   Comment2: { Native: Comment2, Web: Comment2W },
   addPublicacion: { Native: addPublicacion, Web: addPublicacionW },
   tareaUser: { Native: tareaUser, Web: tareaUserW },

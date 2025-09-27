@@ -89,7 +89,7 @@ export default class Barra extends React.Component {
                         <Page label={"Config"} url={"/empresa/config"} permiso={"ver"} permiso_url="/empresa/config" />
                         <Page label={"Config2"} url={"/empresa/config2"} permiso={"ver"} permiso_url="/empresa/config" />
                         <Page label={"Moneda"} url={"/empresa/moneda"} permiso={"ver"} permiso_url="/empresa/moneda" />
-                        <Page label={"Tipos de pagos"} url={"/empresa/tipo_pago"} permiso={"ver"}/>
+                        <Page label={"Tipos de pagos"} url={"/empresa/tipo_pago"} permiso={"ver"} />
                     </Page>
                     <Page label={"Contabilidad"}
                         icon={<ImagePage key_page="fd0c2bfe-0f13-4e81-a967-213cc0adb299" />}
@@ -116,7 +116,7 @@ export default class Barra extends React.Component {
                     <Page label={"Inventario"}
                         icon={<ImagePage key_page="c50a9c4a-429c-426e-9ebf-c6874da14062" />}
                     >
-                        <Page label={"Almacenes"} url={"/inventario"}  permiso="ver" permiso_url="/inventario/almacen"/>
+                        <Page label={"Almacenes"} url={"/inventario"} permiso="ver" permiso_url="/inventario/almacen" />
                         <Page label={"Tipos de productos"} url={"/productos/tipo_producto/table"} permiso="ver" permiso_url="/productos/tipo_producto" />
                         <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" permiso_url="/productos/modelo/table" />
                         <Page label={"Conteos"} url={"/productos/reporte_conteo_inventario"} permiso="ver" permiso_url="/productos/reporte_conteo_inventario" />
@@ -174,6 +174,17 @@ export default class Barra extends React.Component {
                         permiso="page"
                         icon={<ImagePage key_page="5cb364bf-bcd1-4263-8079-654a17e02767" />}
                     />
+                    <Page label={"Social Media"}
+                        permiso="page"
+                        permiso_url="/dev_tools"
+                        icon={<SIconApp name="redesSociales" />}
+                    >
+                        <Page label={"Dashboard"} url={"/icons_"} />
+                        <Page label={"Mensajes"} url={"/social_media/mensajes"} />
+                        <Page label={"Publicaciones"} url={"/test2_"} />
+                        <Page label={"Reportes"} url={"/caja/history_"} />
+                        <Page label={"Calendario"} url={"/caja/history_"} />
+                    </Page>
                     <Page label={"Drive"} url={"/drive"}
                         permiso="page"
                         icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
