@@ -152,10 +152,10 @@ export default class Barra extends React.Component {
                     <Page label={"Facturacion"}
                         icon={<ImagePage key_page="a122ab1e-bf18-4831-8136-befa06e406d3" />}
                     >
-                        <Page label={"Emitir"} url={"/facturacion/create"} permiso="edit" />
+                        <Page label={"Emitir"} url={"/facturacion/create"} permiso="ver" />
                         <Page label={"Libro de Ventas"} url={"/facturacion/libro_ventas"} permiso="ver" />
-                        <Page label={"Anular CUF"} url={"/facturacion/anular_cuf"} permiso="edit" />
-                        <Page label={"Ajustes"} url={"/facturacion/ajustes"} permiso="edit" />
+                        <Page label={"Anular CUF"} url={"/facturacion/anular_cuf"} permiso="ver" />
+                        <Page label={"Ajustes"} url={"/facturacion/ajustes"} permiso="ver" />
                     </Page>
 
                     <Page label={"CRM"}

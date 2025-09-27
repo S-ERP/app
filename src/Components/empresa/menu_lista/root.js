@@ -91,7 +91,7 @@ export default class root extends Component<indexPropsType> {
                             }}>
                             <SView width={28} height={28} style={{ padding: 4 }}>
                                 <SView flex height card style={{ borderRadius: 100, overflow: "hidden" }}>
-                                    <SImage src={SSocket.api.empresa + "empresa/" + item.empresa.key} />
+                                    <SImage src={SSocket.api.empresa + "empresa/.128_" + item.empresa.key} />
                                 </SView>
                             </SView>
                             <SView width={4} />
