@@ -88,6 +88,8 @@ import puntoventa from "./puntoventa";
 import Turnos from "./Turnos";
 import widgets from "./widgets";
 import IconosAlvaro from "./IconosAlvaro";
+import social_media from "./social_media";
+
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -171,4 +173,5 @@ export default SPage.combinePages("/", {
   ...puntoventa,
   "iconosss":IconosAlvaro,
   alvaro,
+  ...social_media,
 });
