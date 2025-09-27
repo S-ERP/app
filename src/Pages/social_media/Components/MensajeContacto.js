@@ -48,7 +48,7 @@ export default class MensajeContacto extends Component {
           <SView flex row >
             <SIcon name={"iconHome"} width={16} height={16} fill={STheme.color.text} />
             <SView width={4} />
-            <SText flex style={{ marginLeft: 4 }} color={STheme.color.gray} fontSize={12}>
+            <SText flex style={{ marginLeft: 4 }} color={STheme.color.text} fontSize={12}>
               Vive en Santa Cruz de la Sierra
             </SText>
           </SView>
@@ -56,7 +56,7 @@ export default class MensajeContacto extends Component {
           <SView flex row >
             <SIcon name={"iconUbicacion"} width={16} height={16} fill={STheme.color.text} />
             <SView width={4} />
-            <SText flex style={{ marginLeft: 4 }} color={STheme.color.gray} fontSize={12}>
+            <SText flex style={{ marginLeft: 4 }} color={STheme.color.text} fontSize={12}>
               De Santa Cruz de la Sierra, Bolivia
             </SText>
           </SView>
@@ -64,7 +64,7 @@ export default class MensajeContacto extends Component {
           <SView col={"xs-12"} row >
             <SIcon name={"iconMail"} width={16} height={16} fill={STheme.color.text} />
             <SView width={4} />
-            <SText style={{ marginLeft: 4 }} color={STheme.color.gray} fontSize={12}>
+            <SText style={{ marginLeft: 4 }} color={STheme.color.text} fontSize={12}>
               usuario@gmail.com
             </SText>
           </SView>
@@ -72,7 +72,7 @@ export default class MensajeContacto extends Component {
           <SView col={"xs-12"} row >
             <SIcon name={"iconCall"} width={16} height={16} fill={STheme.color.text} />
             <SView width={4} />
-            <SText style={{ marginLeft: 4 }} color={STheme.color.gray} fontSize={12}>
+            <SText style={{ marginLeft: 4 }} color={STheme.color.text} fontSize={12}>
               +51 987654321
             </SText>
           </SView>
