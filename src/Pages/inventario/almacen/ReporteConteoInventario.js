@@ -382,7 +382,7 @@ export default class ReporteConteoInventario extends Component {
         return (
             <SPage title="Reporte de Conteo de Inventario" disableScroll>
                 {this.mostrarTabla()}
-                <Informar></Informar>
+                {/* <Informar></Informar> */}
             </SPage>
         );
     }
