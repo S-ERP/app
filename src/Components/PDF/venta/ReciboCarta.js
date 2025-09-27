@@ -3,93 +3,129 @@ import { SMath, SView, SText, SDate, SImage } from 'servisofts-component';
 import * as SPDF from 'servisofts-rn-spdf';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
-import Model from '../../../Model';
+
 const textStyle = {
     font: "Roboto",
     fontSize: 9,
 };
+
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
 const formatCurrency = (val) => `${toNumber(val).toFixed(2)} Bs`;
+
 export default class ReciboCarta extends Component {
     constructor(props) {
         super(props);
         this.state = {};
     }
+
     static async fetchCompraVentaData(keyVenta) {
         try {
-            const compraVenta = await MDL.compra_venta.getByKeyComraVenta(keyVenta);
-            if (!compraVenta) {
-                throw new Error(`compraVenta not found for ID: ${keyVenta}`);
-            }
-            let sucursal = {};
-            if (compraVenta.key_sucursal?.trim()) {
-                sucursal = await Model.sucursal.Action.getByKey({ key: compraVenta.key_sucursal }) || {};
-            }
-            let proveedor = {};
-            if (compraVenta.key_proveedor?.trim()) {
-                proveedor = await MDL.inventario.proveedor.getByKey(compraVenta.key_proveedor) || {};
-            }
-            let cliente = {};
-            if (compraVenta.key_cliente?.trim()) {
-                cliente = await MDL.crm.cliente.getByKey(compraVenta.key_cliente) || {};
-            }
-            const empresa = MDL.empresa.select;
-            if (!empresa?.key) {
-                throw new Error('empresa data is missing or invalid');
-            }
-            const compraVentaData = {
-                ...compraVenta,
-                sucursal,
-                empresa,
-                ...(compraVenta.key_proveedor ? { proveedor } : {}),
-                ...(compraVenta.key_cliente ? { cliente } : {})
-            };
+
             return compraVentaData;
         } catch (error) {
             throw new Error(`Failed to fetch compraVenta data: ${error.message}`);
         }
     }
+
     static async imprimir(key) {
         try {
 
+            // let dataQR = {};
+            // try {
+            //     dataQR = await ReciboCarta.getQR(key);
+            //     console.log('QR ', dataQR?.data?.b64);
+            // } catch (error) {
+            //     console.error("Error al obtener QR:", error);
+            // }
+
+
             const data = await MDL.compra_venta.getByKeyComraVenta(key);
-            console.log('miralo ', data);
+            if (!data) {
+                console.error("No se encontraron datos para la venta con key:", key);
+                return;
+            }
 
-            const dataQR = await ReciboCarta.getQR(data?.key);
-            console.log('QR ' + dataQR?.data?.b64);
+            const empresa = await MDL.empresa.getFull();
+            if (!empresa?.key) {
+                throw new Error('empresa data is missing or invalid');
+            }
 
-            // return;
+            const sucursal = empresa.sucursales?.find(a => a?.key === data?.key_sucursal) || {};
+
+            let cajero = {};
+            if (data?.key_cajero) {
+                try {
+                    const usuarios = await MDL.usuario.getByKeys([data.key_cajero]);
+                    cajero = Array.isArray(usuarios) ? usuarios[0] : usuarios[data.key_cajero] || {};
+                } catch (error) {
+                    console.error("Error al obtener datos del cajero:", error);
+                }
+            }
+
+            // Obtener datos del cliente
+            let cliente = {};
+            if (data?.key_cliente) {
+                try {
+                    cliente = await MDL.crm.cliente.getByKey(data.key_cliente) || {};
+                } catch (error) {
+                    console.error("Error al obtener datos del cliente:", error);
+                }
+            }
+
+            const clientes = await MDL.crm.cliente.getAll();
+
+
+            // Obtener datos del proveedor (si aplica)
+            let proveedor = {};
+            if (data?.key_proveedor) {
+                try {
+                    proveedor = await MDL.inventario.proveedor.getByKey(data.key_proveedor) || {};
+                } catch (error) {
+                    console.error("Error al obtener datos del proveedor:", error);
+                }
+            }
+
+            const moneda = empresa.monedas?.find(m => m.key === data.key_moneda) || {};
+
+
+            const compraVentaData = {
+                ...data,
+                empresa,
+                sucursal,
+                cajero,
+                cliente: clientes.find(a => a?.key === data.key_cliente) || {},
+                proveedor,
+                moneda
+            };
+
             SPDF.create(
                 <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}>
                     <SPDF.View style={{ width: "100%" }}>
-                        {ReciboCarta.HeaderRecibo(data)}
+                        {ReciboCarta.HeaderRecibo(compraVentaData)}
                         {ReciboCarta.espacio()}
-                        {ReciboCarta.cliente(data)}
+                        {ReciboCarta.cliente(compraVentaData)}
                         {ReciboCarta.espacio()}
-                        {ReciboCarta.detalle(data)}
+                        {ReciboCarta.detalle(compraVentaData)}
                         {ReciboCarta.espacio()}
+                        {ReciboCarta.Cajero(compraVentaData.cajero)}
                         {ReciboCarta.espacio()}
-                        {ReciboCarta.FooterRecibo(dataQR?.data?.b64)}
+                        {/* {ReciboCarta.FooterRecibo(dataQR?.data?.b64, compraVentaData)} */}
                         {ReciboCarta.espacio()}
                         {ReciboCarta.pagina()}
                     </SPDF.View>
                 </SPDF.Page>
             );
-
         } catch (error) {
             console.error("Error al generar el recibo:", error);
         }
-
     }
-
 
     static getQR(key) {
         if (!key) {
             return Promise.reject(new Error("Key inválida para generar QR"));
         }
         const content = `https://darmotos.servisofts.com/venta/profile?pk=${encodeURIComponent(key)}`;
-        // var content = `https://darmotos.servisofts.com/venta/profile?pk=${key}`;
         return SSocket.sendPromise({
             "service": "sqr",
             "component": "qr",
@@ -99,12 +135,8 @@ export default class ReciboCarta extends Component {
                 "image_src": "https://darmotos.servisofts.com/logo512.png",
                 "framework": "Rounded",
                 "header": "Circle",
-                // "colorHeader": "#ffffff",
-                // "colorBackground":"#000000",
                 "body": "Dot",
                 "content": content,
-                // "colorBody2": "#80D034",
-                // "colorBody": "#80D034",
                 "type_color": "solid",
             }
         });
@@ -113,42 +145,42 @@ export default class ReciboCarta extends Component {
     static espacio() {
         return <SPDF.View style={{ width: "100%", height: 16 }} />;
     }
+
     static HeaderRecibo(data) {
-        const empresa = MDL.empresa.select;
-        const sucursal = Model.sucursal.Action.getByKey({ key: data?.key_sucursal });
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row", height: 110, alignItems: "center" }}>
                 <SPDF.View style={{ flex: 3, alignItems: "center" }}>
-                    <SPDF.Image src={SSocket.api.empresa + "empresa/" + empresa?.key} style={{ width: 100, height: 50, }} />
-                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{validarDato(empresa?.razon_social, 'EMPRESA')}</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle }}>Sucursal: {validarDato(sucursal?.descripcion, 'Sin sucursal')}</SPDF.Text>
+                    <SPDF.Image src={`${SSocket.api.empresa}empresa/${data?.empresa?.key}`} style={{ width: 100, height: 50 }} />
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{validarDato(data?.empresa?.razon_social, 'EMPRESA')}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle }}>Sucursal: {validarDato(data?.sucursal?.descripcion, 'Sin sucursal')}</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, alignItems: "center" }}>No. Punto de Venta {validarDato(data?.venta, '1')}</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle }}>{validarDato(sucursal?.direccion, 'Av. Sur Nro. 0')}</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle }}>Teléfono: {validarDato(sucursal?.telefono, 'Tel: (123) 00000000')}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle }}>{validarDato(data?.sucursal?.direccion, 'Av. Sur Nro. 0')}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle }}>Teléfono: {validarDato(data?.sucursal?.telefono, 'Tel: (123) 00000000')}</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ flex: 2 }} />
                 <SPDF.View style={{ flex: 3, height: "100%" }}>
                     <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
                         <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{"NIT"}</SPDF.Text>
                         <SPDF.View style={{ flex: 1 }} />
-                        <SPDF.Text style={{ ...textStyle, width: 90 }}>{validarDato(empresa.nit, 'S/N')}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, width: 90 }}>{validarDato(data?.empresa?.nit, 'S/N')}</SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
                         <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{"RECIBO N"}</SPDF.Text>
                         <SPDF.View style={{ flex: 1 }} />
-                        <SPDF.Text style={{ ...textStyle, width: 90 }}>{"812"}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, width: 90 }}>{validarDato(data?.numero_recibo, '812')}</SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
                         <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{"CÓD. AUTORIZACIÓN"}</SPDF.Text>
                         <SPDF.View style={{ flex: 1 }} />
                         <SPDF.Text style={{ ...textStyle, width: 90, alignItems: "center" }}>
-                            {"212E5B3D5BB840450741FE54CD25A18FFD7F23D2012D8BDDAEA002F74"}
+                            {validarDato(data?.codigo_autorizacion, '212E5B3D5BB840450741FE54CD25A18FFD7F23D2012D8BDDAEA002F74')}
                         </SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
             </SPDF.View>
         );
     }
+
     static cliente(data) {
         const cliente = data?.cliente || {};
         return (
@@ -159,39 +191,43 @@ export default class ReciboCarta extends Component {
                 </SPDF.View>
                 <SPDF.View style={{ width: "100%", height: 12 }} />
                 <SPDF.View style={{ width: "100%", alignItems: "center", flexDirection: "row" }}>
-                    <SPDF.View style={{ flex: 3, alignItems: "center", height: "100%", }}>
+                    <SPDF.View style={{ flex: 3, alignItems: "center", height: "100%" }}>
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
                             <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
                                 {"FECHA: "}
                             </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {new SDate(data?.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("dd/MM/yyyy")?.toUpperCase()}
+                                {new SDate(data?.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("dd/MM/yyyy")?.toUpperCase() || 'Sin fecha'}
                             </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ height: 4 }} />
-                        <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center", }}>
+                        <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
                             <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
                                 {"COD. CLIENTE:"}
                             </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {validarDato(cliente?.nit, '6356465-2')}
+                                {validarDato(cliente?.codigo, '0001')}
                             </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ height: 4 }} />
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
-                            <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>FORMA DE PAGO:</SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
+                                {"FORMA DE PAGO:"}
+                            </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {validarDato((data?.tipo_pago?.toUpperCase()), 'S/D')}
+                                {validarDato(data?.tipo_pago?.toUpperCase(), 'S/D')}
                             </SPDF.Text>
                         </SPDF.View>
                     </SPDF.View>
                     <SPDF.View style={{ flex: 3 }} />
-                    <SPDF.View style={{ flex: 3, alignItems: "center", height: "100%", }}>
+                    <SPDF.View style={{ flex: 3, alignItems: "center", height: "100%" }}>
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
                             <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
-                                {"NIT:"}
+                                {"NIT/CI:"}
                             </SPDF.Text>
-                            <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}> {validarDato(cliente.nit, '0')}  </SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
+                                {validarDato(cliente?.nit || cliente?.ci, '0')}
+                            </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ height: 4 }} />
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
@@ -199,12 +235,14 @@ export default class ReciboCarta extends Component {
                                 {"CLIENTE:"}
                             </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {validarDato((cliente?.razon_social?.toUpperCase()), 'S/N')}
+                                {validarDato(cliente?.razon_social?.toUpperCase(), 'S/N')}
                             </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ height: 4 }} />
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
-                            <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>TELEFONO:</SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
+                                {"TELEFONO:"}
+                            </SPDF.Text>
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
                                 {validarDato(cliente?.telefono, '+591 00000000')}
                             </SPDF.Text>
@@ -214,6 +252,31 @@ export default class ReciboCarta extends Component {
             </SPDF.View>
         );
     }
+
+    static Cajero(cajero) {
+        return (
+            <SPDF.View style={{ width: "100%", alignItems: "center", height: 40 }}>
+                <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
+                    <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
+                        {"CAJERO:"}
+                    </SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
+                        {validarDato(cajero?.Nombres.toUpperCase(), 'S/N')}
+                    </SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ height: 4 }} />
+                <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
+                    <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
+                        {"CAJA:"}
+                    </SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
+                        {"01"}
+                    </SPDF.Text>
+                </SPDF.View>
+            </SPDF.View>
+        );
+    }
+
     static detalle(data) {
         const detalles = data?.detalle || {};
         const items = Object.values(detalles).length
@@ -268,11 +331,11 @@ export default class ReciboCarta extends Component {
                 {items.map((item, i) => {
                     const cantidad = toNumber(item.cantidad);
                     const precio = toNumber(item.precio_unitario);
-                    const descuentoItem = toNumber(item.descuento || 0); // Asumiendo que cada ítem puede tener un descuento
+                    const descuentoItem = toNumber(item.descuento || 0);
                     return (
                         <SPDF.View key={i} style={{ width: "100%", height: 44, flexDirection: "row" }}>
                             <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}>
-                                <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center" }}>{i + 1}</SPDF.Text>
+                                <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center" }}>{item.key || (i + 1)}</SPDF.Text>
                             </SPDF.View>
                             <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row" }}>
                                 <SPDF.Text style={{ ...textStyle, fontSize: 8, alignItems: "center" }}>{parseFloat(cantidad).toFixed(2)}</SPDF.Text>
@@ -299,6 +362,7 @@ export default class ReciboCarta extends Component {
             </SPDF.View>
         );
     }
+
     static subtotales(data) {
         const detalles = data?.detalle || {};
         const items = Object.values(detalles);
@@ -309,8 +373,10 @@ export default class ReciboCarta extends Component {
         const descuento = toNumber(data?.descuento);
         const montoGiftCard = toNumber(data?.monto_gift_card);
         const total = subtotal - descuento - montoGiftCard;
+        const montoPagado = toNumber(data?.monto_pagado);
+        const cambio = montoPagado - total;
         return (
-            <SPDF.View style={{ width: "100%", height: 98, flexDirection: "row" }}>
+            <SPDF.View style={{ width: "100%", height: 120, flexDirection: "row" }}>
                 <SPDF.View style={{ flex: 6, height: "100%", justifyContent: "center" }}>
                     <SPDF.View style={{ width: "100%", height: "100%" }}>
                         <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold" }}>
@@ -325,15 +391,18 @@ export default class ReciboCarta extends Component {
                         {ReciboCarta.renderTotalesDetalle({ label: "TOTAL Bs", monto: formatCurrency(total) })}
                         {ReciboCarta.renderTotalesDetalle({ label: "MONTO GIFT CARD Bs", monto: formatCurrency(montoGiftCard) })}
                         {ReciboCarta.renderTotalesDetalle({ label: "MONTO A PAGAR Bs", monto: formatCurrency(total) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: "MONTO PAGADO Bs", monto: formatCurrency(montoPagado) })}
+                        {ReciboCarta.renderTotalesDetalle({ label: "CAMBIO Bs", monto: formatCurrency(cambio >= 0 ? cambio : 0) })}
                         {ReciboCarta.renderTotalesDetalle({ label: "IMPORTE BASE CRÉDITO FISCAL Bs", monto: formatCurrency(total) })}
                     </SPDF.View>
                 </SPDF.View>
             </SPDF.View>
         );
     }
+
     static renderTotalesDetalle({ label, monto }) {
         return (
-            <SPDF.View style={{ width: "100%", flexDirection: "row", height: 16 }}>
+            <SPDF.View style={{ width: "100%", flexDirection: "row", height: 15 }}>
                 <SPDF.View style={{ flex: 2, height: "100%", borderWidth: 1, alignItems: "center", flexDirection: "row" }}>
                     <SPDF.Text style={{ ...textStyle, fontSize: 7, alignItems: "center" }}>{label}</SPDF.Text>
                 </SPDF.View>
@@ -343,8 +412,8 @@ export default class ReciboCarta extends Component {
             </SPDF.View>
         );
     }
-    static FooterRecibo(qr) {
-        const empresa = MDL.empresa.select;
+
+    static FooterRecibo(qr, data) {
         return (
             <SPDF.View style={{ width: "100%", alignItems: "center" }}>
                 <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
@@ -359,18 +428,23 @@ export default class ReciboCarta extends Component {
                             {"\"Este documento es la Representación Gráfica de un Documento Fiscal Digital emitido en una modalidad de registro en línea\""}
                         </SPDF.Text>
                     </SPDF.View>
-
-                    <SPDF.Image src={`data:image/png;base64,${qr}`} style={{ width: 70, height: 70, }} />
-                  
+                    {qr ? (
+                        <SPDF.Image src={`data:image/png;base64,${qr}`} style={{ width: 70, height: 70 }} />
+                    ) : (
+                        <SPDF.Text style={{ ...textStyle, fontSize: 8, color: 'red' }}>{"QR no disponible"}</SPDF.Text>
+                    )}
                 </SPDF.View>
                 <SPDF.View style={{ width: "100%", alignItems: "center", height: 40 }}>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>¡Gracias por su compra!</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>Guarde este recibo para devoluciones.</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>Visítenos en www.{validarDato(empresa?.razon_social, 'EMPRESA')}.com</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>
+                        Visítenos en www.{validarDato(data?.empresa?.razon_social, 'EMPRESA')}.com
+                    </SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
         );
     }
+
     static pagina() {
         return (
             <SPDF.View style={{ width: "100%", height: 20, alignItems: "center", bottom: 0 }}>
@@ -378,10 +452,11 @@ export default class ReciboCarta extends Component {
             </SPDF.View>
         );
     }
+
     render() {
         return (
             <SView onPress={() => ReciboCarta.imprimir(this.props.data?.key)}>
-                <Text>PDF CARTA</Text>
+                <SText>PDF CARTA</SText>
             </SView>
         );
     }
