@@ -54,20 +54,42 @@ export default class PopupDispositivo extends Component<PopupRazonType & { defau
     }
 
     loadMotivosLead = async () => {
+        this.setState({ loading: true, error: null, descripcionDispositivos: [] });
         try {
-            const all2 = await MDL.whatsapp.device.getAll();
-            if (!all2) return;
-            const dispositivosDiltrados = Object.values(all2).map(item => ({
-                key: item.key,
-                content: item.descripcion,
-            }));
+            const allDevices = await MDL.whatsapp.device.getAll();
+            if (!allDevices || Object.keys(allDevices).length === 0) {
+                throw new Error("No se encontraron dispositivos");
+            }
+
+            const miempresa = MDL.empresa.select?.key;
+            if (!miempresa) {
+                throw new Error("No se encontró la key de la empresa");
+            }
+
+            const dispositivosFiltrados = Object.values(allDevices)
+                .filter(item => item.key_empresa === miempresa)
+                .map(item => ({
+                    key: item.key,
+                    content: item.descripcion
+                }));
+
             const motivosConDefault = [
                 { key: "", content: "--" },
-                ...dispositivosDiltrados
+                ...dispositivosFiltrados
             ];
-            this.setState({ descripcionDispositivos: motivosConDefault });
+
+            this.setState({ descripcionDispositivos: motivosConDefault, loading: false });
         } catch (e) {
             console.error("Error al cargar motivos:", e);
+            this.setState({
+                error: "No se pudieron cargar los dispositivos",
+                loading: false
+            });
+            SNotification.send({
+                title: "Error",
+                body: "No se pudieron cargar los dispositivos",
+                type: "error"
+            });
         }
     };
 
