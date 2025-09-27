@@ -92,8 +92,8 @@ export default class permiso extends React.Component {
                 selectType="multiple"
                 loadInitialState={async () => {
                     return {
-                        filters:[
-                            {col:"descripcion",type:"string",value:"(OLD)", operator:"nocontains"}
+                        filters: [
+                            { col: "descripcion", type: "string", value: "(OLD)", operator: "nocontains" }
                         ],
                         sorters: [
                             { key: "url", order: "asc", type: "string" },
@@ -117,7 +117,7 @@ class PermisoSwitch extends React.Component<{ permiso: string, key_rol: string }
             type: "MD",
             title: permiso.descripcion,
             defaultValue: permiso.info?.descripcion,
-            backgroundColor:"#171717",
+            backgroundColor: "#171717",
             onChangeText: (e) => {
                 const k = "editando";
                 new SThread(1000, k, true).start(() => {

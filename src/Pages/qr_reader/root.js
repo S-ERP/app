@@ -1,10 +1,12 @@
 import React from "react";
-import { SPage, SText } from "servisofts-component";
+import { SPage, SSwitch, SText, STheme, SView } from "servisofts-component";
 import BarcodeScanner from "../../Components/BarcodeScanner";
 import SSocket from "servisofts-socket";
 import MDL from "../../MDL";
+import ToolTips from "../../Components/ToolTips";
 
 export default class root extends React.Component {
+
 
     handleRead = (e) => {
         MDL.qr_reader.handleRead(e).then((response) => {
@@ -21,10 +23,20 @@ export default class root extends React.Component {
         })
     }
     render() {
-        return <SPage title={"qr_reader"} disableScroll center>
+        return <SPage title={"qr_reader"} disableScroll center
+        >
+            <ToolTips
+                type="info"
+                small
+                color={STheme.color.warning}
+                descripcion={"hola mundo"}
+                // itemWidth={200}
+                itemHeight={300}
+            />
             <BarcodeScanner
                 onTakePicture={this.handleTakePicture.bind(this)}
                 onRead={this.handleRead.bind(this)} />
         </SPage>
+
     }
 }

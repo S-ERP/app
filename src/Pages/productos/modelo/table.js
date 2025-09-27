@@ -76,7 +76,7 @@ export default class table extends Component {
                 onSelect={e => {
                     FloatMenu.open({
                         e: e.evt,
-                        height:330,
+                        height: 330,
                         label: e.row.descripcion,
                         options: [
                             // {
@@ -210,7 +210,7 @@ export default class table extends Component {
                     />}
                 />
                 <DinamicTable.Col key={"observacion"} label='Observacion' width={200} data={(e) => e.row.observacion}
-               
+
                 />
                 <DinamicTable.Col key={"precio_compra"} label='P. Compra' width={70}
                     textStyle={{ color: STheme.color.danger }}

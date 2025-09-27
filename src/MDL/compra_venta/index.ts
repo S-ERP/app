@@ -103,11 +103,13 @@ export default class compra_venta extends MDLAbstract<EventListener> {
   }
 
   async getByKeyComraVenta(value: any) {
+    console.log("printtttttt "+value)
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
       component: "reporte",
       type: "execute_function",
-      func: "_get_compraventa_byalvaro",
+      func: "_pdf",
+      // func: "_get_compraventa_byalvaro",
       params: ["'" + value + "'"],
     });
     return resp.data[0] || [];

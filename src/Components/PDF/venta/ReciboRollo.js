@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { SMath, SView, SText, SDate, SImage } from 'servisofts-component';
 import * as SPDF from 'servisofts-rn-spdf';
-import Model from '../../../Model';
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
+
 const textStyle = { fontSize: 14, font: 'Roboto', paddingBottom: 4 };
+
 const validarDato = (value, fallback = 'Sin dato') => (value && value.toString().trim() ? value : fallback);
 const toNumber = (val) => (isNaN(Number(val)) ? 0 : Number(val));
 const formatCurrency = (val) => `${toNumber(val).toFixed(2)} Bs`;
@@ -13,37 +14,110 @@ const formatDate = (dateStr, fallback = 'Sin fecha') =>
     dateStr && !isNaN(new Date(dateStr))
         ? new Date(dateStr).toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' })
         : fallback;
+
 export default class ReciboRollo extends Component {
     constructor(props) {
         super(props);
         this.state = {};
     }
+
     static async imprimir(key) {
         try {
             const data = await MDL.compra_venta.getByKeyComraVenta(key);
+            if (!data) {
+                console.error("No se encontraron datos para la venta con key:", key);
+                return;
+            }
             console.log('miralo ', data);
-            const dataQR = await ReciboRollo.getQR(data?.key);
-            console.log('QR ' + dataQR?.data?.b64);
+
+            // Obtener datos de empresa y sucursal
+            const empresa = await MDL.empresa.getFull();
+            if (!empresa?.key) {
+                throw new Error('empresa data is missing or invalid');
+            }
+            const sucursal = empresa.sucursales?.find(a => a?.key === data?.key_sucursal) || {};
+
+            // Obtener datos del cajero
+            let cajero = {};
+            if (data?.key_cajero) {
+                try {
+                    const usuarios = await MDL.usuario.getByKeys([data.key_cajero]);
+                    cajero = Array.isArray(usuarios) ? usuarios[0] : usuarios[data.key_cajero] || {};
+                } catch (error) {
+                    console.error("Error al obtener datos del cajero:", error);
+                }
+            }
+
+            // Obtener datos del cliente
+            let cliente = {};
+            if (data?.key_cliente) {
+                try {
+                    cliente = await MDL.crm.cliente.getByKey(data.key_cliente) || {};
+                } catch (error) {
+                    console.error("Error al obtener datos del cliente:", error);
+                }
+            }
+
+            const clientes = await MDL.crm.cliente.getAll();
+
+
+            let proveedor = {};
+            if (data?.key_proveedor) {
+                try {
+                    proveedor = await MDL.inventario.proveedor.getByKey(data.key_proveedor) || {};
+                } catch (error) {
+                    console.error("Error al obtener datos del proveedor:", error);
+                }
+            }
+
+            // Obtener datos de la moneda
+            const moneda = empresa.monedas?.find(m => m.key === data.key_moneda) || {};
+
+            // Obtener código QR
+            // let dataQR = {};
+            // try {
+            //     dataQR = await ReciboRollo.getQR(key);
+            //     console.log('QR ', dataQR?.data?.b64);
+            // } catch (error) {
+            //     console.error("Error al obtener QR:", error);
+            // }
+
+            // Estructurar datos para el PDF
+            const compraVentaData = {
+                ...data,
+                empresa,
+                sucursal,
+                cajero,
+                cliente: clientes.find(a => a?.key === data.key_cliente) || {},
+                proveedor,
+                moneda
+            };
 
             SPDF.create(
                 <SPDF.Page style={{ width: 464, margin: 24, padding: 0, borderWidth: 0 }}>
                     <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
-                    {ReciboRollo.HeaderRecibo(data)}
+                    {ReciboRollo.HeaderRecibo(compraVentaData)}
                     <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
-                    {ReciboRollo.InfoVenta(data)}
+                    {ReciboRollo.InfoVenta(compraVentaData)}
                     <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
-                    {ReciboRollo.cliente(data)}
+                    {ReciboRollo.cliente(compraVentaData.cliente)}
                     {ReciboRollo.espacio()}
-                    {ReciboRollo.detalle(data)}
+                    {ReciboRollo.detalle(compraVentaData)}
                     {ReciboRollo.espacioPunto()}
-                    {ReciboRollo.subtotales(data)}
+                    {ReciboRollo.subtotales(compraVentaData)}
                     {ReciboRollo.espacio()}
-                    {ReciboRollo.TipoPago(data)}
+                    {ReciboRollo.TipoPago(compraVentaData)}
                     <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
-                    {ReciboRollo.Cajero()}
+                    {ReciboRollo.Cajero(compraVentaData.cajero)}
                     {ReciboRollo.espacio()}
                     <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
-                    {ReciboRollo.FooterRecibO(dataQR?.data?.b64)}
+                    <SPDF.View style={{ width: '100%', height: 70 }}></SPDF.View>.
+
+                    {/* {!dataQR ? <SPDF.View style={{ width: '100%', height: 10 }}></SPDF.View> :
+                        <SPDF.View style={{ width: '100%', height: 156 }}></SPDF.View>
+                    } */}
+
+                    {/* {ReciboRollo.FooterRecibO(dataQR?.data?.b64)} */}
                 </SPDF.Page>
             );
         } catch (error) {
@@ -72,7 +146,6 @@ export default class ReciboRollo extends Component {
         });
     }
 
-
     static espacio() {
         return (
             <SPDF.View style={{ width: '100%' }}>
@@ -84,6 +157,7 @@ export default class ReciboRollo extends Component {
             </SPDF.View>
         );
     }
+
     static espacioPunto() {
         return (
             <SPDF.View style={{ width: '100%' }}>
@@ -95,30 +169,31 @@ export default class ReciboRollo extends Component {
             </SPDF.View>
         );
     }
+
     static HeaderRecibo(data) {
-        const empresa = MDL.empresa.select;
-        const sucursal = Model.sucursal.Action.getByKey({ key: data?.key_sucursal });
         return (
             <SPDF.View style={{ width: '100%', alignItems: 'center' }}>
                 <SPDF.Text style={{ ...textStyle, fontWeight: 'bold', fontSize: 16 }}>
-                    {validarDato(empresa?.razon_social, 'EMPRESA')}
+                    {validarDato(data.empresa?.razon_social, 'EMPRESA')}
                 </SPDF.Text>
                 <SPDF.Text style={{ ...textStyle }}>
-                    SUCURSAL: {validarDato(sucursal?.descripcion, 'Central')}
+                    SUCURSAL: {validarDato(data.sucursal?.descripcion, 'Central')}
                 </SPDF.Text>
                 <SPDF.Text style={{ ...textStyle, alignItems: 'center' }}>
                     NRO. PUNTO DE VENTA {validarDato(data?.venta, '1')}
                 </SPDF.Text>
                 <SPDF.Text style={{ ...textStyle }}>
-                    {validarDato(sucursal?.direccion, 'Av. Sur Nro. 0')}
+                    {validarDato(data.sucursal?.direccion, 'Av. Sur Nro. 0')}
                 </SPDF.Text>
                 <SPDF.Text style={{ ...textStyle }}>
-                    TELÉFONO: {validarDato(sucursal?.telefono, 'S/N')}
+                    TELÉFONO: {validarDato(data.sucursal?.telefono, 'S/N')}
                 </SPDF.Text>
             </SPDF.View>
         );
     }
+
     static InfoVenta(data) {
+        console.log("paso por info ", data);
         return (
             <SPDF.View style={{ width: '100%', alignItems: 'center' }}>
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
@@ -126,7 +201,7 @@ export default class ReciboRollo extends Component {
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>RECIBO NRO: </SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle, width: '100%' }}>{'99997'}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, width: '100%' }}>{validarDato(data?.numero_recibo, '#999')}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
@@ -152,8 +227,8 @@ export default class ReciboRollo extends Component {
             </SPDF.View>
         );
     }
-    static cliente(data) {
-        const cliente = data?.cliente || {};
+
+    static cliente(cliente) {
         return (
             <SPDF.View style={{ width: '100%', alignItems: 'center' }}>
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
@@ -162,7 +237,7 @@ export default class ReciboRollo extends Component {
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
                         <SPDF.Text style={{ ...textStyle, width: '70%' }}>
-                            {validarDato((cliente?.razon_social?.toUpperCase()), 'S/N')}
+                            {validarDato(cliente?.nombres?.toUpperCase(), 'S/N')}
                         </SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
@@ -181,14 +256,14 @@ export default class ReciboRollo extends Component {
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>COD. CLIENTE: </SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle, width: '70%' }}>123456</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, width: '70%' }}>{validarDato(cliente?.codigo, '#000')}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
             </SPDF.View>
         );
     }
 
-    static Cajero() {
+    static Cajero(cajero) {
         return (
             <SPDF.View style={{ width: '100%', alignItems: 'center' }}>
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
@@ -196,7 +271,7 @@ export default class ReciboRollo extends Component {
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>CAJERO: </SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle, width: '100%' }}>MARIA SOSSA</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, width: '100%' }}>{validarDato(cajero?.Nombres, 'S/N')}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
@@ -204,22 +279,26 @@ export default class ReciboRollo extends Component {
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>CAJA: </SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle }}>01</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>#01</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
             </SPDF.View>
         );
     }
+
     static TipoPago(data) {
         const detalles = data?.detalle;
         if (!detalles) return null;
         const items = Object.values(detalles);
         let subtotal = 0;
-        let pagado = 200; // Este valor debería venir de los datos reales
         for (const item of items) {
             subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
         }
-        let cambio = subtotal - pagado;
+        const descuento = toNumber(data?.descuento);
+        const montoGiftCard = toNumber(data?.monto_gift_card);
+        const total = subtotal - descuento - montoGiftCard;
+        const pagado = toNumber(data?.monto_pagado);
+        const cambio = pagado - total;
         return (
             <SPDF.View style={{ width: '100%', alignItems: 'center' }}>
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
@@ -227,7 +306,7 @@ export default class ReciboRollo extends Component {
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>FORMA DE PAGO: </SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle, width: '100%' }}>{(data?.tipo_pago?.toUpperCase())}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, width: '100%' }}>{validarDato(data?.tipo_pago?.toUpperCase(), 'S/D')}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ width: '100%', flexDirection: 'row' }}>
@@ -243,27 +322,26 @@ export default class ReciboRollo extends Component {
                         <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>CAMBIO: </SPDF.Text>
                     </SPDF.View>
                     <SPDF.View style={{ width: '50%' }}>
-                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(cambio > 0 ? cambio : 0)}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle }}>{formatCurrency(cambio >= 0 ? cambio : 0)}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
             </SPDF.View>
         );
     }
+
     static detalle(data) {
         const detalles = data?.detalle;
-        const items = Object.values(detalles).length
-            ? Object.values(detalles)
-            : [
-                {
-                    key: 'PINT-001',
-                    descripcion: 'Bote de Pintura Acrílica, Blanco Mate, 5 Litros',
-                    cantidad: 1,
-                    precio_unitario: 25.0,
-                },
-            ];
+        const items = Object.values(detalles).length ? Object.values(detalles) : [
+            {
+                key: 'PINT-001',
+                descripcion: 'Bote de Pintura Acrílica, Blanco Mate, 5 Litros',
+                cantidad: 1,
+                precio_unitario: 25.0,
+            },
+        ];
         let subtotal = 0;
         for (const item of items) {
-            subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
+            subtotal += toNumber(item?.cantidad) * toNumber(item?.precio_unitario);
         }
         return (
             <SPDF.View style={{ width: '100%' }}>
@@ -272,8 +350,8 @@ export default class ReciboRollo extends Component {
                     <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
                 </SPDF.View>
                 {items.map((item, i) => {
-                    const cantidad = toNumber(item.cantidad);
-                    const precio = toNumber(item.precio_unitario);
+                    const cantidad = toNumber(item?.cantidad);
+                    const precio = toNumber(item?.precio_unitario);
                     return (
                         <SPDF.View key={i} style={{ width: '100%', marginBottom: 4 }}>
                             <SPDF.Text style={{ ...textStyle, fontWeight: 'bold' }}>{item.descripcion}</SPDF.Text>
@@ -291,6 +369,7 @@ export default class ReciboRollo extends Component {
             </SPDF.View>
         );
     }
+
     static subtotales(data) {
         const detalles = data?.detalle;
         if (!detalles) return null;
@@ -371,13 +450,15 @@ export default class ReciboRollo extends Component {
             </SPDF.View>
         );
     }
-    static FooterRecibO(key) {
 
-        const empresa = MDL.empresa.select;
+    static FooterRecibO(qr) {
         return (
             <SPDF.View style={{ width: '100%', alignItems: 'center' }}>
-                <SPDF.Image src={`data:image/png;base64,${qr}`} style={{ width: 70, height: 70, }} />
-
+                {qr ? (
+                    <SPDF.Image src={`data:image/png;base64,${qr}`} style={{ width: 70, height: 70 }} />
+                ) : (
+                    <SPDF.Text style={{ ...textStyle, fontSize: 12, color: 'red' }}>QR no disponible</SPDF.Text>
+                )}
                 <SPDF.View style={{ width: '100%', height: 8 }}></SPDF.View>
                 <SPDF.Text style={{ ...textStyle, width: '85%', textAlign: 'center' }}>
                     {'¡Gracias por su compra!'}
@@ -388,16 +469,17 @@ export default class ReciboRollo extends Component {
                 </SPDF.Text>
                 <SPDF.View style={{ width: '100%', height: 4 }}></SPDF.View>
                 <SPDF.Text style={{ ...textStyle, fontSize: 14, textAlign: 'center', width: '70%' }}>
-                    Visítenos en www.{validarDato(empresa?.razon_social, 'EMPRESA')}.com
+                    Visítenos en www.{validarDato(compraVentaData?.empresa?.razon_social, 'EMPRESA')}.com
                 </SPDF.Text>
                 <SPDF.View style={{ width: '100%', height: 10 }}></SPDF.View>
             </SPDF.View>
         );
     }
+
     render() {
         return (
             <SView onPress={() => ReciboRollo.imprimir(this.props.data?.key)}>
-                <Text>PDF ROLLO</Text>
+                <SText>PDF ROLLO</SText>
             </SView>
         );
     }
