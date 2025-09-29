@@ -60,8 +60,8 @@ export default class Categoria extends Component {
         const categorias = this.tipomodelos || [];
         return (
             <SView col={"xs-12 md-12"} backgroundColor={STheme.color.darkGray} row center style={{ paddingHorizontal: 8, paddingVertical: 5 }} >
-                <SView col={"xs-12 md-12 lg-8.8"} row  >
-                    <ScrollView horizontal scroll={true} style={{ flex: 1, }} contentContainerStyle={{ minWidth: "100%" }}  >
+                <SView col={"xs-12   "} row  >
+                    <ScrollView horizontal scroll={false} style={{ flex: 1, }} contentContainerStyle={{ minWidth: "100%" }}  >
                         {categorias.map(cat => (
                             <SView key={cat.key} onPress={() => this.handlePress(cat.key)}
                                 style={{
@@ -80,8 +80,49 @@ export default class Categoria extends Component {
                     </ScrollView>
                 </SView>
 
-                <SView flex height={14} />
-                <SView col={'xs-12 md-12 lg-8.8'} row>
+                <SView col={"xs-12"} height={4} />
+
+                <SView col={'xs-12 '} row>
+                    <SView col={'xs-12 md-5 lg-9'} row style={{ marginBottom: 4 }}>
+                        <SView col={"xs-12 md-11.5 lg-3.5 "} row center  >
+                            <SInput
+                                type="select"
+                                placeholder="Seleccionar Moneda"
+                                value={this.selectedMoneda?.key || ''}
+                                customStyle="calistenia"
+                                style={{
+                                    height: 45,
+                                    backgroundColor: STheme.color.card,
+                                    borderRadius: 8,
+                                    paddingHorizontal: 8,
+                                }}
+                                options={[
+                                    { key: "", content: "— Seleccionar —" },
+                                    ...this.monedas.map(moneda => ({
+                                        key: moneda.key,
+                                        content: `${moneda.descripcion} ${moneda.observacion ? `(${moneda.observacion})` : ""}`,
+                                    })),
+                                ]}
+                                onChangeText={(val) => this.handleMonedaChange(val)}
+                            />
+                        </SView>
+                    </SView>
+                    <SView col={'xs-12 md-7 lg-3'} row  >
+
+                        <SView col={"xs-12  "} row center 
+                        style={{ borderRadius: 8,height: 45, borderWidth: 1, borderColor: STheme.color.card, paddingHorizontal: 12, backgroundColor: STheme.color.background }}>
+                        
+                            <SInput placeholder="Buscar Producto" center style={{ flex: 1, fontSize: 14, backgroundColor: STheme.color.background }}
+                                value={this.props.value}
+                                onChangeText={this.props.onChangeText}
+                                onKeyPress={(e) => { if (e.nativeEvent.key === "Escape") this.props.onChangeText?.(""); }} />
+                            <SIconApp name="Search" width={16} height={16} fill={"#6B7280"} />
+                        </SView>
+                    </SView>
+                </SView>
+
+
+                {/* <SView col={'xs-12 md-12 lg-8.8'} row>
                     <SInput //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
                         type="select"
                         placeholder="Seleccionar Moneda"
@@ -116,7 +157,9 @@ export default class Categoria extends Component {
                             onKeyPress={(e) => { if (e.nativeEvent.key === "Escape") this.props.onChangeText?.(""); }} />
                         <SIconApp name="Search" width={16} height={16} fill={"#6B7280"} />
                     </SView>
-                </SView>
+                </SView> */}
+
+
             </SView>
         );
     }
