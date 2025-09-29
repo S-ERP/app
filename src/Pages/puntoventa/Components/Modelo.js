@@ -114,22 +114,24 @@ export default class Modelo extends Component {
                                 return (
                                     <SView
                                         key={index}
-                                        col={`xs-6 md-4 lg-3`}
-                                        margin={2}
+                                        col={`xs-6 md-4 lg-3 xl-3 xxl-2`}
+                                        margin={4}
                                         style={{
-                                            minWidth: 120,
-                                            borderRadius: 8,
-                                            shadowOffset: { width: 0, height: 2 },
-                                            shadowOpacity: 0.1,
-                                            shadowRadius: 8,
-                                            elevation: 3,
-                                            borderWidth: 1,
-                                            borderColor: STheme.color.card,
+                                            // width: 120,
+                                            minWidth: "100%",
+                                            // borderRadius: 8,
+                                            // shadowOffset: { width: 0, height: 2 },
+                                            // shadowOpacity: 0.1,
+                                            // shadowRadius: 8,
+                                            // elevation: 3,
+                                            // borderWidth: 1,
+                                            // borderColor: "blue",
                                             overflow: "hidden",
+
                                         }}
                                         onPress={() => {
 
-                                            console.log("pinnnnn " + JSON.stringify(producto))
+                                            // console.log("pinnnnn " + JSON.stringify(producto))
                                             if (producto.stock <= 0) {
                                                 SNotification.send({
                                                     title: "Sin stock",
@@ -149,21 +151,30 @@ export default class Modelo extends Component {
                                             this.forceUpdate();
                                         }}
                                     >
-                                        <SView center style={{ marginBottom: 12, height: 120, overflow: "hidden", backgroundColor: STheme.color.card }}>
+                                        <SView center style={{ marginBottom: 4, height: 180, overflow: "hidden", backgroundColor: STheme.color.card, borderRadius: 4, overflow: "hidden", }}>
                                             <FotoModelo data={producto} />
                                         </SView>
+
                                         <SView col={"xs-12"} padding={4}>
-                                            <SView col={"xs-12"} height={38}  >
-                                                <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1}>{producto.descripcion}</SText>
-                                                <SText fontSize={11} clean color={STheme.color.lightGray} numberOfLines={1}>{producto.marca.descripcion}, {producto.tipo_producto.descripcion}, {producto.observacion}</SText>
-                                            </SView>
+
+                                            <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}> 
+ 
+                                                    <SText   fontSize={14} bold color={STheme.color.text} numberOfLines={1} >{monedaSymbol} {SMath.formatMoney(precio_venta_moneda, 2)}</SText>
+                                                    <SText clean style={{ alignItems: 'flex-end', textAlign: 'flex-end', }} fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"}>{producto?.stock} Und</SText>
+                                             </SView>
+                                            {/* 
                                             <SView col={"xs-12"} row>
-                                                <SView flex row>
-                                                    <SText fontSize={12} bold color={STheme.color.text}>
-                                                        {monedaSymbol} {SMath.formatMoney(precio_venta_moneda, 2)}
-                                                    </SText>
-                                                </SView>
-                                                <SText fontSize={10} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"}>{producto?.stock} Und</SText>
+                                                <SText col={"xs-12 md-8"} fontSize={14} bold color={STheme.color.text} numberOfLines={1} >{monedaSymbol} {SMath.formatMoney(precio_venta_moneda, 2)}</SText>
+                                                <SText clean style={{ alignItems: 'flex-end' }} fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"}>{producto?.stock} Und</SText>
+                                            </SView> */}
+                                            {/* <SView col={"xs-12"} row>
+                                                <SView flex row backgroundColor={"pink"}> <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1} >{monedaSymbol} {SMath.formatMoney(precio_venta_moneda, 2)}</SText></SView>
+                                                <SView col={"md-0 lg-4"} row backgroundColor={"blue"}><SText clean fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"}>{producto?.stock} Und</SText></SView>
+                                            </SView> */}
+
+                                            <SView col={"xs-12"}  >
+                                                <SText fontSize={14} color={STheme.color.text} numberOfLines={1}>{producto.descripcion}</SText>
+                                                <SText fontSize={10} clean color={STheme.color.lightGray} numberOfLines={1}>{producto.marca.descripcion}, {producto.tipo_producto.descripcion}, {producto.observacion}</SText>
                                             </SView>
                                         </SView>
                                     </SView>

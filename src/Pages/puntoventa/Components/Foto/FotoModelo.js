@@ -7,9 +7,6 @@ export default class FotoModelo extends Component {
     render() {
         const data = this.props.data;
         const url = SSocket.api.inventario + "modelo/.128_" + data?.key + "?date=" + this.time;
-        return <>
-            <SImage src={require('../../../../Assets/img/nofoto.jpg')} style={{ position: 'absolute', top: 0, overflow: "hidden", opacity: 0.3 }} />
-            <SImage src={url} style={{ overflow: "hidden" }} />
-        </>
+        return <SImage src={url} style={{ overflow: "hidden", resizeMode:"cover", borderRadius: 8, width: "100%" }} />
     }
 }
