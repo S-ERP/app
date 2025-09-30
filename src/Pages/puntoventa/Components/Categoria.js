@@ -176,7 +176,7 @@ export default class Categoria extends Component {
                             style={{ top: -3 }}
                             labelStyle={{ left: 12, top: 0 }}
                             value={this.props.conStock}  
-                            onChangeText={(text) => {lo
+                            onChangeText={(text) => {
                                 this.props.onChangeConStock?.(text);  
                             }}
                         />
