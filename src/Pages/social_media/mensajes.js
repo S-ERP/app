@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SHr, SIcon, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
 import MensajesLista from './Components/MensajesLista';
 import MensajeDetalle from './Components/MensajeDetalle';
 import MensajeContacto from './Components/MensajeContacto';
+import MDL from '../../MDL';
 class mensajes extends Component {
     constructor(props) {
         super(props);
@@ -761,6 +762,14 @@ class mensajes extends Component {
         };
     }
 
+    componentDidMount() {
+        MDL.rolesPermisos.getPermisoAsync({ url: "/social_media/mensajes", permiso: "ver" }).then((permit) => {
+            if (!permit) {
+                SNavigation.goBack();
+                return;
+            }
+        })
+    }
 
     render() {
         return (
