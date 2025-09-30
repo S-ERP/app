@@ -67,7 +67,7 @@ export default class Categoria extends Component {
                 backgroundColor={STheme.color.darkGray}
                 row
                 center
-                style={{ paddingHorizontal: 8, paddingVertical: 5 }}
+                style={{ paddingHorizontal: 8, paddingVertical: 8 }}
             >
                 <SView col={"xs-12"} row>
                     <ScrollView
@@ -81,8 +81,8 @@ export default class Categoria extends Component {
                                 key={cat.key}
                                 onPress={() => this.handlePress(cat.key)}
                                 style={{
-                                    paddingVertical: 8,
-                                    paddingHorizontal: 16,
+                                    paddingVertical: 4,
+                                    paddingHorizontal: 8,
                                     borderRadius: 20,
                                     marginRight: 8,
                                     backgroundColor:
@@ -110,81 +110,57 @@ export default class Categoria extends Component {
                     </ScrollView>
                 </SView>
 
-                <SView col={"xs-12"} height={4} />
+                <SView col={"xs-12"} height={8} />
 
-                <SView col={"xs-12"} row>
-                    <SView col={"xs-12 md-5 lg-9"} row style={{ marginBottom: 4 }}>
-                        <SView col={"xs-12 md-11.5 lg-3.5"} row center>
+                <SView col={"xs-12"} row backgroundColor='transparent' style={{ justifyContent: "space-between" }}>
+                    <SView col={"xs-12 md-12 lg-9"} row   >
+                        <SView col={"xs-12 md-5 lg-2.5"} row center height={32}  >
                             <SInput
                                 type="select"
                                 placeholder="Seleccionar Moneda"
                                 value={this.selectedMoneda?.key || ""}
                                 customStyle="calistenia"
-                                style={{
-                                    height: 45,
-                                    backgroundColor: STheme.color.card,
-                                    borderRadius: 8,
-                                    paddingHorizontal: 8,
-                                }}
+                                style={{ height: 32, backgroundColor: STheme.color.card, borderRadius: 8, paddingHorizontal: 8, }}
                                 options={[
                                     { key: "", content: "— Seleccionar —" },
                                     ...this.monedas.map((moneda) => ({
                                         key: moneda.key,
-                                        content: `${moneda.descripcion} ${moneda.observacion ? `(${moneda.observacion})` : ""
-                                            }`,
+                                        content: `${moneda.descripcion} ${moneda.observacion ? `(${moneda.observacion})` : ""}`,
                                     })),
                                 ]}
                                 onChangeText={(val) => this.handleMonedaChange(val)}
                             />
                         </SView>
+                        <SView width={16} />
+                        <SView col={"xs-12 md-5 lg-2.5"} row center   >
+                            <SView col={"xs-12 "} row center height={32}   >
+                                <SInput
+                                    label={"Con Stock"}
+                                    style={{ top: -12, fontSize: 12 }}
+                                    type="checkBox"
+                                    labelStyle={{ left: 14, top: -4 }}
+                                    value={this.props.conStock}
+                                    onChangeText={(text) => {
+                                        this.props.onChangeConStock?.(text);
+                                    }}
+                                />
+                            </SView>
+                        </SView>
                     </SView>
-                    <SView col={"xs-12 md-7 lg-3"} row>
-                        <SView
-                            col={"xs-12"}
-                            row
-                            center
-                            style={{
-                                borderRadius: 8,
-                                height: 45,
-                                borderWidth: 1,
-                                borderColor: STheme.color.card,
-                                paddingHorizontal: 12,
-                                backgroundColor: STheme.color.background,
-                            }}
-                        >
+                    <SView col={"xs-12 md-12 lg-2.5"} row center backgroundColor='transparent' >
+                        <SView col={"xs-12"} row center height={32} style={{ borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, backgroundColor: STheme.color.background }} >
                             <SInput
-                                placeholder="Buscar Producto"
-                                center
-                                style={{ flex: 1, fontSize: 14, backgroundColor: STheme.color.background }}
-                                value={this.props.value}
-                                onChangeText={this.props.onChangeText}
+                                placeholder="Buscar Producto" center height={30}
+                                iconR={<SIconApp name="Search" style={{ paddingRight: 8 }} width={16} height={16} fill={"#6B7280"} />}
+                                style={{ fontSize: 12, backgroundColor: STheme.color.background, borderRadius: 8, }}
+                                value={this.props.value} onChangeText={this.props.onChangeText}
                                 onKeyPress={(e) => {
                                     if (e.nativeEvent.key === "Escape") this.props.onChangeText?.("");
                                 }}
                             />
-                            <SIconApp name="Search" width={16} height={16} fill={"#6B7280"} />
                         </SView>
                     </SView>
-
-                    <SView col={"xs-12"} height={4} />
-
-
-                    <SView col={"md-12"} height={24} center   >
-                        <SInput
-                            label={"Con Stock"}
-                            type="checkBox"
-                            style={{ top: -3 }}
-                            labelStyle={{ left: 12, top: 0 }}
-                            value={this.props.conStock}  
-                            onChangeText={(text) => {
-                                this.props.onChangeConStock?.(text);  
-                            }}
-                        />
-
-
-                    </SView>
-                    <SView col={"xs-12"} height={4} />
-
+                    {/* <SView col={"xs-12"} height={4} /> */}
                 </SView>
             </SView>
         );
