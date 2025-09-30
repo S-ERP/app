@@ -22,7 +22,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
             key: "SelectTipoPago",
             type: "1",
             content: <SView style={{
-                maxWidth: 500,
+                maxWidth: 700,
                 width: "100%",
                 // height: 500,
                 maxHeight: "100%",
@@ -97,7 +97,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
         const select = item.__select
         return <SView style={{
             padding: 4,
-            maxWidth: 130,
+            maxWidth: 150,
         }} col={"xs-6 sm-4"} colSquare>
             <SView style={{
                 width: "100%",
@@ -139,13 +139,13 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     }}>
                         <SIconApp name={item?.tipo_pago?.icon || "Ajustes"} />
                     </View>
-                    <SView flex center>
-                        <SText key={item.key_tipo_pago} col={"xs-12"} style={{
-                            textAlign: "center",
-                        }}>{item.tipo_pago ? item.tipo_pago.descripcion : item.key_tipo_pago}</SText>
-                        <SText key={item.key_tipo_pago} col={"xs-12"} style={{
-                            textAlign: "center",
-                        }} fontSize={12} color={STheme.color.lightGray}>{item?.moneda?.descripcion}</SText>
+                    <SView col={"xs-12"} center row backgroundColor={"transparent"} >
+                        <SView col={"xs-12"} backgroundColor={"transparent"}  >
+                            {/* <SText key={item.key_tipo_pago} col={"xs-12"} style={{ textAlign: "center" }}>{item?.descripcion}</SText> */}
+                            <SText key={item.key_tipo_pago} col={"xs-12"} numberOfLines={2} style={{ textAlign: "center" }}>{item?.descripcion}</SText>
+                        </SView>
+                        {/* <SText key={item.key_tipo_pago} col={"xs-12"} style={{ textAlign: "center" }} fontSize={10} color={STheme.color.lightGray}>{item?.tipo_pago?.descripcion}</SText> */}
+                        <SText key={item.key_tipo_pago} col={"xs-12"} style={{ textAlign: "center", textTransform: "uppercase" }} fontSize={12} color={STheme.color.lightGray}>{(item?.moneda?.descripcion)}</SText>
                     </SView>
                 </>}
                 {select && <>
@@ -162,7 +162,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                         </View>
                         <SView width={4} />
                         <SView flex>
-                            <SText key={item.key_tipo_pago} numberOfLines={1} fontSize={12} >{item.tipo_pago ? item.tipo_pago.descripcion : item.key_tipo_pago}</SText>
+                            <SText key={item.key_tipo_pago} numberOfLines={2} fontSize={12} style={{  textTransform: "uppercase" }} >{item.tipo_pago ? item.descripcion : item.key_tipo_pago}</SText>
                             <SText key={item.key_tipo_pago} fontSize={12} color={STheme.color.lightGray}>{item?.moneda?.descripcion}</SText>
                         </SView>
                     </SView>
