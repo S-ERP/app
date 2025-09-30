@@ -8,32 +8,43 @@ import SIconApp from "../../Assets/SIconApp";
 import { Dimensions } from "react-native";
 import PopupCarritoFlotante from "./Components/Carrito/PopupCarritoFlotante";
 import MDL from "../../MDL";
+
+
 export default class Main extends Component {
-    cajaActiva = false; // 🔹 Bandera sin usar state
     constructor(props) {
         super(props);
         this.selectedTipoKey = "all";
         this.searchText = "";
-        this.selectedMoneda = null; //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
+        this.selectedMoneda = null;
+        this.cajaActiva = false;
 
         this.state = {
             showCarritoModal: false,
             carritoModalData: [],
+            conStock: false, // Mover conStock al estado, inicializado en false
         };
     }
+
     setTipoKey = (key) => {
         this.selectedTipoKey = key;
         this.forceUpdate();
     };
+
     setSearchText = (text) => {
         this.searchText = text;
         this.forceUpdate();
     };
 
-    setMoneda = moneda => { //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
+    setMoneda = (moneda) => {
         this.selectedMoneda = moneda;
         console.log("🎂🎂🎂🎂 Main:", this.selectedMoneda);
         this.forceUpdate();
+    };
+
+    setConStock = (value) => {
+        this.setState({ conStock: value }, () => {
+            this.carritoRef?.ajustarCarrito(); // Ajustar carrito después de actualizar el estado
+        });
     };
 
     async checkCaja() {
@@ -43,36 +54,50 @@ export default class Main extends Component {
             if (this.cajaActiva) {
                 this.forceUpdate();
             } else {
-                SNotification.send({ title: "Caja no aperturada", message: "Debes abrir la caja antes de continuar con las operaciones.", type: "danger", body: "⚠️Debe abrir caja⚠️", color: STheme.color.danger, time: 5000, })
+                SNotification.send({
+                    title: "Caja no aperturada",
+                    message: "Debes abrir la caja antes de continuar con las operaciones.",
+                    type: "danger",
+                    body: "⚠️Debe abrir caja⚠️",
+                    color: STheme.color.danger,
+                    time: 5000,
+                });
                 SNavigation.replace("/caja2");
             }
         } catch (e) {
             console.error("Error al obtener estado de caja", e);
         }
     }
+
     componentDidMount() {
         this.checkCaja();
         this.renderCarrito();
         Dimensions.addEventListener("change", this.onChangeDimensions);
     }
+
     onChangeDimensions = () => {
         this.forceUpdate();
     };
+
     componentWillUnmount() {
         Dimensions.removeEventListener("change", this.onChangeDimensions);
     }
+
     renderCarrito() {
         return (
             <Carrito
                 ref={(ref) => (this.carritoRef = ref)}
                 onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
-                selectedMoneda={this.selectedMoneda} //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
+                selectedMoneda={this.selectedMoneda}
+                conStock={this.state.conStock} // Usar estado conStock
+                onChangeConStock={this.setConStock} // Pasar función para actualizar conStock
             />
         );
     }
+
     btnFlotante() {
         return (
-            <SView col="xs-12 md-0 ">
+            <SView col="xs-12 md-0">
                 <SView
                     backgroundColor="#3B82F6"
                     border={STheme.color.text}
@@ -90,8 +115,8 @@ export default class Main extends Component {
                     onPress={() => {
                         const productos = this.carritoRef?.carrito;
                         PopupCarritoFlotante.open({
-                            productos: productos
-                        })
+                            productos: productos,
+                        });
                     }}
                 >
                     <SIconApp name="carritoproducto" width={28} height={28} fill={STheme.color.text} />
@@ -99,19 +124,21 @@ export default class Main extends Component {
             </SView>
         );
     }
+
     getColSize() {
-        const width = Dimensions.get('window').width;
+        const width = Dimensions.get("window").width;
         if (width >= 1200) return parseFloat((12 / 8).toFixed(2));
         if (width >= 768) return parseFloat((12 / 4).toFixed(2));
         return parseFloat((12 / 3).toFixed(2));
     }
+
     render() {
         return (
             <SPage disableScroll hidden>
                 <Header onSelect={this.setSucursal} />
-                <SView col="xs-12" row flex
-                >
-                    <SView flex
+                <SView col="xs-12" row flex>
+                    <SView
+                        flex
                         col="xs-12 sm-12 md-4.5 lg-3.5"
                         style={{
                             display: this.getColSize() === 4 ? "none" : "flex",
@@ -135,20 +162,24 @@ export default class Main extends Component {
                             selected={this.selectedTipoKey}
                             value={this.searchText}
                             onChangeText={this.setSearchText}
-                            selectedMoneda={this.selectedMoneda} //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
-                            onSelectMoneda={this.setMoneda} //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
+                            selectedMoneda={this.selectedMoneda}
+                            onSelectMoneda={this.setMoneda}
+                            conStock={this.state.conStock} // Usar estado conStock
+                            onChangeConStock={this.setConStock} // Pasar función para actualizar conStock
                         />
-                        {this.cajaActiva && <Modelo
-                            ref={(ref) => (this.modeloRef = ref)}
-                            tipoKey={this.selectedTipoKey}
-                            searchText={this.searchText}
-                            selectedMoneda={this.selectedMoneda} //🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂🎂
-                            onPressProducto={(producto) => {
-                                this.carritoRef?.addProducto(producto);
-                                this.carritoRefModal?.addProducto?.(producto);
-                            }}
-                        />
-                        }
+                        {this.cajaActiva && (
+                            <Modelo
+                                ref={(ref) => (this.modeloRef = ref)}
+                                tipoKey={this.selectedTipoKey}
+                                searchText={this.searchText}
+                                selectedMoneda={this.selectedMoneda}
+                                conStock={this.state.conStock} // Usar estado conStock
+                                onPressProducto={(producto) => {
+                                    this.carritoRef?.addProducto(producto);
+                                    this.carritoRefModal?.addProducto?.(producto);
+                                }}
+                            />
+                        )}
                     </SView>
                 </SView>
                 {this.btnFlotante()}

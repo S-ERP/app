@@ -7,12 +7,11 @@ import FotoModelo from './Foto/FotoModelo';
 
 const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 
-export default class Modelo extends Component {
+ export default class Modelo extends Component {
     constructor(props) {
         super(props);
         this.modelos = [];
         this.time = Date.now();
-        this.conStock = false;
     }
 
     componentDidMount() {
@@ -20,19 +19,20 @@ export default class Modelo extends Component {
         this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
             this.loadApis();
         });
-        this.evento2 = MDL.compra_venta.addEventListener("conStock", () => {
-            this.conStock = !this.conStock;
-            this.forceUpdate();
-        });
+        // Eliminar el evento "conStock" ya que usamos props
+        // this.evento2 = MDL.compra_venta.addEventListener("conStock", () => {
+        //     this.conStock = this.props.conStock;
+        //     this.forceUpdate();
+        // });
     }
 
     componentWillUnmount() {
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
-        if (this.evento2) {
-            MDL.compra_venta.removeEventListener(this.evento2);
-        }
+        // if (this.evento2) {
+        //     MDL.compra_venta.removeEventListener(this.evento2);
+        // }
     }
 
     async loadApis() {
@@ -53,7 +53,7 @@ export default class Modelo extends Component {
     }
 
     modificarStock = (key, delta) => {
-        const index = this.modelos.findIndex(m => m.key === key);
+        const index = this.modelos.findIndex((m) => m.key === key);
         if (index >= 0) {
             const nuevoStock = this.modelos[index].stock + delta;
             if (nuevoStock < 0) return false;
@@ -65,7 +65,7 @@ export default class Modelo extends Component {
     };
 
     getColSize() {
-        const width = Dimensions.get('window').width;
+        const width = Dimensions.get("window").width;
         if (width >= 1200) return parseFloat((12 / 8).toFixed(2));
         if (width >= 768) return parseFloat((12 / 4).toFixed(2));
         return parseFloat((12 / 3).toFixed(2));
@@ -75,28 +75,23 @@ export default class Modelo extends Component {
         const modelos = this.modelos || [];
         const tipoKey = this.props.tipoKey;
         const selectedMoneda = this.props.selectedMoneda || null;
-        let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter(m => m.key_tipo_producto === tipoKey);
-        productosFiltrados = productosFiltrados.filter(m => m.precio_venta > 0);
+        let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter((m) => m.key_tipo_producto === tipoKey);
+        productosFiltrados = productosFiltrados.filter((m) => m.precio_venta > 0);
 
-        if (this.conStock) {
-            productosFiltrados = productosFiltrados.filter(m => m.stock > 0);
+        if (this.props.conStock) {
+            productosFiltrados = productosFiltrados.filter((m) => m.stock > 0);
         }
-
-        // if (this.props.searchText) {
-        //     const search = this.props.searchText.toLowerCase();
-        //     productosFiltrados = productosFiltrados.filter(p => p.descripcion?.toLowerCase().includes(search));
-        // }
 
         if (this.props.searchText) {
             const search = this.props.searchText.toLowerCase();
-            productosFiltrados = productosFiltrados.filter(p =>
-                p.descripcion?.toLowerCase().includes(search) ||
-                p.tipo_producto?.descripcion?.toLowerCase().includes(search) ||
-                p.marca?.descripcion?.toLowerCase().includes(search) ||
-                p.observacion?.toLowerCase().includes(search)
+            productosFiltrados = productosFiltrados.filter(
+                (p) =>
+                    p.descripcion?.toLowerCase().includes(search) ||
+                    p.tipo_producto?.descripcion?.toLowerCase().includes(search) ||
+                    p.marca?.descripcion?.toLowerCase().includes(search) ||
+                    p.observacion?.toLowerCase().includes(search)
             );
         }
-
 
         const colSize = this.getColSize();
         return (
@@ -105,32 +100,25 @@ export default class Modelo extends Component {
                     <SView col={"xs-12"} style={{ padding: 2 }}>
                         <SView col={"xs-12"} row padding={5}>
                             {productosFiltrados.map((producto, index) => {
-                                const src = producto.key ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}` : productSinFoto;
+                                const src = producto.key
+                                    ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}`
+                                    : productSinFoto;
                                 const precio_venta_moneda = selectedMoneda
                                     ? producto.precio_venta / (selectedMoneda.tipo_cambio || 1)
                                     : producto.precio_venta;
-                                const monedaSymbol = selectedMoneda ? selectedMoneda.observacion : 'Bs';
+                                const monedaSymbol = selectedMoneda ? selectedMoneda.observacion : "Bs";
 
                                 return (
                                     <SView
                                         key={index}
-                                        col={`xs-6 md-4 lg-3`}
-                                        margin={2}
+                                        col={`xs-6 md-4 lg-3 xl-3 xxl-2`}
+                                        margin={4}
                                         style={{
-                                            minWidth: 120,
-                                            borderRadius: 8,
-                                            shadowOffset: { width: 0, height: 2 },
-                                            shadowOpacity: 0.1,
-                                            shadowRadius: 8,
-                                            elevation: 3,
-                                            borderWidth: 1,
-                                            borderColor: STheme.color.card,
+                                            minWidth: "100%",
                                             overflow: "hidden",
                                         }}
                                         onPress={() => {
-
-                                            console.log("pinnnnn " + JSON.stringify(producto))
-                                            if (producto.stock <= 0) {
+                                            if (this.props.conStock && producto.stock <= 0) {
                                                 SNotification.send({
                                                     title: "Sin stock",
                                                     body: `No hay stock disponible para ${producto.descripcion}.`,
@@ -139,9 +127,10 @@ export default class Modelo extends Component {
                                                 });
                                                 return;
                                             }
+
                                             const productoAjustado = {
                                                 ...producto,
-                                                precio_venta: producto.precio_venta, // Precio base
+                                                precio_venta: producto.precio_venta,
                                                 precio_venta_moneda: parseFloat(precio_venta_moneda.toFixed(2)),
                                                 monedaSymbol,
                                             };
@@ -149,21 +138,56 @@ export default class Modelo extends Component {
                                             this.forceUpdate();
                                         }}
                                     >
-                                        <SView center style={{ marginBottom: 12, height: 120, overflow: "hidden", backgroundColor: STheme.color.card }}>
+                                        <SView
+                                            center
+                                            style={{
+                                                marginBottom: 4,
+                                                height: 180,
+                                                overflow: "hidden",
+                                                backgroundColor: STheme.color.card,
+                                                borderRadius: 4,
+                                            }}
+                                        >
                                             <FotoModelo data={producto} />
                                         </SView>
                                         <SView col={"xs-12"} padding={4}>
-                                            <SView col={"xs-12"} height={38}  >
-                                                <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1}>{producto.descripcion}</SText>
-                                                <SText fontSize={11} clean color={STheme.color.lightGray} numberOfLines={1}>{producto.marca.descripcion}, {producto.tipo_producto.descripcion}, {producto.observacion}</SText>
+                                            <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
+                                                <SText
+                                                    fontSize={14}
+                                                    bold
+                                                    color={STheme.color.text}
+                                                    numberOfLines={1}
+                                                >
+                                                    {monedaSymbol} {SMath.formatMoney(precio_venta_moneda, 2)}
+                                                </SText>
+                                                <SText
+                                                    clean
+                                                    style={{ alignItems: "flex-end", textAlign: "flex-end" }}
+                                                    fontSize={13}
+                                                    numberOfLines={1}
+                                                    bold
+                                                    color={producto?.stock > 0 ? "#10B981" : "#EF4444"}
+                                                >
+                                                    {producto?.stock} Und
+                                                </SText>
                                             </SView>
-                                            <SView col={"xs-12"} row>
-                                                <SView flex row>
-                                                    <SText fontSize={12} bold color={STheme.color.text}>
-                                                        {monedaSymbol} {SMath.formatMoney(precio_venta_moneda, 2)}
-                                                    </SText>
-                                                </SView>
-                                                <SText fontSize={10} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"}>{producto?.stock} Und</SText>
+                                            <SView col={"xs-12"}>
+                                                <SText
+                                                    fontSize={14}
+                                                    color={STheme.color.text}
+                                                    numberOfLines={1}
+                                                >
+                                                    {producto.descripcion}
+                                                </SText>
+                                                <SText
+                                                    fontSize={10}
+                                                    clean
+                                                    color={STheme.color.lightGray}
+                                                    numberOfLines={1}
+                                                >
+                                                    {producto.marca.descripcion}, {producto.tipo_producto.descripcion},{" "}
+                                                    {producto.observacion}
+                                                </SText>
                                             </SView>
                                         </SView>
                                     </SView>
