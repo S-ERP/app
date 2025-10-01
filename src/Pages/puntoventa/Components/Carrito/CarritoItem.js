@@ -62,8 +62,10 @@ export default class CarritoItem extends Component {
                         {/* <SText col={"xs-12"} fontSize={11} bold>{_simbolo} {SMath.formatMoney(item.precio_venta_moneda * item.cantidad, 2)}</SText> */}
                     </SView>
                 </SView>
-                <SView width={20} height={20} center onPress={onEliminar} style={{ position: "absolute", right: -2, top: -1 }}>
-                    <SIconApp name="Close" width={18} height={18} fill="#EF4444" />
+                <SView width={10} height={"100%"} center onPress={onEliminar}  >
+                    <SView style={{ position: "absolute", right: 4, marginTop: 0 }}>
+                        <SIconApp name="Close" width={20} height={20} fill="#EF4444" />
+                    </SView>
                 </SView>
             </SView>
         );
