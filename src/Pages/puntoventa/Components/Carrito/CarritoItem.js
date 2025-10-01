@@ -10,7 +10,6 @@ export default class CarritoItem extends Component {
         const { item, onAumentar, onDisminuir, onEliminar } = this.props;
         const _simbolo = item.monedaSymbol || 'Bs';
         const _precioMoneda = item.precio_venta_moneda;
-        // const _precioMoneda = SMath.formatMoney(item.precio_venta_moneda, 2);
         return (
             <SView col={"xs-12"} row style={{ paddingVertical: 4, borderBottomWidth: 0.2, borderBottomColor: STheme.color.card }}>
                 <SView width={40} row center>
@@ -59,7 +58,6 @@ export default class CarritoItem extends Component {
                 <SView col={"md-2 xl-2.5"} center>
                     <SView col={"xs-12"} style={{ justifyContent: "flex-start" }}>
                         <SText col={"xs-12"} fontSize={11} bold>{_simbolo} {(item.precio_venta_moneda * item.cantidad)}</SText>
-                        {/* <SText col={"xs-12"} fontSize={11} bold>{_simbolo} {SMath.formatMoney(item.precio_venta_moneda * item.cantidad, 2)}</SText> */}
                     </SView>
                 </SView>
                 <SView width={10} height={"100%"} center onPress={onEliminar}  >
