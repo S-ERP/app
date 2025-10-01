@@ -7,7 +7,7 @@ import FotoModelo from './Foto/FotoModelo';
 
 const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 
- export default class Modelo extends Component {
+export default class Modelo extends Component {
     constructor(props) {
         super(props);
         this.modelos = [];
@@ -103,9 +103,18 @@ const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-s
                                 const src = producto.key
                                     ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}`
                                     : productSinFoto;
-                                const precio_venta_moneda = selectedMoneda
-                                    ? producto.precio_venta / (selectedMoneda.tipo_cambio || 1)
-                                    : producto.precio_venta;
+
+                                const precio_venta_moneda = selectedMoneda ? producto.precio_venta / (selectedMoneda.tipo_cambio || 1) : producto.precio_venta;
+
+                                const precioFormateado = Number.isInteger(precio_venta_moneda)
+                                    ? precio_venta_moneda.toString() // mostrar sin decimales
+                                    : precio_venta_moneda.toFixed(2); // mostrar 2 decimales
+
+
+                                // mira necesito que que si no hay isDecimal, no muestre
+                                // ejemplo 12 y si es 12.50 
+                                // los entereros que no muestre decimanl, los numeros decimales que muestre elddsds
+
                                 const monedaSymbol = selectedMoneda ? selectedMoneda.observacion : "Bs";
 
                                 return (
@@ -131,7 +140,8 @@ const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-s
                                             const productoAjustado = {
                                                 ...producto,
                                                 precio_venta: producto.precio_venta,
-                                                precio_venta_moneda: parseFloat(precio_venta_moneda.toFixed(2)),
+                                                precio_venta_moneda: precioFormateado,
+                                                // precio_venta_moneda: parseFloat(precio_venta_moneda.toFixed(2)),
                                                 monedaSymbol,
                                             };
                                             this.props.onPressProducto?.(productoAjustado);
@@ -152,41 +162,14 @@ const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-s
                                         </SView>
                                         <SView col={"xs-12"} padding={4}>
                                             <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
-                                                <SText
-                                                    fontSize={14}
-                                                    bold
-                                                    color={STheme.color.text}
-                                                    numberOfLines={1}
-                                                >
-                                                    {monedaSymbol} {SMath.formatMoney(precio_venta_moneda, 2)}
-                                                </SText>
-                                                <SText
-                                                    clean
-                                                    style={{ alignItems: "flex-end", textAlign: "flex-end" }}
-                                                    fontSize={13}
-                                                    numberOfLines={1}
-                                                    bold
-                                                    color={producto?.stock > 0 ? "#10B981" : "#EF4444"}
-                                                >
+                                                <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1} >{monedaSymbol} {precioFormateado}</SText>
+                                                <SText style={{ alignItems: "flex-end", textAlign: "flex-end" }} clean fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"} >
                                                     {producto?.stock} Und
                                                 </SText>
                                             </SView>
                                             <SView col={"xs-12"}>
-                                                <SText
-                                                    fontSize={14}
-                                                    color={STheme.color.text}
-                                                    numberOfLines={1}
-                                                >
-                                                    {producto.descripcion}
-                                                </SText>
-                                                <SText
-                                                    fontSize={10}
-                                                    clean
-                                                    color={STheme.color.lightGray}
-                                                    numberOfLines={1}
-                                                >
-                                                    {producto.marca.descripcion}, {producto.tipo_producto.descripcion},{" "}
-                                                    {producto.observacion}
+                                                <SText fontSize={14} color={STheme.color.text} numberOfLines={1} >{producto.descripcion}</SText>
+                                                <SText fontSize={10} clean color={STheme.color.lightGray} numberOfLines={1} >{producto.marca.descripcion}, {producto.tipo_producto.descripcion}, {producto.observacion}
                                                 </SText>
                                             </SView>
                                         </SView>
