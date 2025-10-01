@@ -8,10 +8,9 @@ import SIconApp from '../../../../Assets/SIconApp';
 export default class CarritoItem extends Component {
     render() {
         const { item, onAumentar, onDisminuir, onEliminar } = this.props;
-
         const _simbolo = item.monedaSymbol || 'Bs';
-        const _precioMoneda = SMath.formatMoney(item.precio_venta_moneda, 2);
-
+        const _precioMoneda = item.precio_venta_moneda;
+        // const _precioMoneda = SMath.formatMoney(item.precio_venta_moneda, 2);
         return (
             <SView col={"xs-12"} row style={{ paddingVertical: 4, borderBottomWidth: 0.2, borderBottomColor: STheme.color.card }}>
                 <SView width={40} row center>
@@ -22,24 +21,14 @@ export default class CarritoItem extends Component {
                 <SView flex row center>
                     <SView col={"xs-12"} row>
                         <SText col={"xs-12"} fontSize={12}>{item.descripcion}</SText>
-                        <SText col={"xs-12"} fontSize={12}>{_simbolo} {_precioMoneda}/ Und</SText>
+                        <SText col={"xs-12"} fontSize={12}>{_simbolo} {_precioMoneda} /Und</SText>
                     </SView>
                 </SView>
                 <SView col={"md-5.5 lg-4.5 xl-3.5"} row center>
                     <SView col={"xs-12"} row center>
                         <SView col={"md-4 xl-4"} row center>
-                            <SView
-                                center
-                                border={STheme.color.text}
-                                style={{
-                                    width: 24,
-                                    maxWidth: 100,
-                                    height: 24,
-                                    borderRadius: 12,
-                                    opacity: item.cantidad <= 1 ? 0.5 : 1
-                                }}
-                                onPress={onDisminuir}
-                            >
+                            <SView center border={STheme.color.text} onPress={onDisminuir}
+                                style={{ width: 24, maxWidth: 100, height: 24, borderRadius: 12, opacity: item.cantidad <= 1 ? 0.5 : 1 }}>
                                 <SText fontSize={18} color={"#EF4444"}>-</SText>
                             </SView>
                         </SView>
@@ -56,15 +45,9 @@ export default class CarritoItem extends Component {
                             </SView>
                         </SView>
                         <SView col={"md-4 xl-4"} row center>
-                            <SView
-                                center
+                            <SView center
                                 border={STheme.color.text}
-                                style={{
-                                    width: 24,
-                                    height: 24,
-                                    borderRadius: 12,
-                                    opacity: item.cantidad >= (item.stock || 120) ? 0.5 : 1
-                                }}
+                                style={{ width: 24, height: 24, borderRadius: 12, opacity: item.cantidad >= (item.stock || 120) ? 0.5 : 1 }}
                                 disabled={item.cantidad >= (item.stock || 120)}
                                 onPress={onAumentar}
                             >
@@ -75,7 +58,8 @@ export default class CarritoItem extends Component {
                 </SView>
                 <SView col={"md-2 xl-2.5"} center>
                     <SView col={"xs-12"} style={{ justifyContent: "flex-start" }}>
-                        <SText col={"xs-12"} fontSize={11} bold>{_simbolo} {SMath.formatMoney(item.precio_venta_moneda * item.cantidad, 2)}</SText>
+                        <SText col={"xs-12"} fontSize={11} bold>{_simbolo} {(item.precio_venta_moneda * item.cantidad)}</SText>
+                        {/* <SText col={"xs-12"} fontSize={11} bold>{_simbolo} {SMath.formatMoney(item.precio_venta_moneda * item.cantidad, 2)}</SText> */}
                     </SView>
                 </SView>
                 <SView width={20} height={20} center onPress={onEliminar} style={{ position: "absolute", right: -2, top: -1 }}>
