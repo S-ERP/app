@@ -147,6 +147,7 @@ export default class Carrito extends Component {
             this.forceUpdate();
 
         }
+        this.getCarritoItemCount();
         this.forceUpdate();
     };
 
@@ -207,6 +208,7 @@ export default class Carrito extends Component {
         this.cliente = {};
         this.props.onModificarStock?.(null, 0);
         this.carritoRefModal?.setCarrito?.([]);
+        MDL.compra_venta.updateCarritoItems(0)
         this.forceUpdate();
     };
 
@@ -239,6 +241,12 @@ export default class Carrito extends Component {
 
     getCarritoItems() {
         return this.carrito; // Devuelve los ítems del carrito
+    }
+
+    getCarritoItemCount() {
+        const cant = this.carrito.reduce((total, item) => total + item.cantidad, 0);
+        MDL.compra_venta.updateCarritoItems(cant)
+        return cant;
     }
 
     renderCarrito = () => {
@@ -313,7 +321,7 @@ export default class Carrito extends Component {
                                     }}
                                 >
                                     <SText fontSize={12} center color={STheme.color.text}>
-                                        Vaciar ssssss
+                                        Vaciar
                                     </SText>
                                 </SView>
                             </SView>
@@ -409,7 +417,7 @@ export default class Carrito extends Component {
                         <SView
                             col={"xs-12 md-0"}
                             center
-                            backgroundColor={STheme.color.danger}
+                            backgroundColor={STheme.color.darkGray}
                             border={STheme.color.card}
                             style={{ height: 44, borderRadius: 2, margin: 2 }}
                         >

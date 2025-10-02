@@ -50,7 +50,10 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     this.dispatchEvent({ type: "conStock" })
   }
 
-  carrito_globo() {
+
+  totalItemsCarrito = 0
+  updateCarritoItems(carritoCantidad: any) {
+    this.totalItemsCarrito = carritoCantidad;
     this.dispatchEvent({ type: "carrito_globo" })
   }
 
