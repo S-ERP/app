@@ -22,9 +22,8 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
             key: "SelectTipoPago",
             type: "1",
             content: <SView style={{
-                maxWidth: 700,
-                width: "100%",
-                // height: 500,
+                width: 400,
+                height: 500,
                 maxHeight: "100%",
                 backgroundColor: STheme.color.background,
                 borderRadius: 8,
@@ -162,7 +161,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                         </View>
                         <SView width={4} />
                         <SView flex>
-                            <SText key={item.key_tipo_pago} numberOfLines={2} fontSize={12} style={{  textTransform: "uppercase" }} >{item.tipo_pago ? item.descripcion : item.key_tipo_pago}</SText>
+                            <SText key={item.key_tipo_pago} numberOfLines={2} fontSize={12} style={{ textTransform: "uppercase" }} >{item.tipo_pago ? item.descripcion : item.key_tipo_pago}</SText>
                             <SText key={item.key_tipo_pago} fontSize={12} color={STheme.color.lightGray}>{item?.moneda?.descripcion}</SText>
                         </SView>
                     </SView>
