@@ -18,14 +18,16 @@ export type Sucursal = {
   correo?: string;
   lat?: number;
   lng?: number;
-//   punto_venta?: PuntoVenta[];
+  //   punto_venta?: PuntoVenta[];
 };
 
 export type EventListener = {
-    type: "handleChange"
+  type: "handleChange"
 } | {
-    type: "venta_realizada"
-}| {
-    type: "conStock"
+  type: "venta_realizada"
+} | {
+  type: "conStock"
+} | {
+  type: "carrito_globo"
 }
 

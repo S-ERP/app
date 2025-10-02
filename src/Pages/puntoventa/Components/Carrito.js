@@ -85,6 +85,26 @@ export default class Carrito extends Component {
         this.forceUpdate();
     }
 
+    // setCarrito(nuevoCarrito) {
+    //     this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
+    //     this.forceUpdate();
+    // }
+
+    setCarrito(nuevoCarrito) {
+        console.log("🎨🎨🎨🎨🎨🎨setCarrito", nuevoCarrito);
+        this.carrito = Array.isArray(nuevoCarrito)
+            ? nuevoCarrito.map(item => ({
+                ...item,
+                precio_venta_original: item.precio_venta, // Store original price
+                precio_venta: this.props.selectedMoneda
+                    ? item.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
+                    : item.precio_venta,
+                monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : 'Bs',
+            }))
+            : [];
+        this.forceUpdate();
+    }
+
     addProducto = (producto) => {
         console.log("🎪🎪🎪 addProducto", producto);
         const index = this.carrito.findIndex((p) => p.key === producto.key);
@@ -124,6 +144,8 @@ export default class Carrito extends Component {
                     : producto.precio_venta),
                 monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
             });
+            this.forceUpdate();
+
         }
         this.forceUpdate();
     };
@@ -215,6 +237,10 @@ export default class Carrito extends Component {
         />
     );
 
+    getCarritoItems() {
+        return this.carrito; // Devuelve los ítems del carrito
+    }
+
     renderCarrito = () => {
         const subtotal = this.calcularSubtotal();
         const subtotalMoneda = this.calcularSubtotalMoneda();
@@ -287,7 +313,7 @@ export default class Carrito extends Component {
                                     }}
                                 >
                                     <SText fontSize={12} center color={STheme.color.text}>
-                                        Vaciar
+                                        Vaciar ssssss
                                     </SText>
                                 </SView>
                             </SView>
