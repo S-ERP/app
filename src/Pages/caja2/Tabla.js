@@ -416,18 +416,25 @@ export default class Tabla extends Component {
             // 2. Obtener tipos de pago y configuración por empresa
             const tipo_pago = await MDL.caja.tipo_pago_getAll();
             const empresa_tipo_pago = await MDL.caja.empresa_tipo_pago_getAll();
+            const empresa_full = await MDL.empresa.getFull()
 
             // 3. Ordenar movimientos por fecha descendente
-            // movimientos.sort((a, b) => {
-            //     const timeA = new SDate(a.tipo_pago.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime();
-            //     const timeB = new SDate(b.tipo_pago.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime();
-            //     return timeB - timeA;
-            // });
+            movimientos.sort((a, b) => {
+                const timeA = new SDate(a.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime();
+                const timeB = new SDate(b.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime();
+                return timeB - timeA;
+            });
 
             // 4. Enriquecer cada movimiento con info de empresa_tipo_pago
             const movimientosEnriquecidos = movimientos.map((m) => ({
                 ...m,
                 tipo_pago: tipo_pago[m.key_tipo_pago] || {},
+                // moneda: empresa_full.monedas[m.key_moneda] || {},
+
+                moneda: empresa_full.monedas.find(mon => mon.key === m.key_moneda) || {},
+
+
+                // moneda: empresa_full.monedas.find(a => a.key == m.key_moneda)|| {},
                 empresa_tipo_pago: empresa_tipo_pago[m.key_empresa_tipo_pago] || {},
             }));
 
@@ -488,25 +495,39 @@ export default class Tabla extends Component {
                         ]
                     });
                 }}
-                loadInitialState={async () => {
-                    return { sorters: [{ key: "fecha_on2", order: "desc", type: "date" }] }
-                }}
+            // loadInitialState={async () => {
+            //     return { sorters: [{ key: "fecha_on2", order: "asc", type: "date" }] }
+            // }}
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
-                <DinamicTable.Col key="descripcion" label="Descripción" width={200} data={(e) => e.row?.descripcion} />
-                <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-                <DinamicTable.Col key={"fecha_on2"} label="Fecha2" width={120} dataType="date" data={e => new SDate(e.row?.tipo_pago.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-                <DinamicTable.Col key="tipo" label="Tipo" width={100} data={(e) => e.row?.tipo} />
-                <DinamicTable.Col key="estado" label="Estado" width={80} data={(e) => e.row?.estado} />
-                <DinamicTable.Col key="monto" label="Monto" width={100} dataType="number" data={(e) => e.row?.monto} />
-                <DinamicTable.Col key="tipo_cambio" label="Tipo cambio" width={100} dataType="number" data={(e) => e.row?.tipo_cambio} />
-                <DinamicTable.Col key="empresa_tipo_pago" label="Método de pago" width={200} data={(e) => e.row?.empresa_tipo_pago?.key_tipo_pago || ""} />
-                <DinamicTable.Col key="empresa_tipo_pago" label="Método de pago" width={200} data={(e) => e.row?.empresa_tipo_pago?.descripcion || ""} />
+                {/* <DinamicTable.Col key="descripcion" label="Descripción" width={200} data={(e) => e.row?.descripcion} /> */}
+                {/* <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" /> */}
+                {/* <DinamicTable.Col key={"fecha_on2"} label="Fecha2" width={120} dataType="date" data={e => new SDate(e.row?.tipo_pago.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" /> */}
+                {/* <DinamicTable.Col key="estado" label="Estado" width={80} data={(e) => e.row?.estado} /> */}
+                {/* <DinamicTable.Col key="tipo_cambio" label="Tipo cambio" width={100} dataType="number" data={(e) => e.row?.tipo_cambio} /> */}
+
+
+                <DinamicTable.Col key={"fecha_on"} label="FECHA Y HORA" width={120} dataType="date" data={e => new SDate(e.row?.tipo_pago?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
+                <DinamicTable.Col key="operacion" label="TIPO DE OPERACION" width={150} data={(e) => e.row?.descripcion} />
+                <DinamicTable.Col key="cuenta_" label="CUENTA" width={90} data={(e) => e.row?.tipo_pago?.descripcion} />
+                <DinamicTable.Col key="moneda_des" label="MONEDA" width={70} data={(e) => e.row?.moneda?.observacion} />
+                <DinamicTable.Col key="moneda_cambio" label="TIPO CAMBIO" width={90} data={(e) => e.row?.moneda?.tipo_cambio} />
+                <DinamicTable.Col key="monto" label="MONTO" width={70} dataType="number" data={(e) => e.row?.monto} />
+                <DinamicTable.Col key="tipo" label="ESTADO" width={90} data={(e) => e.row?.tipo} />
 
 
 
 
-                <DinamicTable.Col key="clientessdsd" label="Clieddsnte" width={100} data={(e) => e.row?.tipo_pago?.icon ?? ""}
+
+
+                {/* <DinamicTable.Col key="abc_" label="empresa_tipo_pago  " width={500} data={(e) => JSON.stringify(e.row?.empresa_tipo_pago)} />
+                <DinamicTable.Col key="abc___" label="tipo_pago  " width={500} data={(e) => JSON.stringify(e.row?.tipo_pago)} />
+                <DinamicTable.Col key="abc______" label="tipo_pagosd  " width={500} data={(e) => JSON.stringify(e.row?.moneda)} />
+ */}
+
+
+
+                <DinamicTable.Col key="iconossdsf" label="iconos" width={100} data={(e) => e.row?.tipo_pago?.icon ?? ""}
                     customComponent={e => <>
                         {(e.row?.tipo_pago?.icon) ?
                             <SView col={"xs-12"} center row>

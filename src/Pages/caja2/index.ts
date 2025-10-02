@@ -3,11 +3,13 @@ import { SPage } from "servisofts-component";
 import root from "./root";
 import Cuotas from "./Cuotas";
 import Tabla from "./Tabla";
+import TodaslasCajas from "./TodaslasCajas";
  
 export default SPage.combinePages("caja",
     {
         "": root,
         "cuotas": Cuotas,
-        "tabla": Tabla,
+        "tabla": TodaslasCajas,
+        "tabla2": Tabla,
     }
 )
