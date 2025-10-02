@@ -50,6 +50,13 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     this.dispatchEvent({ type: "conStock" })
   }
 
+
+  totalItemsCarrito = 0
+  updateCarritoItems(carritoCantidad: any) {
+    this.totalItemsCarrito = carritoCantidad;
+    this.dispatchEvent({ type: "carrito_globo" })
+  }
+
   getStateInfo(key?: string) {
     const states: any = {
       cotizacion: { color: STheme.color.lightGray, label: "Cotización" },
