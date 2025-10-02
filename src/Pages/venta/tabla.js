@@ -352,7 +352,6 @@ export default class tabla extends Component {
     render() {
         return (
             <SPage title="Tabla Gestión de Ventas" disableScroll>
-                { }
                 {this.mostrarTabla()}
                 <SHr height={20} />
             </SPage>
