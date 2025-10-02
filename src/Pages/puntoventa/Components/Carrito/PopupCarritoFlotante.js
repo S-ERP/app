@@ -50,7 +50,7 @@ class ContenidoCarritoFlotante extends Component {
         return (
             <SView col="xs-12" flex center>
                 <SView height={8} />
-                <SText fontSize={18} bold center>Carrito de d</SText>
+                <SText fontSize={18} bold center>Carrito</SText>
                 <SHr height={16} />
                 <SView col="xs-12">
                     <Carrito

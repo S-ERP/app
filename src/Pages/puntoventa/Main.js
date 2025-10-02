@@ -99,7 +99,8 @@ export default class Main extends Component {
         return (
             <SView col="xs-12 md-0">
                 <SView
-                    backgroundColor="#3B82F6"
+                    backgroundColor="blue"
+                    // backgroundColor="#3B82F6"
                     border={STheme.color.text}
                     style={{
                         position: "absolute",
