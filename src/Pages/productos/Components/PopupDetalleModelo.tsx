@@ -8,6 +8,7 @@ import SIconApp from '../../../Assets/SIconApp';
 import BarcodeScanner from '../../../Components/BarcodeScanner';
 import InputFoto from '../../../Components/InputFoto';
 import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
+import InputFotoGalery from '../../../Components/InputFotoGalery';
 
 type Props = {
     editObject?: any,
@@ -97,6 +98,7 @@ export default class PopupDetalleModelo extends Component<Props> {
             <SForm ref={(ref: any) => this.form = ref} row
                 style={{
                     justifyContent: "space-between",
+
                 }}
                 inputs={{
 
@@ -321,6 +323,50 @@ export default class PopupDetalleModelo extends Component<Props> {
                         label: "Precio venta", placeholder: "0,00", type: "money",
                         onSubmitEditing: () => {
                             // if (this.form) this.form.submit();
+                        }
+                    },
+                    "galeria": {
+                        col: "xs-12",
+                        style: {
+                            // paddingStart: 0,
+                            // flexDirection: "row",
+
+                        },
+                        labelStyle: {
+                            top: -10,
+
+                        },
+                        inputStyle: {
+                            paddingStart: 8,
+                            position: "absolute"
+                        },
+                        // icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
+                        //     <InputFoto
+                        //         ref={ref => this._ref.image_modelo = ref}
+                        //         src={(SSocket.api as any).inventario + "modelo/.128_" + this.props.editObject?.key}
+                        //         style={{
+                        //             width: 50,
+                        //             height: 50,
+                        //         }} />
+                        // </SView>,
+                        render: (data: any) => {
+                            return <SView  col="xs-12" padding={5} style={{ borderRadius: 4, overflow: "hidden",  backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
+                                <InputFotoGalery
+                                    ref={ref => this._ref.image_modelo = ref}
+                                    src={(SSocket.api as any).inventario + "modelo/.128_" + this.props.editObject?.key}
+                                    icon={"addFoto"}
+                                    style={{
+                                        // width: 70,
+                                        // height: 70,
+                                    }} />
+                            </SView>
+                        },
+                        label: "Galería de fotos",
+                        type: "image",
+                        isRequired: true, autoFocus: true,
+                        defaultValue: this.props.editObject?.descripcion,
+                        onSubmitEditing: () => {
+                            if (this.form) this.form.focus("barcode");
                         }
                     },
 

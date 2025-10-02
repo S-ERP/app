@@ -299,6 +299,9 @@ import iconPesos, { ReactComponent as iconPesosW, } from "./svg/iconPesos.svg";
 import iconLista, { ReactComponent as iconListaW, } from "./svg/iconLista.svg";
 import permisos, { ReactComponent as permisosW, } from "./svg/permisos.svg";
 
+import addFoto, { ReactComponent as addFotoW, } from "./svg/producto/addFoto.svg";
+
+
 
 export const svg = {
   Logo: { Native: Logo, Web: LogoW },
@@ -480,6 +483,8 @@ export const svg = {
   iconEdifcio: { Native: iconEdifcio, Web: iconEdifcioW },
   iconLista: { Native: iconLista, Web: iconListaW },
   permisos: { Native: permisos, Web: permisosW },
+
+  addFoto: { Native: addFoto, Web: addFotoW },
   ...blender,
 };
 const Assets: SAssets = {
