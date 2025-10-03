@@ -148,7 +148,7 @@ const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-s
                                                 borderRadius: 4,
                                             }}
                                         >
-                                            <FotoModelo data={producto} />
+                                            <FotoModelo data={producto} prefix={".512_"}/>
                                         </SView>
                                         <SView col={"xs-12"} padding={4}>
                                             <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>

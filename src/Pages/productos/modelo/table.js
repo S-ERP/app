@@ -148,6 +148,15 @@ export default class table extends Component {
                                 }
                             },
                             {
+                                label: "Ingrediente",
+                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    SNavigation.navigate("/productos/modelo/ingrediente", {
+                                        key_modelo: e.row.key
+                                    })
+                                }
+                            },
+                            {
                                 label: "Ver Marca",
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {

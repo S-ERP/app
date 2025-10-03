@@ -50,7 +50,7 @@ export type NodoInstance = {
     viewRef?: React.RefObject<Animated.View>;
     toJSon?: () => any;
 };
-export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(), onChangePosition, onDoublePress }: PizarraNodoProps) {
+function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(), onChangePosition, onDoublePress }: PizarraNodoProps) {
 
     const viewRef = React.useRef<Animated.View>(null);
 
@@ -237,7 +237,7 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
                 ref={viewRef}
                 style={[{
                     position: "absolute",
-                    padding:8,
+                    padding: 8,
                 }, style, animatedStyle, animatedStyleSelect]} onLayout={(event) => {
                     const { width, height } = event.nativeEvent.layout;
                     layout.value = { width, height };
@@ -253,3 +253,7 @@ export default function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(
     );
 }
 
+
+PizarraNodo.displayName = "PizarraNodo";
+
+export default PizarraNodo

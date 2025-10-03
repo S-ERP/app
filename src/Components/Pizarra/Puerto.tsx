@@ -31,7 +31,7 @@ export type PuertoInstance = {
     props: PuertoProps;
 
 };
-export default function Puerto(props: PuertoProps) {
+ function Puerto(props: PuertoProps) {
 
     const layout = useSharedValue({ width: 0, height: 0, x: 0, y: 0, w: 0, h: 0 });
     const viewRef = React.useRef<Animated.View>(null);
@@ -217,3 +217,8 @@ export default function Puerto(props: PuertoProps) {
         </Animated.View>
     </GestureDetector >
 }
+
+
+Puerto.displayName = "Puerto";
+
+export default Puerto;
