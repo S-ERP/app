@@ -73,6 +73,9 @@ export default class Main extends Component {
         this.checkCaja();
         this.renderCarrito();
         Dimensions.addEventListener("change", this.onChangeDimensions);
+        this.evento = MDL.compra_venta.addEventListener("carrito_globo", () => {
+            this.forceUpdate()
+        });
     }
 
     onChangeDimensions = () => {
@@ -81,6 +84,9 @@ export default class Main extends Component {
 
     componentWillUnmount() {
         Dimensions.removeEventListener("change", this.onChangeDimensions);
+        if (this.evento) {
+            MDL.compra_venta.removeEventListener(this.evento);
+        }
     }
 
     renderCarrito() {
@@ -95,7 +101,10 @@ export default class Main extends Component {
         );
     }
 
+
+
     btnFlotante() {
+        let cantidadItems = MDL.compra_venta.totalItemsCarrito;
         return (
             <SView col="xs-12 md-0">
                 <SView
@@ -117,13 +126,36 @@ export default class Main extends Component {
                         PopupCarritoFlotante.open({
                             productos: productos,
                         });
+
                     }}
                 >
                     <SIconApp name="carritoproducto" width={28} height={28} fill={STheme.color.text} />
+                    {cantidadItems > 0 && (
+                        <SView
+                            style={{
+                                position: "absolute",
+                                top: -8,
+                                right: -8,
+                                backgroundColor: STheme.color.danger,
+                                borderRadius: 12,
+                                width: 24,
+                                height: 24,
+                                justifyContent: "center",
+                                alignItems: "center",
+                                borderWidth: 2,
+                                borderColor: STheme.color.background,
+                            }}
+                        >
+                            <SText fontSize={12} bold color={STheme.color.white}>
+                                {cantidadItems}
+                            </SText>
+                        </SView>
+                    )}
                 </SView>
             </SView>
         );
     }
+
 
     getColSize() {
         const width = Dimensions.get("window").width;

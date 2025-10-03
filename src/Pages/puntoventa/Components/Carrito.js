@@ -85,6 +85,26 @@ export default class Carrito extends Component {
         this.forceUpdate();
     }
 
+    // setCarrito(nuevoCarrito) {
+    //     this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
+    //     this.forceUpdate();
+    // }
+
+    setCarrito(nuevoCarrito) {
+        console.log("🎨🎨🎨🎨🎨🎨setCarrito", nuevoCarrito);
+        this.carrito = Array.isArray(nuevoCarrito)
+            ? nuevoCarrito.map(item => ({
+                ...item,
+                precio_venta_original: item.precio_venta, // Store original price
+                precio_venta: this.props.selectedMoneda
+                    ? item.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
+                    : item.precio_venta,
+                monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : 'Bs',
+            }))
+            : [];
+        this.forceUpdate();
+    }
+
     addProducto = (producto) => {
         console.log("🎪🎪🎪 addProducto", producto);
         const index = this.carrito.findIndex((p) => p.key === producto.key);
@@ -124,7 +144,10 @@ export default class Carrito extends Component {
                     : producto.precio_venta),
                 monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
             });
+            this.forceUpdate();
+
         }
+        this.getCarritoItemCount();
         this.forceUpdate();
     };
 
@@ -185,6 +208,7 @@ export default class Carrito extends Component {
         this.cliente = {};
         this.props.onModificarStock?.(null, 0);
         this.carritoRefModal?.setCarrito?.([]);
+        MDL.compra_venta.updateCarritoItems(0)
         this.forceUpdate();
     };
 
@@ -214,6 +238,16 @@ export default class Carrito extends Component {
             onEliminar={() => this.eliminarItem(item)}
         />
     );
+
+    getCarritoItems() {
+        return this.carrito; // Devuelve los ítems del carrito
+    }
+
+    getCarritoItemCount() {
+        const cant = this.carrito.reduce((total, item) => total + item.cantidad, 0);
+        MDL.compra_venta.updateCarritoItems(cant)
+        return cant;
+    }
 
     renderCarrito = () => {
         const subtotal = this.calcularSubtotal();
@@ -383,7 +417,7 @@ export default class Carrito extends Component {
                         <SView
                             col={"xs-12 md-0"}
                             center
-                            backgroundColor={STheme.color.danger}
+                            backgroundColor={STheme.color.darkGray}
                             border={STheme.color.card}
                             style={{ height: 44, borderRadius: 2, margin: 2 }}
                         >

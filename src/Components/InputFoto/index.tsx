@@ -1,6 +1,6 @@
 import React from "react";
 import { GestureResponderEvent, ImageStyle, TouchableOpacity, UIManager, ViewStyle } from "react-native";
-import { SImage, SText, SUuid } from "servisofts-component";
+import { SIcon, SImage, SText, STheme, SUuid } from "servisofts-component";
 import MDL from "../../MDL";
 import DropZoneWeb from "./DropZoneWeb";
 import SUpload from "../SUpload";
@@ -81,6 +81,8 @@ export default class InputFoto extends React.Component<InputFotoProps> {
         })
     }
     render() {
+       
+        // if (str.includes("undefined")) {
         return <TouchableOpacity
             ref={ref => this.view = ref}
             style={this.props.style}
