@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { SView, SText, SIcon, STheme } from 'servisofts-component';
 
-export default class Recargar extends Component {
+export default class Recargar extends Component<{ onFinish: () => void, initialTime?:number }> {
     initialTime = this.props.initialTime ?? 300; // segundos
 
     constructor(props) {
