@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SInput, SNavigation, SNotification, SPage, SSwitch, SText, STheme, SThread, SView } from 'servisofts-component';
+import { SHr, SImage, SInput, SNavigation, SNotification, SPage, SSwitch, SText, STheme, SThread, SView } from 'servisofts-component';
 import { Container } from '../../../Components';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
@@ -8,6 +8,8 @@ import FloatMenu from '../../../Components/FloatMenu';
 import SIconApp from '../../../Assets/SIconApp';
 import FloatButtom from '../../../Components/FloatButtom';
 import PopupDetalleModelo from '../Components/PopupDetalleModelo';
+import FormularioModelo from '../Components/FormularioModelo';
+import Recargar from '../../../Components/Recargar';
 
 export default class ingrediente extends Component {
     key_modelo = SNavigation.getParam("key_modelo");
@@ -43,6 +45,7 @@ export default class ingrediente extends Component {
 
     handleAddIngrediente() {
         const ingrediente = this.input_ingrediente.getValue();
+        if (!ingrediente) return;
         SSocket.sendPromise({
             service: "inventario",
             component: "ingrediente",
@@ -54,11 +57,14 @@ export default class ingrediente extends Component {
                 cantidad: 1
             }
         }).then(e => {
+            this.input_ingrediente.setValue("");
             this.loadIngredientes();
         })
     }
 
     handleProducir() {
+
+        const key_almacen = this.getAlmacenKey()
         const newIng = {};
         Object.values(this.state.ingrendientes).map(ing => {
             newIng[ing.key] = {
@@ -72,6 +78,7 @@ export default class ingrediente extends Component {
             type: "producir",
             key_usuario: MDL.usuario?.session?.key,
             key_sucursal: MDL.caja.activa.key_sucursal,
+            key_almacen: key_almacen,
             key_modelo: this.key_modelo,
             data: newIng
         }).then(e => {
@@ -91,17 +98,34 @@ export default class ingrediente extends Component {
     render() {
         return <SPage title={"Ingredientes"}>
             <Container>
+                <Recargar onFinish={() => {
+                    this.loadIngredientes();
+                }} />
+                <SHr />
+                <SView style={{
+                    width: 50, height: 50,
+                    borderRadius: 4, overflow: "hidden",
+                    backgroundColor: STheme.color.card
+                }}>
+                    <SImage src={SSocket.api.inventario + "/modelo/.512_" + this.key_modelo}
+                        enablePreview
+                        srcPreview={SSocket.api.inventario + "/modelo/" + this.key_modelo}
+                        style={{ resizeMode: "cover" }} />
+                </SView>
                 <SHr />
                 <SText bold fontSize={16}>{this.state?.modelo?.descripcion}</SText>
                 <SHr />
-                <SInput ref={ref => this.input_ingrediente = ref} label={"ingrediente"} customStyle={"erp"} iconR={<SText onPress={this.handleAddIngrediente.bind(this)}>{"SAVE"}</SText>} />
+                <SInput ref={ref => this.input_ingrediente = ref} label={"Agregar Ingrediente"} customStyle={"erp"} iconR={<SText onPress={this.handleAddIngrediente.bind(this)}>{"SAVE"}</SText>} />
                 <SHr />
                 <SView col={"xs-12"}>
                     {Object.values(this.state.ingrendientes).map(ing => {
                         return <Ingrediente ingrediente={ing} modelos={this.state.modelos} instance={this} />
                     })}
                 </SView>
-                <SText onPress={this.handleProducir.bind(this)}>{"PRODUCIR"}</SText>
+                <SHr h={50} />
+                <SelectAlmacen instance={this} />
+                <SHr />
+                <SText onPress={this.handleProducir.bind(this)} card padding={16}>{"PRODUCIR"}</SText>
             </Container>
             <FloatButtom onPress={() => {
                 PopupDetalleModelo.open({
@@ -113,6 +137,8 @@ export default class ingrediente extends Component {
                     }
                 });
             }} />
+
+
         </SPage>
     }
 }
@@ -164,13 +190,35 @@ const Ingrediente = (props) => {
     return <SView >
         <SHr />
         <SView row style={{ alignItems: "center" }}>
-            <SText onPress={handleOnPress}>- {ingrediente.descripcion}</SText>
+            <SText bold onPress={handleOnPress}>- {ingrediente.descripcion}</SText>
             <SView width={8} />
-            <SView row style={{
+            <InputCantidad
+                value={ingrediente.cantidad}
+                defaultValue={ingrediente.cantidad}
+                onChangeText={e => {
+                    ingrediente.cantidad = !e ? "" : parseFloat(e ?? "0");
+                    setState({ ...state })
+                    new SThread(100, "change_" + ingrediente.key, true).start(() => {
+                        SSocket.sendPromise({
+                            service: "inventario",
+                            component: "ingrediente",
+                            type: "editar",
+                            key_usuario: MDL.usuario?.session?.key,
+                            data: {
+                                key: ingrediente.key,
+                                cantidad: ingrediente.cantidad || 0
+                            }
+                        }).then(e => {
+                            // props.instance.loadIngredientes();
+                        })
+                    })
+                }} />
+            <SView width={8} />
+
+            <SView style={{
                 alignItems: "center"
             }}>
-                <SText fontSize={10}>{"Requerido?"}</SText>
-                <SView width={4} />
+                {/* <SView width={4} /> */}
                 <SSwitch size={12} defaultValue={ingrediente.is_required} onChange={e => {
                     ingrediente.is_required = e;
                     new SThread(100, "change_" + ingrediente.key, true).start(() => {
@@ -188,26 +236,7 @@ const Ingrediente = (props) => {
                         })
                     })
                 }} />
-                <SView width={4} />
-                <InputCantidad  label={"cantidad"}
-                    defaultValue={ingrediente.cantidad}
-                    onChangeText={e => {
-                        ingrediente.cantidad = parseFloat(e ?? "0");
-                        new SThread(100, "change_" + ingrediente.key, true).start(() => {
-                            SSocket.sendPromise({
-                                service: "inventario",
-                                component: "ingrediente",
-                                type: "editar",
-                                key_usuario: MDL.usuario?.session?.key,
-                                data: {
-                                    key: ingrediente.key,
-                                    cantidad: ingrediente.cantidad || 0
-                                }
-                            }).then(e => {
-                                // props.instance.loadIngredientes();
-                            })
-                        })
-                    }} />
+                <SText fontSize={10}>{"Requerido?"}</SText>
             </SView>
         </SView>
         <SHr />
@@ -215,7 +244,20 @@ const Ingrediente = (props) => {
             paddingStart: 16
         }}>
             {(ingrediente?.modelo_ingrediente || []).map((opcion) => {
-                return <SView row padding={2}>
+                return <SView row padding={2} style={{
+                    alignItems: "center"
+                }}>
+                    <SView style={{
+                        width: 20, height: 20,
+                        borderRadius: 4, overflow: "hidden",
+                        backgroundColor: STheme.color.card
+                    }}>
+                        <SImage src={SSocket.api.inventario + "/modelo/.128_" + opcion.key_modelo + "?date=" + props.instance.state.time}
+                            enablePreview
+                            srcPreview={SSocket.api.inventario + "/modelo/" + opcion.key_modelo}
+                            style={{ resizeMode: "cover" }} />
+                    </SView>
+                    <SView width={4} />
                     <SText
                         onPress={(evt) => {
                             FloatMenu.open({
@@ -226,11 +268,16 @@ const Ingrediente = (props) => {
                                         icon: <SIconApp name='Edit' />,
                                         label: "Editar",
                                         onPress: () => {
-                                            // ingrediente.modelo_ingrediente.push({
-                                            //     key_ingrediente: ingrediente.key,
-                                            //     key_modelo: "ricky"
-                                            // })
-                                            // setState({ ...state })
+                                            FormularioModelo.open({
+                                                editObject: props.modelos[opcion.key_modelo],
+                                                onSuccess: () => {
+                                                    // if (this.table) {
+                                                    //     this.table.loadData();
+                                                    //     this.state.time = new Date().getTime();
+                                                    // }
+                                                }
+
+                                            })
                                         }
                                     },
                                     {
@@ -277,8 +324,7 @@ const Ingrediente = (props) => {
             <SHr />
             <SInput style={{
                 height: 24,
-                width: 200,
-            }} label={"modelo"}
+            }} label={"Agregar Opcion"}
                 ref={inputRef}
                 type='select2'
                 customStyle={"erp"}
@@ -312,6 +358,7 @@ const Ingrediente = (props) => {
 
 
 const InputCantidad = (props) => {
+    const input = React.useRef();
     return <SView row center style={{
         width: 80,
         height: 20,
@@ -319,12 +366,24 @@ const InputCantidad = (props) => {
         borderColor: STheme.color.card,
         borderRadius: 4,
     }}>
-        <SText card style={{ width: 20, height: 20 }} center>{"-"}</SText>
+        <SText card style={{ width: 20, height: 20 }} center
+
+            onPress={() => {
+                const val = parseFloat(input.current.getValue() ?? 0) - 1
+                if (val <= 0) {
+                    input.current.setValue("");
+                    return;
+                }
+                input.current.setValue(val);
+            }}
+
+        >{"-"}</SText>
         <SView style={{
             flex: 1,
             height: 20,
         }}>
             <SInput
+                ref={input}
                 style={{
                     height: 20,
                     fontSize: 12,
@@ -340,6 +399,38 @@ const InputCantidad = (props) => {
                 {...props}
             />
         </SView>
-        <SText card style={{ width: 20, height: 20 }} center>{"+"}</SText>
+        <SText card style={{ width: 20, height: 20 }} center onPress={() => {
+            input.current.setValue(parseFloat(input.current.getValue() || "0") + 1);
+        }}>{"+"}</SText>
     </SView >
+}
+
+
+const SelectAlmacen = (props) => {
+    const [almacenes, setAlmacenes] = React.useState([]);
+    const input = React.useRef();
+
+    React.useEffect(() => {
+        loadData();
+    }, [])
+
+    const loadData = () => {
+        MDL.inventario.getAllAlmacen().then(almacenes => {
+            const arr = almacenes.filter(a => a.key_sucursal == MDL.caja?.activa?.key_sucursal);
+            // if (this.inputs["almacen"]) this.inputs["almacen"].setValue(arr[0]?.descripcion)
+            if (input.current) input.current.setValue(arr[0]?.descripcion)
+            setAlmacenes(arr)
+        });
+    }
+    props.instance.getAlmacenKey = () => {
+        const alm = input.current.getValue();
+        return almacenes.find(a => a.descripcion === alm)?.key;
+    }
+    return <SInput
+        ref={input}
+        type='select2'
+        label={"almacen destino"}
+        customStyle={"erp"}
+        options={almacenes.map(a => a.descripcion)}
+    />
 }
