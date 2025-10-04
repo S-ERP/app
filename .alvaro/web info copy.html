@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Cajas - Sesiones Financieras</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-bottom: 3px solid #e9ecef;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .summary-card h3 {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-card p {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e3c72;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .session {
+            margin-bottom: 3rem;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .session:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .session-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .session-header.open {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .session-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .session-info label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .session-info span {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.cerrada {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .status-badge.abierta {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            color: #212529;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .icon::before {
+            content: '';
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .icon.Money::before {
+            content: '💵';
+        }
+
+        .icon.Card::before {
+            content: '💳';
+        }
+
+        .icon.Cheque::before {
+            content: '📋';
+        }
+
+        .amount-positive {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .amount-negative {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .amount-zero {
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .no-data {
+            padding: 2rem;
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            background: #f8f9fa;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 2rem;
+            text-align: center;
+            color: #6c757d;
+            border-top: 3px solid #e9ecef;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+
+            .session:hover {
+                transform: none;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Reporte de Cajas</h1>
+            <p>Resumen de Sesiones Financieras</p>
+        </div>
+
+        <div class="summary" id="summary"></div>
+
+        <div class="content" id="content"></div>
+
+        <div class="footer">
+            <p>Reporte generado automáticamente • © 2025</p>
+        </div>
+    </div>
+
+    <script>
+        const data = {
+            "19909205-3463-43fd-b3d0-594d731e7e1b": {
+                "key": "19909205-3463-43fd-b3d0-594d731e7e1b",
+                "fecha": "2025-09-19T00:00:00",
+                "estado": "cerrada",
+                "fecha_on": "2025-09-19T00:51:31.483",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+                "fecha_cierre": "2025-09-27T00:00:38.019",
+                "key_sucursal": "a23a8cd5-840d-4099-9ddc-1a906913c8e2",
+                "monto_cierre": 0,
+                "detalle_tipo_pago": [
+                    {
+                        "icon": "Money",
+                        "tipo_pago": "Caja",
+                        "descripcion": "Efectivo en Bolivianos Santa Maria",
+                        "monto_total": 696.01
+                    },
+                    {
+                        "icon": "Card",
+                        "tipo_pago": "Bancos",
+                        "descripcion": "Payoneer Dollar",
+                        "monto_total": 6.890000000000001
+                    },
+                    {
+                        "icon": "Cheque",
+                        "tipo_pago": "Credito",
+                        "descripcion": "Compra al credito en Dollares",
+                        "monto_total": -20.264137931034483
+                    },
+                    {
+                        "icon": "Cheque",
+                        "tipo_pago": "Credito",
+                        "descripcion": "Compra al credito en Bolivianos",
+                        "monto_total": -145
+                    }
+                ]
+            },
+            "2e8bcdcb-46bf-4086-b7b0-18a90315305b": {
+                "key": "2e8bcdcb-46bf-4086-b7b0-18a90315305b",
+                "fecha": "2025-09-25T00:00:00",
+                "estado": "cerrada",
+                "fecha_on": "2025-09-25T16:00:06.58",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
+                "fecha_cierre": "2025-10-01T16:12:03.354",
+                "key_sucursal": "83b86c27-e05c-4de8-bbbe-7b3ec842a20d",
+                "monto_cierre": 0,
+                "detalle_tipo_pago": [
+                    {
+                        "icon": "Money",
+                        "tipo_pago": "Caja",
+                        "descripcion": "Efectivo en Bolivianos Santa Maria",
+                        "monto_total": 808
+                    },
+                    {
+                        "icon": "Card",
+                        "tipo_pago": "Bancos",
+                        "descripcion": "Payoneer Euro",
+                        "monto_total": -100
+                    }
+                ]
+            },
+            "3eea1422-5ed7-4b71-abe1-c0dca6af727b": {
+                "key": "3eea1422-5ed7-4b71-abe1-c0dca6af727b",
+                "fecha": "2025-09-25T00:00:00",
+                "estado": "cerrada",
+                "fecha_on": "2025-09-25T10:07:05.748",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
+                "fecha_cierre": "2025-09-25T15:59:58.623",
+                "key_sucursal": "83b86c27-e05c-4de8-bbbe-7b3ec842a20d",
+                "monto_cierre": 0,
+                "detalle_tipo_pago": null
+            },
+            "528a1f98-7245-4c6d-bc3e-1334a3bc7e3b": {
+                "key": "528a1f98-7245-4c6d-bc3e-1334a3bc7e3b",
+                "fecha": "2025-09-19T00:00:00",
+                "estado": "cerrada",
+                "fecha_on": "2025-09-19T10:19:06.357",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "983a53fd-aa5f-4fe8-96ab-24709bc4e433",
+                "fecha_cierre": "2025-09-19T10:19:10.611",
+                "key_sucursal": "83b86c27-e05c-4de8-bbbe-7b3ec842a20d",
+                "monto_cierre": 0,
+                "detalle_tipo_pago": null
+            },
+            "7742cf2b-2850-4a59-a4c5-992076f80d46": {
+                "key": "7742cf2b-2850-4a59-a4c5-992076f80d46",
+                "fecha": "2025-09-19T00:00:00",
+                "estado": "cerrada",
+                "fecha_on": "2025-09-19T00:50:21.215",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+                "fecha_cierre": "2025-09-19T00:51:28.64",
+                "key_sucursal": "a23a8cd5-840d-4099-9ddc-1a906913c8e2",
+                "monto_cierre": 0,
+                "detalle_tipo_pago": [
+                    {
+                        "icon": "Money",
+                        "tipo_pago": "Caja",
+                        "descripcion": "Efectivo en Bolivianos Santa Maria",
+                        "monto_total": 808
+                    }
+                ]
+            },
+            "811b68f7-3c1e-484d-a8e6-f60543a8b5e8": {
+                "key": "811b68f7-3c1e-484d-a8e6-f60543a8b5e8",
+                "fecha": "2025-09-19T00:00:00",
+                "estado": "cerrada",
+                "fecha_on": "2025-09-19T00:18:53.024",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+                "fecha_cierre": "2025-09-19T00:30:03.986",
+                "key_sucursal": "a23a8cd5-840d-4099-9ddc-1a906913c8e2",
+                "monto_cierre": 0,
+                "detalle_tipo_pago": [
+                    {
+                        "icon": "Money",
+                        "tipo_pago": "Caja",
+                        "descripcion": "Efectivo en Bolivianos Santa Maria",
+                        "monto_total": 808
+                    },
+                    {
+                        "icon": "Card",
+                        "tipo_pago": "Bancos",
+                        "descripcion": "Payoneer Dollar",
+                        "monto_total": 0
+                    },
+                    {
+                        "icon": "Card",
+                        "tipo_pago": "Bancos",
+                        "descripcion": "Payoneer Euro",
+                        "monto_total": -100
+                    }
+                ]
+            },
+            "9571b551-6cd9-4741-84fd-b19826dc761f": {
+                "key": "9571b551-6cd9-4741-84fd-b19826dc761f",
+                "fecha": "2025-09-19T00:00:00",
+                "estado": "cerrada",
+                "fecha_on": "2025-09-19T10:20:50.952",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "983a53fd-aa5f-4fe8-96ab-24709bc4e433",
+                "fecha_cierre": "2025-09-19T10:21:07.207",
+                "key_sucursal": "83b86c27-e05c-4de8-bbbe-7b3ec842a20d",
+                "monto_cierre": 0,
+                "detalle_tipo_pago": null
+            },
+            "a8496b39-1b61-481d-813c-31f8ceac935f": {
+                "key": "a8496b39-1b61-481d-813c-31f8ceac935f",
+                "fecha": "2025-10-01T00:00:00",
+                "estado": "abierta",
+                "fecha_on": "2025-10-01T16:13:21.541",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
+                "fecha_cierre": null,
+                "key_sucursal": "a23a8cd5-840d-4099-9ddc-1a906913c8e2",
+                "monto_cierre": null,
+                "detalle_tipo_pago": [
+                    {
+                        "icon": "Money",
+                        "tipo_pago": "Caja",
+                        "descripcion": "Efectivo en Bolivianos Santa Maria",
+                        "monto_total": 114.5
+                    },
+                    {
+                        "icon": "Card",
+                        "tipo_pago": "Bancos",
+                        "descripcion": "Payoneer Dollar",
+                        "monto_total": 6.89
+                    },
+                    {
+                        "icon": "Money",
+                        "tipo_pago": "Caja",
+                        "descripcion": "Efectivo en Euros Santa Maria",
+                        "monto_total": 2.54
+                    }
+                ]
+            },
+            "ad9de2bc-474f-41dc-b2b5-8abe416f8498": {
+                "key": "ad9de2bc-474f-41dc-b2b5-8abe416f8498",
+                "fecha": "2025-09-30T00:00:00",
+                "estado": "cerrada",
+                "fecha_on": "2025-09-30T17:20:52.356",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+                "fecha_cierre": "2025-10-01T16:13:11.104",
+                "key_sucursal": "a23a8cd5-840d-4099-9ddc-1a906913c8e2",
+                "monto_cierre": 0,
+                "detalle_tipo_pago": [
+                    {
+                        "icon": "Money",
+                        "tipo_pago": "Caja",
+                        "descripcion": "Efectivo en Bolivianos Santa Maria",
+                        "monto_total": 12
+                    },
+                    {
+                        "icon": "Card",
+                        "tipo_pago": "Bancos",
+                        "descripcion": "Payoneer Dollar",
+                        "monto_total": 6.89
+                    }
+                ]
+            },
+            "c0d35d73-a832-44b6-8cdd-864bd86a722c": {
+                "key": "c0d35d73-a832-44b6-8cdd-864bd86a722c",
+                "fecha": "2025-09-27T00:00:00",
+                "estado": "cerrada",
+                "fecha_on": "2025-09-27T00:26:17.238",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+                "fecha_cierre": "2025-09-27T01:58:23.166",
+                "key_sucursal": "a23a8cd5-840d-4099-9ddc-1a906913c8e2",
+                "monto_cierre": 0,
+                "detalle_tipo_pago": [
+                    {
+                        "icon": "Card",
+                        "tipo_pago": "Bancos",
+                        "descripcion": "Payoneer Dollar",
+                        "monto_total": 6.89
+                    },
+                    {
+                        "icon": "Money",
+                        "tipo_pago": "Caja",
+                        "descripcion": "Efectivo en Bolivianos Santa Maria",
+                        "monto_total": -1071.99
+                    }
+                ]
+            },
+            "e63045c1-39e5-47d4-8635-d1adf0f4732f": {
+                "key": "e63045c1-39e5-47d4-8635-d1adf0f4732f",
+                "fecha": "2025-09-19T00:00:00",
+                "estado": "abierta",
+                "fecha_on": "2025-09-19T10:21:14.185",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "983a53fd-aa5f-4fe8-96ab-24709bc4e433",
+                "fecha_cierre": null,
+                "key_sucursal": "651945dd-984b-4ece-a102-f8a6c064df3a",
+                "monto_cierre": null,
+                "detalle_tipo_pago": null
+            },
+            "e7a3700b-9d35-4661-afae-87f6bad5e407": {
+                "key": "e7a3700b-9d35-4661-afae-87f6bad5e407",
+                "fecha": "2025-09-27T00:00:00",
+                "estado": "cerrada",
+                "fecha_on": "2025-09-27T00:10:42.559",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+                "fecha_cierre": "2025-09-27T00:25:18.907",
+                "key_sucursal": "a23a8cd5-840d-4099-9ddc-1a906913c8e2",
+                "monto_cierre": 0,
+                "detalle_tipo_pago": [
+                    {
+                        "icon": "Money",
+                        "tipo_pago": "Caja",
+                        "descripcion": "Efectivo en Bolivianos Santa Maria",
+                        "monto_total": 696.01
+                    },
+                    {
+                        "icon": "Card",
+                        "tipo_pago": "Bancos",
+                        "descripcion": "Payoneer Dollar",
+                        "monto_total": 6.89
+                    }
+                ]
+            },
+            "f0172887-38ce-43f5-abe5-c4531d7f7ff9": {
+                "key": "f0172887-38ce-43f5-abe5-c4531d7f7ff9",
+                "fecha": "2025-09-27T00:00:00",
+                "estado": "cerrada",
+                "fecha_on": "2025-09-27T00:00:43.876",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+                "fecha_cierre": "2025-09-27T00:10:05.938",
+                "key_sucursal": "a23a8cd5-840d-4099-9ddc-1a906913c8e2",
+                "monto_cierre": 0,
+                "detalle_tipo_pago": [
+                    {
+                        "icon": "Money",
+                        "tipo_pago": "Caja",
+                        "descripcion": "Efectivo en Bolivianos Santa Maria",
+                        "monto_total": 696.01
+                    },
+                    {
+                        "icon": "Card",
+                        "tipo_pago": "Bancos",
+                        "descripcion": "Payoneer Dollar",
+                        "monto_total": 6.89
+                    }
+                ]
+            },
+            "fbf2a2e3-05ab-4fef-861f-83c0abf69ee0": {
+                "key": "fbf2a2e3-05ab-4fef-861f-83c0abf69ee0",
+                "fecha": "2025-09-27T00:00:00",
+                "estado": "cerrada",
+                "fecha_on": "2025-09-27T02:05:18.796",
+                "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+                "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+                "fecha_cierre": "2025-09-30T17:20:34.564",
+                "key_sucursal": "a23a8cd5-840d-4099-9ddc-1a906913c8e2",
+                "monto_cierre": 0,
+                "detalle_tipo_pago": [
+                    {
+                        "icon": "Money",
+                        "tipo_pago": "Caja",
+                        "descripcion": "Efectivo en Bolivianos Santa Maria",
+                        "monto_total": 12
+                    },
+                    {
+                        "icon": "Card",
+                        "tipo_pago": "Bancos",
+                        "descripcion": "Payoneer Dollar",
+                        "monto_total": 6.89
+                    }
+                ]
+            }
+        };
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatAmount(amount) {
+            if (amount === null || amount === undefined) return 'N/A';
+            return new Intl.NumberFormat('es-ES', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        function getAmountClass(amount) {
+            if (amount > 0) return 'amount-positive';
+            if (amount < 0) return 'amount-negative';
+            return 'amount-zero';
+        }
+
+        function calculateSummary() {
+            const sessions = Object.values(data);
+            const totalSessions = sessions.length;
+            const openSessions = sessions.filter(s => s.estado === 'abierta').length;
+            const closedSessions = sessions.filter(s => s.estado === 'cerrada').length;
+            
+            let totalAmount = 0;
+            sessions.forEach(session => {
+                if (session.detalle_tipo_pago) {
+                    session.detalle_tipo_pago.forEach(pago => {
+                        totalAmount += pago.monto_total;
+                    });
+                }
+            });
+
+            return { totalSessions, openSessions, closedSessions, totalAmount };
+        }
+
+        function renderSummary() {
+            const summary = calculateSummary();
+            const summaryDiv = document.getElementById('summary');
+            
+            summaryDiv.innerHTML = `
+                <div class="summary-card">
+                    <h3>Total Sesiones</h3>
+                    <p>${summary.totalSessions}</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Sesiones Cerradas</h3>
+                    <p>${summary.closedSessions}</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Sesiones Abiertas</h3>
+                    <p>${summary.openSessions}</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Monto Total</h3>
+                    <p class="${getAmountClass(summary.totalAmount)}">${formatAmount(summary.totalAmount)}</p>
+                </div>
+            `;
+        }
+
+        function renderSessions() {
+            const contentDiv = document.getElementById('content');
+            const sessions = Object.values(data).sort((a, b) => 
+                new Date(b.fecha) - new Date(a.fecha)
+            );
+
+            sessions.forEach(session => {
+                const sessionDiv = document.createElement('div');
+                sessionDiv.className = 'session';
+
+                const headerClass = session.estado === 'abierta' ? 'session-header open' : 'session-header';
+                
+                let tableContent = '';
+                if (session.detalle_tipo_pago && session.detalle_tipo_pago.length > 0) {
+                    tableContent = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tipo de Pago</th>
+                                    <th>Descripción</th>
+                                    <th style="text-align: right;">Monto Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${session.detalle_tipo_pago.map(pago => `
+                                    <tr>
+                                        <td>
+                                            <span class="icon ${pago.icon}">${pago.tipo_pago}</span>
+                                        </td>
+                                        <td>${pago.descripcion}</td>
+                                        <td style="text-align: right;" class="${getAmountClass(pago.monto_total)}">
+                                            ${formatAmount(pago.monto_total)}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    tableContent = '<div class="no-data">Sin datos de pagos registrados</div>';
+                }
+
+                sessionDiv.innerHTML = `
+                    <div class="${headerClass}">
+                        <div class="session-info">
+                            <label>Fecha</label>
+                            <span>${formatDate(session.fecha)}</span>
+                        </div>
+                        <div class="session-info">
+                            <label>Estado</label>
+                            <span class="status-badge ${session.estado}">${session.estado.toUpperCase()}</span>
+                        </div>
+                        <div class="session-info">
+                            <label>Fecha Apertura</label>
+                            <span>${formatDate(session.fecha_on)}</span>
+                        </div>
+                        <div class="session-info">
+                            <label>Fecha Cierre</label>
+                            <span>${formatDate(session.fecha_cierre)}</span>
+                        </div>
+                        <div class="session-info">
+                            <label>Monto Cierre</label>
+                            <span class="${getAmountClass(session.monto_cierre)}">${formatAmount(session.monto_cierre)}</span>
+                        </div>
+                    </div>
+                    ${tableContent}
+                `;
+
+                contentDiv.appendChild(sessionDiv);
+            });
+        }
+
+        // Initialize
+        renderSummary();
+        renderSessions();
+    </script>
+</body>
+</html>
