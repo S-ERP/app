@@ -29,6 +29,7 @@ type PizarraProps = {
     size?: number;
     startType?: "select" | "move";
     exponentDeRedondeoDeMovimiento?: number;
+    onDoublePress?: (evt: any) => void,
 
 
 }
@@ -42,7 +43,7 @@ const PizarraContext = React.createContext<{
     layoutWidth: any, layoutHeight: any,
     selectStartX: any, selectStartY: any, selectEndX: any, selectEndY: any,
     selectTranslateX: any, selectTranslateY: any,
-    exponentDeRedondeoDeMovimiento:any,
+    exponentDeRedondeoDeMovimiento: any,
     ref: React.RefObject<any>,
     preventPan: any,
     toJSon: () => any,
@@ -321,6 +322,20 @@ export default function Pizarra(props: PizarraProps) {
                 isMiddleDown.current = false;
             }
         };
+        const handleContextMenu = (e: any) => {
+            e.preventDefault();
+            console.log(e);
+            const x = (e.nativeEvent.offsetX) - width / 2;
+            const y = (e.nativeEvent.offsetY) - width / 2;
+            // console.log(x, y)
+
+            if (props.onDoublePress) props.onDoublePress({
+                absoluteX:e.nativeEvent.clientX,
+                absoluteY:e.nativeEvent.clientY,
+                pizarraX: x,
+                pizarraY: y,
+            });
+        };
 
 
         React.useEffect(() => {
@@ -334,6 +349,9 @@ export default function Pizarra(props: PizarraProps) {
             window.addEventListener("mousemove", handleMouseMove);
             // @ts-ignore
             window.addEventListener("mouseup", handleMouseUp);
+            // @ts-ignore
+            el.addEventListener("contextmenu", handleContextMenu);
+
 
             return () => {
                 if (!ref.current) return;
@@ -345,6 +363,8 @@ export default function Pizarra(props: PizarraProps) {
                 window.removeEventListener("mousemove", handleMouseMove);
                 // @ts-ignore
                 window.removeEventListener("mouseup", handleMouseUp);
+                // @ts-ignore
+                el.removeEventListener("contextmenu", handleContextMenu);
             };
         }, []);
 
@@ -405,7 +425,19 @@ export default function Pizarra(props: PizarraProps) {
             scale.value = pinchGesture.context.startScale * event.scale
         });
 
-    const gesture = Gesture.Simultaneous(panGesture, pinchGesture);
+
+    const doubleTapGesture: any = Gesture.Tap().maxDistance(10).maxDelay(200).numberOfTaps(2).onStart((e) => {
+        const x = (e.x / scale.value) - width / 2;
+        const y = (e.y / scale.value) - width / 2;
+        console.log(x, y)
+
+        if (props.onDoublePress) props.onDoublePress({
+            ...e,
+            pizarraX: x,
+            pizarraY: y,
+        });
+    })
+    const gesture = Gesture.Simultaneous(panGesture, pinchGesture, doubleTapGesture);
 
 
     // *********  STYLES  *********
@@ -446,7 +478,7 @@ export default function Pizarra(props: PizarraProps) {
             React.Children.forEach(props.children, (child: any) => {
                 if (!child) return;
                 if (child.type && (child.type.name == "PizarraNodo" || child.type.displayName == "PizarraNodo")) {
-                    console.log("Es el nodo")
+                    // console.log("Es el nodo")
                     if (child.props) {
                         buscarPuertosRecursive(child.props, child);
                     }
@@ -454,7 +486,7 @@ export default function Pizarra(props: PizarraProps) {
                 }
                 if (child.type && (child.type.name == "Puerto" || child.type.displayName == "Puerto")) {
                     // child.nodo = nodo;
-                    console.log("Puerto encontrado", child, nodo)
+                    // console.log("Puerto encontrado", child, nodo)
                     puertosEncontrados.push({ port: child, nodo: nodo });
                     // @ts-ignore
                     // console.log("Puerto encontrado", child.props.id, child.props.value, child.props.type)
@@ -466,7 +498,7 @@ export default function Pizarra(props: PizarraProps) {
         }
 
         buscarPuertosRecursive(props);
-        console.log("peurtos encontrados", puertosEncontrados)
+        // console.log("peurtos encontrados", puertosEncontrados)
         const conexiones: any = [];
         const inputs = puertosEncontrados.filter(a => a.port.props.type == "input");
         const outputs = puertosEncontrados.filter(a => a.port.props.type == "output");
@@ -491,7 +523,7 @@ export default function Pizarra(props: PizarraProps) {
 
 
     const conexiones = encontrarLineas();
-    console.log("Puertos encontrados en Pizarra", conexiones)
+    // console.log("Puertos encontrados en Pizarra", conexiones)
 
     return (
 

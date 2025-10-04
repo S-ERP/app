@@ -17,7 +17,7 @@ export default class inventario extends MDLAbstract<EventListener> {
     {
       key: "consumible",
       cuentas: ["key_cuenta_contable_ganancia", "key_cuenta_contable_costo"]
-    },{
+    }, {
       key: "activo_fijo",
       cuentas: ["key_cuenta_contable", "key_cuenta_contable_ganancia", "key_cuenta_contable_costo", "key_cuenta_contable_depreciacion_activo", "key_cuenta_contable_depreciacion_gasto"]
     }, {
@@ -26,6 +26,18 @@ export default class inventario extends MDLAbstract<EventListener> {
     }
   ]
 
+  async getPizarraIngrediente() {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "ingrediente",
+      type: "getPizarra",
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
+    console.log("getAllModeloStock", resp.data);
+    return Object.values(resp.data || {});
+  }
   async getAllModeloStock(_key_almacen: string) {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
@@ -121,6 +133,31 @@ export default class inventario extends MDLAbstract<EventListener> {
       return resp.data;
     }
   }
+  async saveIngrediente(ingrediente: any) {
+    if (ingrediente.key) {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "ingrediente",
+        type: "editar",
+        data: ingrediente,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    } else {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "ingrediente",
+        type: "registro",
+        data: ingrediente,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    }
+  }
   async saveMarca(marca: any) {
     if (marca.key) {
       const resp: any = await SSocket.sendPromise({
@@ -145,6 +182,33 @@ export default class inventario extends MDLAbstract<EventListener> {
       });
       return resp.data;
     }
+  }
+  async saveReceta(receta: any) {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "receta",
+      type: "save",
+      data: receta,
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
+    return resp.data;
+  }
+  async deleteReceta(key: any) {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "receta",
+      type: "editar",
+      data: {
+        key: key,
+        estado: 0
+      },
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
+    return resp.data;
   }
   async saveAlmacen(almacen: any) {
     almacen.data.key_empresa = MDL.empresa.select?.key;

@@ -51,6 +51,7 @@ export default class ingrediente extends Component {
             component: "ingrediente",
             type: "registro",
             key_usuario: MDL.usuario?.session?.key,
+            key_empresa: MDL.empresa?.select?.key,
             data: {
                 key_modelo: this.key_modelo,
                 descripcion: ingrediente,
@@ -126,6 +127,7 @@ export default class ingrediente extends Component {
                 <SelectAlmacen instance={this} />
                 <SHr />
                 <SText onPress={this.handleProducir.bind(this)} card padding={16}>{"PRODUCIR"}</SText>
+                <SHr h={50} />
             </Container>
             <FloatButtom onPress={() => {
                 PopupDetalleModelo.open({

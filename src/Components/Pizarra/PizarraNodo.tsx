@@ -37,7 +37,7 @@ type PizarraNodoProps = {
     data: any,
     x: number, y: number,
     onChangePosition: (e: { x: number, y: number }) => void,
-    onDoublePress?: () => void,
+    onDoublePress?: (evt:any) => void,
 }
 
 export type NodoInstance = {
@@ -64,8 +64,8 @@ function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(), onChangePosi
     const onDrag = useSharedValue(false);
     const isRendondeado = true;
 
-    const doubleTapGesture: any = Gesture.Tap().numberOfTaps(2).onStart(() => {
-        if (onDoublePress) onDoublePress();
+    const doubleTapGesture: any = Gesture.Tap().numberOfTaps(2).onStart((e) => {
+        if (onDoublePress) onDoublePress(e);
     })
     const panGesture: any = Gesture.Pan()
         .onBegin(() => {

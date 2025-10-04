@@ -1,6 +1,7 @@
 import React from "react";
 import { Dimensions, GestureResponderEvent, TouchableOpacityProps, ViewStyle } from "react-native";
 import { SHr, SIcon, SPage, SPopup, SText, STheme, SView, SViewProps } from "servisofts-component";
+import SIconApp from "../Assets/SIconApp";
 
 type Option = {
     label: string,
@@ -13,7 +14,7 @@ type FloatMenuProps = {
     height?: number,
     options: Option[],
     onClose: () => void,
-    style?:ViewStyle
+    style?: ViewStyle
 }
 export default class FloatMenu extends React.Component<FloatMenuProps> {
 
@@ -21,9 +22,13 @@ export default class FloatMenu extends React.Component<FloatMenuProps> {
         const { e } = props;
 
         let top = e.nativeEvent.pageY;
-        const h = props.height || 200;
+        const h = props.height || ((props.options.length * 40) + 50);
         if (top + h > Dimensions.get("window").height) {
             top = Dimensions.get("window").height - h;
+        }
+        let left = e.nativeEvent.pageX;
+        if (left + 196 > Dimensions.get("window").width) {
+            left = Dimensions.get("window").width - 196;
         }
 
         SPopup.open({
@@ -41,7 +46,7 @@ export default class FloatMenu extends React.Component<FloatMenuProps> {
                         {
                             position: "absolute",
                             top: top,
-                            left: e.nativeEvent.pageX,
+                            left: left,
                             backgroundColor: STheme.color.background,
                             padding: 8,
                             borderWidth: 1,
@@ -58,7 +63,16 @@ export default class FloatMenu extends React.Component<FloatMenuProps> {
     }
     render() {
         return <SView style={this.props.style}>
-            <SText col={"xs-12"} numberOfLines={1} fontSize={11} bold>{this.props.label}</SText>
+            <SView row>
+                <SText flex numberOfLines={1} fontSize={11} bold>{this.props.label}</SText>
+                <SView style={{
+                    width: 16, height: 16,
+                }} onPress={() => {
+                    SPopup.close("popup_menu_alvaro");
+                }}>
+                    <SIconApp name="Close" fill={STheme.color.text} />
+                </SView>
+            </SView>
             <SHr />
             {this.props.options.map((option, index) => {
                 return (

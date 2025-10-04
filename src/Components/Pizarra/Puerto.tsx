@@ -15,7 +15,7 @@ export type PuertoProps = {
     connectSpace?: number,
     value?: any
     onConnect?: (evt: any) => void,
-
+    onPressLine?: (evt: any) => void,
     lineType?: "line" | "curve"
     lineProps?: PathProps & { zIndex?: number },
     selectLineProps?: PathProps & { zIndex?: number },
@@ -31,7 +31,7 @@ export type PuertoInstance = {
     props: PuertoProps;
 
 };
- function Puerto(props: PuertoProps) {
+function Puerto(props: PuertoProps) {
 
     const layout = useSharedValue({ width: 0, height: 0, x: 0, y: 0, w: 0, h: 0 });
     const viewRef = React.useRef<Animated.View>(null);

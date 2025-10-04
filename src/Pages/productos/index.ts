@@ -10,6 +10,7 @@ import catalogo from "./catalogo";
 import inventario from "./inventario";
 import carrito from "./carrito";
 import ReporteConteoInventario from "../inventario/almacen/ReporteConteoInventario";
+import pizarra from "./pizarra";
 import RegistroInventarios from "../inventario/almacen/RegistroInventarios";
 
 
@@ -19,6 +20,7 @@ export default SPage.combinePages("productos",
         "": root,
         catalogo,
         "carrito":carrito,
+        pizarra,
         // "reporte_conteo_inventario":RegistroInventarios,
         "reporte_conteo_inventario":ReporteConteoInventario,
         ...producto,
