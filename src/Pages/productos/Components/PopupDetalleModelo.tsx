@@ -363,7 +363,8 @@ export default class PopupDetalleModelo extends Component<Props> {
                         },
                         label: "Galería de fotos",
                         type: "image",
-                        isRequired: true, autoFocus: true,
+                        //isRequired: true, 
+                        autoFocus: true,
                         defaultValue: this.props.editObject?.descripcion,
                         onSubmitEditing: () => {
                             if (this.form) this.form.focus("barcode");
