@@ -78,9 +78,9 @@ class BoxMenu extends Component<BoxMenuPropsType> {
             },
             {
                 label: "Verificar", icon: "Wifi", onPress: () => {
-                    MDL.factura.verificarEstado({ cuf: factura.data.cuf }).then(e=>{
+                    MDL.factura.verificarEstado({ cuf: factura.data.cuf }).then(e => {
                         // SNotification.send({"title"})
-                    }).catch(e={
+                    }).catch(e = {
 
                     })
                 }
@@ -130,6 +130,18 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                     })
                 }
             })
+            options.push({
+                label: "Eliminar Factura",
+                icon: "Delete",
+                onPress: () => {
+                    MDL.factura.eliminarFactura(factura.key).then(() => {
+                        if (this.props.onReload) this.props.onReload()
+                    }).catch(e => {
+                        if (this.props.onReload) this.props.onReload()
+                    })
+                }
+            })
+
         }
         return (
             <SView

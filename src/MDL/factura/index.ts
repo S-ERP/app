@@ -349,7 +349,52 @@ export default class factura extends MDLAbstract<EventListener> {
         })
     }
 
+    eliminarFactura(factura_key: any) {
+        const ___data = {
+            key: factura_key,
+            estado: 0
+        }
+        return new Promise((resolve, reject) => {
+            SPopup.confirm({
+                title: "Seguro de eliminar",
+                message: "¿Estás seguro de eliminar la factura?",
+                onPress: () => {
+                    SNotification.send({
+                        key: "eliminarFactura" + factura_key,
+                        title: "Eliminando factura",
+                        type: "loading"
+                    });
+                    SSocket.sendPromise({
+                        service: "facturacion",
+                        component: "factura",
+                        type: "editar", // Cambia a la acción correcta según tu backend
+                        key_empresa: Model.empresa.Action.getKey(),
+                        key_usuario: Model.usuario.Action.getKey(),
+                        data: ___data
+                    }).then((e) => {
+                        SNotification.send({
+                            key: "eliminarFactura" + factura_key,
+                            title: "Factura eliminada con éxito",
+                            body: factura_key,
+                            color: STheme.color.success,
+                            time: 5000,
+                        });
+                        resolve(e);
+                    }).catch((e) => {
+                        SNotification.send({
+                            key: "eliminarFactura" + factura_key,
+                            title: "No se pudo eliminar la factura",
+                            body: e.error,
+                            color: STheme.color.error,
+                            time: 5000,
+                        });
+                        reject(e);
+                    });
+                }
+            });
 
+        });
+    }
 
     async getClientes(buscar: string) {
         const resp: any = await SSocket.sendPromise({
