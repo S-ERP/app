@@ -176,6 +176,7 @@ export default class libro_ventas extends Component {
                                 anular={this.anular.bind(this)}
                                 onReload={() => {
                                     this.table.loadData();
+                                    this.forceUpdate();
                                 }}
                             ></BoxMenu>
                         </SView>

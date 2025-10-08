@@ -74,12 +74,14 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                 items: [
                     {
                         label: "Imprimir (Carta)", icon: "imprimir", onPress: () => {
-                            MDL.factura.imprimir({ cuf: factura?.data?.cuf });
+                            MDL.factura.imprimir({ cuf: factura?.data?.cuf }).then(e => { })
+                                .catch(e => { console.error(e); });
                         }
                     },
                     {
                         label: "Imprimir (Rollo)", icon: "iconLista", onPress: () => {
-                            MDL.factura.imprimir({ cuf: factura?.data?.cuf, tipo: "rollo" });
+                            MDL.factura.imprimir({ cuf: factura?.data?.cuf, tipo: "rollo" }).then(e => { })
+                                .catch(e => { console.error(e); });
                         }
                     },
                 ].filter(Boolean) // <-- esto limpia los falsos
@@ -94,17 +96,47 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                     },
                     {
                         label: "Verificar estado", icon: "tareaclose", onPress: () => {
-                            MDL.factura.verificarEstado({ cuf: factura.data.cuf });
+                            // MDL.factura.verificarEstado({ cuf: factura.data.cuf });
+                            MDL.factura.verificarEstado({ cuf: factura.data.cuf })
+                                .then(e => { })
+                                .catch(e => { console.error(e); });
+
                         }
                     },
-                    factura.state !== "anulada" && factura.state !== "enviada" && {
+                    factura.state === "emitida" && {
                         label: "Reenviar a SIAT", icon: "Reload", onPress: () => {
-                            MDL.factura.reenviar({ cuf: factura.data.cuf });
+                            MDL.factura.reenviar({ cuf: factura.data.cuf })
+                                .then(() => {
+                                    MDL.factura.verificarEstado({ cuf: factura.data.cuf }).then(e => {
+                                        if (e.data.codigoDescripcion === "RECHAZADA") {
+                                            SNotification.send({
+                                                title: "Advertencia",
+                                                body:
+                                                    "Error al reenviar la factura. " +
+                                                    "Si no funciona, reconstruya la factura con una nueva fecha.",
+                                                color: STheme.color.warning,
+                                                time: 15000,
+                                            });
+                                        }
+                                        if (this.props.onReload) this.props.onReload();
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error("Error al reenviar/verificar la factura:", error);
+                                    SNotification.send({
+                                        title: "Error",
+                                        body: "Ocurrió un error al reenviar o verificar la factura. Intente nuevamente.",
+                                        color: STheme.color.danger,
+                                        time: 8000,
+                                    });
+                                });
                         }
                     },
-                    factura.state !== "anulada" && factura.state !== "enviada" && {
+                    factura.state === "emitida" && {
                         label: "Reconstruir", icon: "Engranaje", onPress: () => {
-                            MDL.factura.reconstruir({ cuf: factura.data.cuf });
+                            MDL.factura.reconstruir({ cuf: factura.data.cuf }).then(() => {
+                                if (this.props.onReload) this.props.onReload();
+                            }).catch(e => { console.error(e); });
                         }
                     },
                 ].filter(Boolean) // <-- esto limpia los falsos
@@ -126,7 +158,7 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                         icon: <SIconApp name='cancelado' fill='#db0606ff' stroke='#db0606ff' width={16} />,
                         onPress: () => {
                             if (this.props.anular)
-                                this.props.anular({ cuf: factura.data.cuf });
+                                this.props.anular({ cuf: factura.data.cuf })
                         }
                     },
                     factura.state === "emitida" && verificadorAdmin && {
@@ -161,10 +193,10 @@ class BoxMenu extends Component<BoxMenuPropsType> {
 
                                 const randomIndex = Math.floor(Math.random() * response.length);
                                 const leyenda = response[randomIndex].descripcionLeyenda;
-                                console.log("Leyenda aleatoria:", leyenda);
-
-                                await MDL.factura.editarLeyenda(factura.key, factura.data, leyenda);
-                                if (this.props.onReload) this.props.onReload();
+                                // console.log("Leyenda aleatoria:", leyenda);
+                                MDL.factura.editarLeyenda(factura.key, factura.data, leyenda).then(e => {
+                                    if (this.props.onReload) this.props.onReload();
+                                }).catch(e => { console.error(e); });
 
                                 SNotification.send({
                                     title: "Éxito",
@@ -189,13 +221,9 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                         label: "Eliminar Factura",
                         icon: <SIconApp name='crmeliminar' fill='#db0606ff' stroke='#db0606ff' width={16} />,
                         onPress: () => {
-                            MDL.factura.eliminarFactura(factura.key)
-                                .then(() => {
-                                    if (this.props.onReload) this.props.onReload();
-                                })
-                                .catch(e => {
-                                    if (this.props.onReload) this.props.onReload();
-                                });
+                            MDL.factura.eliminarFactura(factura.key).then(() => {
+                                if (this.props.onReload) this.props.onReload();
+                            }).catch(e => { console.error(e); });
                         }
                     }
                 ].filter(Boolean) // <-- esto limpia los falsos

@@ -286,11 +286,9 @@ export default class factura extends MDLAbstract<EventListener> {
                         cuf: cuf,
                     }).then((e: any) => {
                         console.log(e);
-
                         // const b64 = e.data.pdf
                         // const pdf = `data:application/pdf;base64,${b64}`
                         // this.openPdfFromBase64(pdf)
-
                         // this.componentDidMount()
                         SNotification.send({
                             key: "reconstruir" + cuf,
@@ -300,6 +298,7 @@ export default class factura extends MDLAbstract<EventListener> {
                             time: 5000,
                         })
                         resolve(e)
+                        return e;
                     }).catch(e => {
                         SNotification.send({
                             key: "reconstruir" + cuf,
