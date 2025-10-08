@@ -1,55 +1,55 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SDate, SHr, SIcon, SImage, SPage, SText, STheme, SView, SNavigation, SPopup, SLanguage, SList2, SButtom, SInput, SNotification } from 'servisofts-component';
+import {
+    SDate, SHr, SIcon, SImage, SPage, SText, STheme,
+    SView, SNavigation, SPopup, SLanguage, SList2,
+    SButtom, SInput, SNotification
+} from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
 import { Linking } from 'react-native';
 import PButtom from '../../../Components/PButtom';
-
-// import { Parametricas } from "../../../MDL/factura/typeParametricas";
-
+import SIconApp from '../../../Assets/SIconApp';
 
 export type BoxMenuPropsType = {
     data: any,
     onReload?: () => void,
 }
+
 class BoxMenu extends Component<BoxMenuPropsType> {
     constructor(props) {
         super(props);
-        this.state = {
-        };
+        this.state = {};
     }
-
-    // parametricas: Parametricas = {};
-
 
     handlePress() {
         if (!this.props.onPress) return null;
-
         this.props.onPress(this.props.datas)
     }
 
-
+    // ✅ Corregido: soporte para íconos tipo string o JSX
     RenderOption = ({ label, icon, onPress }) => {
-
-        // renderOption = (label: string) => {
         return (
             <>
-                <SView col={"xs-11"} row center
+                <SView
+                    col={"xs-11"}
+                    row
+                    center
                     onPress={() => {
-                        if (onPress) onPress()
-                        // SNavigation.navigate(url, params)
+                        if (onPress) onPress();
                         SPopup.close("popup_menu_alvaro");
                     }}
                 >
                     <SView col={"xs-2"} center height={32}>
-                        <SIcon name={icon} height={18} fill={STheme.color.text} />
+                        {typeof icon === "string"
+                            ? <SIcon name={icon} height={18} fill={STheme.color.text} />
+                            : icon
+                        }
                     </SView>
                     <SView width={8} />
-                    <SView flex  >
-                        <SText fontSize={14} >{label}</SText>
+                    <SView flex>
+                        <SText fontSize={14}>{label}</SText>
                     </SView>
-
                 </SView>
                 <SHr height={1} color={STheme.color.card} />
             </>
@@ -57,134 +57,83 @@ class BoxMenu extends Component<BoxMenuPropsType> {
     }
 
     renderBox() {
-
-        // console.log("this.props.data", this.props.data)
         const verificadorAdmin = MDL.usuario.session?.key === '1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b';
+        const factura = this.props.data;
 
-
-        const factura = this.props.data
-
-        const options = [
-
-            // IMPRESION
-
+        // ✅ Estructura agrupada por secciones
+        const groups = [
+            // {
+            //     title: "CONSULTA",
+            //     items: [
+            //         { label: "Ver detalles", icon: "ver", onPress: () => console.log("Detalles") },
+            //         { label: "Descargar PDF", icon: "pdf", onPress: () => console.log("Descargar PDF") },
+            //     ]
+            // },
             {
-                label: "Imprimir tamaño carta", icon: "imprimir", onPress: () => {
-                    MDL.factura.imprimir({
-                        cuf: factura?.data?.cuf
-                    })
-                }
+                title: "IMPRESIÓN",
+                items: [
+                    {
+                        label: "Imprimir (Carta)", icon: "imprimir", onPress: () => {
+                            MDL.factura.imprimir({ cuf: factura?.data?.cuf });
+                        }
+                    },
+                    {
+                        label: "Imprimir (Rollo)", icon: "iconLista", onPress: () => {
+                            MDL.factura.imprimir({ cuf: factura?.data?.cuf, tipo: "rollo" });
+                        }
+                    },
+                ].filter(Boolean) // <-- esto limpia los falsos
             },
             {
-                label: "Imprimir tipo rollo", icon: "iconLista", onPress: () => {
-                    MDL.factura.imprimir({
-                        cuf: factura?.data?.cuf,
-                        tipo: "rollo"
-                    })
-                }
+                title: "VERIFICACIÓN",
+                items: [
+                    {
+                        label: "Ver en SIAT", icon: "World", onPress: () => {
+                            Linking.openURL(factura.data.urlImpuestos);
+                        }
+                    },
+                    {
+                        label: "Verificar estado", icon: "tareaclose", onPress: () => {
+                            MDL.factura.verificarEstado({ cuf: factura.data.cuf });
+                        }
+                    },
+                    factura.state !== "anulada" && factura.state !== "enviada" && {
+                        label: "Reenviar a SIAT", icon: "Reload", onPress: () => {
+                            MDL.factura.reenviar({ cuf: factura.data.cuf });
+                        }
+                    },
+                    factura.state !== "anulada" && factura.state !== "enviada" && {
+                        label: "Reconstruir", icon: "Engranaje", onPress: () => {
+                            MDL.factura.reconstruir({ cuf: factura.data.cuf });
+                        }
+                    },
+                ].filter(Boolean) // <-- esto limpia los falsos
             },
-
-            // VERIFICACIÒN
             {
-                label: "Ver en SIAT", icon: "World", onPress: () => {
-                    Linking.openURL(factura.data.urlImpuestos)
-                }
-            },
-            {
-                label: "Verificar estado", icon: "Check", onPress: () => {
-                    MDL.factura.verificarEstado({ cuf: factura.data.cuf }).then(e => {
-                        // SNotification.send({"title"})
-                    }).catch(e = {
+                title: "GESTIÓN",
+                items: [
 
-                    })
-                }
-            },
+                    factura.state === "anulada" && {
+                        label: "Revertir factura",
+                        icon: <SIconApp name='Reload' fill='#ff9900ff' stroke='#ff9900ff' width={16} />,
 
-        ];
-
-        // GESTION
-        if (factura.state == "enviada") {
-            options.push({
-                // label: "Anular factura", icon: <SIcon name='cancelado' fill="#c41919ff" />,
-
-                label: "Anular factura", icon: "cancelado",
-                onPress: () => {
-                    // TODO
-                    if (this.props.anular) this.props.anular({ cuf: factura.data.cuf })
-                    // MDL.factura.anular({ cuf: factura.data.cuf })
-                }
-            })
-        }
-
-
-        if (factura.state == "anulada") {
-            options.push({
-                label: "Revertir", icon: "revertir", onPress: () => {
-                    MDL.factura.revertir({ cuf: factura.data.cuf })
-                }
-            })
-        }
-        if (factura.state == "emitida") {
-            options.push({
-
-
-                label: "Reenviar a SIAT", icon: "Reload", onPress: () => {
-                    // label: "Reenviar a SIAT", icon: "Reload", onPress: () => {
-                    MDL.factura.reenviar({ cuf: factura.data.cuf }).then(() => {
-
-                        MDL.factura.verificarEstado({ cuf: factura.data.cuf }).then(e => {
-                            console.log("imprmirrrrrr " + JSON.stringify(e.data.codigoDescripcion))
-
-                            if (e.data.codigoDescripcion === "RECHAZADA") {
-                                SNotification.send({
-                                    title: "Advertencia",
-                                    body: `Error al reenviar la factura.` +
-                                        `cusando no funciona o sale error a reeviar factura, se debe contruir, nota al contruir en el boton presionar.\n\n\n` +
-                                        `Nota: manteniendo los mismos datos pero con una nueva fecha.`,
-                                    color: STheme.color.warning,
-                                    time: 15000,
-                                });
-                            }
-
-                            if (this.props.onReload) this.props.onReload()
-                        })
-
-
-
-                    }).catch(e => {
-                        console.error("Error al reenviar/verificar la factura:", error);
-                        SNotification.send({
-                            title: "Error",
-                            body: "Ocurrió un error al reenviar o verificar la factura. Intente nuevamente.",
-                            color: STheme.color.danger,
-                            time: 8000,
-                        });
-
-                    })
-                }
-            })
-            options.push({
-                label: "Reconstruir", icon: "Engranaje", onPress: () => {
-                    MDL.factura.reconstruir({ cuf: factura.data.cuf }).then(() => {
-                        // MDL.factura.verificarEstado({ cuf: factura.data.cuf }).then(e => {
-                        //     if (this.props.onReload) this.props.onReload()
-                        // })
-
-                    }).catch(e => {
-
-                    })
-                }
-            })
-
-            // GESTION
-            {
-                verificadorAdmin ?
-                    options.push({
+                        onPress: () => {
+                            MDL.factura.revertir({ cuf: factura.data.cuf });
+                        }
+                    },
+                    factura.state === "enviada" && {
+                        label: "Anular factura",
+                        icon: <SIconApp name='cancelado' fill='#db0606ff' stroke='#db0606ff' width={16} />,
+                        onPress: () => {
+                            if (this.props.anular)
+                                this.props.anular({ cuf: factura.data.cuf });
+                        }
+                    },
+                    factura.state === "emitida" && verificadorAdmin && {
                         label: "Editar Leyenda",
-                        icon: "crmeditar",
+                        icon: <SIconApp name='crmeditar' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
                         onPress: async () => {
                             try {
-                                // Validar factura.key
                                 if (!factura.key) {
                                     SNotification.send({
                                         title: "Error",
@@ -195,13 +144,11 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                                     return;
                                 }
 
-                                // Obtener las leyendas disponibles
                                 const response = await MDL.factura.getParametrica({
                                     ambiente: MDL.factura.ambiente,
                                     parametrica: "leyendasFactura"
                                 });
 
-                                // Verificar si hay leyendas disponibles
                                 if (!Array.isArray(response) || response.length === 0) {
                                     SNotification.send({
                                         title: "Error",
@@ -212,31 +159,21 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                                     return;
                                 }
 
-                                // Seleccionar una leyenda aleatoria
                                 const randomIndex = Math.floor(Math.random() * response.length);
                                 const leyenda = response[randomIndex].descripcionLeyenda;
                                 console.log("Leyenda aleatoria:", leyenda);
 
+                                await MDL.factura.editarLeyenda(factura.key, factura.data, leyenda);
+                                if (this.props.onReload) this.props.onReload();
 
-                                MDL.factura.editarLeyenda(factura.key, factura.data, leyenda).then(() => {
-                                    if (this.props.onReload) this.props.onReload()
+                                SNotification.send({
+                                    title: "Éxito",
+                                    message: "Leyenda actualizada correctamente.",
+                                    color: STheme.color.success,
+                                    time: 5000
+                                });
 
-                                    SNotification.send({
-                                        title: "Éxito",
-                                        message: "Leyenda actualizada correctamente.",
-                                        color: STheme.color.success,
-                                        time: 5000
-                                    });
-
-
-                                    // Cerrar el popup
-                                    SPopup.close("popup_menu_alvaro");
-
-                                }).catch(e => {
-                                    if (this.props.onReload) this.props.onReload()
-                                })
-
-
+                                SPopup.close("popup_menu_alvaro");
                             } catch (error) {
                                 console.error("Error al editar leyenda:", error);
                                 SNotification.send({
@@ -247,54 +184,61 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                                 });
                             }
                         }
-                    })
-                    : ""
-            }
-            {
-                verificadorAdmin ?
-                    options.push({
+                    },
+                    factura.state === "emitida" && {
                         label: "Eliminar Factura",
-                        icon: "crmeliminar",
+                        icon: <SIconApp name='crmeliminar' fill='#db0606ff' stroke='#db0606ff' width={16} />,
                         onPress: () => {
-                            MDL.factura.eliminarFactura(factura.key).then(() => {
-                                if (this.props.onReload) this.props.onReload()
-                            }).catch(e => {
-                                if (this.props.onReload) this.props.onReload()
-                            })
+                            MDL.factura.eliminarFactura(factura.key)
+                                .then(() => {
+                                    if (this.props.onReload) this.props.onReload();
+                                })
+                                .catch(e => {
+                                    if (this.props.onReload) this.props.onReload();
+                                });
                         }
-                    })
-                    : ""
+                    }
+                ].filter(Boolean) // <-- esto limpia los falsos
             }
-        }
+        ];
+
+        // ✅ Render de grupos
         return (
             <SView
                 col={"xs-12"}
-                center
-                row
-                withoutFeedback
                 backgroundColor={STheme.color.background}
                 style={{
                     borderRadius: 8,
                     overflow: "hidden",
                     borderWidth: 1,
-                    //  borderBottomWidth: 2,
                     borderColor: "#66666699",
                 }}
             >
-                <SView col={"xs-12"} row center  >
-                    {options.map(this.RenderOption)}
-                </SView>
+                {groups.map((group, gi) => (
+                    <SView key={gi} col={"xs-12"}>
+                        <SView col={"xs-12"} style={{ paddingHorizontal: 8, paddingTop: 8, paddingBottom: 1 }} >
+                            <SText color={STheme.color.text + "99"}>
+                                {group.title}
+                            </SText>
+                        </SView>
+                        {group.items.map((opt, i) => (
+                            <this.RenderOption key={i} {...opt} />
+                        ))}
+                        {gi !== groups.length - 1 && <SHr height={1} color={STheme.color.card} />}
+                    </SView>
+                ))}
             </SView>
         );
     }
 
+
     render() {
-        return (<SView col={"xs-12"} flex center >
-            {/* <SText>{JSON.stringify(this.props.data)}</SText> */}
-            {this.renderBox()}
-            {/* <SHr h={8} /> */}
-        </SView >
+        return (
+            <SView col={"xs-12"} flex center>
+                {this.renderBox()}
+            </SView>
         );
     }
 }
-export default (BoxMenu);
+
+export default BoxMenu;
