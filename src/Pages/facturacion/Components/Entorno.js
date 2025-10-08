@@ -27,7 +27,7 @@ export default class Entorno extends Component {
         }} row center
             onPress={() => { this.props.onPress() }}
         >
-            <SText fontSize={12} color={STheme.color.text} center bold >{this.props.ambiente == 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
+            <SText fontSize={12} color={STheme.color.background} center bold >{this.props.ambiente == 1 ? "PRODUCCIÓN" : "PRUEBA"}</SText>
             <SView flex />
             <SIcon name='Reload' width={10} />
         </SView>

@@ -27,6 +27,11 @@ export default class factura extends MDLAbstract<EventListener> {
         this.ambiente = ambiente;
         SStorage.setItem("factura_ambiente", ambiente + "");
     }
+
+    getAmbiente() {
+        return this.ambiente;
+    }
+
     async getSiat() {
         if (!this.siat) {
             SNotification.send({
@@ -352,7 +357,8 @@ export default class factura extends MDLAbstract<EventListener> {
     eliminarFactura(factura_key: any) {
         const ___data = {
             key: factura_key,
-            estado: 0
+            // estado: 0
+            state: "anulada"
         }
         return new Promise((resolve, reject) => {
             SPopup.confirm({
@@ -393,6 +399,47 @@ export default class factura extends MDLAbstract<EventListener> {
                 }
             });
 
+        });
+    }
+
+
+
+    editarLeyenda(factura_key: any, factura_data: any, leyenda___: any) {
+        const ___data = {
+            key: factura_key,
+            data: {
+                ...factura_data,
+                leyenda: leyenda___
+            }
+        };
+
+        // console.log("Dddddddddd " + JSON.stringify(___data))
+        // return;
+        return SSocket.sendPromise({
+            service: "facturacion",
+            component: "factura",
+            type: "editar", // Asegúrate que esta acción sea la correcta en el backend
+            key_empresa: Model.empresa.Action.getKey(),
+            key_usuario: Model.usuario.Action.getKey(),
+            data: ___data
+        }).then((e) => {
+            SNotification.send({
+                key: "editarFactura_" + factura_key,
+                title: "Leyenda actualizada",
+                body: "La leyenda fue actualizada correctamente.",
+                color: STheme.color.success,
+                time: 5000,
+            });
+            return e; // Devuelve el resultado de la promesa
+        }).catch((e) => {
+            SNotification.send({
+                key: "editarFactura_" + factura_key,
+                title: "Error al actualizar leyenda",
+                body: e?.error || "Error desconocido.",
+                color: STheme.color.error,
+                time: 5000,
+            });
+            throw e; // Lanza el error para que quien llame pueda manejarlo con try/catch
         });
     }
 

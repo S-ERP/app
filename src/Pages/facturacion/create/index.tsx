@@ -10,9 +10,11 @@ import Detalle from "./Detalle";
 import Footer from "./Footer";
 import MDL from "../../../MDL";
 import { Parametricas } from "../../../MDL/factura/typeParametricas";
-import Entorno from "../Components/Entorno";
+// import Entorno from "../Components/Entorno";
 
 export default class index extends React.Component {
+    _____ambiente = MDL.factura.getAmbiente();
+
     factura: Factura;
     parametricas: Parametricas = {};
     state = {
@@ -82,6 +84,14 @@ export default class index extends React.Component {
     }
 
     componentDidMount(): void {
+
+        SNotification.send({
+            key: "ambienteFacturacion",
+            title: this._____ambiente === 1 ? "Modo PRODUCCIÓN" : "Modo PRUEBA",
+            body: this._____ambiente === 1 ? "Estás en modo de facturación PRODUCCIÓN." : "Estás en modo de facturación de PRUEBA",
+            color: this._____ambiente === 1 ? STheme.color.success : STheme.color.warning,
+            time: 10000,
+        })
 
         MDL.rolesPermisos.getPermisoAsync({ url: "/facturacion/create", permiso: "ver" }).then((permit) => {
             if (!permit) {
@@ -154,7 +164,8 @@ export default class index extends React.Component {
         })
     }
     render() {
-        return <SPage title={"Emitir Factura"}>
+        return <SPage title={`Emitir Factura (Ambiente: ${this._____ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`}>
+            {/* return <SPage title={"Emitir Factura"}> */}
             {/* <Entorno onPress={() => {
                 this.setState({ ambiente: this.state.ambiente == 1 ? 2 : 1 })
             }} ambiente={this.state.ambiente} /> */}
