@@ -8,6 +8,7 @@ import MDL from '../../MDL';
 import Entorno from './Components/Entorno';
 import InputFoto from '../../Components/InputFoto';
 import Recargar from '../../Components/Recargar';
+import SIconApp from '../../Assets/SIconApp';
 
 const LabelItem = ({ label, onPress }) => {
     return <SView center padding={4}>
@@ -56,105 +57,126 @@ export default class ajustes extends Component {
         })
     }
 
-
     formFotoFactura() {
         if (!this.state.data) return <SLoad />
 
         const url = SSocket.api.facturacion + "empresa/" + MDL.empresa?.select?.key + "/fotofactura.png";
-        console.log("vvvvvvvvvvvv " + JSON.stringify(this.state.data))
+        
+        console.log("vvvvvvvvvvvv " + JSON.stringify(url))
         return <>
 
-            <SView style={{ borderRadius: 4, overflow: "hidden", width: 150, height: 150, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.lightGray }}>
-                <InputFoto
-                    ref={ref => this.inpimagen = ref} src={url}
-                    style={{ width: "100%", height: "100%", }} />
-                {url.length != 100 ? <SView style={{ position: "absolute", left: 50, top: 65, }}   > <SText bold color={STheme.color.lightGray} >Sin foto</SText> </SView> : ""}
+
+            <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
+                <SView col={"xs-5"}     >
+                    <SView col={"xs-12"} style={{ top: 12, borderRadius: 4, overflow: "hidden", width: "100%", height: 130, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.lightGray }} center>
+                        <InputFoto  
+                            ref={ref => this.inpimagen = ref} src={url}
+                            style={{ width: "100%", height: "100%", }}
+                        />
+                        {/* <SView style={{ position: "absolute", }} center>
+                            <SText bold color={STheme.color.lightGray} fontSize={10} >Sin Foto</SText>
+                            <SText bold color={STheme.color.lightGray} fontSize={10} >Click para cambiar imagen</SText>
+                        </SView> */}
+                        {/* {url.length == 100 ? <SView style={{ position: "absolute", left: 50, top: 58, }}   > <SText bold color={STheme.color.lightGray} >Sin foto</SText> </SView> : ""} */}
+                    </SView>
+                </SView>
+
+
+                <SView col={"xs-6.5"}>
+
+                    <SForm
+                        row style={{ justifyContent: "space-between" }}
+                        inputProps={{ style: { fontSize: 12 } }}
+                        inputs={{
+
+                            "foto_width": {
+                                type: "text",
+                                col: "xs-12",
+                                label: "Width foto",
+                                style: { paddingStart: 0, },
+                                labelStyle: { top: -10, },
+                                inputStyle: { paddingStart: 8 },
+                                defaultValue: this.state?.data?.foto_width,
+                                placeholder: "Ingresa el ancho foto",
+                            },
+                            "foto_height": {
+                                col: "xs-12",
+                                type: "text",
+                                label: "Height foto",
+                                style: { paddingStart: 0, },
+                                labelStyle: { top: -10, },
+                                inputStyle: { paddingStart: 8 },
+                                defaultValue: this.state?.data?.foto_height,
+                                placeholder: "Ingresa el alto foto",
+                            },
+                        }}
+                        ref={ref => this.ref_foto_factura = ref}
+                        onSubmitName={<SView col={"xs-12"} center row
+                        // backgroundColor='blue'
+                        >
+                            <SIconApp name='upImgNube' fill={STheme.color.background} width={18} />
+                            <SText center fontSize={14} color={STheme.color.background} > Subir foto</SText>
+                        </SView>
+                        }
+
+                        onSubmitProps={{
+                            // type: "outline",
+                            // col: "xs-12",
+                            // width: "100%",
+                            // height: 20,
+                            style: {
+                                // backgroundColor: STheme.color.card + "66",
+                                borderRadius: 80, overflow: "hidden",
+                                height: 40, width: "100%"
+                            }
+                        }}
+
+                        loading={this.state.loading}
+                        onSubmit={(data) => {
+                            // console.log("todo  " + JSON.stringify(data))
+                            // console.log("todo2  " + JSON.stringify(this.inpimagen.getValue()))
+                            this.setState({ loading: true })
+                            // if (data.certificado == SSocket.api.facturacion + "empresa/" + Model.empresa.Action.getKey() + "/" + this.state?.data?.certificado) {
+                            //     data.certificado = this.state?.data?.certificado
+                            // }
+                            SSocket.sendPromise({
+                                service: "facturacion",
+                                component: "siat",
+                                type: "editar",
+                                estado: "cargando",
+                                key_usuario: Model.usuario.Action.getKey(),
+                                key_empresa: Model.empresa.Action.getKey(),
+                                data: data
+                            }).then(e => {
+                                if (this.inpimagen) {
+                                    const value = this.inpimagen.getValue();
+                                    if (Array.isArray(value)) {
+                                        Upload.sendPromise({ file: value[0], compress: false }, SSocket.api.facturacion + "upload/empresa/" + MDL.empresa?.select?.key + "/fotofactura.png")
+                                    }
+                                }
+                                SNotification.send({
+                                    title: "Edicion",
+                                    body: "Exito",
+                                    color: STheme.color.success,
+                                    time: 5000
+                                })
+                                this.setState({ loading: false })
+                                console.log(e);
+                            }).catch(e => {
+                                SNotification.send({
+                                    title: "Edicion",
+                                    body: "Error",
+                                    color: STheme.color.error,
+                                    time: 5000
+                                })
+                                console.error(e);
+                            })
+                        }}
+                    />
+                </SView>
             </SView>
 
-            <SForm
-                row style={{ justifyContent: "space-between" }}
-                inputProps={{ style: { fontSize: 12 } }}
-                inputs={{
 
-                    // "descripcion": {
-                    //     label: "Nombre del almacén *", placeholder: "Ingresa el nombre del almacén", isRequired: true, autoFocus: true,
-                    //     defaultValue: this.props.editObject?.descripcion,
-                    //     // onSubmitEditing: () => {
-                    //     //     if (this.form) this.form.submit();
-                    //     // },
-                    //     icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
-                    //         <InputFoto
-                    //             ref={ref => this._ref.image_sucursal = ref}
-                    //             src={(SSocket.api as any).empresa + "sucursal/" + this.props.editObject?.key}
-                    //             style={{ width: 50, height: 50, }} />
-                    //     </SView>,
-                    // },
-
-                    "foto_width": {
-                        type: "text",
-                        col: "xs-5.8",
-                        label: "Width foto",
-                        style: { paddingStart: 0, },
-                        labelStyle: { top: -10, },
-                        inputStyle: { paddingStart: 8 },
-                        defaultValue: this.state?.data?.foto_width,
-                        placeholder: "Ingresa el ancho foto",
-                    },
-                    "foto_height": {
-                        col: "xs-5.8",
-                        type: "text",
-                        label: "Height foto",
-                        style: { paddingStart: 0, },
-                        labelStyle: { top: -10, },
-                        inputStyle: { paddingStart: 8 },
-                        defaultValue: this.state?.data?.foto_height,
-                        placeholder: "Ingresa el alto foto",
-                    },
-                }}
-                ref={ref => this.ref_foto_factura = ref}
-                onSubmitName={"Subir foto"}
-                loading={this.state.loading}
-                onSubmit={(data) => {
-                    // console.log("todo  " + JSON.stringify(data))
-                    // console.log("todo2  " + JSON.stringify(this.inpimagen.getValue()))
-                    this.setState({ loading: true })
-                    // if (data.certificado == SSocket.api.facturacion + "empresa/" + Model.empresa.Action.getKey() + "/" + this.state?.data?.certificado) {
-                    //     data.certificado = this.state?.data?.certificado
-                    // }
-                    SSocket.sendPromise({
-                        service: "facturacion",
-                        component: "siat",
-                        type: "editar",
-                        estado: "cargando",
-                        key_usuario: Model.usuario.Action.getKey(),
-                        key_empresa: Model.empresa.Action.getKey(),
-                        data: data
-                    }).then(e => {
-                        if (this.inpimagen) {
-                            const value = this.inpimagen.getValue();
-                            if (Array.isArray(value)) {
-                                Upload.sendPromise({ file: value[0], compress: false }, SSocket.api.facturacion + "upload/empresa/" + MDL.empresa?.select?.key + "/fotofactura.png")
-                            }
-                        }
-                        SNotification.send({
-                            title: "Edicion",
-                            body: "Exito",
-                            color: STheme.color.success,
-                            time: 5000
-                        })
-                        this.setState({ loading: false })
-                        console.log(e);
-                    }).catch(e => {
-                        SNotification.send({
-                            title: "Edicion",
-                            body: "Error",
-                            color: STheme.color.error,
-                            time: 5000
-                        })
-                        console.error(e);
-                    })
-                }}
-            />
         </>
 
     }
@@ -453,12 +475,9 @@ export default class ajustes extends Component {
         return <SPage title={"Facturación - Ajustes"}>
             <Container>
                 <SHr h={20} />
-                <SText col={"xs-12"} fontSize={15} color={STheme.color.primary}>Administración de procesos</SText>
+                <SText col={"xs-12"} fontSize={15} color={STheme.color.text}>Administración de procesos</SText>
                 <SHr h={5} />
-                <SView col={"xs-12"} center style={{
-                    height: 1,
-                    backgroundColor: STheme.color.secondary,
-                }} />
+                <SView col={"xs-12"} center style={{ height: 1, backgroundColor: STheme.color.secondary, }} />
 
                 <SHr h={10} />
                 <SView col={"xs-12"} row center>
@@ -509,16 +528,20 @@ export default class ajustes extends Component {
                     <SView width={5} />
                     <LabelItem label={"Get certificado"} onPress={this.getCertificado.bind(this)} />
                 </SView>
-                <SHr h={40} />
-                <SText col={"xs-12"} fontSize={15} color={STheme.color.primary}>Credenciales del sistema de facturación</SText>
+
+                <SHr h={30} />
+                <SText col={"xs-12"} fontSize={15} color={STheme.color.text}>Credenciales del sistema de facturación</SText>
                 <SHr h={5} />
-                <SView col={"xs-12"} center style={{
-                    height: 1,
-                    backgroundColor: STheme.color.secondary,
-                }} />
+                <SView col={"xs-12"} center style={{ height: 1, backgroundColor: STheme.color.secondary, }} />
                 <SHr h={5} />
                 {this.formFotoFactura()}
+
+                <SHr h={30} />
+                <SText col={"xs-12"} fontSize={15} color={STheme.color.text}  >Credenciales del Sistema</SText>
                 <SHr h={5} />
+                <SView col={"xs-12"} center style={{ height: 1, backgroundColor: STheme.color.secondary, }} />
+                <SHr h={5} />
+
                 {this.form()}
                 <SHr height={30} />
 
