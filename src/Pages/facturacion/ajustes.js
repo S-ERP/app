@@ -76,6 +76,20 @@ export default class ajustes extends Component {
                 inputProps={{ style: { fontSize: 12 } }}
                 inputs={{
 
+                    // "descripcion": {
+                    //     label: "Nombre del almacén *", placeholder: "Ingresa el nombre del almacén", isRequired: true, autoFocus: true,
+                    //     defaultValue: this.props.editObject?.descripcion,
+                    //     // onSubmitEditing: () => {
+                    //     //     if (this.form) this.form.submit();
+                    //     // },
+                    //     icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
+                    //         <InputFoto
+                    //             ref={ref => this._ref.image_sucursal = ref}
+                    //             src={(SSocket.api as any).empresa + "sucursal/" + this.props.editObject?.key}
+                    //             style={{ width: 50, height: 50, }} />
+                    //     </SView>,
+                    // },
+
                     "foto_width": {
                         type: "text",
                         col: "xs-5.8",
@@ -98,7 +112,7 @@ export default class ajustes extends Component {
                     },
                 }}
                 ref={ref => this.ref_foto_factura = ref}
-                onSubmitName={"SUBIR foto"}
+                onSubmitName={"Subir foto"}
                 loading={this.state.loading}
                 onSubmit={(data) => {
                     // console.log("todo  " + JSON.stringify(data))
@@ -515,7 +529,7 @@ export default class ajustes extends Component {
                 bottom: 32,
             }}>
                 <Recargar ref={ref => this.recargar = ref} initialTime={60} onFinish={() => {
-                    if (!this.state.data) return <SLoad />
+                    // if (!this.state.data) return <SLoad />
                     this.componentDidMount();
                 }} />
             </SView>

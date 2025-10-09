@@ -64,17 +64,39 @@ export default class libro_ventas extends Component {
 
     }
 
-    async loadData() {
-        const request = await SSocket.sendPromise({
-            service: "facturacion",
-            component: "factura",
-            type: "getAll",
-            estado: "cargando",
-            key_usuario: Model.usuario.Action.getKey(),
-            key_empresa: Model.empresa.Action.getKey(),
-        })
-        return Object.values(request.data);
+    // async loadData() {
+    //     const request = await SSocket.sendPromise({
+    //         service: "facturacion",
+    //         component: "factura",
+    //         type: "getAll",
+    //         estado: "cargando",
+    //         key_usuario: Model.usuario.Action.getKey(),
+    //         key_empresa: Model.empresa.Action.getKey(),
+    //     })
+    //     return Object.values(request.data);
+    // }
 
+    async loadData() {
+        try {
+            const request = await SSocket.sendPromise({
+                service: "facturacion",
+                component: "factura",
+                type: "getAll",
+                estado: "cargando",
+                key_usuario: Model.usuario?.Action?.getKey?.(),
+                key_empresa: Model.empresa?.Action?.getKey?.(),
+            });
+
+            if (!request?.data) {
+                console.warn("⚠️ No se recibió data de facturacion.getAll:", request);
+                return [];
+            }
+
+            return Object.values(request.data);
+        } catch (e) {
+            console.error("❌ Error en loadData:", e);
+            return [];
+        }
     }
 
 

@@ -90,7 +90,7 @@ export default class index extends React.Component {
             title: this._____ambiente === 1 ? "Modo PRODUCCIÓN" : "Modo PRUEBA",
             body: this._____ambiente === 1 ? "Estás en modo de facturación PRODUCCIÓN." : "Estás en modo de facturación de PRUEBA",
             color: this._____ambiente === 1 ? STheme.color.success : STheme.color.warning,
-            time: 10000,
+            time: 1000,
         })
 
         MDL.rolesPermisos.getPermisoAsync({ url: "/facturacion/create", permiso: "ver" }).then((permit) => {
@@ -169,6 +169,9 @@ export default class index extends React.Component {
             {/* <Entorno onPress={() => {
                 this.setState({ ambiente: this.state.ambiente == 1 ? 2 : 1 })
             }} ambiente={this.state.ambiente} /> */}
+
+            {/* <SView style={{ backgroundColor: "green", width: 20, height: 20, borderRadius: 20 }} /> */}
+
             <SView padding={8}>
                 <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                     <SView flex={3} center>

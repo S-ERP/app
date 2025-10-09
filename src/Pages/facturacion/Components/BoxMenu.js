@@ -74,14 +74,12 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                 items: [
                     {
                         label: "Imprimir (Carta)", icon: "imprimir", onPress: () => {
-                            MDL.factura.imprimir({ cuf: factura?.data?.cuf }).then(e => { })
-                                .catch(e => { console.error(e); });
+                            MDL.factura.imprimir({ cuf: factura?.data?.cuf, tipo: "carta" });
                         }
                     },
                     {
                         label: "Imprimir (Rollo)", icon: "iconLista", onPress: () => {
-                            MDL.factura.imprimir({ cuf: factura?.data?.cuf, tipo: "rollo" }).then(e => { })
-                                .catch(e => { console.error(e); });
+                            MDL.factura.imprimir({ cuf: factura?.data?.cuf, tipo: "rollo" });
                         }
                     },
                 ].filter(Boolean) // <-- esto limpia los falsos
