@@ -10,7 +10,7 @@ export default class historyTabla extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            fecha_inicio: new SDate().addMonth(-1).setDay(1).toString("yyyy-MM-dd"),
+            fecha_inicio: new SDate().addMonth(-10).setDay(1).toString("yyyy-MM-dd"),
             fecha_fin: new SDate().toString("yyyy-MM-dd"),
             data: [], // Estado para almacenar los datos de la tabla
         };

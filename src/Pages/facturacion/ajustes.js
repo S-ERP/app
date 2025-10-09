@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SForm, SHr, SIcon, SLoad, SNavigation, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SForm, SHr, SIcon, SLoad, SNavigation, SNotification, SPage, SText, STheme, SView, Upload } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
 import { Container } from '../../Components';
 import MDL from '../../MDL';
 import Entorno from './Components/Entorno';
+import InputFoto from '../../Components/InputFoto';
+import Recargar from '../../Components/Recargar';
 
 const LabelItem = ({ label, onPress }) => {
     return <SView center padding={4}>
@@ -54,69 +56,156 @@ export default class ajustes extends Component {
         })
     }
 
+
+    formFotoFactura() {
+        if (!this.state.data) return <SLoad />
+
+        const url = SSocket.api.facturacion + "empresa/" + MDL.empresa?.select?.key + "/fotofactura.png";
+        console.log("vvvvvvvvvvvv " + JSON.stringify(this.state.data))
+        return <>
+
+            <SView style={{ borderRadius: 4, overflow: "hidden", width: 150, height: 150, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.lightGray }}>
+                <InputFoto
+                    ref={ref => this.inpimagen = ref} src={url}
+                    style={{ width: "100%", height: "100%", }} />
+                {url.length != 100 ? <SView style={{ position: "absolute", left: 50, top: 65, }}   > <SText bold color={STheme.color.lightGray} >Sin foto</SText> </SView> : ""}
+            </SView>
+
+            <SForm
+                row style={{ justifyContent: "space-between" }}
+                inputProps={{ style: { fontSize: 12 } }}
+                inputs={{
+
+                    "foto_width": {
+                        type: "text",
+                        col: "xs-5.8",
+                        label: "Width foto",
+                        style: { paddingStart: 0, },
+                        labelStyle: { top: -10, },
+                        inputStyle: { paddingStart: 8 },
+                        defaultValue: this.state?.data?.foto_width,
+                        placeholder: "Ingresa el ancho foto",
+                    },
+                    "foto_height": {
+                        col: "xs-5.8",
+                        type: "text",
+                        label: "Height foto",
+                        style: { paddingStart: 0, },
+                        labelStyle: { top: -10, },
+                        inputStyle: { paddingStart: 8 },
+                        defaultValue: this.state?.data?.foto_height,
+                        placeholder: "Ingresa el alto foto",
+                    },
+                }}
+                ref={ref => this.ref_foto_factura = ref}
+                onSubmitName={"SUBIR foto"}
+                loading={this.state.loading}
+                onSubmit={(data) => {
+                    // console.log("todo  " + JSON.stringify(data))
+                    // console.log("todo2  " + JSON.stringify(this.inpimagen.getValue()))
+                    this.setState({ loading: true })
+                    // if (data.certificado == SSocket.api.facturacion + "empresa/" + Model.empresa.Action.getKey() + "/" + this.state?.data?.certificado) {
+                    //     data.certificado = this.state?.data?.certificado
+                    // }
+                    SSocket.sendPromise({
+                        service: "facturacion",
+                        component: "siat",
+                        type: "editar",
+                        estado: "cargando",
+                        key_usuario: Model.usuario.Action.getKey(),
+                        key_empresa: Model.empresa.Action.getKey(),
+                        data: data
+                    }).then(e => {
+                        if (this.inpimagen) {
+                            const value = this.inpimagen.getValue();
+                            if (Array.isArray(value)) {
+                                Upload.sendPromise({ file: value[0], compress: false }, SSocket.api.facturacion + "upload/empresa/" + MDL.empresa?.select?.key + "/fotofactura.png")
+                            }
+                        }
+                        SNotification.send({
+                            title: "Edicion",
+                            body: "Exito",
+                            color: STheme.color.success,
+                            time: 5000
+                        })
+                        this.setState({ loading: false })
+                        console.log(e);
+                    }).catch(e => {
+                        SNotification.send({
+                            title: "Edicion",
+                            body: "Error",
+                            color: STheme.color.error,
+                            time: 5000
+                        })
+                        console.error(e);
+                    })
+                }}
+            />
+        </>
+
+    }
+
     form() {
         if (!this.state.data) return <SLoad />
-        return <SForm
-            inputProps={{
-                style: {
-                    fontSize: 12
-                }
-            }}
-            inputs={{
-                "codigo_sistema": { type: "text", label: "Código de sistema", placeholder: " ", defaultValue: this.state?.data?.codigo_sistema },
-                "token": { type: "textArea", label: "Token", placeholder: " ", defaultValue: this.state?.data?.token },
-                "token_test": { type: "textArea", label: "Token de prueba", placeholder: " ", defaultValue: this.state?.data?.token_test },
-                "certificado": { type: "file", label: "Certificado (P12)", defaultValue: !this.state?.data?.certificado ? null : SSocket.api.facturacion + "empresa/" + Model.empresa.Action.getKey() + "/" + this.state?.data?.certificado },
-                "certificado_pass": { type: "password", label: "Contraseña del certificado", placeholder: " ", defaultValue: this.state?.data?.certificado_pass },
-
-            }}
-            ref={ref => this.ref = ref}
-            onSubmitName={"SUBIR"}
-            loading={this.state.loading}
-            onSubmit={(data) => {
-                this.setState({ loading: true })
-                if (data.certificado == SSocket.api.facturacion + "empresa/" + Model.empresa.Action.getKey() + "/" + this.state?.data?.certificado) {
-                    data.certificado = this.state?.data?.certificado
-                }
-                SSocket.sendPromise({
-                    service: "facturacion",
-                    component: "siat",
-                    type: "editar",
-                    estado: "cargando",
-                    key_usuario: Model.usuario.Action.getKey(),
-                    key_empresa: Model.empresa.Action.getKey(),
-                    data: data
-                }).then(e => {
-
-                    // this.ref.
-                    this.ref.uploadFiles2(
-                        SSocket.api.facturacion + "upload/empresa/" + Model.empresa.Action.getKey()
-                    ).then((resp) => {
-                        console.log(resp);
-                        // this.setState({ loading: true, loadingLabel: "Guardando cambios..." });
-                    }).catch((e) => {
+        return <>
+            <SForm
+                row style={{ justifyContent: "space-between" }}
+                inputProps={{ style: { fontSize: 12 } }}
+                inputs={{
+                    "codigo_sistema": { type: "text", label: "Código de sistema", placeholder: " ", defaultValue: this.state?.data?.codigo_sistema },
+                    "token": { type: "textArea", label: "Token", placeholder: " ", defaultValue: this.state?.data?.token },
+                    "token_test": { type: "textArea", label: "Token de prueba", placeholder: " ", defaultValue: this.state?.data?.token_test },
+                    "certificado": { type: "file", label: "Certificado (P12)", defaultValue: !this.state?.data?.certificado ? null : SSocket.api.facturacion + "empresa/" + Model.empresa.Action.getKey() + "/" + this.state?.data?.certificado },
+                    "certificado_pass": { type: "password", label: "Contraseña del certificado", placeholder: " ", defaultValue: this.state?.data?.certificado_pass },
+                }}
+                ref={ref => this.ref = ref}
+                onSubmitName={"SUBIR"}
+                loading={this.state.loading}
+                onSubmit={(data) => {
+                    this.setState({ loading: true })
+                    if (data.certificado == SSocket.api.facturacion + "empresa/" + Model.empresa.Action.getKey() + "/" + this.state?.data?.certificado) {
+                        data.certificado = this.state?.data?.certificado
+                    }
+                    SSocket.sendPromise({
+                        service: "facturacion",
+                        component: "siat",
+                        type: "editar",
+                        estado: "cargando",
+                        key_usuario: Model.usuario.Action.getKey(),
+                        key_empresa: Model.empresa.Action.getKey(),
+                        data: data
+                    }).then(e => {
+                        // this.ref.
+                        this.ref.uploadFiles2(
+                            SSocket.api.facturacion + "upload/empresa/" + Model.empresa.Action.getKey()
+                        ).then((resp) => {
+                            console.log(resp);
+                            // this.setState({ loading: true, loadingLabel: "Guardando cambios..." });
+                        }).catch((e) => {
+                            console.error(e);
+                            // this.setState({ loading: false, loadingLabel: "Error al subir los archivos..." });
+                        })
+                        SNotification.send({
+                            title: "Edicion",
+                            body: "Exito",
+                            color: STheme.color.success,
+                            time: 5000
+                        })
+                        this.setState({ loading: false })
+                        console.log(e);
+                    }).catch(e => {
+                        SNotification.send({
+                            title: "Edicion",
+                            body: "Error",
+                            color: STheme.color.error,
+                            time: 5000
+                        })
                         console.error(e);
-                        // this.setState({ loading: false, loadingLabel: "Error al subir los archivos..." });
                     })
-                    SNotification.send({
-                        title: "Edicion",
-                        body: "Exito",
-                        color: STheme.color.success,
-                        time: 5000
-                    })
-                    this.setState({ loading: false })
-                    console.log(e);
-                }).catch(e => {
-                    SNotification.send({
-                        title: "Edicion",
-                        body: "Error",
-                        color: STheme.color.error,
-                        time: 5000
-                    })
-                    console.error(e);
-                })
-            }}
-        />
+                }}
+            />
+        </>
+
     }
 
     verificarComunicacion({ ambiente }) {
@@ -414,9 +503,22 @@ export default class ajustes extends Component {
                     backgroundColor: STheme.color.secondary,
                 }} />
                 <SHr h={5} />
+                {this.formFotoFactura()}
+                <SHr h={5} />
                 {this.form()}
                 <SHr height={30} />
+
             </Container>
+            <SView style={{
+                position: "absolute",
+                right: 16,
+                bottom: 32,
+            }}>
+                <Recargar ref={ref => this.recargar = ref} initialTime={60} onFinish={() => {
+                    if (!this.state.data) return <SLoad />
+                    this.componentDidMount();
+                }} />
+            </SView>
         </SPage>
     }
 }
