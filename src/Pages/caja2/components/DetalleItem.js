@@ -24,7 +24,9 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
         const moneda = empresa?.monedas?.find(e => e.key === item.key_moneda);
         return <SView key={index} row padding={4} style={{
             borderBottomWidth: 1,
-            borderColor: STheme.color.card
+            borderColor: STheme.color.card,
+            backgroundColor: STheme.color.background,
+            borderRadius: 4,
         }}>
 
             <SView flex>

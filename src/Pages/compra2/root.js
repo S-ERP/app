@@ -217,6 +217,7 @@ export default class root extends React.Component {
                 <SView col={"xs-12"} center>
                     <SHr height={15} />
                     <SView col={"xs-11.5 sm-11 md-10 lg-8 xl-6"} flex padding={15} card>
+                        <SHr height={15} />
                         <SView col={"xs-12"} row>
                             <SView col={"xs-12"} padding={4} style={{ alignItems: "flex-end" }} height={60}>
                                 <SView width={200} style={{ marginTop: 0 }}>
@@ -351,6 +352,22 @@ export default class root extends React.Component {
                                 type="primary"
                                 small
                                 onPress={() => {
+                                    // this.inputs?.producto?.validate();
+                                    Detalle.prototype.inputs = this.inputs; // Asegura que cada Detalle tenga acceso a los inputs
+                                    let invalid = false;
+                                    this.state.detalle.forEach((item, index) => {
+                                        if (!item.producto) {
+                                            SNotification.send({
+                                                title: `Error en producto ${index + 1}`,
+                                                body: "Debe seleccionar un producto.",
+                                                // type: "danger",
+                                                color: STheme.color.danger,
+                                                time: 4000,
+                                            });
+                                            invalid = true;
+                                        }
+                                    });
+                                    if (invalid) return;
 
                                     var max = 0;
                                     var max2 = 0;
@@ -463,6 +480,7 @@ class Detalle extends React.Component {
                     <SInput
                         ref={ref => (this.inputs["producto"] = ref)}
                         type="select2"
+                        required
                         customStyle={"erp"}
                         placeholder={"Seleccione un producto"}
                         defaultValue={this.props.data.producto}
