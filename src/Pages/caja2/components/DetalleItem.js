@@ -143,15 +143,19 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         <SText color={STheme.color.lightGray} fontSize={10}>{moneda?.descripcion}</SText>
                         <SView width={4} />
                         <SText color={STheme.color.lightGray} fontSize={10}>{item.tipo_cambio}</SText>
+                        <SView width={4} />
+
+
                     </View>
                     }
+                    <SText color={STheme.color.lightGray} fontSize={10}> Archivos {JSON.stringify(item.vouchers.length)}</SText>
 
                     <SView style={{
                         color: STheme.color.text, margin: 5,
                         backgroundColor: MDL.caja.detalle_types[item.tipo]?.color + "66" || STheme.color.card,
                     }}
                         onPress={() =>
-                            PopupUploadVoucher.open(empresa.key, item.key)
+                            PopupUploadVoucher.open(empresa.key, item.key, item.vouchers)
                         }
                     ><SText>+ subir Voucher</SText></SView>
 
