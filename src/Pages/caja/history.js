@@ -1,219 +1,406 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon } from 'servisofts-component';
+import { SView, SPage, SHr, SScrollView2, STheme, SDate, SText, SImage, SPopup, SMath } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
-import SIconApp from '../../Assets/SIconApp';
-import Config from '../../Config';
-import Model from '../../Model';
-import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 import MDL from '../../MDL';
-import FloatMenu from '../../Components/FloatMenu';
+import Config from '../../Config';
 import DateTimeBetween from '../../Components/DateTimeBetween';
 
 export default class history extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            fecha_inicio: null,
-            fecha_fin: null,
+            fecha_inicio: new SDate('2024-01-01', 'yyyy-MM-dd hh:mm').toString("yyyy-MM-dd"),
+            // fecha_inicio: new SDate().addMonth(-10).setDay(1).toString("yyyy-MM-dd"),
+            fecha_fin: new SDate().toString("yyyy-MM-dd"),
+            data: [], // Estado para almacenar los datos de la tabla
         };
-
     }
 
-    renderUsuario(srcKey) {
-        const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-            <SImage src={`${SSocket.api.root}usuario/${srcKey}`} style={{ resizeMode: "cover" }} />
-        </SView>;
-        const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
-        return srcKey ? pintar : nulo;
-    };
-    renderCliente(srcKey) {
-        const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-            <SImage src={`${SSocket.api.crm}cliente/${srcKey}`} style={{ resizeMode: "cover" }} />
-        </SView>;
-        const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
-        return srcKey ? pintar : nulo;
-    };
-    renderSucursal(suc, a) {
-        if (!suc) return <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
-        return <>
-            <SView row center>
-                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                    <SImage src={`${SSocket.api.empresa}sucursal/${suc.key}`} style={{ resizeMode: "cover" }} />
-                </SView>
-                <SView width={4} />
-                <SText flex numberOfLines={a.colData.wrap ? 0 : 1} style={a.textStyle}>{suc?.descripcion}</SText>
-            </SView>
-        </>
-    };
-
-    toISO(dateString) {
-        // Si ya tiene hora, se respeta
-        if (dateString.includes(":")) {
-            return dateString.replace(" ", "T");
-        }
-        // Si no tiene hora, asumimos inicio de día
-        return dateString + "T00:00:00";
-    }
-
-    toISOEnd(dateString) {
-        // Si ya tiene hora, se respeta
-        if (dateString.includes(":")) {
-            return dateString.replace(" ", "T");
-        }
-        // Si no tiene hora, asumimos fin del día
-        return dateString + "T23:59:59";
-    }
-
-    filtrarPorFechas(data, fecha_inicio, fecha_fin) {
-        return data.filter(item => {
-            const fechaItem = new Date(this.toISO(item.fecha));
-
-            if (fecha_inicio && !fecha_fin) {
-                // Solo desde fecha_inicio
-                return fechaItem >= new Date(this.toISO(fecha_inicio));
-            }
-
-            if (!fecha_inicio && fecha_fin) {
-                // Solo hasta fecha_fin
-                return fechaItem <= new Date(this.toISOEnd(fecha_fin));
-            }
-
-            if (fecha_inicio && fecha_fin) {
-                // Entre fecha_inicio y fecha_fin
-                return fechaItem >= new Date(this.toISO(fecha_inicio)) && fechaItem <= new Date(this.toISOEnd(fecha_fin));
-            }
-
-            // Si no hay filtros, devuelve todo
-            return true;
+    componentDidMount() {
+        this.loadInitialData().then(data => {
+            this.setState({ data }); // Actualizar el estado con los datos iniciales
         });
     }
 
     async loadInitialData() {
         try {
-            const history = await MDL.caja.getAll(MDL.empresa?.select?.key);
+            console.log("📦 Cargando movimientos de caja...");
+            const empresaKey = MDL.empresa.select?.key;
+
+
+
+
+
+
+            if (!empresaKey) throw new Error("Empresa no seleccionada.");
+            const { fecha_inicio, fecha_fin } = this.state;
+            // const fechaInicioRef = fecha_inicio ?? new SDate().addMonth(-1).setDay(1).toString('yyyy-MM-dd');
+            // const fechaFinRef = fecha_fin ?? new SDate().toString('yyyy-MM-dd');
+            const movimientos = await MDL.caja.getAllCajasByEmpresa(empresaKey, fecha_inicio, fecha_fin);
+            if (!Array.isArray(movimientos)) {
+                console.warn("No se recibieron movimientos válidos.");
+                return [];
+            }
+            // console.log("Movimientos recibidos:", JSON.stringify(movimientos));
             const empresa = await MDL.empresa.getFull();
 
-            console.log("history", history);
-            console.log('Loading initial data... 🎈🎈🎈🎈', empresa);
+            const base = empresa.monedas.find(a => a.tipo == "base");
+
+            // console.log("fullllllllllllll " + JSON.stringify(base))
 
 
-            history.map(caja => {
-                caja.sucursal = empresa.sucursales.find(a => a.key == caja.key_sucursal);
-                empresa.sucursales.map(suc => {
-                    const pv = suc.puntos_venta.find(a => a.key == caja.key_punto_venta);
-                    if (pv) {
-                        caja.punto_venta = pv;
-                    }
-                })
-            })
-
-            // Aplicar filtro por fechas si existen
-            const { fecha_inicio, fecha_fin } = this.state;
-            const filteredHistory = this.filtrarPorFechas(history, fecha_inicio, fecha_fin);
-            console.log("Filtered History:", filteredHistory);
-            return filteredHistory;
+            const sucursales = empresa?.sucursales ?? [];
+            const puntos_ventas = sucursales.flatMap(s => s.puntos_venta || []);
+            const usuarioKeys = [...new Set(movimientos.map(m => m.key_usuario).filter(Boolean))];
+            const usuarios = (await MDL.usuario.getByKeys(usuarioKeys)) ?? [];
+            const usuarioMap = Object.fromEntries(usuarios.map(u => [u.key, u]));
+            const processedData = movimientos.map(mov => ({
+                ...mov,
+                usuario: usuarioMap[mov.key_usuario] ?? null,
+                puntos_venta: puntos_ventas.find(pv => pv.key === mov.key_punto_venta) ?? null,
+                sucursal: sucursales.find(s => s.key === mov.key_sucursal) ?? null,
+                moneda: base,
+            }));
+            // console.log("Datos procesados para la tabla:", JSON.stringify(processedData));
+            return processedData;
         } catch (error) {
-            console.error('Error in loadData:', error);
-            SPopup.alert('Error loading data. Please try again.');
+            console.error("❌ Error al cargar movimientos:", error);
+            SPopup.alert("Error al cargar los movimientos. Intenta nuevamente.");
             return [];
         }
     }
-    // renderState(state) {
-    //     const statesInfo = MDL.compra_venta.getStateInfo()[state];
-    //     return <SView row center>
-    //         <SView backgroundColor={statesInfo?.color} style={{ borderRadius: 4, padding: 5 }}>
-    //             <SText color={STheme.color.text} fontSize={10}>{statesInfo?.label}</SText>
-    //         </SView>
-    //     </SView>
-    // }
-    renderTipoPago(values) {
-        const statesTipo = MDL.compra_venta.getTipoPago()[values];
-        return <SView row center>
-            <SView backgroundColor={statesTipo?.color} style={{ borderRadius: 4, padding: 5 }}>
-                <SText color={STheme.color.text} fontSize={10}>{statesTipo?.label}</SText>
-            </SView>
-        </SView>
-    }
-    renderCodigo(codigo) {
-        return <SView row center>
-            <SView border={STheme.color.card} style={{ borderRadius: 8, padding: 6, borderWidth: 1 }}>
-                <SText color={STheme.color.text} fontSize={10} bold>{codigo}</SText>
-            </SView>
-        </SView>
-    }
-    mostrarTabla() {
+
+    renderTabla() {
         return (
             <DinamicTable
                 ref={ref => (this.DinamicTable = ref)}
-                loadData={async () => {
-                    return this.loadInitialData();
-                }}
+                loadData={() => this.loadInitialData()}
+                data={this.state.data} // Pasar los datos del estado
                 key="id"
+                keyExtractor={e => e.key}
                 language="es"
                 center
-                {...Config.table.applyTheme()}
                 selectType="single"
-                keyExtractor={(e) => e.key}
-                onSelect={(e) => {
-                    FloatMenu.open({
-                        e: e.evt,
-                        label: "Tabla de ventas",
-                        options: [
-                            {
-                                label: "Ver venta",
-                                icon: <SIconApp name='addTarea' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    SNavigation.navigate("/venta/profile", { pk: e?.row?.key })
-                                }
-                            },
-                            {
-                                label: "Imprimir tamaño carta",
-                                icon: <SIcon name='imprimir' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    ReciboCarta.imprimir(e?.row?.key)
-                                }
-                            },
-                        ]
-                    });
-                }}
-                loadInitialState={async () => {
-                    return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] }
-                }}
+                loadInitialState={async () => ({
+                    sorters: [{ key: "fecha", order: "desc", type: "date" }],
+                })}
+                {...Config.table.applyTheme()}
             >
-                <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
-                <DinamicTable.Col key="key" label="Key" width={60} textStyle={{
-                    color: STheme.color.lightGray,
-                    fontSize: 10
-                }} data={(e) => e.row?.key ?? ""} />
-                <DinamicTable.Col key="sucursal" label="Sucursal" width={100} data={(e) => e.row?.sucursal?.descripcion ?? ""} customComponent={a => this.renderSucursal(a.row.sucursal, a)} />
-                <DinamicTable.Col key="punto_venta" label="Punto venta" width={100} data={(e) => e.row?.punto_venta?.descripcion ?? ""} />
-                <DinamicTable.Col key="key_usuario" label="Usuario" width={50} data={(e) => e.row?.key_usuario ?? ""} customComponent={a => this.renderUsuario(a.data)} />
-                <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-                <DinamicTable.Col key={"fecha_on_since"} label="Hace" width={120}
-                    data={e => "Hace " + new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}
+                <DinamicTable.Col key="index" label="N°" width={30} data={e => e.index + 1} />
+
+                <DinamicTable.Col
+                    key="sucursal"
+                    label="SUCURSAL"
+                    width={120}
+                    data={e => e.row?.sucursal?.descripcion ?? "Sin sucursal"}
+                    customComponent={e => {
+                        const key = e.row?.key_sucursal;
+                        const descripcion = e.row?.sucursal?.descripcion ?? "Sin sucursal";
+                        return key ? (
+                            <SView col="xs-12" row center>
+                                <SView
+                                    style={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: 100,
+                                        overflow: "hidden",
+                                        backgroundColor: STheme.color.card + "66",
+                                    }}
+                                >
+                                    <SImage
+                                        src={`${SSocket.api.empresa}sucursal/${key}`}
+                                        style={{ resizeMode: "cover" }}
+                                    />
+                                </SView>
+                                <SView width={5} />
+                                <SText flex numberOfLines={1} style={e.textStyle}>
+                                    {descripcion}
+                                </SText>
+                            </SView>
+                        ) : (
+                            <SText>Sin sucursal</SText>
+                        );
+                    }}
+                />
+
+                <DinamicTable.Col
+                    key="punto"
+                    label="P.VENTA"
+                    width={50}
+                    data={e => e.row?.puntos_venta?.descripcion ?? "Sin punto de venta"}
+                />
+
+                <DinamicTable.Col
+                    key="fecha"
+                    label="FECHA"
+                    width={80}
+                    dataType="date"
+                    data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date : null)}
+
+                    // data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-dd").date : null)}
+                    // data={e => (e.row?.fecha ? new SDate(e.row.fecha, "yyyy-MM-dd").date : null)}
+                    textStyle={{ fontSize: 12, color: STheme.color.text }}
+                    dateFormat="yyyy-MM-dd"
+                />
+
+                <DinamicTable.Col
+                    key="estado_caja"
+                    label="ESTADO"
+                    width={80}
+                    data={e => e.row?.estado_caja ?? "Desconocido"}
+                    customComponent={e => {
+                        const estado = e.row?.estado_caja ?? "Desconocido";
+                        return (
+                            <SView col={"xs-12"} row center padding={8}>
+                                <SView
+                                    padding={4}
+                                    center
+                                    row
+                                    style={{
+                                        backgroundColor: estado === "cerrada" ? "#503131ff" : "#2a533cff",
+                                        borderColor: estado === "cerrada" ? "#ef4444" : "#22c45e",
+                                        borderWidth: 1,
+                                        borderRadius: 20,
+                                    }}
+                                >
+                                    <SView
+                                        width={6}
+                                        height={6}
+                                        style={{
+                                            backgroundColor: estado === "cerrada" ? "#ef4545" : "#22c45e",
+                                            borderRadius: 8,
+                                        }}
+                                    />
+                                    <SText
+                                        style={{
+                                            textTransform: "uppercase",
+                                            fontSize: 10,
+                                            color: estado === "cerrada" ? "#ef4444" : "#22c45e",
+                                        }}
+                                    >
+                                        {estado}
+                                    </SText>
+                                </SView>
+                            </SView>
+                        );
+                    }}
+                />
+
+                <DinamicTable.Col
+                    key="fecha_on"
+                    label="F.APERTURA"
+                    width={110}
+                    dataType="date"
+                    data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date : null)}
+                    textStyle={{ fontSize: 12, color: STheme.color.text }}
+                    dateFormat="yyyy-MM-dd hh:mm"
+                />
+
+                <DinamicTable.Col
+                    key="fecha_cierre"
+                    label="F.CIERRE"
+                    width={110}
+                    dataType="date"
+                    data={e =>
+                        e.row?.fecha_cierre ? new SDate(e.row.fecha_cierre, "yyyy-MM-ddThh:mm:ss").date : null
+                    }
+                    dateFormat="yyyy-MM-dd hh:mm"
                     textStyle={{ fontSize: 12, color: STheme.color.text }}
                 />
 
+                <DinamicTable.Col
+                    key="tiempos"
+                    label="DURACIÓN"
+                    width={90}
+                    data={e => {
+                        const { fecha_on, fecha_cierre } = e.row;
+                        if (!fecha_on || !fecha_cierre) return null;
+                        return new Date(fecha_cierre).getTime() - new Date(fecha_on).getTime();
+                    }}
+                    format={e => {
+                        const { fecha_on, fecha_cierre } = e.row;
+                        if (!fecha_on || !fecha_cierre) {
+                            return (
+                                <SView col={"xs-12"} row center>
+                                    <SView
+                                        padding={4}
+                                        center
+                                        row
+                                        style={{
+                                            backgroundColor: "#e8eef0ff",
+                                            borderColor: "#2596be",
+                                            borderWidth: 1,
+                                            borderRadius: 20,
+                                        }}
+                                    >
+                                        <SText style={{ textTransform: "uppercase", fontSize: 10, color: "#159ecfff" }}>
+                                            En curso
+                                        </SText>
+                                    </SView>
+                                </SView>
+                            );
+                        }
+                        return new SDate(fecha_on).timeSince(new SDate(fecha_cierre));
+                    }}
+                    textStyle={{ fontSize: 12, color: STheme.color.text }}
+                />
+
+                <DinamicTable.Col
+                    key="moneda"
+                    wrap
+                    label="MONEDA"
+                    width={60}
+                    data={e => e.row?.moneda.observacion ?? 0}
+                />
+
+
+                <DinamicTable.Col
+                    key="monedasa"
+                    wrap
+                    center
+                    label="TIPO DE CAMBIO"
+                    width={60}
+                    data={e => e.row?.moneda.tipo_cambio ?? 0}
+                />
+
+                <DinamicTable.Col
+                    key="total_monto_apertura"
+                    wrap
+                    label="MONTO APERTURA"
+                    width={60}
+                    data={e => e.row?.total_monto_apertura ?? 0}
+                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#007bff33" }}
+                    format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
+                />
+
+                <DinamicTable.Col
+                    key="total_monto_venta"
+                    wrap
+                    label="VENTAS TOTALES"
+                    width={60}
+                    data={e => e.row?.total_monto_venta ?? 0}
+                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#28a74566" }}
+                    format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
+                />
+
+                <DinamicTable.Col
+                    key="total_monto_ingresos"
+                    wrap
+                    label="INGRESOS TOTALES"
+                    width={60}
+                    data={e => e.row?.total_monto_ingresos ?? 0}
+                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#28a74533" }}
+                    format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
+                />
+
+                <DinamicTable.Col
+                    key="total_cantidad_ingresos"
+                    wrap
+                    label="CANT. DE INGRESOS"
+                    width={60}
+                    data={e => e.row?.total_cantidad_ingresos ?? 0}
+                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#28a74533" }}
+                    format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
+                />
+
+                <DinamicTable.Col
+                    key="total_monto_compra"
+                    wrap
+                    label="MONTO COMPRAS"
+                    width={60}
+                    data={e => e.row?.total_monto_compra ?? 0}
+                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#ffc10766" }}
+                    format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
+                />
+
+                <DinamicTable.Col
+                    key="total_monto_egresos"
+                    wrap
+                    label="EGRESOS TOTALES"
+                    width={60}
+                    data={e => e.row?.total_monto_egresos ?? 0}
+                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#ffc10733" }}
+                    format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
+                />
+
+                <DinamicTable.Col
+                    key="total_cantidad_egresos"
+                    wrap
+                    label="CANT. DE EGRESOS"
+                    width={60}
+                    data={e => e.row?.total_cantidad_egresos ?? 0}
+                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#ffc10733" }}
+                    format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
+                />
+
+                <DinamicTable.Col
+                    key="admin"
+                    label="CAJERO"
+                    width={120}
+                    data={e => e.row?.usuario?.Nombres ?? "Sin cajero"}
+                    customComponent={e => {
+                        const key = e.row?.key_usuario;
+                        const nombre = e.row?.usuario?.Nombres ?? "Sin cajero";
+                        return key ? (
+                            <SView col="xs-12" row center>
+                                <SView
+                                    style={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: 100,
+                                        overflow: "hidden",
+                                        backgroundColor: STheme.color.card + "66",
+                                    }}
+                                >
+                                    <SImage
+                                        src={`${SSocket.api.root}usuario/${key}`}
+                                        style={{ resizeMode: "cover" }}
+                                    />
+                                </SView>
+                                <SView width={5} />
+                                <SText flex numberOfLines={1} style={e.textStyle}>
+                                    {nombre}
+                                </SText>
+                            </SView>
+                        ) : (
+                            <SText>Sin cajero</SText>
+                        );
+                    }}
+                />
             </DinamicTable>
         );
     }
+
     render() {
         return (
-            <SPage title="Tabla Historial Caja" disableScroll>
+            <SPage title="Tabla de Caja" disableScroll>
                 <SView width={260} center>
                     <DateTimeBetween
-                        fecha_inicio='2024-01-01'
-                        fecha_fin={new SDate().toString("yyyy-MM-dd")}
+                        fecha_inicio={this.state.fecha_inicio}
+                        fecha_fin={this.state.fecha_fin}
                         onChange={({ fecha_inicio, fecha_fin }) => {
-                            console.log("Fechas seleccionadas:", fecha_inicio, fecha_fin);
-                            this.setState({ fecha_inicio, fecha_fin }); // si lo quieres en el padre
-                            this.DinamicTable?.loadData(); // recargar la tabla
+                            // console.log("Fechas seleccionadas:", fecha_inicio, fecha_fin);
+                            this.setState({ fecha_inicio, fecha_fin }, () => {
+                                // Recargar los datos de la tabla al cambiar fechas
+                                this.loadInitialData().then(data => {
+                                    this.setState({ data });
+                                    if (this.DinamicTable) {
+                                        this.DinamicTable.loadData();
+                                    }
+                                });
+                            });
                         }}
                     />
                 </SView>
-                {this.mostrarTabla()}
-                <SHr height={20} />
+                {this.state.data.length === 0 ? (
+                    <SView col="xs-12" center>
+                        <SText>No hay datos disponibles</SText>
+                    </SView>
+                ) : (
+                    this.renderTabla()
+                )}
+                <SHr h={16} />
             </SPage>
         );
     }
