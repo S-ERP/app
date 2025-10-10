@@ -17,12 +17,13 @@ import MDL from "../../../MDL";
 type Props = {
     key_empresa: string;
     key_caja_detalle: string;
+    data_vouchers: any;
 
     onSuccess?: (resp: any) => void;
 };
 
 export default class PopupUploadVoucher extends Component<Props> {
-    static open(key_empresa: string, key_caja_detalle: string) {
+    static open(key_empresa: string, key_caja_detalle: string, data_vouchers: any) {
         const key = `PopupUploadVoucher_${Date.now()}`;
         SPopup.open({
             key,
@@ -40,7 +41,7 @@ export default class PopupUploadVoucher extends Component<Props> {
                     }}
                     withoutFeedback
                 >
-                    <PopupUploadVoucher key_empresa={key_empresa} key_caja_detalle={key_caja_detalle} />
+                    <PopupUploadVoucher key_empresa={key_empresa} key_caja_detalle={key_caja_detalle} data_vouchers={data_vouchers} />
                 </SView>
             ),
         });
@@ -128,11 +129,20 @@ export default class PopupUploadVoucher extends Component<Props> {
         }
     };
 
+    // traerdaaaaaaaa(){
+
+    //     // MDL.caja.getDetalle
+
+    //     return <SText> {} </SText>
+    // }
+
+
     render() {
         return (
             <SView col={"xs-12"} padding={12}>
                 <SText fontSize={18} bold center color={STheme.color.text}>
                     📤 Subir Voucher
+                    {/* {JSON.stringify(this.props.data_vouchers)} */}
                 </SText>
                 <SHr h={12} />
 
