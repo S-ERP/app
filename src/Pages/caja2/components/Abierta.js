@@ -72,7 +72,7 @@ export default class Abierta extends Component {
                     <SText
                         // disabled={true} 
                         onPress={() => {
-                            SPopup.date("Selecciona ss la fecha", (a) => {
+                            SPopup.date("Selecciona la fecha", (a) => {
                                 console.log("devorame " + JSON.stringify(this.props.caja))
                                 Model.caja.Action.editar({
                                     data: {
@@ -86,7 +86,7 @@ export default class Abierta extends Component {
                                     console.error(e);
                                 })
                             })
-                        }}>Cambiar fecha gestion</SText>
+                        }}>Cambiar fecha gestión</SText>
                 </SView>
             </SView>
             <SHr />
@@ -125,12 +125,13 @@ export default class Abierta extends Component {
                         </SView>
                     }}
                     renderItem={({ item, index }) => {
-                        return <SView col={"xs-12"} center>
-                            <SView col={"xs-11 sm-10 md-8 lg-6"} >
+                        return <SView col={"xs-12"} center >
+                            <SView col={"xs-11 sm-10 md-8 lg-6"}>
                                 <DetalleItem item={item} index={this.state.movimientos.length - index} empresa={this.state.empresa} tipo_pago={this.state.tipo_pago} />
                             </SView>
                         </SView>
                     }} />
+                <SHr h={20} />
             </SView>
         );
     }

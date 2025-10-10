@@ -68,6 +68,7 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
         return <SView style={{
             padding: 2,
             maxWidth: 140,
+
         }} col={"xs-6 sm-4"} colSquare>
             <SView style={{
                 width: "100%",
@@ -78,7 +79,9 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
                 borderRadius: 8,
                 padding: 4,
                 justifyContent: "center",
-                alignItems: "center"
+                alignItems: "center",
+                backgroundColor: STheme.color.background,
+
             }} >
 
                 <SView row col={"xs-12"} style={{
