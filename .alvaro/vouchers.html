@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vouchers Mejorados</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d5a7b 100%);
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 16px;
+    }
+
+    .vouchers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .voucher-card {
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border-radius: 16px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .voucher-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .voucher-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      border-color: #6366f1;
+    }
+
+    .voucher-card:hover::before {
+      opacity: 1;
+    }
+
+    .voucher-card.active {
+      border-color: #10b981;
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    }
+
+    .voucher-card.active .amount {
+      color: #059669;
+    }
+
+    .voucher-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .voucher-card.active .voucher-icon {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .voucher-icon svg {
+      width: 24px;
+      height: 24px;
+      color: white;
+    }
+
+    .voucher-info {
+      position: relative;
+      z-index: 1;
+    }
+
+    .voucher-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .amount {
+      font-size: 24px;
+      font-weight: 700;
+      color: #6366f1;
+      margin-bottom: 12px;
+    }
+
+    .currency-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(99, 102, 241, 0.1);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6366f1;
+    }
+
+    .voucher-card.active .currency-badge {
+      background: rgba(16, 185, 129, 0.1);
+      color: #059669;
+    }
+
+    .actions-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .action-btn {
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn.primary {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .action-btn.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .action-btn.secondary {
+      background: white;
+      color: #374151;
+      border: 2px solid #e5e7eb;
+    }
+
+    .action-btn.secondary:hover {
+      border-color: #6366f1;
+      color: #6366f1;
+      transform: translateY(-2px);
+    }
+
+    .action-btn.danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .action-btn.danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    .stats-bar {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      justify-content: space-around;
+      margin-top: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .vouchers-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+      }
+
+      .voucher-card {
+        padding: 16px;
+      }
+
+      .actions-bar {
+        flex-direction: column;
+      }
+
+      .action-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .stats-bar {
+        flex-direction: column;
+        gap: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Gestión de Vouchers</h1>
+      <p>Selecciona o administra tus vouchers disponibles</p>
+    </div>
+
+    <div class="vouchers-grid">
+      <div class="voucher-card">
+        <div class="voucher-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="voucher-info">
+          <div class="voucher-title">Recepción Dólar Americano</div>
+          <div class="amount">EUR 0.00</div>
+          <span class="currency-badge">EUR</span>
+        </div>
+      </div>
+
+      <div class="voucher-card">
+        <div class="voucher-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+        </div>
+        <div class="voucher-info">
+          <div class="voucher-title">Recepción Dólar Americano</div>
+          <div class="amount">$US 0.00</div>
+          <span class="currency-badge">USD</span>
+        </div>
+      </div>
+
+      <div class="voucher-card">
+        <div class="voucher-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+          </svg>
+        </div>
+        <div class="voucher-info">
+          <div class="voucher-title">Efectivo en Bolivianos</div>
+          <div class="amount">EUR 0.00</div>
+          <span class="currency-badge">EUR</span>
+        </div>
+      </div>
+
+      <div class="voucher-card active">
+        <div class="voucher-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="voucher-info">
+          <div class="voucher-title">Efectivo en Bolivianos</div>
+          <div class="amount">BOB 758.00</div>
+          <span class="currency-badge">BOB</span>
+        </div>
+      </div>
+
+      <div class="voucher-card">
+        <div class="voucher-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+          </svg>
+        </div>
+        <div class="voucher-info">
+          <div class="voucher-title">Efectivo en Dólares</div>
+          <div class="amount">$US 0.00</div>
+          <span class="currency-badge">USD</span>
+        </div>
+      </div>
+
+      <div class="voucher-card">
+        <div class="voucher-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+        </div>
+        <div class="voucher-info">
+          <div class="voucher-title">Efectivo en Dólares</div>
+          <div class="amount">BOB 0.00</div>
+          <span class="currency-badge">BOB</span>
+        </div>
+      </div>
+
+      <div class="voucher-card">
+        <div class="voucher-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+        </div>
+        <div class="voucher-info">
+          <div class="voucher-title">Compra de cambio de moneda</div>
+          <div class="amount">EUR 0.00</div>
+          <span class="currency-badge">EUR</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-value">BOB 758.00</div>
+        <div class="stat-label">Total Activo</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">7</div>
+        <div class="stat-label">Vouchers Totales</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">1</div>
+        <div class="stat-label">Con Saldo</div>
+      </div>
+    </div>
+
+    <div class="actions-bar">
+      <button class="action-btn secondary">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+        </svg>
+        Transferir
+      </button>
+      <button class="action-btn secondary">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+        </svg>
+        Vender Productos
+      </button>
+      <button class="action-btn primary">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+        </svg>
+        Subir Vouchers
+      </button>
+      <button class="action-btn secondary">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Cobrar a Clientes
+      </button>
+      <button class="action-btn danger">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        Cerrar la Caja
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const cards = document.querySelectorAll('.voucher-card');
+    
+    cards.forEach(card => {
+      card.addEventListener('click', function() {
+        cards.forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

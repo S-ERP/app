@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Caja - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            background: '#0a0a0a',
+            foreground: '#ededed',
+            card: '#1a1a1a',
+            'card-foreground': '#ededed',
+            primary: '#3b82f6',
+            'primary-foreground': '#ffffff',
+            secondary: '#262626',
+            'secondary-foreground': '#a3a3a3',
+            accent: '#10b981',
+            'accent-foreground': '#ffffff',
+            muted: '#262626',
+            'muted-foreground': '#737373',
+            border: '#2a2a2a',
+            destructive: '#ef4444',
+            'destructive-foreground': '#ffffff',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .currency-card {
+      transition: all 0.2s ease;
+    }
+    
+    .currency-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    
+    .action-btn {
+      transition: all 0.2s ease;
+    }
+    
+    .action-btn:hover {
+      transform: translateY(-1px);
+    }
+    
+    .transaction-item {
+      transition: all 0.2s ease;
+    }
+    
+    .transaction-item:hover {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+  </style>
+</head>
+<body class="bg-background text-foreground min-h-screen">
+  
+   Header 
+  <header class="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-xl font-semibold text-balance">Sistema de Caja</h1>
+            <p class="text-sm text-muted-foreground">Gestión de Efectivo y Transacciones</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-muted-foreground hidden sm:inline">Jueves, 09 de Octubre del 2025</span>
+          <span class="text-sm font-medium text-accent hidden sm:inline">06:28</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+     Status Alert 
+    <div class="mb-6 bg-accent/10 border border-accent/20 rounded-lg p-4 flex items-start gap-3">
+      <svg class="w-5 h-5 text-accent flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+      </svg>
+      <div class="flex-1">
+        <p class="text-sm font-medium text-accent">La caja se encuentra abierta</p>
+        <p class="text-xs text-muted-foreground mt-1">Registrada el Jueves, 09 de Octubre del 2025 a las 06:28</p>
+      </div>
+    </div>
+
+     Currency Cards Grid 
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      
+       Payoneer Euro 
+      <div class="currency-card bg-card border border-border rounded-xl p-5">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs text-muted-foreground">Payoneer</p>
+              <p class="text-sm font-medium">Euro</p>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <p class="text-3xl font-bold text-balance">EUR 0,00</p>
+          <div class="flex items-center gap-4 text-xs">
+            <div class="flex items-center gap-1">
+              <span class="text-muted-foreground">↑</span>
+              <span class="text-muted-foreground">EUR 0,0</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-muted-foreground">↓</span>
+              <span class="text-muted-foreground">EUR 0,0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+       Payoneer Dollar 
+      <div class="currency-card bg-card border border-border rounded-xl p-5">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs text-muted-foreground">Payoneer</p>
+              <p class="text-sm font-medium">Dollar</p>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <p class="text-3xl font-bold text-balance">$US 0,00</p>
+          <div class="flex items-center gap-4 text-xs">
+            <div class="flex items-center gap-1">
+              <span class="text-muted-foreground">↑</span>
+              <span class="text-muted-foreground">$US 0,0</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-muted-foreground">↓</span>
+              <span class="text-muted-foreground">$US 0,0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+       Efectivo en Euros 
+      <div class="currency-card bg-card border border-border rounded-xl p-5">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs text-muted-foreground">Efectivo</p>
+              <p class="text-sm font-medium">Euros</p>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <p class="text-3xl font-bold text-balance">EUR 0,00</p>
+          <div class="flex items-center gap-4 text-xs">
+            <div class="flex items-center gap-1">
+              <span class="text-muted-foreground">↑</span>
+              <span class="text-muted-foreground">EUR 0,0</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-muted-foreground">↓</span>
+              <span class="text-muted-foreground">EUR 0,0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+       Efectivo en Bolivianos - Highlighted 
+      <div class="currency-card bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/30 rounded-xl p-5">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs text-accent/80">Efectivo</p>
+              <p class="text-sm font-medium text-accent">Bolivianos</p>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <p class="text-3xl font-bold text-accent text-balance">BOB 778,50</p>
+          <div class="flex items-center gap-4 text-xs">
+            <div class="flex items-center gap-1">
+              <span class="text-accent/70">↑</span>
+              <span class="text-accent/70">BOB 778,5</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-accent/70">↓</span>
+              <span class="text-accent/70">BOB 0,0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+       Efectivo en Dollars 
+      <div class="currency-card bg-card border border-border rounded-xl p-5">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs text-muted-foreground">Efectivo</p>
+              <p class="text-sm font-medium">Dollars</p>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <p class="text-3xl font-bold text-balance">$US 0,00</p>
+          <div class="flex items-center gap-4 text-xs">
+            <div class="flex items-center gap-1">
+              <span class="text-muted-foreground">↑</span>
+              <span class="text-muted-foreground">$US 0,0</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-muted-foreground">↓</span>
+              <span class="text-muted-foreground">$US 0,0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+       Compra al crédito 
+      <div class="currency-card bg-card border border-border rounded-xl p-5">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs text-muted-foreground">Compra al crédito</p>
+              <p class="text-sm font-medium">Boliviano</p>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <p class="text-3xl font-bold text-balance">BOB 0,00</p>
+          <div class="flex items-center gap-4 text-xs">
+            <div class="flex items-center gap-1">
+              <span class="text-muted-foreground">↑</span>
+              <span class="text-muted-foreground">BOB 0,0</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-muted-foreground">↓</span>
+              <span class="text-muted-foreground">BOB 0,0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+     Action Buttons 
+    <div class="mb-8">
+      <h2 class="text-sm font-medium text-muted-foreground mb-4">Acciones Rápidas</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <button class="action-btn bg-card hover:bg-secondary border border-border rounded-lg p-4 text-left transition-all">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+          </div>
+          <p class="text-sm font-medium">Transferir</p>
+        </button>
+
+        <button class="action-btn bg-card hover:bg-secondary border border-border rounded-lg p-4 text-left transition-all">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+          <p class="text-sm font-medium">Vender Productos</p>
+        </button>
+
+        <button class="action-btn bg-card hover:bg-secondary border border-border rounded-lg p-4 text-left transition-all">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <p class="text-sm font-medium">Comprar Productos</p>
+        </button>
+
+        <button class="action-btn bg-card hover:bg-secondary border border-border rounded-lg p-4 text-left transition-all">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <p class="text-sm font-medium">Pagar a Proveedores</p>
+        </button>
+
+        <button class="action-btn bg-card hover:bg-secondary border border-border rounded-lg p-4 text-left transition-all">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p class="text-sm font-medium">Cobrar a Clientes</p>
+        </button>
+
+        <button class="action-btn bg-destructive/10 hover:bg-destructive/20 border border-destructive/30 rounded-lg p-4 text-left transition-all">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <p class="text-sm font-medium text-destructive">Cerrar la Caja</p>
+        </button>
+      </div>
+    </div>
+
+     Date Management 
+    <div class="mb-8">
+      <button class="action-btn bg-card hover:bg-secondary border border-border rounded-lg px-4 py-3 flex items-center gap-2 text-sm font-medium">
+        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        Cambiar fecha gestión
+      </button>
+    </div>
+
+     Transaction History 
+    <div class="bg-card border border-border rounded-xl overflow-hidden">
+      <div class="p-6 border-b border-border">
+        <h2 class="text-lg font-semibold text-balance">Historial de Transacciones</h2>
+        <p class="text-sm text-muted-foreground mt-1">Últimas operaciones registradas</p>
+      </div>
+      
+      <div class="divide-y divide-border">
+        
+         Transaction 1 
+        <div class="transaction-item p-6">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4 flex-1">
+              <div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span class="text-sm font-bold text-accent">2</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <h3 class="font-medium text-balance">Venta desde punto de venta</h3>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-accent/10 text-accent">
+                    Venta
+                  </span>
+                </div>
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                  <span class="flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    2025-10-10 06:05
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Efectivo en Bolivianos Santa María
+                  </span>
+                  <span class="text-xs">Vouchers Totales: 0</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-col items-end gap-2 flex-shrink-0">
+              <p class="text-xl font-bold text-accent text-balance">BOB 20,50</p>
+              <button class="inline-flex items-center gap-1 px-3 py-1.5 bg-secondary hover:bg-secondary/80 rounded-lg text-xs font-medium transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                Subir Vouchers
+              </button>
+            </div>
+          </div>
+        </div>
+
+         Transaction 2 
+        <div class="transaction-item p-6">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4 flex-1">
+              <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span class="text-sm font-bold text-primary">1</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <h3 class="font-medium text-balance">Apertura de caja</h3>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary">
+                    Apertura
+                  </span>
+                </div>
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                  <span class="flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    2025-10-09 06:28
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Efectivo en Bolivianos Santa María
+                  </span>
+                  <span class="text-xs">Vouchers Totales: 4</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-col items-end gap-2 flex-shrink-0">
+              <p class="text-xl font-bold text-accent text-balance">BOB 758,00</p>
+              <button class="inline-flex items-center gap-1 px-3 py-1.5 bg-secondary hover:bg-secondary/80 rounded-lg text-xs font-medium transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                Subir Vouchers
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>

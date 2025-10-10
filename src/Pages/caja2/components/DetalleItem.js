@@ -25,7 +25,7 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
         return <SView key={index} row padding={4} style={{
             borderBottomWidth: 1,
             borderColor: STheme.color.card,
-            backgroundColor: STheme.color.background,
+            // backgroundColor: STheme.color.background,
             borderRadius: 4,
         }}>
 
@@ -33,6 +33,7 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                 <SView row style={{
                     alignItems: "center"
                 }}>
+
                     <SView style={{
                         width: 20,
                         height: 20,
@@ -66,7 +67,7 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         padding: 2,
                         borderRadius: 4
                     }}>
-                        <SText fontSize={10}   >  {MDL.caja.detalle_types[item.tipo]?.label || item.tipo}</SText>
+                        <SText fontSize={10} >  {MDL.caja.detalle_types[item.tipo]?.label || item.tipo}</SText>
                     </View>
                     <SView width={8} />
                     {item.codigo_comprobante && <><View style={{
@@ -114,25 +115,18 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
 
 
                     <SView width={8} />
-                    <View style={{
-                        // backgroundColor: STheme.color.card,
-                        borderWidth: 1,
-                        borderColor: STheme.color.card,
-                        padding: 2,
-                        borderRadius: 4,
-                        flexDirection: "row",
-                        alignItems: "center"
-                    }}>
+                    <View style={{ borderWidth: 1, borderColor: STheme.color.card, padding: 2, borderRadius: 4, flexDirection: "row", alignItems: "center" }}>
+
                         {/* <SView width={16} height={16}> */}
                         {/* {this?.props?.tipo_pago?.[item.key_tipo_pago] && <SIconApp name={this?.props?.tipo_pago?.[item.key_tipo_pago].icon} />} */}
                         {/* </SView> */}
                         {/* <SView width={4} /> */}
+
                         <SText color={STheme.color.lightGray} fontSize={10}>{item.empresa_tipo_pago?.descripcion}</SText>
                         {/* <SText color={STheme.color.lightGray} fontSize={10}>{item.key_punto_venta_tipo_pago}</SText> */}
                     </View>
                     <SView width={8} />
-                    {moneda && <View style={{
-                        // backgroundColor: STheme.color.card,
+                    {/* {moneda && <View style={{
                         borderWidth: 1,
                         borderColor: STheme.color.card,
                         padding: 2,
@@ -144,20 +138,22 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         <SView width={4} />
                         <SText color={STheme.color.lightGray} fontSize={10}>{item.tipo_cambio}</SText>
                         <SView width={4} />
-
-
                     </View>
-                    }
-                    <SText color={STheme.color.lightGray} fontSize={10}> Archivos {JSON.stringify(item.vouchers.length)}</SText>
+                    } */}
 
-                    <SView style={{
-                        color: STheme.color.text, margin: 5,
-                        backgroundColor: MDL.caja.detalle_types[item.tipo]?.color + "66" || STheme.color.card,
-                    }}
+                    <View style={{ borderWidth: 1, borderColor: STheme.color.card, padding: 2, borderRadius: 4, flexDirection: "row", alignItems: "center" }}>
+                        <SText color={STheme.color.lightGray} fontSize={10}>Vouchers Totales {JSON.stringify(item.vouchers?.length ?? 0)}</SText>
+                    </View>
+
+                    {/* <SView width={140} style={{ justifyContent: "space-between", color: STheme.color.text, margin: 5, backgroundColor: STheme.color.card, paddingHorizontal: 10, height: 30, borderRadius: 40 }}
                         onPress={() =>
                             PopupUploadVoucher.open(empresa.key, item.key, item.vouchers)
-                        }
-                    ><SText>+ subir Voucher</SText></SView>
+                        } row center>
+
+                        <SIconApp name='upImgNube' fill={STheme.color.background} width={18} />
+
+                        <SText>Subir Voucher</SText>
+                    </SView> */}
 
 
                 </SView>
@@ -165,9 +161,19 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
             <SView style={{
                 alignItems: "flex-end"
             }}>
-                <SView row center>
+                <SView center>
                     <SText fontSize={18} bold color={color}>{moneda?.observacion} {SMath.formatMoney(item.monto)}</SText>
                     {/* <SView width={4} /> */}
+                    <SView width={120} style={{ justifyContent: "space-between", color: STheme.color.text, margin: 5, backgroundColor: STheme.color.card, paddingHorizontal: 6, height: 30, borderRadius: 40 }}
+                        onPress={() =>
+                            PopupUploadVoucher.open(empresa.key, item.key, item.vouchers)
+                        } row center>
+
+                        <SIconApp name='upImgNube' fill={STheme.color.text} width={16} />
+
+                        <SText fontSize={13} color={STheme.color.text} >Subir Vouchers</SText>
+                    </SView>
+
 
                 </SView>
 

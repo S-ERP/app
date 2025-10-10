@@ -90,7 +90,7 @@ export default class InputFoto extends React.Component<InputFotoProps> {
             activeOpacity={0.8}>
             <DropZoneWeb handleDropFiles={this.handleDropFiles.bind(this)}>
                 {this.state.src && <SImage src={this.state.src} style={{
-                    resizeMode: "cover",
+                    // resizeMode: "cover",
                     ...(this.props.imageStyle || {}),
                 }} />}
             </DropZoneWeb>

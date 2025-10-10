@@ -26,7 +26,7 @@ type Props = {
 
 export default class PopupUploadVoucher extends Component<Props> {
     static open(key_empresa: string, key_caja_detalle: string, data_vouchers?: any[]) {
-        const key = `PopupUploadVoucher_${Date.now()}`;
+        const key = `PopupUploadVoucher_`;
         SPopup.open({
             key,
             content: (
@@ -66,18 +66,13 @@ export default class PopupUploadVoucher extends Component<Props> {
      * - Fusiona con las existentes.
      * - Evita duplicados (por nombre).
      */
+    /**
+   * 🖼️ Cuando el usuario arrastra o quita imágenes desde el input:
+   * - Se actualiza automáticamente el listado de vouchers.
+   * - Evita duplicados y elimina los que ya no estén seleccionados.
+   */
     handleFileChange = (e: any) => {
         const nuevos = Array.isArray(e) ? e.flat() : [];
-        if (nuevos.length === 0) {
-            return SNotification.send({
-                title: "Sin archivos seleccionados",
-                body: "Por favor, selecciona al menos una imagen para subir.",
-                color: STheme.color.warning,
-                time: 2500,
-            });
-        }
-
-        // Mapeamos los nuevos archivos con información adicional
         const nuevosArchivos = nuevos.map((item: any) => ({
             file: item.file,
             name: item.file.name,
@@ -87,27 +82,27 @@ export default class PopupUploadVoucher extends Component<Props> {
             url: URL.createObjectURL(item.file),
         }));
 
-        // 🔹 Fusionar sin duplicados (por nombre)
-        const fusionados = [
-            ...this.state.uploadedVouchers.filter(
-                (ex: any) =>
-                    !nuevosArchivos.find((nu: any) => nu.name === ex.name)
-            ),
-            ...nuevosArchivos,
-        ];
+        // 🔹 Fusionar archivos del servidor + nuevos seleccionados
+        const actualesServidor = this.state.uploadedVouchers.filter(v => !v.file);
+        const fusionados = [...actualesServidor];
 
-        this.setState({ uploadedVouchers: fusionados });
+        // 🔹 Añadimos los nuevos, sin duplicar nombres
+        nuevosArchivos.forEach(nuevo => {
+            if (!fusionados.find(f => f.name === nuevo.name)) {
+                fusionados.push(nuevo);
+            }
+        });
 
-        // 🔹 Mantener solo archivos nuevos para subir
-        const nuevosFiles = nuevos.map((it: any) => it.file);
-        const noDuplicados = [
-            ...this.files,
-            ...nuevosFiles.filter(
-                (nf) => !this.files.find((f) => f.name === nf.name)
-            ),
-        ];
-        this.files = noDuplicados;
+        // 🔹 Si se quitaron archivos del input, los removemos también del registro
+        const nombresActuales = nuevosArchivos.map(n => n.name);
+        const filtrados = fusionados.filter(
+            f => f.file ? nombresActuales.includes(f.name) : true
+        );
+
+        this.files = nuevosArchivos.map(n => n.file); // Solo los archivos nuevos que siguen presentes
+        this.setState({ uploadedVouchers: filtrados });
     };
+
 
     /** ❌ Quitar imagen (solo local, antes de guardar) */
     removeVoucher = (index: number) => {
@@ -174,7 +169,8 @@ export default class PopupUploadVoucher extends Component<Props> {
 
             if (this.props.onSuccess) this.props.onSuccess(resp);
 
-            setTimeout(() => SPopup.close(), 700);
+            SPopup.close("PopupUploadVoucher_");
+            // setTimeout(() => SPopup.close(), 700);
         } catch (error) {
             console.error("❌ Error al guardar vouchers:", error);
             SNotification.send({
