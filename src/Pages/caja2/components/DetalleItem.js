@@ -6,6 +6,7 @@ import { Container } from '../../../Components';
 import SelectTipoPago from './SelectTipoPago';
 import SIconApp from '../../../Assets/SIconApp';
 import TotalTipoPago from './TotalTipoPago';
+import PopupUploadVoucher from './PopupUploadVoucher';
 
 
 export default class DetalleItem extends Component<{ item: any, index: number, tipo_pago: any, empresa: any }> {
@@ -13,6 +14,9 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
 
     render() {
         const { item, index, empresa } = this.props;
+
+        console.log("traeloaaaaaaaaaaaaaaaa " + JSON.stringify(item))
+
         let color = STheme.color.success;
         if (item.monto < 0) {
             color = STheme.color.danger;
@@ -36,7 +40,7 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         <SText color={STheme.color.lightGray} fontSize={10} >{index}</SText>
                     </SView>
                     <SView width={4} />
-                    <SText >{item.descripcion}</SText>
+                    <SText > {item.descripcion}</SText>
 
                 </SView>
                 <SHr h={4} />
@@ -60,7 +64,7 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         padding: 2,
                         borderRadius: 4
                     }}>
-                        <SText fontSize={10}   >{MDL.caja.detalle_types[item.tipo]?.label || item.tipo}</SText>
+                        <SText fontSize={10}   >  {MDL.caja.detalle_types[item.tipo]?.label || item.tipo}</SText>
                     </View>
                     <SView width={8} />
                     {item.codigo_comprobante && <><View style={{
@@ -104,6 +108,9 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         <SView width={4} />
                         <SText color={STheme.color.lightGray} fontSize={10}>{this?.props?.tipo_pago?.[item.key_tipo_pago]?.descripcion || item.key_tipo_pago}</SText>
                     </View>
+
+
+
                     <SView width={8} />
                     <View style={{
                         // backgroundColor: STheme.color.card,
@@ -115,7 +122,7 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         alignItems: "center"
                     }}>
                         {/* <SView width={16} height={16}> */}
-                            {/* {this?.props?.tipo_pago?.[item.key_tipo_pago] && <SIconApp name={this?.props?.tipo_pago?.[item.key_tipo_pago].icon} />} */}
+                        {/* {this?.props?.tipo_pago?.[item.key_tipo_pago] && <SIconApp name={this?.props?.tipo_pago?.[item.key_tipo_pago].icon} />} */}
                         {/* </SView> */}
                         {/* <SView width={4} /> */}
                         <SText color={STheme.color.lightGray} fontSize={10}>{item.empresa_tipo_pago?.descripcion}</SText>
@@ -136,6 +143,16 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         <SText color={STheme.color.lightGray} fontSize={10}>{item.tipo_cambio}</SText>
                     </View>
                     }
+
+                    <SView style={{
+                        color: STheme.color.text, margin: 5,
+                        backgroundColor: MDL.caja.detalle_types[item.tipo]?.color + "66" || STheme.color.card,
+                    }}
+                        onPress={() =>
+                            PopupUploadVoucher.open(empresa.key, item.key)
+                        }
+                    ><SText>+ subir Voucher</SText></SView>
+
 
                 </SView>
             </SView>
