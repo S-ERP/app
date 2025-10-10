@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { ScrollView } from 'react-native';
+import React, { Component } from "react";
+import { ScrollView } from "react-native";
 import {
     SForm,
     SHr,
@@ -11,15 +11,16 @@ import {
     STheme,
     SView,
     Upload,
-} from 'servisofts-component';
-import SSocket from 'servisofts-socket';
-import Btn from '../../empresa/config/Components/Btn';
-import MDL from '../../../MDL';
+} from "servisofts-component";
+import SSocket from "servisofts-socket";
+import Btn from "../../empresa/config/Components/Btn";
+import MDL from "../../../MDL";
+import { SDate } from "servisofts-component"; // ✅ Importamos SDate para el control de caché
 
 type Props = {
     key_empresa: string;
     key_caja_detalle: string;
-    data_vouchers?: any[]; // Lista de vouchers ya guardados
+    data_vouchers?: any[];
     onSuccess?: (resp: any) => void;
 };
 
@@ -31,8 +32,8 @@ export default class PopupUploadVoucher extends Component<Props> {
             content: (
                 <SView
                     style={{
-                        width: '100%',
-                        maxHeight: '100%',
+                        width: "100%",
+                        maxHeight: "100%",
                         maxWidth: 500,
                         borderRadius: 10,
                         borderColor: STheme.color.card,
@@ -60,70 +61,95 @@ export default class PopupUploadVoucher extends Component<Props> {
         uploadedVouchers: this.props.data_vouchers ?? [],
     };
 
-    /** 🔹 Captura los archivos seleccionados y los fusiona con los existentes */
+    /**
+     * 🖼️ Al seleccionar nuevas imágenes:
+     * - Fusiona con las existentes.
+     * - Evita duplicados (por nombre).
+     */
     handleFileChange = (e: any) => {
         const nuevos = Array.isArray(e) ? e.flat() : [];
         if (nuevos.length === 0) {
             return SNotification.send({
-                title: 'Sin archivos',
-                body: 'Debes seleccionar al menos una imagen.',
+                title: "Sin archivos seleccionados",
+                body: "Por favor, selecciona al menos una imagen para subir.",
                 color: STheme.color.warning,
                 time: 2500,
             });
         }
 
+        // Mapeamos los nuevos archivos con información adicional
         const nuevosArchivos = nuevos.map((item: any) => ({
             file: item.file,
             name: item.file.name,
             type: item.file.type,
             size: item.file.size,
             lastModified: item.file.lastModified,
-            url: URL.createObjectURL(item.file), // vista previa local
+            url: URL.createObjectURL(item.file),
         }));
 
-        // 🔹 Fusiona: mantiene los existentes + nuevos
-        this.setState({
-            uploadedVouchers: [...this.state.uploadedVouchers, ...nuevosArchivos],
-        });
+        // 🔹 Fusionar sin duplicados (por nombre)
+        const fusionados = [
+            ...this.state.uploadedVouchers.filter(
+                (ex: any) =>
+                    !nuevosArchivos.find((nu: any) => nu.name === ex.name)
+            ),
+            ...nuevosArchivos,
+        ];
 
-        // 🔹 Guarda los archivos para subirlos luego
-        this.files = [...this.files, ...nuevos.map((it: any) => it.file)];
+        this.setState({ uploadedVouchers: fusionados });
+
+        // 🔹 Mantener solo archivos nuevos para subir
+        const nuevosFiles = nuevos.map((it: any) => it.file);
+        const noDuplicados = [
+            ...this.files,
+            ...nuevosFiles.filter(
+                (nf) => !this.files.find((f) => f.name === nf.name)
+            ),
+        ];
+        this.files = noDuplicados;
     };
 
-    /** 🔹 Elimina una imagen del listado (sin afectar servidor aún) */
+    /** ❌ Quitar imagen (solo local, antes de guardar) */
     removeVoucher = (index: number) => {
         const updated = [...this.state.uploadedVouchers];
         const removed = updated.splice(index, 1);
         this.setState({ uploadedVouchers: updated });
 
-        // También eliminamos el archivo local si existe
+        // Si el archivo era local, también lo eliminamos del buffer
         if (removed[0]?.file) {
             this.files = this.files.filter(f => f.name !== removed[0].file?.name);
         }
+
+        SNotification.send({
+            title: "Imagen eliminada",
+            body: "Se quitó la imagen correctamente.",
+            color: STheme.color.info,
+            time: 1500,
+        });
     };
 
-    /** 🔹 Subir archivos al servidor y registrar en BD */
+    /** 💾 Guardar los vouchers (subir nuevos + registrar todos) */
     handleSubmit = async () => {
         if (!this.state.uploadedVouchers.length) {
             return SNotification.send({
-                title: 'Error',
-                body: 'Debes tener al menos una imagen.',
-                color: STheme.color.danger,
+                title: "Sin imágenes",
+                body: "Debes mantener al menos una imagen antes de guardar.",
+                color: STheme.color.warning,
             });
         }
 
         try {
             this.setState({ loading: true });
 
-            // 1️⃣ Subimos solo los archivos nuevos
+            // 1️⃣ Subir solo los archivos nuevos
             const nuevosArchivos = this.state.uploadedVouchers.filter(v => v.file);
             for (let v of nuevosArchivos) {
                 const uploadUrl = `${SSocket.api.root}upload/empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${v.name}`;
                 await Upload.sendPromise({ file: v.file, compress: false }, uploadUrl);
             }
 
-            // 2️⃣ Construimos la lista completa (existentes + nuevos)
-            const vouchersParaGuardar = this.state.uploadedVouchers.map(v => ({
+            // 2️⃣ Crear payload con todos los vouchers (sin duplicados)
+            const vouchersFinales = this.state.uploadedVouchers.map(v => ({
                 name: v.name,
                 type: v.type,
                 size: v.size,
@@ -133,26 +159,27 @@ export default class PopupUploadVoucher extends Component<Props> {
             const payload = {
                 key_empresa: this.props.key_empresa,
                 key: this.props.key_caja_detalle,
-                vouchers: vouchersParaGuardar,
+                vouchers: vouchersFinales,
             };
 
+            // 3️⃣ Guardar en BD
             const resp = await MDL.caja.editar_detalle(payload);
 
             SNotification.send({
-                title: 'Registro exitoso 🎉',
-                body: 'Los vouchers se guardaron correctamente.',
+                title: "¡Cambios guardados!",
+                body: "Los vouchers fueron actualizados correctamente.",
                 color: STheme.color.success,
                 time: 2500,
             });
 
             if (this.props.onSuccess) this.props.onSuccess(resp);
 
-            setTimeout(() => SPopup.close(), 500);
+            setTimeout(() => SPopup.close(), 700);
         } catch (error) {
-            console.error('❌ Error al subir voucher:', error);
+            console.error("❌ Error al guardar vouchers:", error);
             SNotification.send({
-                title: 'Error',
-                body: 'No se pudo guardar el voucher. Intenta nuevamente.',
+                title: "Error",
+                body: "Ocurrió un problema al guardar los vouchers. Intenta nuevamente.",
                 color: STheme.color.danger,
                 time: 3000,
             });
@@ -161,14 +188,16 @@ export default class PopupUploadVoucher extends Component<Props> {
         }
     };
 
-    /** 🔹 Renderiza las imágenes ya registradas o nuevas */
+    /** 🖼️ Renderiza las imágenes (servidor + locales), con control de caché */
     renderUploadedVouchers() {
         const { uploadedVouchers = [] } = this.state;
         if (!uploadedVouchers.length) return null;
 
         return (
             <SView>
-                <SText bold color={STheme.color.text}>📁 Vouchers registrados:</SText>
+                <SText bold color={STheme.color.text}>
+                    📁 Imágenes registradas
+                </SText>
                 <SHr h={10} />
                 <ScrollView
                     horizontal
@@ -176,9 +205,10 @@ export default class PopupUploadVoucher extends Component<Props> {
                     contentContainerStyle={{ paddingVertical: 10 }}
                 >
                     {uploadedVouchers.map((v, i) => {
+                        // ✅ Forzamos recarga del servidor usando SDate
                         const url =
                             v.url ??
-                            `${SSocket.api.root}empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${v.name}`;
+                            `${SSocket.api.root}empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${v.name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
 
                         return (
                             <SView
@@ -187,31 +217,34 @@ export default class PopupUploadVoucher extends Component<Props> {
                                     width: 120,
                                     height: 120,
                                     marginRight: 10,
-                                    borderRadius: 8,
-                                    overflow: 'hidden',
+                                    borderRadius: 10,
+                                    overflow: "hidden",
                                     borderWidth: 1,
                                     borderColor: STheme.color.card,
                                 }}
                             >
-                                <SImage src={url} style={{ width: '100%', height: '100%' }} />
+                                <SImage
+                                    src={url}
+                                    style={{ width: "100%", height: "100%" }}
+                                />
 
-                                {/* 🔹 Botón para quitar imagen */}
+                                {/* Botón para eliminar imagen */}
                                 <SView
                                     style={{
-                                        position: 'absolute',
+                                        position: "absolute",
                                         top: 4,
                                         right: 4,
-                                        backgroundColor: '#00000088',
+                                        backgroundColor: "#00000088",
                                         width: 28,
                                         height: 28,
                                         borderRadius: 14,
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
+                                        justifyContent: "center",
+                                        alignItems: "center",
                                     }}
                                     onPress={() => this.removeVoucher(i)}
                                 >
                                     <SText color="#fff" bold>
-                                        X
+                                        ✕
                                     </SText>
                                 </SView>
                             </SView>
@@ -225,34 +258,31 @@ export default class PopupUploadVoucher extends Component<Props> {
 
     render() {
         return (
-            <SView col={'xs-12'} padding={12}>
+            <SView col={"xs-12"} padding={12}>
                 <SText fontSize={18} bold center color={STheme.color.text}>
-                    📤 Subir Voucher
+                    📤 Subir o actualizar vouchers
                 </SText>
                 <SHr h={12} />
 
-                <ScrollView style={{ width: '100%' }}>
-                    {/* 🔹 Mostrar archivos ya registrados o nuevos */}
+                <ScrollView style={{ width: "100%" }}>
                     {this.renderUploadedVouchers()}
 
-                    {/* 🔹 Formulario para subir nuevos archivos */}
                     <SForm
                         ref={ref => (this.form = ref)}
                         inputs={{
                             file: {
-                                label: 'Nuevas imágenes *',
-                                type: 'files',
-                                isRequired: true,
+                                label: "Agregar nuevas imágenes",
+                                type: "files",
                                 multiple: true,
                                 style: {
                                     height: 200,
                                     borderWidth: 1,
                                     borderColor: STheme.color.card,
                                     borderRadius: 8,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
+                                    justifyContent: "center",
+                                    alignItems: "center",
                                 },
-                                placeholder: 'Selecciona o arrastra las imágenes aquí 📎',
+                                placeholder: "Selecciona o arrastra tus imágenes aquí 📎",
                                 onChangeText: this.handleFileChange,
                             },
                         }}
@@ -262,16 +292,12 @@ export default class PopupUploadVoucher extends Component<Props> {
 
                 <SHr h={20} />
 
-                <SView row col={'xs-12'} center>
-                    <Btn
-                        type="danger"
-                        label="CANCELAR"
-                        onPress={() => SPopup.close()}
-                    />
+                <SView row col={"xs-12"} center>
+                    <Btn type="danger" label="CANCELAR" onPress={() => SPopup.close()} />
                     <SView width={10} />
                     <Btn
                         type="primary"
-                        label={this.state.loading ? 'GUARDANDO...' : 'GUARDAR'}
+                        label={this.state.loading ? "GUARDANDO..." : "GUARDAR CAMBIOS"}
                         disabled={this.state.loading}
                         onPress={() => this.form?.submit()}
                     />
@@ -280,20 +306,20 @@ export default class PopupUploadVoucher extends Component<Props> {
                 {this.state.loading && (
                     <SView
                         style={{
-                            position: 'absolute',
+                            position: "absolute",
                             top: 0,
                             bottom: 0,
                             left: 0,
                             right: 0,
-                            backgroundColor: '#00000066',
-                            justifyContent: 'center',
-                            alignItems: 'center',
+                            backgroundColor: "#00000066",
+                            justifyContent: "center",
+                            alignItems: "center",
                             borderRadius: 10,
                         }}
                     >
                         <SLoad />
                         <SHr h={8} />
-                        <SText color="#fff">Subiendo voucher...</SText>
+                        <SText color="#fff">Subiendo imágenes, por favor espera...</SText>
                     </SView>
                 )}
             </SView>
