@@ -114,6 +114,20 @@ export default class caja extends MDLAbstract<EventListener> {
     return resp.data
   }
 
+  async editar_detalle(caja_detalle: CajaDetalle) {
+
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "caja_detalle",
+      type: "editar",
+      data: caja_detalle,
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    })
+    this.dispatchEvent({ type: "onDetalleChange" })
+    return resp.data
+  }
+
   async getAll(key: string) {
 
     const resp: any = await SSocket.sendPromise({
