@@ -300,6 +300,7 @@ import iconLista, { ReactComponent as iconListaW, } from "./svg/iconLista.svg";
 import permisos, { ReactComponent as permisosW, } from "./svg/permisos.svg";
 
 import addFoto, { ReactComponent as addFotoW, } from "./svg/producto/addFoto.svg";
+import upImgNube, { ReactComponent as upImgNubeW, } from "./svg/upImgNube.svg";
 
 
 
@@ -483,6 +484,7 @@ export const svg = {
   iconEdifcio: { Native: iconEdifcio, Web: iconEdifcioW },
   iconLista: { Native: iconLista, Web: iconListaW },
   permisos: { Native: permisos, Web: permisosW },
+  upImgNube: { Native: upImgNube, Web: upImgNubeW },
 
   addFoto: { Native: addFoto, Web: addFotoW },
   ...blender,

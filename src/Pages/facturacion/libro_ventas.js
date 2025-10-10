@@ -40,19 +40,63 @@ export default class libro_ventas extends Component {
         })
 
 
+        // this.fecha_actual = new SDate("2025-10-28 02:36:47");
+        this.fecha_actual = new SDate();
+        this.fecha_fin_mes = new SDate(); // Establece al primer día del mes
+        this.fecha_fin_mes.addMonth(1).setDay(1).addDay(-1); // Avanza al primer día del próximo mes y retrocede un día
+
+
+
+        // Validar si faltan 10 días o menos para el fin de mes
+        this.dias_restantes = this.fecha_fin_mes.diff(this.fecha_actual);
+        if (this.dias_restantes <= 10) {
+            SNotification.send({
+                title: "⚠️ Cierre de Mes ⚠️",
+                body: `Estás en el período crítico de cierre.\n\n` +
+                    `🚫 No podrás anular facturas después del último día del mes.\n` +
+                    `✅ Revisa y procesa todas las anulaciones antes del cierre.\n\n` +
+                    `⏰ *Quedan ${this.dias_restantes} días.*`,
+                color: STheme.color.warning,
+                time: 20000,
+            });
+        }
+
+
     }
 
-    async loadData() {
-        const request = await SSocket.sendPromise({
-            service: "facturacion",
-            component: "factura",
-            type: "getAll",
-            estado: "cargando",
-            key_usuario: Model.usuario.Action.getKey(),
-            key_empresa: Model.empresa.Action.getKey(),
-        })
-        return Object.values(request.data);
+    // async loadData() {
+    //     const request = await SSocket.sendPromise({
+    //         service: "facturacion",
+    //         component: "factura",
+    //         type: "getAll",
+    //         estado: "cargando",
+    //         key_usuario: Model.usuario.Action.getKey(),
+    //         key_empresa: Model.empresa.Action.getKey(),
+    //     })
+    //     return Object.values(request.data);
+    // }
 
+    async loadData() {
+        try {
+            const request = await SSocket.sendPromise({
+                service: "facturacion",
+                component: "factura",
+                type: "getAll",
+                estado: "cargando",
+                key_usuario: Model.usuario?.Action?.getKey?.(),
+                key_empresa: Model.empresa?.Action?.getKey?.(),
+            });
+
+            if (!request?.data) {
+                console.warn("⚠️ No se recibió data de facturacion.getAll:", request);
+                return [];
+            }
+
+            return Object.values(request.data);
+        } catch (e) {
+            console.error("❌ Error en loadData:", e);
+            return [];
+        }
     }
 
 
@@ -98,6 +142,10 @@ export default class libro_ventas extends Component {
     }
 
     render() {
+        const verificadorAdmin = MDL.usuario.session?.key === '1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b';
+
+        // const verificadorAdmin = MDL.usuario.session?.key === '1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b' ? true : false
+        // return <SPage title={"Facturacion - libro ventas " + this.fecha_actual + "--------- Quedan " + this.dias_restantes + " dias ----------- " + this.fecha_fin_mes} disableScroll>
         return <SPage title={"Facturacion - libro ventas"} disableScroll>
             <DinamicTable
                 language='es'
@@ -150,6 +198,7 @@ export default class libro_ventas extends Component {
                                 anular={this.anular.bind(this)}
                                 onReload={() => {
                                     this.table.loadData();
+                                    this.forceUpdate();
                                 }}
                             ></BoxMenu>
                         </SView>
@@ -241,8 +290,8 @@ export default class libro_ventas extends Component {
                     dateFormat='yyyy-MM-dd hh:mm'
                 />
 
-
-
+                {verificadorAdmin ? <DinamicTable.Col key="estadoss" label='Estado🏉' data={e => e.row?.estado} width={60} /> : ""}
+                {verificadorAdmin ? <DinamicTable.Col key="leyenda" label='Leyenda🏉' data={e => e.row?.data?.leyenda} width={400} /> : ""}
             </DinamicTable>
             {/* <SHr h={}/> */}
         </SPage>
