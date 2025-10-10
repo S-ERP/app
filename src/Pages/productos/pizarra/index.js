@@ -1,5 +1,5 @@
 import React from "react";
-import { SImage, SInput, SNotification, SPage, SText, STheme, SView } from "servisofts-component";
+import { SImage, SInput, SNavigation, SNotification, SPage, SText, STheme, SView } from "servisofts-component";
 import Pizarra from "../../../Components/Pizarra/Pizarra";
 import PizarraNodo from "../../../Components/Pizarra/PizarraNodo";
 import MDL from "../../../MDL";
@@ -11,6 +11,7 @@ import SIconApp from "../../../Assets/SIconApp";
 import FormularioModelo from "../Components/FormularioModelo";
 import Recargar from "../../../Components/Recargar";
 import FormularioIngrediente from "../Components/FormularioIngrediente";
+import SelectMenu from "./SelectMenu";
 
 export default class pizarra extends React.Component {
     state = {
@@ -53,6 +54,19 @@ export default class pizarra extends React.Component {
             return <PizarraNodo key={modelo.key} id={modelo.key} x={ipos?.x ?? 0} y={ipos?.y ?? 0}
                 style={{
                     opacity: this.filtro_opacity(modelo)
+                }}
+                onDelete={() => {
+                    MDL.inventario.saveModelo({
+                        key: modelo.key,
+                        estado: 0
+                    }).then(e => {
+                        this.state.modelos = this.state.modelos.filter(a => a.key != modelo.key);
+                        this.setState({
+                            modelos: this.state.modelos
+                        })
+                    }).catch(e => {
+                        console.log(e)
+                    })
                 }}
                 onDoublePress={e => {
                     FormularioModelo.open({
@@ -172,9 +186,21 @@ export default class pizarra extends React.Component {
         return this.state.ingredientes.map(ingrediente => {
             const ipos = this.state.initialsPositions[ingrediente.key];
             return <PizarraNodo key={ingrediente.key} id={ingrediente.key} x={ipos?.x ?? 0} y={ipos?.y ?? 0}
-            
                 style={{
                     opacity: this.filtro_opacity(ingrediente)
+                }}
+                onDelete={() => {
+                    MDL.inventario.saveIngrediente({
+                        key: ingrediente.key,
+                        estado: 0
+                    }).then(e => {
+                        this.state.ingredientes = this.state.ingredientes.filter(a => a.key != ingrediente.key);
+                        this.setState({
+                            ingredientes: this.state.ingredientes
+                        })
+                    }).catch(e => {
+                        console.log(e)
+                    })
                 }}
                 onDoublePress={e => {
                     FormularioIngrediente.open({
@@ -289,6 +315,12 @@ export default class pizarra extends React.Component {
     render() {
         return <SPage title={"pizarra"} disableScroll>
             <Pizarra id={"productos_pizarra"} scale={1} exponentDeRedondeoDeMovimiento={10}
+                onSelectChange={e => {
+                    console.log(e)
+                    if (this.selectMenu) {
+                        this.selectMenu.onChangeSelect(e);
+                    }
+                }}
                 onDoublePress={e => {
                     FloatMenu.open({
                         e: { nativeEvent: { pageX: e.absoluteX, pageY: e.absoluteY } },
@@ -344,6 +376,7 @@ export default class pizarra extends React.Component {
                     this.loadData();
                 }} />
             </SView>
+            <SelectMenu ref={ref => this.selectMenu = ref} />
             {this.renderFiltros()}
         </SPage >
     }
@@ -380,7 +413,9 @@ const NodoModelo = (props) => {
                 <SText clean>{" "}</SText>
                 <Tag>{modelo?.marca?.descripcion}</Tag>
                 {/* <SText clean>{" "}</SText> */}
-
+                <SText card padding={2} onPress={() => {
+                    SNavigation.navigate("/productos/modelo/ingrediente", { key_modelo: modelo.key })
+                }}>{"Elaborar"}</SText>
             </SText>
             <SView row>
                 <SText bold style={{

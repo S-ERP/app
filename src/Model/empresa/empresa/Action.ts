@@ -38,6 +38,8 @@ export default class Action extends SAction {
 
             try {
                 MDL.empresa.setEmpresa(data);
+                MDL.caja.setActiva(null);
+                MDL.caja.componentDidMount();
                 Model._events.CLEAR();
             } catch (error) {
                 console.error(error)

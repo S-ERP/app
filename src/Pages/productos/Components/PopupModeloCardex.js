@@ -33,6 +33,7 @@ export default class PopupModeloCardex extends Component {
 
     render() {
         return <DinamicTable
+            key={"tabla_modelo_cardex"}
             ref={ref => this.table = ref}
             colors={Config.table.colors()}
             cellStyle={Config.table.cellStyle()}

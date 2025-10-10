@@ -61,6 +61,7 @@ export default class table extends Component {
         return <SPage title={"Modelos"} disableScroll >
             <BarcodeIcon onChange={this.onChangeBarcode.bind(this)} />
             <DinamicTable
+                key={"tabla_modelo"}
                 ref={ref => this.table = ref}
                 {...Config.table.applyTheme()}
                 // colors={Config.table.colors()}

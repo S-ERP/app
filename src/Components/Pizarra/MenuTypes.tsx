@@ -48,7 +48,7 @@ const MenuType = ({ onChange, type }: { type: string, onChange: (type: "select" 
             opacity: 1,
         }} onPress={() => {
             // pizarra.toJSon();
-            pizarra.saveChanges();
+            // pizarra.saveChanges();
             // console.log(JSON.stringify({nodos: Object.keys(usePizarra().nodos.current), puertos: Object.keys(usePizarra().puertos.current), lineas: Object.keys(usePizarra().lineas.current)}));
         }}>{"Save"}</SText>
     </SView>;
