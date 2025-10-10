@@ -30,6 +30,7 @@ type PizarraProps = {
     startType?: "select" | "move";
     exponentDeRedondeoDeMovimiento?: number;
     onDoublePress?: (evt: any) => void,
+    onSelectChange?: (selects: any[]) => void;
 
 
 }
@@ -59,6 +60,7 @@ const PizarraContext = React.createContext<{
     lineasRef: React.MutableRefObject<Lineas | null>,
     saveChanges: () => void,
     saveChangeNodes: (node: any) => void,
+    onNodoChangeSelect: (node: any) => void
 }>({
     width: 1000,
     scale: 1,
@@ -88,6 +90,7 @@ const PizarraContext = React.createContext<{
     toJSon: () => { },
     saveChanges: () => { },
     saveChangeNodes: (node: any) => { },
+    onNodoChangeSelect: (node: any) => { }
 });
 
 
@@ -159,22 +162,41 @@ export default function Pizarra(props: PizarraProps) {
         delete lineas.current[key];
     };
 
+    const onNodoChangeSelect = (node: any) => {
+        const selectedNodos = Object.values(nodos.current).filter(n => n.selected.value)
+        console.log("nodos seleccionados", selectedNodos)
+        if (!props.onSelectChange) return;
+        props.onSelectChange(selectedNodos);
+    }
 
-    const saveChangeNodes = (nodes: any[]) => {
+
+    const saveChangeNodes = (nodes: any[], preventSave?: boolean) => {
         const data = {
             id: props.id,
             key_empresa: MDL.empresa.select?.key,
             descripcion: "pizarra",
             nodes: nodes
         }
-        if (serverData?.current?.nodes) {
 
+        const oldNodes: any[] = [];
+        if (serverData?.current?.nodes) {
             nodes.forEach(nodo => {
                 const nodoInstance = serverData.current.nodes.find((n: any) => n.id == nodo.id);
                 if (nodoInstance) {
+                    oldNodes.push({
+                        id: nodoInstance.id,
+                        x: nodoInstance.x,
+                        y: nodoInstance.y,
+                    });
                     nodoInstance.x = nodo.x;
                     nodoInstance.y = nodo.y;
                 }
+            })
+        }
+        if (!preventSave) {
+            MDL.pizarra.saveLastChange({
+                ...data,
+                nodes: oldNodes,
             })
         }
 
@@ -324,20 +346,43 @@ export default function Pizarra(props: PizarraProps) {
         };
         const handleContextMenu = (e: any) => {
             e.preventDefault();
-            console.log(e);
+            const el = ref.current as HTMLElement;
+            const target = e.target;
+
+            if (target === el) {
+                // console.log("👉 Click derecho sobre el elemento directamente");
+                // @ts-ignore
+            } else if (el.contains(target)) {
+                return;
+            }
+            // console.log(e);
             const x = (e.nativeEvent.offsetX) - width / 2;
             const y = (e.nativeEvent.offsetY) - width / 2;
             // console.log(x, y)
 
             if (props.onDoublePress) props.onDoublePress({
-                absoluteX:e.nativeEvent.clientX,
-                absoluteY:e.nativeEvent.clientY,
+                absoluteX: e.nativeEvent.clientX,
+                absoluteY: e.nativeEvent.clientY,
                 pizarraX: x,
                 pizarraY: y,
             });
         };
 
 
+        const handleOnKeyDown = (e: any) => {
+            if (e.key == "z" && (e.ctrlKey || e.metaKey)) {
+                const lchange: any = MDL.pizarra.popLastChange(props.id);
+                console.log(lchange)
+                if (lchange) {
+                    // lchange.nodes.forEach((nodo: any) => {
+                    //     serverData.current.nodes.find((n: any) => n.id == nodo.id).x = nodo.x;
+                    //     serverData.current.nodes.find((n: any) => n.id == nodo.id).y = nodo.y;
+                    // })
+                    saveChangeNodes(lchange.nodes, true);
+                    applyDataServer();
+                }
+            }
+        }
         React.useEffect(() => {
             if (!ref.current) return;
             const el = ref.current as HTMLElement;
@@ -351,6 +396,9 @@ export default function Pizarra(props: PizarraProps) {
             window.addEventListener("mouseup", handleMouseUp);
             // @ts-ignore
             el.addEventListener("contextmenu", handleContextMenu);
+            // @ts-ignore
+            window.addEventListener("keydown", handleOnKeyDown);
+
 
 
             return () => {
@@ -365,6 +413,8 @@ export default function Pizarra(props: PizarraProps) {
                 window.removeEventListener("mouseup", handleMouseUp);
                 // @ts-ignore
                 el.removeEventListener("contextmenu", handleContextMenu);
+                // @ts-ignore
+                window.removeEventListener("keydown", handleOnKeyDown);
             };
         }, []);
 
@@ -560,7 +610,8 @@ export default function Pizarra(props: PizarraProps) {
                 registerLinea: registerLinea,
                 unregisterLinea: unregisterLinea,
                 lineasRef: lineasRef,
-                exponentDeRedondeoDeMovimiento
+                exponentDeRedondeoDeMovimiento,
+                onNodoChangeSelect: onNodoChangeSelect,
             }}>
 
                 <GestureDetector gesture={gesture}>

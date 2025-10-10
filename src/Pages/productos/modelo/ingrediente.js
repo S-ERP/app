@@ -73,6 +73,12 @@ export default class ingrediente extends Component {
                 modelo_ingrediente: ing.modelo_ingrediente.filter(a => !!a.cantidad)
             }
         })
+        SNotification.send({
+            key: "producir_modelo",
+            title: "Produciendo...",
+            type: "loading",
+        })
+        const cantidad = this.cantidad_input.getValue() ?? 1
         SSocket.sendPromise({
             service: "inventario",
             component: "modelo",
@@ -81,14 +87,17 @@ export default class ingrediente extends Component {
             key_sucursal: MDL.caja.activa.key_sucursal,
             key_almacen: key_almacen,
             key_modelo: this.key_modelo,
+            cantidad: cantidad,
             data: newIng
         }).then(e => {
+            SNotification.remove("producir_modelo");
             console.log(e);
 
             // this.loadIngredientes();
         }).catch(e => {
             console.error(e);
             SNotification.send({
+                key: "producir_modelo",
                 title: "Error",
                 body: e.error,
                 color: STheme.color.danger,
@@ -115,8 +124,8 @@ export default class ingrediente extends Component {
                 </SView>
                 <SHr />
                 <SText bold fontSize={16}>{this.state?.modelo?.descripcion}</SText>
-                <SHr />
-                <SInput ref={ref => this.input_ingrediente = ref} label={"Agregar Ingrediente"} customStyle={"erp"} iconR={<SText onPress={this.handleAddIngrediente.bind(this)}>{"SAVE"}</SText>} />
+                {/* <SHr /> */}
+                {/* <SInput ref={ref => this.input_ingrediente = ref} label={"Agregar Ingrediente"} customStyle={"erp"} iconR={<SText onPress={this.handleAddIngrediente.bind(this)}>{"SAVE"}</SText>} /> */}
                 <SHr />
                 <SView col={"xs-12"}>
                     {Object.values(this.state.ingrendientes).map(ing => {
@@ -126,10 +135,12 @@ export default class ingrediente extends Component {
                 <SHr h={50} />
                 <SelectAlmacen instance={this} />
                 <SHr />
+                <SInput type='money2' icon={" "} defaultValue={"1"} label={"Cantidad"}  customStyle={"erp"} ref={ref => this.cantidad_input = ref} />
+                <SHr />
                 <SText onPress={this.handleProducir.bind(this)} card padding={16}>{"PRODUCIR"}</SText>
                 <SHr h={50} />
             </Container>
-            <FloatButtom onPress={() => {
+            {/* <FloatButtom onPress={() => {
                 PopupDetalleModelo.open({
                     key_modelo: null,
                     editObject: null,
@@ -138,7 +149,7 @@ export default class ingrediente extends Component {
                         // this.state.time = new Date().getTime();
                     }
                 });
-            }} />
+            }} /> */}
 
 
         </SPage>
@@ -324,7 +335,7 @@ const Ingrediente = (props) => {
                 </SView>
             })}
             <SHr />
-            <SInput style={{
+            {/* <SInput style={{
                 height: 24,
             }} label={"Agregar Opcion"}
                 ref={inputRef}
@@ -352,7 +363,7 @@ const Ingrediente = (props) => {
                         inputRef.current.setValue("")
                         setState({ ...state })
                     })
-                }} >{"SAVE"}</SText>} />
+                }} >{"SAVE"}</SText>} /> */}
         </SView>
         <SHr />
     </SView>

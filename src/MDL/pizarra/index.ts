@@ -22,7 +22,26 @@ export default class pizarra extends MDLAbstract<EventListener> {
     })
     return resp;
   }
+
+  historico_cambios: { [key: string]: any[] } = {
+
+  }
+  popLastChange(instance_id: string) {
+    const lastChage = this.historico_cambios[instance_id][this.historico_cambios[instance_id].length - 1];
+    this.historico_cambios[instance_id].pop();
+    console.log(this.historico_cambios[instance_id])
+    return lastChage;
+  }
+  async saveLastChange(data: any) {
+    if (!this.historico_cambios[data.id]) {
+      this.historico_cambios[data.id] = []
+    }
+    this.historico_cambios[data.id].push(data);
+    console.log(this.historico_cambios[data.id])
+  }
   async saveNodo(data: any, instance_id: string) {
+
+
     const resp = await SSocket.sendPromise({
       component: "pizarra",
       type: "saveNodo",

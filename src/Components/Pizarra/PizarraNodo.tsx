@@ -37,7 +37,8 @@ type PizarraNodoProps = {
     data: any,
     x: number, y: number,
     onChangePosition: (e: { x: number, y: number }) => void,
-    onDoublePress?: (evt:any) => void,
+    onDoublePress?: (evt: any) => void,
+    onSelectChange?: (select: boolean) => void
 }
 
 export type NodoInstance = {
@@ -49,9 +50,12 @@ export type NodoInstance = {
     panGesture?: any;
     viewRef?: React.RefObject<Animated.View>;
     toJSon?: () => any;
-};
-function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(), onChangePosition, onDoublePress }: PizarraNodoProps) {
+    getData?: () => any
+    getProps?: () => PizarraNodoProps
 
+};
+function PizarraNodo(props: PizarraNodoProps) {
+    const { children, style, x = 0, y = 0, id = SUuid(), onChangePosition, onDoublePress, onSelectChange, data } = props;
     const viewRef = React.useRef<Animated.View>(null);
 
     const layout = useSharedValue({ width: 0, height: 0 });
@@ -146,9 +150,15 @@ function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(), onChangePosi
             selected: selected.value,
         }
     }
+    const getData = () => {
+        return data;
+    }
+    const getProps = () => {
+        return props;
+    }
 
     React.useEffect(() => {
-        pizarra.registerNodo({ id: id, translateX, translateY, selected, onDrag, panGesture: panGesture, viewRef: viewRef, toJSon });
+        pizarra.registerNodo({ id: id, translateX, translateY, selected, onDrag, panGesture: panGesture, viewRef: viewRef, toJSon, getData, getProps });
         return () => {
             pizarra.unregisterNodo(id);
         };
@@ -160,6 +170,10 @@ function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(), onChangePosi
     });
     translateY.addListener(999, (value: any) => {
         if (onChangePosition) onChangePosition({ x: translateX.value, y: value });
+    });
+    selected.addListener(999, (value: any) => {
+        if (onSelectChange) onSelectChange(value);
+        if (pizarra.onNodoChangeSelect) pizarra.onNodoChangeSelect(toJSon());
     });
     const animatedStyleSelect = useAnimatedStyle(() => {
         const isSelect = () => {
@@ -252,8 +266,17 @@ function PizarraNodo({ children, style, x = 0, y = 0, id = SUuid(), onChangePosi
     </>
     );
 }
-
-
 PizarraNodo.displayName = "PizarraNodo";
+
+
+const MemoPizarraNodo = React.memo(PizarraNodo, (prevProps, nextProps) => {
+    return prevProps.x === nextProps.x &&
+        prevProps.y === nextProps.y &&
+        // prevProps.style === nextProps.style &&
+        prevProps.id === nextProps.id
+    // prevProps.children === nextProps.children;
+});
+
+MemoPizarraNodo.displayName = "PizarraNodo";
 
 export default PizarraNodo
