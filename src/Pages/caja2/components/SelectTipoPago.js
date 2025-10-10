@@ -23,7 +23,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
             type: "1",
             content: <SView style={{
                 width: 400,
-                height: 500,
+                // height: 600,
                 maxHeight: "100%",
                 backgroundColor: STheme.color.background,
                 borderRadius: 8,
@@ -105,8 +105,8 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                 borderColor: select ? STheme.color.success : STheme.color.card,
                 // backgroundColor: this._select[item.key] ? STheme.color.success + "44" : "transparent",
                 borderRadius: 8,
-                padding: 8,
-                justifyContent: "center",
+                padding: 4,
+                // justifyContent: "center",
                 alignItems: "center"
             }} onPress={() => {
                 item.__select = !item.__select;
@@ -131,14 +131,15 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
             }}>
                 {!select && <>
                     <View style={{
-                        width: "70%",
-                        height: "70%",
+                        width: "50%",
+                        height: "50%",
+                        padding: 5
                         // borderWidth: 1,
                         // borderColor: STheme.color.card
                     }}>
                         <SIconApp name={item?.tipo_pago?.icon || "Ajustes"} />
                     </View>
-                    <SView col={"xs-12"} center row backgroundColor={"transparent"} >
+                    <SView col={"xs-12"} center row backgroundColor={STheme.color.card} padding={2} style={{ bottom: 0, position: "absolute", minHeight: 52 , overflow: "hidden", borderBottomLeftRadius:6, borderBottomRightRadius:6}}>
                         <SView col={"xs-12"} backgroundColor={"transparent"}  >
                             {/* <SText key={item.key_tipo_pago} col={"xs-12"} style={{ textAlign: "center" }}>{item?.descripcion}</SText> */}
                             <SText key={item.key_tipo_pago} col={"xs-12"} numberOfLines={2} style={{ textAlign: "center" }}>{item?.descripcion}</SText>
@@ -209,30 +210,38 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
     }
 
     render() {
-        return <SView flex col={"xs-12"} padding={4}>
-            {this.props.montoMaximo && <>
-                <SView padding={4} row style={{
+        return <SView col={"xs-12"} padding={6} flex>
+            <SView col={"xs-12"} row style={{ padding: 2 }}>
+                {this.props.montoMaximo && <>
+                    {/* <SView col={"xs-6"}> */}
+                    <SView flex padding={4} style={{
+                        alignItems: "center",
+                    }} card>
+                        <SText fontSize={15} color={STheme.color.lightGray}>{"Monto a Pagar: "}</SText>
+                        <SView width={4} />
+                        <SText bold fontSize={18}>{this.moneda?.observacion} {(parseFloat(this.props.montoMaximo ?? "0") / parseFloat(this.moneda?.tipo_cambio ?? 1)).toFixed(2)}</SText>
+                        <SView width={16} />
+                        <SText>{this.moneda?.descripcion}</SText>
+                    </SView>
+                    {/* </SView> */}
+                </>}
+                <SView col={"xs-0.5"} />
+                {/* <SText bold fontSize={16}>{"Base"} {(parseFloat(this.props.montoMaximo ?? "0")).toFixed(2)}</SText> */}
+                <SView flex padding={4} style={{
                     alignItems: "center",
-                }}>
-                    <SText color={STheme.color.lightGray}>{"Monto Pagar: "}</SText>
+                }} card>
+                    <SText fontSize={15} color={STheme.color.lightGray}>{"Monto Insertado: "}</SText>
                     <SView width={4} />
-                    <SText bold fontSize={16}>{this.moneda?.observacion} {(parseFloat(this.props.montoMaximo ?? "0") / parseFloat(this.moneda?.tipo_cambio ?? 1)).toFixed(2)}</SText>
+                    <SText bold fontSize={18}>{this.moneda?.observacion} {((this.pvtp ?? []).filter(a => a.__select).map(item => parseFloat(item.monto) ?? 0).reduce((a, b) => a + b, 0))}</SText>
                     <SView width={16} />
                     <SText>{this.moneda?.descripcion}</SText>
                 </SView>
-            </>}
-            {/* <SText bold fontSize={16}>{"Base"} {(parseFloat(this.props.montoMaximo ?? "0")).toFixed(2)}</SText> */}
-            <SView padding={4} row style={{
-                alignItems: "center",
-            }}>
-                <SText color={STheme.color.lightGray}>{"Monto Insertado: "}</SText>
-                <SView width={4} />
-                <SText bold fontSize={16}>{((this.pvtp ?? []).filter(a => a.__select).map(item => parseFloat(item.monto) ?? 0).reduce((a, b) => a + b, 0))}</SText>
-                <SView width={16} />
-                <SText>{this.moneda?.descripcion}</SText>
             </SView>
+            <SView flex />
+            <SView height={10} style={{ borderBottomWidth: 3, borderBottomColor: STheme.color.gray }} />
+            <SHr h={7} />
             {this.state.ready &&
-                <SView row padding={4} style={{
+                <SView row style={{
                     justifyContent: "space-around",
                     alignItems: "center"
                 }}>
@@ -240,12 +249,14 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     {/* {this.renderItemTipoPago({ key_tipo_pago: "credito", tipo_pago: { descripcion: "Post Pago", icon: "tarea" }})} */}
                 </SView>
             }
+            <SView height={10} style={{ borderBottomWidth: 3, borderBottomColor: STheme.color.gray }} />
+            <SHr h={7} />
             <SView row col={"xs-12"} padding={4} style={{
                 justifyContent: "flex-end"
             }}>
-                <SText padding={16} card onPress={() => {
+                <SText padding={16}  onPress={() => {
                     SelectTipoPago.closePopup();
-                }} >{"Cancelar"}</SText>
+                }} backgroundColor={STheme.color.danger} style={{borderRadius:4}} >{"Cancelar"}</SText>
                 <SView width={32} />
                 <SText padding={16} card onPress={() => {
                     let montoTotal = 0;

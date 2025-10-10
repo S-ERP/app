@@ -314,7 +314,7 @@ export default class Lista extends Component {
                         }[e.data] || { color: STheme.color.gray, label: 'Desconocido' };
                         return (
                             <SView row center>
-                                <SView backgroundColor={statesTipo.color} style={{ borderRadius: 4, padding: 5 }}>
+                                <SView backgroundColor={statesTipo.color} width={55} style={{ borderRadius: 4, padding: 5 }} center>
                                     <SText color={STheme.color.text} fontSize={10}>
                                         {statesTipo.label}
                                     </SText>
