@@ -62,7 +62,7 @@ export default class pizarra extends MDLAbstract<EventListener> {
     })
     return resp.data;
   }
-  async pizarra_usuario_save(p: { id_pizarra: string, active?: boolean }) {
+  async pizarra_usuario_save(p: { id_pizarra: string, data?: any }) {
     const resp: any = await SSocket.sendPromise({
       component: "pizarra",
       type: "save_pizarra_usuario",

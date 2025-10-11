@@ -188,6 +188,9 @@ export default class Barra extends React.Component {
                     </Page>
                     <Page label={"Drive"} url={"/drive"}
                         permiso="page"
+                        params={{
+                            key_empresa:MDL.empresa?.select?.key
+                        }}
                         icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
                     />
                     <Page label={"Camara"} url={"/qr_reader"}

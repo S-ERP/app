@@ -4,6 +4,7 @@ import { SDate, SIcon, SList, SNavigation, SPage, SText, STheme, SView } from 's
 import SSocket from 'servisofts-socket';
 import SUpload from '../../Components/SUpload';
 import ListItem from './Components/ListItem';
+import MDL from '../../MDL';
 
 export default class root extends Component {
     constructor(props) {
@@ -74,7 +75,7 @@ export default class root extends Component {
         //     SNavigation.reset("/")
         //     return;
         // }
-        SNavigation.navigate("/drive", { path: newPath })
+        SNavigation.navigate("/drive", { path: newPath, key_empresa: MDL.empresa?.select?.key })
         this.getData(newPath);
     }
     renderBar() {
@@ -140,11 +141,11 @@ export default class root extends Component {
                 order={[this.state.order]}
                 space={0}
                 render={(obj, k, index) => <ListItem obj={obj} i={index} path={this.state.path}
-                    reload={this.handleReload.bind(this)} 
-                    onDelete={(path)=>{
+                    reload={this.handleReload.bind(this)}
+                    onDelete={(path) => {
                         this.handleDelete(path)
                     }}
-                    />}
+                />}
             />
         </SPage>
     }

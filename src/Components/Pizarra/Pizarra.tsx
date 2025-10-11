@@ -27,6 +27,7 @@ type PizarraProps = {
     hiddeMiniMapa?: boolean;
     scale?: number;
     size?: number;
+    reloadTime?: any;
     startType?: "select" | "move";
     exponentDeRedondeoDeMovimiento?: number;
     onDoublePress?: (evt: any) => void,
@@ -100,7 +101,7 @@ export const usePizarra = () => React.useContext(PizarraContext);
 //     return 
 // }
 
-export default function Pizarra(props: PizarraProps) {
+function Pizarra(props: PizarraProps) {
     // Posiciones acumuladas
     const [state, setState] = React.useState<any>({
     })
@@ -254,10 +255,13 @@ export default function Pizarra(props: PizarraProps) {
 
             // nodos.current[nodo.id].selected.value = nodo.selected;
         })
+
+        console.log("Pisarra", "applyDataServer")
     }
 
     const loadDataFromServer = () => {
         if (!props.id) return;
+        console.log("Pisarra", "loadDataFromServer")
         MDL.pizarra.get(props.id).then(e => {
             serverData.current = e
             // setState({ ...state })
@@ -645,3 +649,11 @@ export default function Pizarra(props: PizarraProps) {
         </GestureHandlerRootView>
     );
 }
+
+const MemoPizarra= React.memo(Pizarra, (prevProps, nextProps) => {
+    return prevProps.id === nextProps.id
+    && prevProps.children === nextProps.children
+});
+
+MemoPizarra.displayName = "Pizarra";
+export default Pizarra

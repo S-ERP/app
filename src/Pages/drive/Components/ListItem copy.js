@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { SButtom, SDate, SIcon, SImage, SInput, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import { DBUploadTask, UploadTask } from '../../../Components/SUpload';
+import MDL from '../../../MDL';
 
 export default class ListItem extends Component {
     task: UploadTask = null;
@@ -100,11 +101,11 @@ export default class ListItem extends Component {
                     onPress={() => {
                         let pathfinal = !path ? obj.name : path + "/" + obj.name
                         if (obj.type == "directory") {
-                            SNavigation.navigate("/drive", { path: pathfinal })
+                            SNavigation.navigate("/drive", { path: pathfinal, key_empresa: MDL.empresa?.select?.key })
                             if (this.props.reload) this.props.reload(pathfinal)
                             // this.getData(path);
                         } else {
-                            SNavigation.navigate("/drive/preview", { path: pathfinal, ...obj })
+                            SNavigation.navigate("/drive/preview", { path: pathfinal, ...obj, key_empresa: MDL.empresa?.select?.key })
                             // Linking.openURL(SSocket.api.drive + path)
                         }
                     }}
@@ -163,6 +164,6 @@ export default class ListItem extends Component {
             }}>MV</SText>
             {this.renderProgresBar()}
 
-        </SView>
+        </SView >
     }
 }

@@ -29,7 +29,7 @@ const PopupSubir = ({ path, onEvent }) => {
                     const file = e[i];
                     const submite = SUpload.submitFile({
                         host: SSocket.api.drive + "uploadv2",
-                        path: "/" + path + "/" + encodeURI(file?.name),
+                        path: path + "/" + encodeURI(file?.name),
                         file: file
                     })
                     if (onEvent) {

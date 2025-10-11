@@ -133,6 +133,19 @@ export default class FormularioIngrediente extends Component<Props> {
                             // if (this.form) this.form.focus("precio_venta");
                         }
                     },
+                    "bloquear_desensamblaje": {
+                        col: "xs-12",
+
+                        customStyle: "erp",
+                        inputStyle: {
+                            height: 40,
+                        },
+                        defaultValue: !!this.props.editObject?.bloquear_desensamblaje,
+                        label: "Solo para ensamblaje", type: "checkBox",
+                        onSubmitEditing: () => {
+                            // if (this.form) this.form.focus("precio_venta");
+                        }
+                    },
 
 
                 }}
@@ -142,6 +155,7 @@ export default class FormularioIngrediente extends Component<Props> {
                         descripcion: data.descripcion,
                         cantidad: parseFloat(data.cantidad ?? 0),
                         is_required: !!data.is_required,
+                        bloquear_desensamblaje: !!data.bloquear_desensamblaje,
                     }
                     if (this.props.editObject) {
                         obj.key = this.props.editObject.key;

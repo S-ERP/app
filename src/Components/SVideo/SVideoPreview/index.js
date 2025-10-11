@@ -16,32 +16,37 @@ export default class SVideoPreview extends React.Component {
         // const { obj, path } = this.props;
         const xhr = new XMLHttpRequest();
         xhr.open('GET', this.props.src, true);
-        const size = 1024 * 1024;
-        console.log(size)
-        console.log(this.props.size)
-        xhr.setRequestHeader('Range', `bytes=0-${this.props.size <= size ? "" : size}`);
+        const maxSize = 1024 * 1024; // 1 MB
+        const rangeEnd = this.props.size > maxSize ? maxSize : this.props.size - 1;
+        xhr.setRequestHeader('Range', `bytes=0-${rangeEnd}`);
+        // console.log(size)
+        // console.log(this.props.size)
+        // xhr.setRequestHeader('Range', `bytes=0-${maxSize}`);
         xhr.responseType = 'blob';
 
         xhr.onload = () => {
             if (xhr.status === 200 || xhr.status === 206) {
-                const blob = xhr.response;
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    // console.log(reader.result)
-                    // const path = `file://${RNFS.DocumentDirectoryPath}/${this.state.id}.mp4`
-                    // const b64 = reader.result.split("base64,")[1];
-                    this.setState({ image: reader.result });
-                    // RNFS.writeFile(path, b64, 'base64')
-                    //     .then(success => {
+                // const blob = xhr.response;
+                // const reader = new FileReader();
+                // reader.onloadend = () => {
+                //     // console.log(reader.result)
+                //     // const path = `file://${RNFS.DocumentDirectoryPath}/${this.state.id}.mp4`
+                //     // const b64 = reader.result.split("base64,")[1];
+                //     this.setState({ image: reader.result });
+                //     // RNFS.writeFile(path, b64, 'base64')
+                //     //     .then(success => {
 
-                    //         this.setState({ image: path });
-                    //         console.log('FILE WRITTEN: ', path)
-                    //     })
-                    //     .catch(err => {
-                    //         console.log('File Write Error: ', err.message)
-                    //     })
-                };
-                reader.readAsDataURL(blob);
+                //     //         this.setState({ image: path });
+                //     //         console.log('FILE WRITTEN: ', path)
+                //     //     })
+                //     //     .catch(err => {
+                //     //         console.log('File Write Error: ', err.message)
+                //     //     })
+                // };
+                // reader.readAsDataURL(blob);
+                const blob = xhr.response;
+                const videoURL = URL.createObjectURL(blob);
+                this.setState({ image: videoURL });
             } else {
                 this.setState({ error: 'Error fetching video preview' });
                 console.error('Error fetching video preview:', xhr.statusText);
@@ -64,7 +69,7 @@ export default class SVideoPreview extends React.Component {
                 height: "100%",
                 // backgroundColor: "#000",
             }}>
-                {error && <Text style={{ color: "#fff" }}>{error}</Text>}
+                {/* {error && <Text style={{ color: "#fff" }}>{error}</Text>} */}
                 {image ? (
                     <SVideo paused={false} src={image} muted={true} />
                     //   <Image

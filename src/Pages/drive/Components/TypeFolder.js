@@ -7,6 +7,7 @@ import AddButtom from './AddButtom';
 import SUpload, { DBUploadTask, SUploadFileDrop } from '../../../Components/SUpload';
 import SSocket from 'servisofts-socket';
 import ListItem2 from './ListItem2';
+import MDL from '../../../MDL';
 
 export default class TypeFolder extends Component {
     constructor(props) {
@@ -21,7 +22,7 @@ export default class TypeFolder extends Component {
     }
 
     loadData() {
-        Actions.ls({ path: Actions.root_path + "" +this.props.path })
+        Actions.ls({ path: Actions.root_path + "" + this.props.path })
             .then(e => {
                 let extras = Object.values(DBUploadTask)
                     .filter(a => {
@@ -54,7 +55,7 @@ export default class TypeFolder extends Component {
         if (!this.isrun) return;
         new SThread(2000, "cambios", false).start(() => {
             if (!this.isrun) return;
-            if(this.state.realTime){
+            if (this.state.realTime) {
                 this.loadData();
             }
             this.hilo();
@@ -194,7 +195,7 @@ export default class TypeFolder extends Component {
                         keyExtractor={e => e.name}
                         // numColumns={6}
                         renderItem={({ item, index }) => {
-                            return <ListItem  numColumns={6} index={index} width={this.state?.layout?.width} obj={item} path={this.props.path}
+                            return <ListItem numColumns={6} index={index} width={this.state?.layout?.width} obj={item} path={this.props.path}
                                 time={this.state.time}
                                 onPress={() => {
                                     console.log("Entro")
@@ -206,7 +207,7 @@ export default class TypeFolder extends Component {
                                     this.active = true;
                                     let pathfinal = this.props.path + (this.props.path == "/" ? item.name : "/" + item.name)
                                     console.log(pathfinal)
-                                    SNavigation.lastRoute.navigation.push("/drive", { path: pathfinal })
+                                    SNavigation.lastRoute.navigation.push("/drive", { path: pathfinal, key_empresa: MDL.empresa?.select?.key })
 
                                 }}
                                 onEvent={(evt, data) => {

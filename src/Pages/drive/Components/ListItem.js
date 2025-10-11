@@ -22,8 +22,10 @@ export default class ListItem extends Component {
 
     findTask() {
         let name = encodeURI(this.props?.obj?.name);
+
         // let pathfinal = !this.props.path ? name : this.props.path + "/" + name
-        let pathfinal = this.props.path + "/" + name;
+        let pathfinal = Actions.root_path + "" + this.props.path + "/" + name;
+        console.log("este es el path q va a buscar", pathfinal)
         // console.log("entro aca", pathfinal, DBUploadTask)
 
         const task = Object.values(DBUploadTask).find(a => {
@@ -86,7 +88,7 @@ export default class ListItem extends Component {
         // return new SDate(date).timeSince(new SDate())
     }
     buildIcon() {
-        return <ItemIcon obj={this.props.obj} path={Actions.root_path + "" +this.props.path} time={this.props.time} />
+        return <ItemIcon obj={this.props.obj} path={Actions.root_path + "" + this.props.path} time={this.props.time} />
     }
 
     renderProgresBar = () => {
@@ -140,7 +142,7 @@ export default class ListItem extends Component {
             }}>
                 <SText col={"xs-12"} clean row fontSize={14} color={(this?.props?.obj?.name ?? "").startsWith(".") ? STheme.color.gray : STheme.color.text}>{this.buildName()}</SText>
                 {/* {!this.task ? null : <SLoad type={"bar"} />} */}
-                <SText clean fontSize={8} color={STheme.color.gray}>{"Modificado:"} {this.buildFecha()} {this.props?.obj?.lastModified/1000}</SText>
+                <SText clean fontSize={8} color={STheme.color.gray}>{"Modificado:"} {this.buildFecha()} {this.props?.obj?.lastModified / 1000}</SText>
                 {/* <SText clean fontSize={10} color={STheme.color.gray}></SText> */}
                 <SText clean fontSize={8} color={STheme.color.gray}>{this.humanReadableFileSize(this.props?.obj?.size) ?? "-"}</SText>
             </SView>
@@ -164,7 +166,7 @@ export default class ListItem extends Component {
             row
             style={{
                 height: h,
-                backgroundColor: (this.props.index % 2)==0 ? "#00000011" : "#ffffff11",
+                backgroundColor: (this.props.index % 2) == 0 ? "#00000011" : "#ffffff11",
                 borderBottomColor: STheme.color.card,
                 borderBottomWidth: 1,
             }}

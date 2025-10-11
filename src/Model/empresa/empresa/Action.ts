@@ -5,6 +5,7 @@ import Model from "../..";
 import Config from "../../../Config";
 import DataBase from "../../../DataBase";
 import MDL from "../../../MDL";
+import SSocket from "servisofts-socket";
 export default class Action extends SAction {
 
     getSelect() {
@@ -18,6 +19,20 @@ export default class Action extends SAction {
     }
     getKey() {
         return this._getReducer().select?.key;
+    }
+
+    async changeEmpresaByKey(key_empresa) {
+        const resp = await SSocket.sendPromise({
+
+            service: "empresa",
+            component: "empresa_usuario",
+            type: "getAll",
+            // key_empresa: MDL.empresa.select.key,
+            key_usuario: MDL.usuario.session.key
+        })
+        const empresa_usuario = Object.values(resp.data).find(e => e?.key_empresa == key_empresa);
+        console.log("esta es la empresa", empresa_usuario)
+        this.setEmpresa(empresa_usuario?.empresa);
     }
     setEmpresa(data) {
         if (!data) {

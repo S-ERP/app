@@ -27,6 +27,7 @@ export default class SUploadFileDrop extends Component<SUploadFileDropProps> {
     };
 
     handleDrop = (e) => {
+        console.log("Entro al ondrop,",e)
         e.preventDefault();
         e.stopPropagation();
         this.setState({ isDragging: false });

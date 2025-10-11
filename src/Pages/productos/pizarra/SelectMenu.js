@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SText, SView } from 'servisofts-component';
+import { SHr, SText, SView } from 'servisofts-component';
 
 export default class SelectMenu extends Component {
     constructor(props) {
@@ -26,7 +26,14 @@ export default class SelectMenu extends Component {
                     const props = nodo.getProps();
                     if (props.onDelete) props.onDelete()
                 })
-            }}>{"Eliminar "}{}{this.selecteds.length}{" seleccionados"}</SText>
+            }}>{"Eliminar "}{ }{this.selecteds.length}{" seleccionados"}</SText>
+            <SHr />
+            <SText padding={4} card onPress={() => {
+                this.selecteds.map((nodo) => {
+                    const props = nodo.getProps();
+                    if (props.onDuplicate) props.onDuplicate(nodo)
+                })
+            }}>{"Duplicar "}{ }{this.selecteds.length}{" seleccionados"}</SText>
         </SView>
     }
 }

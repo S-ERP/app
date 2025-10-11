@@ -68,6 +68,7 @@ function PizarraNodo(props: PizarraNodoProps) {
     const onDrag = useSharedValue(false);
     const isRendondeado = true;
 
+    console.log("entro al render")
     const doubleTapGesture: any = Gesture.Tap().numberOfTaps(2).onStart((e) => {
         if (onDoublePress) onDoublePress(e);
     })
@@ -245,8 +246,7 @@ function PizarraNodo(props: PizarraNodoProps) {
 
 
 
-    return (<>
-        <GestureDetector gesture={(Gesture.Simultaneous(panGesture, doubleTapGesture))}>
+    return (<GestureDetector gesture={(Gesture.Simultaneous(panGesture, doubleTapGesture))}>
             <Animated.View
                 ref={viewRef}
                 style={[{
@@ -263,18 +263,15 @@ function PizarraNodo(props: PizarraNodoProps) {
                 </NodoContext.Provider>
             </Animated.View>
         </GestureDetector>
-    </>
     );
 }
 PizarraNodo.displayName = "PizarraNodo";
 
 
 const MemoPizarraNodo = React.memo(PizarraNodo, (prevProps, nextProps) => {
-    return prevProps.x === nextProps.x &&
-        prevProps.y === nextProps.y &&
-        // prevProps.style === nextProps.style &&
-        prevProps.id === nextProps.id
-    // prevProps.children === nextProps.children;
+    return prevProps.id === nextProps.id 
+    // && prevProps.data == nextProps.data
+        // && prevProps.children === nextProps.children;
 });
 
 MemoPizarraNodo.displayName = "PizarraNodo";

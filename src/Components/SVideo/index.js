@@ -42,7 +42,7 @@ export default class SVideo extends Component {
                     this.video = ref
                 }
             }} style={{
-                objectFit: "cover",
+                // objectFit: "cover",
                 width: "100%",
                 height: "100%",
                 // flex: 1,

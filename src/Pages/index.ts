@@ -89,7 +89,7 @@ import Turnos from "./Turnos";
 import widgets from "./widgets";
 import IconosAlvaro from "./IconosAlvaro";
 import social_media from "./social_media";
-
+import pizarra2 from "../Components/Pizarra2/testPage"
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -97,6 +97,7 @@ export default SPage.combinePages("/", {
   // "": test,
   "": lobyRoot,
   ...restaurante,
+  pizarra2,
   // "": lobyRoot,
   root: Root,
   ricky,
