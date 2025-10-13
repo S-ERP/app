@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, FlatList } from 'react-native';
-import { SDate, SHr, SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SNavigation, SNotification, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SelectTipoPago from './SelectTipoPago';
-import TotalTipoPago from './TotalTipoPago';
-import DetalleItem from './DetalleItem';
 import CargarEfectivoDelBanco from '../Acciones/CargarEfectivoDelBanco';
 import Transferencia from '../Acciones/Transferencia';
 

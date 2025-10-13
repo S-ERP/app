@@ -209,10 +209,25 @@ export default class Barra extends React.Component {
                         <Page label={"Tema"} onPress={() => {
                             PopupEditarTema.open()
                         }} />
+
+
+
                         {/* <SText onPress={() => {
 
                         }}>{"Tema"}</SText> */}
                     </Page>
+
+
+                    <Page label={"reporte"}
+                        // permiso="page"
+                        // permiso_url="/dev_tools"
+                        icon={<SIconApp name="redesSocialessssssssss" />}
+                    >
+                        <Page label={"Caja Hisotirosssssss"} url={"/caja/reporte_cajas"} />
+                        <Page label={"Caja movimeineto"} url={"/caja/reporte_movimientos"} />
+                  
+                    </Page>
+
                     {/* <Page label={"Iconos"} url={"/icons"} /> */}
                     <SHr h={100} />
                 </ScrollView>
