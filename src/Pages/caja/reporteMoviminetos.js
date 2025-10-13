@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SView, SPage, SHr, SScrollView2, STheme, SDate, SText, SImage, SPopup, SMath, SNavigation } from 'servisofts-component';
+import { SView, SPage, SHr, SScrollView2, STheme, SDate, SText, SImage, SPopup, SMath, SNavigation, SNotification } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
 import MDL from '../../MDL';
@@ -61,25 +61,15 @@ export default class reporteMoviminetos extends Component {
         try {
             console.log("📦 Cargando movimientos de caja...");
             const empresaKey = MDL.empresa.select?.key;
-
-
             if (!empresaKey) throw new Error("Empresa no seleccionada.");
             const { fecha_inicio, fecha_fin } = this.state;
-            // const fechaInicioRef = fecha_inicio ?? new SDate().addMonth(-1).setDay(1).toString('yyyy-MM-dd');
-            // const fechaFinRef = fecha_fin ?? new SDate().toString('yyyy-MM-dd');
             const movimientos = await MDL.caja.getAllMovimientosCajasByEmpresa(empresaKey, fecha_inicio, fecha_fin);
             if (!Array.isArray(movimientos)) {
                 console.warn("No se recibieron movimientos válidos.");
                 return [];
             }
-            // console.log("Movimientos recibidos:", JSON.stringify(movimientos));
             const empresa = await MDL.empresa.getFull();
-
             const base = empresa.monedas.find(a => a.tipo == "base");
-
-            // console.log("fullllllllllllll " + JSON.stringify(base))
-
-
             const sucursales = empresa?.sucursales ?? [];
             const puntos_ventas = sucursales.flatMap(s => s.puntos_venta || []);
             const usuarioKeys = [...new Set(movimientos.map(m => m.key_usuario).filter(Boolean))];
@@ -116,189 +106,53 @@ export default class reporteMoviminetos extends Component {
                 selectType="single"
 
                 onSelect={(e) => {
+                    if (!e.row) {
+                        console.warn('No row data provided for selection');
+                        return;
+                    }
+
+                    const menuOptions = [
+                        // View Vouchers
+                        {
+                            label: 'Ver Vouchers',
+                            icon: <SIconApp name="Arrow" fill="#e4e4e4ff" width={16} />,
+                            onPress: () => {
+                                const vouchers = Array.isArray(e.row?.vouchers) ? e.row.vouchers : [];
+                                if (vouchers.length === 0) {
+                                    SPopup.alert('No hay vouchers disponibles para este movimiento.');
+                                    return;
+                                }
+                                PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, vouchers);
+                            },
+                        },
+                        // View Accounting Voucher (Conditional)
+                        ...(e.row?.key_comprobante ? [{
+                            label: 'Ver Comprobante Contable',
+                            icon: <SIconApp name="Ajustes" fill="#e4e4e4ff" width={16} />,
+                            onPress: () => {
+
+
+                                if (e.row?.codigo_comprobante === 0) {
+                                    SPopup.alert('No hay comprobantes.');
+                                    return;
+                                }
+                                SNavigation.navigate('/contabilidad/asiento_contable/profile', { pk: e.row.key_comprobante });
+                            },
+                        }] : []),
+                    ];
                     FloatMenu.open({
                         e: e.evt,
-                        label: "Opciones",
-                        options: [
-                            {
-                                label: "Ver Detalle Inventario",
-                                icon: <SIconApp name='Arrow' fill="#e4e4e4ff" width={16} />,
-                                onPress: () => {
-                                    SNavigation.navigate("/inventario/almacen/profile/registro_inventario", { pk: e.row.key_almacen, key_conteo: e.row.key_conteo })
-                                }
-                            },
-                            {
-                                label: "Generar Asiento",
-                                icon: <SIconApp name='Ajustes' fill="#e4e4e4ff" width={16} />,
-                                onPress: () => {
-                                    alert("Generar Asiento contable " + JSON.stringify(e.row?.key_conteo))
-                                }
-                            },
-
-                            ...(!e.row?.fecha_confirmacion ? [{
-                                label: "Consolidar en Cardex",
-                                icon: <SIconApp name='Arrow' fill="#e4e4e4ff" width={16} />,
-                                onPress: () => {
-                                    SNotification.send({
-                                        key: "proceso_consolidacion",
-                                        title: "Procesando Inventario",
-                                        body: `Consolidando inventario Nro. ${e.row?.key_conteo}...`,
-                                        color: STheme.color.warning,
-                                        type: "loading"
-                                    });
-
-                                    SPopup.confirm({
-                                        title: "¿Seguro que quieres aplicar cambios cardex?",
-                                        message: `El inventario Nro. ${e.row?.key_conteo} será consolidado.`,
-                                        onClose: () => {
-                                            SNotification.remove("proceso_consolidacion");
-                                            console.log("❌ Consolidación cancelada por el usuario");
-                                        },
-                                        onPress: async () => {
-                                            try {
-                                                const resp = await MDL.inventario.aplicar_cardex(e.row?.key_conteo);
-                                                console.log("✅ aplicar_cardex", resp);
-                                                SNotification.remove("proceso_consolidacion");
-                                                SNotification.send({
-                                                    key: "proceso_consolidacion",
-                                                    title: "✅ Consolidación Exitosa",
-                                                    body: `Inventario Nro. ${e.row?.key_conteo} consolidado.`,
-                                                    time: 5000,
-                                                    color: STheme.color.success
-                                                });
-                                            } catch (error) {
-                                                console.error("❌ Error aplicar_cardex:", error);
-
-                                                SNotification.remove("proceso_consolidacion");
-                                                SNotification.send({
-                                                    key: "proceso_consolidacion",
-                                                    title: "❌ Error en la Consolidación",
-                                                    body: `No se consolidó el inventario ${e.row?.key_conteo}.`,
-                                                    time: 6000,
-                                                    color: STheme.color.danger
-                                                });
-                                            }
-
-                                            this.table.loadData();
-
-                                        }
-                                    });
-                                }
-                            }] : []),
-
-                            // ...(e.row?.fecha_confirmacion ? [{
-                            //     label: "Anular Registro Cardex",
-                            //     icon: <SIconApp name='Cerrar' fill="#e00b0bff" width={16} />,
-                            //     onPress: () => {
-
-                            //         const fecha = new SDate(e.row?.fecha_confirmacion, "yyyy-MM-ddThh:mm:ss");
-                            //         if (!fecha) {
-                            //             return SNotification.send({
-                            //                 title: "⚠️ Sin fecha de confirmación",
-                            //                 body: `No se puede consolidar el inventario.`,
-                            //                 time: 5000,
-                            //                 color: STheme.color.danger
-                            //             });
-                            //         }
-
-
-                            //         SPopup.confirm({
-                            //             title: "¿Seguro que quieres eliminar el inventario?",
-                            //             message: "El inventario Nro." + e.row?.key_conteo + " será eliminado, si alguien es miembro de la nota puede invitarlo nuevamente.",
-                            //             onPress: () => {
-                            //                 console.log("Anular Registro Cardex", e.row?.key_conteo);
-                            //             }
-                            //         })
-
-                            //         this.table.loadData();
-
-                            //     }
-                            // }] : [])
-
-                            ...(e.row?.fecha_confirmacion ? [{
-                                label: "Anular Registro Cardex",
-                                icon: <SIconApp name='Cerrar' fill="#e00b0bff" width={16} />,
-                                onPress: () => {
-                                    const fecha = new SDate(e.row?.fecha_confirmacion, "yyyy-MM-ddThh:mm:ss");
-                                    if (!fecha) {
-                                        return SNotification.send({
-                                            key: `anular_${e.row?.key_conteo}`,
-                                            title: "⚠️ Sin fecha de confirmación",
-                                            body: `No se puede anular el inventario.`,
-                                            time: 5000,
-                                            color: STheme.color.danger
-                                        });
-                                    }
-
-                                    // Notificación de proceso en curso
-                                    SNotification.send({
-                                        key: `proceso_anulacion_${e.row?.key_conteo}`,
-                                        title: "Procesando Anulación",
-                                        body: `Anulando inventario Nro. ${e.row?.key_conteo}...`,
-                                        color: STheme.color.warning,
-                                        type: "loading"
-                                    });
-
-                                    // Confirmación del usuario antes de anular
-                                    SPopup.confirm({
-                                        title: "¿Seguro que quieres eliminar el inventario?",
-                                        message: `El inventario Nro. ${e.row?.key_conteo} será eliminado. Si alguien es miembro de la nota, podrá ser invitado nuevamente.`,
-                                        onClose: () => {
-                                            SNotification.remove(`proceso_anulacion_${e.row?.key_conteo}`);
-                                            console.log("❌ Anulación cancelada por el usuario");
-                                        },
-                                        onPress: async () => {
-                                            try {
-                                                const resp = await MDL.inventario.anular_cardex(e.row?.key_conteo);
-                                                console.log("✅ Anular Registro Cardex", resp);
-
-                                                SNotification.remove(`proceso_anulacion_${e.row?.key_conteo}`);
-                                                SNotification.send({
-                                                    key: `anulado_${e.row?.key_conteo}`,
-                                                    title: "✅ Inventario Anulado",
-                                                    body: `El inventario Nro. ${e.row?.key_conteo} fue anulado correctamente.`,
-                                                    time: 5000,
-                                                    color: STheme.color.success
-                                                });
-
-                                                // Recargar la tabla
-                                                this.table.loadData();
-
-                                            } catch (error) {
-                                                console.error("❌ Error al anular inventario:", error);
-
-                                                SNotification.remove(`proceso_anulacion_${e.row?.key_conteo}`);
-                                                SNotification.send({
-                                                    key: `error_anular_${e.row?.key_conteo}`,
-                                                    title: "❌ Error al Anular",
-                                                    body: `No se pudo anular el inventario Nro. ${e.row?.key_conteo}.`,
-                                                    time: 6000,
-                                                    color: STheme.color.danger
-                                                });
-                                            }
-                                        }
-                                    });
-                                }
-                            }] : [])
-
-
-
-
-                        ]
+                        label: 'Opciones',
+                        options: menuOptions,
                     });
-                }
-                }
+                }}
 
                 loadInitialState={async () => ({
-                    sorters: [{ key: "fecha", order: "desc", type: "date" }],
+                    sorters: [{ key: "fecha_movimiento", order: "desc", type: "date" }],
                 })}
                 {...Config.table.applyTheme()}
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={e => e.index + 1} />
-
-
-
-
 
                 <DinamicTable.Col
                     key="sucursal_"
@@ -319,7 +173,6 @@ export default class reporteMoviminetos extends Component {
                                         backgroundColor: STheme.color.card + "66",
                                     }}
                                 >
-
                                     <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                                         <SImage src={SSocket.api.empresa + "empresa/" + e.row?.key_empresa} />
                                     </SView>
@@ -349,7 +202,7 @@ export default class reporteMoviminetos extends Component {
                 />
 
                 <DinamicTable.Col
-                    key="fecha2"
+                    key="fecha_apertura"
                     label="APERTURA CAJA"
                     width={130}
                     center
@@ -359,7 +212,7 @@ export default class reporteMoviminetos extends Component {
                     dateFormat="yyyy-MM-dd hh:mm:ss"
                 />
                 <DinamicTable.Col
-                    key="fecha3"
+                    key="fecha_cierre"
                     label="CIERRE CAJA"
                     width={130}
                     center
@@ -369,7 +222,7 @@ export default class reporteMoviminetos extends Component {
                     dateFormat="yyyy-MM-dd hh:mm:ss"
                 />
                 <DinamicTable.Col
-                    key="fecha"
+                    key="fecha_movimiento"
                     label="FECHA Y HORA TRANSACCIÓN"
                     width={130}
                     center
@@ -378,26 +231,40 @@ export default class reporteMoviminetos extends Component {
                     textStyle={{ fontSize: 12, color: STheme.color.text }}
                     dateFormat="yyyy-MM-dd hh:mm:ss"
                 />
-                <DinamicTable.Col
-                    key="horaa"
-                    label=" HORA  "
-                    width={130}
+                {/* <DinamicTable.Col
+                    key="fecha_movimiento"
+                    label="FECHA Y HORA TRANSACCIÓN"
+                    width={90}
                     center
                     dataType="date"
-                    data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date : null)}
                     textStyle={{ fontSize: 12, color: STheme.color.text }}
-                    dateFormat="yyyy-MM-dd hh:mm:ss"
-                />
-
-
-
-                {/* <DinamicTable.Col key="fechaas" label="Fecha Creación" width={120} data={(e) => e.row?.fecha}
-                    customComponent={e => <SView center row><SIconApp name='Evento' width={12} height={12} fill={STheme.color.lightGray} />
-                        <SText style={e.textStyle} color={STheme.color.lightGray} > {e.row?.fecha}</SText></SView>}
-                />
-                <DinamicTable.Col key="horadsa" label="Hora Creación" width={80} data={(e) => e.row?.hora}
-                    customComponent={e => <SView center row><SIconApp name='history' width={12} height={12} fill={STheme.color.lightGray} />
-                        <SText style={e.textStyle} color={STheme.color.lightGray}> {e.row?.hora}</SText></SView>} /> */}
+                    data={e => e.row?.fecha_on ?? 0}
+                    customComponent={e => {
+                        if (!e.row?.fecha_on) {
+                            return (
+                                <SView col="xs-12" center>
+                                    <SText fontSize={12} color={STheme.color.lightGray}>
+                                        Sin fecha
+                                    </SText>
+                                </SView>
+                            );
+                        }
+                        const fecha = new SDate(e.row.fecha_on, 'yyyy-MM-ddThh:mm:ss').toString('yyyy-MM-dd');
+                        const hora = new SDate(e.row.fecha_on, 'yyyy-MM-ddThh:mm:ss').toString('hh:mm:ss');
+                        return (
+                            <SView col="xs-12" center style={{ paddingVertical: 4 }}>
+                                <SView row center style={{ paddingHorizontal: 4, paddingVertical: 2 }}>
+                                    <SText fontSize={12} color={STheme.color.text}>{fecha}</SText>
+                                </SView>
+                                <SView row center style={{ paddingHorizontal: 4, paddingVertical: 2 }}>
+                                    <SIconApp name="history" width={10} height={10} fill={STheme.color.lightGray} />
+                                    <SView width={4} />
+                                    <SText fontSize={10} color={STheme.color.lightGray}>{hora}</SText>
+                                </SView>
+                            </SView>
+                        );
+                    }}
+                /> */}
 
 
                 <DinamicTable.Col
@@ -422,23 +289,7 @@ export default class reporteMoviminetos extends Component {
                             </SView>
                         );
                     }}
-
                 />
-
-                {/* {item.codigo_comprobante && <><View style={{
-                        // backgroundColor: STheme.color.card,
-                        borderWidth: 1,
-                        borderColor: STheme.color.card,
-                        padding: 2,
-                        borderRadius: 4
-                    }}>
-                        <SText color={STheme.color.link} underLine fontSize={10} onPress={() => {
-                            SNavigation.navigate("/contabilidad/asiento_contable/profile", { pk: item.key_comprobante })
-                        }}>{item.codigo_comprobante}</SText>
-                    </View>
-                        <SView width={8} />
-                    </>} */}
-
 
                 <DinamicTable.Col
                     key="tipo"
@@ -461,9 +312,6 @@ export default class reporteMoviminetos extends Component {
                     }}
                 />
 
-
-
-
                 <DinamicTable.Col
                     key="descripcion"
                     wrap
@@ -471,8 +319,6 @@ export default class reporteMoviminetos extends Component {
                     width={200}
                     data={e => e.row?.descripcion ?? 0}
                 />
-
-
 
                 <DinamicTable.Col
                     key="key_tipo_pago"
@@ -495,20 +341,12 @@ export default class reporteMoviminetos extends Component {
                     }}
                 />
 
-
-                {/* iconLista
-pagotarjeta
-iconPesos */}
-
                 <DinamicTable.Col
-                    key="key_tipo_pago1"
-                    wrap
-                    label="TIPO DE PAGO"
-                    width={110}
-                    data={e => e.row?.key_tipo_pago ?? ""}
+                    key="key_tipo_pagov2"
+                    wrap label="TIPO DE PAGO"
+                    width={110} data={e => e.row?.key_tipo_pago ?? ""}
                     customComponent={e => {
                         const tipo = e.row?.key_tipo_pago;
-
                         // Definir texto descriptivo según el tipo de pago
                         let texto = "";
                         switch (tipo) {
@@ -529,7 +367,6 @@ iconPesos */}
                             <SView col={"xs-12"} row center>
                                 <SView width={4} />
                                 <SIconApp name={e.row?.icon || "Ajustes"} width={14} />
-
                                 <SView width={4} />
                                 <SView
                                     flex
@@ -555,98 +392,40 @@ iconPesos */}
                     data={e => e.row?.empresa_tipo_pago ?? 0}
                 />
 
-
-
-
-
-
-
-
-                {/* #14b77f
-                #e6950c
-                #7c44b4
-                https://pinetools.com/es/obtener-colores-imagen */}
-                {/* dedicar a crear mejores filtros de susursales, n cosas
-                menu que lleve a comprbante
-                menu que te muestre el vaucher
-                elc caja fecha apertura */}
-
-
                 <DinamicTable.Col
-                    key="moneda_02"
-                    wrap
-                    label="MONTO"
+                    key="monto_total"
+                    wrap label="MONTO"
                     width={90}
                     color={STheme.color.danger}
                     data={e => e.row?.monto ?? 0}
                     cellStyle={{ alignItems: "flex-end", backgroundColor: "#47a0ff33", color: "blue" }}
                     format={e => (!e.data ? "" : e.row?.moneda.observacion + " " + SMath.formatMoney(e.data))}
-
-                // customComponent={e => {
-                //     return (
-                //         <SView col={"xs-12"} row center>
-                //             {e.data < 0 ? <SIconApp name='Egreso' width={10} /> : <SIconApp name='Ingreso' width={10} />}
-                //             <SText fontSize={11} color={e.data < 0 ? STheme.color.danger : STheme.color.text} >{e.data}</SText>
-                //         </SView>
-                //     );
-                // }}
-
                 />
 
                 <DinamicTable.Col
-                    key="moneda_01"
+                    key="tipo_cambio"
                     wrap
                     center
                     label="TIPO CAMBIO"
                     width={50}
                     cellStyle={{ alignItems: "flex-end", backgroundColor: "#47a0ff33" }}
-
                     data={e => e.row?.moneda.tipo_cambio ?? 0}
                 />
 
-
-
-
                 <DinamicTable.Col
-                    key="moneda_05"
-                    wrap
-                    label="MONTO BASE"
+                    key="monto_base"
+                    wrap label="MONTO BASE"
                     width={90}
                     data={e => (e.row?.moneda.tipo_cambio * e.row?.monto) ?? 0}
                     cellStyle={{ alignItems: "flex-end", backgroundColor: "#818c97c7" }}
                     format={e => (!e.data ? "" : e.row?.moneda_base.observacion + " " + SMath.formatMoney(e.data))}
                 />
 
+                <DinamicTable.Col key="vouchers" wrap center label="VOUCHERS TOTALES" width={80} data={e => e.row?.vouchers?.length ?? 0} customComponent={e => {
+                    if (!e.data) return null; return (<SView col={"xs-12"} row center onPress={() =>
 
-
-
-
-
-                <DinamicTable.Col
-                    key="vouchers"
-                    wrap
-                    center
-                    label="VOUCHERS TOTALES"
-                    width={80}
-                    data={e => e.row?.vouchers?.length ?? 0}
-                    customComponent={e => {
-                        if (!e.data) return null;
-                        return (
-                            <SView col={"xs-12"} row center
-                            onPress={() =>
-                                PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, e.row?.vouchers)
-                            }
-                            >
-                                <SText fontSize={12} color={STheme.color.text} >({e.data}) </SText>
-                                <SIconApp name='iconLista' width={8} />
-                            </SView>
-                        );
-                    }}
-                />
-
-
-
-
+                        PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, e.row?.vouchers)} > <SText fontSize={12} color={STheme.color.text} >({e.data}) </SText> <SIconApp name='iconLista' width={8} /> </SView>);
+                }} />
 
                 <DinamicTable.Col
                     key="estado_caja"
@@ -691,12 +470,9 @@ iconPesos */}
                     }}
                 />
 
-
-
                 <DinamicTable.Col
                     key="admin"
-                    label="CAJERO2"
-                    width={120}
+                    label="CAJERO" width={120}
                     data={e => e.row?.cajero?.Nombres ?? "Sin cajero"}
                     customComponent={e => {
                         const key = e.row?.key_cajero;
@@ -727,7 +503,7 @@ iconPesos */}
                         );
                     }}
                 />
-            </DinamicTable>
+            </DinamicTable >
         );
     }
 
@@ -739,9 +515,7 @@ iconPesos */}
                         fecha_inicio={this.state.fecha_inicio}
                         fecha_fin={this.state.fecha_fin}
                         onChange={({ fecha_inicio, fecha_fin }) => {
-                            // console.log("Fechas seleccionadas:", fecha_inicio, fecha_fin);
                             this.setState({ fecha_inicio, fecha_fin }, () => {
-                                // Recargar los datos de la tabla al cambiar fechas
                                 this.loadInitialData().then(data => {
                                     this.setState({ data });
                                     if (this.DinamicTable) {
