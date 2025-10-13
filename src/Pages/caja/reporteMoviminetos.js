@@ -31,30 +31,28 @@ export default class reporteMoviminetos extends Component {
     colorTipoOperacion(estado) {
         switch (estado?.toUpperCase()) {
             case "APERTURA":
-                return "#4CAF50"; // verde
+                return "#4dbe52ff"; // Verde intenso y confiable
             case "VENTA":
-                return "#FF9800"; // naranja
+                return "#3683dbff"; // Azul fuerte (profesional y moderno)
             case "COMPRA":
-                return "#F44336"; // rojo
+                return "#e0883fff"; // Naranja intenso (enérgico pero amigable)
             default:
-                return "#9E9E9E"; // gris neutro por defecto
+                return "#979797ff"; // Gris claro por defecto (neutral)
         }
     }
 
-    colorTipoPagoaaaaaaaaaaaa(estado) {
-        // console.log("punta-" + estado + "-")
+    colorTipoPago(estado) {
         switch (estado?.toUpperCase()) {
             case "CAJA":
-                return "#4CAF50"; // verde
+                return "#388E3C"; // Verde más profundo (confianza)
             case "CREDITO":
-                return "#FF9800"; // naranja
+                return "#8E24AA"; // Violeta más saturado (moderno, llamativo)
             case "BANCO":
-                return "#F44336"; // rojo
+                return "#FB8C00"; // Naranja vivo (acceso rápido y claro)
             default:
-                return "#9E9E9E"; // gris neutro por defecto
+                return "#B0BEC5"; // Gris azulado claro (neutro y elegante)
         }
     }
-
 
 
     async loadInitialData() {
@@ -303,8 +301,8 @@ export default class reporteMoviminetos extends Component {
                             <SView col={"xs-12"} row center >
                                 <SView width={80} center style={{
                                     ...e.textStyle,
-                                    backgroundColor: this.colorTipoOperacion(e.row?.tipo) + "60" || STheme.color.card,
-                                    borderWidth: 1, borderColor: this.colorTipoOperacion(e.row?.tipo) + "33" || STheme.color.card,
+                                    backgroundColor: this.colorTipoOperacion(e.row?.tipo) || STheme.color.card,
+                                    borderWidth: 1, borderColor: this.colorTipoOperacion(e.row?.tipo) || STheme.color.card,
                                     paddingHorizontal: 2, paddingVertical: 3, borderRadius: 4
                                 }}> <SText fontSize={11}> {e.row?.tipo} </SText>
                                 </SView>
@@ -332,7 +330,7 @@ export default class reporteMoviminetos extends Component {
                             <SView col={"xs-12"} row center >
                                 <SView width={80} center style={{
                                     ...e.textStyle,
-                                    backgroundColor: this.colorTipoPagoaaaaaaaaaaaa(e.row?.key_tipo_pago) || STheme.color.card,
+                                    backgroundColor: this.colorTipoPago(e.row?.key_tipo_pago) || STheme.color.card,
                                     // borderWidth: 1, borderColor: this.colorTipoPagoaaaaaaaaaaaa(e.row?.key_tipo_pago) || STheme.color.card,
                                     paddingHorizontal: 2, paddingVertical: 3, borderRadius: 4
                                 }}> <SText fontSize={11}>{e.row?.key_tipo_pago}</SText>
