@@ -151,6 +151,18 @@ export default class caja extends MDLAbstract<EventListener> {
     return Object.values(resp.data)
   }
 
+  async getAllMovimientosCajasByEmpresa(key_empresa: string, fecha_inicio: string, fecha_fin: string) {
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "caja",
+      type: "getAllMovimientosCajasByEmpresa",
+      key_empresa: key_empresa,
+      fecha_inicio: fecha_inicio,
+      fecha_fin: fecha_fin,
+    })
+    return Object.values(resp.data)
+  }
+
 
   async tipo_pago_getAll() {
 

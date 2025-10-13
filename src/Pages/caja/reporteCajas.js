@@ -6,7 +6,7 @@ import MDL from '../../MDL';
 import Config from '../../Config';
 import DateTimeBetween from '../../Components/DateTimeBetween';
 
-export default class history extends Component {
+export default class reporteCajas extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -374,7 +374,7 @@ export default class history extends Component {
 
     render() {
         return (
-            <SPage title="Reporte HIstorial Caja" disableScroll>
+            <SPage title="Reporte de Cajas por Sucursal" disableScroll>
                 <SView width={260} center>
                     <DateTimeBetween
                         fecha_inicio={this.state.fecha_inicio}
