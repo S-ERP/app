@@ -274,6 +274,7 @@ export default class reporteMoviminetos extends Component {
                     width={110}
                     data={e => e.row?.codigo_comprobante ?? 0}
                     customComponent={e => {
+                        if (!e.row?.codigo_comprobante) return null;
                         return (
                             <SView col={"xs-12"} row center >
                                 <SView width={80} center style={{
