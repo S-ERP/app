@@ -101,8 +101,10 @@ export default class reporteMoviminetos extends Component {
                 key="id"
                 keyExtractor={e => e.key}
                 language="es"
+
                 center
                 selectType="single"
+                {...Config.table.applyTheme()}
 
                 onSelect={(e) => {
                     if (!e.row) {
@@ -150,6 +152,12 @@ export default class reporteMoviminetos extends Component {
                     sorters: [{ key: "fecha_movimiento", order: "desc", type: "date" }],
                 })}
                 {...Config.table.applyTheme()}
+
+                listFooterComponent={() => {
+                    return <SHr height={100} />
+
+                }}
+
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={e => e.index + 1} />
 
@@ -162,29 +170,18 @@ export default class reporteMoviminetos extends Component {
                         const key = e.row?.key_sucursal;
                         const descripcion = e.row?.sucursal?.descripcion ?? "Sin sucursal";
                         return key ? (
-                            <SView col="xs-12" row center>
-                                <SView
-                                    style={{
-                                        width: 40,
-                                        height: 24,
-                                        borderRadius: 100,
-                                        overflow: "hidden",
-                                        backgroundColor: STheme.color.card + "66",
-                                    }}
-                                >
-                                    <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                            <SView col="xs-12" row center  >
+                                <SView width={28}   >
+                                    <SView style={{ width: 20, height: 20, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                                         <SImage src={SSocket.api.empresa + "empresa/" + e.row?.key_empresa} />
                                     </SView>
-                                    <SView style={{ width: 26, position: "absolute", left: 12 }}>
-                                        <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                    <SView style={{ width: 20, position: "absolute", left: 5 }}>
+                                        <SView style={{ width: 20, height: 20, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                                             <SImage src={`${SSocket.api.empresa}sucursal/${key}`} style={{ resizeMode: "cover" }} />
                                         </SView>
                                     </SView>
                                 </SView>
-                                <SView width={5} />
-                                <SText flex numberOfLines={1} style={e.textStyle}>
-                                    {descripcion}
-                                </SText>
+                                <SText flex numberOfLines={1} style={e.textStyle}> {descripcion} </SText>
                             </SView>
                         ) : (
                             <SText>Sin sucursal</SText>
@@ -270,21 +267,23 @@ export default class reporteMoviminetos extends Component {
                     key="codigo_comprobante"
                     wrap
                     label="CÓDIGO COMPROBANTE"
-                    width={110}
+                    width={100}
                     data={e => e.row?.codigo_comprobante ?? 0}
                     customComponent={e => {
                         if (!e.row?.codigo_comprobante) return null;
                         return (
-                            <SView col={"xs-12"} row center >
-                                <SView width={80} center style={{
-                                    ...e.textStyle,
-                                    borderWidth: 1, borderColor: STheme.color.link,
-                                    paddingHorizontal: 2, paddingVertical: 3, borderRadius: 4
-                                }}
-                                    onPress={() => {
-                                        SNavigation.navigate("/contabilidad/asiento_contable/profile", { pk: e.row?.key_comprobante })
+                            <SView col={"xs-12"} center height={20}   >
+                                <SView col={"xs-12"} row center height={20}   >
+                                    <SView width={70} center style={{
+                                        ...e.textStyle,
+                                        borderWidth: 1, borderColor: STheme.color.link,
+                                        borderRadius: 4
                                     }}
-                                > <SText color={STheme.color.link} underLine fontSize={11}> {e.row?.codigo_comprobante} </SText>
+                                        onPress={() => {
+                                            SNavigation.navigate("/contabilidad/asiento_contable/profile", { pk: e.row?.key_comprobante })
+                                        }}
+                                    > <SText color={STheme.color.link} underLine fontSize={12}> {e.row?.codigo_comprobante} </SText>
+                                    </SView>
                                 </SView>
                             </SView>
                         );
@@ -299,13 +298,15 @@ export default class reporteMoviminetos extends Component {
                     data={e => e.row?.tipo ?? 0}
                     customComponent={e => {
                         return (
-                            <SView col={"xs-12"} row center >
-                                <SView width={80} center style={{
-                                    ...e.textStyle,
-                                    backgroundColor: this.colorTipoOperacion(e.row?.tipo) || STheme.color.card,
-                                    borderWidth: 1, borderColor: this.colorTipoOperacion(e.row?.tipo) || STheme.color.card,
-                                    paddingHorizontal: 2, paddingVertical: 3, borderRadius: 4
-                                }}> <SText fontSize={11}> {e.row?.tipo} </SText>
+                            <SView col={"xs-12"} center height={20}   >
+                                <SView col={"xs-12"} row center height={20}   >
+                                    <SView width={60} center style={{
+                                        ...e.textStyle,
+                                        backgroundColor: this.colorTipoOperacion(e.row?.tipo) || STheme.color.card,
+                                        borderWidth: 1, borderColor: this.colorTipoOperacion(e.row?.tipo) || STheme.color.card,
+                                        borderRadius: 4
+                                    }}> <SText fontSize={12}> {e.row?.tipo} </SText>
+                                    </SView>
                                 </SView>
                             </SView>
                         );
@@ -316,7 +317,7 @@ export default class reporteMoviminetos extends Component {
                     key="descripcion"
                     wrap
                     label="DESCRIPCIÓN"
-                    width={200}
+                    width={180}
                     data={e => e.row?.descripcion ?? 0}
                 />
 
@@ -324,17 +325,19 @@ export default class reporteMoviminetos extends Component {
                     key="key_tipo_pago"
                     wrap
                     label="MÉTODO DE PAGO"
-                    width={90}
+                    width={80}
                     data={e => e.row?.key_tipo_pago ?? ""}
                     customComponent={e => {
                         return (
-                            <SView col={"xs-12"} row center >
-                                <SView width={80} center style={{
-                                    ...e.textStyle,
-                                    backgroundColor: this.colorTipoPago(e.row?.key_tipo_pago) || STheme.color.card,
-                                    // borderWidth: 1, borderColor: this.colorTipoPagoaaaaaaaaaaaa(e.row?.key_tipo_pago) || STheme.color.card,
-                                    paddingHorizontal: 2, paddingVertical: 3, borderRadius: 4
-                                }}> <SText fontSize={11}>{e.row?.key_tipo_pago}</SText>
+                            <SView col={"xs-12"} center height={20}   >
+                                <SView col={"xs-12"} row center height={20}   >
+                                    <SView width={60} center style={{
+                                        ...e.textStyle,
+                                        backgroundColor: this.colorTipoPago(e.row?.key_tipo_pago) || STheme.color.card,
+                                        borderWidth: 1, borderColor: this.colorTipoPago(e.row?.key_tipo_pago) || STheme.color.card,
+                                        borderRadius: 4
+                                    }}> <SText fontSize={12}>{e.row?.key_tipo_pago}</SText>
+                                    </SView>
                                 </SView>
                             </SView>
                         );
@@ -377,7 +380,7 @@ export default class reporteMoviminetos extends Component {
                                         borderRadius: 4
                                     }}
                                 >
-                                    <SText fontSize={11}>{texto}</SText>
+                                    <SText fontSize={12}>{texto}</SText>
                                 </SView>
                             </SView>
                         );
@@ -417,12 +420,10 @@ export default class reporteMoviminetos extends Component {
                             }
                         }
                         return (
-                            <SView col="xs-12" row style={{ paddingVertical: 4 }}>
-                                <SIconApp name={iconName} width={14} height={14} fill={color} />
+                            <SView col="xs-12" row  >
+                                <SIconApp name={iconName} width={12} height={12} fill={color} />
                                 <SView width={4} />
-                                <SText fontSize={12} color={STheme.color.text}>
-                                    {texto}
-                                </SText>
+                                <SText fontSize={12} color={STheme.color.text}> {texto} </SText>
                             </SView>
                         );
                     }}
@@ -460,7 +461,6 @@ export default class reporteMoviminetos extends Component {
                             // </SView>
                         );
                     }}
-
                 />
 
                 <DinamicTable.Col
@@ -495,52 +495,72 @@ export default class reporteMoviminetos extends Component {
                             </SView>
                         );
                     }}
-
                 />
 
-                <DinamicTable.Col key="vouchers" wrap center label="VOUCHERS TOTALES" width={80} data={e => e.row?.vouchers?.length ?? 0} customComponent={e => {
+                {/* <DinamicTable.Col key="vouchers" wrap center label="VOUCHERS TOTALES" width={80} data={e => e.row?.vouchers?.length ?? 0} customComponent={e => {
                     if (!e.data) return null; return (<SView col={"xs-12"} row center onPress={() =>
 
                         PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, e.row?.vouchers)} > <SText fontSize={12} color={STheme.color.text} >({e.data}) </SText> <SIconApp name='iconLista' width={8} /> </SView>);
-                }} />
+                }} /> */}
 
-                <DinamicTable.Col
+                {/* <DinamicTable.Col
                     key="estado_caja"
                     label="ESTADO CAJA"
-                    width={80}
+                    width={100}
                     data={e => e.row?.estado_caja ?? "Desconocido"}
                     customComponent={e => {
                         const estado = e.row?.estado_caja ?? "Desconocido";
                         return (
-                            <SView col={"xs-12"} row center padding={8}>
-                                <SView
-                                    padding={4}
-                                    center
-                                    row
-                                    style={{
-                                        backgroundColor: estado === "cerrada" ? "#503131ff" : "#2a533cff",
-                                        borderColor: estado === "cerrada" ? "#ef4444" : "#22c45e",
-                                        borderWidth: 1,
-                                        borderRadius: 20,
-                                    }}
-                                >
-                                    <SView
-                                        width={6}
-                                        height={6}
-                                        style={{
-                                            backgroundColor: estado === "cerrada" ? "#ef4545" : "#22c45e",
-                                            borderRadius: 8,
-                                        }}
-                                    />
-                                    <SText
-                                        style={{
-                                            textTransform: "uppercase",
-                                            fontSize: 10,
-                                            color: estado === "cerrada" ? "#ef4444" : "#22c45e",
-                                        }}
-                                    >
-                                        {estado}
-                                    </SText>
+                            <SView col={"xs-12"} row center backgroundColor='red' >
+                                <SView col={"xs-12"} center  backgroundColor='blue'  >
+                                    <SView paddingHorizontal={4}  center row style={{ backgroundColor: estado === "cerrada" ? "#503131ff" : "#2a533cff", borderColor: estado === "cerrada" ? "#ef4444" : "#22c45e", borderWidth: 1, borderRadius: 20, }} >
+                                        <SView width={6} height={6} style={{ backgroundColor: estado === "cerrada" ? "#ef4545" : "#22c45e", borderRadius: 8, }} />
+                                        <SText style={{ textTransform: "uppercase", fontSize: 11, color: estado === "cerrada" ? "#ef4444" : "#22c45e", }} > {estado} </SText>
+                                    </SView>
+                                </SView>
+                            </SView>
+                        );
+                    }}
+                />
+
+                <DinamicTable.Col key="admin"
+                    label="CAJERO" width={120}
+
+                    data={e => e.row?.cajero?.Nombres ?? "Sin cajero"}
+                    customComponent={e => {
+                        const key = e.row?.key_cajero;
+                        const nombre = e.row?.cajero?.Nombres ?? "Sin cajero";
+                        return key ? (
+                            <SView col="xs-12" row center  >
+                                <SView style={{ width: 20, height: 20, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} >
+                                    <SImage src={`${SSocket.api.root}usuario/${key}`} style={{ resizeMode: "cover" }} />
+                                </SView>
+                                <SView width={5} />
+                                <SText flex numberOfLines={1} style={e.textStyle}> {nombre} </SText>
+                            </SView>
+                        ) : (
+                            <SText>Sin cajero</SText>
+                        );
+                    }}
+                /> */}
+
+
+                <DinamicTable.Col
+                    key="estado_caja"
+                    label="ESTADO CAJA"
+                    width={100}
+                    data={e => e.row?.estado_caja ?? "Desconocido"}
+                    customComponent={e => {
+                        const estado = e.row?.estado_caja ?? "Desconocido";
+                        const isCerrada = estado === "cerrada";
+                        const color = isCerrada ? "#ef4444" : "#22c55e";
+                        const bgColor = isCerrada ? "#503131ff" : "#2a533cff";
+
+                        return (
+                            <SView col={"xs-12"} center>
+                                <SView padding={4} row center style={{ backgroundColor: bgColor, borderColor: color, borderWidth: 1, borderRadius: 20, }} >
+                                    <SView center width={6} height={6} style={{ backgroundColor: color, borderRadius: 8, marginRight: 2, }} />
+                                    <SText style={{ textTransform: "uppercase", fontSize: 11, color: color, }} > {estado} </SText>
                                 </SView>
                             </SView>
                         );
@@ -549,28 +569,30 @@ export default class reporteMoviminetos extends Component {
 
                 <DinamicTable.Col
                     key="admin"
-                    label="CAJERO" width={120}
+                    label="CAJERO"
+                    width={120}
                     data={e => e.row?.cajero?.Nombres ?? "Sin cajero"}
                     customComponent={e => {
                         const key = e.row?.key_cajero;
                         const nombre = e.row?.cajero?.Nombres ?? "Sin cajero";
+
                         return key ? (
                             <SView col="xs-12" row center>
                                 <SView
+                                    width={20}
+                                    height={20}
                                     style={{
-                                        width: 24,
-                                        height: 24,
                                         borderRadius: 100,
                                         overflow: "hidden",
                                         backgroundColor: STheme.color.card + "66",
+                                        marginRight: 6,
                                     }}
                                 >
                                     <SImage
                                         src={`${SSocket.api.root}usuario/${key}`}
-                                        style={{ resizeMode: "cover" }}
+                                        style={{ resizeMode: "cover", width: "100%", height: "100%" }}
                                     />
                                 </SView>
-                                <SView width={5} />
                                 <SText flex numberOfLines={1} style={e.textStyle}>
                                     {nombre}
                                 </SText>
@@ -580,6 +602,7 @@ export default class reporteMoviminetos extends Component {
                         );
                     }}
                 />
+
             </DinamicTable >
         );
     }
@@ -587,6 +610,7 @@ export default class reporteMoviminetos extends Component {
     render() {
         return (
             <SPage title="Historial de Movimientos / Transacciones" disableScroll>
+                <SHr height={8} />
                 <SView width={260} center>
                     <DateTimeBetween
                         fecha_inicio={this.state.fecha_inicio}
@@ -603,6 +627,8 @@ export default class reporteMoviminetos extends Component {
                         }}
                     />
                 </SView>
+                <SHr height={8} />
+
                 {this.state.data.length === 0 ? (
                     <SView col="xs-12" center>
                         <SText>No hay datos disponibles</SText>
