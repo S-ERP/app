@@ -427,11 +427,11 @@ export default class reporteMoviminetos extends Component {
 
 
 
-                {/* <DinamicTable.Col key="vouchers" wrap center label="VOUCHERS TOTALES" width={80} data={e => e.row?.vouchers?.length ?? 0} customComponent={e => {
+                <DinamicTable.Col key="vouchers" wrap center label="VOUCHERS TOTALES" width={80} data={e => e.row?.vouchers?.length ?? 0} customComponent={e => {
                     if (!e.data) return null; return (<SView col={"xs-12"} row center onPress={() =>
 
                         PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, e.row?.vouchers)} > <SText fontSize={12} color={STheme.color.text} >({e.data}) </SText> <SIconApp name='iconLista' width={8} /> </SView>);
-                }} /> */}
+                }} />
 
 
 
