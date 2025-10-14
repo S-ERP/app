@@ -189,7 +189,7 @@ export default class Barra extends React.Component {
                     <Page label={"Drive"} url={"/drive"}
                         permiso="page"
                         params={{
-                            key_empresa:MDL.empresa?.select?.key
+                            key_empresa: MDL.empresa?.select?.key
                         }}
                         icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
                     />
@@ -218,14 +218,14 @@ export default class Barra extends React.Component {
                     </Page>
 
 
-                    <Page label={"reporte"}
-                        // permiso="page"
-                        // permiso_url="/dev_tools"
-                        icon={<SIconApp name="redesSocialessssssssss" />}
+                    <Page label={"Reportes caja"}
+                        permiso="page"
+                        permiso_url="/reporte_cajas"
+                        icon={<SIconApp name="menuAll" fill={STheme.color.text} />}
                     >
-                        <Page label={"Caja Hisotirosssssss"} url={"/caja/reporte_cajas"} />
-                        <Page label={"Caja movimeineto"} url={"/caja/reporte_movimientos"} />
-                  
+                        <Page label={"Caja historico"} url={"/caja/reporte_cajas"}   permiso="reportecajas" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Caja movimientos"} url={"/caja/reporte_movimientos"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+
                     </Page>
 
                     {/* <Page label={"Iconos"} url={"/icons"} /> */}

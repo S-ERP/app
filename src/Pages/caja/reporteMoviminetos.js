@@ -8,6 +8,7 @@ import DateTimeBetween from '../../Components/DateTimeBetween';
 import SIconApp from '../../Assets/SIconApp';
 import FloatMenu from '../../Components/FloatMenu';
 import PopupSeeVoucher from '../caja2/components/PopupSeeVoucher';
+import { color } from 'three/examples/jsm/nodes/Nodes';
 
 export default class reporteMoviminetos extends Component {
     constructor(props) {
@@ -86,7 +87,7 @@ export default class reporteMoviminetos extends Component {
             return processedData;
         } catch (error) {
             console.error("❌ Error al cargar movimientos:", error);
-            SPopup.alert("Error al cargar los movimientos. Intenta nuevamente.");
+            // SPopup.alert("Error al cargar los movimientos. Intenta nuevamente.");
             return [];
         }
     }
@@ -387,9 +388,46 @@ export default class reporteMoviminetos extends Component {
                     key="empresa_tipo_pago"
                     wrap
                     label="DETALLE"
-                    width={200}
+                    width={220}
                     data={e => e.row?.empresa_tipo_pago ?? 0}
                 />
+
+
+
+
+
+                <DinamicTable.Col
+                    key="tag_transaccion_"
+                    label="TAG"
+                    width={90}
+                    wrap
+                    center
+                    data={e => e.row?.monto ?? 0}
+                    customComponent={e => {
+                        let texto = '-';
+                        let color = STheme.color.lightGray;
+                        let iconName = 'Ajustes';
+                        if (e.row?.monto != null) {
+                            if (e.row.monto > 0) {
+                                texto = 'Ingreso';
+                                iconName = 'Ingreso';
+                            } else if (e.row.monto < 0) {
+                                texto = 'Egreso';
+                                iconName = 'Egreso';
+                            }
+                        }
+                        return (
+                            <SView col="xs-12" row style={{ paddingVertical: 4 }}>
+                                <SIconApp name={iconName} width={14} height={14} fill={color} />
+                                <SView width={4} />
+                                <SText fontSize={12} color={STheme.color.text}>
+                                    {texto}
+                                </SText>
+                            </SView>
+                        );
+                    }}
+                />
+
 
                 <DinamicTable.Col
                     key="monto_total"
@@ -397,8 +435,32 @@ export default class reporteMoviminetos extends Component {
                     width={90}
                     color={STheme.color.danger}
                     data={e => e.row?.monto ?? 0}
-                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#47a0ff33", color: "blue" }}
+                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#a8b1bb73", color: "blue" }}
                     format={e => (!e.data ? "" : e.row?.moneda.observacion + " " + SMath.formatMoney(e.data))}
+                    customComponent={e => {
+                        let iconName = 'Ajustes';
+                        if (e.row?.monto != null) {
+                            if (e.row.monto > 0) {
+                                iconName = 'Ingreso';
+                            } else if (e.row.monto < 0) {
+                                iconName = 'Egreso';
+                            }
+                        }
+                        return (
+                            <SView col={"xs-12"} style={{ alignItems: "flex-end" }} >
+                                <SText fontSize={12} color={e.data > 0 ? STheme.color.text : STheme.color.danger} >{e.data}</SText>
+                            </SView>
+                            //  <SView col={"xs-12"} row center style={{ alignItems: "flex-end" }} >
+                            //     <SView width={4} />
+                            //     <SIconApp name={iconName} width={14} />
+                            //     <SView width={4} />
+                            //     <SView flex>
+                            //     <SText fontSize={12} color={e.data > 0 ? STheme.color.text : STheme.color.danger} >{e.data}</SText>
+                            //     </SView>
+                            // </SView>
+                        );
+                    }}
+
                 />
 
                 <DinamicTable.Col
@@ -407,7 +469,7 @@ export default class reporteMoviminetos extends Component {
                     center
                     label="TIPO CAMBIO"
                     width={50}
-                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#47a0ff33" }}
+                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#a8b1bb73" }}
                     data={e => e.row?.moneda.tipo_cambio ?? 0}
                 />
 
@@ -416,8 +478,24 @@ export default class reporteMoviminetos extends Component {
                     wrap label="MONTO BASE"
                     width={90}
                     data={e => (e.row?.moneda.tipo_cambio * e.row?.monto) ?? 0}
-                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#818c97c7" }}
+                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#a8b1bb73" }}
                     format={e => (!e.data ? "" : e.row?.moneda_base.observacion + " " + SMath.formatMoney(e.data))}
+                    customComponent={e => {
+                        let iconName = 'Ajustes';
+                        if (e.row?.monto != null) {
+                            if (e.row.monto > 0) {
+                                iconName = 'Ingreso';
+                            } else if (e.row.monto < 0) {
+                                iconName = 'Egreso';
+                            }
+                        }
+                        return (
+                            <SView col={"xs-12"} style={{ alignItems: "flex-end" }} >
+                                <SText fontSize={12} color={e.data > 0 ? STheme.color.text : STheme.color.danger} >{e.data}</SText>
+                            </SView>
+                        );
+                    }}
+
                 />
 
                 <DinamicTable.Col key="vouchers" wrap center label="VOUCHERS TOTALES" width={80} data={e => e.row?.vouchers?.length ?? 0} customComponent={e => {

@@ -66,7 +66,7 @@ export default class reporteCajas extends Component {
             return processedData;
         } catch (error) {
             console.error("❌ Error al cargar movimientos:", error);
-            SPopup.alert("Error al cargar los movimientos. Intenta nuevamente.");
+            // SPopup.alert("Error al cargar los movimientos. Intenta nuevamente.");
             return [];
         }
     }

@@ -40,7 +40,7 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         borderRadius: 100,
                         backgroundColor: STheme.color.card,
                     }} center>
-                        <SText color={STheme.color.lightGray} fontSize={10} >{index}</SText>
+                        <SText color={STheme.color.lightGray} fontSize={10} >ssssssss {index}</SText>
                     </SView>
                     <SView width={4} />
                     <SText > {item.descripcion}</SText>
