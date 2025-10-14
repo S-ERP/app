@@ -149,6 +149,7 @@ export default class reporteMoviminetos extends Component {
                 }}
 
                 loadInitialState={async () => ({
+                    // sorters: [{ key: "fecha_apertura", order: "desc", type: "date" }],
                     sorters: [{ key: "fecha_movimiento", order: "desc", type: "date" }],
                 })}
                 {...Config.table.applyTheme()}
@@ -203,7 +204,7 @@ export default class reporteMoviminetos extends Component {
                     width={130}
                     center
                     dataType="date"
-                    data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date : null)}
+                    data={e => (e.row?.caja_fecha_on ? new SDate(e.row.caja_fecha_on, "yyyy-MM-ddThh:mm:ss").date : null)}
                     textStyle={{ fontSize: 12, color: STheme.color.text }}
                     dateFormat="yyyy-MM-dd hh:mm:ss"
                 />
@@ -213,14 +214,14 @@ export default class reporteMoviminetos extends Component {
                     width={130}
                     center
                     dataType="date"
-                    data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date : null)}
+                    data={e => (e.row?.caja_fecha_cierre ? new SDate(e.row.caja_fecha_cierre, "yyyy-MM-ddThh:mm:ss").date : null)}
                     textStyle={{ fontSize: 12, color: STheme.color.text }}
                     dateFormat="yyyy-MM-dd hh:mm:ss"
                 />
                 <DinamicTable.Col
                     key="fecha_movimiento"
-                    label="FECHA Y HORA TRANSACCIÓN"
-                    width={130}
+                    label="FECHA TRANSACCIÓN"
+                    width={140}
                     center
                     dataType="date"
                     data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date : null)}
@@ -305,7 +306,7 @@ export default class reporteMoviminetos extends Component {
                                         backgroundColor: this.colorTipoOperacion(e.row?.tipo) || STheme.color.card,
                                         borderWidth: 1, borderColor: this.colorTipoOperacion(e.row?.tipo) || STheme.color.card,
                                         borderRadius: 4
-                                    }}> <SText fontSize={12}> {e.row?.tipo} </SText>
+                                    }}> <SText fontSize={12} style={{textTransform:"capitalize"}} >{e.row?.tipo}</SText>
                                     </SView>
                                 </SView>
                             </SView>
@@ -321,7 +322,7 @@ export default class reporteMoviminetos extends Component {
                     data={e => e.row?.descripcion ?? 0}
                 />
 
-                <DinamicTable.Col
+                {/* <DinamicTable.Col
                     key="key_tipo_pago"
                     wrap
                     label="MÉTODO DE PAGO"
@@ -342,7 +343,7 @@ export default class reporteMoviminetos extends Component {
                             </SView>
                         );
                     }}
-                />
+                /> */}
 
                 <DinamicTable.Col
                     key="key_tipo_pagov2"
@@ -449,7 +450,7 @@ export default class reporteMoviminetos extends Component {
                         }
                         return (
                             <SView col={"xs-12"} style={{ alignItems: "flex-end" }} >
-                                <SText fontSize={12} color={e.data > 0 ? STheme.color.text : STheme.color.danger} >{e.data}</SText>
+                                <SText fontSize={12} color={e.data > 0 ? STheme.color.text : STheme.color.danger} >({e.row.moneda.observacion}) {e.data}</SText>
                             </SView>
                             //  <SView col={"xs-12"} row center style={{ alignItems: "flex-end" }} >
                             //     <SView width={4} />
@@ -491,7 +492,7 @@ export default class reporteMoviminetos extends Component {
                         }
                         return (
                             <SView col={"xs-12"} style={{ alignItems: "flex-end" }} >
-                                <SText fontSize={12} color={e.data > 0 ? STheme.color.text : STheme.color.danger} >{e.data}</SText>
+                                 <SText fontSize={12} color={e.data > 0 ? STheme.color.text : STheme.color.danger} >({e.row.moneda_base.observacion}) {e.data}</SText>
                             </SView>
                         );
                     }}
