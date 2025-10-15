@@ -189,7 +189,7 @@ export default class Barra extends React.Component {
                     <Page label={"Drive"} url={"/drive"}
                         permiso="page"
                         params={{
-                            key_empresa:MDL.empresa?.select?.key
+                            key_empresa: MDL.empresa?.select?.key
                         }}
                         icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
                     />
@@ -209,10 +209,25 @@ export default class Barra extends React.Component {
                         <Page label={"Tema"} onPress={() => {
                             PopupEditarTema.open()
                         }} />
+
+
+
                         {/* <SText onPress={() => {
 
                         }}>{"Tema"}</SText> */}
                     </Page>
+
+
+                    <Page label={"Reportes caja"}
+                        permiso="page"
+                        permiso_url="/reporte_cajas"
+                        icon={<SIconApp name="menuAll" fill={STheme.color.text} />}
+                    >
+                        <Page label={"Caja historico"} url={"/caja/reporte_cajas"}   permiso="reportecajas" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Caja movimientos"} url={"/caja/reporte_movimientos"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+
+                    </Page>
+
                     {/* <Page label={"Iconos"} url={"/icons"} /> */}
                     <SHr h={100} />
                 </ScrollView>

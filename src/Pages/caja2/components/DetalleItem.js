@@ -14,9 +14,6 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
 
     render() {
         const { item, index, empresa } = this.props;
-
-        console.log("traeloaaaaaaaaaaaaaaaa " + JSON.stringify(item))
-
         let color = STheme.color.success;
         if (item.monto < 0) {
             color = STheme.color.danger;

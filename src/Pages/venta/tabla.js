@@ -74,58 +74,133 @@ export default class tabla extends Component {
         const nulo = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.lightGray + "66", }} />;
         return srcKey ? pintar : nulo;
     };
+
     async loadInitialData() {
+    try {
+        console.log('🚀 Iniciando carga de datos...');
+
+        // 1. Obtener registros principales
+        const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
+        if (!registros) throw new Error("No se encontraron registros.");
+
+        // 2. Obtener empresa y sucursales
+        const empresa = await MDL.empresa.getFull();
+        if (!empresa) throw new Error("No se pudo obtener la empresa.");
+        const sucursales = empresa.sucursales || [];
+
+        // 3. Filtrar ventas
+        const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
+        if (ventas.length === 0) throw new Error("No se encontraron ventas.");
+
+        // 4. Obtener usuarios únicos
+        const keysUsuarios = [];
+        ventas.forEach(cv => {
+            if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
+                keysUsuarios.push(cv.key_usuario);
+            }
+        });
+
+        // 5. Cargar datos relacionados
+        const proveedores = await MDL.inventario.proveedor.getAllProveedor();
+        if (!proveedores) throw new Error("No se pudieron obtener proveedores.");
+
+        const clientes = await MDL.crm.cliente.getAll();
+        if (!clientes) throw new Error("No se pudieron obtener clientes.");
+
+        const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
+        const usuariosMap = Array.isArray(usuarios)
+            ? Object.fromEntries(usuarios.map(u => [u.key, u]))
+            : usuarios || {};
+
+        // 6. Totales de la primera venta
+        let totales = {};
         try {
-            console.log('Loading initial data... 🎈🎈🎈🎈');
-            // 1. Obtener registros principales
-            const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
-            if (!registros) return [];
-            const empresa = await MDL.empresa.getFull();
-            const sucursales = empresa.sucursales
-            // 2. Filtrar ventas
-            const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
-            // 3. Obtener usuarios únicos
-            const keysUsuarios = [];
-            ventas.forEach(cv => {
-                if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
-                    keysUsuarios.push(cv.key_usuario);
-                }
-            });
-            // 4. Cargar datos relacionados
-            const proveedores = await MDL.inventario.proveedor.getAllProveedor();
-            const clientes = await MDL.crm.cliente.getAll();
-            const usuarios = await MDL.usuario.getByKeys(keysUsuarios) || {};
-            // Normalizar usuarios en objeto { key: usuario }
-            const usuariosMap = Array.isArray(usuarios)
-                ? Object.fromEntries(usuarios.map(u => [u.key, u]))
-                : usuarios;
-            // 5. Totales de la primera venta
-            const totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0].key }) || {};
-            // 6. Enriquecer ventas con data relacionada
-            const ventasEnriquecidas = await Promise.all(
-                ventas.map(async (cv) => {
-                    return {
-                        ...cv,
-                        moneda: empresa.monedas.find(m => m.key === cv.key_moneda) || {},
-                        sucursal: sucursales.find(a => a?.key === cv?.key_sucursal) || {},
-                        usuario: usuariosMap[cv?.key_usuario] || {},
-                        empresa,
-                        proveedor: proveedores.find(a => a.key == proveedorEjemplo?.key) || {},
-                        cliente: clientes.find(a => a?.key === cv.key_cliente) || {},
-                        subtotal: totales?.subtotal || "0",
-                        descuento: totales?.descuento || "0",
-                    };
-                })
-            );
-            console.log('Initial data loaded successfully! 🎉🎉🎉🎉');
-            console.log(ventasEnriquecidas);
-            return ventasEnriquecidas;
-        } catch (error) {
-            console.error('Error in loadData:', error);
-            SPopup.alert('Error loading data. Please try again.');
-            return [];
+            totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0]?.key }) || {};
+        } catch (e) {
+            console.warn("No se pudieron obtener los totales de la primera venta:", e);
         }
+
+        // 7. Enriquecer ventas
+        const ventasEnriquecidas = await Promise.all(
+            ventas.map(async (cv) => {
+                return {
+                    ...cv,
+                    moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {},
+                    sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
+                    usuario: usuariosMap[cv?.key_usuario] || {},
+                    empresa,
+                    proveedor: proveedores.find(p => p.key === cv.key_proveedor) || {},
+                    cliente: clientes.find(c => c?.key === cv.key_cliente) || {},
+                    subtotal: totales?.subtotal || "0",
+                    descuento: totales?.descuento || "0",
+                };
+            })
+        );
+
+        console.log('✅ Datos cargados exitosamente:', ventasEnriquecidas.length, "ventas.");
+        return ventasEnriquecidas;
+
+    } catch (error) {
+        console.error("❌ Error en loadInitialData:", error?.message || error, error);
+        SPopup.alert("Error al cargar los datos. Intenta nuevamente.");
+        return [];
     }
+}
+
+
+    // async loadInitialData() {
+    //     try {
+    //         console.log('Loading initial data... 🎈🎈🎈🎈');
+    //         // 1. Obtener registros principales
+    //         const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
+    //         if (!registros) return [];
+    //         const empresa = await MDL.empresa.getFull();
+    //         const sucursales = empresa.sucursales
+    //         // 2. Filtrar ventas
+    //         const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
+    //         // 3. Obtener usuarios únicos
+    //         const keysUsuarios = [];
+    //         ventas.forEach(cv => {
+    //             if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
+    //                 keysUsuarios.push(cv.key_usuario);
+    //             }
+    //         });
+    //         // 4. Cargar datos relacionados
+    //         const proveedores = await MDL.inventario.proveedor.getAllProveedor();
+    //         const clientes = await MDL.crm.cliente.getAll();
+    //         const usuarios = await MDL.usuario.getByKeys(keysUsuarios) || {};
+    //         // Normalizar usuarios en objeto { key: usuario }
+    //         const usuariosMap = Array.isArray(usuarios)
+    //             ? Object.fromEntries(usuarios.map(u => [u.key, u]))
+    //             : usuarios;
+    //         // 5. Totales de la primera venta
+    //         const totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0].key }) || {};
+    //         // 6. Enriquecer ventas con data relacionada
+    //         const ventasEnriquecidas = await Promise.all(
+    //             ventas.map(async (cv) => {
+    //                 return {
+    //                     ...cv,
+    //                     moneda: empresa.monedas.find(m => m.key === cv.key_moneda) || {},
+    //                     sucursal: sucursales.find(a => a?.key === cv?.key_sucursal) || {},
+    //                     usuario: usuariosMap[cv?.key_usuario] || {},
+    //                     empresa,
+    //                     proveedor: proveedores.find(a => a.key == proveedorEjemplo?.key) || {},
+    //                     cliente: clientes.find(a => a?.key === cv.key_cliente) || {},
+    //                     subtotal: totales?.subtotal || "0",
+    //                     descuento: totales?.descuento || "0",
+    //                 };
+    //             })
+    //         );
+    //         console.log('Initial data loaded successfully! 🎉🎉🎉🎉');
+    //         console.log(ventasEnriquecidas);
+    //         return ventasEnriquecidas;
+    //     } catch (error) {
+    //         // console.error('Error in loadData:', error);
+    //         console.error('Error in loadData:', JSON.stringify(error, null, 2));
+    //         SPopup.alert('Error loading data. Please try again.');
+    //         return [];
+    //     }
+    // }
     renderState(state) {
         const statesInfo = MDL.compra_venta.getStateInfo()[state];
         return <SView row center>

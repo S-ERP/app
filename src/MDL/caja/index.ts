@@ -24,10 +24,10 @@ export default class caja extends MDLAbstract<EventListener> {
   async getActiva() {
     const key_usuario = MDL.usuario.session?.key;
     const key_empresa = MDL.empresa.select?.key
-    if (!key_usuario || !key_empresa) {
-      // throw "Se requiere key_usuario y key_empresa"
-      throw "Debe abrir caja";
-    }
+    // if (!key_usuario || !key_empresa) {
+    //   // throw "Se requiere key_usuario y key_empresa"
+    //   throw "Debe abrir caja";
+    // }
     const resp: any = await SSocket.sendPromise({
       service: "caja",
       component: "caja",
@@ -144,6 +144,18 @@ export default class caja extends MDLAbstract<EventListener> {
       service: "caja",
       component: "caja",
       type: "getAllCajasByEmpresa",
+      key_empresa: key_empresa,
+      fecha_inicio: fecha_inicio,
+      fecha_fin: fecha_fin,
+    })
+    return Object.values(resp.data)
+  }
+
+  async getAllMovimientosCajasByEmpresa(key_empresa: string, fecha_inicio: string, fecha_fin: string) {
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "caja",
+      type: "getAllMovimientosCajasByEmpresa",
       key_empresa: key_empresa,
       fecha_inicio: fecha_inicio,
       fecha_fin: fecha_fin,
