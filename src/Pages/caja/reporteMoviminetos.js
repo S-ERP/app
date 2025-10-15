@@ -9,6 +9,7 @@ import SIconApp from '../../Assets/SIconApp';
 import FloatMenu from '../../Components/FloatMenu';
 import PopupSeeVoucher from '../caja2/components/PopupSeeVoucher';
 import { color } from 'three/examples/jsm/nodes/Nodes';
+import { Linking } from 'react-native';
 
 export default class reporteMoviminetos extends Component {
     constructor(props) {
@@ -56,6 +57,135 @@ export default class reporteMoviminetos extends Component {
     }
 
 
+    // iconotipoArchivo(documento_name = "", documento_type = "") {
+    //     if (!documento_type) return null;
+
+    //     const tipo = documento_type.toLowerCase().trim();
+
+    //     // Colores por tipo
+    //     let bgColor = "#B0B0B0"; // Default gray
+    //     let borderColor = "#3c3d3dff";
+    //     let icon = "crmpdarchivo";
+    //     let iconColor = "#3c3d3dff";
+
+    //     if (tipo.endsWith(".pdf") || tipo.includes("/pdf")) {
+    //         bgColor = "#ffcccc";
+    //         borderColor = "#f00";
+    //         icon = "crmpdf";
+    //         iconColor = "#f00";
+    //     }
+
+
+
+    //     else if (tipo.endsWith(".docx") || tipo.includes("/docx") || tipo.includes("/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+    //         bgColor = "#E8F0FF";
+    //         borderColor = "#2F6AC4";
+    //         icon = "crmword";
+    //         iconColor = "#2F6AC4";
+    //     }
+
+    //     else if (tipo.endsWith("/x-icon") || tipo.includes("x-icon")) {
+    //         bgColor = "#fcdfa5";
+    //         borderColor = "#fcd674";
+    //         icon = "crmpdarchivo";
+    //         iconColor = "#fcd674";
+    //     }
+    //     // else if (tipo.endsWith("/x-icon") || tipo.includes("x-icon")) {
+    //     //     bgColor = "#E8F0FF";
+    //     //     borderColor = "#2F6AC4";
+    //     //     icon = "crmpdarchivo";
+    //     //     iconColor = "#2F6AC4";
+    //     // }
+
+    //     else if (tipo.endsWith("/png") || tipo.includes("/jpg")) {
+    //         bgColor = "#e9e4ec";
+    //         borderColor = "#a1c8fc";
+    //         icon = "Galeria";
+    //         iconColor = "#a1c8fc";
+    //     }
+    //     // else if (tipo.endsWith("/png") || tipo.includes("/jpg")) {
+    //     //     bgColor = "#6567db";
+    //     //     borderColor = "#8775d0";
+    //     //     icon = "Galeria";
+    //     //     iconColor = "#8775d0";
+    //     // }
+
+    //     else if (tipo.endsWith("/xlsx") || tipo.includes("/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+    //         bgColor = "#E6F5EE";
+    //         borderColor = "#208D50";
+    //         icon = "crmexcel";
+    //         iconColor = "#208D50";
+    //     } else if (tipo.endsWith(".pptx") || tipo.includes("/vnd.openxmlformats-officedocument.presentationml.presentation")) {
+    //         bgColor = "#FFECE6";
+    //         borderColor = "#CA5131";
+    //         icon = "crmpresentacion";
+    //         iconColor = "#CA5131";
+    //     }
+
+    //     return (
+    //         <SView row center style={{ padding: 4, backgroundColor: bgColor, borderRadius: 6, marginRight: 4, marginBottom: 4, }} >
+    //             <SIconApp name={icon} fill={iconColor} width={14} height={14} /> <SText fontSize={10} color={iconColor} >Voucher.{tipo?.split(".").pop()} </SText> <SIconApp name={"downImgNube"} fill={iconColor} width={14} height={14} />
+    //         </SView>
+    //     );
+    // }
+
+    iconotipoArchivo(documento_name = "", documento_type = "") {
+        if (!documento_type) return null;
+
+        const tipo = documento_type.toLowerCase().trim();
+
+        const extension = (() => {
+            const parts = tipo.split(/[/\.]/);
+            return parts[parts.length - 1] || "";
+        })();
+
+
+
+        let bgColor = "#B0B0B0";
+        let borderColor = "#3c3d3dff";
+        let icon = "crmpdarchivo";
+        let iconColor = "#3c3d3dff";
+
+        const tipoMapeo = {
+            pdf: { bg: "#fdc4c4ff", border: "#D32F2F", icon: "crmpdf", color: "#D32F2F" },
+            document: { bg: "#b2dfffff", border: "#1976D2", icon: "crmword", color: "#1976D2" },
+            sheet: { bg: "#affab5ff", border: "#388E3C", icon: "crmexcel", color: "#388E3C" },
+            presentation: { bg: "#FFF3E0", border: "#F57C00", icon: "crmpresentacion", color: "#F57C00" },
+            png: { bg: "#e895f5ff", border: "#8E24AA", icon: "Galeria", color: "#8E24AA" },
+            jpg: { bg: "#F3E5F5", border: "#8E24AA", icon: "Galeria", color: "#8E24AA" },
+            jpeg: { bg: "#F3E5F5", border: "#8E24AA", icon: "Galeria", color: "#8E24AA" },
+            "x-icon": { bg: "#ECEFF1", border: "#607D8B", icon: "crmpdarchivo", color: "#607D8B" },
+            txt: { bg: "#F1F8E9", border: "#689F38", icon: "crmtxt", color: "#689F38" },
+            csv: { bg: "#FFFDE7", border: "#FBC02D", icon: "crmexcel", color: "#FBC02D" },
+            zip: { bg: "#E0F7FA", border: "#0097A7", icon: "crmzip", color: "#0097A7" },
+            rar: { bg: "#E0F7FA", border: "#0097A7", icon: "crmzip", color: "#0097A7" },
+            mp4: { bg: "#FBE9E7", border: "#D84315", icon: "crmpvideo", color: "#D84315" },
+            mp3: { bg: "#E8EAF6", border: "#3F51B5", icon: "crmpaudio", color: "#3F51B5" }
+        };
+
+        const config = tipoMapeo[extension];
+        if (config) {
+            bgColor = config.bg;
+            borderColor = config.border;
+            icon = config.icon;
+            iconColor = config.color;
+        }
+
+        const extensionAlias = {
+            "document": "docx",
+            "sheet": "xlsx",
+            "presentation": "pptx"
+        };
+        const displayExt = extensionAlias[extension] || extension;
+
+        return (
+            <SView row center style={{ padding: 4, backgroundColor: bgColor, borderRadius: 6, marginRight: 4, marginBottom: 4, borderWidth: 1, borderColor: borderColor }} >
+                <SIconApp name={icon} fill={iconColor} width={12} height={12} style={{ marginRight: 3 }} />
+                <SText fontSize={10} color={iconColor} bold>Voucher.{displayExt}</SText>
+                <SIconApp name={"downImgNube"} fill={iconColor} width={12} height={12} style={{ marginLeft: 3 }} />
+            </SView>
+        );
+    }
     async loadInitialData() {
         try {
             console.log("📦 Cargando movimientos de caja...");
@@ -429,9 +559,36 @@ export default class reporteMoviminetos extends Component {
 
                 <DinamicTable.Col key="vouchers" wrap center label="VOUCHERS TOTALES" width={80} data={e => e.row?.vouchers?.length ?? 0} customComponent={e => {
                     if (!e.data) return null; return (<SView col={"xs-12"} row center onPress={() =>
-
                         PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, e.row?.vouchers)} > <SText fontSize={12} color={STheme.color.text} >({e.data}) </SText> <SIconApp name='iconLista' width={8} /> </SView>);
                 }} />
+
+
+
+                <DinamicTable.Col key="voucherdsds" wrap center label="DOCUMENTOS" width={120}
+                    data={(e) => (e.row.vouchers ?? []).map(p => p)}
+                    customComponent={(e) => (
+                        <SView row>
+                            {(e.row.vouchers ?? []).map((p, index) => (
+                                <SView key={index} style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4, marginRight: 4, }}
+                                    onPress={() => {
+                                        console.log("📦 VOUCHER..." + JSON.stringify(p));
+
+
+
+                                        const url = `${SSocket.api.root}empresa/${e.row.key_empresa}/voucher/${e.row.key}/${p.name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
+                                        Linking.openURL(url);
+                                    }}
+                                >
+                                    {/* <SText fontSize={10} numberOfLines={1}>Voucher {index + 1}</SText> */}
+                                    {/* {this.iconotipoArchivo(p.type)} */}
+                                    {this.iconotipoArchivo(p.name, p.type)}
+
+                                    {/* <SText fontSize={10} numberOfLines={1}>Voucher{index + 1}.{p.type?.split("/").pop()}</SText> */}
+                                </SView>
+                            ))}
+                        </SView>
+                    )}
+                />
 
 
 
