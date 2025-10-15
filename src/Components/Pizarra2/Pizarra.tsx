@@ -5,7 +5,7 @@ import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-nativ
 import Linea from './Linea';
 import Conexiones from './Conexiones';
 import MDL from '../../MDL';
-import { STheme, SUuid } from 'servisofts-component';
+import { STheme, SThread, SUuid } from 'servisofts-component';
 import select from 'servisofts-component/Component/SInput2/types/select';
 import PizarraMiniMapa from './MiniMapa';
 import label from '../label';
@@ -38,7 +38,7 @@ const Pizarra = (props: PizarraProps) => {
     const layoutWidth = useSharedValue(0);
     const layoutHeight = useSharedValue(0);
     const exponentDeRedondeoDeMovimiento = useSharedValue(props.exponentDeRedondeoDeMovimiento ?? 1);
-    const scale = useSharedValue(1);
+    const scale = useSharedValue(serverData.current?.pizarra_usuario?.data?.scale ?? 1);
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
 
@@ -59,7 +59,10 @@ const Pizarra = (props: PizarraProps) => {
             const pud = serverData.current.pizarra_usuario.data;
             if (pud.translateX) translateX.value = pud.translateX
             if (pud.translateY) translateY.value = pud.translateY
-            if (pud.scale) scale.value = pud.scale
+            if (pud.scale) {
+                scale.value = pud.scale
+                console.log("aplico la scale", pud.scale)
+            }
 
         }
         serverData.current.nodes?.forEach((nodo: any) => {
@@ -347,41 +350,51 @@ const Pizarra = (props: PizarraProps) => {
             }
         })
 
-        const sendUpdate = (x, y, s) => {
+        const sendUpdate = (x: any, y: any, s: any) => {
             // Aquí mandas al servidor
 
             if (!!serverData.current) {
                 if (serverData.current.pizarra_usuario) {
                     const pud = serverData.current.pizarra_usuario.data;
-                    if (pud.translateX) pud.translateX = x
-                    if (pud.translateY) pud.translateY = y
-                    if (pud.scale) pud.scale = s
+                    if (pud.translateX) pud.translateX = translateX.value
+                    if (pud.translateY) pud.translateY = translateY.value
+                    if (pud.scale) pud.scale = scale.value
 
                 }
+                console.log("Enviar al servidor:", {
+                    x: translateX.value,
+                    y: translateY.value,
+                    s: scale.value
+                });
+                MDL.pizarra.pizarra_usuario_save({
+                    id_pizarra: props.id,
+                    data: {
+                        translateX: translateX.value,
+                        translateY: translateY.value,
+                        scale: scale.value,
+                        layoutWidth: layoutWidth.value,
+                        layoutHeight: layoutHeight.value
+
+                    }
+
+                })
             }
-            console.log("Enviar al servidor:", { x, y, s });
-            MDL.pizarra.pizarra_usuario_save({
-                id_pizarra: props.id,
-                data: {
-                    translateX: x,
-                    translateY: y,
-                    scale: s,
-                    layoutWidth: layoutWidth.value,
-                    layoutHeight: layoutHeight.value
 
-                }
-
-            })
             // fetch('/api/update', { method: 'POST', body: JSON.stringify({ x, y, s }) })
         };
 
         const throttledSend = () => {
+
             const now = Date.now();
             const fps = 2;
+
             if (now - lastSentRef.current >= (1000 / fps)) { // 30 fps
                 lastSentRef.current = now;
                 runOnJS(sendUpdate)(translateX.value, translateY.value, scale.value);
             }
+            new SThread((1000 / fps), props.id, true).start(() => {
+                runOnJS(sendUpdate)(translateX.value, translateY.value, scale.value);
+            })
         };
 
         const xListener = translateX.addListener(listenerId, throttledSend);

@@ -35,6 +35,10 @@ const Conexiones = (props: ConexionesProps) => {
             console.log("Cargando los puertos", cantidad_puertos, cantidad_puertos_cargados)
             return;
         }
+        if(cantidad_puertos<=0){
+            // console.log("No hay puertos");
+            return;
+        }
         console.log("LLego al final y cargo todos los puertos", inputs, outputs)
 
         const _conexiones: any = {};

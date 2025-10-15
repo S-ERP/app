@@ -174,7 +174,7 @@ function PuertoBase(props: PuertoProps) {
     if (nodo?.puertos?.current?.[id + "-" + type]) {
         nodo.puertos.current[id + "-" + type].props = props;
     }
-    console.log("Entro al rendes puerto", props, value)
+    // console.log("Entro al rendes puerto", props, value)
 
     if (pizarra.conexiones?.current) {
         pizarra.conexiones.current.calcularConexiones();

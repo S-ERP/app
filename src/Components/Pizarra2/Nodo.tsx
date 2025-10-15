@@ -225,7 +225,7 @@ function NodoBase(props: NodoProps) {
         };
     }, []);
 
-    console.log("Entro al rendes", id)
+    // console.log("Entro al rendes", id)
     return (
         <NodoContext.Provider value={contextValue}>
             <GestureDetector gesture={(Gesture.Simultaneous(panGesture, doubleTapGesture))}>

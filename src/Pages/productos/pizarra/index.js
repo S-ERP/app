@@ -1,5 +1,5 @@
 import React from "react";
-import { SHr, SImage, SInput, SNavigation, SNotification, SPage, SText, STheme, SUuid, SView } from "servisofts-component";
+import { SHr, SImage, SInput, SNavigation, SNotification, SPage, SPopup, SText, STheme, SUuid, SView } from "servisofts-component";
 import Pizarra from "../../../Components/Pizarra2/Pizarra";
 import PizarraNodo from "../../../Components/Pizarra2/Nodo"
 import Puerto from "../../../Components/Pizarra2/Puerto";
@@ -13,9 +13,11 @@ import FormularioModelo from "../Components/FormularioModelo";
 import Recargar from "../../../Components/Recargar";
 import FormularioIngrediente from "../Components/FormularioIngrediente";
 import SelectMenu from "./SelectMenu";
+import Elaborar from "../Components/Elaborar";
 
 export default class pizarra extends React.Component {
     state = {
+        key_sucursal: MDL.caja?.activa?.key_sucursal,
         filtro: "",
         modelos: [],
         ingredientes: [],
@@ -26,7 +28,7 @@ export default class pizarra extends React.Component {
     }
 
     async loadData() {
-        const modelos = await MDL.inventario.getAllModeloStock();
+        const modelos = await MDL.inventario.getAllModeloStockBySucursal(this.state.key_sucursal);
         const ingredientes = await MDL.inventario.getPizarraIngrediente();
 
         this.setState({
@@ -111,7 +113,7 @@ export default class pizarra extends React.Component {
                     })
                     console.log(modelo)
                 }}>
-                <NodoModelo modelo={modelo} />
+                <NodoModelo modelo={modelo} key_sucursal={this.state.key_sucursal} />
                 <Puerto
                     id="key_ingrediente"
                     type="input"
@@ -380,6 +382,17 @@ export default class pizarra extends React.Component {
                         })
                     }} />
             </SView>
+            <SView width={8} />
+            <SView width={100}>
+                <SInput style={{ width: 100 }} label={"Sucursal"} customStyle={"erp"}
+                    defaultValue={MDL.caja?.activa?.key_sucursal}
+                    onChangeText={e => {
+                        this.state.key_sucursal = e;
+                        // this.setState({
+                        //     filtro: e
+                        // })
+                    }} />
+            </SView>
         </SView>
     }
     render() {
@@ -494,7 +507,11 @@ const NodoModelo = (props) => {
                     }}>{"Elaborar"}</SText>
                     <SText clean>{" "}</SText>
                     <SText card padding={2} fontSize={8} onPress={() => {
-                        // SNavigation.navigate("/productos/modelo/ingrediente", { key_modelo: modelo.key })
+                        Elaborar.open({
+                            modelo: modelo,
+                            key_sucursal: props.key_sucursal,
+                        })
+                        // SNavigation.navigate("/productos/modelo/ingrediente", {key_modelo: modelo.key })
                     }}>{"Descomponer"}</SText>
                 </SText>
 
@@ -513,7 +530,7 @@ const NodoModelo = (props) => {
                 color: STheme.color.success
             }}>BOB {modelo?.precio_venta}</SText>}
         </SView>
-    </View>
+    </View >
 }
 const NodoIngrediente = (props) => {
     const { ingrediente } = props;
