@@ -9,6 +9,7 @@ import SIconApp from '../../Assets/SIconApp';
 import FloatMenu from '../../Components/FloatMenu';
 import PopupSeeVoucher from '../caja2/components/PopupSeeVoucher';
 import { color } from 'three/examples/jsm/nodes/Nodes';
+import { Linking } from 'react-native';
 
 export default class reporteMoviminetos extends Component {
     constructor(props) {
@@ -429,9 +430,30 @@ export default class reporteMoviminetos extends Component {
 
                 <DinamicTable.Col key="vouchers" wrap center label="VOUCHERS TOTALES" width={80} data={e => e.row?.vouchers?.length ?? 0} customComponent={e => {
                     if (!e.data) return null; return (<SView col={"xs-12"} row center onPress={() =>
-
                         PopupSeeVoucher.open(e.row?.key_empresa, e.row?.key, e.row?.vouchers)} > <SText fontSize={12} color={STheme.color.text} >({e.data}) </SText> <SIconApp name='iconLista' width={8} /> </SView>);
                 }} />
+
+
+
+                <DinamicTable.Col key="voucherdsds" wrap center label="DOCUMENTOS" width={120}
+                    data={(e) => (e.row.vouchers ?? []).map(p => p)}
+                    customComponent={(e) => (
+                        <SView row>
+                            {(e.row.vouchers ?? []).map((p, index) => (
+                                <SView key={index} style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4, marginRight: 4, }}
+                                    onPress={() => {
+                                        console.log("📦 VOUCHER..." + JSON.stringify(p));
+                                        const url = `${SSocket.api.root}empresa/${e.row.key_empresa}/voucher/${e.row.key}/${p.name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
+                                        Linking.openURL(url);
+                                    }}
+                                >
+                                    <SText fontSize={10} numberOfLines={1}>Voucher {index + 1}</SText>
+                                    {/* <SText fontSize={10} numberOfLines={1}>  {p.name ?? "Sin nombre"}  </SText> */}
+                                </SView>
+                            ))}
+                        </SView>
+                    )}
+                />
 
 
 
