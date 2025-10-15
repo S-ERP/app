@@ -306,6 +306,7 @@ export default class Dashboard extends Component {
 
 
         console.log("DATAS", this.state.cards);
+        console.log("STAGES", this.stages);
         return (
             <GestureHandlerRootView style={{ flex: 1, }}>
                 <SPage title={'Dashboard ' + this.dashboardType} disableScroll>

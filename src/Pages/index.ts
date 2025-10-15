@@ -90,6 +90,8 @@ import widgets from "./widgets";
 import IconosAlvaro from "./IconosAlvaro";
 import social_media from "./social_media";
 import pizarra2 from "../Components/Pizarra2/testPage"
+import contactos from "./contactos";
+
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -175,4 +177,5 @@ export default SPage.combinePages("/", {
   "iconosss":IconosAlvaro,
   alvaro,
   ...social_media,
+  ...contactos
 });

@@ -193,6 +193,17 @@ export default class Barra extends React.Component {
                         }}
                         icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
                     />
+                    <Page label={"Contactos"}
+                        permiso="page"
+                        permiso_url="/contactos"
+                        // icon={<SIconApp name="menuAll" fill={STheme.color.text} />
+                        icon={<ImagePage key_page="5f397907-35a9-4efa-8c1b-59af54d5f29a" />
+                        }
+                    >
+                        <Page label={"Agenda"} url={"/contactos"} permiso="page" permiso_url="/contactos" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        {/* <Page label={"Caja movimientos"} url={"/caja/reporte_movimientos"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} /> */}
+
+                    </Page>
                     <Page label={"Camara"} url={"/qr_reader"}
                         permiso="page"
                         icon={<ImagePage key_page="676e0ed7-2320-4adb-8dfa-624e0c48df07" />}
@@ -223,10 +234,12 @@ export default class Barra extends React.Component {
                         permiso_url="/reporte_cajas"
                         icon={<SIconApp name="menuAll" fill={STheme.color.text} />}
                     >
-                        <Page label={"Caja historico"} url={"/caja/reporte_cajas"}   permiso="reportecajas" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Caja historico"} url={"/caja/reporte_cajas"} permiso="reportecajas" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Caja movimientos"} url={"/caja/reporte_movimientos"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
 
                     </Page>
+
+
 
                     {/* <Page label={"Iconos"} url={"/icons"} /> */}
                     <SHr h={100} />
