@@ -50,7 +50,7 @@ export default class DashboardCard extends Component {
                         color={STheme.color.link}
                         onPress={() => {
                             // SNavigation.navigate("/crm/plantilla", { key: card.key })
-                            SNavigation.navigate("/crm/call", { key: card.key })
+                            // SNavigation.navigate("/crm/call", { key: card.key })
                         }} >{card?.cliente?.telefono}</SText>
                     <SHr h={4} />
                     <SText fontSize={10} color={STheme.color.lightGray}>{card?.cliente?.tipo}</SText>
