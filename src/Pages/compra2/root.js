@@ -117,9 +117,12 @@ export default class root extends React.Component {
         MDL.inventario.getAllModeloStock().then(modelos => {
             this.setState({ modelos });
         });
-        MDL.inventario.proveedor.getAllProveedor().then(proveedores => {
+        MDL.crm.cliente.getAll().then(proveedores => {
             this.setState({ proveedores });
         });
+        // MDL.inventario.proveedor.getAllProveedor().then(proveedores => {
+        //     this.setState({ proveedores });
+        // });
         MDL.inventario.getAllAlmacen().then(almacenes => {
             const arr = almacenes.filter(a => a.key_sucursal == MDL.caja?.activa?.key_sucursal);
 
@@ -152,7 +155,7 @@ export default class root extends React.Component {
             // data.
 
             const provValue = this.inputs["proveedor"].getValue();
-            const proveedor = this.state.proveedores.find(a => a.razon_social === provValue);
+            const proveedor = this.state.proveedores.find(a => a.nombres === provValue);
 
             console.log(this.selectedMoneda)
             const data = {
@@ -292,7 +295,7 @@ export default class root extends React.Component {
                                     onChangeText={e => {
                                         this.forceUpdate();
                                     }}
-                                    options={this.state.proveedores.map(a => a?.razon_social || "")}
+                                    options={this.state.proveedores.map(a => a?.nombres || "")}
                                 />
                             </SView>
                         </SView>
@@ -458,6 +461,7 @@ class Detalle extends React.Component {
         let modelos_arr = this.props.parent.state.modelos;
         let prov = this.props.parent.inputs["proveedor"]?.getValue() || "";
         let modelos_arr_filter = modelos_arr.filter(e => {
+            return true;
             if (prov) {
                 return !!(e.proveedores ?? []).find(p => p.proveedor.razon_social === prov);
             }
