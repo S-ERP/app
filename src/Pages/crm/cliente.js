@@ -15,6 +15,7 @@ const URL = "/crm/cliente";
 
 export default class cliente extends Component {
 
+    onSelect = SNavigation.getParam("onSelect")
     componentDidMount() {
 
         MDL.rolesPermisos.getPermisoAsync({
@@ -150,7 +151,16 @@ export default class cliente extends Component {
 
                         })
                     }
-
+                    if (this.onSelect) {
+                        options.push({
+                            label: "select",
+                            icon: <SIcon name="Check" fill={STheme.color.text} />,
+                            onPress: () => {
+                                this.onSelect(e.row)
+                                SNavigation.goBack();
+                            }
+                        })
+                    }
                     // const nombreCliente = "CLIENTE: "+ row?.nombres ?? "El cliente";
                     FloatMenu.open({
                         e: evt,

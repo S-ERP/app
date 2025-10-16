@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SIcon, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SNavigation, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
 import {
     FlatList,
     GestureHandlerRootView,
@@ -21,6 +21,8 @@ import Model from '../../Model';
 import MDL from '../../MDL';
 import Etiqueta from './Components/Etiqueta';
 import DashboardCard from './Components/DashboardCard';
+import FormRegistroTipoCliente from '../crm/Components/FormRegistroTipoCliente';
+import SSocket from 'servisofts-socket';
 // import GraficoEstados from './graficos/GraficoEstados';
 
 const HEADER_HEIGHT = 30;// Altura del header
@@ -38,12 +40,40 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                 <SView row col={"xs-12"} center>
                     <SView style={{ backgroundColor: stage.color, width: 20, height: 20, borderRadius: 20 }} />
                     <SView width={8} />
-                    <SText bold>{stage.name}</SText>
+                    <SText bold onPress={() => {
+                        FormRegistroTipoCliente.open({
+                            defaultData: stage,
+                            onRegister: () => {
+                                // this.loadData()
+                            },
+                            onActualizar: () => {
+                                // this.loadData()
+                            },
+
+                        })
+                    }}>{stage.titulo}</SText>
                     <SView flex />
                     <SText bold card fontSize={10} padding={4}>{cards?.length}</SText>
                 </SView>
+                <SText col={"xs-12"} fontSize={10} color={STheme.color.lightGray}>{stage.descripcion}</SText>
                 {/* <SHr /> */}
-                <SView row col={"xs-12"}>{stage.states.map((state, index) => <Etiqueta tipo_leads={state} size={8} style={{ marginRight: 4, marginTop: 4 }} />)}</SView>
+                <SView row col={"xs-12"}>{stage?.states?.map((state, index) => <Etiqueta tipo_leads={state} size={8} style={{ marginRight: 4, marginTop: 4 }} />)}</SView>
+
+                <SText fontSize={10} underLine onPress={() => {
+                    SNavigation.navigate("/crm/cliente", {
+                        onSelect: (e) => {
+                            console.log(e);
+                            MDL.crm.tipoCliente.addToCliente({
+                                key_cliente: e.key,
+                                key_tipo_cliente: stage.key
+                            }).then(e => {
+                                console.log(e);
+                            }).catch(e => {
+                                console.error(e);
+                            })
+                        }
+                    })
+                }}>{"Agregar Cliente"}</SText>
             </SView>
             <FlatList
                 contentContainerStyle={{
@@ -106,6 +136,7 @@ export default class root extends Component {
             dragOffset: { x: 0, y: 0 },
             initialOffset: { x: 0, y: 0 },
             dpto: "all", // Estado para el departamento seleccionado,
+            tipo_cliente: []
         };
         this.stages = [
             {
@@ -281,11 +312,21 @@ export default class root extends Component {
         ]
     }
     componentDidMount() {
+        this.loadData();
+
         MDL.rolesPermisos.loadPermissions().then(() => {
             // MDL.crm.clienteProyecto.get_en_proceso()
-
             this.forceUpdate();
         })
+
+    }
+    async loadData() {
+        const clientes = await MDL.crm.cliente.getAll();
+        const tipos = await MDL.crm.tipoCliente.getAll();
+        this.state.tipo_cliente = tipos;
+        this.state.clientes = clientes;
+        this.forceUpdate();
+
     }
 
     handleDrop = (cardKey, gestureEnd, prevenChange) => {
@@ -492,10 +533,19 @@ export default class root extends Component {
     <Components.empresa.Select disabled />
    </Components.Container>
    <SHr height={32} /> */}
-
-            <SHr h={32} />
+            <SText onPress={() => {
+                FormRegistroTipoCliente.open({
+                    onRegister: () => {
+                        this.loadData();
+                    },
+                    onActualizar: () => {
+                        this.loadData();
+                    }
+                })
+            }}>{"Registrar nuevo tipo"}</SText>
+            <SHr h={12} />
             <ScrollView horizontal>
-                {this.stages.map((stage) => {
+                {this.state.tipo_cliente.map((stage) => {
                     // if (!this.stageRefs[stage.key]) {
                     //     this.stageRefs[stage.key] = createRef();
                     //     console.log("CREO STAGE", stage.key);
@@ -521,7 +571,20 @@ export default class root extends Component {
                                 //     return c?.cliente?.departamento == this.state.dpto
 
                                 // })}
-                                cards={stage?.cards}
+                                cards={this.state.clientes.filter((c) => {
+                                    if (!c.tipo_cliente) return false;
+                                    var isValid = false;
+                                    c.tipo_cliente.forEach(tc => {
+                                        if (tc.key == stage.key) {
+                                            isValid = true;
+                                        }
+                                    });
+
+
+                                    // if (!.includes(c.state)) return false;
+
+                                    return isValid;
+                                })}
                                 onCardDrop={this.handleDrop}
                                 onDragStart={this.handleDragStart}
                                 onDragMove={this.handleDragMove}

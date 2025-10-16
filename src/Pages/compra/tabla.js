@@ -70,7 +70,8 @@ export default class tabla extends Component {
                 keysUsuarios.push(cv.key_usuario);
             }
         });
-        const proveedores = await MDL.inventario.proveedor.getAllProveedor();
+        // const proveedores = await MDL.inventario.proveedor.getAllProveedor();
+        const proveedores = await MDL.crm.cliente.getAll();
         const usuarios = await MDL.usuario.getByKeys(keysUsuarios) || {};
         const usuariosMap = Array.isArray(usuarios)
             ? Object.fromEntries(usuarios.map(u => [u.key, u]))
@@ -192,7 +193,7 @@ export default class tabla extends Component {
                         {(e.row?.proveedor?.key) ?
                             <SView col={"xs-12"} center row  >
                                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                                    <SImage src={`${SSocket.api.inventario}proveedor/${e.row?.proveedor?.key}`} style={{ resizeMode: "cover" }} />
+                                    <SImage src={`${SSocket.api.crm}cliente/${e.row?.proveedor?.key}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                                 <SView width={5} />
                                 <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.proveedor?.razon_social}</SText>

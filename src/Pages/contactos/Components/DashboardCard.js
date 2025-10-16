@@ -44,16 +44,16 @@ export default class DashboardCard extends Component {
             <SView row col={"xs-10"}>
                 <SView row col={"xs-12"}>
                     <SHr h={4} />
-                    <SText bold>{card?.cliente?.nombres}</SText>
+                    <SText bold>{card?.nombres}</SText>
                     <SView width={8} />
                     <SText fontSize={14} underLine style={{ marginTop: -1 }}
                         color={STheme.color.link}
                         onPress={() => {
                             // SNavigation.navigate("/crm/plantilla", { key: card.key })
                             // SNavigation.navigate("/crm/call", { key: card.key })
-                        }} >{card?.cliente?.telefono}</SText>
+                        }} >{card?.telefono}</SText>
                     <SHr h={4} />
-                    <SText fontSize={10} color={STheme.color.lightGray}>{card?.cliente?.tipo}</SText>
+                    <SText fontSize={10} color={STheme.color.lightGray}>{card?.tipo}</SText>
 
                 </SView>
 
@@ -70,8 +70,8 @@ export default class DashboardCard extends Component {
                     justifyContent: 'center',
                     marginRight: 4, marginBottom: 4
                 }} ></Etiqueta>
-                {card?.cliente?.departamento && <SView style={{ padding: 3, backgroundColor: STheme.colorFromText(card.cliente.departamento) + "6b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
-                    <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{card.cliente.departamento}</SText>
+                {card?.departamento && <SView style={{ padding: 3, backgroundColor: STheme.colorFromText(card.departamento) + "6b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                    <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{card.departamento}</SText>
                 </SView>}
                 {/* <SView style={{ padding: 3, backgroundColor: STheme.color.card, borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
                     <SIcon name="producto" width={12} height={14} fill={"#384052"} />
@@ -85,11 +85,11 @@ export default class DashboardCard extends Component {
                 </SView> */}
 
 
-                {(card.state == "rellamada" || card.state == "delivery_rellamada") && <SView style={{ padding: 3, backgroundColor: "#3840526b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
+                {/* {(card.state == "rellamada" || card.state == "delivery_rellamada") && <SView style={{ padding: 3, backgroundColor: "#3840526b", borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
                     <SIcon name="recall" width={12} height={14} fill={"#384052"} />
                     <SView width={4} />
                     <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{new SDate(card?.fecha_rellamada, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")}</SText>
-                </SView>}
+                </SView>} */}
 
                 <SView style={{ padding: 3, backgroundColor: STheme.color.card, borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
                     <SIcon name="history" width={12} height={14} fill={"#384052"} />
