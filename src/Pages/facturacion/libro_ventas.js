@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, Linking, Dimensions } from 'react-native';
-import { SButtom, SDate, SHr, SIcon, SMath, SNavigation, SNotification, SPage, STable, STable2, SText, STheme, SView } from 'servisofts-component';
+import { SButtom, SDate, SHr, SIcon, SImage, SMath, SNavigation, SNotification, SPage, STable, STable2, SText, STheme, SView } from 'servisofts-component';
 import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
@@ -78,7 +78,7 @@ export default class libro_ventas extends Component {
 
     async loadData() {
         try {
-            const request = await SSocket.sendPromise({
+            const response = await SSocket.sendPromise({
                 service: "facturacion",
                 component: "factura",
                 type: "getAll",
@@ -87,12 +87,35 @@ export default class libro_ventas extends Component {
                 key_empresa: Model.empresa?.Action?.getKey?.(),
             });
 
-            if (!request?.data) {
-                console.warn("⚠️ No se recibió data de facturacion.getAll:", request);
-                return [];
+            if (!response?.data) {
+                throw "⚠️ No se recibió data de facturacion.getAll:"
             }
 
-            return Object.values(request.data);
+
+            // if ("key_usuario" in response.data) {
+            //     delete response.data.key_usuario;
+            // }
+
+            try {
+                let keys = [];
+                Object.values(response.data).map((fac) => {
+                    keys.push(fac.key_usuario);
+                })
+                const usuarios = await MDL.usuario.getByKeys(keys)
+
+                Object.values(response.data).map((fac) => {
+                    if (fac.key_usuario) {
+                        fac._usuario = usuarios.find(usr => usr.key == fac.key_usuario)
+                    }
+                })
+
+
+            } catch (error) {
+                console.log("se cargo pero sin usuarios")
+            }
+
+            return Object.values(response.data);
+
         } catch (e) {
             console.error("❌ Error en loadData:", e);
             return [];
@@ -289,6 +312,31 @@ export default class libro_ventas extends Component {
                     dataType='date'
                     dateFormat='yyyy-MM-dd hh:mm'
                 />
+
+                <DinamicTable.Col
+                    key="adminas"
+                    label="Adm"
+                    width={190}
+                    data={e => `${e.row?._usuario?.Nombres} ${e.row?._usuario?.Apellidos}`} // ✅ Ya está bien
+                    customComponent={e => {
+                        const key = e.row?.key_usuario;
+                        const nombre = e.data ?? "Sin cajero";
+                        return key ? (
+                            <SView col="xs-12" row center>
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card }} >
+                                    <SImage src={`${SSocket.api.root}usuario/${key}`} style={{ resizeMode: "cover" }} />
+                                </SView>
+                                <SView width={5} />
+                                <SText flex numberOfLines={1}  >
+                                    {nombre}
+                                </SText>
+                            </SView>
+                        ) : (
+                            <SText>Sin Usuario</SText>
+                        );
+                    }}
+                />
+
 
                 {verificadorAdmin ? <DinamicTable.Col key="estadoss" label='Estado🏉' data={e => e.row?.estado} width={60} /> : ""}
                 {verificadorAdmin ? <DinamicTable.Col key="leyenda" label='Leyenda🏉' data={e => e.row?.data?.leyenda} width={400} /> : ""}
