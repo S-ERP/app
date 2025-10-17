@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SIcon, SNavigation, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import {
     FlatList,
     GestureHandlerRootView,
@@ -75,42 +75,33 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                     })
                 }}>{"Agregar Cliente"}</SText>
 
-                <SText fontSize={10} underLine
+
+                <SView style={{ padding: 3, backgroundColor: STheme.color.danger, borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center
                     onPress={() => {
-                        console.log("quizasssss " + JSON.stringify(stage))
 
+                        SPopup.confirm({
+                            title: "Seguro de eliminar el Tipo Cliente?",
+                            onPress: () => {
+                                MDL.crm.tipoCliente.eliminar(stage).then(e => {
+                                    console.log(e);
+                                }).catch(e => {
+                                    console.error(e);
+                                })
 
-                        MDL.crm.tipoCliente.eliminar(stage).then(e => {
-                            console.log(e);
-                        }).catch(e => {
-                            console.error(e);
+                            }
                         })
-                        // MDL.crm.tipoCliente.deleteClienteDeLaTabla({
-                        //     key_cliente: e.key,
-                        //     key_tipo_cliente: stage.key
-                        // }).then(e => {
-                        //     console.log(e);
-                        // }).catch(e => {
-                        //     console.error(e);
-                        // })
 
 
 
-                        //     SNavigation.navigate("/crm/cliente", {
-                        //         onSelect: (e) => {
-                        //             console.log(e);
-                        //             MDL.crm.tipoCliente.addToCliente({
-                        //                 key_cliente: e.key,
-                        //                 key_tipo_cliente: stage.key
-                        //             }).then(e => {
-                        //                 console.log(e);
-                        //             }).catch(e => {
-                        //                 console.error(e);
-                        //             })
-                        //         }
-                        //     })
+
                     }}
-                >{"elimnar grupo tipo "  }</SText>
+                >
+                    <SView width={4} />
+                    <SText fontSize={10} >{"elimnar grupo tipo "}</SText>
+                    <SView width={4} />
+                </SView>
+
+
             </SView>
             <FlatList
                 contentContainerStyle={{
@@ -636,12 +627,12 @@ export default class root extends Component {
     }
 }
 
-const DraggableCarta = React.forwardRef(({stage, card, onDrop, onDragStart, onDragMove }, ref) => {
+const DraggableCarta = React.forwardRef(({ stage, card, onDrop, onDragStart, onDragMove }, ref) => {
     const offsetX = useSharedValue(0);
     const offsetY = useSharedValue(0);
 
 
-  
+
     const panGesture = Gesture.Pan()
         .onBegin(() => {
             runOnJS(onDragStart)(card.key);
@@ -679,7 +670,7 @@ const DraggableCarta = React.forwardRef(({stage, card, onDrop, onDragStart, onDr
     return (
         <GestureDetector gesture={panGesture}>
             <Animated.View ref={ref} style={[{ paddingBottom: 8 }, animatedStyle]} >
-                <DashboardCard data={card} data_stage={stage}/>
+                <DashboardCard data={card} data_stage={stage} />
             </Animated.View>
         </GestureDetector>
     );

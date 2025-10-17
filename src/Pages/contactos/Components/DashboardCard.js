@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SDate, SHr, SIcon, SImage, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SIcon, SImage, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Etiqueta from './Etiqueta';
 import SIconApp from '../../../Assets/SIconApp';
@@ -109,11 +109,24 @@ export default class DashboardCard extends Component {
 
                 <SView style={{ padding: 3, backgroundColor: STheme.color.danger, borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center
                     onPress={() => {
-                        MDL.crm.tipoCliente.deleteClienteDeLaTabla(tipo_contacto.key_cliente_tipo_cliente).then(e => {
-                            console.log(e);
-                        }).catch(e => {
-                            console.error(e);
+
+
+
+                        SPopup.confirm({
+                            title: "Seguro de eliminar el contacto?",
+                            onPress: () => {
+
+                                MDL.crm.tipoCliente.deleteClienteDeLaTabla(tipo_contacto.key_cliente_tipo_cliente).then(e => {
+                                    console.log(e);
+                                }).catch(e => {
+                                    console.error(e);
+                                })
+
+                            }
                         })
+
+
+
                     }}
                 >
                     <SIcon name="Cancel" width={12} height={14} fill={"#07db3cff"} />
