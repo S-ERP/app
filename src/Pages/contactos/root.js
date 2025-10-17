@@ -16,6 +16,7 @@ import Etiqueta from './Components/Etiqueta';
 import DashboardCard from './Components/DashboardCard';
 import FormRegistroTipoCliente from '../crm/Components/FormRegistroTipoCliente';
 import SSocket from 'servisofts-socket';
+import SIconApp from '../../Assets/SIconApp';
 
 const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard, cardRefs, onDeleteStage, onAddCliente, onRemoveCliente }) => {
     return (
@@ -42,7 +43,7 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                 </SView>
                 <SText col={"xs-12"} fontSize={10} color={STheme.color.lightGray}>{stage.descripcion}</SText>
                 <SView row col={"xs-12"}>
-                    {stage?.states?.map((state, index) => 
+                    {stage?.states?.map((state, index) =>
                         <Etiqueta key={index} tipo_leads={state} size={8} style={{ marginRight: 4, marginTop: 4 }} />
                     )}
                 </SView>
@@ -73,40 +74,97 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                 }}>Agregar Cliente</SText>
 
                 {/* ✅ ELIMINAR GRUPO */}
-                <SView style={{ 
-                    padding: 6, 
-                    backgroundColor: STheme.color.danger, 
-                    borderRadius: 4, 
-                    marginTop: 8 
-                }} center row 
-                onPress={() => {
-                    SPopup.confirm({
-                        title: `¿Eliminar "${stage.titulo}"?`,
-                        body: `${cards.length} clientes se moverán a "Sin tipo"`,
-                        onPress: () => {
-                            MDL.crm.tipoCliente.eliminar(stage.key).then(() => {
-                                onDeleteStage(stage.key);
-                                SNotification.send({
-                                    title: `✅ "${stage.titulo}" eliminado`,
-                                    color: STheme.color.success,
-                                    time: 2000
+                <SView style={{
+                    padding: 6,
+                    backgroundColor: STheme.color.danger,
+                    borderRadius: 4,
+                    marginTop: 8
+                }} center row
+                    onPress={() => {
+
+                        SPopup.confirm({
+                            title: (
+                                <SView center style={{
+                                    textAlign: 'center',
+                                    gap: 16,
+                                    // paddingVertical: 24,
+                                    paddingTop: 18,
+                                    paddingBottom: 14,
+                                    paddingHorizontal: 20
+                                }}>
+                                    {/* HEADER PROFESIONAL */}
+                                    <SView col="xs-12" row style={{
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        marginBottom: 8
+                                    }}>
+                                        <SView flex> <SText style={{ fontSize: 18, fontWeight: 'bold', color: STheme.color.text }}> Eliminar tipo contacto</SText> </SView>
+
+                                        <SView> <SIconApp name="Cerrar" width={10} fill="#9ca3af" onPress={() => SPopup.close('confirm')} /> </SView>
+                                    </SView>
+
+                                    {/* ÍCONO ALERTA ROJO */}
+                                    <SView style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(220, 38, 38, 0.2)', alignItems: 'center', justifyContent: 'center' }}>
+                                        <SIconApp name="crmeliminar" height={20} fill="#dc2626" />
+                                    </SView>
+
+                                    {/* TEXTO PRINCIPAL */}
+                                    <SView style={{ marginBottom: 4 }}> <SText style={{ fontSize: 16, color: STheme.color.text, textAlign: 'center' }}> ¿Estás seguro de que deseas eliminar la categoría</SText> </SView>
+
+                                    {/* NOMBRE EN ROJO */}
+                                    <SView style={{ marginBottom: 8 }}> <SText style={{ fontSize: 18, fontWeight: 'bold', color: STheme.color.text, textAlign: 'center' }}> {stage.titulo} </SText> </SView>
+
+                                    {/* ADVERTENCIA GRIS */}
+                                    <SText style={{ fontSize: 12, color: '#737373', textAlign: 'center' }}> Todos los contactos de esta categoría permanecerán sin categoría. </SText>
+                                </SView>
+                            ),
+                            onPress: () => {
+                                MDL.crm.tipoCliente.eliminar(stage.key).then(() => {
+                                    onDeleteStage(stage.key);
+                                    SNotification.send({
+                                        title: `✅ "${stage.titulo}" eliminado`,
+                                        color: STheme.color.success,
+                                        time: 2000
+                                    });
+                                }).catch(err => {
+                                    SNotification.send({
+                                        title: "❌ Error al eliminar",
+                                        body: err,
+                                        color: STheme.color.danger
+                                    });
                                 });
-                            }).catch(err => {
-                                SNotification.send({
-                                    title: "❌ Error al eliminar",
-                                    body: err,
-                                    color: STheme.color.danger
-                                });
-                            });
-                        }
-                    });
-                }}>
+                            }
+
+
+                        });
+
+                        // SPopup.confirm({
+                        //     title: `¿Eliminar "${stage.titulo}"?`,
+                        //     message: `${cards.length} clientes se moverán a "Sin tipo"`,
+                        //     onPress: () => {
+                        //         MDL.crm.tipoCliente.eliminar(stage.key).then(() => {
+                        //             onDeleteStage(stage.key);
+                        //             SNotification.send({
+                        //                 title: `✅ "${stage.titulo}" eliminado`,
+                        //                 color: STheme.color.success,
+                        //                 time: 2000
+                        //             });
+                        //         }).catch(err => {
+                        //             SNotification.send({
+                        //                 title: "❌ Error al eliminar",
+                        //                 body: err,
+                        //                 color: STheme.color.danger
+                        //             });
+                        //         });
+                        //     }
+                        // });
+                    }}>
                     <SIcon name="trash" width={14} height={14} fill="white" />
                     <SView width={6} />
                     <SText fontSize={11} white bold>Eliminar ({cards.length})</SText>
                 </SView>
             </SView>
-            
+
             <FlatList
                 contentContainerStyle={{ padding: 4 }}
                 data={cards}
@@ -157,23 +215,23 @@ export default class root extends Component {
             MDL.crm.cliente.getAll(),
             MDL.crm.tipoCliente.getAll()
         ]);
-        this.setState({ 
-            tipo_cliente: tipos, 
-            clientes 
+        this.setState({
+            tipo_cliente: tipos,
+            clientes
         });
     }
 
     handleRemoveCliente = (keyClienteTipo) => {
         if (!keyClienteTipo) return;
-        
+
         this.setState(prev => ({
             clientes: prev.clientes.map(cliente => {
                 if (!cliente?.tipo_cliente) return cliente;
-                
-                cliente.tipo_cliente = cliente.tipo_cliente.filter(tc => 
+
+                cliente.tipo_cliente = cliente.tipo_cliente.filter(tc =>
                     tc?.key_cliente_tipo_cliente !== keyClienteTipo
                 );
-                
+
                 return cliente;
             })
         }));
@@ -181,7 +239,7 @@ export default class root extends Component {
 
     handleAddCliente = (stageKey, clienteKey) => {
         if (!stageKey || !clienteKey) return;
-        
+
         this.setState(prev => ({
             clientes: prev.clientes.map(cliente => {
                 if (cliente.key === clienteKey) {
@@ -189,10 +247,10 @@ export default class root extends Component {
                     if (tipoCliente) {
                         const existe = cliente.tipo_cliente?.some(tc => tc?.key === stageKey);
                         if (!existe) {
-                            cliente.tipo_cliente = [...(cliente.tipo_cliente || []), { 
-                                key: stageKey, 
+                            cliente.tipo_cliente = [...(cliente.tipo_cliente || []), {
+                                key: stageKey,
                                 key_cliente_tipo_cliente: `${clienteKey}_${stageKey}`,
-                                titulo: tipoCliente.titulo 
+                                titulo: tipoCliente.titulo
                             }];
                         }
                     }
@@ -281,6 +339,7 @@ export default class root extends Component {
                                 onDeleteStage={this.handleDeleteStage}
                                 onAddCliente={this.handleAddCliente}
                                 onRemoveCliente={this.handleRemoveCliente}
+
                             />
                         </SView>
                     ))}
@@ -319,8 +378,8 @@ const DraggableCarta = React.forwardRef(({ stage, card, onDrop, onDragStart, onD
     return (
         <GestureDetector gesture={panGesture}>
             <Animated.View ref={ref} style={[{ paddingBottom: 8 }, animatedStyle]}>
-                <DashboardCard 
-                    data={card} 
+                <DashboardCard
+                    data={card}
                     data_stage={stage}
                     onRemoveCliente={onRemoveCliente}
                 />
