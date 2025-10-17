@@ -235,15 +235,11 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         <SText color={STheme.color.lightGray} fontSize={10}>Vouchers Totales {JSON.stringify(item.vouchers?.length ?? 0)}</SText>
                     </View>
 
-                    <SView row style={{ alignItems: "center" }}>
-                        {/* ... tus otros componentes ... */}
+                    {/* <SView row style={{ alignItems: "center" }}>
                         <SView width={8} />
-
-                        {/* ✅ NUEVO - BOTONES VOUCHERS */}
                         {this.botonesVoucher(item.vouchers)}
-
                         <SView width={8} />
-                    </SView>
+                    </SView> */}
 
 
                     {/* <SView width={140} style={{ justifyContent: "space-between", color: STheme.color.text, margin: 5, backgroundColor: STheme.color.card, paddingHorizontal: 10, height: 30, borderRadius: 40 }}

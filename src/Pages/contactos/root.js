@@ -74,6 +74,43 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                         }
                     })
                 }}>{"Agregar Cliente"}</SText>
+
+                <SText fontSize={10} underLine
+                    onPress={() => {
+                        console.log("quizasssss " + JSON.stringify(stage))
+
+
+                        MDL.crm.tipoCliente.eliminar(stage).then(e => {
+                            console.log(e);
+                        }).catch(e => {
+                            console.error(e);
+                        })
+                        // MDL.crm.tipoCliente.deleteClienteDeLaTabla({
+                        //     key_cliente: e.key,
+                        //     key_tipo_cliente: stage.key
+                        // }).then(e => {
+                        //     console.log(e);
+                        // }).catch(e => {
+                        //     console.error(e);
+                        // })
+
+
+
+                        //     SNavigation.navigate("/crm/cliente", {
+                        //         onSelect: (e) => {
+                        //             console.log(e);
+                        //             MDL.crm.tipoCliente.addToCliente({
+                        //                 key_cliente: e.key,
+                        //                 key_tipo_cliente: stage.key
+                        //             }).then(e => {
+                        //                 console.log(e);
+                        //             }).catch(e => {
+                        //                 console.error(e);
+                        //             })
+                        //         }
+                        //     })
+                    }}
+                >{"elimnar grupo tipo "  }</SText>
             </SView>
             <FlatList
                 contentContainerStyle={{
@@ -88,6 +125,7 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                         <DraggableCarta
                             key={item.key}
                             card={item}
+                            stage={stage}
                             onDrop={onCardDrop}
                             onDragStart={onDragStart}
                             onDragMove={onDragMove}
@@ -598,10 +636,12 @@ export default class root extends Component {
     }
 }
 
-const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove }, ref) => {
+const DraggableCarta = React.forwardRef(({stage, card, onDrop, onDragStart, onDragMove }, ref) => {
     const offsetX = useSharedValue(0);
     const offsetY = useSharedValue(0);
 
+
+  
     const panGesture = Gesture.Pan()
         .onBegin(() => {
             runOnJS(onDragStart)(card.key);
@@ -639,7 +679,7 @@ const DraggableCarta = React.forwardRef(({ card, onDrop, onDragStart, onDragMove
     return (
         <GestureDetector gesture={panGesture}>
             <Animated.View ref={ref} style={[{ paddingBottom: 8 }, animatedStyle]} >
-                <DashboardCard data={card} />
+                <DashboardCard data={card} data_stage={stage}/>
             </Animated.View>
         </GestureDetector>
     );

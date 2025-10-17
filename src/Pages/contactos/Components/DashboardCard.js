@@ -4,6 +4,7 @@ import { SDate, SHr, SIcon, SImage, SNavigation, SText, STheme, SView } from 'se
 import SSocket from 'servisofts-socket';
 import Etiqueta from './Etiqueta';
 import SIconApp from '../../../Assets/SIconApp';
+import MDL from '../../../MDL';
 
 export default class DashboardCard extends Component {
     constructor(props) {
@@ -14,6 +15,13 @@ export default class DashboardCard extends Component {
 
     render() {
         const card = this.props.data;
+        const data_tipo_stage = this.props.data_stage;
+        const tipo_contacto = card.tipo_cliente?.filter(a => a.key === data_tipo_stage.key)[0] ?? null;
+
+
+
+
+
         const fecha = card.fecha_edit ?? card.fecha_on;
         return <SView style={{
             backgroundColor: STheme.color.background + "66",
@@ -54,6 +62,7 @@ export default class DashboardCard extends Component {
                         }} >{card?.telefono}</SText>
                     <SHr h={4} />
                     <SText fontSize={10} color={STheme.color.lightGray}>{card?.tipo}</SText>
+                    <SText fontSize={10} color={STheme.color.lightGray}>{tipo_contacto?.titulo}</SText>
 
                 </SView>
 
@@ -89,13 +98,30 @@ export default class DashboardCard extends Component {
                     <SIcon name="recall" width={12} height={14} fill={"#384052"} />
                     <SView width={4} />
                     <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{new SDate(card?.fecha_rellamada, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM-dd hh:mm")}</SText>
-                </SView>} */}
+                </SView>} */
+                }
 
                 <SView style={{ padding: 3, backgroundColor: STheme.color.card, borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center>
                     <SIcon name="history" width={12} height={14} fill={"#384052"} />
                     <SView width={4} />
                     <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}</SText>
                 </SView>
+
+                <SView style={{ padding: 3, backgroundColor: STheme.color.danger, borderRadius: 1, flexDirection: "row", borderRadius: 4, marginRight: 4, marginBottom: 4 }} center
+                    onPress={() => {
+                        MDL.crm.tipoCliente.deleteClienteDeLaTabla(tipo_contacto.key_cliente_tipo_cliente).then(e => {
+                            console.log(e);
+                        }).catch(e => {
+                            console.error(e);
+                        })
+                    }}
+                >
+                    <SIcon name="Cancel" width={12} height={14} fill={"#07db3cff"} />
+                    <SView width={4} />
+                    <SText style={{ maxWidth: 90 }} fontSize={10} numberOfLines={1} color={STheme.color.text}>quitar </SText>
+                    <SView width={4} />
+                </SView>
+
             </SView>
 
 
