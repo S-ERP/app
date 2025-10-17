@@ -65,7 +65,7 @@ export default class ComprobanteCarta extends Component {
                 sucursal,
                 cajero,
                 cliente: clientes.find(a => a?.key === compraVenta.key_cliente) || {},
-                proveedor,
+                proveedor: clientes.find(a => a?.key === compraVenta.key_proveedor) || {},
                 moneda
             };
 

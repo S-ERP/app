@@ -42,4 +42,21 @@ export default class tipoCliente {
         const resp: any = await SSocket.sendPromise({ service: "crm", component: "tipo_cliente", type: "editar", data: { ...data, estado: 0 }, key_usuario: Model.usuario.Action.getKey() });
         return resp.data;
     }
+
+    async deleteClienteDeLaTabla(keyyyyyyyyyyyyyy: string) {
+        const resp: any = await SSocket.sendPromise({
+            service: "crm",
+            component: "cliente_tipo_cliente",
+            type: "editar",
+            data: {
+                key:keyyyyyyyyyyyyyy,
+                estado: 0
+            },
+            key_usuario: Model.usuario.Action.getKey(),
+            key_empresa: Model.empresa.Action.getKey()
+        })
+        return resp.data;
+    }
+
+
 }
