@@ -3,6 +3,8 @@ import MDLAbstract from "../MDLAbstract";
 import { EventListener } from "./types";
 import MDL from "..";
 import cuenta_contable from "./cuenta_contable";
+import centro_costo_tipo from "./centro_costo_tipo";
+import centro_costo from "./centro_costo";
 
 export default class contabilidad extends MDLAbstract<EventListener> {
   color_tipo = {
@@ -13,6 +15,9 @@ export default class contabilidad extends MDLAbstract<EventListener> {
     "GASTO": "#F44336"
   }
   cuenta_contable = new cuenta_contable();
+  centro_costo_tipo = new centro_costo_tipo();
+  centro_costo = new centro_costo();
+
   async componentDidMount() {
     this.cuenta_contable.componentDidMount();
   }
