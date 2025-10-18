@@ -60,24 +60,21 @@ export default class PopupUploadVoucher extends Component<Props> {
     state = {
         loading: false,
         uploadedVouchers: this.props.data_vouchers ?? [],
-        fileValue: [], // ✅ STATE PARA EL VALOR DEL FILE
+        fileValue: [],
     };
 
     componentDidMount() {
         this.validateFileEmpty();
     }
 
-    /** ✅ VALIDAR FILE VACÍO - SIN getValue() */
     validateFileEmpty = () => {
         const isEmpty = this.state.fileValue.length === 0;
         return isEmpty;
     };
 
-    /** 🖼️ Al seleccionar nuevas imágenes */
     handleFileChange = (e: any) => {
         const nuevos = Array.isArray(e) ? e.flat() : [];
 
-        // ✅ ACTUALIZAR STATE DEL FILE
         this.setState({ fileValue: nuevos });
 
         const nuevosArchivos = nuevos.map((item: any) => ({
@@ -107,7 +104,6 @@ export default class PopupUploadVoucher extends Component<Props> {
         this.setState({ uploadedVouchers: filtrados });
     };
 
-    /** ❌ Quitar imagen */
     removeVoucher = (index: number) => {
         const updated = [...this.state.uploadedVouchers];
         const removed = updated.splice(index, 1);
@@ -117,7 +113,6 @@ export default class PopupUploadVoucher extends Component<Props> {
             this.files = this.files.filter(f => f.name !== removed[0].file?.name);
         }
 
-        // ✅ SI SE ELIMINARON TODOS LOS LOCALES, LIMPIAR FILEVALUE
         const nuevosLocal = updated.filter(v => v.file);
         if (nuevosLocal.length === 0) {
             this.setState({ fileValue: [] });
@@ -131,7 +126,6 @@ export default class PopupUploadVoucher extends Component<Props> {
         });
     };
 
-    /** 💾 Guardar los vouchers */
     handleSubmit = async () => {
         if (!this.state.uploadedVouchers.length) {
             return SNotification.send({
@@ -187,7 +181,6 @@ export default class PopupUploadVoucher extends Component<Props> {
         }
     };
 
-    /** 🖼️ Renderiza las imágenes */
     renderUploadedVouchers() {
         const { uploadedVouchers = [] } = this.state;
         if (!uploadedVouchers.length) return null;
@@ -208,6 +201,8 @@ export default class PopupUploadVoucher extends Component<Props> {
                             v.url ??
                             `${SSocket.api.root}empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${v.name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
 
+                        const esImagen = v.type?.startsWith("image/");
+
                         return (
                             <SView
                                 key={i}
@@ -221,10 +216,25 @@ export default class PopupUploadVoucher extends Component<Props> {
                                     borderColor: STheme.color.card,
                                 }}
                             >
-                                <SImage
-                                    src={url}
-                                    style={{ width: "100%", height: "100%" }}
-                                />
+                                {esImagen ? (
+                                    <SImage
+                                        src={url}
+                                        style={{ width: "100%", height: "100%" }}
+                                        resizeMode="contain"
+                                    />
+                                ) : (
+                                    <SView
+                                        flex
+                                        center
+                                        style={{ backgroundColor: STheme.color.card }}
+                                    >
+                                        <SText fontSize={30}>📄</SText>
+                                        <SText fontSize={10} center numberOfLines={1}>
+                                            {v.name}
+                                        </SText>
+                                    </SView>
+                                )}
+
                                 <SView
                                     style={{
                                         position: "absolute",
@@ -250,7 +260,6 @@ export default class PopupUploadVoucher extends Component<Props> {
         );
     }
 
-    /** ✅ MENSAJE DINÁMICO CON EVENTO DE SUBIDA */
     renderFileEmptyMessage = () => {
         const isEmpty = this.validateFileEmpty();
 
@@ -263,24 +272,28 @@ export default class PopupUploadVoucher extends Component<Props> {
                     left: 40,
                     width: "90%"
                 }}
-                backgroundColor={isEmpty ? "transparent" : "transparent"}
+                backgroundColor="transparent"
                 onPress={() => {
-                    // ✅ SIMULAR CLICK DIRECTO EN EL INPUT FILE
                     const input = document.querySelector('input[type="file"]') as HTMLInputElement;
-                    if (input) {
-                        input.click();
-                    }
+                    if (input) input.click();
                 }}
                 pointerEvents={isEmpty ? "auto" : "none"}
             >
                 {isEmpty && (
                     <SView col={"xs-12"} row center>
                         <SView style={{ top: 25 }} center>
-
-                            <SView style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: '#4786b1ff', alignItems: 'center', justifyContent: 'center' }}>
+                            <SView
+                                style={{
+                                    width: 48,
+                                    height: 48,
+                                    borderRadius: 24,
+                                    backgroundColor: '#4786b1ff',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                            >
                                 <SIconApp name="confirmar" height={20} />
                             </SView>
-
                             <SHr h={12} />
                             <SText center color={STheme.color.lightGray}>
                                 Arrastra tus archivos aquí o haz clic para seleccionar
@@ -299,7 +312,9 @@ export default class PopupUploadVoucher extends Component<Props> {
     render() {
         return (
             <SView col={"xs-12"} padding={12} relative>
-                <SText fontSize={18} bold center color={STheme.color.text}>Subir vouchers</SText>
+                <SText fontSize={18} bold center color={STheme.color.text}>
+                    Subir vouchers
+                </SText>
                 <SHr h={12} />
 
                 <ScrollView style={{ width: "100%" }}>
@@ -330,7 +345,6 @@ export default class PopupUploadVoucher extends Component<Props> {
                     />
                 </ScrollView>
 
-                {/* ✅ MENSAJE DINÁMICO */}
                 {this.renderFileEmptyMessage()}
 
                 <SHr h={20} />
