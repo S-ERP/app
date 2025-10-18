@@ -278,7 +278,15 @@ export default class caja extends MDLAbstract<EventListener> {
       "label": "Venta Rápida",
       "color": "#41C34A"
     },
+    "venta": {
+      "label": "Venta Rápida",
+      "color": "#41C34A"
+    },
     "compra_rapida": {
+      "label": "Compra Rápida",
+      "color": "#9b59b6"
+    },
+    "compra": {
       "label": "Compra Rápida",
       "color": "#9b59b6"
     }

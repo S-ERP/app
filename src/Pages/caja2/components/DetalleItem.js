@@ -17,53 +17,72 @@ export default class DetalleItem extends Component<{
   empresa: any
 }> {
 
+
+
+
   iconotipoArchivo(documento_name = "", documento_type = "") {
     if (!documento_type) return null;
 
-    const tipo = documento_type.toLowerCase().trim();
-    const extension = (() => {
-      const parts = tipo.split(/[/\.]/);
-      return parts[parts.length - 1] || "";
-    })();
+    const mimeType = documento_type.toLowerCase().trim();
+
+    const tipoMapeoKeys = {
+      "application/pdf": "pdf",
+      "application/msword": "document",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "document",
+      "application/vnd.ms-excel": "sheet",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "sheet",
+      "application/vnd.ms-powerpoint": "presentation",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation": "presentation",
+      "image/png": "png",
+      "ico": "icon",
+      "image/jpeg": "jpg",
+      "image/jpg": "jpg",
+      "text/plain": "txt",
+      "text/csv": "csv",
+      "application/zip": "zip",
+      "application/x-rar-compressed": "rar",
+      "video/mp4": "mp4",
+      "audio/mpeg": "mp3",
+    };
+
+    const tipo = tipoMapeoKeys[mimeType] || "file";
 
     let bgColor = "#B0B0B0";
     let borderColor = "#3c3d3dff";
     let icon = "crmpdarchivo";
     let iconColor = "#3c3d3dff";
 
-    const tipoMapeo: any = {
+    const tipoMapeo = {
       pdf: { bg: "#fdc4c4ff", border: "#D32F2F", icon: "crmpdf", color: "#D32F2F" },
       document: { bg: "#b2dfffff", border: "#1976D2", icon: "crmword", color: "#1976D2" },
       sheet: { bg: "#affab5ff", border: "#388E3C", icon: "crmexcel", color: "#388E3C" },
       presentation: { bg: "#FFF3E0", border: "#F57C00", icon: "crmpresentacion", color: "#F57C00" },
       png: { bg: "#e895f5ff", border: "#8E24AA", icon: "Galeria", color: "#8E24AA" },
       jpg: { bg: "#F3E5F5", border: "#8E24AA", icon: "Galeria", color: "#8E24AA" },
-      jpeg: { bg: "#F3E5F5", border: "#8E24AA", icon: "Galeria", color: "#8E24AA" },
       txt: { bg: "#F1F8E9", border: "#689F38", icon: "crmtxt", color: "#689F38" },
       csv: { bg: "#FFFDE7", border: "#FBC02D", icon: "crmexcel", color: "#FBC02D" },
       zip: { bg: "#E0F7FA", border: "#0097A7", icon: "crmzip", color: "#0097A7" },
       rar: { bg: "#E0F7FA", border: "#0097A7", icon: "crmzip", color: "#0097A7" },
       mp4: { bg: "#FBE9E7", border: "#D84315", icon: "crmpvideo", color: "#D84315" },
-      mp3: { bg: "#E8EAF6", border: "#3F51B5", icon: "crmpaudio", color: "#3F51B5" }
+      mp3: { bg: "#E8EAF6", border: "#3F51B5", icon: "crmpaudio", color: "#3F51B5" },
+      icon: { bg: "#E8EAF6", border: "#3F51B5", icon: "icon", color: "#3F51B5" }
     };
 
-    const config = tipoMapeo[extension];
-    if (config) {
-      bgColor = config.bg;
-      borderColor = config.border;
-      icon = config.icon;
-      iconColor = config.color;
+    if (tipoMapeo[tipo]) {
+      bgColor = tipoMapeo[tipo].bg;
+      borderColor = tipoMapeo[tipo].border;
+      icon = tipoMapeo[tipo].icon;
+      iconColor = tipoMapeo[tipo].color;
     }
 
-    const extensionAlias: any = {
+    const extensionAlias = {
       "document": "docx",
       "sheet": "xlsx",
       "presentation": "pptx"
     };
-    const displayExt = extensionAlias[extension] || extension;
+    const displayExt = extensionAlias[tipo] || tipo;
 
-    // ✅ URL corregida usando this.props
-    const url = `${SSocket.api.root}empresa/${this.props.empresa.key}/voucher/${this.props.item.key}/${documento_name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
+    const url = `${SSocket.api.root}empresa/${this.props?.empresa?.key}/voucher/${this.props?.item.key}/${documento_name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
 
     return (
       <SView row center style={{
@@ -76,7 +95,7 @@ export default class DetalleItem extends Component<{
         borderColor: borderColor
       }} onPress={() => Linking.openURL(url)}>
         <SIconApp name={icon} fill={iconColor} width={12} height={12} style={{ marginRight: 3 }} />
-        <SText fontSize={10} color={iconColor} bold>Voucher.{displayExt}</SText>
+        <SText fontSize={10} color={iconColor} bold>{documento_name?.substring(0,7)}.{displayExt}</SText>
         <SIconApp name={"downImgNube"} fill={iconColor} width={12} height={12} style={{ marginLeft: 3 }} />
       </SView>
     );
@@ -84,18 +103,19 @@ export default class DetalleItem extends Component<{
 
   botonesVoucher(vouchers = []) {
     if (!Array.isArray(vouchers) || vouchers.length === 0) {
-      return (
-        <View style={{ borderWidth: 1, borderColor: STheme.color.card, padding: 2, borderRadius: 4 }}>
-          <SText color={STheme.color.lightGray} fontSize={10}>Sin vouchers</SText>
-        </View>
-      );
+      return null;
+      // return (
+      //   <View style={{ borderWidth: 1, borderColor: STheme.color.card, padding: 2, borderRadius: 4 }}>
+      //     <SText color={STheme.color.lightGray} fontSize={10}>Sin vouchers</SText>
+      //   </View>
+      // );
     }
 
     return (
       <SView row flexWrap style={{ paddingVertical: 2 }}>
         {vouchers.slice(0, 4).map((voucher, index) => (
           <SView key={index} style={{ padding: 2 }}>
-            {this.iconotipoArchivo(voucher.name, voucher.type)}
+            {this.iconotipoArchivo(voucher?.name, voucher?.type)}
           </SView>
         ))}
         {vouchers.length > 4 && (
@@ -121,7 +141,7 @@ export default class DetalleItem extends Component<{
     const color = item.monto < 0 ? STheme.color.danger : STheme.color.success;
     const moneda = empresa?.monedas?.find(e => e.key === item.key_moneda);
 
-    return (
+    return (<>
       <SView key={index} row padding={4} style={{
         borderBottomWidth: 1,
         borderColor: STheme.color.card,
@@ -205,6 +225,12 @@ export default class DetalleItem extends Component<{
             </View>
             <SView width={8} />
 
+
+            <SView row style={{ alignItems: "center" }}>
+              {this.botonesVoucher(item.vouchers)}
+            </SView>
+
+
             <SView row flexWrap>
               <SView style={styles.botonSubir} onPress={() =>
                 PopupUploadVoucher.open(empresa.key, item.key, item.vouchers)
@@ -216,22 +242,23 @@ export default class DetalleItem extends Component<{
               <SView width={4} />
             </SView>
 
-            <SView row style={{ alignItems: "center" }}>
-              {this.botonesVoucher(item.vouchers)}
-            </SView>
           </SView>
         </SView>
 
-        <SView style={{ alignItems: "flex-end" }}>
-          <SView center>
-            <SText fontSize={18} bold color={color}>
-              {moneda?.observacion} {SMath.formatMoney(item.monto)}
-            </SText>
-          </SView>
-        </SView>
 
-        <SHr h={4} />
+
+        {/* <SHr h={4} /> */}
       </SView>
+      {/* <SView style={{ alignItems: "flex-end" }}> */}
+      <SView center style={{ position: "absolute", right: 0, top: 4 }}  >
+        <SView center>
+          <SText fontSize={18} bold color={color}>
+            {moneda?.observacion} {SMath.formatMoney(item.monto)}
+          </SText>
+        </SView>
+      </SView>
+    </>
+
     );
   }
 }

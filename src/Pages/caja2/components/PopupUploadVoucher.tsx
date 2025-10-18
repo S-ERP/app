@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ScrollView } from "react-native";
+import { Linking, ScrollView } from "react-native";
 import {
     SForm,
     SHr,
@@ -235,6 +235,7 @@ export default class PopupUploadVoucher extends Component<Props> {
                                     </SView>
                                 )}
 
+                                {/* Eliminar */}
                                 <SView
                                     style={{
                                         position: "absolute",
@@ -251,6 +252,43 @@ export default class PopupUploadVoucher extends Component<Props> {
                                 >
                                     <SText color="#fff" bold>✕</SText>
                                 </SView>
+
+                                {/* Descargar */}
+                                <SView
+                                    style={{
+                                        position: "absolute",
+                                        bottom: 4,
+                                        right: 4,
+                                        backgroundColor: "#00000088",
+                                        width: 28,
+                                        height: 28,
+                                        borderRadius: 14,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                    }}
+
+                                    onPress={() => Linking.openURL(url)}
+
+                                >
+
+
+
+                                    {/* <a
+                                        href={url}
+                                        download={v.name}
+                                        style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            textDecoration: "none"
+                                        }}
+                                    > */}
+                                    <SText color="#fff" bold>📥</SText>
+                                    {/* </a> */}
+                                </SView>
+
                             </SView>
                         );
                     })}
@@ -259,7 +297,6 @@ export default class PopupUploadVoucher extends Component<Props> {
             </SView>
         );
     }
-
     renderFileEmptyMessage = () => {
         const isEmpty = this.validateFileEmpty();
 
