@@ -99,7 +99,7 @@ export default class DashboardCard extends Component {
                 <SView row col={"xs-2"} center >
                     <SView style={{ width: 30, height: 30, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card, }}>
                         <SImage
-                            src={SSocket.api.root + "usuario/" + card.key_usuario_atiende}
+                            src={SSocket.api.root + "usuario/" + card.key}
                             style={{ resizeMode: "cover" }}
                         />
                     </SView>
