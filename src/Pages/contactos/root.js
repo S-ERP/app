@@ -1,62 +1,59 @@
+
+
 import React, { Component, createRef } from 'react';
 import { UIManager, findNodeHandle } from 'react-native';
-import { SHr, SIcon, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
-import {
-    FlatList, ScrollView, Gesture, GestureDetector
-} from 'react-native-gesture-handler';
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    runOnJS
-} from 'react-native-reanimated';
+import { SHr, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { FlatList, ScrollView, Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { useSharedValue, useAnimatedStyle, runOnJS } from 'react-native-reanimated';
 import Components from '../../Components';
-import Model from '../../Model';
 import MDL from '../../MDL';
 import Etiqueta from './Components/Etiqueta';
 import DashboardCard from './Components/DashboardCard';
 import FormRegistroTipoCliente from '../crm/Components/FormRegistroTipoCliente';
-import SSocket from 'servisofts-socket';
 import SIconApp from '../../Assets/SIconApp';
+import FloatMenu from '../../Components/FloatMenu';
+import FloatButtom from '../../Components/FloatButtom';
 
-const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard, cardRefs, onDeleteStage, onAddCliente, onRemoveCliente }) => {
-    return (
-        <SView style={{
-            backgroundColor: STheme.color.text + "11",
-            borderColor: STheme.color.card,
-            borderWidth: 1,
-            borderRadius: 8,
-            height: "100%",
-        }}>
-            <SView col={"xs-12"} padding={8} center>
-                <SView row col={"xs-12"} center>
-                    <SView style={{ backgroundColor: stage.color, width: 20, height: 20, borderRadius: 20 }} />
-                    <SView width={8} />
-                    <SText bold onPress={() => {
-                        FormRegistroTipoCliente.open({
-                            defaultData: stage,
-                            onRegister: () => { },
-                            onActualizar: () => { },
-                        })
-                    }}>{stage.titulo}</SText>
-                    <SView flex />
-                    <SText bold card fontSize={10} padding={4}>{cards?.length}</SText>
-                </SView>
-                <SText col={"xs-12"} fontSize={10} color={STheme.color.lightGray}>{stage.descripcion}</SText>
-                <SView row col={"xs-12"}>
-                    {stage?.states?.map((state, index) =>
-                        <Etiqueta key={index} tipo_leads={state} size={8} style={{ marginRight: 4, marginTop: 4 }} />
-                    )}
-                </SView>
+// ✅ STAGE CONVERTIDO A CLASE CON CALLBACK PARA PADRE
+class Stage extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedStageKey: null
+        };
+    }
 
-                {/* ⚡ AGREGAR CLIENTE (0.1s) */}
-                <SText fontSize={10} underLine onPress={() => {
+    handleStageSelect = (e) => {
+        const { stage, onStageSelect } = this.props;
+        this.setState({ selectedStageKey: stage.key });
+        // ✅ NOTIFICAR AL PADRE PARA CAMBIAR EL BORDER
+        onStageSelect(stage.key);
+
+        // ✅ ARRAY DE OPCIONES CORREGIDO
+        const menuOptions = [
+            {
+                label: 'Editar Tipo',
+                icon: <SIconApp name="Pencil" fill="#e4e4e4ff" width={16} />,
+                onPress: () => {
+                    FormRegistroTipoCliente.open({
+                        defaultData: stage,
+                        onRegister: () => this.props.onLoadData(),
+                        onActualizar: () => this.props.onLoadData()
+                    })
+                }
+            },
+
+            {
+                label: 'Agregar Contacto',
+                icon: <SIconApp name="tareaUser" fill="#e4e4e4ff" width={16} />,
+                onPress: () => {
                     SNavigation.navigate("/crm/cliente", {
                         onSelect: (e) => {
                             MDL.crm.tipoCliente.addToCliente({
                                 key_cliente: e.key,
                                 key_tipo_cliente: stage.key
                             }).then((response) => {
-                                onAddCliente(stage.key, e.key);
+                                this.props.onAddCliente(stage.key, e.key);
                                 SNotification.send({
                                     title: "✅ Cliente agregado",
                                     color: STheme.color.success,
@@ -71,124 +68,131 @@ const Stage = ({ stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard
                             });
                         }
                     })
-                }}>Agregar Cliente</SText>
+                },
+            },
 
-                {/* ✅ ELIMINAR GRUPO */}
-                <SView style={{
-                    padding: 6,
-                    backgroundColor: STheme.color.danger,
-                    borderRadius: 4,
-                    marginTop: 8
-                }} center row
-                    onPress={() => {
+            {
+                label: 'Eliminar Tipo',
+                icon: <SIconApp name="crmeliminar" fill={STheme.color.danger} height={16} />,
+                onPress: () => {
+                    SPopup.confirm({
+                        title: (<SView center style={{ textAlign: 'center', gap: 16, paddingTop: 18, paddingBottom: 14, paddingHorizontal: 20 }}> <SView col="xs-12" row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                            <SView flex>
+                                <SText style={{ fontSize: 18, fontWeight: 'bold', color: STheme.color.text }}> Eliminar tipo contacto</SText>
+                            </SView>
+                            <SView>
+                                <SIconApp name="Cerrar" width={10} fill="#9ca3af" onPress={() => SPopup.close('confirm')} />
+                            </SView>
+                        </SView>
 
-                        SPopup.confirm({
-                            title: (
-                                <SView center style={{
-                                    textAlign: 'center',
-                                    gap: 16,
-                                    // paddingVertical: 24,
-                                    paddingTop: 18,
-                                    paddingBottom: 14,
-                                    paddingHorizontal: 20
-                                }}>
-                                    {/* HEADER PROFESIONAL */}
-                                    <SView col="xs-12" row style={{
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        marginBottom: 8
-                                    }}>
-                                        <SView flex> <SText style={{ fontSize: 18, fontWeight: 'bold', color: STheme.color.text }}> Eliminar tipo contacto</SText> </SView>
+                            <SView style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(220, 38, 38, 0.2)', alignItems: 'center', justifyContent: 'center' }}>
+                                <SIconApp name="crmeliminar" height={20} fill="#dc2626" />
+                            </SView>
 
-                                        <SView> <SIconApp name="Cerrar" width={10} fill="#9ca3af" onPress={() => SPopup.close('confirm')} /> </SView>
-                                    </SView>
+                            <SView style={{ marginBottom: 4 }}>
+                                <SText style={{ fontSize: 16, color: STheme.color.text, textAlign: 'center' }}> ¿Estás seguro de que deseas eliminar la categoría</SText>
+                            </SView>
 
-                                    {/* ÍCONO ALERTA ROJO */}
-                                    <SView style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(220, 38, 38, 0.2)', alignItems: 'center', justifyContent: 'center' }}>
-                                        <SIconApp name="crmeliminar" height={20} fill="#dc2626" />
-                                    </SView>
+                            <SView style={{ marginBottom: 8 }}>
+                                <SText style={{ fontSize: 18, fontWeight: 'bold', color: STheme.color.text, textAlign: 'center' }}> {stage.titulo} </SText>
+                            </SView>
 
-                                    {/* TEXTO PRINCIPAL */}
-                                    <SView style={{ marginBottom: 4 }}> <SText style={{ fontSize: 16, color: STheme.color.text, textAlign: 'center' }}> ¿Estás seguro de que deseas eliminar la categoría</SText> </SView>
-
-                                    {/* NOMBRE EN ROJO */}
-                                    <SView style={{ marginBottom: 8 }}> <SText style={{ fontSize: 18, fontWeight: 'bold', color: STheme.color.text, textAlign: 'center' }}> {stage.titulo} </SText> </SView>
-
-                                    {/* ADVERTENCIA GRIS */}
-                                    <SText style={{ fontSize: 12, color: '#737373', textAlign: 'center' }}> Todos los contactos de esta categoría permanecerán sin categoría. </SText>
-                                </SView>
-                            ),
-                            onPress: () => {
-                                MDL.crm.tipoCliente.eliminar(stage.key).then(() => {
-                                    onDeleteStage(stage.key);
-                                    SNotification.send({
-                                        title: `✅ "${stage.titulo}" eliminado`,
-                                        color: STheme.color.success,
-                                        time: 2000
-                                    });
-                                }).catch(err => {
-                                    SNotification.send({
-                                        title: "❌ Error al eliminar",
-                                        body: err,
-                                        color: STheme.color.danger
-                                    });
+                            <SText style={{ fontSize: 12, color: '#737373', textAlign: 'center' }}> Todos los contactos de esta categoría permanecerán sin categoría. </SText>
+                        </SView>
+                        ),
+                        onPress: () => {
+                            MDL.crm.tipoCliente.eliminar(stage.key).then(() => {
+                                this.props.onDeleteStage(stage.key);
+                                SNotification.send({
+                                    title: `✅ "${stage.titulo}" eliminado`,
+                                    color: STheme.color.success,
+                                    time: 2000
                                 });
-                            }
+                            }).catch(err => {
+                                SNotification.send({
+                                    title: "❌ Error al eliminar",
+                                    body: err,
+                                    color: STheme.color.danger
+                                });
+                            });
+                        }
+                    });
+                },
+            },
 
+        ];
 
-                        });
+        FloatMenu.open({
+            e: e,
+            label: 'Opciones del tipo - ' + stage?.titulo,
+            options: menuOptions,
+        });
+    };
 
-                        // SPopup.confirm({
-                        //     title: `¿Eliminar "${stage.titulo}"?`,
-                        //     message: `${cards.length} clientes se moverán a "Sin tipo"`,
-                        //     onPress: () => {
-                        //         MDL.crm.tipoCliente.eliminar(stage.key).then(() => {
-                        //             onDeleteStage(stage.key);
-                        //             SNotification.send({
-                        //                 title: `✅ "${stage.titulo}" eliminado`,
-                        //                 color: STheme.color.success,
-                        //                 time: 2000
-                        //             });
-                        //         }).catch(err => {
-                        //             SNotification.send({
-                        //                 title: "❌ Error al eliminar",
-                        //                 body: err,
-                        //                 color: STheme.color.danger
-                        //             });
-                        //         });
-                        //     }
-                        // });
-                    }}>
-                    <SIcon name="trash" width={14} height={14} fill="white" />
-                    <SView width={6} />
-                    <SText fontSize={11} white bold>Eliminar ({cards.length})</SText>
+    render() {
+        const { stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard, cardRefs, onDeleteStage, onAddCliente, onRemoveCliente, onLoadData } = this.props;
+        const isSelected = this.state.selectedStageKey === stage.key;
+
+        return (
+            <SView
+                style={{
+                    backgroundColor: STheme.color.text + "11",
+                    borderColor: STheme.color.card,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    height: "100%",
+                }}
+            >
+                <SView
+                    col={"xs-12"}
+                    padding={8}
+                    center
+                    onPress={(e) => {
+                        this.handleStageSelect(e)
+                    }}
+                >
+                    <SView row col={"xs-12"} center>
+                        <SView style={{ backgroundColor: stage.color, width: 20, height: 20, borderRadius: 20 }} />
+                        <SView width={8} />
+                        <SText bold>{stage.titulo}</SText>
+                        <SView flex />
+                        <SText bold card fontSize={10} padding={4}>{cards?.length}</SText>
+                    </SView>
+                    <SText col={"xs-12"} fontSize={10} color={STheme.color.lightGray}>Descripción: {stage.descripcion}</SText>
+                    <SView row col={"xs-12"}>
+                        {stage?.states?.map((state, index) =>
+                            <Etiqueta key={index} tipo_leads={state} size={8} style={{ marginRight: 4, marginTop: 4 }} />
+                        )}
+                    </SView>
                 </SView>
-            </SView>
 
-            <FlatList
-                contentContainerStyle={{ padding: 4 }}
-                data={cards}
-                renderItem={({ item }) => (
-                    <DraggableCarta
-                        key={item.key}
-                        card={item}
-                        stage={stage}
-                        onDrop={onCardDrop}
-                        onDragStart={onDragStart}
-                        onDragMove={onDragMove}
-                        onRemoveCliente={onRemoveCliente}
-                        ref={cardRefs[item.key]}
-                    />
-                )}
-            />
-        </SView>
-    );
-};
+                <SView width={10} height={4}  ></SView>
+
+
+                <FlatList
+                    contentContainerStyle={{ padding: 4 }}
+                    data={cards}
+                    renderItem={({ item }) => (
+                        <DraggableCarta
+                            key={item.key}
+                            card={item}
+                            stage={stage}
+                            onDrop={onCardDrop}
+                            onDragStart={onDragStart}
+                            onDragMove={onDragMove}
+                            onRemoveCliente={onRemoveCliente}
+                            ref={cardRefs[item.key]}
+                        />
+                    )}
+                />
+            </SView>
+        );
+    }
+}
 
 export default class root extends Component {
     stageRefs = {};
     cardRefs = {};
-    dragginCard = null;
 
     constructor(props) {
         super(props);
@@ -199,7 +203,8 @@ export default class root extends Component {
             initialOffset: { x: 0, y: 0 },
             dpto: "all",
             tipo_cliente: [],
-            clientes: []
+            clientes: [],
+            selectedStageKey: null // ✅ ESTADO CENTRALIZADO
         };
     }
 
@@ -209,6 +214,11 @@ export default class root extends Component {
             this.forceUpdate();
         });
     }
+
+    // ✅ MÉTODO PARA MANEJAR SELECCIÓN DESDE STAGE
+    handleStageSelect = (stageKey) => {
+        this.setState({ selectedStageKey: stageKey });
+    };
 
     async loadData() {
         const [clientes, tipos] = await Promise.all([
@@ -267,9 +277,6 @@ export default class root extends Component {
     };
 
     handleDrop = (cardKey, gestureEnd, prevenChange) => {
-        if (this.dragginCard) {
-            this.dragginCard.setState({ draggingCard: "" });
-        }
         if (prevenChange) return;
 
         for (const stageKey in this.stageRefs) {
@@ -305,25 +312,26 @@ export default class root extends Component {
     };
 
     handleDragMove = (x, y) => {
-        if (this.dragginCard) this.dragginCard.setState({ dragOffset: { x, y } });
+        // Lógica de drag
     };
 
     render() {
         return (
             <SPage title={'Agenda de contactos'}>
-                <SText onPress={() => {
-                    FormRegistroTipoCliente.open({
-                        onRegister: () => this.loadData(),
-                        onActualizar: () => this.loadData()
-                    })
-                }}>Registrar nuevo tipo</SText>
                 <SHr h={12} />
                 <ScrollView horizontal>
                     {this.state.tipo_cliente.map((stage) => (
                         <SView
                             key={stage.key}
                             ref={el => this.stageRefs[stage.key] = el}
-                            style={{ width: 320, margin: 6 }}
+                            style={{
+                                width: 320,
+                                margin: 6,
+                                borderColor: this.state.selectedStageKey === stage.key ? STheme.color.card : "transparent",
+                                backgroundColor: this.state.selectedStageKey === stage.key ? STheme.color.card : "transparent",
+                                borderWidth: 2,
+                                borderRadius: 12
+                            }}
                         >
                             <Stage
                                 stage={stage}
@@ -339,11 +347,21 @@ export default class root extends Component {
                                 onDeleteStage={this.handleDeleteStage}
                                 onAddCliente={this.handleAddCliente}
                                 onRemoveCliente={this.handleRemoveCliente}
-
+                                onStageSelect={this.handleStageSelect}
+                                onLoadData={this.loadData} // ✅ PROP NUEVA PARA RECARGAR
                             />
                         </SView>
                     ))}
                 </ScrollView>
+
+                <FloatButtom onPress={() => {
+
+                    FormRegistroTipoCliente.open({
+                        onRegister: () => this.loadData(),
+                        onActualizar: () => this.loadData()
+                    })
+                }} />
+
             </SPage>
         );
     }
