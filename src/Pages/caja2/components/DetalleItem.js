@@ -216,30 +216,31 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                         {/* <SText color={STheme.color.lightGray} fontSize={10}>{item.key_punto_venta_tipo_pago}</SText> */}
                     </View>
                     <SView width={8} />
-                    {/* {moneda && <View style={{
-                        borderWidth: 1,
-                        borderColor: STheme.color.card,
-                        padding: 2,
-                        borderRadius: 4,
-                        flexDirection: "row",
-                        alignItems: "center"
-                    }}>
-                        <SText color={STheme.color.lightGray} fontSize={10}>{moneda?.descripcion}</SText>
-                        <SView width={4} />
-                        <SText color={STheme.color.lightGray} fontSize={10}>{item.tipo_cambio}</SText>
-                        <SView width={4} />
-                    </View>
-                    } */}
 
-                    <View style={{ borderWidth: 1, borderColor: STheme.color.card, padding: 2, borderRadius: 4, flexDirection: "row", alignItems: "center" }}>
-                        <SText color={STheme.color.lightGray} fontSize={10}>Vouchers Totales {JSON.stringify(item.vouchers?.length ?? 0)}</SText>
-                    </View>
 
-                    {/* <SView row style={{ alignItems: "center" }}>
-                        <SView width={8} />
+
+
+
+                    {/* <SView row center style={{ padding: 4, backgroundColor: bgColor, borderRadius: 6, marginRight: 4, marginBottom: 4, borderWidth: 1, borderColor: borderColor }} > */}
+
+
+                    {/* justifyContent: "space-between", */}
+                    <SView row flexWrap style={{ paddingVertical: 2 }}>
+                        <SView style={{ justifyContent: "space-between", borderWidth: 1, borderColor: STheme.color.card, backgroundColor: STheme.color.card, padding: 4, marginRight: 2, marginBottom: 4, borderRadius: 6, flexDirection: "row", alignItems: "center" }} row center onPress={() => PopupUploadVoucher.open(empresa.key, item.key, item.vouchers)} >
+                            <SIconApp name='upImgNube' fill={STheme.color.text} width={12} />
+                            <SView width={4} />
+                            <SText fontSize={10} color={STheme.color.text} >Subir Vouchers</SText>
+                        </SView>
+                        <SView width={4} />
+                    </SView>
+
+
+
+                    <SView row style={{ alignItems: "center" }}>
+                        {/* <SView width={8} /> */}
                         {this.botonesVoucher(item.vouchers)}
-                        <SView width={8} />
-                    </SView> */}
+                        {/* <SView width={8} /> */}
+                    </SView>
 
 
                     {/* <SView width={140} style={{ justifyContent: "space-between", color: STheme.color.text, margin: 5, backgroundColor: STheme.color.card, paddingHorizontal: 10, height: 30, borderRadius: 40 }}
@@ -261,15 +262,15 @@ export default class DetalleItem extends Component<{ item: any, index: number, t
                 <SView center>
                     <SText fontSize={18} bold color={color}>{moneda?.observacion} {SMath.formatMoney(item.monto)}</SText>
                     {/* <SView width={4} /> */}
-                    <SView width={120} style={{ justifyContent: "space-between", color: STheme.color.text, margin: 5, backgroundColor: STheme.color.card, paddingHorizontal: 6, height: 30, borderRadius: 40 }}
+                    {/* <SView width={120} style={{ justifyContent: "space-between", color: STheme.color.text, margin: 5, backgroundColor: STheme.color.card, paddingHorizontal: 6, height: 30, borderRadius: 40 }}
                         onPress={() =>
                             PopupUploadVoucher.open(empresa.key, item.key, item.vouchers)
                         } row center>
 
                         <SIconApp name='upImgNube' fill={STheme.color.text} width={16} />
 
-                        <SText fontSize={13} color={STheme.color.text} >Subir Vouchers</SText>
-                    </SView>
+                        <SText fontSize={10} color={STheme.color.text} >Subir Vouchers</SText>
+                    </SView> */}
 
 
                 </SView>
