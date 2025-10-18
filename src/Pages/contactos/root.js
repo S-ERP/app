@@ -1,5 +1,3 @@
-
-
 import React, { Component, createRef } from 'react';
 import { UIManager, findNodeHandle } from 'react-native';
 import { SHr, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
@@ -76,14 +74,15 @@ class Stage extends Component {
                 icon: <SIconApp name="crmeliminar" fill={STheme.color.danger} height={16} />,
                 onPress: () => {
                     SPopup.confirm({
-                        title: (<SView center style={{ textAlign: 'center', gap: 16, paddingTop: 18, paddingBottom: 14, paddingHorizontal: 20 }}> <SView col="xs-12" row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                            <SView flex>
-                                <SText style={{ fontSize: 18, fontWeight: 'bold', color: STheme.color.text }}> Eliminar tipo contacto</SText>
+                        title: (<SView center style={{ textAlign: 'center', gap: 16, paddingTop: 18, paddingBottom: 14, paddingHorizontal: 20 }}> 
+                            <SView col="xs-12" row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                                <SView flex>
+                                    <SText style={{ fontSize: 18, fontWeight: 'bold', color: STheme.color.text }}> Eliminar tipo contacto</SText>
+                                </SView>
+                                <SView>
+                                    <SIconApp name="Cerrar" width={10} fill="#9ca3af" onPress={() => SPopup.close('confirm')} />
+                                </SView>
                             </SView>
-                            <SView>
-                                <SIconApp name="Cerrar" width={10} fill="#9ca3af" onPress={() => SPopup.close('confirm')} />
-                            </SView>
-                        </SView>
 
                             <SView style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(220, 38, 38, 0.2)', alignItems: 'center', justifyContent: 'center' }}>
                                 <SIconApp name="crmeliminar" height={20} fill="#dc2626" />
@@ -98,8 +97,7 @@ class Stage extends Component {
                             </SView>
 
                             <SText style={{ fontSize: 12, color: '#737373', textAlign: 'center' }}> Todos los contactos de esta categoría permanecerán sin categoría. </SText>
-                        </SView>
-                        ),
+                        </SView>),
                         onPress: () => {
                             MDL.crm.tipoCliente.eliminar(stage.key).then(() => {
                                 this.props.onDeleteStage(stage.key);
@@ -119,7 +117,6 @@ class Stage extends Component {
                     });
                 },
             },
-
         ];
 
         FloatMenu.open({
@@ -168,7 +165,6 @@ class Stage extends Component {
 
                 <SView width={10} height={4}  ></SView>
 
-
                 <FlatList
                     contentContainerStyle={{ padding: 4 }}
                     data={cards}
@@ -206,6 +202,16 @@ export default class root extends Component {
             clientes: [],
             selectedStageKey: null // ✅ ESTADO CENTRALIZADO
         };
+
+        // 🚨 ✅ BIND TODO AQUÍ - ESTO SOLUCIONA EL ERROR
+        this.handleStageSelect = this.handleStageSelect.bind(this);
+        this.loadData = this.loadData.bind(this);
+        this.handleRemoveCliente = this.handleRemoveCliente.bind(this);
+        this.handleAddCliente = this.handleAddCliente.bind(this);
+        this.handleDeleteStage = this.handleDeleteStage.bind(this);
+        this.handleDrop = this.handleDrop.bind(this);
+        this.handleDragStart = this.handleDragStart.bind(this);
+        this.handleDragMove = this.handleDragMove.bind(this);
     }
 
     componentDidMount() {
@@ -216,9 +222,9 @@ export default class root extends Component {
     }
 
     // ✅ MÉTODO PARA MANEJAR SELECCIÓN DESDE STAGE
-    handleStageSelect = (stageKey) => {
+    handleStageSelect(stageKey) {
         this.setState({ selectedStageKey: stageKey });
-    };
+    }
 
     async loadData() {
         const [clientes, tipos] = await Promise.all([
@@ -231,7 +237,7 @@ export default class root extends Component {
         });
     }
 
-    handleRemoveCliente = (keyClienteTipo) => {
+    handleRemoveCliente(keyClienteTipo) {
         if (!keyClienteTipo) return;
 
         this.setState(prev => ({
@@ -245,9 +251,9 @@ export default class root extends Component {
                 return cliente;
             })
         }));
-    };
+    }
 
-    handleAddCliente = (stageKey, clienteKey) => {
+    handleAddCliente(stageKey, clienteKey) {
         if (!stageKey || !clienteKey) return;
 
         this.setState(prev => ({
@@ -268,15 +274,15 @@ export default class root extends Component {
                 return cliente;
             })
         }));
-    };
+    }
 
-    handleDeleteStage = (deletedKey) => {
+    handleDeleteStage(deletedKey) {
         this.setState(prev => ({
             tipo_cliente: prev.tipo_cliente.filter(t => t.key !== deletedKey)
         }));
-    };
+    }
 
-    handleDrop = (cardKey, gestureEnd, prevenChange) => {
+    handleDrop(cardKey, gestureEnd, prevenChange) {
         if (prevenChange) return;
 
         for (const stageKey in this.stageRefs) {
@@ -305,15 +311,15 @@ export default class root extends Component {
                 }
             });
         }
-    };
+    }
 
-    handleDragStart = (cardKey) => {
+    handleDragStart(cardKey) {
         console.log("Drag start:", cardKey);
-    };
+    }
 
-    handleDragMove = (x, y) => {
+    handleDragMove(x, y) {
         // Lógica de drag
-    };
+    }
 
     render() {
         return (
@@ -355,7 +361,6 @@ export default class root extends Component {
                 </ScrollView>
 
                 <FloatButtom onPress={() => {
-
                     FormRegistroTipoCliente.open({
                         onRegister: () => this.loadData(),
                         onActualizar: () => this.loadData()
