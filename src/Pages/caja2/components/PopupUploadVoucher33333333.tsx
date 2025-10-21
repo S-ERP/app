@@ -93,25 +93,13 @@ export default class PopupUploadVoucher extends Component<Props> {
         this.files = nuevosArchivos.map(n => n.file);
         this.setState({ uploadedVouchers: filtrados, fileValue: nuevos });
 
-        //   if (this.form && this.form?.getValues("file")) {
-        //         console.log("..................se murio")
-        //         this.form?.inputs?.file.setValue([]); // Asumiendo que SForm tiene un método setValue
-        //     }
-
-
-        // this.form?.setValues({ "file": "" });
-
+        // 🔧 Solución al problema de re-selección del mismo archivo
         // const input = document.querySelector('input[type="file"]') as HTMLInputElement;
-        const inpsa = this.form?.getValues()?.file || {};
         // if (input) input.value = "";
-        if (inpsa) {
-            console.log("hay valores")
-        } else {
-            console.log("sin data")
 
+        if (this.fileInputRef.current) {
+            this.fileInputRef.current.value = "";
         }
-
-        // input.value = "";
     };
 
     removeVoucher = (index: number) => {
@@ -224,25 +212,28 @@ export default class PopupUploadVoucher extends Component<Props> {
                                     height: 28,
                                     borderRadius: 14,
                                     justifyContent: "center",
-                                    alignItems: "center",
+                                    alignItems: "center"
 
                                 }} onPress={() => this.removeVoucher(i)}>
+                                    {/* <SView style={this.iconButtonStyle("top")} onPress={() => this.removeVoucher(i)}> */}
                                     <SText color="#fff" bold>✕</SText>
                                 </SView>
 
                                 {/* Descargar */}
-                                <SView style={{
-                                    position: "absolute",
-                                    bottom: 4,
-                                    right: 4,
-                                    backgroundColor: "#00000088",
-                                    width: 28,
-                                    height: 28,
-                                    borderRadius: 14,
-                                    justifyContent: "center",
-                                    alignItems: "center",
+                                <SView
+                                    style={{
+                                        position: "absolute",
+                                        bottom: 4,
+                                        right: 4,
+                                        backgroundColor: "#00000088",
+                                        width: 28,
+                                        height: 28,
+                                        borderRadius: 14,
+                                        justifyContent: "center",
+                                        alignItems: "center"
 
-                                }} onPress={() => Linking.openURL(url)}>
+                                    }}
+                                    onPress={() => Linking.openURL(url)}>
                                     <SText color="#fff" bold>📥</SText>
                                 </SView>
                             </SView>
@@ -319,9 +310,7 @@ export default class PopupUploadVoucher extends Component<Props> {
                                 style: { height: 200, borderWidth: 2, borderColor: STheme.color.card, borderRadius: 8, borderStyle: "dashed", justifyContent: "center", alignItems: "center", backgroundColor: STheme.color.background, },
                                 placeholder: "Selecciona o arrastra tus imágenes aquí 📎",
                                 onChangeText: this.handleFileChange,
-
-                                //   ref:this.fileInputRef
-
+                                ref: { ref: this.fileInputRef = ref }
                             },
                         }}
                         onSubmit={this.handleSubmit}
@@ -333,11 +322,12 @@ export default class PopupUploadVoucher extends Component<Props> {
                 <SHr h={20} />
 
                 <SView row col={"xs-12"} center>
-                    <Btn type="secondary" label="CANCELAR" onPress={() => SPopup.close("PopupUploadVoucher_")} />
+                    <Btn type="danger" label="CANCELAR" onPress={() => SPopup.close("PopupUploadVoucher_")} />
                     <SView width={10} />
                     <Btn
                         type="primary"
                         label={this.state.loading ? "GUARDANDO..." : "SUBIR"}
+                        // disabled={this.state.loading}
                         onPress={() => this.form?.submit()}
                     />
                 </SView>
