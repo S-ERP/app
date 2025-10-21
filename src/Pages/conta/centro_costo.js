@@ -113,7 +113,7 @@ export default class centro_costo extends React.Component {
 
                         })}
                     </SView>
-                    <SHr h={16} />
+                    <SHr h={8} />
                     <SView style={{
                         maxWidth: 500,
                         paddingHorizontal: 16
@@ -121,7 +121,8 @@ export default class centro_costo extends React.Component {
                         <SInput
                             ref={ref => this._ref[tipo.key] = ref}
                             customStyle={"erp"}
-                            label={"Agregar centro de costo a " + tipo.descripcion}
+                            style={{ height: 25 }}
+                            // label={"Agregar centro de costo a " + tipo.descripcion}
                             placeholder={"Escribe el centro de costo"}
                             iconR={<SView flex center onPress={() => {
                                 const value = this._ref[tipo.key].getValue();

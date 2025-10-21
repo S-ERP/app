@@ -48,3 +48,9 @@ body {
 body>iframe {
     /* pointer-events: none; */
 }
+
+svg, svg * {
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+}
