@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import { SDate, SHr, SIcon, SImage, SNavigation, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SIcon, SImage, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Etiqueta from './Etiqueta';
 import SIconApp from '../../../Assets/SIconApp';
 import MDL from '../../../MDL';
+import FloatMenu from '../../../Components/FloatMenu';
 
 export default class DashboardCard extends Component {
     constructor(props) {
@@ -19,25 +19,87 @@ export default class DashboardCard extends Component {
         const fecha = card.fecha_edit ?? card.fecha_on;
 
         return (
-            <SView style={{
-                backgroundColor: STheme.color.background + "66",
-                borderColor: STheme.color.card,
-                borderWidth: 1,
-                minHeight: 70,
-                padding: 8,
-                borderRadius: 8,
-                cursor: "grab",
-            }} row >
-                <SView row col={"xs-2"} center>
-                    <SView style={{
-                        width: 30,
-                        height: 30,
-                        borderRadius: 100,
-                        overflow: "hidden",
-                        backgroundColor: STheme.color.card,
-                    }}>
+            <SView style={{ backgroundColor: STheme.color.background + "66", borderColor: STheme.color.card, borderWidth: 1, minHeight: 70, padding: 8, borderRadius: 8, cursor: "grab", }} row
+
+                onPress={(e) => {
+
+                    const menuOptions = [
+                        {
+                            label: 'Llamar',
+                            icon: <SIconApp name="tareaclose" fill="#e4e4e4ff" width={16} />,
+                            onPress: () => {
+                                alert("trabajandolo")
+                            },
+                        },
+                        {
+                            label: 'Editar Contacto',
+                            icon: <SIconApp name="Pencil" fill="#e4e4e4ff" width={16} />,
+                            onPress: () => {
+                                alert("trabajandolo")
+                            },
+                        },
+                        {
+                            label: 'Eliminar Contacto',
+                            icon: <SIconApp name="crmeliminar" fill={STheme.color.danger} width={16} />,
+                            onPress: () => {
+
+                                SPopup.confirm({
+                                    title: (
+                                        <SView center style={{
+                                            textAlign: 'center',
+                                            gap: 16,
+                                            paddingTop: 18,
+                                            paddingBottom: 14,
+                                            paddingHorizontal: 20
+                                        }}>
+                                            <SView col="xs-12" row style={{
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                marginBottom: 8
+                                            }}>
+                                                <SView flex> <SText style={{ fontSize: 18, fontWeight: 'bold', color: STheme.color.text }}> Eliminar Contacto </SText> </SView>
+
+                                                <SView> <SIconApp name="Cerrar" width={10} fill="#9ca3af" onPress={() => SPopup.close('confirm')} /> </SView>
+                                            </SView>
+                                            <SView style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(220, 38, 38, 0.2)', alignItems: 'center', justifyContent: 'center' }}>
+                                                <SIconApp name="AlertOutline" width={24} fill="#dc2626" />
+                                            </SView>
+                                            <SView style={{ marginBottom: 4 }}> <SText style={{ fontSize: 16, color: STheme.color.text, textAlign: 'center' }}> ¿Estás seguro de que deseas eliminar a </SText> </SView>
+                                            <SView style={{ marginBottom: 8 }}> <SText style={{ fontSize: 18, fontWeight: 'bold', color: STheme.color.text, textAlign: 'center' }}> {card.nombres} </SText> </SView>
+                                            <SText style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center' }}> Esta acción no se podrá deshacer </SText>
+                                        </SView>
+                                    ),
+                                    onPress: () => {
+                                        MDL.crm.tipoCliente.deleteClienteDeLaTabla(tipo_contacto.key_cliente_tipo_cliente)
+                                            .then(() => {
+                                                this.props.onRemoveCliente(tipo_contacto.key_cliente_tipo_cliente);
+                                                SNotification.send({
+                                                    title: `✅ "${card.nombres}" quitado`,
+                                                    color: STheme.color.success,
+                                                    time: 1500
+                                                });
+                                            })
+                                            .catch(err => {
+                                                SNotification.send({
+                                                    title: "❌ Error al quitar",
+                                                    body: err,
+                                                    color: STheme.color.danger
+                                                });
+                                            });
+                                    }
+
+                                });
+
+                            },
+                        },
+                    ];
+
+                    FloatMenu.open({ e: e, label: 'Opciones Contacto - ' + card?.nombres, options: menuOptions, });
+                }} >
+                <SView row col={"xs-2"} center >
+                    <SView style={{ width: 30, height: 30, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card, }}>
                         <SImage
-                            src={SSocket.api.root + "usuario/" + card.key_usuario_atiende}
+                            src={SSocket.api.root + "usuario/" + card.key}
                             style={{ resizeMode: "cover" }}
                         />
                     </SView>
@@ -45,7 +107,7 @@ export default class DashboardCard extends Component {
                 <SView row col={"xs-10"}>
                     <SView row col={"xs-12"}>
                         <SHr h={4} />
-                        <SText bold>{card?.nombres}</SText>
+                        <SText bold >{card?.nombres}</SText>
                         <SView width={8} />
                         <SText fontSize={14} underLine style={{ marginTop: -1 }}
                             color={STheme.color.link}
@@ -56,7 +118,7 @@ export default class DashboardCard extends Component {
                         >{card?.telefono}</SText>
                         <SHr h={4} />
                         <SText fontSize={10} color={STheme.color.lightGray}>{card?.tipo}</SText>
-                        <SText fontSize={10} color={STheme.color.lightGray}>{tipo_contacto?.titulo}</SText>
+                        <SText fontSize={10} color={STheme.color.lightGray} >{tipo_contacto?.titulo}</SText>
                     </SView>
                 </SView>
                 <SHr h={5} />
@@ -94,7 +156,7 @@ export default class DashboardCard extends Component {
                             </SText>
                         </SView>
                     )}
-                    <SView style={{
+                    <SView row style={{
                         padding: 3,
                         backgroundColor: STheme.color.card,
                         borderRadius: 4,
@@ -111,104 +173,6 @@ export default class DashboardCard extends Component {
                             Hace {new SDate(fecha, "yyyy-MM-ddThh:mm:ss").timeSince(new SDate())}
                         </SText>
                     </SView>
-
-                    {/* ✅ BOTÓN QUITAR (DESAPARECE INSTANTÁNEO) */}
-                    {tipo_contacto && (
-                        <SView style={{
-                            padding: 3,
-                            backgroundColor: STheme.color.danger,
-                            borderRadius: 4,
-                            marginRight: 4,
-                            marginBottom: 4
-                        }} center row
-                            onPress={() => {
-
-                                SPopup.confirm({
-                                    title: (
-                                        <SView center style={{
-                                            textAlign: 'center',
-                                            gap: 16,
-                                            // paddingVertical: 24,
-                                            paddingTop: 18,
-                                            paddingBottom: 14,
-                                            paddingHorizontal: 20
-                                        }}>
-                                            {/* HEADER PROFESIONAL */}
-                                            <SView col="xs-12" row style={{
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                                marginBottom: 8
-                                            }}>
-                                                <SView flex> <SText style={{ fontSize: 18, fontWeight: 'bold', color: STheme.color.text }}> Eliminar Contacto </SText> </SView>
-
-                                                <SView> <SIconApp name="Cerrar" width={10} fill="#9ca3af" onPress={() => SPopup.close('confirm')} /> </SView>
-                                            </SView>
-
-                                            {/* ÍCONO ALERTA ROJO */}
-                                            <SView style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(220, 38, 38, 0.2)', alignItems: 'center', justifyContent: 'center' }}>
-                                                <SIconApp name="AlertOutline" width={24} fill="#dc2626" />
-                                            </SView>
-
-                                            {/* TEXTO PRINCIPAL */}
-                                            <SView style={{ marginBottom: 4 }}> <SText style={{ fontSize: 16, color: STheme.color.text, textAlign: 'center' }}> ¿Estás seguro de que deseas eliminar a </SText> </SView>
-
-                                            {/* NOMBRE EN ROJO */}
-                                            <SView style={{ marginBottom: 8 }}> <SText style={{ fontSize: 18, fontWeight: 'bold', color: STheme.color.text, textAlign: 'center' }}> {card.nombres} </SText> </SView>
-
-                                            {/* ADVERTENCIA GRIS */}
-                                            <SText style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center' }}> Esta acción no se podrá deshacer </SText>
-                                        </SView>
-                                    ),
-                                    onPress: () => {
-                                        MDL.crm.tipoCliente.deleteClienteDeLaTabla(tipo_contacto.key_cliente_tipo_cliente)
-                                            .then(() => {
-                                                this.props.onRemoveCliente(tipo_contacto.key_cliente_tipo_cliente);
-                                                SNotification.send({
-                                                    title: `✅ "${card.nombres}" quitado`,
-                                                    color: STheme.color.success,
-                                                    time: 1500
-                                                });
-                                            })
-                                            .catch(err => {
-                                                SNotification.send({
-                                                    title: "❌ Error al quitar",
-                                                    body: err,
-                                                    color: STheme.color.danger
-                                                });
-                                            });
-                                    }
-
-
-                                });
-
-                                // SPopup.confirm({
-                                //     title: `¿Quitar "${card.nombres}" de "${tipo_contacto.titulo}"?`,
-                                //     onPress: () => {
-                                //         MDL.crm.tipoCliente.deleteClienteDeLaTabla(tipo_contacto.key_cliente_tipo_cliente)
-                                //             .then(() => {
-                                //                 this.props.onRemoveCliente(tipo_contacto.key_cliente_tipo_cliente);
-                                //                 SNotification.send({
-                                //                     title: `✅ "${card.nombres}" quitado`,
-                                //                     color: STheme.color.success,
-                                //                     time: 1500
-                                //                 });
-                                //             })
-                                //             .catch(err => {
-                                //                 SNotification.send({
-                                //                     title: "❌ Error al quitar",
-                                //                     body: err,
-                                //                     color: STheme.color.danger
-                                //                 });
-                                //             });
-                                //     }
-                                // });
-                            }}
-                        >
-                            <SIcon name="Cancel" width={12} height={14} fill={"#07db3cff"} />
-                            <SView width={4} />
-                            <SText fontSize={10} color={STheme.color.text}>Quitar</SText>
-                        </SView>
-                    )}
                 </SView>
             </SView>
         );
