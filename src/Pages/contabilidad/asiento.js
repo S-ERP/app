@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SHr, SIcon, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SInput, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
 import { AsientoContable2 } from 'servisofts-rn-contabilidad';
 import Container from '../../Components/Container';
 import Model from '../../Model';
@@ -10,6 +10,9 @@ class index extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            tags: {
+
+            }
         };
         this.pk = SNavigation.getParam("pk")
         this.clone = SNavigation.getParam("clone")
@@ -30,7 +33,12 @@ class index extends Component {
         return (
             <SPage title={"Asientos contables"} disableScroll center>
                 <SView col={"xs-11.5 sm-10 md-8"} height>
-                    <AsientoContable2 key_gestion={this.key_gestion} key_asiento_contable={this.pk} clone={this.clone} />
+                    <SHr />
+                    <ContactoSelect onChange={(cliente) => {
+                        this.state.tags.key_cliente = cliente?.key
+                        this.forceUpdate();
+                    }} />
+                    <AsientoContable2 key_gestion={this.key_gestion} key_asiento_contable={this.pk} clone={this.clone} tags={this.state.tags}/>
                 </SView>
             </SPage>
         );
@@ -40,3 +48,33 @@ const initStates = (state) => {
     return { state }
 };
 export default connect(initStates)(index);
+
+
+const ContactoSelect = ({ onChange }) => {
+    const [data, setData] = React.useState([]);
+
+
+    const loadData = async () => {
+        const resp = await MDL.crm.cliente.getAll();
+        setData(resp);
+    }
+
+    React.useEffect(() => {
+        loadData();
+    }, [])
+
+    return <SInput label={"Contacto"}
+        customStyle={"erp"}
+        placeholder={"Selecciona un contacto"}
+        type='select2'
+        options={data.map(e => `${e.nombres}`)}
+        onChangeText={(e) => {
+            const cliente = data.find(a => a.nombres == e);
+            onChange(cliente);
+        }}
+        style={{
+            maxWidth: 300
+        }}
+
+    />
+}

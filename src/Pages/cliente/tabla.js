@@ -8,17 +8,19 @@ import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
 import PopupCrearCliente from './Components/PopupCrearCliente';
 import SIconApp from '../../Assets/SIconApp';
+import label from '../ajustes/label';
 
 const URL = "/crm/cliente";
 
 export default class ListaClientes extends Component {
+    onSelect = SNavigation.getParam("onSelect");
     componentDidMount() {
         // Verificar permiso de visualización
         MDL.rolesPermisos
             .getPermisoAsync({ url: URL, permiso: 'ver' })
             .then(e => {
                 if (!e) {
-                    SNavigation.goBack();
+                    // SNavigation.goBack();
                     return;
                 }
                 this.forceUpdate();
@@ -185,6 +187,15 @@ export default class ListaClientes extends Component {
                                 });
                             },
                         });
+                    }
+
+                    if (this.onSelect) {
+                        options.push({
+                            label: "select",
+                            onPress: () => {
+                                this.onSelect(e.row);
+                            }
+                        })
                     }
 
                     FloatMenu.open({
