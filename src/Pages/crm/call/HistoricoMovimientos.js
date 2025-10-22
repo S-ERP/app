@@ -130,7 +130,7 @@ export default class HistoricoMovimientos extends Component {
     render() {
 
 
-
+console.log("HISTORICO", this.state.sections)
         return (
             <View style={{ flex: 1 }}>
                 <Text>Histórico de Movimientos</Text>
