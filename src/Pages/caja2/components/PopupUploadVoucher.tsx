@@ -288,7 +288,7 @@ export default class PopupUploadVoucher extends Component<Props> {
             </SView>
             <SHr h={10} />
             <SView row col={"xs-12"} center style={{ paddingTop: 8, borderTopWidth: 1, borderTopColor: STheme.color.card }}>
-                <Btn type="primary" label="CANCELAR" onPress={() => SPopup.close("PopupUploadVoucher_")} />
+                <Btn type="secondary" label="CANCELAR" onPress={() => SPopup.close("PopupUploadVoucher_")} />
                 <SView width={12} />
                 <Btn type="primary" label={this.state.loading ? "GUARDANDO..." : "GUARDAR COMPROBANTES"} onPress={() => this.form?.submit()} />
             </SView>
