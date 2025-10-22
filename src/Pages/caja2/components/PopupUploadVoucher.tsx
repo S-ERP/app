@@ -136,13 +136,14 @@ export default class PopupUploadVoucher extends Component<Props> {
     };
 
     handleSubmit = async () => {
-        if (!this.state.uploadedVouchers.length) {
-            return SNotification.send({
-                title: "Sin imágenes",
-                body: "Debes mantener al menos una imagen antes de guardar.",
-                color: STheme.color.warning,
-            });
-        }
+
+        // if (!this.state.uploadedVouchers.length) {
+        //     return SNotification.send({
+        //         title: "Sin imágenes",
+        //         body: "Debes mantener al menos una imagen antes de guardar.",
+        //         color: STheme.color.warning,
+        //     });
+        // }
 
         try {
             this.setState({ loading: true });
@@ -190,14 +191,54 @@ export default class PopupUploadVoucher extends Component<Props> {
         }
     };
 
+    limpiarTodosLosVouchers = () => {
+        this.files = []; // Limpiamos los archivos en memoria
+        this.setState({ uploadedVouchers: [], fileValue: [] }, () => {
+            SNotification.send({
+                title: "Imágenes eliminadas",
+                body: "Todas las imágenes fueron borradas correctamente.",
+                color: STheme.color.info,
+                time: 1500,
+            });
+            // Ejecutar handleSubmit para guardar el cambio (registro backend)
+            this.handleSubmit();
+        });
+    };
+
+
+
     renderUploadedVouchers() {
         const { uploadedVouchers } = this.state;
         if (!uploadedVouchers.length) return null;
 
         return (
             <SView>
-                <SText bold>📁 Imágenes registradas</SText>
+
+                <SView style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                    <SText bold>📁 Imágenes registradas</SText>
+                    <SView
+                        style={{
+                            paddingHorizontal: 10,
+                            paddingVertical: 5,
+                            backgroundColor: "#e74c3c",
+                            borderRadius: 5,
+                        }}
+                        onPress={() => {
+                            SPopup.confirm({
+                                title: "Confirmar acción",
+                                message: "¿Deseas eliminar todas las imágenes?",
+                                onPress: () => {
+                                    this.limpiarTodosLosVouchers();
+                                }
+                            })
+                        }}
+                    >
+                        <SText color="#fff" bold>Limpiar vouche</SText>
+                    </SView>
+                </SView>
                 <SHr h={10} />
+
+
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {uploadedVouchers.map((v, i) => {
                         const url = v.url ?? `${SSocket.api.root}empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${v.name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`;
