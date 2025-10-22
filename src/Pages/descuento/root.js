@@ -140,20 +140,20 @@ export default class root extends React.Component {
                 <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
                 <DinamicTable.Col
                     key={"descripcion"}
-                    label={"descripcion"}
+                    label={"Descripción"}
                     width={200}
                     data={e => e.row.descripcion}></DinamicTable.Col>
                 <DinamicTable.Col
                     key={"porcentaje"}
-                    label={"porcentaje"}
+                    label={"Porcentaje"}
                     data={e => e.row.porcentaje}></DinamicTable.Col>
                 <DinamicTable.Col
                     key={"monto"}
-                    label={"monto"}
+                    label={"Monto"}
                     data={e => e.row.monto}></DinamicTable.Col>
                 <DinamicTable.Col key={"fecha_on"} label="Fecha"
                     width={110} dataType="date"
-                    textStyle={{ fontSize: 10 }}
+                    // textStyle={{ fontSize: 10 }}
                     data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
                     dateFormat="yyyy-MM-dd hh:mm" />
                 {/* <DinamicTable.Col
