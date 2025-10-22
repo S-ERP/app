@@ -1,90 +1,75 @@
 import React, { Component } from 'react';
-import { SButtom, SHr, SInput, SPage, SText, SView, Upload } from 'servisofts-component';
-import SSocket from 'servisofts-socket';
+import { SPage, SView, SInput, SHr, SText, SButtom } from 'servisofts-component';
 import { Container } from '../Components';
-import * as SUpload from '../Components/SUpload';
 
-export default class index extends Component {
+export default class FileUploaderPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      files: [], // Lista de archivos seleccionados
     };
   }
-  sendPromise({ file }, url) {
-    return new Promise(async (resolve, reject) => {
-      if (!file) reject("file not found");
-      if (!file.type) reject("file.type not found");
-      var formData = new FormData();
-      formData.append('file', file);
 
-      var request = new XMLHttpRequest();
-      request.open('POST', url, true);
-      // request.setRequestHeader("Upload-ID", "123")
-      request.upload.addEventListener('progress', function (e) {
-        if (e.lengthComputable) {
-          const percentComplete = (e.loaded / e.total) * 100;
-          console.log(percentComplete)
-        }
-      });
-      request.onreadystatechange = () => {
-        if (request.readyState === XMLHttpRequest.DONE) {
-          if (request.readyState === 4 && request.status === 200) {
-            console.log("exito")
-            resolve(request.response);
-          } else {
-            console.log("onreadystatechange", request.statusText)
-          }
-        }
-      }
-      request.send(file);
-      // request.send(formData);
+  handleFileChange = (files) => {
+    console.log("Archivos cargados:", files);
+    this.files = files;
 
-    })
+    // Limpia el input de archivos si existe
+    if (this.fileInput?.input) {
+      this.fileInput.input.value = "";
+    }
 
-  }
+    this.setState({});
+  };
+
+  removeFile = (index) => {
+    console.log("Eliminando archivo en posición:", index);
+    if (!this.files || this.files.length === 0) return;
+
+    this.files.splice(index, 1);
+    this.setState({});
+    this.files = [];
+  };
+
+  removeAllFiles = () => {
+    if (!this.files) return;
+    // Recorremos al revés para evitar problemas con splice e índices
+    for (let i = this.files.length - 1; i >= 0; i--) {
+      this.files.splice(i, 1);
+    }
+    this.setState({});
+  };
+
 
   render() {
-    return <SPage title={"Upload"} disableScroll>
-      <Container>
-        <SInput
-          type='files'
-          style={{
-            height: 500,
-          }}
-          placeholder={"SUELTE LOS ARCHIBOS "}
-          onChangeText={(e) => {
-            console.log(e)
-            this.files = e;
-          }} />
+    return (
+      <SPage title="Subida de Archivos" disableScroll>
+        <Container>
+          <SInput
+            ref={(ref) => (this.fileInput = ref)}
+            type="files"
+            style={{ height: 150, borderWidth: 1, borderColor: '#ccc', padding: 8, }}
+            placeholder="Suelte los archivos aquí"
+            onChangeText={this.handleFileChange}
+          />
 
-        <SButtom type='danger' onPress={async () => {
-          for (let i = 0; i < this.files.length; i++) {
-            SUpload.submitFile({
-              host: SSocket.api.root + "uploadv2",
-              path: "/carpeta/" + this.files[i]?.file?.name,
-              file: this.files[i]
-            })
-            // this.sendPromise(this.files[i], SSocket.api.drive + "subir/carpeta/" + this.files[i]?.file?.name)
-            // this.sendPromise(this.files[i],"http://192.168.2.1:8081/upload/carpeta/" + this.files[i]?.file?.name)
-          }
-        }}>hola ricky</SButtom>
-        <SHr />
-        <SButtom type='danger' onPress={async () => {
-          for (let i = 0; i < this.files.length; i++) {
-            this.sendPromise(this.files[i], SSocket.api.drive + "subir/carpeta/" + this.files[i]?.file?.name)
-            // this.sendPromise(this.files[i],"http://192.168.2.1:8081/upload/carpeta/" + this.files[i]?.file?.name)
-          }
-        }}>hola GERRARDO</SButtom>
-        <SHr />
-        <SButtom type='danger' onPress={async () => {
-          for (let i = 0; i < this.files.length; i++) {
-            // this.sendPromise(this.files[i], SSocket.api.root + "uploadv2/carpeta/" + this.files[i]?.file?.name)
-            this.sendPromise(this.files[i], "http://192.168.2.1:8081/upload")
-          }
-        }}>hola RUDDY</SButtom>
+          <SHr height={20} />
 
-      </Container>
-    </SPage>
+          {this.files && this.files.length > 0 && (
+            <SView>
+              <SView row center> <SButtom type="danger" onPress={() => this.removeAllFiles()} style={{ marginLeft: 8 }} > Eliminar Todo</SButtom> </SView>
+
+              {this.files.map((fileObj, index) => (
+                <SView key={index} row center>
+                  <SText> {fileObj.file?.name || fileObj.name || `Archivo ${index + 1}`} </SText>
+                  <SButtom type="danger" onPress={() => this.removeFile(index)} style={{ marginLeft: 8 }} > Eliminar </SButtom>
+                </SView>
+              ))}
+              <SHr />
+            </SView>
+          )}
+        </Container>
+      </SPage>
+    );
   }
 }
-
