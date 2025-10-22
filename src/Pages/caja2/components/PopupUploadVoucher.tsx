@@ -184,7 +184,7 @@ export default class PopupUploadVoucher extends Component<Props> {
                     </SView>
 
                     <SView
-                        style={{ paddingHorizontal: 10, paddingVertical: 6, backgroundColor: "#dc3545", borderRadius: 4, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 3, }}
+                        style={{ paddingHorizontal: 10, paddingVertical: 6, backgroundColor: "#686868ff", borderRadius: 4, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 3, }}
                         onPress={() => {
                             SPopup.confirm({
                                 title: "Eliminar todos los comprobantes",
@@ -199,9 +199,6 @@ export default class PopupUploadVoucher extends Component<Props> {
                     </SView>
                 </SView>
 
-
-                <SHr h={12} />
-
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -215,51 +212,25 @@ export default class PopupUploadVoucher extends Component<Props> {
                         const esImagen = v.type?.startsWith("image/")
 
                         return (
-                            <SView
-                                key={i}
-                                style={{
-                                    width: 100,
-                                    height: 110,
-                                    marginRight: 10,
-                                    borderRadius: 8,
-                                    overflow: "hidden",
-                                    borderWidth: 1,
-                                    borderColor: STheme.color.card,
-                                    backgroundColor: STheme.color.card,
-                                    shadowColor: "#000",
-                                    shadowOffset: { width: 0, height: 2 },
-                                    shadowOpacity: 0.08,
-                                    shadowRadius: 4,
-                                }}
-                            >
+                            <SView key={i} style={{ width: 80, height: 90, marginRight: 10, borderRadius: 8, overflow: "hidden", borderWidth: 1, borderColor: STheme.color.card, backgroundColor: STheme.color.card, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4, }} >
                                 {esImagen ? (
                                     <SImage src={url} style={{ width: "100%", height: "100%" }} />
                                 ) : (
-                                    <SView flex center style={{ backgroundColor: STheme.color.card, padding: 6 }}>
-                                        <SText fontSize={28}>📄</SText>
-                                        <SHr h={6} />
-                                        <SText fontSize={9} center numberOfLines={2} color={STheme.color.text}> {v.name} </SText>
-                                    </SView>
+                                    <SView flex center style={{ backgroundColor: STheme.color.card, padding: 6 }}> <SText fontSize={28}>📄</SText> <SHr h={4} /> <SText fontSize={9} center numberOfLines={2} color={STheme.color.text}> {v.name} </SText> </SView>
                                 )}
 
-                                <SView
-                                    style={{ position: "absolute", top: 4, right: 4, backgroundColor: "#dc3545", width: 24, height: 24, borderRadius: 12, justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, }}
-                                    onPress={() => this.removeVoucher(i)}
-                                >
+                                <SView style={{ position: "absolute", top: 4, right: 4, backgroundColor: "#dc3545", width: 24, height: 24, borderRadius: 12, justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, }} onPress={() => this.removeVoucher(i)} >
                                     <SText color="#fff" fontSize={12} bold> ✕ </SText>
                                 </SView>
 
-                                <SView
-                                    style={{ position: "absolute", bottom: 4, right: 4, backgroundColor: "#28a745", width: 24, height: 24, borderRadius: 12, justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, }}
-                                    onPress={() => Linking.openURL(url)}
-                                >
+                                <SView style={{ position: "absolute", bottom: 4, right: 4, backgroundColor: "#28a745", width: 24, height: 24, borderRadius: 12, justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, }} onPress={() => Linking.openURL(url)} >
                                     <SText color="#fff" fontSize={12}> ⬇ </SText>
                                 </SView>
                             </SView>
                         )
                     })}
                 </ScrollView>
-                <SHr h={14} />
+                <SHr h={12} />
             </SView>
         )
     }
@@ -267,16 +238,15 @@ export default class PopupUploadVoucher extends Component<Props> {
     renderFileEmptyMessage() {
         if (!this.validateFileEmpty()) return null
 
+ 
         return (
             <SView
                 height={180}
                 style={{
                     position: "absolute",
-                    width: "90%",
-                    top: 400,
-                    // bottom: 100,
-                    // left: 20,
-                    // right: 20,
+                    width: "100%",
+                    // top: uploadedVouchers.length ? 20 : 150,
+                    // top: 10,
                     borderRadius: 8,
                     borderWidth: 2,
                     borderStyle: "dashed",
@@ -331,78 +301,80 @@ export default class PopupUploadVoucher extends Component<Props> {
         )
     }
 
-    render() { return ( <SView col={"xs-12"} padding={4}>
-                <SView center backgroundColor="blue">
-                    <SText fontSize={20} bold color={STheme.color.text}>Gestión de Comprobantes</SText>
-                    <SHr h={6} />
-                    <SText fontSize={13} center color={STheme.color.lightGray}>Adjunta los comprobantes de pago de esta transacción</SText>
-                </SView>
-                <SHr h={20} />
-
-                <ScrollView style={{ width: "100%", maxHeight: 300 }} backgroundColor="cyan">
-                    {this.renderUploadedVouchers()}
-                    <SView backgroundColor="blue">
-                        <SText fontSize={15} bold color={STheme.color.text}>Agregar nuevos comprobantes</SText>
-                        <SHr h={8} />
-                        <SText fontSize={12} color={STheme.color.lightGray}>Puedes seleccionar múltiples archivos a la vez </SText>
-                        <SHr h={12} />
-                    </SView>
-
-                    <SForm
-                        ref={(ref) => (this.form = ref)}
-                        inputs={{
-                            file: {
-                                label: "",
-                                type: "files",
-                                style: { height: 180, borderWidth: 2, borderColor: STheme.color.card, borderRadius: 8, borderStyle: "dashed", justifyContent: "center", alignItems: "center", backgroundColor: STheme.color.background, },
-                                placeholder: "📎 Selecciona o arrastra tus comprobantes aquí",
-                                onChangeText: this.handleFileChange,
-                            },
-                        }}
-                        onSubmit={this.handleSubmit}
-                    />
-                    {/* {this.renderFileEmptyMessage()} */}
-                </ScrollView>
-
-
-                <SHr h={24} />
-
-                <SView  backgroundColor="blue" row col={"xs-12"} center style={{ paddingTop: 8, borderTopWidth: 1, borderTopColor: STheme.color.card }}>
-                    <Btn type="secondary" label="CANCELAR" onPress={() => SPopup.close("PopupUploadVoucher_")} />
-                    <SView width={12} />
-                    <Btn
-                        type="primary"
-                        label={this.state.loading ? "GUARDANDO..." : "GUARDAR COMPROBANTES"}
-                        onPress={() => this.form?.submit()}
-                    />
-                </SView>
-
-                {this.state.loading && (
-                    <SView
-                        style={{
-                            position: "absolute",
-                            top: 0,
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            backgroundColor: "rgba(0, 0, 0, 0.75)",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            borderRadius: 12,
-                        }}
-                    >
-                        <SLoad />
-                        <SHr h={16} />
-                        <SText color="#fff" fontSize={15} bold>
-                            Guardando comprobantes...
-                        </SText>
-                        <SHr h={6} />
-                        <SText color="#fff" fontSize={12} center style={{ opacity: 0.8 }}>
-                            Por favor espera un momento
-                        </SText>
-                    </SView>
-                )}
+    render() {
+        return (<SView col={"xs-12"} >
+            <SView center  >
+                <SText fontSize={20} bold color={STheme.color.text}>Gestión de Comprobantes</SText>
+                <SHr h={4} />
+                <SText fontSize={13} center color={STheme.color.lightGray}>Adjunta los comprobantes de pago de esta transacción</SText>
             </SView>
+            <SHr h={4} />
+            {/* <SHr h={12} /> */}
+
+            {/* <ScrollView style={{ width: "100%", maxHeight: 300 }} backgroundColor="cyan"> */}
+            {this.renderUploadedVouchers()}
+            <SView  >
+                <SText fontSize={15} bold color={STheme.color.text}>Agregar nuevos comprobantes</SText>
+                <SHr h={2} />
+                <SText fontSize={12} color={STheme.color.lightGray}>Puedes seleccionar múltiples archivos a la vez </SText>
+                <SHr h={8} />
+            </SView>
+
+
+            <SView  >
+
+                <SForm
+                    ref={(ref) => (this.form = ref)}
+                    inputs={{
+                        file: {
+                            label: "",
+                            type: "files",
+                            style: { height: 180, borderWidth: 2, borderColor: STheme.color.card, borderRadius: 8, borderStyle: "dashed", justifyContent: "center", alignItems: "center", backgroundColor: STheme.color.background, },
+                            placeholder: "📎 Selecciona o arrastra tus comprobantes aquí",
+                            onChangeText: this.handleFileChange,
+                        },
+                    }}
+                    onSubmit={this.handleSubmit}
+                />
+                {this.renderFileEmptyMessage()}
+                {/* </ScrollView> */}
+
+            </SView>
+
+            <SHr h={10} />
+
+            <SView row col={"xs-12"} center style={{ paddingTop: 8, borderTopWidth: 1, borderTopColor: STheme.color.card }}>
+                <Btn type="primary" label="CANCELAR" onPress={() => SPopup.close("PopupUploadVoucher_")} />
+                <SView width={12} />
+                <Btn type="primary" label={this.state.loading ? "GUARDANDO..." : "GUARDAR COMPROBANTES"} onPress={() => this.form?.submit()} />
+            </SView>
+
+            {/* {this.state.loading && (
+                <SView
+                    style={{
+                        position: "absolute",
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        backgroundColor: "rgba(228, 8, 8, 0.75)",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 12,
+                    }}
+                >
+                    <SLoad />
+                    <SHr h={16} />
+                    <SText color="#fff" fontSize={15} bold>
+                        Guardando comprobantes...
+                    </SText>
+                    <SHr h={6} />
+                    <SText color="#fff" fontSize={12} center style={{ opacity: 0.8 }}>
+                        Por favor espera un momento
+                    </SText>
+                </SView>
+            )} */}
+        </SView>
         )
     }
 }
