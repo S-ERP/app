@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+ import React, { Component } from "react";
+
 import { Linking, ScrollView } from "react-native"
 import { SForm, SHr, SImage, SLoad, SNotification, SPopup, SText, STheme, SView, Upload } from "servisofts-component"
 import SSocket from "servisofts-socket"
@@ -28,14 +29,29 @@ export default class PopupUploadVoucher extends Component<Props> {
         const key = `PopupUploadVoucher_`
         SPopup.open({
             key,
-            content: (<SView style={{ width: "100%", maxHeight: "100%", maxWidth: 550, borderRadius: 12, borderColor: STheme.color.card, borderWidth: 1, backgroundColor: STheme.color.background, padding: 20, }} withoutFeedback >
-                <PopupUploadVoucher key_empresa={key_empresa} key_caja_detalle={key_caja_detalle} data_vouchers={data_vouchers} />
-            </SView>
+            content: (
+                <SView
+                    style={{
+                        width: "100%",
+                        maxHeight: "100%",
+                        maxWidth: 550,
+                        borderRadius: 12,
+                        borderColor: STheme.color.card,
+                        borderWidth: 1,
+                        backgroundColor: STheme.color.background,
+                        padding: 20,
+                    }}
+                    withoutFeedback
+                >
+                    <PopupUploadVoucher
+                        key_empresa={key_empresa}
+                        key_caja_detalle={key_caja_detalle}
+                        data_vouchers={data_vouchers}
+                    />
+                </SView>
             ),
         })
     }
-
-
 
     form: SForm | null = null
     files: File[] = []
@@ -176,15 +192,36 @@ export default class PopupUploadVoucher extends Component<Props> {
 
         return (
             <SView>
-                <SView style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 8, paddingHorizontal: 4, }} >
+                <SView
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingVertical: 8,
+                        paddingHorizontal: 4,
+                    }}
+                >
                     <SView>
-                        <SText fontSize={14} bold color={STheme.color.text}> Comprobantes adjuntos </SText>
-                        <SHr h={2} />
-                        <SText fontSize={12} color={STheme.color.lightGray}> {uploadedVouchers.length} {uploadedVouchers.length === 1 ? "archivo" : "archivos"} </SText>
+                        <SText fontSize={16} bold color={STheme.color.text}>
+                            Comprobantes adjuntos
+                        </SText>
+                        <SHr h={4} />
+                        <SText fontSize={12} color={STheme.color.lightGray}>
+                            {uploadedVouchers.length} {uploadedVouchers.length === 1 ? "archivo" : "archivos"}
+                        </SText>
                     </SView>
 
                     <SView
-                        style={{ paddingHorizontal: 10, paddingVertical: 6, backgroundColor: "#dc3545", borderRadius: 4, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 3, }}
+                        style={{
+                            paddingHorizontal: 14,
+                            paddingVertical: 8,
+                            backgroundColor: "#dc3545",
+                            borderRadius: 6,
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: 0.1,
+                            shadowRadius: 3,
+                        }}
                         onPress={() => {
                             SPopup.confirm({
                                 title: "Eliminar todos los comprobantes",
@@ -195,17 +232,17 @@ export default class PopupUploadVoucher extends Component<Props> {
                             })
                         }}
                     >
-                        <SText color="#fff" fontSize={13} bold> Eliminar todos </SText>
+                        <SText color="#fff" fontSize={13} bold>
+                            Eliminar todos
+                        </SText>
                     </SView>
                 </SView>
-
-
-                <SHr h={12} />
+                <SHr h={16} />
 
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    style={{ marginHorizontal: -4, maxHeight: 120 }}
+                    style={{ marginHorizontal: -4 }}
                     contentContainerStyle={{ paddingHorizontal: 4 }}
                 >
                     {uploadedVouchers.map((v, i) => {
@@ -218,12 +255,12 @@ export default class PopupUploadVoucher extends Component<Props> {
                             <SView
                                 key={i}
                                 style={{
-                                    width: 100,
-                                    height: 110,
-                                    marginRight: 10,
+                                    width: 130,
+                                    height: 140,
+                                    marginRight: 12,
                                     borderRadius: 8,
                                     overflow: "hidden",
-                                    borderWidth: 1,
+                                    borderWidth: 2,
                                     borderColor: STheme.color.card,
                                     backgroundColor: STheme.color.card,
                                     shadowColor: "#000",
@@ -235,31 +272,65 @@ export default class PopupUploadVoucher extends Component<Props> {
                                 {esImagen ? (
                                     <SImage src={url} style={{ width: "100%", height: "100%" }} />
                                 ) : (
-                                    <SView flex center style={{ backgroundColor: STheme.color.card, padding: 6 }}>
-                                        <SText fontSize={28}>📄</SText>
-                                        <SHr h={6} />
-                                        <SText fontSize={9} center numberOfLines={2} color={STheme.color.text}> {v.name} </SText>
+                                    <SView flex center style={{ backgroundColor: STheme.color.card, padding: 8 }}>
+                                        <SText fontSize={36}>📄</SText>
+                                        <SHr h={8} />
+                                        <SText fontSize={10} center numberOfLines={2} color={STheme.color.text}>
+                                            {v.name}
+                                        </SText>
                                     </SView>
                                 )}
 
                                 <SView
-                                    style={{ position: "absolute", top: 4, right: 4, backgroundColor: "#dc3545", width: 24, height: 24, borderRadius: 12, justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, }}
+                                    style={{
+                                        position: "absolute",
+                                        top: 6,
+                                        right: 6,
+                                        backgroundColor: "#dc3545",
+                                        width: 30,
+                                        height: 30,
+                                        borderRadius: 15,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        shadowColor: "#000",
+                                        shadowOffset: { width: 0, height: 2 },
+                                        shadowOpacity: 0.3,
+                                        shadowRadius: 3,
+                                    }}
                                     onPress={() => this.removeVoucher(i)}
                                 >
-                                    <SText color="#fff" fontSize={12} bold> ✕ </SText>
+                                    <SText color="#fff" fontSize={16} bold>
+                                        ✕
+                                    </SText>
                                 </SView>
 
                                 <SView
-                                    style={{ position: "absolute", bottom: 4, right: 4, backgroundColor: "#28a745", width: 24, height: 24, borderRadius: 12, justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, }}
+                                    style={{
+                                        position: "absolute",
+                                        bottom: 6,
+                                        right: 6,
+                                        backgroundColor: "#28a745",
+                                        width: 30,
+                                        height: 30,
+                                        borderRadius: 15,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        shadowColor: "#000",
+                                        shadowOffset: { width: 0, height: 2 },
+                                        shadowOpacity: 0.3,
+                                        shadowRadius: 3,
+                                    }}
                                     onPress={() => Linking.openURL(url)}
                                 >
-                                    <SText color="#fff" fontSize={12}> ⬇ </SText>
+                                    <SText color="#fff" fontSize={14}>
+                                        ⬇
+                                    </SText>
                                 </SView>
                             </SView>
                         )
                     })}
                 </ScrollView>
-                <SHr h={14} />
+                <SHr h={20} />
             </SView>
         )
     }
@@ -331,20 +402,31 @@ export default class PopupUploadVoucher extends Component<Props> {
         )
     }
 
-    render() { return ( <SView col={"xs-12"} padding={4}>
+    render() {
+        return (
+            <SView col={"xs-12"} padding={4}>
                 <SView center backgroundColor="blue">
-                    <SText fontSize={20} bold color={STheme.color.text}>Gestión de Comprobantes</SText>
+                    <SText fontSize={20} bold color={STheme.color.text}>
+                        Gestión de Comprobantes
+                    </SText>
                     <SHr h={6} />
-                    <SText fontSize={13} center color={STheme.color.lightGray}>Adjunta los comprobantes de pago de esta transacción</SText>
+                    <SText fontSize={13} center color={STheme.color.lightGray}>
+                        Adjunta los comprobantes de pago de esta transacción
+                    </SText>
                 </SView>
                 <SHr h={20} />
 
-                <ScrollView style={{ width: "100%", maxHeight: 300 }} backgroundColor="cyan">
+                <ScrollView style={{ width: "100%", maxHeight: 450 }} backgroundColor="cyan">
                     {this.renderUploadedVouchers()}
-                    <SView backgroundColor="blue">
-                        <SText fontSize={15} bold color={STheme.color.text}>Agregar nuevos comprobantes</SText>
+
+                    <SView>
+                        <SText fontSize={15} bold color={STheme.color.text}>
+                            Agregar nuevos comprobantes
+                        </SText>
                         <SHr h={8} />
-                        <SText fontSize={12} color={STheme.color.lightGray}>Puedes seleccionar múltiples archivos a la vez </SText>
+                        <SText fontSize={12} color={STheme.color.lightGray}>
+                            Puedes seleccionar múltiples archivos a la vez
+                        </SText>
                         <SHr h={12} />
                     </SView>
 
@@ -354,7 +436,16 @@ export default class PopupUploadVoucher extends Component<Props> {
                             file: {
                                 label: "",
                                 type: "files",
-                                style: { height: 180, borderWidth: 2, borderColor: STheme.color.card, borderRadius: 8, borderStyle: "dashed", justifyContent: "center", alignItems: "center", backgroundColor: STheme.color.background, },
+                                style: {
+                                    height: 180,
+                                    borderWidth: 2,
+                                    borderColor: STheme.color.card,
+                                    borderRadius: 8,
+                                    borderStyle: "dashed",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    backgroundColor: STheme.color.background,
+                                },
                                 placeholder: "📎 Selecciona o arrastra tus comprobantes aquí",
                                 onChangeText: this.handleFileChange,
                             },
@@ -367,7 +458,7 @@ export default class PopupUploadVoucher extends Component<Props> {
 
                 <SHr h={24} />
 
-                <SView  backgroundColor="blue" row col={"xs-12"} center style={{ paddingTop: 8, borderTopWidth: 1, borderTopColor: STheme.color.card }}>
+                <SView row col={"xs-12"} center style={{ paddingTop: 8, borderTopWidth: 1, borderTopColor: STheme.color.card }}>
                     <Btn type="secondary" label="CANCELAR" onPress={() => SPopup.close("PopupUploadVoucher_")} />
                     <SView width={12} />
                     <Btn
