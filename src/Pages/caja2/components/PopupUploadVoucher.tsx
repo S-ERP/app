@@ -200,9 +200,11 @@ export default class PopupUploadVoucher extends Component<Props> {
                 color: STheme.color.info,
                 time: 1500,
             });
+            // Ejecutar handleSubmit para guardar el cambio (registro backend)
+            this.handleSubmit();
         });
-        this.handleSubmit
     };
+
 
 
     renderUploadedVouchers() {
