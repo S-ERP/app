@@ -6,14 +6,12 @@ import Btn from "../../empresa/config/Components/Btn"
 import MDL from "../../../MDL"
 import { SDate } from "servisofts-component"
 import SIconApp from "../../../Assets/SIconApp"
-
 type Props = {
     key_empresa: string
     key_caja_detalle: string
     data_vouchers?: any[]
     onSuccess?: (resp: any) => void
 }
-
 type VoucherFile = {
     file?: File
     name: string
@@ -22,7 +20,6 @@ type VoucherFile = {
     lastModified: number
     url?: string
 }
-
 export default class PopupUploadVoucher extends Component<Props> {
     static open(key_empresa: string, key_caja_detalle: string, data_vouchers?: any[]) {
         const key = `PopupUploadVoucher_`
@@ -34,32 +31,24 @@ export default class PopupUploadVoucher extends Component<Props> {
             ),
         })
     }
-
-
-
     form: SForm | null = null
     files: File[] = []
-
     state = {
         loading: false,
         uploadedVouchers: this.props.data_vouchers ?? [],
         fileValue: [],
     }
-
     componentDidMount() {
         this.validateFileEmpty()
     }
-
     validateFileEmpty = () => {
         return this.state.fileValue.length === 0
     }
-
     isFileValid = (file: File) => {
         const isImageOrPDF = file.type.startsWith("image/") || file.type === "application/pdf"
         const isSizeOk = file.size <= 10 * 1024 * 1024
         return isImageOrPDF && isSizeOk
     }
-
     handleFileChange = (e: any) => {
         const nuevos = Array.isArray(e) ? e.flat() : []
         const nuevosArchivos = nuevos
@@ -72,36 +61,28 @@ export default class PopupUploadVoucher extends Component<Props> {
                 lastModified: item.file.lastModified,
                 url: URL.createObjectURL(item.file),
             }))
-
         const actualesServidor = this.state.uploadedVouchers.filter((v) => !v.file)
         const fusionados: VoucherFile[] = [...actualesServidor]
-
         nuevosArchivos.forEach((nuevo) => {
             if (!fusionados.find((f) => f.name === nuevo.name && f.size === nuevo.size)) {
                 fusionados.push(nuevo)
             }
         })
-
         const nombresActuales = nuevosArchivos.map((n) => n.name)
         const filtrados = fusionados.filter((f) => (f.file ? nombresActuales.includes(f.name) : true))
-
         this.files = nuevosArchivos.map((n) => n.file)
         this.setState({ uploadedVouchers: filtrados, fileValue: nuevos })
     }
-
     removeVoucher = (index: number) => {
         const updated = [...this.state.uploadedVouchers]
         const removed = updated.splice(index, 1)
         this.setState({ uploadedVouchers: updated })
-
         if (removed[0]?.file) {
             this.files = this.files.filter((f) => f.name !== removed[0].file?.name)
         }
-
         if (updated.filter((v) => v.file).length === 0) {
             this.setState({ fileValue: [] })
         }
-
         SNotification.send({
             title: "Comprobante eliminado",
             body: "El comprobante se eliminó correctamente.",
@@ -109,39 +90,32 @@ export default class PopupUploadVoucher extends Component<Props> {
             time: 1500,
         })
     }
-
     handleSubmit = async () => {
         try {
             this.setState({ loading: true })
-
             const nuevosArchivos = this.state.uploadedVouchers.filter((v) => v.file)
             for (const v of nuevosArchivos) {
                 const uploadUrl = `${SSocket.api.root}upload/empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${v.name}`
                 await Upload.sendPromise({ file: v.file!, compress: false }, uploadUrl)
             }
-
             const vouchersFinales = this.state.uploadedVouchers.map((v) => ({
                 name: v.name,
                 type: v.type,
                 size: v.size,
                 lastModified: v.lastModified,
             }))
-
             const payload = {
                 key_empresa: this.props.key_empresa,
                 key: this.props.key_caja_detalle,
                 vouchers: vouchersFinales,
             }
-
             const resp = await MDL.caja.editar_detalle(payload)
-
             SNotification.send({
                 title: "Comprobantes guardados",
                 body: "Los comprobantes de pago se guardaron correctamente.",
                 color: STheme.color.success,
                 time: 2500,
             })
-
             if (this.props.onSuccess) this.props.onSuccess(resp)
             SPopup.close("PopupUploadVoucher_")
         } catch (error) {
@@ -156,7 +130,6 @@ export default class PopupUploadVoucher extends Component<Props> {
             this.setState({ loading: false })
         }
     }
-
     limpiarTodosLosVouchers = () => {
         this.files = []
         this.setState({ uploadedVouchers: [], fileValue: [] }, () => {
@@ -169,11 +142,9 @@ export default class PopupUploadVoucher extends Component<Props> {
             this.handleSubmit()
         })
     }
-
     renderUploadedVouchers() {
         const { uploadedVouchers } = this.state
         if (!uploadedVouchers.length) return null
-
         return (
             <SView>
                 <SView style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 8, paddingHorizontal: 4, }} >
@@ -182,7 +153,6 @@ export default class PopupUploadVoucher extends Component<Props> {
                         <SHr h={2} />
                         <SText fontSize={12} color={STheme.color.lightGray}> {uploadedVouchers.length} {uploadedVouchers.length === 1 ? "archivo" : "archivos"} </SText>
                     </SView>
-
                     <SView
                         style={{ paddingHorizontal: 10, paddingVertical: 6, backgroundColor: "#686868ff", borderRadius: 4, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 3, }}
                         onPress={() => {
@@ -198,7 +168,6 @@ export default class PopupUploadVoucher extends Component<Props> {
                         <SText color="#fff" fontSize={13} bold> Eliminar todos </SText>
                     </SView>
                 </SView>
-
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -210,7 +179,6 @@ export default class PopupUploadVoucher extends Component<Props> {
                             v.url ??
                             `${SSocket.api.root}empresa/${this.props.key_empresa}/voucher/${this.props.key_caja_detalle}/${v.name}?time=${new SDate().toString("yyyy-MM-ddThh:mm")}`
                         const esImagen = v.type?.startsWith("image/")
-
                         return (
                             <SView key={i} style={{ width: 80, height: 90, marginRight: 10, borderRadius: 8, overflow: "hidden", borderWidth: 1, borderColor: STheme.color.card, backgroundColor: STheme.color.card, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4, }} >
                                 {esImagen ? (
@@ -218,11 +186,9 @@ export default class PopupUploadVoucher extends Component<Props> {
                                 ) : (
                                     <SView flex center style={{ backgroundColor: STheme.color.card, padding: 6 }}> <SText fontSize={28}>📄</SText> <SHr h={4} /> <SText fontSize={9} center numberOfLines={2} color={STheme.color.text}> {v.name} </SText> </SView>
                                 )}
-
                                 <SView style={{ position: "absolute", top: 4, right: 4, backgroundColor: "#dc3545", width: 24, height: 24, borderRadius: 12, justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, }} onPress={() => this.removeVoucher(i)} >
                                     <SText color="#fff" fontSize={12} bold> ✕ </SText>
                                 </SView>
-
                                 <SView style={{ position: "absolute", bottom: 4, right: 4, backgroundColor: "#28a745", width: 24, height: 24, borderRadius: 12, justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, }} onPress={() => Linking.openURL(url)} >
                                     <SText color="#fff" fontSize={12}> ⬇ </SText>
                                 </SView>
@@ -234,19 +200,14 @@ export default class PopupUploadVoucher extends Component<Props> {
             </SView>
         )
     }
-
     renderFileEmptyMessage() {
         if (!this.validateFileEmpty()) return null
-
- 
         return (
             <SView
                 height={180}
                 style={{
                     position: "absolute",
                     width: "100%",
-                    // top: uploadedVouchers.length ? 20 : 150,
-                    // top: 10,
                     borderRadius: 8,
                     borderWidth: 2,
                     borderStyle: "dashed",
@@ -268,16 +229,9 @@ export default class PopupUploadVoucher extends Component<Props> {
                 <SView col={"xs-12"} row center flex>
                     <SView center>
                         <SView
-                            style={{
-                                width: 56,
-                                height: 56,
-                                borderRadius: 28,
-                                backgroundColor: "#4786b1",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                shadowColor: "#000",
-                                shadowOffset: { width: 0, height: 2 },
-                                shadowOpacity: 0.2,
+                            style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: "#4786b1", alignItems: "center", justifyContent: "center", shadowColor: "#000",
+                                // shadowOffset: { width: 0, height: 2 },
+                                // shadowOpacity: 0.2,
                                 shadowRadius: 4,
                             }}
                         >
@@ -300,29 +254,22 @@ export default class PopupUploadVoucher extends Component<Props> {
             </SView>
         )
     }
-
     render() {
         return (<SView col={"xs-12"} >
-            <SView center  >
+            <SView center>
                 <SText fontSize={20} bold color={STheme.color.text}>Gestión de Comprobantes</SText>
                 <SHr h={4} />
                 <SText fontSize={13} center color={STheme.color.lightGray}>Adjunta los comprobantes de pago de esta transacción</SText>
             </SView>
-            <SHr h={4} />
-            {/* <SHr h={12} /> */}
-
-            {/* <ScrollView style={{ width: "100%", maxHeight: 300 }} backgroundColor="cyan"> */}
+            <SHr h={16} />
             {this.renderUploadedVouchers()}
-            <SView  >
+            <SView>
                 <SText fontSize={15} bold color={STheme.color.text}>Agregar nuevos comprobantes</SText>
                 <SHr h={2} />
                 <SText fontSize={12} color={STheme.color.lightGray}>Puedes seleccionar múltiples archivos a la vez </SText>
-                <SHr h={8} />
+                <SHr h={16} />
             </SView>
-
-
-            <SView  >
-
+            <SView>
                 <SForm
                     ref={(ref) => (this.form = ref)}
                     inputs={{
@@ -337,43 +284,14 @@ export default class PopupUploadVoucher extends Component<Props> {
                     onSubmit={this.handleSubmit}
                 />
                 {this.renderFileEmptyMessage()}
-                {/* </ScrollView> */}
-
+                { }
             </SView>
-
             <SHr h={10} />
-
             <SView row col={"xs-12"} center style={{ paddingTop: 8, borderTopWidth: 1, borderTopColor: STheme.color.card }}>
                 <Btn type="primary" label="CANCELAR" onPress={() => SPopup.close("PopupUploadVoucher_")} />
                 <SView width={12} />
                 <Btn type="primary" label={this.state.loading ? "GUARDANDO..." : "GUARDAR COMPROBANTES"} onPress={() => this.form?.submit()} />
             </SView>
-
-            {/* {this.state.loading && (
-                <SView
-                    style={{
-                        position: "absolute",
-                        top: 0,
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        backgroundColor: "rgba(228, 8, 8, 0.75)",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderRadius: 12,
-                    }}
-                >
-                    <SLoad />
-                    <SHr h={16} />
-                    <SText color="#fff" fontSize={15} bold>
-                        Guardando comprobantes...
-                    </SText>
-                    <SHr h={6} />
-                    <SText color="#fff" fontSize={12} center style={{ opacity: 0.8 }}>
-                        Por favor espera un momento
-                    </SText>
-                </SView>
-            )} */}
         </SView>
         )
     }
