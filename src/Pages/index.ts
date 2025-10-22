@@ -91,6 +91,7 @@ import IconosAlvaro from "./IconosAlvaro";
 import social_media from "./social_media";
 import pizarra2 from "../Components/Pizarra2/testPage"
 import contactos from "./contactos";
+import descuento from "./descuento";
 
 export default SPage.combinePages("/", {
   // "":Example,
@@ -135,6 +136,7 @@ export default SPage.combinePages("/", {
   ...ajustes,
   ...banco,
   ...cliente,
+  ...descuento,
   ...productos,
   ...compra,
   ...compra2,
