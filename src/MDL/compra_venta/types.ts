@@ -21,6 +21,17 @@ export type Sucursal = {
   //   punto_venta?: PuntoVenta[];
 };
 
+export type Descuento = {
+  key: string;
+  key_usuario: string;
+  fecha_on: string;
+  estado: number;
+  key_empresa: string;
+  descripcion: string;
+  monto: string;
+  porcentaje: string;
+};
+
 export type EventListener = {
   type: "handleChange"
 } | {

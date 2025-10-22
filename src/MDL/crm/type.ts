@@ -62,6 +62,8 @@ export type TipoMovimientoLead = {
     descripcion: string;
 };
 
+
+
 export type StatesClienteProyecto = "nuevo"
     | "en_proceso"
     | "rellamada"

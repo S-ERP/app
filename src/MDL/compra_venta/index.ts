@@ -1,4 +1,4 @@
-import { EventListener } from "./types";
+import { EventListener, Descuento } from "./types";
 
 import MDLAbstract from "../MDLAbstract";
 import Model from "../../Model";
@@ -244,6 +244,24 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
+
+  //DESCUENTOS
+
+    async registrarDescuento(data: Descuento) {
+        data.key_empresa = Model.empresa.Action.getKey();
+        const resp: any = await SSocket.sendPromise({ service: "compra_venta", component: "descuento", type: "registro", data: data, key_usuario: Model.usuario.Action.getKey()  , key_empresa: Model.empresa.Action.getKey()})
+        return resp.data;
+    }
+    async editarDescuento(data: Descuento) {
+        data.key_empresa = Model.empresa.Action.getKey();
+        const resp: any = await SSocket.sendPromise({ service: "compra_venta", component: "descuento", type: "editar", data: data, key_usuario: Model.usuario.Action.getKey() });
+        return resp.data;
+    }
+    async eliminarDescuento(data: Descuento) {
+        data.key_empresa = Model.empresa.Action.getKey();
+        const resp: any = await SSocket.sendPromise({ service: "compra_venta", component: "descuento", type: "editar", data: { ...data, estado: 0 }, key_usuario: Model.usuario.Action.getKey() });
+        return resp.data;
+    }
 
 
 
