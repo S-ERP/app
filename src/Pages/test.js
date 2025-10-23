@@ -19,7 +19,7 @@ export default class test extends Component {
     };
   }
 
-  componentDidMount(){
+  componentDidMount() {
 
   }
   cosasDeTest() {
@@ -78,6 +78,17 @@ export default class test extends Component {
         }} x={-500} y={-100}>
           <DateTimeBetween />
         </PizarraNodo>
+        <PizarraNodo id={"testwebkit"} style={{
+          backgroundColor: STheme.color.background,
+          borderRadius: 4,
+          padding: 8,
+        }} x={0} y={0}>
+          <SText onPress={async () => {
+           
+
+
+          }}>{"Prueba el audio"}</SText>
+        </PizarraNodo>
         <Sucursal label="Sucursal 1" x={-100} />
         <Sucursal label="Sucursal 2" x={0} />
         <Sucursal label="Sucursal 3" x={100} />
@@ -96,10 +107,10 @@ const Sucursal = ({ label = "", x = 0, y = 0 }) => {
     justifyContent: "center",
     alignItems: "center",
   }} x={x} y={y}
-  id={'sucursal_' + label}
-  onChangePosition={e => {
-    console.log(label, "onChangePosition", e)
-  }}>
+    id={'sucursal_' + label}
+    onChangePosition={e => {
+      console.log(label, "onChangePosition", e)
+    }}>
     <SView width={50} height={50} padding={8}>
       <SIcon name='Marker' fill={STheme.color.text} />
     </SView>
