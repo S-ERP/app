@@ -177,6 +177,7 @@ class Stage extends Component {
                             onDragStart={onDragStart}
                             onDragMove={onDragMove}
                             onRemoveCliente={onRemoveCliente}
+                            onLoadData={onLoadData} // ✅ PROP NUEVA PARA RECARGAR
                             ref={cardRefs[item.key]}
                         />
                     )}
@@ -372,7 +373,7 @@ export default class root extends Component {
     }
 }
 
-const DraggableCarta = React.forwardRef(({ stage, card, onDrop, onDragStart, onDragMove, onRemoveCliente }, ref) => {
+const DraggableCarta = React.forwardRef(({ stage, card, onDrop, onDragStart, onDragMove, onRemoveCliente, onLoadData }, ref) => {
     const offsetX = useSharedValue(0);
     const offsetY = useSharedValue(0);
 
@@ -405,6 +406,7 @@ const DraggableCarta = React.forwardRef(({ stage, card, onDrop, onDragStart, onD
                     data={card}
                     data_stage={stage}
                     onRemoveCliente={onRemoveCliente}
+                    onLoadData={onLoadData} // ✅ PROP NUEVA PARA RECARGAR
                 />
             </Animated.View>
         </GestureDetector>
