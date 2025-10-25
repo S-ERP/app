@@ -84,9 +84,15 @@ export default class test extends Component {
           padding: 8,
         }} x={0} y={0}>
           <SText onPress={async () => {
-           
-
-
+            try {
+              const audioContext = window.AudioContext || window.webkitAudioContext
+              const response = await fetch("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+              const arrayBuffer = await response.arrayBuffer();
+              const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+              console.log(audioBuffer)
+            } catch (error) {
+              console.error("Error al cargar el audio:", error);
+            }
           }}>{"Prueba el audio"}</SText>
         </PizarraNodo>
         <Sucursal label="Sucursal 1" x={-100} />

@@ -8,7 +8,7 @@ import dimension from "./dimension";
 import libro_diario from "./libro_diario";
 import report_config from "./report_config";
 import centro_costo from "./centro_costo";
-
+import diario from "./diario"
 export default SPage.combinePages("conta",{
     "":root,
     cuentas,
@@ -16,6 +16,7 @@ export default SPage.combinePages("conta",{
     dimension,
     balance,
     libro_diario,
+    diario,
     centro_costo,
     ...report_config
 })

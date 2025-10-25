@@ -283,8 +283,8 @@ class WhatsappDevices extends Component {
                     ref={ref => this.DinamicTable = ref}
                     // loadData={async () => await MDL.whatsapp.device.getAll()}
                     loadData={async () => {
-                        const data_empresa_ = await SStorage.getItem("empresa_select"); 
-                        const data_empresa = JSON.parse(data_empresa_); 
+                        const data_empresa_ = await SStorage.getItem("empresa_select");
+                        const data_empresa = JSON.parse(data_empresa_);
                         let key_empresa = data_empresa?.key;
                         const data = await MDL.whatsapp.device.getAll();
                         return data.filter(item => item.key_empresa === key_empresa);
@@ -316,6 +316,24 @@ class WhatsappDevices extends Component {
                                         // });
                                     },
                                     icon: <SIcon name="Edit" fill={STheme.color.text} />,
+                                },
+                                {
+                                    label: "Reiniciar",
+                                    icon: <SIcon name="Reload" fill={STheme.color.text} />,
+                                    onPress: () => {
+
+                                        MDL.whatsapp.device.reiniciar(e?.row?.key).then(e => {
+                                            console.log(e);
+                                            // SNotification.send({
+                                            //     title: "Dispositivo eliminado",
+                                            //     body: "Dispositivo eliminado.",
+                                            //     color: STheme.color.danger,
+                                            //     time: 4000,
+                                            // });
+                                            // this.DinamicTable.loadData();
+                                        })
+
+                                    },
                                 },
                                 {
                                     label: "Eliminar whatsapp",
