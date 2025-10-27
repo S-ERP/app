@@ -224,11 +224,12 @@ export default class ChatById extends Component {
                         const reader = new FileReader();
                         const telefono = this.props.idchat.split("@")[0];
                         const INSTANCE = this;
+
                         reader.onload = function () {
                             const base64Image = reader.result.split(',')[1];
                             // const file = files[0];
                             // this.sendImage(base64Image);
-                            MDL.whatsapp.send({ key_device: this.props.idDevice, phone: telefono, message: "", image: base64Image }).then(e => {
+                            MDL.whatsapp.send({ key_device: INSTANCE.props.idDevice, phone: telefono, message: "", image: "data:image/png;base64," + base64Image }).then(e => {
                                 INSTANCE.state.data.push({
                                     id: SUuid(),
                                     body: "foto",

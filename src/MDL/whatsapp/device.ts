@@ -60,6 +60,17 @@ export default class whatsapp extends MDLAbstract<EventListener> {
     return json;
   }
 
+  async reiniciar(key: string) {
+    const resp = await fetch((SSocket.api as any).whatsapp + "/api/device/reiniciar/" + key, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    const json = await resp.json();
+    return json;
+  }
+
   async getChats(key: string) {
     const resp = await fetch((SSocket.api as any).whatsapp + "/api/device/" + key + "/chats", {
       method: "GET",

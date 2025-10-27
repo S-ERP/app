@@ -17,7 +17,7 @@ export default class MsgImg extends Component {
     }
 
     componentDidMount() {
-        const { width, height } = this.props.mensaje._data
+        const { width, height } = this.props.mensaje?._data ?? { width: 0, height: 0}
         // Image.getSize(this.props.mensaje.mediaData, (width, height) => {
         console.log('Ancho:', width);
         console.log('Alto:', height);
@@ -71,11 +71,11 @@ export default class MsgImg extends Component {
                 // this.setState({ widthContainer: width, heightContainer: height });
 
             }}>
-                <SImage src={`data:img/png;base64,${this.props.mensaje._data.body}`} style={{
+                <SImage src={`data:img/png;base64,${this.props.mensaje?._data?.body}`} style={{
                     borderRadius: 8,
                     position: "absolute",
                 }} />
-                <SImage enablePreview src={MDL.whatsapp.device.getMedia(this.props.key_device, this.props.mensaje.id._serialized)} style={{
+                <SImage enablePreview src={MDL.whatsapp.device.getMedia(this.props.key_device, this.props.mensaje?.id?._serialized)} style={{
                     borderRadius: 8,
                 }} />
                 <HoraLabel style={{
