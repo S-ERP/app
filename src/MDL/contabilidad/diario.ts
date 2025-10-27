@@ -15,6 +15,7 @@ export default class diario {
     }
     async registrar(data: any) {
         data.key_empresa = Model.empresa.Action.getKey();
+        data.key_usuario = Model.usuario.Action.getKey();
         const resp: any = await SSocket.sendPromise({
             service: "contabilidad", component: "diario", type: "registro", data: data,
             key_usuario: Model.usuario.Action.getKey(),
