@@ -5,6 +5,7 @@ import Etiqueta from './Etiqueta';
 import SIconApp from '../../../Assets/SIconApp';
 import MDL from '../../../MDL';
 import FloatMenu from '../../../Components/FloatMenu';
+import FormRegistroCliente from '../../crm/Components/FormRegistroCliente';
 
 export default class DashboardCard extends Component {
     constructor(props) {
@@ -22,20 +23,29 @@ export default class DashboardCard extends Component {
             <SView style={{ backgroundColor: STheme.color.background + "66", borderColor: STheme.color.card, borderWidth: 1, minHeight: 70, padding: 8, borderRadius: 8, cursor: "grab", }} row
 
                 onPress={(e) => {
-
+                    console.log("AQUI",e)
+                    // const { row, evt } = e;
                     const menuOptions = [
-                        {
-                            label: 'Llamar',
-                            icon: <SIconApp name="tareaclose" fill="#e4e4e4ff" width={16} />,
-                            onPress: () => {
-                                alert("trabajandolo")
-                            },
-                        },
+                        // {
+                        //     label: 'Llamar',
+                        //     icon: <SIconApp name="tareaclose" fill="#e4e4e4ff" width={16} />,
+                        //     onPress: () => {
+                        //         alert("trabajandolo")
+                        //     },
+                        // },
                         {
                             label: 'Editar Contacto',
                             icon: <SIconApp name="Pencil" fill="#e4e4e4ff" width={16} />,
                             onPress: () => {
-                                alert("trabajandolo")
+                                // alert("trabajandolo")
+                                FormRegistroCliente.open({
+                                    defaultData: card,
+                                    onActualizar: (nuevoDato) => {
+                                        // this.DinamicTable.loadData();
+                                        this.props.onLoadData(); // ✅ PROP NUEVA PARA RECARGAR
+                                        console.log("Cliente actualizado:", nuevoDato);
+                                    }
+                                });
                             },
                         },
                         {
@@ -163,7 +173,7 @@ export default class DashboardCard extends Component {
                         marginRight: 4,
                         marginBottom: 4
                     }} center>
-                        <SIcon name="history" width={12} height={14} fill={"#384052"} />
+                        <SIcon name="history" width={12} height={14} fill={STheme.color.lightGray}/>
                         <SView width={4} />
                         <SText style={{ maxWidth: 90 }}
                             fontSize={10}
