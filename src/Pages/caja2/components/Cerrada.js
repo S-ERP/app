@@ -66,7 +66,7 @@ export default class Cerrada extends Component {
     return (
       <SView col={"xs-12"} padding={8}>
         <SView col={"xs-12"} center>
-          <SText col={"xs-10 md-5"} center fontSize={16} color={STheme.color.gray}>Tu caja se encuentra cerrada, selecciona la Sucursal - Punto de Venta para aperturar tu caja.</SText>
+          <SText col={"xs-10 md-5"} center fontSize={16} color={STheme.color.lightGray}>Tu caja se encuentra cerrada, selecciona la Sucursal - Punto de Venta para aperturar tu caja.</SText>
         </SView>
         <SView col={"xs-12"} row center>
           <InputPuntoVenta onChange={(e) => {

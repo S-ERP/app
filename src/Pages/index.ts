@@ -21,6 +21,7 @@ import test2 from "./test2";
 import wiki from "./wiki";
 import compra from "./compra";
 import compra2 from "./compra2";
+import compra3 from "./compra3";
 import venta from "./venta";
 import caja from "./caja";
 import caja2 from "./caja2";
@@ -140,6 +141,7 @@ export default SPage.combinePages("/", {
   ...productos,
   ...compra,
   ...compra2,
+  ...compra3,
   ...venta,
   ...caja,
   ...caja2,
