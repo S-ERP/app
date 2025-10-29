@@ -29,7 +29,7 @@ export default class MsgText extends Component {
         const formattedTexto = this.formatText(texto);
 
         return (
-            <SView style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 6, width: "auto", maxWidth: "80%", alignItems: "flex-start" }}>
+            <SView style={{ backgroundColor: this.props.color, borderRadius: 10, padding: 6, width: "auto", maxWidth: "80%", alignItems: "flex-start" }}>
                 {this.props.mensaje.hasQuotedMsg && <QuotedMsg mensaje={this.props.mensaje} key_device={this.props.key_device} />}
                 <SText col={"xs-12"} clean color={"white"} fontSize={14}>
                     {/* <span style={{  }} dangerouslySetInnerHTML={{ __html: formattedTexto + "                  " }} /> */}

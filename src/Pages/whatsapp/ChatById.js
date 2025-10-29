@@ -142,7 +142,7 @@ export default class ChatById extends Component {
                 <SView col="xs-8" row style={{ justifyContent: "flex-start" }} onPress={() => {
                     // console.log(data, this.state.data)
                 }}>
-                    <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card }} center>
+                    <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.red }} center>
                         <SImage
                             enablePreview
                             src={MDL.whatsapp.device.getUrlImage(idDevice, idchat)}
