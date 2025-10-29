@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,45 +43,54 @@
       background-color: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(4px);
     }
+
     .modal.active {
       display: flex;
       align-items: center;
       justify-content: center;
     }
+
     .modal-content {
       animation: slideIn 0.3s ease-out;
     }
+
     @keyframes slideIn {
       from {
         opacity: 0;
         transform: translateY(-20px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
+
     /* Added styles for category delete button */
     .category-item {
       position: relative;
     }
+
     .category-delete-btn {
       opacity: 0;
       transition: opacity 0.2s;
     }
+
     .category-item:hover .category-delete-btn {
       opacity: 1;
     }
   </style>
 </head>
+
 <body class="bg-background text-foreground min-h-screen">
-  
+
   <!-- Header -->
   <header class="border-b border-border bg-card">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold text-balance">Agenda de Contactos</h1>
-        <button onclick="openAddModal()" class="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium transition-colors">
+        <button onclick="openAddModal()"
+          class="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium transition-colors">
           + Nuevo Contacto
         </button>
       </div>
@@ -90,7 +100,7 @@
   <!-- Sidebar and Main Content -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="flex flex-col lg:flex-row gap-6">
-      
+
       <!-- Sidebar -->
       <aside class="lg:w-64 flex-shrink-0">
         <div class="bg-card border border-border rounded-lg p-4">
@@ -101,30 +111,36 @@
             </button>
             <!-- Added delete buttons to each category -->
             <div class="category-item">
-              <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-secondary text-foreground transition-colors">
+              <button
+                class="w-full text-left px-3 py-2 rounded-lg hover:bg-secondary text-foreground transition-colors">
                 Proveedores
               </button>
-              <button onclick="openDeleteCategoryModal('Proveedores')" class="category-delete-btn absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-destructive/20 rounded text-destructive transition-colors">
+              <button onclick="openDeleteCategoryModal('Proveedores')"
+                class="category-delete-btn absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-destructive/20 rounded text-destructive transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               </button>
             </div>
             <div class="category-item">
-              <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-secondary text-foreground transition-colors">
+              <button
+                class="w-full text-left px-3 py-2 rounded-lg hover:bg-secondary text-foreground transition-colors">
                 Clientes
               </button>
-              <button onclick="openDeleteCategoryModal('Clientes')" class="category-delete-btn absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-destructive/20 rounded text-destructive transition-colors">
+              <button onclick="openDeleteCategoryModal('Clientes')"
+                class="category-delete-btn absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-destructive/20 rounded text-destructive transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               </button>
             </div>
             <div class="category-item">
-              <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-secondary text-foreground transition-colors">
+              <button
+                class="w-full text-left px-3 py-2 rounded-lg hover:bg-secondary text-foreground transition-colors">
                 Personal
               </button>
-              <button onclick="openDeleteCategoryModal('Personal')" class="category-delete-btn absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-destructive/20 rounded text-destructive transition-colors">
+              <button onclick="openDeleteCategoryModal('Personal')"
+                class="category-delete-btn absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-destructive/20 rounded text-destructive transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
@@ -137,11 +153,12 @@
       <!-- Contact Grid -->
       <main class="flex-1">
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          
+
           <!-- Contact Card 1 -->
           <div class="bg-card border border-border rounded-lg p-5 hover:border-primary/50 transition-colors">
             <div class="flex items-start gap-4 mb-4">
-              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+              <div
+                class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
                 LF
               </div>
               <div class="flex-1 min-w-0">
@@ -154,10 +171,12 @@
               <p class="text-xs text-muted-foreground">Hace 2 meses</p>
             </div>
             <div class="flex gap-2">
-              <button onclick="openEditModal('Liseth Flores', '+591 21251321', 'Proveedores')" class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              <button onclick="openEditModal('Liseth Flores', '+591 21251321', 'Proveedores')"
+                class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 Editar
               </button>
-              <button onclick="openDeleteModal('Liseth Flores')" class="bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              <button onclick="openDeleteModal('Liseth Flores')"
+                class="bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 Eliminar
               </button>
             </div>
@@ -166,7 +185,8 @@
           <!-- Contact Card 2 -->
           <div class="bg-card border border-border rounded-lg p-5 hover:border-primary/50 transition-colors">
             <div class="flex items-start gap-4 mb-4">
-              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+              <div
+                class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
                 RR
               </div>
               <div class="flex-1 min-w-0">
@@ -179,10 +199,12 @@
               <p class="text-xs text-muted-foreground">Hace 7 horas</p>
             </div>
             <div class="flex gap-2">
-              <button onclick="openEditModal('Roy Ruddy', '+591 25666929', 'Clientes')" class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              <button onclick="openEditModal('Roy Ruddy', '+591 25666929', 'Clientes')"
+                class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 Editar
               </button>
-              <button onclick="openDeleteModal('Roy Ruddy')" class="bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              <button onclick="openDeleteModal('Roy Ruddy')"
+                class="bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 Eliminar
               </button>
             </div>
@@ -191,7 +213,8 @@
           <!-- Contact Card 3 -->
           <div class="bg-card border border-border rounded-lg p-5 hover:border-primary/50 transition-colors">
             <div class="flex items-start gap-4 mb-4">
-              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+              <div
+                class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
                 JM
               </div>
               <div class="flex-1 min-w-0">
@@ -204,10 +227,12 @@
               <p class="text-xs text-muted-foreground">Hace 1 mes</p>
             </div>
             <div class="flex gap-2">
-              <button onclick="openEditModal('José María Banzer', '+591 56145131', 'Personal')" class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              <button onclick="openEditModal('José María Banzer', '+591 56145131', 'Personal')"
+                class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 Editar
               </button>
-              <button onclick="openDeleteModal('José María Banzer')" class="bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              <button onclick="openDeleteModal('José María Banzer')"
+                class="bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 Eliminar
               </button>
             </div>
@@ -233,25 +258,32 @@
       <form onsubmit="saveEdit(event)" class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-foreground mb-2">Nombre</label>
-          <input type="text" id="editName" class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" required>
+          <input type="text" id="editName"
+            class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            required>
         </div>
         <div>
           <label class="block text-sm font-medium text-foreground mb-2">Teléfono</label>
-          <input type="tel" id="editPhone" class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" required>
+          <input type="tel" id="editPhone"
+            class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            required>
         </div>
         <div>
           <label class="block text-sm font-medium text-foreground mb-2">Categoría</label>
-          <select id="editCategory" class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary">
+          <select id="editCategory"
+            class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary">
             <option>Proveedores</option>
             <option>Clientes</option>
             <option>Personal</option>
           </select>
         </div>
         <div class="flex gap-3 pt-4">
-          <button type="button" onclick="closeEditModal()" class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg font-medium transition-colors">
+          <button type="button" onclick="closeEditModal()"
+            class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg font-medium transition-colors">
             Cancelar
           </button>
-          <button type="submit" class="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium transition-colors">
+          <button type="submit"
+            class="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium transition-colors">
             Guardar
           </button>
         </div>
@@ -273,7 +305,9 @@
       <div class="mb-6">
         <div class="w-12 h-12 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-4">
           <svg class="w-6 h-6 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+            </path>
           </svg>
         </div>
         <p class="text-center text-foreground mb-2">¿Estás seguro de que deseas eliminar a</p>
@@ -281,10 +315,12 @@
         <p class="text-center text-muted-foreground text-sm mt-2">Esta acción no se puede deshacer.</p>
       </div>
       <div class="flex gap-3">
-        <button onclick="closeDeleteModal()" class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg font-medium transition-colors">
+        <button onclick="closeDeleteModal()"
+          class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg font-medium transition-colors">
           Cancelar
         </button>
-        <button onclick="confirmDelete()" class="flex-1 bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-lg font-medium transition-colors">
+        <button onclick="confirmDelete()"
+          class="flex-1 bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-lg font-medium transition-colors">
           Eliminar
         </button>
       </div>
@@ -305,25 +341,32 @@
       <form onsubmit="saveNewContact(event)" class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-foreground mb-2">Nombre</label>
-          <input type="text" id="addName" class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" required>
+          <input type="text" id="addName"
+            class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            required>
         </div>
         <div>
           <label class="block text-sm font-medium text-foreground mb-2">Teléfono</label>
-          <input type="tel" id="addPhone" class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" required>
+          <input type="tel" id="addPhone"
+            class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            required>
         </div>
         <div>
           <label class="block text-sm font-medium text-foreground mb-2">Categoría</label>
-          <select id="addCategory" class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary">
+          <select id="addCategory"
+            class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary">
             <option>Proveedores</option>
             <option>Clientes</option>
             <option>Personal</option>
           </select>
         </div>
         <div class="flex gap-3 pt-4">
-          <button type="button" onclick="closeAddModal()" class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg font-medium transition-colors">
+          <button type="button" onclick="closeAddModal()"
+            class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg font-medium transition-colors">
             Cancelar
           </button>
-          <button type="submit" class="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium transition-colors">
+          <button type="submit"
+            class="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium transition-colors">
             Agregar
           </button>
         </div>
@@ -336,7 +379,8 @@
     <div class="modal-content bg-card border border-border rounded-lg p-6 max-w-md w-full mx-4">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-bold text-foreground">Eliminar Categoría</h2>
-        <button onclick="closeDeleteCategoryModal()" class="text-muted-foreground hover:text-foreground transition-colors">
+        <button onclick="closeDeleteCategoryModal()"
+          class="text-muted-foreground hover:text-foreground transition-colors">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
@@ -345,18 +389,23 @@
       <div class="mb-6">
         <div class="w-12 h-12 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-4">
           <svg class="w-6 h-6 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+            </path>
           </svg>
         </div>
         <p class="text-center text-foreground mb-2">¿Estás seguro de que deseas eliminar la categoría</p>
         <p class="text-center text-foreground font-semibold text-lg" id="deleteCategoryName"></p>
-        <p class="text-center text-muted-foreground text-sm mt-2">Todos los contactos de esta categoría permanecerán sin categoría.</p>
+        <p class="text-center text-muted-foreground text-sm mt-2">Todos los contactos de esta categoría permanecerán sin
+          categoría.</p>
       </div>
       <div class="flex gap-3">
-        <button onclick="closeDeleteCategoryModal()" class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg font-medium transition-colors">
+        <button onclick="closeDeleteCategoryModal()"
+          class="flex-1 bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg font-medium transition-colors">
           Cancelar
         </button>
-        <button onclick="confirmDeleteCategory()" class="flex-1 bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-lg font-medium transition-colors">
+        <button onclick="confirmDeleteCategory()"
+          class="flex-1 bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-lg font-medium transition-colors">
           Eliminar Categoría
         </button>
       </div>
@@ -443,7 +492,7 @@
     }
 
     // Close modals when clicking outside
-    window.onclick = function(event) {
+    window.onclick = function (event) {
       if (event.target.classList.contains('modal')) {
         event.target.classList.remove('active');
       }
@@ -451,4 +500,5 @@
   </script>
 
 </body>
+
 </html>

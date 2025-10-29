@@ -21,7 +21,7 @@ export default class PopupTag extends Component<Props> {
             width: "100%",
             maxHeight: "100%",
             // height: 800,
-            height: 180,
+            // height: 180,
             maxWidth: 500,
             borderRadius: 10,
             borderColor: STheme.color.card,
@@ -89,31 +89,21 @@ export default class PopupTag extends Component<Props> {
         <SHr height={8} />
 
         {/* 🔹 Botones */}
-        <SView row style={{ justifyContent: "center", alignItems: "center", }} >
+        <SView row style={{ justifyContent: "center", alignItems: "center", }}  >
           <SView center flex style={{ height: 28, backgroundColor: STheme.color.danger, borderRadius: 4, marginHorizontal: 4, paddingHorizontal: 12, }} onPress={() => {
-
-
             SPopup.confirm({
               title: "Eliminar el tag",
               message: "¿Está seguro de eliminar el tag " + editObject.descripcion + "?",
               onPress: (res) => {
-
-                MDL.inventario.modelo_tag.editar({
-                  key: editObject.key_modelo_tag,
-                  estado: 0,
-                })
-
-
-                if (onSuccess) onSuccess(res);
+                MDL.inventario.modelo_tag.editar({ key: editObject.key_modelo_tag, estado: 0, })
+                if (onSuccess) onSuccess();
                 SPopup.close("testPopup_");
-
-
               }
             });
 
           }}>
             <SView row center >
-              <SIconApp name="Delete" height={10} /> <SText color={STheme.color.text} fontSize={12}>ELIMINAR</SText>
+              <SText color={STheme.color.text} fontSize={12}><SIconApp name="Delete" width={12} /> ELIMINAR</SText>
             </SView>
           </SView>
           <SView width={10} />
@@ -124,6 +114,8 @@ export default class PopupTag extends Component<Props> {
             <SText color={STheme.color.background} fontSize={12}> {editObject?.key ? "ACTUALIZAR" : "REGISTRAR"} </SText>
           </SView>
         </SView>
+        {/* <SHr height={80} /> */}
+
       </SView>
     );
   }

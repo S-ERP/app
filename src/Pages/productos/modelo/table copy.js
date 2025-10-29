@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SHr, SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SButtom, SHr, SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../../Config';
 import MDL from '../../../MDL';
@@ -15,6 +15,7 @@ import PopupDesglose from '../Components/PopupDesglose';
 import PopupModeloCardex from '../Components/PopupModeloCardex';
 // import PopupInfoProv from './Components/PopupInfoProv';
 import PopupCrearProveedor from './Components/PopupCrearProveedor';
+import TestPopup from '../../testPopup';
 import PopupTag from '../../tag/Components/PopupTag';
 
 export default class table extends Component {
@@ -155,19 +156,22 @@ export default class table extends Component {
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
                                     SNavigation.navigate("/tag", {
-                                        onSelect: (item) => {
+                                        onSelect: (prov) => {
+
                                             MDL.inventario.modelo_tag.registrar({
                                                 key_modelo: e.row.key,
-                                                key_tag: item.key,
-                                            });
-                                            if (this.table) this.table.loadData();
+                                                key_tag: prov.key,
+                                            })
+
+                                            if (this.table) {
+                                                this.table.loadData();
+                                            }
+
+
                                         }
                                     });
                                 }
                             },
-
-
-
                             {
                                 label: "Ingrediente",
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
@@ -278,14 +282,10 @@ export default class table extends Component {
                                         precio_compra: e?.row?.precio_compra,
                                         producto_descripcion: e?.row?.descripcion,
                                         key_empresa: e?.row?.key_empresa,
-
                                         onSuccess: async () => {
                                             this.table.loadData();
                                         },
-
                                     });
-
-
                                 }}
 
                             //     PopupInfoProv.open({
@@ -303,29 +303,79 @@ export default class table extends Component {
                     }
                 />
 
-
-                <DinamicTable.Col key={"tags"} label='Tags' width={120}
+                <DinamicTable.Col key={"tags"} label='tags'
+                    // textStyle={{ color: STheme.color.success }}
+                    width={120}
                     data={(e) => (e.row?.tags ?? []).map(p => p?.tags?.descripcion)}
                     customComponent={e => <SView row>
-                        {(e.row?.tags ?? []).map(item => (
-                            <SView key={item?.key} style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }}
+                        {(e.row?.tags ?? []).map(item => {
+                            return <SView style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }}
                                 onPress={() => {
+                                    // quieres elimianr
+                                    // alert("cento quieres elimianr " + item?.key_modelo_tag)
+
+
                                     PopupTag.open({
                                         editObject: item,
                                         onSuccess: () => {
-                                            if (this.table) this.table.loadData();
+                                            if (this.table) {
+                                                this.table.loadData();
+                                            }
                                         }
-                                    });
-                                }}>
-                                <SText fontSize={10} numberOfLines={1}>{item?.descripcion}</SText>
+                                    })
+
+
+                                    // SPopup.confirm({
+                                    //     title: "Eliminar el tag",
+                                    //     message: "¿Está seguro de eliminar el tag " + item.descripcion + "?",
+                                    //     onPress: () => {
+
+                                    //         MDL.inventario.modelo_tag.editar({
+                                    //             key: item.key_modelo_tag,
+                                    //             estado: 0,
+                                    //         })
+
+                                    //         if (this.table) {
+                                    //             this.table.loadData();
+                                    //         }
+
+                                    //     }
+                                    // });
+
+
+                                }}
+                            >
+                                <SText fontSize={10} numberOfLines={1} >{item?.descripcion}</SText>
                             </SView>
-                        ))}
-                    </SView>}
+                        })}
+                    </SView>
+                    }
                 />
 
 
 
-                <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sd' width={150}
+                <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sdssssssssss' width={150}
+                    data={(e) => e.row?.tipo_producto?.tipo}
+                    cellStyle={{
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                        flexDirection: "row"
+                    }}
+                    customComponent={e => {
+                        return <View style={{
+                            padding: 2,
+                            borderRadius: 4,
+                            backgroundColor: STheme.colorFromText(e?.data) + "44",
+                            borderWidth: 1,
+                            borderColor: STheme.colorFromText(e?.data)
+                        }}>
+                            <SText fontSize={10}>{e?.data}</SText>
+                        </View>
+                    }}
+                />
+
+                {/* tengo que agrge a select el getall */}
+                {/* <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sdssssssssss' width={150}
                     data={(e) => e.row?.tipo_producto?.tipo}
                     cellStyle={{
                         alignItems: "center",
@@ -343,7 +393,9 @@ export default class table extends Component {
                             <SText fontSize={10}>{e.data}</SText>
                         </View>
                     }}
-                />
+                /> */}
+
+
                 <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row?.barcode} />
             </DinamicTable>
             <FloatButtom onPress={() => {
