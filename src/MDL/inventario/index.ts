@@ -3,11 +3,15 @@ import MDLAbstract from "../MDLAbstract";
 import { EventListener } from "./types";
 import MDL from "..";
 import proveedor from "./proveedor";
+import tag from "./tag";
+import modelo_tag from "./modelo_tag";
 
 export default class inventario extends MDLAbstract<EventListener> {
   async componentDidMount() { }
 
   proveedor = new proveedor();
+  tag = new tag();
+  modelo_tag = new modelo_tag();
 
   TIPOS_DE_PRODUCTOS = [
     {
