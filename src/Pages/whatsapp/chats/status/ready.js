@@ -82,57 +82,109 @@ export default class ready extends Component {
             <FlatList
                 data={data}
                 keyExtractor={(item) => item.id._serialized}
-                renderItem={({ item }) => (
-                    <View style={{ padding: 10 }}>
-                        <SView row center onPress={() => {
-                            this.setState({ idchat: item.id._serialized });
-                        }}>
-                            <SView style={{
-                                width: 50,
-                                height: 50,
-                                borderRadius: 25,
-                                backgroundColor: STheme.color.card,
-                                justifyContent: "center",
-                                alignItems: "center",
-                                overflow: "hidden"
-                            }}>
-                                <SImage src={MDL.whatsapp.device.getUrlImage(this.props?.device?.key, item.id._serialized)} />
-                            </SView>
-                            <SView style={{ width: 10 }} />
-                            <SView border="transparent" flex row style={{
-                                height: "100%",
+                renderItem={({ item }) => {
+                    const isActive = this.state.idchat === item.id._serialized;
+                    return (
+                        <SView
+                            row
+                            center
+                            onPress={() => {
+                                this.setState({ idchat: item.id._serialized });
+                            }}
+                            style={{
+                                backgroundColor: isActive ? "#2a3942" : "transparent", // ← color de selección tipo WhatsApp
+                                paddingVertical: 10,
+                                paddingHorizontal: 8,
                                 borderBottomWidth: 1,
                                 borderBottomColor: STheme.color.card,
-                            }}>
-                                <SView flex border="transparent" >
-                                    <SText bold>{item.name}</SText>
-                                    <SText numberOfLines={1} flex color={STheme.color.lightGray}>
-                                        {item?.lastMessage?.type === "chat" ? item.lastMessage.body : item?.lastMessage?.type}
+                                borderRadius: 6,
+                                transition: "background-color 0.2s ease"
+                            }}
+                        >
+                            {/* Imagen del chat */}
+                            <SView
+                                style={{
+                                    width: 50,
+                                    height: 50,
+                                    borderRadius: 25,
+                                    backgroundColor: STheme.color.card,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    overflow: "hidden"
+                                }}
+                            >
+                                <SImage src={MDL.whatsapp.device.getUrlImage(this.props?.device?.key, item.id._serialized)} />
+                            </SView>
+
+                            <SView style={{ width: 10 }} />
+
+                            {/* Información del chat */}
+                            <SView flex row style={{ height: "100%" }}>
+                                <SView flex>
+                                    <SText bold color={isActive ? "#e9edef" : STheme.color.text}>
+                                        {item.name}
+                                    </SText>
+                                    <SText
+                                        numberOfLines={1}
+                                        flex
+                                        color={isActive ? "#b6c1c7" : STheme.color.lightGray}
+                                    >
+                                        {item?.lastMessage?.type === "chat"
+                                            ? item.lastMessage.body
+                                            : item?.lastMessage?.type}
                                     </SText>
                                 </SView>
-                                <SView border="transparent" >
-                                    <SView col={"xs-12"} style={{ justifyContent: "flex-end", alignItems: "flex-end" }} >
-                                        <SText style={{ marginLeft: 4 }} color={item?.unreadCount ? "#22be60" : STheme.color.gray} fontSize={12}>
-                                            {item?.lastMessage?.timestamp ? new Date(item.lastMessage.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "Sin mensajes"}
+
+                                {/* Hora + contador */}
+                                <SView>
+                                    <SView
+                                        col={"xs-12"}
+                                        style={{
+                                            justifyContent: "flex-end",
+                                            alignItems: "flex-end"
+                                        }}
+                                    >
+                                        <SText
+                                            style={{ marginLeft: 4 }}
+                                            color={item?.unreadCount ? "#22be60" : STheme.color.gray}
+                                            fontSize={12}
+                                        >
+                                            {item?.lastMessage?.timestamp
+                                                ? new Date(
+                                                    item.lastMessage.timestamp * 1000
+                                                ).toLocaleTimeString([], {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: true
+                                                })
+                                                : "Sin mensajes"}
                                         </SText>
                                     </SView>
-                                    <SView col={"xs-12"} style={{ justifyContent: "flex-end", alignItems: "flex-end" }} >
-                                        {!!item?.unreadCount && (
-                                            <SView style={{
-                                                width: 20, height: 20, borderRadius: 10, backgroundColor: "#22be60", justifyContent: "center", alignItems: "center"
-                                            }}>
-                                                <SText fontSize={10} color={STheme.color.black}>{item?.unreadCount}</SText>
-                                            </SView>)}
-                                    </SView>
+
+                                    {!!item?.unreadCount && (
+                                        <SView
+                                            style={{
+                                                width: 20,
+                                                height: 20,
+                                                borderRadius: 10,
+                                                backgroundColor: "#22be60",
+                                                justifyContent: "center",
+                                                alignItems: "center"
+                                            }}
+                                        >
+                                            <SText fontSize={10} color={STheme.color.black}>
+                                                {item?.unreadCount}
+                                            </SText>
+                                        </SView>
+                                    )}
                                 </SView>
                             </SView>
                         </SView>
-                    </ View>
-                )}
+                    );
+                }}
             />
         );
     }
-
 
     render() {
         const { device } = this.props;

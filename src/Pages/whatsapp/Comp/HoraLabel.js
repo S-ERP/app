@@ -18,7 +18,7 @@ export default class HoraLabel extends Component {
         let ack = ""
 
         if (this.props.mesaje.fromMe) {
-            ack = <SText clean fontSize={10} color={STheme.color.lightGray} style={{ letterSpacing: -2 }}>{" ✓ "}</SText>;
+            ack = <SText clean fontSize={12} color={STheme.color.lightGray} style={{ letterSpacing: -2 }}>{" ✓ "}</SText>;
             if (this.props.mesaje.ack === 2) {
                 // ack = <SText clean fontSize={10} color={STheme.color.lightGray}>{"✓✓"}</SText>;
                 ack = <SText clean fontSize={10} color={STheme.color.lightGray} style={{ letterSpacing: -2 }}>{" ✓✓ "}</SText>;

@@ -64,7 +64,7 @@ export default class QuotedMsg extends Component {
             case "sticker":
                 // if(qr.)
                 const ba = this.props.mensaje?.id?.remote == qPariticipant._serialized ? "false" : "true"
-                const surl = ba+"_" + this.props.mensaje?.id?.remote + "_" + quotedStanzaID
+                const surl = ba + "_" + this.props.mensaje?.id?.remote + "_" + quotedStanzaID
                 // const surl = "false_" + qPariticipant._serialized + "_" + quotedStanzaID
                 return <>
                     <SView style={{ minWidth: 120, padding: 4 }}>
