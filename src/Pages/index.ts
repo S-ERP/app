@@ -92,6 +92,7 @@ import social_media from "./social_media";
 import pizarra2 from "../Components/Pizarra2/testPage"
 import contactos from "./contactos";
 import descuento from "./descuento";
+import tag from "./tag";
 
 export default SPage.combinePages("/", {
   // "":Example,
@@ -174,6 +175,7 @@ export default SPage.combinePages("/", {
   Turnos,
   ...server,
   ...proveedor,
+  ...tag,
   ...qr_reader,
   ...puntoventa,
   "iconosss":IconosAlvaro,
