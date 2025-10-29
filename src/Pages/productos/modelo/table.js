@@ -106,7 +106,7 @@ export default class table extends Component {
                                         onSuccess: () => {
                                             if (this.table) {
                                                 this.table.loadData();
-                                                this.state.time = new Date().getTime();
+                                                // this.state.time = new Date().getTime();
                                             }
                                         }
 
@@ -155,12 +155,17 @@ export default class table extends Component {
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
                                     SNavigation.navigate("/tag", {
-                                        onSelect: (item) => {
+                    
+
+                                         onSelect: (item) => {
                                             MDL.inventario.modelo_tag.registrar({
                                                 key_modelo: e.row.key,
                                                 key_tag: item.key,
                                             });
-                                            if (this.table) this.table.loadData();
+
+                                            if (this.table) {
+                                                this.table.loadData();
+                                            }
                                         }
                                     });
                                 }
@@ -311,7 +316,7 @@ export default class table extends Component {
                             <SView key={item?.key} style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }}
                                 onPress={() => {
                                     PopupTag.open({
-                                        editObject: item,
+                                        editObject: { ...item, quitar: true },
                                         onSuccess: () => {
                                             if (this.table) this.table.loadData();
                                         }
