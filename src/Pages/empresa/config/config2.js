@@ -9,6 +9,7 @@ import { Pizarra, Nodo, Puerto } from "../../../Components/Pizarra2";
 import Recargar from "../../../Components/Recargar";
 import PopupCrearPuntoVenta from "./Components/PopupCrearPuntoVenta";
 import PopupCrearAlmacen from "../../inventario/almacen/Components/PopupCrearAlmacen";
+import FloatMenu from "../../../Components/FloatMenu";
 
 export default class config2 extends React.Component {
 
@@ -45,7 +46,64 @@ export default class config2 extends React.Component {
         const space = 300;
         return <SPage title={"config2"} disableScroll>
 
-            <Pizarra id={"config_empresa"} scale={0.4}>
+            <Pizarra id={"config_empresa"} scale={0.4}
+                onDoublePress={e => {
+                    FloatMenu.open({
+                        e: { nativeEvent: { pageX: e.absoluteX, pageY: e.absoluteY } },
+                        label: "Agregar nodo",
+                        options: [
+                            {
+                                icon: <SIconApp name="Marker" fill={STheme.color.text} />,
+                                label: "Crear Sucursal",
+                                onPress: () => {
+                                    PopupCrearSucursal.open({
+                                        key_empresa: empresa.key,
+                                        // editObject: sucursal,
+                                        onSuccess: (e) => {
+                                            // const nuevaSucursal = e.data;
+                                            // const index = empresa.sucursales.findIndex(o => o.key == nuevaSucursal.key)
+                                            // empresa.sucursales[index] = nuevaSucursal;
+                                            // this.forceUpdate();
+
+                                        },
+                                    })
+                                }
+                            },
+                            {
+                                icon: <SIconApp name="Caja" fill={STheme.color.text} />,
+                                label: "Crear Punto de Venta",
+                                onPress: () => {
+                                    PopupCrearAlmacen.open({
+                                        key_empresa: empresa.key,
+                                        // editObject: sucursal,
+                                        onSuccess: (e) => {
+                                            // const nuevaSucursal = e.data;
+                                            // const index = empresa.sucursales.findIndex(o => o.key == nuevaSucursal.key)
+                                            // empresa.sucursales[index] = nuevaSucursal;
+                                            // this.forceUpdate();
+
+                                        },
+                                    })
+                                }
+                            },
+                            {
+                                icon: <SIconApp name="productos" fill={STheme.color.text} />,
+                                label: "Crear Almacen",
+                                onPress: () => {
+                                    PopupCrearAlmacen.open({
+                                        key_empresa: empresa.key,
+                                        // editObject: almacen,
+                                        onSuccess: () => {
+                                            // this.loadData()
+                                        },
+
+                                    })
+                                }
+                            }
+                        ]
+                    })
+                }}
+            >
                 <EmpresaNodo empresa={empresa} />
                 {(empresa.sucursales ?? []).map((sucursal, i) => {
                     return <>
@@ -122,17 +180,17 @@ const EmpresaNodo = ({ empresa }) => {
                 right: 0,
                 width: 20,
                 height: 20,
-                backgroundColor: "#f0f"
+                backgroundColor: "#fff"
                 // bottom: 0
             }} />
-        <SView style={{
+        {/* <SView style={{
             width: 25,
             height: 25,
             position: "absolute",
             right: -40,
         }}>
             <SIconApp name="Add" />
-        </SView>
+        </SView> */}
     </Nodo>
 }
 
@@ -173,7 +231,7 @@ const AlmacenNodo = ({ sucursal, almacen, empresa }) => {
         </SView>
         <SText style={{
             maxWidth: 80,
-        }} numberOfLines={1}>{almacen.descripcion}</SText>
+        }} numberOfLines={2} center>{almacen.descripcion}</SText>
         <Puerto id="key_sucursal"
             value={almacen.key_sucursal}
             type="input"
@@ -303,10 +361,10 @@ const PuntoVentaNodo = ({ sucursal, empresa, punto_venta }) => {
             value={punto_venta.key_sucursal}
             type="input"
             style={{
-                position:"absolute",
-                backgroundColor:STheme.color.text,
+                position: "absolute",
+                backgroundColor: STheme.color.text,
                 width: 8,
-                height:20,
+                height: 20,
                 top: 35,
                 left: 0
             }} />

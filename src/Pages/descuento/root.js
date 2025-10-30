@@ -161,7 +161,7 @@ export default class root extends React.Component {
                     label={"key_tipo_cliente"}
                     data={e => ""}></DinamicTable.Col> */}
             </DinamicTable>
-            {MDL.rolesPermisos.getPermiso({ url: URL, permiso: "new", }) &&
+            {/* {MDL.rolesPermisos.getPermiso({ url: URL, permiso: "new", }) && */}
                 <FloatButtom
                     onPress={() => {
                         FormRegistroDescuento.open({
@@ -171,7 +171,7 @@ export default class root extends React.Component {
                         });
                     }}
                 />
-            }
+            {/* } */}
         </SPage>
     }
 }

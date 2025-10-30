@@ -95,12 +95,12 @@ export default class table extends Component {
                     customComponent={e => {
                         return <SView col={"xs-12"} row center >
                             <SView center style={{
-                                padding:4,
+                                padding: 4,
                                 borderRadius: 4,
-                                backgroundColor: STheme.colorFromText(e.row.tipo) + "44",
+                                backgroundColor: STheme.colorFromText(e.row?.tipo ?? "") + "44",
                                 borderWidth: 1,
-                                borderColor: STheme.colorFromText(e.row.tipo),
-                            }}><SText fontSize={10}>{(e.row.tipo).toUpperCase()}</SText></SView>
+                                borderColor: STheme.colorFromText(e.row?.tipo ?? ""),
+                            }}><SText fontSize={10}>{(e.row?.tipo ?? "").toUpperCase()}</SText></SView>
                         </SView>
                     }} />
 

@@ -130,6 +130,10 @@ export default class libro_diario extends React.Component {
                         textStyle={{
                             color: STheme.color.lightGray,
                         }} />
+                    <DinamicTable.Col key="diario" label="Diario" data={e => e.row?.diario?.descripcion} width={150}
+                        textStyle={{
+                            color: STheme.color.lightGray,
+                        }} />
                     {/* <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{
                         alignItems: "center",
                         justifyContent: "center",

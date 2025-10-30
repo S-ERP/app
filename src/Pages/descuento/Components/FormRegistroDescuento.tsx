@@ -49,23 +49,30 @@ export default class FormRegistroDescuento extends Component<FormRegistroDescuen
                 ref={(ref: any) => this.form = ref}
                 inputs={{
                     "descripcion": {
-                        label: "Descripción", autoFocus: true, required: true, defaultValue: defaultData?.descripcion, onSubmitEditing: () => {
-                            if (this.form) this.form.focus("description");
-                        }
-                    },
-                    "porcentaje": {
-                        label: "Porcentaje",  autoFocus: true, required: true, defaultValue: defaultData?.porcentaje, onSubmitEditing: () => {
+                        label: "Descripción", autoFocus: true, required: true, defaultValue: defaultData?.descripcion,
+                        onSubmitEditing: () => {
                             if (this.form) this.form.focus("porcentaje");
                         }
                     },
-                     "monto": {
-                        label: "Monto",  autoFocus: true, required: true, defaultValue: defaultData?.monto, onSubmitEditing: () => {
+                    "porcentaje": {
+                        label: "Porcentaje", autoFocus: true, required: true, defaultValue: defaultData?.porcentaje,
+                        iconR: <SText>{"%"}</SText>,
+                        placeholder:"0.00 - 1.00",
+                        onSubmitEditing: () => {
                             if (this.form) this.form.focus("monto");
                         }
                     },
-                   
-                   
-                  
+                    "monto": {
+                        label: "Monto", autoFocus: true, required: true, defaultValue: defaultData?.monto,
+                        placeholder:"0.00 - 10000.00",
+                        iconR: <SText>{"BOB"}</SText>,
+                        onSubmitEditing: () => {
+                            if (this.form) this.form.submit();
+                        }
+                    },
+
+
+
                 }}
                 onSubmit={(e: any) => {
 

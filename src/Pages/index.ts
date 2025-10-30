@@ -93,6 +93,7 @@ import social_media from "./social_media";
 import pizarra2 from "../Components/Pizarra2/testPage"
 import contactos from "./contactos";
 import descuento from "./descuento";
+import excel from "./excel";
 
 export default SPage.combinePages("/", {
   // "":Example,
@@ -156,6 +157,7 @@ export default SPage.combinePages("/", {
   ...cafe,
   ...publicacion,
   ...solicitud_qr,
+  ...excel,
   invitation,
   invitacion: invitacion,
   terminos,

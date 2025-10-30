@@ -17,10 +17,13 @@ export default class PuntoDeVentaChoise extends React.Component {
         const empresa = await MDL.empresa.getFull();
         let pva: any[] = [];
         empresa.sucursales.map((suc: any) => {
-            suc.puntos_venta.map((pv: any) => {
-                pv._code = suc.descripcion + " - " + pv.descripcion;
-                pva.push(pv)
-            })
+            if (suc.puntos_venta) {
+                suc.puntos_venta.map((pv: any) => {
+                    pv._code = suc.descripcion + " - " + pv.descripcion;
+                    pva.push(pv)
+                })
+            }
+
         })
         this.state.data = pva;
         this.forceUpdate();

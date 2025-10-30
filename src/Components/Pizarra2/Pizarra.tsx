@@ -34,6 +34,7 @@ const Pizarra = (props: PizarraProps) => {
     const isMiddleDown = React.useRef(false);
     const start = React.useRef({ x: 0, y: 0, tx: 0, ty: 0 });
     const linea = React.useRef<any>(null);
+    const isSpaceDown = useSharedValue(false);
     const size = useSharedValue(props.size ?? 15000);
     const layoutWidth = useSharedValue(0);
     const layoutHeight = useSharedValue(0);
@@ -175,14 +176,18 @@ const Pizarra = (props: PizarraProps) => {
         })
         .onUpdate((e) => {
             if (preventPan.value) return;
+            if (isSpaceDown.value) {
+                translateX.value = panGesture.context.startX + e.translationX / scale.value;
+                translateY.value = panGesture.context.startY + e.translationY / scale.value;
+                return;
+            }
             if (e.numberOfPointers == 1) {
                 // console.log(event.numberOfPointers)
                 selectEndX.value = selectStartX.value + (e.translationX / scale.value);
                 selectEndY.value = selectStartY.value + (e.translationY / scale.value);
                 return;
             }
-            // translateX.value = panGesture.context.startX + e.translationX / scale.value;
-            // translateY.value = panGesture.context.startY + e.translationY / scale.value;
+
         }).onFinalize(e => {
             selectTranslateX.value = 0;
             selectTranslateY.value = 0;
@@ -219,6 +224,7 @@ const Pizarra = (props: PizarraProps) => {
     const animatedStyle = useAnimatedStyle(() => {
         return {
             position: "absolute",
+            cursor: isSpaceDown.value ? "grab" : "default",
             width: size.value,
             height: size.value,
             transform: [
@@ -312,6 +318,7 @@ const Pizarra = (props: PizarraProps) => {
         };
 
         const handleMouseMove = (e: any) => {
+
             if (!isMiddleDown.current) return;
             e.preventDefault();
             translateX.value = start.current.tx + ((e.clientX - start.current.x) / scale.value);
@@ -336,7 +343,18 @@ const Pizarra = (props: PizarraProps) => {
                     applyDataServer();
                 }
             }
+            if (e.key == " ") {
+                isSpaceDown.value = true;
+            }
         }
+
+        const handleOnKeyUp = (e: any) => {
+            if (e.key == " ") {
+                isSpaceDown.value = false;
+            }
+        }
+
+
 
         MDL.erp.addServerListener({
             key: "pizarra_edit_" + props.id,
@@ -408,6 +426,8 @@ const Pizarra = (props: PizarraProps) => {
         viewRef.current.addEventListener("contextmenu", handleContextMenu);
         // @ts-ignore
         window.addEventListener("keydown", handleOnKeyDown);
+        // @ts-ignore
+        window.addEventListener("keyup", handleOnKeyUp);
 
         return () => {
             if (viewRef.current) {
@@ -422,6 +442,8 @@ const Pizarra = (props: PizarraProps) => {
             scale.removeListener(listenerId);
             // @ts-ignore
             window.removeEventListener("keydown", handleOnKeyDown);
+            // @ts-ignore
+            window.removeEventListener("keyup", handleOnKeyUp);
 
         };
     }, []);
