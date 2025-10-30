@@ -13,6 +13,7 @@ import FloatMenu from "../../../Components/FloatMenu";
 
 export default class config2 extends React.Component {
 
+    save_locations = {};
     componentDidMount() {
         this.loadData();
         MDL.erp.addServerListener({
@@ -40,6 +41,9 @@ export default class config2 extends React.Component {
         })
         this.forceUpdate();
     }
+    reload() {
+        this.loadData();
+    }
     render() {
         const empresa = this.empresa;
         if (!empresa) return <SLoad />
@@ -48,6 +52,7 @@ export default class config2 extends React.Component {
 
             <Pizarra id={"config_empresa"} scale={0.4}
                 onDoublePress={e => {
+                    console.log(e);
                     FloatMenu.open({
                         e: { nativeEvent: { pageX: e.absoluteX, pageY: e.absoluteY } },
                         label: "Agregar nodo",
@@ -59,7 +64,9 @@ export default class config2 extends React.Component {
                                     PopupCrearSucursal.open({
                                         key_empresa: empresa.key,
                                         // editObject: sucursal,
-                                        onSuccess: (e) => {
+                                        onSuccess: (resp) => {
+                                            this.save_locations[resp.data.key] = e;
+                                            this.reload()
                                             // const nuevaSucursal = e.data;
                                             // const index = empresa.sucursales.findIndex(o => o.key == nuevaSucursal.key)
                                             // empresa.sucursales[index] = nuevaSucursal;
@@ -73,10 +80,12 @@ export default class config2 extends React.Component {
                                 icon: <SIconApp name="Caja" fill={STheme.color.text} />,
                                 label: "Crear Punto de Venta",
                                 onPress: () => {
-                                    PopupCrearAlmacen.open({
+                                    PopupCrearPuntoVenta.open({
                                         key_empresa: empresa.key,
                                         // editObject: sucursal,
                                         onSuccess: (e) => {
+                                            this.save_locations[resp.data.key] = e;
+                                            this.reload()
                                             // const nuevaSucursal = e.data;
                                             // const index = empresa.sucursales.findIndex(o => o.key == nuevaSucursal.key)
                                             // empresa.sucursales[index] = nuevaSucursal;
@@ -93,7 +102,9 @@ export default class config2 extends React.Component {
                                     PopupCrearAlmacen.open({
                                         key_empresa: empresa.key,
                                         // editObject: almacen,
-                                        onSuccess: () => {
+                                        onSuccess: (e) => {
+                                            this.save_locations[resp.data.key] = e;
+                                            this.reload()
                                             // this.loadData()
                                         },
 
@@ -104,18 +115,18 @@ export default class config2 extends React.Component {
                     })
                 }}
             >
-                <EmpresaNodo empresa={empresa} />
+                {/* <EmpresaNodo empresa={empresa} /> */}
                 {(empresa.sucursales ?? []).map((sucursal, i) => {
                     return <>
-                        <SucursalNodo empresa={empresa} sucursal={sucursal} />
+                        <SucursalNodo empresa={empresa} sucursal={sucursal} reload={this.reload.bind(this)} save_locations={this.save_locations} />
                         {
                             (sucursal.almacenes ?? []).map((almacen, j) => {
-                                return <AlmacenNodo empresa={empresa} sucursal={sucursal} almacen={almacen} />
+                                return <AlmacenNodo empresa={empresa} sucursal={sucursal} almacen={almacen} reload={this.reload.bind(this)} save_locations={this.save_locations} />
                             })
                         }
                         {
                             (sucursal.puntos_venta ?? []).map((punto_venta, j) => {
-                                return <PuntoVentaNodo empresa={empresa} sucursal={sucursal} punto_venta={punto_venta} />
+                                return <PuntoVentaNodo empresa={empresa} sucursal={sucursal} punto_venta={punto_venta} reload={this.reload.bind(this)} save_locations={this.save_locations} />
                             })
                         }
                     </>
@@ -194,12 +205,14 @@ const EmpresaNodo = ({ empresa }) => {
     </Nodo>
 }
 
-const AlmacenNodo = ({ sucursal, almacen, empresa }) => {
+const AlmacenNodo = ({ sucursal, almacen, empresa, save_locations }) => {
     return <Nodo
         key={almacen.key}
         id={almacen.key}
-        y={80}
-        x={300} style={{
+        y={save_locations[almacen.key]?.pizarraY ?? 0}
+        x={save_locations[almacen.key]?.pizarraX ?? 0}
+
+        style={{
             alignItems: "center",
             justifyContent: "center"
         }}
@@ -208,6 +221,7 @@ const AlmacenNodo = ({ sucursal, almacen, empresa }) => {
                 key_empresa: empresa.key,
                 editObject: almacen,
                 onSuccess: () => {
+                    if (reload) reload()
                     // this.loadData()
                 },
 
@@ -243,6 +257,7 @@ const AlmacenNodo = ({ sucursal, almacen, empresa }) => {
                         key_sucursal: e.value
                     }
                 }).then(e => {
+                    if (reload) reload()
                     // this.loadData();
                 }).catch(e => {
                     console.log(e)
@@ -261,12 +276,14 @@ const AlmacenNodo = ({ sucursal, almacen, empresa }) => {
     </Nodo>
 }
 
-const SucursalNodo = ({ sucursal, empresa }) => {
+const SucursalNodo = ({ sucursal, empresa, save_locations }) => {
     return <Nodo
         key={sucursal.key}
         id={sucursal.key}
         data={sucursal}
-        y={0} x={100} style={{
+        y={save_locations[sucursal.key]?.pizarraY ?? 0}
+        x={save_locations[sucursal.key]?.pizarraX ?? 0}
+        style={{
             alignItems: "center",
             justifyContent: "center"
         }}
@@ -299,7 +316,7 @@ const SucursalNodo = ({ sucursal, empresa }) => {
             </SView>
             <SText flex fontSize={20}>{sucursal.descripcion}</SText>
         </SView>
-        <Puerto id="key_empresa"
+        {/* <Puerto id="key_empresa"
             type="input"
             value={sucursal.key_empresa}
             style={{
@@ -308,7 +325,7 @@ const SucursalNodo = ({ sucursal, empresa }) => {
                 height: 20,
                 backgroundColor: STheme.color.text,
                 left: -4
-            }} />
+            }} /> */}
         <Puerto id="key_sucursal"
             value={sucursal.key}
             type="output"
@@ -324,11 +341,13 @@ const SucursalNodo = ({ sucursal, empresa }) => {
     </Nodo >
 }
 
-const PuntoVentaNodo = ({ sucursal, empresa, punto_venta }) => {
+const PuntoVentaNodo = ({ sucursal, empresa, punto_venta, reload, save_locations }) => {
     return <Nodo
         id={punto_venta.key}
         key={punto_venta.key}
-        y={110} x={320} style={{
+        y={save_locations[punto_venta.key]?.pizarraY ?? 0}
+        x={save_locations[punto_venta.key]?.pizarraX ?? 0}
+        style={{
             alignItems: "center",
             justifyContent: "center"
         }}
@@ -337,6 +356,7 @@ const PuntoVentaNodo = ({ sucursal, empresa, punto_venta }) => {
                 key_sucursal: sucursal.key,
                 editObject: punto_venta,
                 onSuccess: () => {
+                    if (reload) reload()
                     // this.loadData()
                 },
             })
@@ -360,6 +380,19 @@ const PuntoVentaNodo = ({ sucursal, empresa, punto_venta }) => {
         <Puerto id="key_sucursal"
             value={punto_venta.key_sucursal}
             type="input"
+            onConnect={e => {
+                if (e.value == punto_venta.key_sucursal) return;
+                MDL.punto_venta.save({
+                    key: punto_venta.key,
+                    key_sucursal: e.value
+                }).then(e => {
+                    if (reload) reload()
+                    // this.loadData();
+                }).catch(e => {
+                    console.log(e)
+                })
+                console.log("onConnect", e)
+            }}
             style={{
                 position: "absolute",
                 backgroundColor: STheme.color.text,
