@@ -1,4 +1,4 @@
- import React, { Component } from 'react';
+import React, { Component } from 'react';
 import {
   SHr,
   SInput,
@@ -18,21 +18,21 @@ export default class TagManager extends Component {
 
     // Lista inicial de etiquetas ordenadas alfabéticamente
     this.allTags = [
-      { nombre: "bug", descripcion: "Informe de un error en el software", color: "#f87171", key_modelo_tag: "tag-1" },
-      { nombre: "dependencies", descripcion: "Actualizaciones o cambios en dependencias", color: "#6366f1", key_modelo_tag: "tag-2" },
-      { nombre: "design", descripcion: "Cambios o mejoras de diseño UI/UX", color: "#f59e0b", key_modelo_tag: "tag-3" },
-      { nombre: "documentation", descripcion: "Cambios relacionados con la documentación", color: "#fbbf24", key_modelo_tag: "tag-4" },
-      { nombre: "duplicate", descripcion: "Este issue o PR es un duplicado", color: "#facc15", key_modelo_tag: "tag-5" },
-      { nombre: "enhancement", descripcion: "Mejora o optimización existente", color: "#34d399", key_modelo_tag: "tag-6" },
-      { nombre: "feature", descripcion: "Nueva funcionalidad solicitada", color: "#60a5fa", key_modelo_tag: "tag-7" },
-      { nombre: "good first issue", descripcion: "Ideal para nuevos contribuidores", color: "#4ade80", key_modelo_tag: "tag-8" },
-      { nombre: "help wanted", descripcion: "Se busca ayuda con este problema", color: "#a78bfa", key_modelo_tag: "tag-9" },
-      { nombre: "invalid", descripcion: "El reporte no es válido o incompleto", color: "#94a3b8", key_modelo_tag: "tag-10" },
-      { nombre: "performance", descripcion: "Optimizaciones de rendimiento", color: "#10b981", key_modelo_tag: "tag-11" },
-      { nombre: "question", descripcion: "Requiere aclaración o información", color: "#f472b6", key_modelo_tag: "tag-12" },
-      { nombre: "security", descripcion: "Vulnerabilidad o mejora de seguridad", color: "#ef4444", key_modelo_tag: "tag-13" },
-      { nombre: "testing", descripcion: "Cambios o mejoras en pruebas", color: "#38bdf8", key_modelo_tag: "tag-14" },
-      { nombre: "wontfix", descripcion: "El problema no será solucionado", color: "#9ca3af", key_modelo_tag: "tag-15" },
+      // { nombre: "bug", descripcion: "Informe de un error en el software", color: "#f87171", key_modelo_tag: "tag-1" },
+      // { nombre: "dependencies", descripcion: "Actualizaciones o cambios en dependencias", color: "#6366f1", key_modelo_tag: "tag-2" },
+      // { nombre: "design", descripcion: "Cambios o mejoras de diseño UI/UX", color: "#f59e0b", key_modelo_tag: "tag-3" },
+      // { nombre: "documentation", descripcion: "Cambios relacionados con la documentación", color: "#fbbf24", key_modelo_tag: "tag-4" },
+      // { nombre: "duplicate", descripcion: "Este issue o PR es un duplicado", color: "#facc15", key_modelo_tag: "tag-5" },
+      // { nombre: "enhancement", descripcion: "Mejora o optimización existente", color: "#34d399", key_modelo_tag: "tag-6" },
+      // { nombre: "feature", descripcion: "Nueva funcionalidad solicitada", color: "#60a5fa", key_modelo_tag: "tag-7" },
+      // { nombre: "good first issue", descripcion: "Ideal para nuevos contribuidores", color: "#4ade80", key_modelo_tag: "tag-8" },
+      // { nombre: "help wanted", descripcion: "Se busca ayuda con este problema", color: "#a78bfa", key_modelo_tag: "tag-9" },
+      // { nombre: "invalid", descripcion: "El reporte no es válido o incompleto", color: "#94a3b8", key_modelo_tag: "tag-10" },
+      // { nombre: "performance", descripcion: "Optimizaciones de rendimiento", color: "#10b981", key_modelo_tag: "tag-11" },
+      // { nombre: "question", descripcion: "Requiere aclaración o información", color: "#f472b6", key_modelo_tag: "tag-12" },
+      // { nombre: "security", descripcion: "Vulnerabilidad o mejora de seguridad", color: "#ef4444", key_modelo_tag: "tag-13" },
+      // { nombre: "testing", descripcion: "Cambios o mejoras en pruebas", color: "#38bdf8", key_modelo_tag: "tag-14" },
+      // { nombre: "wontfix", descripcion: "El problema no será solucionado", color: "#9ca3af", key_modelo_tag: "tag-15" },
     ].sort((a, b) => a.nombre.localeCompare(b.nombre));
 
     this.selectedTags = [];
@@ -60,6 +60,7 @@ export default class TagManager extends Component {
     if (this.selectedTags.includes(tag))
       this.selectedTags = this.selectedTags.filter(t => t !== tag);
     else this.selectedTags.push(tag);
+    this.openTagPopup();
 
     this.forceUpdate();
   }
@@ -91,7 +92,8 @@ export default class TagManager extends Component {
           col="xs-12"
           center
           style={{
-            backgroundColor: STheme.color.card,
+            backgroundColor: STheme.color.primary,
+            // backgroundColor: STheme.color.card,
             maxWidth: 340,
             borderRadius: 8,
             overflow: "hidden",
@@ -136,11 +138,24 @@ export default class TagManager extends Component {
                     paddingHorizontal: 14,
                     paddingVertical: 8,
                     backgroundColor: this.selectedTags.includes(tag)
-                      ? STheme.color.gray
+                      ? "transparent"
+                      // ? STheme.color.gray
                       : "transparent",
                   }}
                   onPress={() => this.toggleTag(tag)}
                 >
+                  <SView width={27} row border={"transparent"}>
+                    <SInput center type="checkBox" value={this.selectedTags.includes(tag)}
+                      style={{ height: 18, width: 18 }}
+                      onChangeText={() => {
+                        if (!this.selectedTags.includes(tag)) this.selectedTags.push(tag);
+                        else this.selectedTags = this.selectedTags.filter(t => t !== tag);
+                        this.openTagPopup();
+                        this.forceUpdate();
+                      }}
+                    />
+                  </SView>
+
                   <SView
                     width={14}
                     height={14}
@@ -160,24 +175,15 @@ export default class TagManager extends Component {
               )}
               ListFooterComponent={() =>
                 this.search &&
-                !this.allTags.some(
-                  t => t.nombre.toLowerCase() === this.search.toLowerCase()
-                ) ? (
-                  <SView
-                    col="xs-12"
-                    center
-                    row
-                    style={{
-                      padding: 10,
-                      backgroundColor: STheme.color.secondary,
-                      borderRadius: 4,
-                      margin: 10,
-                    }}
-                    onPress={() => this.createNewTag()}
-                  >
-                    <SText color={STheme.color.white}>
-                      Crear nueva etiqueta “{this.search}”
-                    </SText>
+                  !this.allTags.some(
+                    t => t.nombre.toLowerCase() === this.search.toLowerCase()
+                  ) ? (
+                  <SView col="xs-11" row style={{ padding: 10, backgroundColor: STheme.color.card, borderRadius: 4, margin: 10, }} onPress={() => this.createNewTag()} >
+                    <SView flex row  >
+                      <SText col={"xs-12"} color={STheme.color.white} numberOfLines={4}> etiqueta “{this.search}” </SText>
+                    </SView>
+                    <SView width={18} row    ><SText fontSize={14}>+</SText></SView>
+
                   </SView>
                 ) : null
               }
@@ -197,7 +203,7 @@ export default class TagManager extends Component {
             <SText
               fontSize={12}
               bold
-              color={STheme.color.primary}
+              color={STheme.color.text}
               onPress={() => {
                 SNavigation.navigate("/tag");
                 SPopup.close("tag-popup");
@@ -249,12 +255,14 @@ export default class TagManager extends Component {
                     gap: 6,
                   }}
                 >
-                  <SText color="#fff" fontSize={13}>{tag.nombre}</SText>
+                  <SText color={STheme.color.text} fontSize={13}>{tag.nombre}</SText>
                   <SText
-                    color="#fff"
+                    color={STheme.color.text}
                     fontSize={16}
                     onPress={() => {
                       this.selectedTags = this.selectedTags.filter(t => t !== tag);
+                      this.openTagPopup();
+
                       this.forceUpdate();
                     }}
                   >
