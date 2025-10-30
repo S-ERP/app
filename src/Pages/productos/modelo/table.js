@@ -57,7 +57,48 @@ export default class table extends Component {
             }
         }
         console.log("Barcode read:", barcode);
+
+
+
     }
+
+
+    getContrastColor(hex: string): string {
+        if (!/^#([A-Fa-f0-9]{6})$/.test(hex)) return "#1a1a1a"; // Validación básica
+
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return luminance > 0.5 ? "#1a1a1a" : "#ffffff";
+    }
+
+    renderColorPreview(nombre: string, color: string) {
+        const displayName = nombre?.trim() || "Etiqueta de ejemplo";
+        const backgroundColor = `${color}33`; // color con transparencia
+
+        return (
+            <SView
+                height={18}
+                center
+                style={{
+                    backgroundColor,
+                    borderRadius: 20,
+                    borderWidth: 1,
+                    borderColor: color,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    paddingHorizontal: 6,
+                }}
+            >
+                <SText color="white" fontSize={10} numberOfLines={1}>
+                    {displayName}
+                </SText>
+            </SView>
+        );
+    }
+
     render() {
         return <SPage title={"Modelos"} disableScroll >
             <BarcodeIcon onChange={this.onChangeBarcode.bind(this)} />
@@ -155,9 +196,9 @@ export default class table extends Component {
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
                                     SNavigation.navigate("/tag", {
-                    
 
-                                         onSelect: (item) => {
+
+                                        onSelect: (item) => {
                                             MDL.inventario.modelo_tag.registrar({
                                                 key_modelo: e.row.key,
                                                 key_tag: item.key,
@@ -309,28 +350,36 @@ export default class table extends Component {
                 />
 
 
-                <DinamicTable.Col key={"tags"} label='Tags' width={120}
-                    data={(e) => (e.row?.tags ?? []).map(p => p?.tags?.descripcion)}
-                    customComponent={e => <SView row>
-                        {(e.row?.tags ?? []).map(item => (
-                            <SView key={item?.key} style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }}
-                                onPress={() => {
-                                    PopupTag.open({
-                                        editObject: { ...item, quitar: true },
-                                        onSuccess: () => {
-                                            if (this.table) this.table.loadData();
-                                        }
-                                    });
-                                }}>
-                                <SText fontSize={10} numberOfLines={1}>{item?.descripcion}</SText>
-                            </SView>
-                        ))}
-                    </SView>}
+
+
+                <DinamicTable.Col
+                    key="tags"
+                    label="Tags"
+                    width={120}
+                    data={e => (e.row?.tags ?? []).map(p => p?.tags?.nombre)}
+                    customComponent={e => (
+                        <SView row>
+                            {(e.row?.tags ?? []).map(item => (
+                                <SView
+                                    key={item?.key}
+                                    center
+                                    row
+                                    style={{ marginRight: 4, marginBottom: 4 }}
+                                    onPress={() =>
+                                        PopupTag.open({
+                                            editObject: { ...item, quitar: true },
+                                            onSuccess: () => this.table?.loadData(),
+                                        })
+                                    }
+                                >
+                                    {this.renderColorPreview(item?.nombre, item?.color)}
+                                </SView>
+                            )) }
+                        </SView>
+                    )}
                 />
 
-
-
-                <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable sd' width={150}
+                <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable' width={150}
                     data={(e) => e.row?.tipo_producto?.tipo}
                     cellStyle={{
                         alignItems: "center",
