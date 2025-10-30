@@ -23,6 +23,8 @@ export default class test3 extends Component {
           <SText fontSize={18} bold>Aplicar etiquetas a este producto</SText>
           <SHr height={16} />
 
+
+
           <SInput
             placeholder="Filtrar etiquetas"
             value={this.search}
@@ -33,27 +35,23 @@ export default class test3 extends Component {
             style={{ marginBottom: 12 }}
           />
 
-          <SView style={{ maxHeight: 300 }}>
+          <SView style={{ maxHeight: 300 }}  >
             {this.allTags
               .filter(tag => tag.toLowerCase().includes(this.search.toLowerCase()))
               .map(tag => (
 
-
-                   
-
                 // un cheack box
                 // y boton de color
                 <SView
-                type="checkBox" 
                   key={tag}
                   row
-                  center
+                  // center
                   height={44}
                   style={{
                     backgroundColor: this.selectedTags.includes(tag) ? '#1d4ed8' : '#ff7300ff',
-                    borderRadius: 12,
+                    borderRadius: 4,
                     marginBottom: 6,
-                    paddingHorizontal: 12
+                    // paddingHorizontal: 12
                   }}
                   onPress={() => {
                     if (!this.selectedTags.includes(tag)) this.selectedTags.push(tag);
@@ -62,12 +60,10 @@ export default class test3 extends Component {
                     this.forceUpdate();
                   }}
                 >
+                  {/* <SView col={"xs-12"} row backgroundColor='green' center> */}
 
 
-                    <SInput
-                    type="checkBox"
-                    center
-                    value={this.selectedTags.includes(tag)}
+                  <SInput type="checkBox" center value={this.selectedTags.includes(tag)}
                     onChangeText={() => {
                       if (!this.selectedTags.includes(tag)) this.selectedTags.push(tag);
                       else this.selectedTags = this.selectedTags.filter(t => t !== tag);
@@ -75,12 +71,9 @@ export default class test3 extends Component {
                     }}
                   />
 
-                  <SText color={this.selectedTags.includes(tag) ? '#fff' : '#111'} fontSize={14} bold={this.selectedTags.includes(tag)}>
-                    {tag}
-                  </SText>
-                  {this.selectedTags.includes(tag) && (
-                    <SText style={{ marginLeft: 'auto', color: '#93c5fd' }}>✓</SText>
-                  )}
+                  <SText color={this.selectedTags.includes(tag) ? '#fff' : '#111'} fontSize={14} bold={this.selectedTags.includes(tag)}> {tag} </SText>
+                  {this.selectedTags.includes(tag) && (<SText style={{ marginLeft: 'auto', color: '#93c5fd' }}>✓</SText>)}
+                  {/* </SView> */}
                 </SView>
               ))}
 
