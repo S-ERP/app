@@ -38,15 +38,19 @@ export default class test3 extends Component {
               .filter(tag => tag.toLowerCase().includes(this.search.toLowerCase()))
               .map(tag => (
 
+
+                   
+
                 // un cheack box
                 // y boton de color
                 <SView
+                type="checkBox" 
                   key={tag}
                   row
                   center
                   height={44}
                   style={{
-                    backgroundColor: this.selectedTags.includes(tag) ? '#1d4ed8' : '#f3f4f6',
+                    backgroundColor: this.selectedTags.includes(tag) ? '#1d4ed8' : '#ff7300ff',
                     borderRadius: 12,
                     marginBottom: 6,
                     paddingHorizontal: 12
@@ -58,6 +62,19 @@ export default class test3 extends Component {
                     this.forceUpdate();
                   }}
                 >
+
+
+                    <SInput
+                    type="checkBox"
+                    center
+                    value={this.selectedTags.includes(tag)}
+                    onChangeText={() => {
+                      if (!this.selectedTags.includes(tag)) this.selectedTags.push(tag);
+                      else this.selectedTags = this.selectedTags.filter(t => t !== tag);
+                      this.forceUpdate();
+                    }}
+                  />
+
                   <SText color={this.selectedTags.includes(tag) ? '#fff' : '#111'} fontSize={14} bold={this.selectedTags.includes(tag)}>
                     {tag}
                   </SText>
@@ -86,7 +103,7 @@ export default class test3 extends Component {
 
                 }}
               >
-                <SText color="#059669" fontSize={14}>+ Crear "{this.search}"</SText>
+                <SText color="#059669" fontSize={14}>+ Crear nueva etiqueta "{this.search}"</SText>
               </SView>
             )}
           </SView>
@@ -98,16 +115,11 @@ export default class test3 extends Component {
             center
             style={{ borderRadius: 12 }}
             onPress={() => {
-
-
               SNavigation.navigate("/tag")
-
               SPopup.close('tag-popup');
-              // this.forceUpdate(); // muestra etiquetas seleccionadas en la página
-
             }}
           >
-            <SText color="#fff" bold>Editar</SText>
+            <SText color="#fff" bold>Editar etiquetas</SText>
           </SView>
         </SView>
       )
