@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { SText, SView } from "servisofts-component";
+import { SText, SView, SNavigation } from "servisofts-component";
 import HoraLabel from "../Comp/HoraLabel";
 import QuotedMsg from "../Comp/QuotedMsg";
 
@@ -9,39 +9,83 @@ export default class MsgText extends Component {
         this.state = {};
     }
 
-    // Función para formatear el texto
-    formatText = (texto) => {
-        // Reemplazar texto entre asteriscos por negrita
-        let formattedText = texto.replace(/\*(.*?)\*/g, (match, p1) => `<b>${p1}</b>`);
+    // Función que separa texto normal y links
+    renderTextoConLinks = (texto) => {
+        if (!texto) return null;
 
-        // Reemplazar links por etiquetas <a> con la URL
-        formattedText = formattedText.replace(/https?:\/\/[^\s]+/g, (match) => `<a href="${match}" target="_blank">${match}</a>`);
+        // Expresión regular para detectar URLs
+        const regex = /(https?:\/\/[^\s]+)/g;
+        const partes = texto.split(regex);
 
-        return formattedText;
-    }
+        return partes.map((parte, i) => {
+            if (parte.match(regex)) {
+                // Es un link → clickeable y con estilo
+                return (
+                    <SText
+                        key={i}
+                        color={"#4da6ff"}
+                        style={{ textDecorationLine: "underline" }}
+                        onPress={() => SNavigation.openURL(parte)}
+                    >
+                        {parte}
+                    </SText>
+                );
+            }
+
+            // Detectar texto en negrita con *...*
+            const boldParts = parte.split(/(\*.*?\*)/g);
+            return boldParts.map((bp, j) => {
+                if (bp.startsWith("*") && bp.endsWith("*")) {
+                    return (
+                        <SText key={`${i}-${j}`} bold color={"white"}>
+                            {bp.replace(/\*/g, "")}
+                        </SText>
+                    );
+                }
+                return (
+                    <SText key={`${i}-${j}`} color={"white"}>
+                        {bp}
+                    </SText>
+                );
+            });
+        });
+    };
 
     render() {
-        const isEnviado = this.props.mensaje.fromMe;
         const texto = this.props.mensaje.body;
-        const hora = this.props.mensaje.time;
-
-        // Formatear el texto antes de mostrarlo
-        const formattedTexto = this.formatText(texto);
+        const isEnviado = this.props.mensaje.fromMe;
 
         return (
-            <SView style={{ backgroundColor: this.props.color, borderRadius: 8, padding: 6, width: "auto", maxWidth: "80%", alignItems: "flex-start" }}>
-                {this.props.mensaje.hasQuotedMsg && <QuotedMsg mensaje={this.props.mensaje} key_device={this.props.key_device} />}
-                <SText col={"xs-12"} clean color={"white"} fontSize={14}>
-                    {/* <span style={{  }} dangerouslySetInnerHTML={{ __html: formattedTexto + "                  " }} /> */}
-                    {formattedTexto}{"                   "}
+            <SView
+                style={{
+                    backgroundColor: this.props.color,
+                    borderRadius: 10,
+                    padding: 6,
+                    maxWidth: "80%",
+                    paddingRight: 5,
+                    alignItems: "flex-end",
+                    position: "relative",
+                }}
+            >
+                {this.props.mensaje.hasQuotedMsg && (
+                    <QuotedMsg
+                        mensaje={this.props.mensaje}
+                        key_device={this.props.key_device}
+                    />
+                )}
 
-                    {/* <SText clean>{"               "}</SText> */}
+                <SText fontSize={14} color={"white"}>
+                    {this.renderTextoConLinks(texto)}
                 </SText>
-                <HoraLabel mesaje={this.props.mensaje} style={{
-                    position: "absolute",
-                    bottom: 4, right: 4,
-                }} />
 
+                <HoraLabel
+                    mesaje={this.props.mensaje}
+                    style={{
+                        position: "",
+                        bottom: 4,
+                        right: 4,
+                    }}
+                />
             </SView>
         );
     }

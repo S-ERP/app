@@ -19,7 +19,7 @@ export default class ResumenTotales extends Component {
                         {monedaSymbol} {SMath.formatMoney(subtotalMoneda, 2)}
                     </SText>
                 </SView>
-                <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
+                {/* <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                     <SText fontSize={12} color={STheme.color.text}>
                         IVA ({numeroIva}%)
                     </SText>
@@ -32,7 +32,7 @@ export default class ResumenTotales extends Component {
                     <SText fontSize={13} color={STheme.color.text}>
                         - {monedaSymbol} {SMath.formatMoney(totalDescuento || 0, 2)}
                     </SText>
-                </SView>
+                </SView> */}
                 <SHr height={3} />
                 <SView col={"xs-12"} style={{ borderColor: STheme.color.gray, borderBottomWidth: 2 }} />
                 <SHr height={5} />

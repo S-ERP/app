@@ -21,7 +21,7 @@ import Carrito from "./Components/Carrito";
 // import PButtom from "../../Components/PButtom";
 // import SelectTipoPago from "../caja2/components/SelectTipoPago";
 
-export default class root extends React.Component {
+export default class Root extends React.Component {
 
     cajaActiva = false; // Bandera sin usar state
     selectedMoneda = this.props.selectedMoneda || null; // Moneda seleccionada
@@ -139,6 +139,11 @@ export default class root extends React.Component {
         })
 
         this.checkCaja();
+        this.renderCarrito();
+        Dimensions.addEventListener("change", this.onChangeDimensions);
+        this.evento = MDL.compra_venta.addEventListener("carrito_globo", () => {
+            this.forceUpdate()
+        });
 
         // MDL.empresa.getAllSucursales().then(sucursales => {
         //     if (this.inputs["sucursal"]) this.inputs["sucursal"].setValue(sucursales[0]?.descripcion);
@@ -160,6 +165,11 @@ export default class root extends React.Component {
             this.setState({ almacenes: arr })
         });
     }
+
+    onChangeDimensions = () => {
+        this.forceUpdate();
+    };
+
 
     handleSubmit = async (tipos_pago) => {
         console.log("DETALLE ", this.state.detalle);
@@ -267,7 +277,7 @@ export default class root extends React.Component {
         return (
             <SPage title={"Compras Rápidas"} disableScroll > {/* Corregido el título */}
                 {/* <SView col={"xs-12"} center> */}
-                <SView col={"xs-12"} flex padding={10} backgroundColor={STheme.color.card}>
+                <SView col={"xs-12"} flex padding={10} >
                     <SHr height={5} />
                     <SView col={"xs-12"} row>
                         <SView col={"xs-12 sm-4.5"} padding={2}>
@@ -424,10 +434,11 @@ export default class root extends React.Component {
                                     selectedMoneda={this.selectedMoneda}
                                     conStock={this.state.conStock} // Usar estado conStock
                                     onPressProducto={(producto) => {
+                                        console.log("PRODUCTO SELECT ", producto)
                                         this.carritoRef?.addProducto(producto);
                                         this.carritoRefModal?.addProducto?.(producto);
                                     }}
-                                    data={this.state.modelos}
+                                // data={this.state.modelos}
 
                                 />
                             )}
@@ -438,6 +449,7 @@ export default class root extends React.Component {
                             style={{
                                 display: this.getColSize() === 4 ? "none" : "flex",
                                 padding: 8,
+                                paddingBottom: 0,
                                 borderRightWidth: 1,
                                 borderRightColor: STheme.color.card,
                             }}
@@ -445,7 +457,7 @@ export default class root extends React.Component {
                             {this.renderCarrito()}
                         </SView>
                     </SView>
-                    <SView col={"xs-12"} center>
+                    {/* <SView col={"xs-12"} center>
                         <SHr height={25} />
                         <PButtom
                             type="primary"
@@ -477,13 +489,6 @@ export default class root extends React.Component {
                                     max3 += item.precioConvertido;
                                 });
 
-
-
-                                // console.log("MONTO MAXIMO: ", max);
-
-                                // return;
-
-
                                 SelectTipoPago.openPopup({
                                     key_punto_venta: MDL.caja.activa.key_punto_venta,
                                     montoMaximo: max,
@@ -494,10 +499,10 @@ export default class root extends React.Component {
                         >
                             GUARDAR
                         </PButtom>
-                    </SView>
+                    </SView> */}
                 </SView>
                 {/* </SView> */}
-                <SHr height={25} />
+                {/* <SHr height={25} /> */}
             </SPage>
         );
     }

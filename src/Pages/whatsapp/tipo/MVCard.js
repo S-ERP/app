@@ -22,7 +22,7 @@ export default class MVCard extends Component {
         console.log("onPress", this.props.mensaje);
     }
 
-   static vCardToJson(vcard) {
+    static vCardToJson(vcard) {
         const lines = vcard.trim().split(/\r?\n/);
         const json = {};
         let currentItem = null;
@@ -102,7 +102,7 @@ export default class MVCard extends Component {
                             backgroundColor: STheme.color.card,
                         }}>
 
-                            <SImage src={MDL.whatsapp.device.getUrlImage(this.props?.key_device, number+"@c.us")} />
+                            <SImage src={MDL.whatsapp.device.getUrlImage(this.props?.key_device, number + "@c.us")} />
                         </SView>
                         <SView style={{ width: 8 }} />
                         <SText bold>{json?.FN}</SText>
