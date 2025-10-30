@@ -62,8 +62,8 @@ export default class MsgText extends Component {
                     borderRadius: 10,
                     padding: 6,
                     maxWidth: "80%",
-                    paddingRight: 5,
-                    alignItems: "flex-end",
+                    paddingRight: 80,
+                    alignItems: "flex-start",
                     position: "relative",
                 }}
             >
@@ -81,7 +81,7 @@ export default class MsgText extends Component {
                 <HoraLabel
                     mesaje={this.props.mensaje}
                     style={{
-                        position: "",
+                        position: "absolute",
                         bottom: 4,
                         right: 4,
                     }}

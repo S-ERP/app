@@ -89,7 +89,8 @@ export default class ready extends Component {
                             row
                             center
                             onPress={() => {
-                                this.setState({ idchat: item.id._serialized });
+                                this.setState({ idchat: item.id._serialized, chatseleccionado: item })
+                                    ;
                             }}
                             style={{
                                 backgroundColor: isActive ? "#2a3942" : "transparent", // ← color de selección tipo WhatsApp
@@ -211,7 +212,7 @@ export default class ready extends Component {
                 {this.renderChats()}
             </View>
             <View style={{ flex: 1, }}>
-                {this.state.idchat && <Whatsapp.ChatById key={this.state.idchat} idDevice={device?.key} idchat={this.state.idchat} />}
+                {this.state.idchat && <Whatsapp.ChatById key={this.state.idchat} idDevice={device?.key} idchat={this.state.idchat} data={this.state.chatseleccionado} />}
                 {!this.state.idchat && <SView col={"xs-12"} center flex backgroundColor={STheme.color.card}>
                     <SView width={100} height={100}>
                         <SIconApp name='whatsapp' fill={STheme.color.lightGray} />
