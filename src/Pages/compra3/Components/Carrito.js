@@ -7,6 +7,9 @@ import ResumenTotales from './Carrito/ResumenTotales';
 import TecladoNumerico from './Carrito/TecladoNumerico';
 import MDL from '../../../MDL';
 import FotoCliente from './Foto/FotoCliente';
+import PButtom from '../../../Components/PButtom';
+import Root from '../root';
+import SelectTipoPago from '../../caja2/components/SelectTipoPago';
 
 
 export default class Carrito extends Component {
@@ -54,11 +57,18 @@ export default class Carrito extends Component {
 
     componentDidUpdate(prevProps) {
         if (prevProps.selectedMoneda !== this.props.selectedMoneda) {
+            // this.carrito = this.carrito.map((item) => ({
+            //     ...item,
+            //     precio_compra_moneda: this.props.selectedMoneda
+            //         ? item.precio_compra / (this.props.selectedMoneda.tipo_cambio || 1)
+            //         : item.precio_compra,
+            //     monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
+            // }));
             this.carrito = this.carrito.map((item) => ({
                 ...item,
-                precio_venta_moneda: this.props.selectedMoneda
-                    ? item.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
-                    : item.precio_venta,
+                precio_compra_moneda: this.props.selectedMoneda
+                    ? item.precio_compra / (this.props.selectedMoneda.tipo_cambio || 1)
+                    : item.precio_compra,
                 monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
             }));
             this.forceUpdate();
@@ -95,10 +105,10 @@ export default class Carrito extends Component {
         this.carrito = Array.isArray(nuevoCarrito)
             ? nuevoCarrito.map(item => ({
                 ...item,
-                precio_venta_original: item.precio_venta, // Store original price
-                precio_venta: this.props.selectedMoneda
-                    ? item.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
-                    : item.precio_venta,
+                precio_compra_original: item.precio_compra, // Store original price
+                precio_compra: this.props.selectedMoneda
+                    ? item.precio_compra / (this.props.selectedMoneda.tipo_cambio || 1)
+                    : item.precio_compra,
                 monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : 'Bs',
             }))
             : [];
@@ -125,6 +135,7 @@ export default class Carrito extends Component {
             } else {
                 item.cantidad += 1;
             }
+            console.log("SIII")
         } else {
             if (this.props.conStock && (!producto.stock || producto.stock <= 0)) {
                 SNotification.send({
@@ -138,14 +149,14 @@ export default class Carrito extends Component {
             this.carrito.push({
                 ...producto,
                 cantidad: 1,
-                precio_venta: producto.precio_venta,
-                precio_venta_moneda: producto.precio_venta_moneda || (this.props.selectedMoneda
-                    ? producto.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
-                    : producto.precio_venta),
+                precio_compra: producto.precio_compra,
+                precio_compra_moneda: producto.precio_compra_moneda || (this.props.selectedMoneda
+                    ? producto.precio_compra / (this.props.selectedMoneda.tipo_cambio || 1)
+                    : producto.precio_compra),
                 monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
             });
             this.forceUpdate();
-
+            console.log("NOOO")
         }
         this.getCarritoItemCount();
         this.forceUpdate();
@@ -212,8 +223,8 @@ export default class Carrito extends Component {
         this.forceUpdate();
     };
 
-    calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
-    calcularSubtotalMoneda = () => this.carrito.reduce((t, i) => t + i.precio_venta_moneda * i.cantidad, 0);
+    calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_compra * i.cantidad, 0);
+    calcularSubtotalMoneda = () => this.carrito.reduce((t, i) => t + i.precio_compra_moneda * i.cantidad, 0);
 
     calcularTotalConIVA = (subtotal) => {
         if (!this._enviromentsIva) return subtotal;
@@ -231,12 +242,15 @@ export default class Carrito extends Component {
     calcularTotalConDescuento = (total) => total - parseFloat(this.descuentoManual || "0");
 
     renderItemCarrito = ({ item }) => (
+        console.log("item", item),
         <CarritoItem
             item={item}
             onAumentar={() => this.aumentarCantidad(item)}
             onDisminuir={() => this.disminuirCantidad(item)}
             onEliminar={() => this.eliminarItem(item)}
+            selectedMoneda={this.props.selectedMoneda}
         />
+        // <SText>{item.descripcion}</SText>
     );
 
     getCarritoItems() {
@@ -257,7 +271,7 @@ export default class Carrito extends Component {
         const totalDescuento = this.descuentoManual || 0;
         const totalFinal = this.calcularTotalConDescuento(totalConIVA);
         const monedaSymbol = this.carrito.length > 0 ? this.carrito[0].monedaSymbol || "Bs" : "Bs";
-
+        console.log("CARRITO: ", this.carrito)
         return (
             <>
                 {subtotal <= 0 ? (
@@ -343,11 +357,16 @@ export default class Carrito extends Component {
                         >
                             <SScrollView2 disableHorizontal>
                                 <SHr height={4} />
-                                <FlatList
-                                    data={this.carrito}
-                                    keyExtractor={(item) => item.key.toString()}
-                                    renderItem={this.renderItemCarrito}
-                                />
+                                <SView flex >
+                                    <FlatList
+                                        style={{ flex: 1 }}
+                                        data={this.carrito}
+                                        keyExtractor={(item) => item.key.toString()}
+                                        renderItem={this.renderItemCarrito}
+                                    // renderItem={({ item }) => <SText>{item.descripcion}</SText>}
+                                    />
+                                </SView>
+
                             </SScrollView2>
                         </SView>
                         <SHr height={5} />
@@ -360,7 +379,7 @@ export default class Carrito extends Component {
                             totalFinal={totalFinal}
                             monedaSymbol={monedaSymbol}
                         />
-                        <SView col={"xs-12"} row center>
+                        {/* <SView col={"xs-12"} row center>
                             <SView col={"md-12 xl-6"} height={70}>
                                 <SView col={"xs-10"} center>
                                     <SInput
@@ -412,7 +431,7 @@ export default class Carrito extends Component {
                                     />
                                 </SView>
                             </SView>
-                        </SView>
+                        </SView> */}
                         <SHr height={4} />
                         <SView
                             col={"xs-12 md-0"}
@@ -430,9 +449,55 @@ export default class Carrito extends Component {
                                 />
                             </SView>
                         </SView>
+                        <SHr height={3} />
+                        <SView col={"xs-12"} center>
+                            <PButtom
+                                type="primary"
+                                small
+                                onPress={() => {
+                                    // this.inputs?.producto?.validate();
+                                    Root.prototype.inputs = this.inputs; // Asegura que cada Detalle tenga acceso a los inputs
+                                    // let invalid = false;
+                                    // this.state.detalle.forEach((item, index) => {
+                                    //     if (!item.producto) {
+                                    //         SNotification.send({
+                                    //             title: `Error en producto ${index + 1}`,
+                                    //             body: "Debe seleccionar un producto.",
+                                    //             color: STheme.color.danger,
+                                    //             time: 4000,
+                                    //         });
+                                    //         invalid = true;
+                                    //     }
+                                    // });
+                                    // if (invalid) return;
+
+                                    // var max = 0;
+                                    // var max2 = 0;
+                                    // var max3 = 0;
+                                    // this.state.detalle.forEach(item => {
+                                    //     max += item.precio;
+                                    //     max2 += item.cantidad * item.precioBase;
+                                    //     max3 += item.precioConvertido;
+                                    // });
+
+
+
+
+                                    SelectTipoPago.openPopup({
+                                        key_punto_venta: MDL.caja.activa.key_punto_venta,
+                                        montoMaximo: subtotal,
+                                        key_moneda: this.props.selectedMoneda?.key || this.state.monedas[0]?.key,
+                                        onSelect: (tipos_pago) => this.handleSubmit(tipos_pago),
+                                    });
+                                }}
+                            >
+                                GUARDAR
+                            </PButtom>
+                        </SView>
                     </SView>
+
                 )}
-                <TecladoNumerico
+                {/* <TecladoNumerico
                     cliente={this.cliente}
                     key_sucursal={this._key_sucursal}
                     key_cajero={this._key_cajero}
@@ -452,7 +517,7 @@ export default class Carrito extends Component {
                     onReloadCliente={() => {
                         this.cliente = null;
                     }}
-                />
+                /> */}
             </>
         );
     };

@@ -16,25 +16,25 @@ export default class Modelo extends Component {
 
     componentDidMount() {
         this.loadApis();
-        // this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
-        //     this.loadApis();
-        // });
+        this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
+            this.loadApis();
+        });
 
-        // Eliminar el evento "conStock" ya que usamos props
-        // this.evento2 = MDL.compra_venta.addEventListener("conStock", () => {
-        //     this.conStock = this.props.conStock;
-        //     this.forceUpdate();
-        // });
+       // Eliminar el evento "conStock" ya que usamos props
+        this.evento2 = MDL.compra_venta.addEventListener("conStock", () => {
+            this.conStock = this.props.conStock;
+            this.forceUpdate();
+        });
     }
 
     componentWillUnmount() {
-        // if (this.evento) {
-        //     MDL.compra_venta.removeEventListener(this.evento);
-        // }
+        if (this.evento) {
+            MDL.compra_venta.removeEventListener(this.evento);
+        }
 
-        // if (this.evento2) {
-        //     MDL.compra_venta.removeEventListener(this.evento2);
-        // }
+        if (this.evento2) {
+            MDL.compra_venta.removeEventListener(this.evento2);
+        }
     }
 
     async loadApis() {
@@ -81,7 +81,7 @@ export default class Modelo extends Component {
         const selectedMoneda = this.props.selectedMoneda || null;
 
         // let productosFiltrados = modelos;
-        console.log("PRODUCTOS: ", productosFiltrados);
+        // console.log("PRODUCTOS: ", productosFiltrados);
 
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter((m) => m.key_tipo_producto === tipoKey);
         // productosFiltrados = productosFiltrados.filter((m) => m.precio_venta > 0);
@@ -90,16 +90,16 @@ export default class Modelo extends Component {
         //     productosFiltrados = productosFiltrados.filter((m) => m.stock > 0);
         // }
 
-        // if (this.props.searchText) {
-        //     const search = this.props.searchText.toLowerCase();
-        //     productosFiltrados = productosFiltrados.filter(
-        //         (p) =>
-        //             p.descripcion?.toLowerCase().includes(search) ||
-        //             p.tipo_producto?.descripcion?.toLowerCase().includes(search) ||
-        //             p.marca?.descripcion?.toLowerCase().includes(search) ||
-        //             p.observacion?.toLowerCase().includes(search)
-        //     );
-        // }
+        if (this.props.searchText) {
+            const search = this.props.searchText.toLowerCase();
+            productosFiltrados = productosFiltrados.filter(
+                (p) =>
+                    p.descripcion?.toLowerCase().includes(search) ||
+                    p.tipo_producto?.descripcion?.toLowerCase().includes(search) ||
+                    p.marca?.descripcion?.toLowerCase().includes(search) ||
+                    p.observacion?.toLowerCase().includes(search)
+            );
+        }
 
         const colSize = this.getColSize();
         return (
@@ -108,7 +108,6 @@ export default class Modelo extends Component {
                     <SView col={"xs-12"} style={{ padding: 2 }}>
                         <SView col={"xs-12"} row padding={5}>
                             {productosFiltrados.map((producto, index) => {
-                                console.log("HOLAAA", producto)
                                 const src = producto.key
                                     ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}`
                                     : productSinFoto;
@@ -138,26 +137,26 @@ export default class Modelo extends Component {
                                             minWidth: "100%",
                                             overflow: "hidden",
                                         }}
-                                    // onPress={() => {
-                                    //     if (this.props.conStock && producto.stock <= 0) {
-                                    //         SNotification.send({
-                                    //             title: "Sin stock",
-                                    //             body: `No hay stock disponible para ${producto?.descripcion}.`,
-                                    //             color: STheme.color.danger,
-                                    //             time: 3000,
-                                    //         });
-                                    //         return;
-                                    //     }
+                                    onPress={() => {
+                                        if (this.props.conStock && producto.stock <= 0) {
+                                            SNotification.send({
+                                                title: "Sin stock",
+                                                body: `No hay stock disponible para ${producto?.descripcion}.`,
+                                                color: STheme.color.danger,
+                                                time: 3000,
+                                            });
+                                            return;
+                                        }
 
-                                    //     const productoAjustado = {
-                                    //         ...producto,
-                                    //         precio_venta: producto.precio_venta,
-                                    //         precio_venta_moneda: precioFormateado,
-                                    //         monedaSymbol,
-                                    //     };
-                                    //     this.props.onPressProducto?.(productoAjustado);
-                                    //     this.forceUpdate();
-                                    // }}
+                                        const productoAjustado = {
+                                            ...producto,
+                                            precio_venta: producto.precio_venta,
+                                            precio_venta_moneda: precioFormateado,
+                                            monedaSymbol,
+                                        };
+                                        this.props.onPressProducto?.(productoAjustado);
+                                        this.forceUpdate();
+                                    }}
                                     >
                                         <SView
                                             center
