@@ -1,124 +1,165 @@
 import React, { Component } from 'react';
-import { SDate, SHr, SMath, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
-import { DinamicTable } from 'servisofts-table';
-import SIconApp from '../Assets/SIconApp';
-import MDL from '../MDL';
-import FloatMenu from '../Components/FloatMenu';
-import Config from '../Config';
+// import { View, Text, FlatList } from 'react-native';
+import { SDate, SHr, SInput, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import FloatButtom from '../Components/FloatButtom';
-import testPopup from './testPopup';
-
+// import DiaItem from './DiaItem';
+// import TurnoComponent from '.';
+// import MDL from '../../MDL';
 
 export default class test3 extends Component {
+  constructor(props) {
+    super(props);
+    // Variables globales dentro de la clase
+    this.allTags = ["bug", "feature", "documentation", "enhancement", "help wanted"];
+    this.selectedTags = [];
+    this.search = "";
+  }
 
-  onSelect = SNavigation.getParam('onSelect');
+  openTagPopup() {
+    SPopup.open({
+      key: "tag-popup",
+      content: (
+        <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 550 }} padding={16} withoutFeedback>
+          <SText fontSize={18} bold>Aplicar etiquetas a este producto</SText>
+          <SHr height={16} />
 
-  async loadData() {
-    const modelos = await MDL.inventario.tag.getAll();
-    this.modelos = modelos;
-    return modelos;
+
+
+          <SInput
+            placeholder="Filtrar etiquetas"
+            value={this.search}
+            onChangeText={(text) => {
+              this.search = text;
+              this.openTagPopup(); // reabre popup con búsqueda actualizada
+            }}
+            style={{ marginBottom: 12 }}
+          />
+
+          <SView style={{ maxHeight: 300 }}  >
+            {this.allTags
+              .filter(tag => tag.toLowerCase().includes(this.search.toLowerCase()))
+              .map(tag => (
+
+                // un cheack box
+                // y boton de color
+                <SView
+                  key={tag}
+                  row
+                  // center
+                  height={44}
+                  style={{
+                    backgroundColor: this.selectedTags.includes(tag) ? '#1d4ed8' : '#ff7300ff',
+                    borderRadius: 4,
+                    marginBottom: 6,
+                    // paddingHorizontal: 12
+                  }}
+                  onPress={() => {
+                    if (!this.selectedTags.includes(tag)) this.selectedTags.push(tag);
+                    else this.selectedTags = this.selectedTags.filter(t => t !== tag);
+                    this.openTagPopup();
+                    this.forceUpdate();
+                  }}
+                >
+                  {/* <SView col={"xs-12"} row backgroundColor='green' center> */}
+
+
+                  <SInput type="checkBox" center value={this.selectedTags.includes(tag)}
+                    onChangeText={() => {
+                      if (!this.selectedTags.includes(tag)) this.selectedTags.push(tag);
+                      else this.selectedTags = this.selectedTags.filter(t => t !== tag);
+                      this.forceUpdate();
+                    }}
+                  />
+
+                  <SText color={this.selectedTags.includes(tag) ? '#fff' : '#111'} fontSize={14} bold={this.selectedTags.includes(tag)}> {tag} </SText>
+                  {this.selectedTags.includes(tag) && (<SText style={{ marginLeft: 'auto', color: '#93c5fd' }}>✓</SText>)}
+                  {/* </SView> */}
+                </SView>
+              ))}
+
+            {/* Crear nueva etiqueta */}
+            {this.search && !this.allTags.some(t => t.toLowerCase() === this.search.toLowerCase()) && (
+              <SView
+                center
+                height={44}
+                backgroundColor="#ecfdf5"
+                style={{ borderRadius: 12, marginTop: 8 }}
+                onPress={() => {
+                  const newTag = this.search.trim();
+                  if (newTag && !this.allTags.includes(newTag)) {
+                    this.allTags.push(newTag);
+                    this.selectedTags.push(newTag);
+                  }
+                  this.search = "";
+                  this.openTagPopup();
+                  this.forceUpdate(); // muestra etiquetas seleccionadas en la página
+
+                }}
+              >
+                <SText color="#059669" fontSize={14}>+ Crear nueva etiqueta "{this.search}"</SText>
+              </SView>
+            )}
+          </SView>
+
+          <SHr height={16} />
+          <SView
+            height={48}
+            backgroundColor="#10b981"
+            center
+            style={{ borderRadius: 12 }}
+            onPress={() => {
+              SNavigation.navigate("/tag")
+              SPopup.close('tag-popup');
+            }}
+          >
+            <SText color="#fff" bold>Editar etiquetas</SText>
+          </SView>
+        </SView>
+      )
+    });
   }
 
   render() {
     return (
-      <SPage title="TABLA DE COMPRAS" disableScroll>
-        <DinamicTable loadData={this.loadData} keyExtractor={e => e.key} center
+      <SPage title="Turnos y Horarios" disableScroll>
+        <SHr height={20} />
+        <SView col="xs-12" center padding={16}>
+          <SText bold marginBottom={8}>Etiquetas seleccionadas:</SText>
+          <SView row center style={{ gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+            {this.selectedTags.length === 0 ? (
+              <SText color="#999">Ninguna</SText>
+            ) : (
+              this.selectedTags.map(tag => (
+                <SView
+                  key={tag}
+                  row
+                  center
+                  style={{
+                    backgroundColor: '#3b82f6',
+                    paddingHorizontal: 12,
+                    paddingVertical: 6,
+                    borderRadius: 16,
+                    gap: 6
+                  }}
+                >
+                  <SText color="#fff" fontSize={13}>{tag}</SText>
+                  <SText
+                    color="#fff"
+                    fontSize={16}
+                    onPress={() => {
+                      this.selectedTags = this.selectedTags.filter(t => t !== tag);
+                      this.forceUpdate();
+                    }}
+                  >
+                    ×
+                  </SText>
+                </SView>
+              ))
+            )}
+          </SView>
 
-          key={"tabla_modelo"}
-          ref={ref => this.table = ref}
-          {...Config.table.applyTheme()}
-          // colors={Config.table.colors()}
-          // cellStyle={Config.table.cellStyle()}
-          // textStyle={Config.table.textStyle()}
-          selectType='single'
-          language='es'
-          listFooterComponent={() => {
-            return <SHr height={100} />
-
-          }}
-          // loadData={this.loadData.bind(this)}
-          onSelect={e => {
-
-            if (this.onSelect) {
-              this.onSelect(e.row);
-              SNavigation.goBack();
-              return;
-            }
-
-            FloatMenu.open({
-              e: e.evt,
-              height: 330,
-              label: e.row.descripcion,
-              options: [
-
-                {
-                  label: "Editar",
-                  icon: <SIconApp name='Edit' />,
-                  onPress: () => {
-                    testPopup.open({
-                      editObject: e.row,
-                      onSuccess: () => {
-                        if (this.table) {
-                          this.table.loadData();
-                        }
-                      }
-                    })
-                  }
-
-
-                },
-
-                {
-                  label: "Eliminar",
-                  icon: <SIconApp name='Delete' />,
-                  onPress: () => {
-                    SPopup.confirm({
-                      title: "Eliminar Modelo",
-                      message: "¿Está seguro de eliminar el modelo " + e.row.descripcion + "?",
-                      onPress: () => {
-                        MDL.inventario.tag.editar({
-                          key: e.row.key,
-                          estado: 0,
-                        }).then(() => {
-                          if (this.table) {
-                            this.table.loadData();
-                          }
-                        });
-                      }
-                    });
-                  }
-                },
-
-
-              ]
-            });
-
-
-          }}
-
-        >
-          <DinamicTable.Col key="index" label="N°" width={30} data={e => e.index + 1} />
-          <DinamicTable.Col key="key_usuario" label="Usuario" width={110} textStyle={{ fontSize: 10 }} data={e => e.row.key_usuario} />
-          <DinamicTable.Col key="fecha_on" label="FECHA" width={110} dataType="date" textStyle={{ fontSize: 10 }} data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} dateFormat="yyyy-MM-dd hh:mm" />
-          <DinamicTable.Col key="estado" label="estado" width={110} textStyle={{ fontSize: 10 }} data={e => e.row.estado} />
-          <DinamicTable.Col key="key_empresa" label="key_empresa" width={110} textStyle={{ fontSize: 10 }} data={e => e.row.key_empresa} />
-          <DinamicTable.Col key="descripcion" label="descripcion" width={110} textStyle={{ fontSize: 10 }} data={e => e.row.descripcion} />
-        </DinamicTable>
-
-
-
-        <FloatButtom onPress={() => {
-          testPopup.open({
-            editObject: null, // nuevo registro
-            onSuccess: () => {
-              if (this.table) {
-                this.table.loadData();
-              }
-            }
-          });
-        }} />
-
-
+          <FloatButtom onPress={() => this.openTagPopup()} />
+        </SView>
       </SPage>
     );
   }
