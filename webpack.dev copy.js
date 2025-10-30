@@ -5,11 +5,10 @@ const webpack = require('webpack');
 
 module.exports = merge(common, {
     mode: 'development',
-    // devtool: 'source-map',
+    devtool: 'source-map',
     // devtool: 'cheap-module-source-map',
-    devtool: 'eval-cheap-module-source-map',
     cache: {
-        type: "memory"
+        type: "filesystem"
     },
     devServer: {
         port: 3010,
@@ -26,19 +25,19 @@ module.exports = merge(common, {
             {
                 test: /\.(js|jsx|tsx|ts)$/,
                 exclude: /node_modules/,
-                use: [
-                    'thread-loader',
-                    {
-                        loader: 'esbuild-loader',
-                        options: { loader: 'tsx', target: 'es2020' },
-                    },],
+                use: [{
+                    loader: 'babel-loader',
+                    options: {
+                        plugins: [require.resolve('react-refresh/babel')],
+                    },
+                }],
             },
         ],
     },
     watchOptions: {
-        aggregateTimeout: 300,
+        aggregateTimeout: 200,
         // poll: 500,
-        ignored: ['**/node_modules/**', '**/public/**', '**/build/**', '**/src/Assets/**', "**/android/**", "**/ios/**"],
+        ignored: /node_modules|src\/Assets/,
         // ignored: /node_modules/,
     },
     // optimization: {

@@ -16,6 +16,7 @@ import DataBaseContainer from './DataBase/DataBaseContainer';
 import * as MDL from './MDL';
 import MenuGlobal from './Components/MenuGlobal';
 import PopupEditarTema from './Pages/empresa/Components/PopupEditarTema';
+import CarritoCompra from './Components/CarritoCompra';
 // import SplashScreen from 'react-native-splash-screen'
 setProps(Config.socket);
 
@@ -74,6 +75,7 @@ const App = (props) => {
                             props={{ navBar: NavBar, title: 'SERP', pages: Pages }}
                         />
                     </MenuGlobal>
+                    <CarritoCompra/>
                 </DataBaseContainer>
                 {/* <SUploadContainer /> */}
                 <Socket store={store} />

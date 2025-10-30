@@ -502,6 +502,7 @@ const NodoModelo = (props) => {
                     <SText clean>{" "}</SText>
                     {!!modelo.stock_padres && <Tag style={{ backgroundColor: STheme.color.warning }} >{`${modelo.stock_padres} und.`}</Tag>}
                     <SText clean>{" "}</SText>
+
                     <SText card padding={2} fontSize={8} onPress={() => {
                         SNavigation.navigate("/productos/modelo/ingrediente", { key_modelo: modelo.key })
                     }}>{"Elaborar"}</SText>
@@ -513,6 +514,13 @@ const NodoModelo = (props) => {
                         })
                         // SNavigation.navigate("/productos/modelo/ingrediente", {key_modelo: modelo.key })
                     }}>{"Descomponer"}</SText>
+                    <SText clean>{" "}</SText>
+                    <SText card padding={2} fontSize={8} onPress={() => {
+                        // SNavigation.navigate("/productos/modelo/ingrediente", { key_modelo: modelo.key })
+                        MDL.carrito.agregarItemAlCarritoDeCompras({
+                            nombre:"algo"
+                        })
+                    }}>{"Agregar al carrito"}</SText>
                 </SText>
 
             </SView>

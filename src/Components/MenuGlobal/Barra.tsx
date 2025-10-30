@@ -85,9 +85,8 @@ export default class Barra extends React.Component {
                     >
                         <Page label={"Perfil"} url={"/empresa"} permiso={"ver"} />
                         <Page label={"Sucursales"} url={"/sucursal"} permiso={"ver"} />
-                        <Page label={"Configurar íconos"} url={"/empresa/configIcon"} permiso={"edit"} permiso_url="/empresa/configIcon" />
-                        <Page label={"Config"} url={"/empresa/config"} permiso={"ver"} permiso_url="/empresa/config" />
-                        <Page label={"Config2"} url={"/empresa/config2"} permiso={"ver"} permiso_url="/empresa/config" />
+                        {/* <Page label={"Config"} url={"/empresa/config"} permiso={"ver"} permiso_url="/empresa/config" /> */}
+                        <Page label={"Pizarra"} url={"/empresa/config2"} permiso={"ver"} permiso_url="/empresa/config" />
                         <Page label={"Moneda"} url={"/empresa/moneda"} permiso={"ver"} permiso_url="/empresa/moneda" />
                         <Page label={"Tipos de pagos"} url={"/empresa/tipo_pago"} permiso={"ver"} />
                     </Page>
@@ -151,7 +150,7 @@ export default class Barra extends React.Component {
                         <Page label={"Ventas"} url={"/venta"} permiso="ver" />
                         <Page label={"Ventas Rapida"} url={"/puntoventa"} permiso="ver" permiso_url="/venta" />
                         <Page label={"Tabla"} url={"/venta/tabla"} permiso="ver" permiso_url="/venta" />
-                         <Page label={"Descuento"} url={"/descuento"} permiso="ver" permiso_url="/descuento" />
+                        <Page label={"Descuento"} url={"/descuento"} permiso="ver" permiso_url="/descuento" />
                     </Page>
 
                     <Page label={"Facturacion"}
@@ -218,12 +217,14 @@ export default class Barra extends React.Component {
                         icon={<SIconApp name="Ajustes" />}
                     >
                         <Page label={"Icons"} url={"/icons"} />
+                        <Page label={"Configurar íconos"} url={"/empresa/configIcon"} permiso={"edit"} permiso_url="/empresa/configIcon" />
                         <Page label={"Test"} url={"/test"} />
                         <Page label={"Test2"} url={"/test2"} />
                         <Page label={"Caja history"} url={"/caja/history"} />
                         <Page label={"Tema"} onPress={() => {
                             PopupEditarTema.open()
                         }} />
+
 
 
 
