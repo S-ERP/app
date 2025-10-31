@@ -21,5 +21,10 @@
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "meta": {
+    "title": "Cliente 1 - Mi App",
+    "description": "Bienvenido al portal de Cliente 1",
+    "image": "https://cliente1.midominio.com/logos/cliente1.png"
+  }
 }

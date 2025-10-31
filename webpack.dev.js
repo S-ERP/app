@@ -38,7 +38,14 @@ module.exports = merge(common, {
     watchOptions: {
         aggregateTimeout: 300,
         // poll: 500,
-        ignored: ['**/node_modules/**', '**/public/**', '**/build/**', '**/src/Assets/**', "**/android/**", "**/ios/**"],
+        ignored: [
+            '**/node_modules/**',
+            // '**/public/**',
+            '**/build/**',
+            '**/src/Assets/**',
+            "**/android/**",
+            "**/ios/**"
+        ],
         // ignored: /node_modules/,
     },
     // optimization: {

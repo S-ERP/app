@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Font, SButtom, SForm, SHr, SIcon, SInput, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { Font, SButtom, SForm, SHr, SIcon, SImage, SInput, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../Model';
 import CryptoJS from 'crypto-js';
 import { Container } from '../../Components';
+import DomainLogo from '../../Components/Domain/DomainLogo';
 
 export default class Login extends Component {
     static HIDDEN = true;
@@ -25,7 +26,8 @@ export default class Login extends Component {
                 <Container>
                     <SHr height={16} />
                     <SView width={300} height={100} center>
-                        <SIcon name={"Logo"} fill={STheme.color.secondary} />
+                        <DomainLogo />
+                        {/* <SImage src={require("../../../public/logo512.png")}/> */}
                     </SView>
                     <SHr height={16} />
                     <SText fontSize={18}>Iniciar sesión</SText>
