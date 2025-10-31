@@ -46,8 +46,8 @@ export default class MenuGlobal extends React.Component<MenuGlobalProps> {
         // if (pageClass?.TITLE) {
         if (Platform.OS == "web") {
             // const title = MDL.empresa?.select?.razon_social || "S-ERP"
-            const title = "S-ERP"
-            window.document.title = title + " - " + (pageClass.TITLE || e.name);
+            // const title = "S-ERP"
+            // window.document.title = title + " - " + (pageClass.TITLE || e.name);
         }
         // }
 

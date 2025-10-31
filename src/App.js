@@ -72,7 +72,7 @@ const App = (props) => {
                                     Firebase.getInitialURL();
                                 }
                             }}
-                            props={{ navBar: NavBar, title: 'SERP', pages: Pages }}
+                            props={{ navBar: NavBar, title: document.title, pages: Pages }}
                         />
                     </MenuGlobal>
                     <CarritoCompra/>
