@@ -25,11 +25,13 @@ class root extends Component {
         };
         return (
             <SPage  >
-                <Header title="Regístrate para acceder a todos los beneficios de ser un usuario activo en la app" />
+                {/* <Header title="Regístrate para acceder a todos los beneficios de ser un usuario activo en la app" /> */}
                 <SHr height={20} />
                 <Container>
                     <SView col={"xs-12"} center>
                         <SText fontSize={26} color={STheme.color.text}>Registro</SText>
+                        <SHr height={20} />
+                        <SText fontSize={15}color={STheme.color.text}>Regístrate para acceder a todos los beneficios de ser un usuario activo en la app</SText>
                     </SView>
                     <SHr height={20} />
                     <SForm
