@@ -6,6 +6,7 @@ import { SHr, SNavigation, SPage, SText, STheme, SView } from 'servisofts-compon
 import { Container } from '../../Components';
 import Background from 'servisofts-component/img/Background';
 import SIconApp from '../../Assets/SIconApp';
+import DomainLogo from '../../Components/Domain/DomainLogo';
 
 // create a component
 class comorecuperar extends Component {
@@ -16,8 +17,9 @@ class comorecuperar extends Component {
 
             <Container>
                 <SHr h={30} />
-                <SView height={70}>
-                    <SIconApp name='Servisofts' />
+                <SView width={300} height={100}>
+                    {/* <SIconApp name='Servisofts' /> */}
+                     <DomainLogo />
                 </SView>
                 
                 <SHr h={20} />

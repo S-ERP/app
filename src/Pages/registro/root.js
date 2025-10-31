@@ -10,6 +10,7 @@ import Header from './components/Header';
 import CryptoJS from 'crypto-js';
 
 class root extends Component {
+    static HIDDEN = true;
     constructor(props) {
         super(props);
         this.state = {
