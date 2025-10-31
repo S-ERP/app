@@ -518,7 +518,9 @@ const NodoModelo = (props) => {
                     <SText card padding={2} fontSize={8} onPress={() => {
                         // SNavigation.navigate("/productos/modelo/ingrediente", { key_modelo: modelo.key })
                         MDL.carrito.agregarItemAlCarritoDeCompras({
-                            nombre:"algo"
+                            modelo: modelo,
+                            cantidad: 1,
+                            precio: modelo.precio_compra
                         })
                     }}>{"Agregar al carrito"}</SText>
                 </SText>

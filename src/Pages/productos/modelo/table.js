@@ -60,7 +60,7 @@ export default class table extends Component {
     }
     render() {
         return <SPage title={"Modelos"} disableScroll >
-            <BarcodeIcon onChange={this.onChangeBarcode.bind(this)} />
+            {/* <BarcodeIcon onChange={this.onChangeBarcode.bind(this)} /> */}
             <DinamicTable
                 key={"tabla_modelo"}
                 ref={ref => this.table = ref}
@@ -73,6 +73,10 @@ export default class table extends Component {
                 listFooterComponent={() => {
                     return <SHr height={100} />
 
+                }}
+                cellStyle={{
+                    ...Config.table.cellStyle(),
+                    padding: 2, borderWidth: 0
                 }}
                 loadData={this.loadData.bind(this)}
                 onSelect={e => {
@@ -155,9 +159,9 @@ export default class table extends Component {
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
                                     SNavigation.navigate("/tag", {
-                    
 
-                                         onSelect: (item) => {
+
+                                        onSelect: (item) => {
                                             MDL.inventario.modelo_tag.registrar({
                                                 key_modelo: e.row.key,
                                                 key_tag: item.key,
@@ -224,27 +228,36 @@ export default class table extends Component {
 
                 }}
             >
-                <DinamicTable.Col key="index" label="#" textStyle={{ color: STheme.color.lightGray }} width={40} data={(e) => e.index + 1} />
-                <DinamicTable.Col key={"tipo_producto"} label='Tipo' width={150} data={(e) => e.row?.tipo_producto?.descripcion}
+                <DinamicTable.Col key="index" label="#" textStyle={{ color: STheme.color.lightGray, fontSize: 10 }} width={30} data={(e) => e.index + 1} />
+                <DinamicTable.Col key={"tipo_producto"} label='Tipo' width={90} data={(e) => e.row?.tipo_producto?.descripcion}
+                    textStyle={{
+                        fontSize: 10,
+                        color: STheme.color.lightGray,
+                    }}
                     customComponent={e => <ImageLabel {...e}
                         src={SSocket.api.inventario + "tipo_producto/.128_" + e.row.key_tipo_producto + "?date=" + this.state.time}
                         srcPreview={SSocket.api.inventario + "tipo_producto/" + e.row.key_tipo_producto + "?date=" + this.state.time}
                     />}
                 />
-                <DinamicTable.Col key={"marca"} label='Marca' width={150} data={(e) => e.row?.marca?.descripcion}
+                <DinamicTable.Col key={"marca"} label='Marca' width={90} data={(e) => e.row?.marca?.descripcion}
+                    textStyle={{
+                        fontSize: 10,
+                        color: STheme.color.lightGray,
+                    }}
                     customComponent={e => <ImageLabel {...e}
                         src={SSocket.api.inventario + "marca/.128_" + e.row.key_marca + "?date=" + this.state.time}
                         srcPreview={SSocket.api.inventario + "marca/" + e.row.key_marca + "?date=" + this.state.time}
                     />}
                 />
                 <DinamicTable.Col key={"nombre"} label='Nombre' width={200} data={(e) => e.row.descripcion}
+                    wrap
                     textStyle={{ fontWeight: "bold" }}
                     customComponent={e => <ImageLabel {...e}
                         src={SSocket.api.inventario + "modelo/.128_" + e.row.key + "?date=" + this.state.time}
                         srcPreview={SSocket.api.inventario + "modelo/" + e.row.key + "?date=" + this.state.time}
                     />}
                 />
-                <DinamicTable.Col key={"observacion"} label='Observacion' width={200} data={(e) => e.row.observacion}
+                <DinamicTable.Col key={"observacion"} label='Observacion' width={150} data={(e) => e.row.observacion}
 
                 />
                 <DinamicTable.Col key={"precio_compra"} label='P. Compra' width={70}
@@ -373,9 +386,11 @@ const ImageLabel = (props) => {
         alignItems: "center",
     }}>
         <SView style={{
-            width: 30,
-            height: 30,
+            width: 25,
+            height: 25,
             borderRadius: 4,
+            borderWidth: 1,
+            borderColor: STheme.color.card,
             overflow: "hidden",
             backgroundColor: STheme.color.card + "66",
         }}>
@@ -386,6 +401,6 @@ const ImageLabel = (props) => {
                 }} />
         </SView>
         <SView width={8} />
-        <SText flex style={props.textStyle} numberOfLines={1} >{props.data}</SText>
+        <SText flex style={props.textStyle} numberOfLines={props.colData.wrap ? 0 : 1} >{props.data}</SText>
     </SView>
 }
