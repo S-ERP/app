@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Issue #42 - Labels</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+
+  <!-- Header -->
+  <header class="bg-gray-900 text-white py-3 px-4">
+    <div class="max-w-7xl mx-auto flex items-center gap-4">
+      <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+      </svg>
+      <span class="text-xl font-semibold">mi-proyecto / backend-api</span>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <main class="max-w-3xl">
+      <div class="bg-white rounded-lg border border-gray-300 p-6 mb-6">
+        <div class="flex items-start justify-between mb-4">
+          <h1 class="text-3xl font-semibold">
+            Agregar autenticación de usuarios
+            <span class="text-gray-500 font-normal text-2xl">#42</span>
+          </h1>
+          <button onclick="openLabelsModal()" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-medium">
+            Editar
+          </button>
+        </div>
+
+        <!-- Labels seleccionados -->
+        <div id="selectedLabelsDisplay" class="flex flex-wrap gap-2">
+          <span class="text-sm text-gray-500">Ningún label aplicado aún</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL DE LABELS -->
+  <div id="labelsModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
+      <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+        <h3 class="text-lg font-semibold">Seleccionar labels</h3>
+        <button onclick="closeLabelsModal()" class="text-gray-500 hover:text-gray-700">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-4 flex-1 overflow-y-auto">
+        <!-- Buscador -->
+        <input 
+          type="text" 
+          id="labelSearch"
+          placeholder="Filtrar labels..." 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
+        >
+
+        <!-- Lista de labels -->
+        <div id="labelsList" class="space-y-1">
+          <!-- Solo bug y feature por defecto -->
+          <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer group">
+            <input type="checkbox" class="label-checkbox w-4 h-4 rounded border-gray-300" data-label="bug" data-color="#dc2626" data-text="text-white">
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-600 text-white">bug</span>
+          </label>
+
+          <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer group">
+            <input type="checkbox" class="label-checkbox w-4 h-4 rounded border-gray-300" data-label="feature" data-color="#2563eb" data-text="text-white">
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-600 text-white">feature</span>
+          </label>
+        </div>
+
+        <!-- Mensaje "Crear nuevo" cuando no hay resultados -->
+        <div id="noResultsMessage" class="hidden mt-3 p-2">
+          <button id="createFromSearchBtn" class="flex items-center gap-2 text-sm text-green-600 hover:bg-green-50 rounded p-2 w-full font-medium">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span>Crear "<span id="searchTermDisplay"></span>"</span>
+          </button>
+        </div>
+
+        <!-- Botón manual crear -->
+        <div class="mt-4 pt-3 border-t border-gray-200">
+          <button onclick="openCreateLabelModal()" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+            + Crear nuevo label
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CREAR LABEL -->
+  <div id="createLabelModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+      <div class="p-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold">Crear nuevo label</h3>
+      </div>
+      <div class="p-4">
+        <input type="text" id="newLabelName" placeholder="Nombre del label" class="w-full px-3 py-2 border rounded-md mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <input type="color" id="newLabelColor" value="#3b82f6" class="w-full h-10 rounded border mb-4">
+        <div class="flex gap-2">
+          <button onclick="closeCreateLabelModal()" class="flex-1 px-4 py-2 border rounded-md hover:bg-gray-50">Cancelar</button>
+          <button onclick="saveNewLabel()" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Crear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Elementos
+    const selectedLabelsDisplay = document.getElementById('selectedLabelsDisplay');
+    const labelsModal = document.getElementById('labelsModal');
+    const labelSearch = document.getElementById('labelSearch');
+    const labelsList = document.getElementById('labelsList');
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    const searchTermDisplay = document.getElementById('searchTermDisplay');
+    const createFromSearchBtn = document.getElementById('createFromSearchBtn');
+
+    let currentSearchTerm = '';
+
+    // Abrir / Cerrar modal
+    function openLabelsModal() {
+      labelsModal.classList.remove('hidden');
+      labelSearch.focus();
+    }
+    function closeLabelsModal() {
+      labelsModal.classList.add('hidden');
+      labelSearch.value = '';
+      filterLabels();
+    }
+
+    // Cerrar al hacer clic fuera
+    labelsModal.addEventListener('click', e => {
+      if (e.target === labelsModal) closeLabelsModal();
+    });
+
+    // Actualizar labels seleccionados
+    function updateSelectedLabels() {
+      selectedLabelsDisplay.innerHTML = '';
+      const checked = document.querySelectorAll('.label-checkbox:checked');
+
+      if (checked.length === 0) {
+        selectedLabelsDisplay.innerHTML = '<span class="text-sm text-gray-500">Ningún label aplicado aún</span>';
+        return;
+      }
+
+      checked.forEach(cb => {
+        const name = cb.dataset.label;
+        const color = cb.dataset.color;
+        const text = cb.dataset.text;
+
+        const span = document.createElement('span');
+        span.className = `inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${text}`;
+        span.style.backgroundColor = color;
+        span.innerHTML = `${name} <button onclick="uncheckLabel('${name}')" class="ml-1 hover:bg-white/30 rounded-full p-0.5">×</button>`;
+        selectedLabelsDisplay.appendChild(span);
+      });
+    }
+
+    window.uncheckLabel = function(name) {
+      const cb = document.querySelector(`.label-checkbox[data-label="${name}"]`);
+      if (cb) cb.checked = false;
+      updateSelectedLabels();
+    };
+
+    // Filtrar labels
+    function filterLabels() {
+      const term = labelSearch.value.trim().toLowerCase();
+      currentSearchTerm = term;
+      let visible = 0;
+
+      document.querySelectorAll('#labelsList label').forEach(label => {
+        const name = label.textContent.toLowerCase();
+        if (name.includes(term)) {
+          label.style.display = 'flex';
+          visible++;
+        } else {
+          label.style.display = 'none';
+        }
+      });
+
+      // Mostrar "Crear" si no hay resultados
+      if (visible === 0 && term) {
+        noResultsMessage.classList.remove('hidden');
+        searchTermDisplay.textContent = term;
+      } else {
+        noResultsMessage.classList.add('hidden');
+      }
+    }
+
+    labelSearch.addEventListener('input', filterLabels);
+
+    // Crear desde búsqueda
+    createFromSearchBtn.addEventListener('click', () => {
+      const name = currentSearchTerm;
+      document.getElementById('newLabelName').value = name;
+      closeLabelsModal();
+      openCreateLabelModal();
+    });
+
+    // Modal crear label
+    function openCreateLabelModal() {
+      document.getElementById('createLabelModal').classList.remove('hidden');
+      document.getElementById('newLabelName').focus();
+    }
+    function closeCreateLabelModal() {
+      document.getElementById('createLabelModal').classList.add('hidden');
+      document.getElementById('newLabelName').value = '';
+    }
+
+    // Guardar nuevo label
+    window.saveNewLabel = function() {
+      const name = document.getElementById('newLabelName').value.trim();
+      const color = document.getElementById('newLabelColor').value;
+      if (!name) return alert('Ingresa un nombre');
+
+      if (document.querySelector(`[data-label="${name.toLowerCase()}"]`)) {
+        return alert('Ya existe un label con ese nombre');
+      }
+
+      const textClass = getContrastColor(color) === '#ffffff' ? 'text-white' : 'text-gray-900';
+
+      const labelHTML = `
+        <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer group">
+          <input type="checkbox" class="label-checkbox w-4 h-4 rounded border-gray-300" 
+                 data-label="${name}" data-color="${color}" data-text="${textClass}" checked>
+          <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${textClass}" 
+                style="background-color: ${color}">${name}</span>
+        </label>
+      `;
+
+      labelsList.insertAdjacentHTML('beforeend', labelHTML);
+      closeCreateLabelModal();
+      updateSelectedLabels();
+
+      // Volver al modal de labels
+      openLabelsModal();
+      labelSearch.value = name;
+      filterLabels();
+    };
+
+    function getContrastColor(hex) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      const l = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      return l > 0.5 ? '#000000' : '#ffffff';
+    }
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.label-checkbox').forEach(cb => {
+        cb.addEventListener('change', updateSelectedLabels);
+      });
+      updateSelectedLabels();
+    });
+  </script>
+</body>
+</html>

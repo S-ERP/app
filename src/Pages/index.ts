@@ -95,6 +95,7 @@ import contactos from "./contactos";
 import descuento from "./descuento";
 import excel from "./excel";
 import tag from "./tag";
+import test3 from "./test3";
 
 export default SPage.combinePages("/", {
   // "":Example,
@@ -121,6 +122,7 @@ export default SPage.combinePages("/", {
   widgets,
   test: test,
   test2: test2,
+  test3: test3,
   start: start,
   wiki: wiki,
 
