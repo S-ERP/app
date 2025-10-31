@@ -77,9 +77,9 @@ export default class MsgText extends Component {
                     borderRadius: 10,
                     paddingVertical: 6,
                     paddingLeft: 8,
-                    paddingRight: 55,
+                    paddingRight: 80,
                     maxWidth: "80%",
-                    alignItems: "flex-end",
+                    alignItems: "flex-start",
                     alignSelf: isEnviado ? "flex-end" : "flex-start",
                     position: "relative",
                 }}
@@ -100,7 +100,7 @@ export default class MsgText extends Component {
                     style={{
                         position: "absolute",
                         bottom: 4,
-                        right: 8,
+                        right: 4,
                     }}
                 />
             </SView>
