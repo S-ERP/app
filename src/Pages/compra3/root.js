@@ -278,8 +278,8 @@ export default class Root extends React.Component {
             <SPage title={"Compras Rápidas"} disableScroll > {/* Corregido el título */}
                 {/* <SView col={"xs-12"} center> */}
                 <SView col={"xs-12"} flex padding={10} >
-                    <SHr height={5} />
-                    <SView col={"xs-12"} row>
+                    {/* <SHr height={5} /> */}
+                    {/* <SView col={"xs-12"} row>
                         <SView col={"xs-12 sm-4.5"} padding={2}>
                             <SInput
                                 ref={ref => (this.inputs["almacen"] = ref)}
@@ -359,7 +359,7 @@ export default class Root extends React.Component {
                             )}
                         </SView>
                     </SView>
-                    <SHr h={1} color={STheme.color.card} />
+                    <SHr h={1} color={STheme.color.card} /> */}
                     {/* <SView col={"xs-12"} flex>
                             <SText fontSize={10} padding={4} color={STheme.color.lightGray}>PRODUCTOS:</SText>
                             <FlatList
@@ -409,7 +409,7 @@ export default class Root extends React.Component {
                             </SView>
                         </SView> */}
                     <SView col="xs-12" row flex>
-                        <SView col={"xs-8"}
+                        <SView col={"xs-12"}
                             style={{
                                 display: this.state.showCarritoModal ? "none" : "flex",
                                 borderRightWidth: 1,
@@ -435,15 +435,15 @@ export default class Root extends React.Component {
                                     conStock={this.state.conStock} // Usar estado conStock
                                     onPressProducto={(producto) => {
                                         console.log("PRODUCTO SELECT ", producto)
-                                        this.carritoRef?.addProducto(producto);
-                                        this.carritoRefModal?.addProducto?.(producto);
+                                        this.carritoRef?.addProducto2(producto);
+                                        this.carritoRefModal?.addProducto2?.(producto);
                                     }}
                                 // data={this.state.modelos}
 
                                 />
                             )}
                         </SView>
-                        <SView
+                        {/* <SView
                             flex
                             col="xs-4"
                             style={{
@@ -455,7 +455,7 @@ export default class Root extends React.Component {
                             }}
                         >
                             {this.renderCarrito()}
-                        </SView>
+                        </SView> */}
                     </SView>
                     {/* <SView col={"xs-12"} center>
                         <SHr height={25} />

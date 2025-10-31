@@ -20,7 +20,7 @@ export default class Modelo extends Component {
             this.loadApis();
         });
 
-       // Eliminar el evento "conStock" ya que usamos props
+        // Eliminar el evento "conStock" ya que usamos props
         this.evento2 = MDL.compra_venta.addEventListener("conStock", () => {
             this.conStock = this.props.conStock;
             this.forceUpdate();
@@ -137,26 +137,32 @@ export default class Modelo extends Component {
                                             minWidth: "100%",
                                             overflow: "hidden",
                                         }}
-                                    onPress={() => {
-                                        if (this.props.conStock && producto.stock <= 0) {
-                                            SNotification.send({
-                                                title: "Sin stock",
-                                                body: `No hay stock disponible para ${producto?.descripcion}.`,
-                                                color: STheme.color.danger,
-                                                time: 3000,
-                                            });
-                                            return;
-                                        }
+                                        onPress={() => {
 
-                                        const productoAjustado = {
-                                            ...producto,
-                                            precio_venta: producto.precio_venta,
-                                            precio_venta_moneda: precioFormateado,
-                                            monedaSymbol,
-                                        };
-                                        this.props.onPressProducto?.(productoAjustado);
-                                        this.forceUpdate();
-                                    }}
+                                            // if (this.props.conStock && producto.stock <= 0) {
+                                            //     SNotification.send({
+                                            //         title: "Sin stock",
+                                            //         body: `No hay stock disponible para ${producto?.descripcion}.`,
+                                            //         color: STheme.color.danger,
+                                            //         time: 3000,
+                                            //     });
+                                            //     return;
+                                            // }
+
+                                            const productoAjustado = {
+                                                ...producto,
+                                                precio_compra: producto.precio_compra,
+                                                precio_compra_moneda: precioFormateado,
+                                                monedaSymbol,
+                                            };
+                                            // this.props.onPressProducto?.(productoAjustado);
+                                            MDL.carrito.agregarItemAlCarritoDeCompras({
+                                                modelo: productoAjustado,
+                                                cantidad: 1,
+                                                precio: productoAjustado.precio_compra
+                                            })
+                                            this.forceUpdate();
+                                        }}
                                     >
                                         <SView
                                             center

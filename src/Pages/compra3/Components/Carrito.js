@@ -115,6 +115,14 @@ export default class Carrito extends Component {
         this.forceUpdate();
     }
 
+    addProducto2 = (producto) => {
+        MDL.carrito.agregarItemAlCarritoDeCompras({
+            modelo: producto,
+            cantidad: 1,
+            precio: producto.precio_compra
+        })
+    }
+
     addProducto = (producto) => {
         console.log("🎪🎪🎪 addProducto", producto);
         const index = this.carrito.findIndex((p) => p.key === producto.key);
