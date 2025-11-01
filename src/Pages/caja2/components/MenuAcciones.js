@@ -78,7 +78,7 @@ export default class MenuAcciones extends Component<{ caja: any, movimientos: an
                 {/* <SText card padding={8} margin={4} style={{ backgroundColor: STheme.color.danger }}>{"Pagar a Proveedores"}</SText> */}
                 {/* <SText card padding={8} margin={4} onPress={this.enviarAlBanco.bind(this)}>{"Enviar al Banco"}</SText> */}
 
-                <SText card padding={8} margin={4} onPress={() => { SNavigation.navigate("/proveedor", {pagar: true}) }}>{"Pagar a Proveedores"}</SText>
+                <SText card padding={8} margin={4} onPress={() => { SNavigation.navigate("/proveedor") }}>{"Pagar a Proveedores"}</SText>
                 <SText card padding={8} margin={4} onPress={() => { SNavigation.navigate("/cliente") }}>{"Cobrar a Clientes"}</SText>
 
                 <SText card padding={8} style={{

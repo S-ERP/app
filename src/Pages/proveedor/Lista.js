@@ -15,7 +15,6 @@ export default class Lista extends Component {
     constructor(props) {
         super(props);
         this.state = {};
-        this.pagar_proveedor = SNavigation.getParam('pagar');
     }
 
 
@@ -133,18 +132,18 @@ export default class Lista extends Component {
                     // sorters: [{ key: 'fecha_on', order: 'asc', type: 'date' }],
                     let filters = []
                     
-                    if (this.pagar_proveedor) {
-                        filters.push({
-                            col: "cuota_6",
-                            type: "string",
-                            operator: "!=",
-                            value: ""
-                        })
-                    }
+                    // if (this.pagar_proveedor) {
+                    //     filters.push({
+                    //         col: "cuota_6",
+                    //         type: "string",
+                    //         operator: "!=",
+                    //         value: ""
+                    //     })
+                    // }
 
                     return {
                         filters: filters,
-                        sorters: [{ key: 'fecha_on', order: 'asc', type: 'date' }],
+                        sorters: [{key:'cuota_6', order:'desc', type:'number'},{ key: 'fecha_on', order: 'asc', type: 'date' } ],
 
                     }
                 }}
