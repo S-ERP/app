@@ -556,7 +556,7 @@ const NodoModelo = (props) => {
         <SView col={"xs-12"} row style={{
             paddingHorizontal: 4
         }}>
-            <SView ew card padding={3} row center width={70} onPress={() => {
+            <SView  card padding={3} row center width={70} onPress={() => {
                 MDL.carrito.agregarItemAlCarritoDeCompras({
                     modelo: modelo,
                     cantidad: 1,
@@ -567,16 +567,16 @@ const NodoModelo = (props) => {
                     <SIconApp name="compraCarro" fill={STheme.color.text} />
                 </SView>
                 <SView width={3} />
-                <SText fontSize={8}>COMPRAR</SText>
+                <SText fontSize={8} center>COMPRAR</SText>
             </SView>
             <SView flex /> 
-            <SView card padding={3} row center width={70} style={{ alignItems: "flex-end" }} onPress={() => {
+            <SView card padding={3} row  width={65} style={{ alignItems: "flex-end" }} onPress={() => {
             }}>
                 <SView height={15} width={15}  >
                     <SIconApp name="ventaCarro" fill={STheme.color.text} />
                 </SView>
                 <SView width={6} />
-                <SText fontSize={8}>VENDER</SText>
+                <SText fontSize={8} center height={15} >VENDER</SText> 
             </SView>
             <SHr height={5} />
         </SView>
