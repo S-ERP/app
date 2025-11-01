@@ -176,7 +176,8 @@ const Pizarra = (props: PizarraProps) => {
         })
         .onUpdate((e) => {
             if (preventPan.value) return;
-            if (isSpaceDown.value) {
+
+            if (isSpaceDown.value || e.numberOfPointers > 1) {
                 translateX.value = panGesture.context.startX + e.translationX / scale.value;
                 translateY.value = panGesture.context.startY + e.translationY / scale.value;
                 return;
@@ -204,10 +205,27 @@ const Pizarra = (props: PizarraProps) => {
                 startScale: scale.value,
                 startX: translateX.value,
                 startY: translateY.value,
+                focalX: e.focalX,
+                focalY: e.focalY,
             };
+
         })
         .onUpdate((event) => {
-            scale.value = pinchGesture.context.startScale * event.scale
+
+            const scaleChange = event.scale !== 1 ? event.scale : 1;
+            const newScale = pinchGesture.context.startScale * scaleChange;
+
+            // // Calcular desplazamiento del punto focal para mantener el zoom centrado en los dedos
+            // const dx = (event.focalX - pinchGesture.context.focalX) / scale.value;
+            // const dy = (event.focalY - pinchGesture.context.focalY) / scale.value;
+
+
+            // // Ajustar traslación para que el zoom no mueva el contenido fuera del foco
+            // translateX.value = pinchGesture.context.startX + dx;
+            // translateY.value = pinchGesture.context.startY + dy;
+
+            scale.value = newScale
+
         });
 
     const doubleTapGesture: any = Gesture.Tap().maxDistance(10).maxDelay(200).numberOfTaps(2).onStart((e) => {

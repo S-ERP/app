@@ -16,10 +16,12 @@ export default class carrito extends MDLAbstract<EventListener> {
     items: CarritoItem[],
     cantidad_items: number,
     monto_total: number,
+    key_almacen?: string,
+    key_proveedor?: string,
   } = {
       cantidad_items: 0,
       monto_total: 0,
-      items: []
+      items: [],
     }
 
 
@@ -34,7 +36,10 @@ export default class carrito extends MDLAbstract<EventListener> {
     this.calcularValoresCarritDeCompras();
 
 
-
+  }
+  limpiarCarritoCompras = () => {
+    this.carrito_compra.items = [];
+    this.calcularValoresCarritDeCompras();
   }
 
   calcularValoresCarritDeCompras() {
@@ -64,5 +69,7 @@ export default class carrito extends MDLAbstract<EventListener> {
 
 
   }
+
+  
 
 }

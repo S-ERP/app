@@ -4,6 +4,7 @@ import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import { FlatList } from "react-native";
+import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 
 type PopupCarritoProps = {
 
@@ -12,19 +13,25 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     static open(props: PopupCarritoProps) {
         SPopup.open({
             key: "PopupCarrito",
-            type: "1",
-            content: <SView style={{
-                width: "100%",
-                maxWidth: 500,
-                height: 500,
-                maxHeight: "100%",
-                backgroundColor: STheme.color.background,
-                borderRadius: 8,
-                cursor: "default",
-                userSelect: "text"
-            }} withoutFeedback>
-                <PopupCarrito {...props} />
-            </SView>
+            type: "3",
+            content:
+                <SView style={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    width: "100%",
+                    maxWidth: 300,
+                    height: 500,
+                    maxHeight: "100%",
+                    backgroundColor: STheme.color.background,
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: STheme.color.card,
+                    cursor: "default",
+                    userSelect: "text"
+                }} withoutFeedback>
+                    <PopupCarrito {...props} />
+                </SView>
         })
     }
     handleChange = () => {
@@ -40,14 +47,26 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     render() {
         const items = MDL.carrito.carrito_compra.items;
         return <SView col={"xs-12"} height>
+            <SHr />
             <SText center color={STheme.color.lightGray} bold>{"Carrito de compras"}</SText>
+            <SView style={{
+                padding: 4,
+                width: 33, height: 33,
+                position: "absolute",
+                right: 0,
+                top: 0,
+            }} onPress={() => {
+                SPopup.close("PopupCarrito")
+            }}>
+                <SIconApp name="Close" fill={STheme.color.text} />
+            </SView>
             <SHr />
             <SView row col={"xs-12"} style={{
                 paddingHorizontal: 8
             }}>
-                <SText color={STheme.color.lightGray}>{"Productos"} ({MDL.carrito.carrito_compra.cantidad_items})</SText>
+                <SText color={STheme.color.lightGray} fontSize={12}>{"Productos"} ({MDL.carrito.carrito_compra.cantidad_items})</SText>
                 <SView flex />
-                <SText color={STheme.color.lightGray}>{"Sub Total"}</SText>
+                <SText color={STheme.color.lightGray} fontSize={12}>{"Sub Total"}</SText>
 
             </SView>
             <SHr />
@@ -58,13 +77,38 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     return <ItemComp item={item} />
                 }}
             />
-            <SView height={40}  >
-                <SHr h={1} color={STheme.color.card} />
+            <SHr h={1} color={STheme.color.card} />
+            <SView padding={8}>
+                <SText col={"xs-12"} style={{ textAlign: "right" }}>{"Total:"} {SMath.formatMoney(MDL.carrito.carrito_compra.monto_total)}</SText>
+            </SView>
+            <SHr h={1} color={STheme.color.card} />
+            <SView padding={8}>
                 <SView col={"xs-12"} row flex center>
-                    <SView padding={8} card onPress={() => {
-                        console.log("ee");
+                    <SView padding={4} card style={{
+                        backgroundColor: STheme.color.danger
+                    }} onPress={() => {
+                        SPopup.confirm({
+                            title: "Seguro que quieres limpiar el carrito?",
+                            onPress: () => {
+                                MDL.carrito.limpiarCarritoCompras();
+                                SPopup.close("PopupCarrito")
+
+                            }
+                        })
                     }}>
-                        <SText>{"Confirmar la compra"}</SText>
+                        <SText fontSize={12}>{"Limpiar carrito"}</SText>
+                    </SView>
+                    <SView flex />
+                    <SView
+                        style={{
+                            backgroundColor: STheme.color.success
+                        }}
+                        padding={4} card onPress={() => {
+                            PopupCarritoConfirmar.open({
+
+                            })
+                        }}>
+                        <SText fontSize={12}>{"Confirmar la compra"}</SText>
                     </SView>
                 </SView>
             </SView>
@@ -73,7 +117,25 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
 }
 
 const ItemComp = (props: any) => {
+
+    const cantidadRef = React.useRef<any>(null);
+    const precioRef = React.useRef<any>(null);
+
     const { item } = props;
+
+
+    if (cantidadRef.current) {
+        if (cantidadRef.current.getValue() != item.cantidad) {
+            cantidadRef.current.setValue(item.cantidad);
+        }
+    }
+    if (precioRef.current) {
+        if (precioRef.current.getValue() != item.precio) {
+            precioRef.current.setValue(item.precio);
+        }
+    }
+
+
     return <SView padding={8}>
         <SView row center>
             <SView center style={{
@@ -86,8 +148,8 @@ const ItemComp = (props: any) => {
                 <SIconApp name="Close" fill={STheme.color.warning} />
             </SView>
             <SView center style={{
-                width: 40,
-                height: 40,
+                width: 35,
+                height: 35,
                 borderRadius: 4, overflow: "hidden",
                 borderColor: STheme.color.card,
                 borderWidth: 1,
@@ -105,15 +167,16 @@ const ItemComp = (props: any) => {
                     alignItems: "center"
                 }} >
                     <SView width={60}>
-                        <SInput style={{
-                            height: 20,
+                        <SInput ref={precioRef} style={{
+                            height: 16,
                             fontSize: 12,
                             padding: 0,
                             paddingRight: 4,
                             textAlign: "right",
                         }}
                             type="money2"
-                            icon={<SText width={15} fontSize={10} color={STheme.color.lightGray}>{"BS"}</SText>} defaultValue={item.precio}
+                            icon={<SText width={15} fontSize={10} color={STheme.color.lightGray}>{"BS"}</SText>}
+                            defaultValue={item.precio}
                             onChangeText={e => {
                                 if (!e) {
                                     item.precio = 0
@@ -128,8 +191,8 @@ const ItemComp = (props: any) => {
                     <SView width={4} />
                     {/* <SText fontSize={12} color={STheme.color.lightGray}>{"\t"}x{"\t"}</SText> */}
                     <SView width={60}>
-                        <SInput style={{
-                            height: 20,
+                        <SInput ref={cantidadRef} style={{
+                            height: 16,
                             fontSize: 12,
                             padding: 0,
                             paddingRight: 4,
@@ -140,7 +203,7 @@ const ItemComp = (props: any) => {
                             defaultValue={item.cantidad}
                             onChangeText={e => {
                                 if (!e) {
-                                    item.cantidad = 1
+                                    item.cantidad = 0
                                 } else {
                                     item.cantidad = parseFloat(e ?? "1")
                                 }
@@ -149,15 +212,17 @@ const ItemComp = (props: any) => {
                             }}
                         />
                     </SView>
+                    <SView flex />
+                    <SView width={80} style={{
+                        justifyContent: "center"
+                    }}>
+                        <SText fontSize={12} bold style={{
+                            textAlign: "right"
+                        }}>BS {SMath.formatMoney(item.precio * item.cantidad)} </SText>
+                    </SView>
                 </SView>
-            </SView>
-            <SView width={4} />
-            <SView width={80} style={{
-                justifyContent: "center"
-            }}>
-                <SText fontSize={14} bold style={{
-                    textAlign: "right"
-                }}>BS {SMath.formatMoney(item.precio * item.cantidad)} </SText>
+                {/* <SView width={4} /> */}
+
             </SView>
 
         </SView>

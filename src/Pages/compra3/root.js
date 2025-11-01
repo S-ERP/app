@@ -129,14 +129,14 @@ export default class Root extends React.Component {
 
     inputs = {};
     componentDidMount() {
-        MDL.rolesPermisos.getPermisoAsync({ url: "/compra2", permiso: "ver" }).then((permit) => {
-            if (!permit) {
-                SNavigation.goBack();
-                return;
-            }
-        }).catch(e => {
-            console.error(e);
-        })
+        // MDL.rolesPermisos.getPermisoAsync({ url: "/compra2", permiso: "ver" }).then((permit) => {
+        //     if (!permit) {
+        //         SNavigation.goBack();
+        //         return;
+        //     }
+        // }).catch(e => {
+        //     console.error(e);
+        // })
 
         this.checkCaja();
         this.renderCarrito();

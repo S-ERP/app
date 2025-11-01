@@ -20,7 +20,8 @@ export default class Lista extends Component {
     async loadInitialData() {
         try {
             // Obtener proveedores
-            const proveedores = await MDL.inventario.proveedor.getAllProveedor();
+            // const proveedores = await MDL.inventario.proveedor.getAllProveedor();
+            const proveedores = await MDL.crm.cliente.getAll();
             if (!proveedores || !Object.keys(proveedores).length) {
                 SNotification.send({
                     title: 'Advertencia',

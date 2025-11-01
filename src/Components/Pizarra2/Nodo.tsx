@@ -64,6 +64,11 @@ function NodoBase(props: NodoProps) {
     })
     // 📌 Arrastre del nodo
     const panGesture: any = Gesture.Pan()
+        .onTouchesDown(e => {
+            if (e.allTouches.length > 1) {
+                panGesture.fail();
+            }
+        })
         .onBegin(() => {
             pizarra.preventPan.value = true;
             onDrag.value = true;
