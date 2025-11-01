@@ -272,8 +272,19 @@ export default class PopupPagoCuota extends Component {
                 totalCompra += (item.precio_unitario || 0) * (item.cantidad || 0);
             }
         }
-        const estadoCompra = compra.cuotas_en_mora?.monto > 0 ? 'Pendiente' : 'Pagado';
+
         const cuotasDetalle = this.cuotasCompras.length > 0 ? this.cuotasCompras : [];
+
+        // const estadoCompra = compra.cuotas_en_mora?.monto > 0 ? 'Pendiente' : 'Pagado';
+        let tieneVencidas = false, tienePendientes = false;
+        for (let i = 0; i < cuotasDetalle.length; i++) {
+            const c = cuotasDetalle[i];
+            if (c.estado === "Vencido") tieneVencidas = true;
+            else if (c.estado === "Pendiente") tienePendientes = true;
+        }
+
+        let estadoCompra = "Pagado";
+        if (tieneVencidas || tienePendientes) estadoCompra = "Pendiente";
 
         return {
             id: compra.id || 'N/A',
@@ -370,15 +381,32 @@ export default class PopupPagoCuota extends Component {
         );
     };
 
-    labelEstadoHeader = (estado, isVencida = false) => {
-        console.log("headerrrrrrrrrrrrrrrrrrr " + estado + " yyyy " + isVencida)
-        const estadoNormalizado = isVencida ? 'Vencido' : estado;
-        const { color, bgColor, textColor, label, icon } = data.configuracion.estados[estadoNormalizado] || data.configuracion.estados.Pendiente;
+
+    labelEstadoHeader = (estado) => {
+        const { loading } = this.state;
+
+        const { color, bgColor, textColor, label, icon } =
+            data.configuracion.estados[estado] || data.configuracion.estados.Pendiente;
+
         return (
-            <SView row center style={{ backgroundColor: bgColor, borderRadius: 4, padding: 4, borderWidth: 1, borderColor: color }}>
-                <SIconApp name={icon} width={12} height={12} fill={textColor} />
-                <SText fontSize={12} bold color={textColor}> {label}</SText>
-            </SView>
+            loading ? (
+                <SLoad type='skeleton' style={{ width: "100%", height: 24 }} />
+            ) : (
+                <SView
+                    row
+                    center
+                    style={{
+                        backgroundColor: bgColor,
+                        borderRadius: 4,
+                        padding: 4,
+                        borderWidth: 1,
+                        borderColor: color
+                    }}
+                >
+                    <SIconApp name={icon} width={12} height={12} fill={textColor} />
+                    <SText fontSize={12} bold color={textColor}> {label}</SText>
+                </SView>
+            )
         );
     };
 
@@ -455,21 +483,43 @@ export default class PopupPagoCuota extends Component {
                         <SView col={'xs-12'} row style={{ flexWrap: 'wrap' }}>
                             <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Cuotas Pagadas:</SText>
-                                <SText fontSize={14} bold color={COLOR_TEXT}>
+
+                                {this.state.loading ? (
+                                    <SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />
+                                ) : (
+                                    <SText fontSize={14} bold color={COLOR_TEXT}>
+                                        {cant_pagado} ({compra.moneda} {montototal_pagado})
+                                    </SText>
+                                )}
+
+                                {/* <SText fontSize={14} bold color={COLOR_TEXT}>
                                     {cant_pagado} ({compra.moneda} {montototal_pagado})
-                                </SText>
+                                </SText> */}
                             </SView>
                             <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Cuotas en Mora:</SText>
-                                <SText fontSize={14} bold color={COLOR_TEXT}>
-                                    {cant_mora} ({compra.moneda} {montototal_mora})
-                                </SText>
+
+                                {this.state.loading ? (
+                                    <SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />
+                                ) : (
+
+                                    <SText fontSize={14} bold color={COLOR_TEXT}>
+                                        {cant_mora} ({compra.moneda} {montototal_mora})
+                                    </SText>
+                                )}
+
                             </SView>
                             <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Cuotas Pendientes:</SText>
-                                <SText fontSize={14} bold color={COLOR_TEXT}>
-                                    {cant_pendientes} ({compra.moneda} {montototal_pendientes})
-                                </SText>
+
+                                {this.state.loading ? (
+                                    <SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />
+                                ) : (
+                                    <SText fontSize={14} bold color={COLOR_TEXT}>
+                                        {cant_pendientes} ({compra.moneda} {montototal_pendientes})
+                                    </SText>
+                                )}
+
                             </SView>
                         </SView>
                     </SView>
@@ -720,6 +770,7 @@ export default class PopupPagoCuota extends Component {
                         paddingBottom: paddingBottom,
                     }}
                 >
+                    {/* sssssssssssssssssssssssssssssssssssssss */}
                     {this.cabecera(compra, MontoSaldo)}
                     <SHr h={12} />
 
