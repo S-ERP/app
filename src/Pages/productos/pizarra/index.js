@@ -516,8 +516,7 @@ const NodoModelo = (props) => {
                     }}>{"Descomponer"}</SText>
                     <SText clean>{" "}</SText>
                     <SText card padding={2} fontSize={8} onPress={() => {
-                        // SNavigation.navigate("/productos/modelo/ingrediente", { key_modelo: modelo.key })
-                        console.log("MODELO " , modelo)
+                        console.log("MODELO ", modelo)
                         MDL.carrito.agregarItemAlCarritoDeCompras({
                             modelo: modelo,
                             cantidad: 1,
@@ -531,15 +530,55 @@ const NodoModelo = (props) => {
         <SView col={"xs-12"} row style={{
             paddingHorizontal: 4
         }}>
-            {modelo?.precio_compra && <SText bold style={{
-                fontSize: 12,
-                color: STheme.color.danger
-            }}>BOB {modelo?.precio_compra}</SText>}
+
+            {modelo?.precio_compra &&
+                <SText bold style={{
+                    fontSize: 12,
+                    color: STheme.color.danger
+                }}>BOB {modelo?.precio_compra}</SText>
+            }
+
+
             <SView flex />
-            {modelo?.precio_venta && <SText bold style={{
-                fontSize: 12,
-                color: STheme.color.success
-            }}>BOB {modelo?.precio_venta}</SText>}
+            {modelo?.precio_venta &&
+                <SView style={{ alignItems: "flex-end" }}>
+                    <SText bold style={{
+                        fontSize: 12,
+                        color: STheme.color.success,
+                        alignContent: "flex-end"
+                    }}>BOB {modelo?.precio_venta}</SText>
+
+                </SView>
+            }
+
+        </SView>
+        <SView flex />
+        <SView col={"xs-12"} row style={{
+            paddingHorizontal: 4
+        }}>
+            <SView ew card padding={3} row center width={70} onPress={() => {
+                MDL.carrito.agregarItemAlCarritoDeCompras({
+                    modelo: modelo,
+                    cantidad: 1,
+                    precio: modelo.precio_compra
+                })
+            }}>
+                <SView height={15} width={15}  >
+                    <SIconApp name="compraCarro" fill={STheme.color.text} />
+                </SView>
+                <SView width={3} />
+                <SText fontSize={8}>COMPRAR</SText>
+            </SView>
+            <SView flex /> 
+            <SView card padding={3} row center width={70} style={{ alignItems: "flex-end" }} onPress={() => {
+            }}>
+                <SView height={15} width={15}  >
+                    <SIconApp name="ventaCarro" fill={STheme.color.text} />
+                </SView>
+                <SView width={6} />
+                <SText fontSize={8}>VENDER</SText>
+            </SView>
+            <SHr height={5} />
         </SView>
     </View >
 }
