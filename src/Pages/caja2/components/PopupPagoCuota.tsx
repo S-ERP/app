@@ -327,7 +327,7 @@ export default class PopupPagoCuota extends Component {
                         <SView flex row style={{ paddingTop: 4 }}>
                             <SText fontSize={16} bold color={COLOR_TEXT}>Cuota #{cuota.numero}</SText>
                         </SView>
-                        <SView>{this.labelEstado(cuota.estado, isVencida)}</SView>
+                        <SView>{this.labelEstadoItem(cuota.estado, isVencida)}</SView>
                     </SView>
                     <SHr h={4} />
                     <SView row style={{ justifyContent: "space-between" }}>
@@ -356,7 +356,7 @@ export default class PopupPagoCuota extends Component {
         );
     };
 
-    labelEstado = (estado, isVencida = false) => {
+    labelEstadoItem = (estado, isVencida = false) => {
         const estadoNormalizado = isVencida ? 'Vencido' : estado;
         const { color, bgColor, textColor, label, icon } = data.configuracion.estados[estadoNormalizado] || data.configuracion.estados.Pendiente;
         return (
@@ -370,7 +370,8 @@ export default class PopupPagoCuota extends Component {
         );
     };
 
-    labelEstado2 = (estado, isVencida = false) => {
+    labelEstadoHeader = (estado, isVencida = false) => {
+        console.log("headerrrrrrrrrrrrrrrrrrr " + estado + " yyyy " + isVencida)
         const estadoNormalizado = isVencida ? 'Vencido' : estado;
         const { color, bgColor, textColor, label, icon } = data.configuracion.estados[estadoNormalizado] || data.configuracion.estados.Pendiente;
         return (
@@ -424,7 +425,7 @@ export default class PopupPagoCuota extends Component {
                             padding: 12,
                         }}
                     >
-                        <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la {this.props?.editObject?.pagado?"venta":"compra"}</SText>
+                        <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la {this.props?.editObject?.pagado ? "venta" : "compra"}</SText>
                         {/* <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la Compra</SText> */}
                         <SHr h={4} />
                         <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }} backgroundColor='transparent'>
@@ -435,8 +436,8 @@ export default class PopupPagoCuota extends Component {
                                 </SText>
                             </SView>
                             <SView col={'xs-3'}>
-                                <SText fontSize={12} color={COLOR_TEXT}>Estado:</SText>
-                                {this.labelEstado2(compra.estado)}
+                                <SText fontSize={12} color={COLOR_TEXT}>Estadoaaa:</SText>
+                                {this.labelEstadoHeader(compra.estado)}
                             </SView>
                         </SView>
                         <SHr h={4} />
@@ -584,7 +585,7 @@ export default class PopupPagoCuota extends Component {
                                     const hoy = new SDate().toString('yyyy-MM-dd hh:mm:ss');
                                     const keyTipoPago = Object.keys(item)[0];
                                     const monto = item[keyTipoPago];
-                                    
+
                                     // Model.cuota_amortizacion.Action.registro({
                                     //     data: {
                                     //         descripcion: "Amortización de cuota desde caja.",
@@ -702,6 +703,7 @@ export default class PopupPagoCuota extends Component {
             if (cuota.estado === 'Pagado') {
                 hasPaidCuotas = true;
             }
+            // if (cuota.estado !== 'Pagado' && !this.isCuotaVencida(cuota.vencimiento) ) {
             if (cuota.estado !== 'Pagado' && !this.isCuotaVencida(cuota.vencimiento) && cuota.numero > 2) {
                 hasMoreThanTwoFuturePending = true;
             }
@@ -721,7 +723,7 @@ export default class PopupPagoCuota extends Component {
                     {this.cabecera(compra, MontoSaldo)}
                     <SHr h={12} />
 
-{/* ssssssssssssssssssssssss */}
+                    {/* ssssssssssssssssssssssss */}
 
                     <SView col={'xs-12'} style={{ paddingHorizontal: 16, }}>
                         {loading ? (
