@@ -280,8 +280,22 @@ export default class FormularioModelo extends Component<Props> {
                             if (this.form) this.form.focus("barcode");
                         }
                     },
+                    "codigo_ref": {
+                        col: "xs-5.5",
+                        style: {
+                            // maxWidth: 200,
+                        },
+                        icon: <SView />,
+                        defaultValue: (!this.props.editObject?.codigo_ref ? "" : this.props.editObject?.codigo_ref),
+                        label: "Codigo de Referencia", placeholder: "[ 000 ]",
+                        onSubmitEditing: () => {
+                            // if (this.form) this.form.submit();
+                            if (this.form) this.form.focus("precio_compra");
+                        }
+                    },
+
                     "barcode": {
-                        col: "xs-12",
+                        col: "xs-5.5",
                         style: {
                             // maxWidth: 200,
                         },
@@ -306,23 +320,34 @@ export default class FormularioModelo extends Component<Props> {
                             if (this.form) this.form.focus("precio_compra");
                         }
                     },
-                    "precio_compra": {
-                        col: "xs-5.5 sm-4",
-                        defaultValue: (!this.props.editObject?.precio_compra ? "" : parseFloat(this.props.editObject?.precio_compra ?? 0).toFixed(2)),
-                        icon: <SIconApp name='Egreso' width={20} />,
-                        label: "Precio compra", placeholder: "0,00", type: "money",
+
+                    "duracion": {
+                        col: "xs-5.5",
+                        style: {
+                            // maxWidth: 200,
+                        },
+                        type: "number",
+                        icon: <SView />,
+                        defaultValue: (!this.props.editObject?.duracion ? "" : this.props.editObject?.duracion),
+                        label: "Duracion", placeholder: "Duracion del producto o servicio",
                         onSubmitEditing: () => {
-                            if (this.form) this.form.focus("precio_venta");
+                            // if (this.form) this.form.submit();
+                            if (this.form) this.form.focus("precio_compra");
                         }
                     },
-                    "precio_venta": {
-                        col: "xs-5.5 sm-4",
-                        icon: <SIconApp name='Ingreso' width={20} />,
-                        defaultValue: (!this.props.editObject?.precio_venta ? "" : parseFloat(this.props.editObject?.precio_venta ?? 0).toFixed(2)),
-                        label: "Precio venta", placeholder: "0,00", type: "money",
+                    "duracion_medida": {
+                        col: "xs-5.5",
+                        style: {
+                            // maxWidth: 200,
+                        },
+                        type: "select2",
+                        defaultValue: (!this.props.editObject?.duracion_medida ? "" : this.props.editObject?.duracion_medida),
+                        label: "Duracion",
+                        options: ["horas", "dias", "semanas", "meses", "anos"],
+                        placeholder: "Duracion del producto o servicio",
                         onSubmitEditing: () => {
-                            if (this.form) this.form.focus("observacion");
                             // if (this.form) this.form.submit();
+                            if (this.form) this.form.focus("precio_compra");
                         }
                     },
                     "observacion": {
@@ -344,6 +369,25 @@ export default class FormularioModelo extends Component<Props> {
                                     this.form.setValues({ "observacion": text });
                                 }
                             }} />
+                    },
+                    "precio_compra": {
+                        col: "xs-5.5 sm-4",
+                        defaultValue: (!this.props.editObject?.precio_compra ? "" : parseFloat(this.props.editObject?.precio_compra ?? 0).toFixed(2)),
+                        icon: <SIconApp name='Egreso' width={20} />,
+                        label: "Precio compra", placeholder: "0,00", type: "money",
+                        onSubmitEditing: () => {
+                            if (this.form) this.form.focus("precio_venta");
+                        }
+                    },
+                    "precio_venta": {
+                        col: "xs-5.5 sm-4",
+                        icon: <SIconApp name='Ingreso' width={20} />,
+                        defaultValue: (!this.props.editObject?.precio_venta ? "" : parseFloat(this.props.editObject?.precio_venta ?? 0).toFixed(2)),
+                        label: "Precio venta", placeholder: "0,00", type: "money",
+                        onSubmitEditing: () => {
+                            if (this.form) this.form.focus("observacion");
+                            // if (this.form) this.form.submit();
+                        }
                     },
 
                 }}
@@ -376,6 +420,9 @@ export default class FormularioModelo extends Component<Props> {
                         barcode: data.barcode,
                         precio_compra: parseFloat(data.precio_compra ?? 0),
                         precio_venta: parseFloat(data.precio_venta ?? 0),
+                        duracion: parseInt(data.duracion ?? "0"),
+                        duracion_medida: data.duracion_medida,
+                        codigo_ref: data.codigo_ref,
                     }
                     if (this.props.editObject) {
                         modelo.key = this.props.editObject.key;

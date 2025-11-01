@@ -6,7 +6,8 @@ import MDL from '../../../MDL';
 
 type ElaborarProps = {
   modelo: any,
-  key_sucursal: string
+  key_sucursal: string,
+  
 }
 export default class Elaborar extends Component<ElaborarProps> {
 
@@ -102,7 +103,9 @@ export default class Elaborar extends Component<ElaborarProps> {
         </SView>
         <SHr h={32} />
         <SView row center>
-          <SView padding={8} card>
+          <SView padding={8} card onPress={()=>{
+
+          }}>
             <SText>{"Elaborar"}</SText>
           </SView>
         </SView>
@@ -158,7 +161,7 @@ class Ingrediente extends Component<{ ingrediente: any, modelos: any[] }> {
               Object.keys(this.ingredientes_ref).filter(key => key != modelo_ingrediente.key).forEach(key => {
                 const ref = this.ingredientes_ref[key];
                 if (ref.getValue()) {
-                  ref.setValue("");
+                  // ref.setValue("");
                 }
               })
               if (parseFloat(e) > ingrediente.cantidad) {

@@ -14,6 +14,7 @@ import Recargar from "../../../Components/Recargar";
 import FormularioIngrediente from "../Components/FormularioIngrediente";
 import SelectMenu from "./SelectMenu";
 import Elaborar from "../Components/Elaborar";
+import PopupComprar from "../Components/PopupComprar";
 
 export default class pizarra extends React.Component {
     state = {
@@ -517,12 +518,17 @@ const NodoModelo = (props) => {
                     <SText clean>{" "}</SText>
                     <SText card padding={2} fontSize={8} onPress={() => {
                         // SNavigation.navigate("/productos/modelo/ingrediente", { key_modelo: modelo.key })
-                        console.log("MODELO " , modelo)
-                        MDL.carrito.agregarItemAlCarritoDeCompras({
+                        console.log("MODELO ", modelo)
+                        PopupComprar.open({
                             modelo: modelo,
                             cantidad: 1,
                             precio: modelo.precio_compra
                         })
+                        // MDL.carrito.agregarItemAlCarritoDeCompras({
+                        //     modelo: modelo,
+                        //     cantidad: 1,
+                        //     precio: modelo.precio_compra
+                        // })
                     }}>{"Agregar al carrito"}</SText>
                 </SText>
 

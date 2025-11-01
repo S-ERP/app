@@ -2,7 +2,7 @@ import SSocket from "servisofts-socket";
 import MDLAbstract from "../MDLAbstract";
 import { EventListener } from "./types";
 
-type CarritoItem = {
+export type CarritoItem = {
   modelo: { descripcion: string, key: string, estado?: number },
   cantidad: number,
   precio: number,
