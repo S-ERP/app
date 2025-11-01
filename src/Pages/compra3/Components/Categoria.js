@@ -94,9 +94,10 @@ export default class Categoria extends Component {
                                             ? STheme.color.text
                                             : STheme.color.lightGray,
                                 }}
+                                center
                             >
                                 <SText
-                                    fontSize={12}
+                                    fontSize={12} center
                                     color={
                                         this.selectedCategory === cat.key
                                             ? STheme.color.background

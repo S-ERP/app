@@ -128,6 +128,8 @@ export default class Modelo extends Component {
                                 // los entereros que no muestre decimanl, los numeros decimales que muestre elddsds
 
                                 const monedaSymbol = selectedMoneda ? selectedMoneda.observacion : "Bs";
+                                let proveedores = !producto.proveedores ? "" : producto.proveedores.map(item => item?.proveedor?.razon_social).join(', ');
+
                                 return (
                                     <SView
                                         key={index}
@@ -136,6 +138,7 @@ export default class Modelo extends Component {
                                         style={{
                                             minWidth: "100%",
                                             overflow: "hidden",
+                                            marginBottom:15
                                         }}
                                         onPress={() => {
 
@@ -185,7 +188,10 @@ export default class Modelo extends Component {
                                                 </SText>
                                             </SView>
                                             <SView col={"xs-12"}>
+                                                <SText fontSize={15}  color={STheme.color.text} numberOfLines={1} >{producto?.precio_compra ? producto?.precio_compra : "---"} {monedaSymbol}</SText>
                                                 <SText fontSize={14} color={STheme.color.text} numberOfLines={1} >{producto?.descripcion}</SText>
+                                                <SText fontSize={11} color={STheme.color.lightGray} numberOfLines={1} >{proveedores}</SText>
+
                                                 {/* <SText fontSize={10} clean color={STheme.color.lightGray} numberOfLines={1} >{producto.marca.descripcion}, {producto.tipo_producto.descripcion}, {producto.observacion}
                                                 </SText> */}
                                             </SView>

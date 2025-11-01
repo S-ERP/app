@@ -1,8 +1,6 @@
 import React, { Component } from "react";
-import { SDate, SHr, SImage, SInput, SList, SLoad, SMath, SNavigation, SText, STheme, SThread, SView, SIcon } from "servisofts-component";
-import SSocket from "servisofts-socket";
+import { SView, SText, SImage } from "servisofts-component";
 import HoraLabel from "../Comp/HoraLabel";
-import { Image, View } from "react-native";
 import MDL from "../../../MDL";
 
 export default class MsgImg extends Component {
@@ -11,39 +9,27 @@ export default class MsgImg extends Component {
         this.state = {
             widthImage: 0,
             heightImage: 0,
-            widthContainer: 0,
-            heightContainer: 0,
         };
     }
 
     componentDidMount() {
-        const { width, height } = this.props.mensaje?._data ?? { width: 0, height: 0 }
-        // Image.getSize(this.props.mensaje.mediaData, (width, height) => {
-        console.log('Ancho:', width);
-        console.log('Alto:', height);
-        this.setState({
-            widthImage: width,
-            heightImage: height
-        });
-        // }, (error) => {
-        //     console.error('Error al obtener tamaño:', error);
-        // });
+        const { width, height } = this.props.mensaje?._data ?? { width: 0, height: 0 };
+        this.setState({ widthImage: width, heightImage: height });
     }
 
     calcularDimensiones() {
         const { widthImage, heightImage } = this.state;
         if (!widthImage || !heightImage) {
-            return { width: 250, height: 300 }; // valores por defecto
+            return { width: 250, height: 300 };
         }
 
-        const maxWidth = 250; // ancho máximo del card
-        const maxHeight = 400; // alto máximo del card
+        const maxWidth = 250;
+        const maxHeight = 400;
 
         const aspectRatio = widthImage / heightImage;
         let width = maxWidth;
         let height = width / aspectRatio;
 
-        // si la altura supera el máximo permitido, recalcular
         if (height > maxHeight) {
             height = maxHeight;
             width = height * aspectRatio;
@@ -52,68 +38,102 @@ export default class MsgImg extends Component {
         return { width, height };
     }
 
-    render() {
-        const texto = this.props.mensaje.body;
-        const { width, height } = this.calcularDimensiones();
+    // 🔹 Mostrar remitente solo si es grupo y no es tuyo
+    renderRemitente() {
+        const { mensaje } = this.props;
+        if (mensaje.fromMe || !mensaje.id?.remote?.includes("@g.us")) return null;
+
+        const nombre =
+            mensaje._data?.notifyName ||
+            mensaje._data?.pushname ||
+            mensaje.author?.replace(/@.*/, "") ||
+            "Desconocido";
 
         return (
-            <View
+            <SText
+                color={"#a0d7ff"}
+                fontSize={12}
+                bold
                 style={{
-                    width,
-                    height,
-                    overflow: 'hidden',
-                    marginHorizontal: 10,
-                    backgroundColor: this.props.color,
-                    borderWidth: 2,
-                    borderColor: this.props.color,
-                    borderRadius: 8,
+                    marginBottom: 4,
+                    marginLeft: 4,
                 }}
             >
-                <SImage
-                    src={`data:image/png;base64,${this.props.mensaje?._data?.body}`}
+                {nombre}
+            </SText>
+        );
+    }
+
+    render() {
+        const { mensaje, color, key_device } = this.props;
+        const { width, height } = this.calcularDimensiones();
+        const texto = mensaje.body;
+        const isEnviado = mensaje.fromMe;
+
+        return (
+            <SView
+                style={{
+                    backgroundColor: color,
+                    borderRadius: 10,
+                    padding: 6,
+                    width: "auto",
+                    maxWidth: "80%",
+                    alignItems: "flex-start",
+                    alignSelf: isEnviado ? "flex-end" : "flex-start",
+                    marginBottom: 8,
+                }}
+            >
+                {/* 🔹 Mostrar remitente (solo en grupos) */}
+                {this.renderRemitente()}
+
+                {/* 🔹 Imagen */}
+                <SView
                     style={{
-                        width: "100%",
-                        height: "100%",
-                        resizeMode: "cover",
+                        width,
+                        height,
                         borderRadius: 8,
+                        overflow: "hidden",
+                        position: "relative",
                     }}
-                />
-                <SImage
-                    enablePreview
-                    src={MDL.whatsapp.device.getMedia(this.props.key_device, this.props.mensaje?.id?._serialized)}
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        resizeMode: "cover",
-                        borderRadius: 8,
-                        position: "absolute",
-                    }}
-                />
-                <HoraLabel
-                    style={{
-                        position: "absolute",
-                        bottom: 2,
-                        right: 5,
-                        color: "white",
-                        fontWeight: "bold",
-                    }}
-                    mesaje={this.props.mensaje}
-                />
-                {texto && (
-                    <SView
+                >
+                    <SImage
+                        enablePreview
+                        src={MDL.whatsapp.device.getMedia(
+                            key_device,
+                            mensaje?.id?._serialized
+                        )}
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            resizeMode: "cover",
+                        }}
+                    />
+                    {/* 🔹 Hora */}
+                    <HoraLabel
+                        mesaje={mensaje}
                         style={{
                             position: "absolute",
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            backgroundColor: "rgba(0,0,0,0.5)",
-                            padding: 5,
+                            bottom: 4,
+                            right: 6,
                         }}
-                    >
-                        <SText color={"white"}>{texto}</SText>
-                    </SView>
-                )}
-            </View>
+                    />
+                    {/* 🔹 Texto debajo (caption) */}
+                    {texto && (
+                        <SView
+                            style={{
+                                position: "absolute",
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                backgroundColor: "rgba(0,0,0,0.5)",
+                                padding: 5,
+                            }}
+                        >
+                            <SText color={"white"}>{texto}</SText>
+                        </SView>
+                    )}
+                </SView>
+            </SView>
         );
     }
 }
