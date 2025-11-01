@@ -181,14 +181,14 @@ export default class Modelo extends Component {
                                         </SView>
                                         <SView col={"xs-12"} padding={4}>
                                             <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
-                                                {producto.precio_compra && <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1} >BS {producto.precio_compra}</SText>}
+                                                {producto.precio_compra ? <SText fontSize={15}  color={STheme.color.text} numberOfLines={1} >{producto?.precio_compra ? producto?.precio_compra : "---"} {monedaSymbol}</SText> : <SText fontSize={15}  color={STheme.color.text} numberOfLines={1} >GRATIS</SText>}
                                                 <SView flex/>
-                                                <SText style={{ alignItems: "flex-end", textAlign: "flex-end" }} clean fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"} >
+                                                <SText style={{ alignItems: "flex-end", textAlign: "flex-end" }} clean fontSize={14} bold numberOfLines={1}  color={producto?.stock > 0 ? "#10B981" : "#EF4444"} >
                                                     {producto?.stock} Und
                                                 </SText>
                                             </SView>
                                             <SView col={"xs-12"}>
-                                                <SText fontSize={15}  color={STheme.color.text} numberOfLines={1} >{producto?.precio_compra ? producto?.precio_compra : "---"} {monedaSymbol}</SText>
+                                                
                                                 <SText fontSize={14} color={STheme.color.text} numberOfLines={1} >{producto?.descripcion}</SText>
                                                 <SText fontSize={11} color={STheme.color.lightGray} numberOfLines={1} >{proveedores}</SText>
 

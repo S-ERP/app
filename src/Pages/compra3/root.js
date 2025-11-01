@@ -276,145 +276,14 @@ export default class Root extends React.Component {
     render() {
         return (
             <SPage title={"Compras Rápidas"} disableScroll > {/* Corregido el título */}
-                {/* <SView col={"xs-12"} center> */}
-                <SView col={"xs-12"} flex padding={10} >
-                    {/* <SHr height={5} /> */}
-                    {/* <SView col={"xs-12"} row>
-                        <SView col={"xs-12 sm-4.5"} padding={2}>
-                            <SInput
-                                ref={ref => (this.inputs["almacen"] = ref)}
-                                label={"Almacen"}
-                                customStyle={"erp"}
-                                type="select2"
-                                placeholder={"Seleccione un almacen"}
-                                options={this.state.almacenes.map(a => a.descripcion)}
-                            />
-                        </SView>
-                        <SView col={"xs-12 sm-4.5"} padding={2}>
-                            <SInput
-                                ref={ref => (this.inputs["proveedor"] = ref)}
-                                label={"Proveedor"}
-                                customStyle={"erp"}
-                                type="select2"
-                                placeholder={"Seleccione un proveedor"}
-                                onChangeText={e => {
-                                    this.forceUpdate();
-                                }}
-                                options={this.state.proveedores.map(a => a?.nombres || "")}
-                            />
-                        </SView>
-                        <SView col={"xs-12 sm-3"} padding={2} >
-                            <SView col={"xs-12"} height={60} row >
-                                <SView style={{ position: "relative", marginTop: 0 }}>
-                                    <SInput
-                                        type="select"
-                                        placeholder="Seleccionar Moneda"
-                                        value={this.selectedMoneda?.key || ""}
-                                        customStyle="calistenia"
-                                        style={{
-                                            width: 120,
-                                            height: 40,
-                                            backgroundColor: STheme.color.card,
-                                            borderRadius: 8,
-                                            paddingHorizontal: 8,
-                                        }}
-                                        options={[
-                                            { key: "", content: "— Seleccionar —" },
-                                            ...this.state.monedas.map(moneda => ({
-                                                key: moneda.key,
-                                                content: `${moneda.descripcion} ${moneda.observacion ? `(${moneda.observacion})` : ""}`,
-                                            })),
-                                        ]}
-                                        onChangeText={(val) => this.handleMonedaChange(val)}
-                                    />
-                                </SView>
-                                <SView flex center style={{ paddingLeft: 5 }}>
-                                    <SInput
-                                        label={"Con factura"}
-                                        type="checkBox"
-                                        defaultValue={false}
-                                        onChangeText={(text) => {
-                                            this.facturar = text;
-                                            this.forceUpdate();
-                                        }}
-                                        style={{ marginTop: 0 }}
-                                    />
-                                </SView>
-                            </SView>
-                            {this.facturar && (
-                                <SView col={"xs-12"} padding={4} style={{ alignItems: "flex-end" }} height={30}>
-                                    <SView width={200} style={{ marginTop: -25, paddingLeft: 10 }}>
-                                        <SInput
-                                            label={"La factura será entregada posteriormente"}
-                                            type="checkBox"
-                                            defaultValue={false}
-                                            onChangeText={(text) => {
-                                                this.facturar_luego = text;
-                                                this.forceUpdate();
-                                            }}
-                                            style={{ marginTop: 0 }}
-                                        />
-                                    </SView>
-                                </SView>
-                            )}
-                        </SView>
-                    </SView>
-                    <SHr h={1} color={STheme.color.card} /> */}
-                    {/* <SView col={"xs-12"} flex>
-                            <SText fontSize={10} padding={4} color={STheme.color.lightGray}>PRODUCTOS:</SText>
-                            <FlatList
-                                data={this.state.detalle}
-                                renderItem={({ item, index }) => (
-                                    <Detalle
-                                        parent={this}
-                                        data={item}
-                                        monedas={this.state.monedas}
-                                        selectedMoneda={this.selectedMoneda}
-                                        onDelete={() => {
-                                            this.state.detalle.splice(index, 1);
-                                            this.setState({ detalle: this.state.detalle });
-                                        }}
-                                    />
-                                )}
-                                keyExtractor={(item, index) => index.toString()}
-                                ListEmptyComponent={() => <SText center>No hay productos agregados</SText>}
-                            />
-                        </SView>
-                        <SHr height={5} />
-                        <SView col={"xs-12"} style={{ alignItems: "flex-end" }}>
-                            <SView
-                                width={85}
-                                height={35}
-                                onPress={() => {
-                                    this.state.detalle.push({
-                                        producto: "",
-                                        cantidad: 1,
-                                        precio: 0,
-                                        modelo: null,
-                                        moneda: this.selectedMoneda,
-                                    });
-                                    this.setState({ detalle: this.state.detalle });
-                                    console.log("DETALLE ", this.state.detalle);
-                                }}
-                                row
-                                center
-                                style={{
-                                    backgroundColor: STheme.color.danger,
-                                    borderRadius: 4,
-                                }}
-                            >
-                                <SIcon name="iconAdd" width={15} height={15} fill={STheme.color.white} />
-                                <SView width={10} />
-                                <SText fontSize={14} color={STheme.color.white}>AÑADIR</SText>
-                            </SView>
-                        </SView> */}
+                <SView col={"xs-12"} flex  >
                     <SView col="xs-12" row flex>
                         <SView col={"xs-12"}
                             style={{
                                 display: this.state.showCarritoModal ? "none" : "flex",
                                 borderRightWidth: 1,
                                 borderRightColor: STheme.color.card,
-                                backgroundColor: STheme.color.background + "90"
+                                //backgroundColor: STheme.color.background + "90"
                             }}>
                             <Categoria
                                 onSelect={this.setTipoKey}
@@ -443,66 +312,8 @@ export default class Root extends React.Component {
                                 />
                             )}
                         </SView>
-                        {/* <SView
-                            flex
-                            col="xs-4"
-                            style={{
-                                display: this.getColSize() === 4 ? "none" : "flex",
-                                padding: 8,
-                                paddingBottom: 0,
-                                borderRightWidth: 1,
-                                borderRightColor: STheme.color.card,
-                            }}
-                        >
-                            {this.renderCarrito()}
-                        </SView> */}
                     </SView>
-                    {/* <SView col={"xs-12"} center>
-                        <SHr height={25} />
-                        <PButtom
-                            type="primary"
-                            small
-                            onPress={() => {
-                                // this.inputs?.producto?.validate();
-                                Detalle.prototype.inputs = this.inputs; // Asegura que cada Detalle tenga acceso a los inputs
-                                let invalid = false;
-                                this.state.detalle.forEach((item, index) => {
-                                    if (!item.producto) {
-                                        SNotification.send({
-                                            title: `Error en producto ${index + 1}`,
-                                            body: "Debe seleccionar un producto.",
-                                            // type: "danger",
-                                            color: STheme.color.danger,
-                                            time: 4000,
-                                        });
-                                        invalid = true;
-                                    }
-                                });
-                                if (invalid) return;
-
-                                var max = 0;
-                                var max2 = 0;
-                                var max3 = 0;
-                                this.state.detalle.forEach(item => {
-                                    max += item.precio;
-                                    max2 += item.cantidad * item.precioBase;
-                                    max3 += item.precioConvertido;
-                                });
-
-                                SelectTipoPago.openPopup({
-                                    key_punto_venta: MDL.caja.activa.key_punto_venta,
-                                    montoMaximo: max,
-                                    key_moneda: this.selectedMoneda?.key || this.state.monedas[0]?.key,
-                                    onSelect: (tipos_pago) => this.handleSubmit(tipos_pago),
-                                });
-                            }}
-                        >
-                            GUARDAR
-                        </PButtom>
-                    </SView> */}
                 </SView>
-                {/* </SView> */}
-                {/* <SHr height={25} /> */}
             </SPage>
         );
     }
