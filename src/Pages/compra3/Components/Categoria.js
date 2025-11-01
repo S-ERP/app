@@ -69,7 +69,7 @@ export default class Categoria extends Component {
                 center
                 style={{ paddingHorizontal: 8, paddingVertical: 8 }}
             >
-                <SView col={"xs-12"} row>
+                <SView col={"xs-12 md-9"} row>
                     <ScrollView
                         horizontal
                         scroll={false}
@@ -108,23 +108,25 @@ export default class Categoria extends Component {
                                 </SText>
                             </SView>
                         ))}
-                        <SView col={"xs-12 md-12 lg-2.5"} row center backgroundColor='transparent' >
-                            <SView col={"xs-12"} row center height={32} style={{ borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, backgroundColor: STheme.color.background }} >
-                                <SInput
-                                    placeholder="Buscar Producto" center height={30}
-                                    iconR={<SIconApp name="Search" style={{ paddingRight: 8 }} width={16} height={16} fill={"#6B7280"} />}
-                                    style={{ fontSize: 12, backgroundColor: STheme.color.background, borderRadius: 8, }}
-                                    value={this.props.value} onChangeText={this.props.onChangeText}
-                                    onKeyPress={(e) => {
-                                        if (e.nativeEvent.key === "Escape") this.props.onChangeText?.("");
-                                    }}
-                                />
-                            </SView>
-                        </SView>
+
                     </ScrollView>
+
                 </SView>
 
-                <SView col={"xs-12"} row backgroundColor='transparent' style={{ justifyContent: "space-between" }}>
+                <SView col={"xs-12 md-3"} row backgroundColor='transparent' style={{ justifyContent: "space-between" }}>
+                    <SView col={"xs-12"} row center backgroundColor='transparent' >
+                        <SView col={"xs-12"} row center height={32} style={{ borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, backgroundColor: STheme.color.background }} >
+                            <SInput
+                                placeholder="Buscar Producto" center height={30}
+                                iconR={<SIconApp name="Search" style={{ paddingRight: 8 }} width={16} height={16} fill={"#6B7280"} />}
+                                style={{ fontSize: 12, backgroundColor: STheme.color.background, borderRadius: 8, }}
+                                value={this.props.value} onChangeText={this.props.onChangeText}
+                                onKeyPress={(e) => {
+                                    if (e.nativeEvent.key === "Escape") this.props.onChangeText?.("");
+                                }}
+                            />
+                        </SView>
+                    </SView>
                     {/* <SView col={"xs-12 md-12 lg-9"} row   >
                         <SView col={"xs-12 md-5 lg-2.5"} row center height={32}  >
                             <SInput
