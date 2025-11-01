@@ -570,12 +570,12 @@ const NodoModelo = (props) => {
                 <SText fontSize={8} center>COMPRAR</SText>
             </SView>
             <SView flex /> 
-            <SView card padding={3} row  width={65} style={{ alignItems: "flex-end" }} onPress={() => {
+            <SView card padding={3} row  width={65} center style={{ alignItems: "flex-end" }} onPress={() => {
             }}>
                 <SView height={15} width={15}  >
                     <SIconApp name="ventaCarro" fill={STheme.color.text} />
                 </SView>
-                <SView width={6} />
+                <SView width={3} />
                 <SText fontSize={8} center height={15} >VENDER</SText> 
             </SView>
             <SHr height={5} />
