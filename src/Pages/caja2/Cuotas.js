@@ -29,8 +29,8 @@ const DATA_CONFIG = {
         pagado: { label: 'Pagado', color: COLORS.PAGADO, bgColor: COLORS.PAGADO_BACKGROUNG, textColor: COLORS.PAGADO, icon: 'bien' },
         vencido: { label: 'Vencido', color: COLORS.VENCIDO, bgColor: COLORS.VENCIDO_BACKGROUNG, textColor: COLORS.VENCIDO, icon: 'AlertOutline' },
     },
-    metodosPago: ['Efectivo', 'Transferencia', 'Tarjeta de crédito', 'Cheque'],
 };
+
 const InfoRow = ({ label, value, icon, iconColorFill, iconColorStroke, bgColor, subText, subTextColor }) => (
     <SView col={'xs-12 sm-6 md-3'} row center height={90} style={{ padding: 8 }}>
         <SView center style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: bgColor || STheme.color.lightGray }}>
@@ -39,11 +39,7 @@ const InfoRow = ({ label, value, icon, iconColorFill, iconColorStroke, bgColor, 
         <SView style={{ marginLeft: 12 }}>
             <SView flex>
                 <SText numberOfLines={1} {...TYPOGRAPHY.LABEL}>{label}</SText>
-                {typeof value === 'string' ? (
-                    <SText numberOfLines={1} {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>{value}</SText>
-                ) : (
-                    value
-                )}
+                {typeof value === 'string' ? (<SText numberOfLines={1} {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>{value}</SText>) : (value)}
             </SView>
             <SView col={'xs-0 lg-12'} style={{ paddingHorizontal: 5, paddingVertical: 3, borderRadius: 5, backgroundColor: subTextColor + "88" || "transparent" }}>
                 {subText && <SText numberOfLines={1} fontSize={10} color={COLORS.TEXT}>{subText}</SText>}
@@ -72,10 +68,8 @@ export default class Cuotas extends Component {
 
             this.setState({ key_proveedor, key_cliente, loading: true });
 
+            const registros = key_proveedor ? await MDL.compra_venta.getTransaccionCuotasCompras(key_proveedor) : await MDL.compra_venta.getTransaccionCuotasVentas(key_cliente);
 
-            const registros = key_proveedor
-                ? await MDL.compra_venta.getTransaccionCuotasCompras(key_proveedor)
-                : await MDL.compra_venta.getTransaccionCuotasVentas(key_cliente);
             if (!Array.isArray(registros) || registros.length === 0) {
                 console.warn('No hay registros válidos');
                 return this.getDefaultData();
@@ -85,13 +79,13 @@ export default class Cuotas extends Component {
                 acc.cant_pendientes += item.cuotas_en_pendientes?.cantidad || 0;
                 acc.cant_mora += item.cuotas_en_mora?.cantidad || 0;
                 acc.cant_pagado += item.cuotas_en_amortizacion?.cantidad || 0;
-                const montoPend = parseFloat(item.cuotas_en_pendientes?.monto || 0);
-                const montoMora = parseFloat(item.cuotas_en_mora?.monto || 0);
-                const montoPag = parseFloat(item.cuotas_en_amortizacion?.monto || 0);
-                acc.total_pendientes += montoPend;
-                acc.total_mora += montoMora;
-                acc.total_pagado += montoPag;
-                acc.deudaTotal[moneda] = (acc.deudaTotal[moneda] || 0) + montoPend + montoMora + montoPag;
+                acc.total_pendientes += parseFloat(item.cuotas_en_pendientes?.monto || 0);
+                acc.total_mora += parseFloat(item.cuotas_en_mora?.monto || 0);
+                acc.total_pagado += parseFloat(item.cuotas_en_amortizacion?.monto || 0);
+                acc.deudaTotal[moneda] = (acc.deudaTotal[moneda] || 0)
+                    + parseFloat(item.cuotas_en_pendientes?.monto || 0)
+                    + parseFloat(item.cuotas_en_mora?.monto || 0)
+                    + parseFloat(item.cuotas_en_amortizacion?.monto || 0);
                 return acc;
             }, {
                 cant_pendientes: 0,
@@ -104,12 +98,12 @@ export default class Cuotas extends Component {
             });
             const [proveedorData, clienteData] = await Promise.all([
                 key_proveedor ? MDL.crm.cliente.getByKey(key_proveedor).catch(() => ({})) : Promise.resolve({}),
-                // key_proveedor ? MDL.inventario.proveedor.getByKey(key_proveedor).catch(() => ({})) : Promise.resolve({}),
                 key_cliente ? MDL.crm.cliente.getByKey(key_cliente).catch(() => ({})) : Promise.resolve({})
             ]);
 
-            console.log("madreeeeeeeeeeeeeeeeeeeeeeee " + JSON.stringify(proveedorData))
-            const cliente = Object.values(clienteData)[0] || {};
+            // console.log("madreeeeeeeeeeeeeeeeeeeeeeee " + JSON.stringify(proveedorData))
+            // const cliente = Object.values(clienteData)[0] || {};
+            // const cliente = Object.values(clienteData)[0] || {};
             return {
                 cant_pendientes: globalSummary.cant_pendientes,
                 cant_mora: globalSummary.cant_mora,
@@ -119,7 +113,8 @@ export default class Cuotas extends Component {
                 montototal_pagado: globalSummary.total_pagado.toFixed(2),
                 deudaTotal: Object.keys(globalSummary.deudaTotal).length ? globalSummary.deudaTotal : null,
                 proveedor: proveedorData,
-                cliente,
+                cliente: clienteData,
+                // cliente,
                 compras: registros,
             };
         } catch (error) {
@@ -238,7 +233,7 @@ export default class Cuotas extends Component {
                         iconColorFill={COLORS.PENDIENTE}
                         iconColorStroke={COLORS.PENDIENTE}
                         bgColor={COLORS.PENDIENTE_BACKGROUNG}
-                        subText={(cant_mora + cant_pendientes) > 0 ? `(Mora ${cant_mora - cant_pendientes} + Pend. ${cant_pendientes}) cuotas` : null}
+                        subText={(cant_mora + cant_pendientes) > 0 ? `(Mora ${cant_mora} + Pend. ${cant_pendientes}) cuotas` : null}
                     />
                 </SView>
                 {this.botonMostrarPagadas()}
