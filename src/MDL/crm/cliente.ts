@@ -43,7 +43,9 @@ export default class cliente {
       key: key_cliente,
       key_empresa: Model.empresa.Action.getKey(),
     });
-    return resp.data;
+        return Object.values(resp.data)[0];
+ 
+    // return resp.data[0];
   }
 
 
