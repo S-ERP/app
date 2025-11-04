@@ -303,6 +303,10 @@ import addFoto, { ReactComponent as addFotoW, } from "./svg/producto/addFoto.svg
 import upImgNube, { ReactComponent as upImgNubeW, } from "./svg/upImgNube.svg";
 import downImgNube, { ReactComponent as downImgNubeW, } from "./svg/downImgNube.svg";
 
+import compraCarro, { ReactComponent as compraCarroW, } from "./svg/compraCarro.svg";
+import ventaCarro, { ReactComponent as ventaCarroW, } from "./svg/ventaCarro.svg";
+
+
 
 
 export const svg = {
@@ -489,6 +493,11 @@ export const svg = {
   downImgNube: { Native: downImgNube, Web: downImgNubeW },
 
   addFoto: { Native: addFoto, Web: addFotoW },
+
+  compraCarro: { Native: compraCarro, Web: compraCarroW },
+  ventaCarro: { Native: ventaCarro, Web: ventaCarroW },
+
+
   ...blender,
 };
 const Assets: SAssets = {

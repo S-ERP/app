@@ -17,6 +17,7 @@ export default class Lista extends Component {
         this.state = {};
     }
 
+
     async loadInitialData() {
         try {
             // Obtener proveedores
@@ -60,6 +61,7 @@ export default class Lista extends Component {
                 proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario) || null;
                 proveedor.resumen_cuota = registros.find(r => r.key_proveedor === proveedor.key) || null;
                 proveedor.compras = transacciones ? transacciones.filter(t => t.key_proveedor === proveedor.key) : [];
+                // console.log("proveeee", proveedor)
                 return proveedor;
             });
         } catch (error) {
@@ -126,15 +128,33 @@ export default class Lista extends Component {
                 colors={Config.table.colors()}
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
-                loadInitialState={async () => ({
-                    sorters: [{ key: 'fecha_on', order: 'asc', type: 'date' }],
-                })}
+                loadInitialState={async () => {
+                    // sorters: [{ key: 'fecha_on', order: 'asc', type: 'date' }],
+                    let filters = []
+                    
+                    // if (this.pagar_proveedor) {
+                    //     filters.push({
+                    //         col: "cuota_6",
+                    //         type: "string",
+                    //         operator: "!=",
+                    //         value: ""
+                    //     })
+                    // }
+
+                    return {
+                        filters: filters,
+                        sorters: [{key:'cuota_6', order:'desc', type:'number'},{ key: 'fecha_on', order: 'asc', type: 'date' } ],
+
+                    }
+                }}
                 onSelect={e => {
                     if (this.onSelect) {
                         this.onSelect(e.row);
                         SNavigation.goBack();
                         return;
                     }
+
+
                     FloatMenu.open({
                         e: e.evt,
                         label: `Proveedor: ${e.row.razon_social}`,
