@@ -13,15 +13,18 @@ import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
 import PopupDetalleModelo from '../Components/PopupDetalleModelo';
 import PopupDesglose from '../Components/PopupDesglose';
 import PopupModeloCardex from '../Components/PopupModeloCardex';
-// import PopupInfoProv from './Components/PopupInfoProv';
 import PopupCrearProveedor from './Components/PopupCrearProveedor';
 import PopupTag from '../../tag/Components/PopupTag';
+import PopupAgregarTags from './Components/PopupAgregarTags';
 
 export default class table extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            time: new Date().getTime()
+            time: new Date().getTime(),
+            allTags: [],
+            selectedTags: props.selectedTags || [], // ✅ aquí llegan los preseleccionados
+            search: "",
         };
     }
 
@@ -195,27 +198,55 @@ export default class table extends Component {
                                 }
                             },
 
+
+
                             {
                                 label: "Agregar Tag",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                icon: <SIconApp name="Tag" fill={STheme.color.text} />,
                                 onPress: () => {
-                                    SNavigation.navigate("/tag", {
+                                    const currentTags = (e.row.tags || [])
+                                        .map(t => t?.tags || t)
+                                        .filter(t => t?.key);
 
+                                    PopupAgregarTags.open({
+                                        selectedTags: currentTags,
+                                        key_modelo: e.row.key,
+                                        onSuccess: async (selected) => {
+                                            const nuevos = selected.map(t => t?.tags || t).filter(t => t?.key);
+                                            const actuales = currentTags;
 
-                                        onSelect: (item) => {
-                                            MDL.inventario.modelo_tag.registrar({
-                                                key_modelo: e.row.key,
-                                                key_tag: item.key,
-                                            });
+                                            const nuevosKeys = nuevos.map(t => t.key);
+                                            const actualesKeys = actuales.map(t => t.key);
 
-                                            if (this.table) {
-                                                this.table.loadData();
+                                            // LOGS CLAROS
+                                            console.log("TODOS LOS TAGS:", actuales.map(t => ({ key: t.key, nombre: t.nombre })));
+                                            console.log("NUEVOS:", nuevos.filter(t => !actualesKeys.includes(t.key)).map(t => ({ key: t.key, nombre: t.nombre })));
+                                            console.log("QUITADOS:", actuales.filter(t => !nuevosKeys.includes(t.key)).map(t => ({ key: t.key, nombre: t.nombre, key_modelo_tag: t.key_modelo_tag })));
+
+                                            // AGREGAR
+                                            for (let t of nuevos.filter(t => !actualesKeys.includes(t.key))) {
+                                                await MDL.inventario.modelo_tag.registrar({
+                                                    key_modelo: e.row.key,
+                                                    key_tag: t.key,
+                                                });
                                             }
-                                        }
-                                    });
-                                }
-                            },
 
+                                            // ELIMINAR (estado: 0)
+                                            for (let t of actuales.filter(t => !nuevosKeys.includes(t.key))) {
+                                                if (t.key_modelo_tag) {
+                                                    await MDL.inventario.modelo_tag.editar({
+                                                        key: t.key_modelo_tag,
+                                                        estado: 0
+                                                    }).catch(() => SPopup.alert("Error al quitar etiqueta"));
+                                                }
+                                            }
+
+                                            this.table?.loadData();
+                                        },
+                                        onCancel: () => { }
+                                    });
+                                },
+                            },
 
 
                             {
@@ -367,7 +398,7 @@ export default class table extends Component {
 
                 <DinamicTable.Col
                     key="tags"
-                    label="Tags"
+                    label="Tagssssssssssss"
                     width={120}
                     data={e => (e.row?.tags ?? []).map(p => p?.tags?.nombre)}
                     customComponent={e => (
@@ -387,7 +418,7 @@ export default class table extends Component {
                                 >
                                     {this.renderColorPreview(item?.nombre, item?.color)}
                                 </SView>
-                            )) }
+                            ))}
                         </SView>
                     )}
                 />
