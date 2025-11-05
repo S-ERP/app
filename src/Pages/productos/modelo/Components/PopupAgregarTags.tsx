@@ -1,12 +1,4 @@
-//  import React, { Component } from 'react';
-// import { FlatList } from 'react-native';
-// import {
-//   SPopup, SView, SText, SHr, STheme, SInput, SNotification, SNavigation
-// } from 'servisofts-component';
-// import SIconApp from '../../../../Assets/SIconApp';
-// import MDL from '../../../../MDL';
-
-// Components/PopupAgregarTags.js
+ 
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
 import {
