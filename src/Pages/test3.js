@@ -7,7 +7,7 @@ import FloatButtom from '../Components/FloatButtom';
 import SIconApp from '../Assets/SIconApp';
 import MDL from '../MDL';
 
-export default class TagManager extends Component {
+export default class test3 extends Component {
   constructor(props) {
     super(props);
     this.allTags = [];
@@ -70,20 +70,18 @@ export default class TagManager extends Component {
   }
 
   openTagPopup() {
+    const filteredTags = this.allTags.filter(tag =>
+      tag.nombre.toLowerCase().includes(this.search.toLowerCase())
+    );
+
+    const showCreateButton =
+      this.search.trim() !== "" &&
+      !this.allTags.some(t => t.nombre.toLowerCase() === this.search.toLowerCase().trim());
+
     SPopup.open({
       key: "tag-popup",
       content: (
-        <SView
-          col="xs-12"
-          center
-          style={{
-            backgroundColor: STheme.color.background,
-            maxWidth: 340,
-            borderRadius: 8,
-            overflow: "hidden",
-          }}
-          withoutFeedback
-        >
+        <SView col="xs-12" center style={{ backgroundColor: STheme.color.background, maxWidth: 340, borderRadius: 8, overflow: "hidden", }} withoutFeedback >
           {/* Encabezado */}
           <SView
             col="xs-12"
@@ -95,12 +93,13 @@ export default class TagManager extends Component {
             }}
           >
             <SText color={STheme.color.white}>Seleccionar etiquetas</SText>
-            <SView col="xs-11.5" marginVertical={10}>
+            <SHr height={4} />
+            <SView col="xs-11.1">
               <SInput
                 icon={<SIconApp fill={"#b8b9b9"} name="Search" height={16} />}
                 placeholder="Filtrar o crear etiqueta..."
                 value={this.search}
-                style={{ height: 36 }}
+                style={{ height: 36, borderRadius: 4 }}
                 onChangeText={(text) => {
                   this.search = text;
                   this.openTagPopup();
@@ -109,110 +108,128 @@ export default class TagManager extends Component {
             </SView>
           </SView>
 
-          {/* Lista */}
-          <SView col="xs-12" style={{ minHeight: 140, maxHeight: 320 }}>
-            <FlatList
-              data={this.allTags.filter(tag =>
-                tag.nombre.toLowerCase().includes(this.search.toLowerCase())
-              )}
-              keyExtractor={item => item.key_modelo_tag}
-              ItemSeparatorComponent={() => <SHr height={6} />}
-              renderItem={({ item: tag, index }) => (
-                <SView
-                  col="xs-12"
-                  key={tag.key_modelo_tag}
-                  style={{ paddingHorizontal: 14 }}
-                  onPress={() => this.toggleTag(tag)}
-                >
-                  <SView row>
-                    {/* Checkbox */}
+          <SHr height={8} />
+
+          {/* Lista con altura controlada */}
+          <SView
+            col="xs-12"
+            style={{
+              // minHeight: 140,
+              // maxHeight: 320,
+              height: 250,
+              paddingHorizontal: 14,
+            }}
+          >
+            {filteredTags.length === 0 && !showCreateButton ? (
+              /* Caso: Nada que mostrar */
+              <SView col="xs-12" center height={140} style={{ justifyContent: "center" }}>
+                <SText color={STheme.color.lightGray} fontSize={14}>
+                  No hay etiquetas
+                </SText>
+              </SView>
+            ) : (
+              <FlatList
+                data={filteredTags}
+                keyExtractor={item => item.key_modelo_tag || item.nombre}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item: tag, index }) => {
+                  const isLastItem = index === filteredTags.length - 1;
+
+                  return (
                     <SView
-                      width={16}
-                      height={16}
-                      center
-                      style={{
-                        borderWidth: 1,
-                        borderColor: STheme.color.text,
-                        borderRadius: 2,
-                        marginRight: 6,
-                        backgroundColor: this.selectedTags.includes(tag)
-                          ? "#1975fe"
-                          : "transparent",
-                      }}
+                      style={{ paddingVertical: 4 }}
+                      onPress={() => this.toggleTag(tag)}
                     >
-                      {this.selectedTags.includes(tag) && (
-                        <SText color={STheme.color.white} bold fontSize={12}>
-                          ✓
+                      <SView row>
+                        {/* Checkbox */}
+                        <SView
+                          width={16}
+                          height={16}
+                          center
+                          style={{
+                            borderWidth: 1,
+                            borderColor: STheme.color.text,
+                            borderRadius: 2,
+                            marginRight: 6,
+                            backgroundColor: this.selectedTags.includes(tag)
+                              ? "#1975fe"
+                              : "transparent",
+                          }}
+                        >
+                          {this.selectedTags.includes(tag) && (
+
+                            <SText color={STheme.color.white} bold fontSize={12}>
+                              ✓
+                            </SText>
+
+                          )}
+                        </SView>
+
+                        {/* Color */}
+                        <SView width={16} height={16} center style={{ marginRight: 10 }}>
+                          <SView
+                            width={14}
+                            height={14}
+                            style={{ backgroundColor: tag.color, borderRadius: 15 }}
+                          />
+                        </SView>
+
+                        {/* Texto */}
+                        <SView
+                          flex
+                          style={{
+                            borderBottomWidth: isLastItem && !showCreateButton ? 0 : 1,
+                            borderColor: STheme.color.lightGray + "55",
+                            paddingBottom: 8,
+                          }}
+                        >
+                          <SText fontSize={14} numberOfLines={1}>
+                            {tag.nombre}
+                          </SText>
+                          {tag.descripcion ? (
+                            <SText fontSize={11} color={STheme.color.lightGray} numberOfLines={1}>
+                              {tag.descripcion}
+                            </SText>
+                          ) : null}
+                        </SView>
+                      </SView>
+                    </SView>
+                  );
+                }}
+                ListFooterComponent={() =>
+                  showCreateButton ? (
+                    <SView
+                      col="xs-12"
+                      row
+                      style={{
+                        padding: 12,
+                        backgroundColor: STheme.color.lightGray + "33",
+                        borderRadius: 8,
+                        marginTop: 8,
+                        marginBottom: 4,
+                      }}
+                      onPress={() => this.createNewTag()}
+                    >
+                      <SView flex row center>
+                        <SText color={STheme.color.primary} fontSize={13}>
+                          Crear nueva etiqueta “{this.search.trim()}”
                         </SText>
-                      )}
+                      </SView>
+                      <SView width={20} center>
+                        <SText fontSize={16} bold color={STheme.color.primary}>
+                          +
+                        </SText>
+                      </SView>
                     </SView>
-
-                    {/* Color círculo */}
-                    <SView width={20} center>
-                      <SView
-                        width={14}
-                        height={14}
-                        style={{
-                          backgroundColor: tag.color,
-                          borderRadius: 15,
-                          marginRight: 9,
-                        }}
-                      />
-                    </SView>
-
-                    {/* Texto */}
-                    <SView
-                      flex
-                      style={{
-                        borderBottomWidth: 1,
-                        borderColor: STheme.color.lightGray + "55",
-                      }}
-                    >
-                      <SText fontSize={14} numberOfLines={1}>{tag.nombre}</SText>
-                      <SText
-                        fontSize={11}
-                        color={STheme.color.lightGray}
-                        numberOfLines={1}
-                      >
-                        {tag.descripcion}
-                      </SText>
-                      <SHr height={4} />
-                    </SView>
-                  </SView>
-                </SView>
-              )}
-              ListFooterComponent={() =>
-                this.search &&
-                  !this.allTags.some(
-                    t => t.nombre.toLowerCase() === this.search.toLowerCase()
-                  ) ? (
-                  <SView
-                    col="xs-11"
-                    row
-                    style={{
-                      padding: 10,
-                      backgroundColor: STheme.color.lightGray + "33",
-                      borderRadius: 4,
-                      margin: 10,
-                    }}
-                    onPress={() => this.createNewTag()}
-                  >
-                    <SView flex row>
-                      <SText
-                        color={STheme.color.text}
-                        fontSize={12}
-                      >
-                        Crear nueva etiqueta “{this.search}”
-                      </SText>
-                    </SView>
-                    <SView width={18} center>
-                      <SText fontSize={14} bold color={STheme.color.text}>+</SText>
-                    </SView>
-                  </SView>
-                ) : null
-              }
-            />
+                  ) : (
+                    <SHr height={8} />
+                  )
+                }
+              />
+            )}
           </SView>
+
+          <SHr height={8} />
 
           {/* Footer */}
           <SView
