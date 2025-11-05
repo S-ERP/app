@@ -7,7 +7,7 @@ import FloatButtom from '../Components/FloatButtom';
 import SIconApp from '../Assets/SIconApp';
 import MDL from '../MDL';
 
-export default class TagManager extends Component {
+export default class test3 extends Component {
   constructor(props) {
     super(props);
     this.allTags = [];
