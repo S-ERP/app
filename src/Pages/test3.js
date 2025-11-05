@@ -126,7 +126,7 @@ export default class TagManager extends Component {
             style={{
               // minHeight: 140,
               // maxHeight: 320,
-              height:250,
+              height: 250,
               paddingHorizontal: 14,
             }}
           >
@@ -167,9 +167,11 @@ export default class TagManager extends Component {
                           }}
                         >
                           {this.selectedTags.includes(tag) && (
+
                             <SText color={STheme.color.white} bold fontSize={12}>
-                              s
+                              ✓
                             </SText>
+
                           )}
                         </SView>
 
