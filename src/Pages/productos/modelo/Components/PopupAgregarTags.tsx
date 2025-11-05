@@ -1,4 +1,4 @@
- 
+
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
 import {
@@ -83,18 +83,22 @@ export default class PopupAgregarTags extends Component {
   }
 
   toggleTag = (tag) => {
+    console.log("🧩 TAG RECIBIDO:", tag);
     this.setState(prev => {
       const exists = prev.selectedTags.some(t => t.key === tag.key);
       const selectedTags = exists
         ? prev.selectedTags.filter(t => t.key !== tag.key)
         : [...prev.selectedTags, tag];
 
-      // ENVIAR CAMBIO EN TIEMPO REAL
-      this.props.onChange?.(selectedTags);
+      console.log(exists ? "🟥 TAG QUITADO" : "🟩 TAG NUEVO", tag.key_modelo_tag || tag.key);
+      console.log("📋 TODOS LOS TAGS ACTUALES:", selectedTags);
 
+      this.props.onChange?.(selectedTags);
       return { selectedTags };
     });
   };
+
+
 
   createNewTag = async () => {
     const { search, allTags } = this.state;
