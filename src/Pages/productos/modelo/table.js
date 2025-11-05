@@ -208,6 +208,7 @@ export default class table extends Component {
                                         .map(t => t?.tags || t)
                                         .filter(t => t?.key);
 
+                                        console.log("gamboa "+JSON.stringify(currentTags))
                                     PopupAgregarTags.open({
                                         selectedTags: currentTags,
                                         key_modelo: e.row.key,

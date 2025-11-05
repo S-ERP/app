@@ -82,21 +82,68 @@ export default class PopupAgregarTags extends Component {
     return '#' + Array.from({ length: 6 }, () => letters[Math.floor(Math.random() * 16)]).join('');
   }
 
-  toggleTag = (tag) => {
-    console.log("🧩 TAG RECIBIDO:", tag);
-    this.setState(prev => {
-      const exists = prev.selectedTags.some(t => t.key === tag.key);
-      const selectedTags = exists
-        ? prev.selectedTags.filter(t => t.key !== tag.key)
-        : [...prev.selectedTags, tag];
+  async toggleTag(tag) {
+    const { selectedTags: prevSelected } = this.state;
+    const exists = prevSelected.some(t => t.key === tag.key);
 
-      console.log(exists ? "🟥 TAG QUITADO" : "🟩 TAG NUEVO", tag.key_modelo_tag || tag.key);
-      console.log("📋 TODOS LOS TAGS ACTUALES:", selectedTags);
+    let selectedTags = [];
+    let dataseleccionado = null;
 
-      this.props.onChange?.(selectedTags);
-      return { selectedTags };
-    });
-  };
+    if (exists) {
+      // Eliminar
+      dataseleccionado = prevSelected.find(t => t.key === tag.key);
+      selectedTags = prevSelected.filter(t => t.key !== tag.key);
+
+      // Actualizamos el estado primero
+      this.setState({ selectedTags });
+
+      // Llamada async fuera del setState
+      if (dataseleccionado?.key_modelo_tag) {
+        try {
+          await MDL.inventario.modelo_tag.editar({
+            key: dataseleccionado.key_modelo_tag,
+            estado: 0,
+          });
+          this.props.onSuccess?.(selectedTags)
+
+
+        } catch (e) {
+          SPopup.alert("Error al quitar etiqueta");
+        }
+      }
+    } else {
+      // Agregar
+      selectedTags = [...prevSelected, tag];
+      this.setState({ selectedTags });
+
+      // Llamada async fuera del setState
+      if (tag.key) {
+        try {
+
+
+
+          await MDL.inventario.modelo_tag.registrar({
+            key_modelo: this.props.key_modelo,
+            key_tag: selectedTags.key,
+          });
+
+
+          this.props.onSuccess?.(selectedTags)
+        } catch (e) {
+          SPopup.alert("Error al agregar etiqueta");
+        }
+      }
+    }
+
+    // Notificar al padre
+    this.props.onChange?.(selectedTags);
+
+    if (exists && dataseleccionado) {
+      this.props.onTagRemoved?.(dataseleccionado);
+    }
+
+    console.log("TODOS LOS TAGS ACTUALES:", selectedTags);
+  }
 
 
 

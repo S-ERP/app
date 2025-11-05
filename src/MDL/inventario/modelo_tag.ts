@@ -42,8 +42,8 @@ export default class modelo_tag {
     return resp.data;
   }
 
- 
-  
+
+
 
   async registrar(data: any) {
     data.key_empresa = MDL.empresa.select?.key;
