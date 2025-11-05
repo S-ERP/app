@@ -290,6 +290,10 @@ export default class table extends Component {
                         srcPreview={SSocket.api.inventario + "marca/" + e.row.key_marca + "?date=" + this.state.time}
                     />}
                 />
+                <DinamicTable.Col key={"codigo_ref"} label='Codigo' width={50} data={(e) => e.row.codigo_ref}
+                    wrap
+                   
+                />
                 <DinamicTable.Col key={"nombre"} label='Nombre' width={200} data={(e) => e.row.descripcion}
                     wrap
                     textStyle={{ fontWeight: "bold" }}
