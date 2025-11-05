@@ -81,17 +81,7 @@ export default class test3 extends Component {
     SPopup.open({
       key: "tag-popup",
       content: (
-        <SView
-          col="xs-12"
-          center
-          style={{
-            backgroundColor: STheme.color.background,
-            maxWidth: 340,
-            borderRadius: 8,
-            overflow: "hidden",
-          }}
-          withoutFeedback
-        >
+        <SView col="xs-12" center style={{ backgroundColor: STheme.color.background, maxWidth: 340, borderRadius: 8, overflow: "hidden", }} withoutFeedback >
           {/* Encabezado */}
           <SView
             col="xs-12"
