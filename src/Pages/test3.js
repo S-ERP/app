@@ -95,12 +95,14 @@ export default class TagManager extends Component {
             }}
           >
             <SText color={STheme.color.white}>Seleccionar etiquetas</SText>
-            <SView col="xs-11.5" marginVertical={10}>
+            <SHr height={4} />
+
+            <SView col="xs-11.1" >
               <SInput
                 icon={<SIconApp fill={"#b8b9b9"} name="Search" height={16} />}
                 placeholder="Filtrar o crear etiqueta..."
                 value={this.search}
-                style={{ height: 36 }}
+                style={{ height: 36, borderRadius: 4 }}
                 onChangeText={(text) => {
                   this.search = text;
                   this.openTagPopup();
@@ -108,6 +110,8 @@ export default class TagManager extends Component {
               />
             </SView>
           </SView>
+
+          <SHr height={8} />
 
           {/* Lista */}
           <SView col="xs-12" style={{ minHeight: 140, maxHeight: 320 }}>
@@ -147,18 +151,15 @@ export default class TagManager extends Component {
                       )}
                     </SView>
 
-                    {/* Color círculo */}
-                    <SView width={20} center>
-                      <SView
-                        width={14}
-                        height={14}
-                        style={{
-                          backgroundColor: tag.color,
-                          borderRadius: 15,
-                          marginRight: 9,
-                        }}
-                      />
+
+                    <SView width={16} height={16} center style={{ marginRight: 10, }} >
+                      <SView width={14} height={14} style={{ backgroundColor: tag.color, borderRadius: 15 }} />
                     </SView>
+
+
+
+
+
 
                     {/* Texto */}
                     <SView
@@ -213,6 +214,9 @@ export default class TagManager extends Component {
               }
             />
           </SView>
+
+          <SHr height={8} />
+
 
           {/* Footer */}
           <SView
