@@ -1,17 +1,16 @@
-// import React, { Component } from 'react';
+//  import React, { Component } from 'react';
 // import { FlatList } from 'react-native';
 // import {
-//   SPopup, SView, SText, SHr, STheme, SInput, SNotification
+//   SPopup, SView, SText, SHr, STheme, SInput, SNotification, SNavigation
 // } from 'servisofts-component';
 // import SIconApp from '../../../../Assets/SIconApp';
 // import MDL from '../../../../MDL';
 
-
-
+// Components/PopupAgregarTags.js
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
 import {
-  SPopup, SView, SText, SHr, STheme, SInput, SNotification
+  SPopup, SView, SText, SHr, STheme, SInput, SNotification, SNavigation
 } from 'servisofts-component';
 import SIconApp from '../../../../Assets/SIconApp';
 import MDL from '../../../../MDL';
@@ -26,17 +25,15 @@ export default class PopupAgregarTags extends Component {
           center
           style={{
             backgroundColor: STheme.color.background,
-            maxWidth: 380,
+            maxWidth: 340,
             borderRadius: 8,
             overflow: "hidden",
-            borderWidth: 1,
-            borderColor: STheme.color.lightGray + "55",
-            padding: 16
           }}
           withoutFeedback
         >
           <PopupAgregarTags
             {...props}
+            onChange={(tags) => props.onChange?.(tags)}
             onCancel={() => {
               SPopup.close("PopupAgregarTags");
               props.onCancel?.();
@@ -45,9 +42,10 @@ export default class PopupAgregarTags extends Component {
               SPopup.close("PopupAgregarTags");
               props.onSuccess?.(tags);
             }}
+
           />
         </SView>
-      )
+      ),
     });
   }
 
@@ -60,8 +58,8 @@ export default class PopupAgregarTags extends Component {
     };
   }
 
-  componentDidMount() {
-    this.loadTags();
+  async componentDidMount() {
+    await this.loadTags();
   }
 
   async loadTags() {
@@ -73,13 +71,12 @@ export default class PopupAgregarTags extends Component {
         .filter(t => t.estado !== 0)
         .sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-      // Filtrar solo los seleccionados que aún existen
-      const validSelected = this.state.selectedTags
-        .filter(sel => tags.find(t => t.key === sel.key));
+      const validSelected = this.state.selectedTags.filter(sel =>
+        tags.find(t => t.key === sel.key)
+      );
 
       this.setState({ allTags: tags, selectedTags: validSelected });
     } catch (e) {
-      console.error("Error cargando etiquetas:", e);
       SNotification.send({
         title: "Error",
         body: "No se pudieron cargar las etiquetas.",
@@ -88,40 +85,57 @@ export default class PopupAgregarTags extends Component {
     }
   }
 
+  generateRandomColor() {
+    const letters = '0123456789ABCDEF';
+    return '#' + Array.from({ length: 6 }, () => letters[Math.floor(Math.random() * 16)]).join('');
+  }
+
   toggleTag = (tag) => {
     this.setState(prev => {
       const exists = prev.selectedTags.some(t => t.key === tag.key);
       const selectedTags = exists
         ? prev.selectedTags.filter(t => t.key !== tag.key)
         : [...prev.selectedTags, tag];
+
+      // ENVIAR CAMBIO EN TIEMPO REAL
+      this.props.onChange?.(selectedTags);
+
       return { selectedTags };
     });
   };
 
-  createTag = async () => {
+  createNewTag = async () => {
     const { search, allTags } = this.state;
     const nombre = search.trim();
+
     if (!nombre || allTags.some(t => t.nombre.toLowerCase() === nombre.toLowerCase())) return;
 
     try {
       const newTag = {
         nombre,
         descripcion: "",
-        color: this.randomColor(),
+        color: this.generateRandomColor(),
       };
+
       const resp = await MDL.inventario.tag.registrar(newTag);
-      if (resp) {
-        this.setState({
-          allTags: [...allTags, resp].sort((a, b) => a.nombre.localeCompare(b.nombre)),
-          selectedTags: [...this.state.selectedTags, resp],
-          search: "",
-        });
-        SNotification.send({
-          title: "Etiqueta creada",
-          body: `"${resp.nombre}"`,
-          color: STheme.color.success,
-        });
-      }
+      if (!resp) throw new Error("No response");
+
+      const newSelected = [...this.state.selectedTags, resp];
+
+      this.setState({
+        allTags: [...allTags, resp].sort((a, b) => a.nombre.localeCompare(b.nombre)),
+        selectedTags: newSelected,
+        search: "",
+      });
+
+      // ENVIAR CAMBIO INMEDIATO
+      this.props.onChange?.(newSelected);
+
+      // SNotification.send({
+      //   title: "Etiqueta creada",
+      //   body: `"${resp.nombre}"`,
+      //   color: STheme.color.success,
+      // });
     } catch (err) {
       SNotification.send({
         title: "Error",
@@ -129,121 +143,185 @@ export default class PopupAgregarTags extends Component {
         color: STheme.color.danger,
       });
     }
-  };
 
-  randomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+
+  };
 
   render() {
     const { allTags, selectedTags, search } = this.state;
-    const filtered = allTags.filter(t =>
-      t.nombre.toLowerCase().includes(search.toLowerCase())
+    const filteredTags = allTags.filter(tag =>
+      tag.nombre.toLowerCase().includes(search.toLowerCase())
     );
+
+    const showCreateButton =
+      search.trim() !== "" &&
+      !allTags.some(t => t.nombre.toLowerCase() === search.toLowerCase().trim());
 
     return (
       <>
-        <SText fontSize={16} bold center>Seleccionar etiquetas</SText>
-        <SHr height={12} />
-
-        <SInput
-          icon={<SIconApp name="Search" fill="#aaa" height={16} />}
-          placeholder="Buscar o crear..."
-          value={search}
-          style={{ height: 38 }}
-          onChangeText={text => this.setState({ search: text })}
-        />
-
-        <SHr height={12} />
-
-        <SView style={{ maxHeight: 280, width: "100%" }}>
-          <FlatList
-            data={filtered}
-            keyExtractor={item => item.key}
-            keyboardShouldPersistTaps="handled"
-            ItemSeparatorComponent={() => <SHr height={6} />}
-            renderItem={({ item: tag }) => {
-              const isSelected = selectedTags.some(t => t.key === tag.key);
-              return (
-                <SView
-                  row
-                  center
-                  onPress={() => this.toggleTag(tag)}
-                  style={{
-                    padding: 10,
-                    borderRadius: 8,
-                    backgroundColor: isSelected ? STheme.color.primary + "22" : "transparent",
-                    borderWidth: 1,
-                    borderColor: isSelected ? STheme.color.primary : STheme.color.lightGray + "55",
-                  }}
-                >
-                  <SView
-                    width={16}
-                    height={16}
-                    center
-                    style={{
-                      borderWidth: 1,
-                      borderColor: STheme.color.text,
-                      borderRadius: 2,
-                      marginRight: 10,
-                      backgroundColor: isSelected ? STheme.color.primary : "transparent",
-                    }}
-                  >
-                    {isSelected && <SText color="#fff" bold fontSize={12}>Check</SText>}
-                  </SView>
-
-                  <SView width={14} height={14} backgroundColor={tag.color} borderRadius={7} marginRight={10} />
-
-                  <SView flex>
-                    <SText fontSize={14} bold>{tag.nombre}</SText>
-                    <SText fontSize={10} color={STheme.color.lightGray}>
-                      {tag.key.substring(0, 12)}...
-                    </SText>
-                  </SView>
-                </SView>
-              );
-            }}
-            ListFooterComponent={() =>
-              search && !allTags.some(t => t.nombre.toLowerCase() === search.toLowerCase()) && (
-                <SView
-                  row
-                  center
-                  onPress={this.createTag}
-                  style={{
-                    padding: 12,
-                    backgroundColor: STheme.color.success + "22",
-                    borderRadius: 8,
-                    marginTop: 8,
-                    borderWidth: 1,
-                    borderColor: STheme.color.success,
-                  }}
-                >
-                  <SText color={STheme.color.success} bold>
-                    Crear etiqueta "{search}"
-                  </SText>
-                </SView>
-              )
-            }
-          />
+        {/* ENCABEZADO */}
+        <SView
+          col="xs-12"
+          center
+          style={{
+            borderBottomWidth: 1,
+            borderColor: STheme.color.lightGray + "55",
+            paddingVertical: 8,
+          }}
+        >
+          <SText color={STheme.color.white}>Seleccionar etiquetas</SText>
+          <SHr height={4} />
+          <SView col="xs-11.1">
+            <SInput
+              icon={<SIconApp fill={"#b8b9b9"} name="Search" height={16} />}
+              placeholder="Filtrar o crear etiqueta..."
+              value={search}
+              style={{ height: 36, borderRadius: 4 }}
+              onChangeText={text => this.setState({ search: text })}
+            />
+          </SView>
         </SView>
 
-        <SHr height={16} />
-        <SView row center>
-          <SView
-            flex
-            center
-            style={{ padding: 12, backgroundColor: STheme.color.danger, borderRadius: 8, marginRight: 6 }}
-            onPress={this.props.onCancel}
+        <SHr height={8} />
+
+        {/* LISTA */}
+        <SView col="xs-12" style={{ height: 250, paddingHorizontal: 14 }}>
+          {filteredTags.length === 0 && !showCreateButton ? (
+            <SView col="xs-12" center height={140} style={{ justifyContent: "center" }}>
+              <SText color={STheme.color.lightGray} fontSize={14}>
+                No hay etiquetas
+              </SText>
+            </SView>
+          ) : (
+            <FlatList
+              data={filteredTags}
+              keyExtractor={item => item.key}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item: tag, index }) => {
+                const isLastItem = index === filteredTags.length - 1;
+                const isSelected = selectedTags.some(t => t.key === tag.key);
+
+                return (
+                  <SView style={{ paddingVertical: 4 }} onPress={() => this.toggleTag(tag)}>
+                    <SView row>
+                      {/* Checkbox */}
+                      <SView
+                        width={16} height={16} center
+                        style={{
+                          borderWidth: 1,
+                          borderColor: STheme.color.text,
+                          borderRadius: 2,
+                          marginRight: 6,
+                          backgroundColor: isSelected ? "#1975fe" : "transparent",
+                        }}
+                      >
+                        {isSelected && <SText color={STheme.color.white} bold fontSize={12}> ✓ </SText>}
+                      </SView>
+
+                      {/* Color */}
+                      <SView width={16} height={16} center style={{ marginRight: 10 }}>
+                        <SView width={14} height={14} style={{ backgroundColor: tag.color, borderRadius: 15 }} />
+                      </SView>
+
+                      {/* Texto */}
+                      <SView
+                        flex
+                        style={{
+                          borderBottomWidth: isLastItem && !showCreateButton ? 0 : 1,
+                          borderColor: STheme.color.lightGray + "55",
+                          paddingBottom: 8,
+                        }}
+                      >
+                        <SText fontSize={14} numberOfLines={1}>{tag.nombre}</SText>
+                        {tag.descripcion && (
+                          <SText fontSize={11} color={STheme.color.lightGray} numberOfLines={1}>
+                            {tag.descripcion}
+                          </SText>
+                        )}
+                      </SView>
+                    </SView>
+                  </SView>
+                );
+              }}
+              ListFooterComponent={() =>
+                showCreateButton ? (
+                  <SView
+                    col="xs-12" row
+                    style={{
+                      padding: 12,
+                      backgroundColor: STheme.color.lightGray + "33",
+                      borderRadius: 8,
+                      marginTop: 8,
+                      marginBottom: 4,
+                    }}
+                    onPress={this.createNewTag}
+                  >
+                    <SView flex row center>
+                      <SText color={STheme.color.primary} fontSize={13}>
+                        Crear nueva etiqueta “{search.trim()}”
+                      </SText>
+                    </SView>
+                    <SView width={20} center>
+                      <SText fontSize={16} bold color={STheme.color.primary}>+</SText>
+                    </SView>
+                  </SView>
+                ) : <SHr height={8} />
+              }
+            />
+          )}
+        </SView>
+
+        <SHr height={8} />
+
+        {/* FOOTER */}
+        <SView
+          col="xs-12"
+          center
+          style={{
+            borderTopWidth: 1,
+            borderColor: STheme.color.lightGray + "55",
+            paddingVertical: 8,
+          }}
+        >
+          <SText
+            fontSize={12}
+            color={STheme.color.text}
+            onPress={() => {
+              SNavigation.navigate("/tag");
+              SPopup.close("PopupAgregarTags");
+            }}
           >
-            <SText color="#fff" bold>Cancelar</SText>
-          </SView>
-          <SView
-            flex
-            center
-            style={{ padding: 12, backgroundColor: STheme.color.success, borderRadius: 8 }}
+            Editar etiquetas
+          </SText>
+        </SView>
+
+        <SView
+          width={60}
+          height={20}
+          center
+          backgroundColor='red'
+          style={{
+            position: "absolute",
+            right: 10,
+            bottom: 10,
+            borderTopWidth: 1,
+            borderColor: STheme.color.lightGray + "55",
+            paddingVertical: 8,
+          }}
+        >
+          <SText
+            fontSize={7}
+            color={STheme.color.text}
             onPress={() => this.props.onSuccess?.(selectedTags)}
           >
-            <SText color="#fff" bold>Aceptar</SText>
-          </SView>
+            Save
+          </SText>
         </SView>
+
+        {/* BOTONES */}
+        <SHr height={8} />
+
+        {/* <SHr height={16} /> */}
       </>
     );
   }
