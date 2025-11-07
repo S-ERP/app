@@ -25,6 +25,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       facturar: data?.caja?.conFactura,
       detalle: data.detalle,
       key_moneda: data.key_moneda,
+      descuentos: data.descuentos,
     };
 
     // console.log("dime quien " + JSON.stringify(formar));
@@ -33,7 +34,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       service: "caja",
       component: "caja_detalle",
       type: "venta",
-      data: formar,
+      data: formar
       // key_cliente: data?.key_cliente,
       // cliente: data?.cliente,
     });

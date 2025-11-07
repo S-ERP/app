@@ -76,76 +76,76 @@ export default class tabla extends Component {
     };
 
     async loadInitialData() {
-    try {
-        console.log('🚀 Iniciando carga de datos...');
-
-        // 1. Obtener registros principales
-        const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
-        if (!registros) throw new Error("No se encontraron registros.");
-
-        // 2. Obtener empresa y sucursales
-        const empresa = await MDL.empresa.getFull();
-        if (!empresa) throw new Error("No se pudo obtener la empresa.");
-        const sucursales = empresa.sucursales || [];
-
-        // 3. Filtrar ventas
-        const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
-        if (ventas.length === 0) throw new Error("No se encontraron ventas.");
-
-        // 4. Obtener usuarios únicos
-        const keysUsuarios = [];
-        ventas.forEach(cv => {
-            if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
-                keysUsuarios.push(cv.key_usuario);
-            }
-        });
-
-        // 5. Cargar datos relacionados
-        const proveedores = await MDL.inventario.proveedor.getAllProveedor();
-        if (!proveedores) throw new Error("No se pudieron obtener proveedores.");
-
-        const clientes = await MDL.crm.cliente.getAll();
-        if (!clientes) throw new Error("No se pudieron obtener clientes.");
-
-        const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
-        const usuariosMap = Array.isArray(usuarios)
-            ? Object.fromEntries(usuarios.map(u => [u.key, u]))
-            : usuarios || {};
-
-        // 6. Totales de la primera venta
-        let totales = {};
         try {
-            totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0]?.key }) || {};
-        } catch (e) {
-            console.warn("No se pudieron obtener los totales de la primera venta:", e);
+            console.log('🚀 Iniciando carga de datos...');
+
+            // 1. Obtener registros principales
+            const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
+            if (!registros) throw new Error("No se encontraron registros.");
+
+            // 2. Obtener empresa y sucursales
+            const empresa = await MDL.empresa.getFull();
+            if (!empresa) throw new Error("No se pudo obtener la empresa.");
+            const sucursales = empresa.sucursales || [];
+
+            // 3. Filtrar ventas
+            const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
+            if (ventas.length === 0) throw new Error("No se encontraron ventas.");
+
+            // 4. Obtener usuarios únicos
+            const keysUsuarios = [];
+            ventas.forEach(cv => {
+                if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
+                    keysUsuarios.push(cv.key_usuario);
+                }
+            });
+
+            // 5. Cargar datos relacionados
+            const proveedores = await MDL.inventario.proveedor.getAllProveedor();
+            if (!proveedores) throw new Error("No se pudieron obtener proveedores.");
+
+            const clientes = await MDL.crm.cliente.getAll();
+            if (!clientes) throw new Error("No se pudieron obtener clientes.");
+
+            const usuarios = await MDL.usuario.getByKeys(keysUsuarios);
+            const usuariosMap = Array.isArray(usuarios)
+                ? Object.fromEntries(usuarios.map(u => [u.key, u]))
+                : usuarios || {};
+
+            // 6. Totales de la primera venta
+            let totales = {};
+            try {
+                totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0]?.key }) || {};
+            } catch (e) {
+                console.warn("No se pudieron obtener los totales de la primera venta:", e);
+            }
+
+            // 7. Enriquecer ventas
+            const ventasEnriquecidas = await Promise.all(
+                ventas.map(async (cv) => {
+                    return {
+                        ...cv,
+                        moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {},
+                        sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
+                        usuario: usuariosMap[cv?.key_usuario] || {},
+                        empresa,
+                        proveedor: proveedores.find(p => p.key === cv.key_proveedor) || {},
+                        cliente: clientes.find(c => c?.key === cv.key_cliente) || {},
+                        subtotal: totales?.subtotal || "0",
+                        // descuento: totales?.descuento || "0",
+                    };
+                })
+            );
+
+            console.log('✅ Datos cargados exitosamente:', ventasEnriquecidas.length, "ventas.");
+            return ventasEnriquecidas;
+
+        } catch (error) {
+            console.error("❌ Error en loadInitialData:", error?.message || error, error);
+            SPopup.alert("Error al cargar los datos. Intenta nuevamente.");
+            return [];
         }
-
-        // 7. Enriquecer ventas
-        const ventasEnriquecidas = await Promise.all(
-            ventas.map(async (cv) => {
-                return {
-                    ...cv,
-                    moneda: empresa.monedas?.find(m => m.key === cv.key_moneda) || {},
-                    sucursal: sucursales.find(s => s?.key === cv?.key_sucursal) || {},
-                    usuario: usuariosMap[cv?.key_usuario] || {},
-                    empresa,
-                    proveedor: proveedores.find(p => p.key === cv.key_proveedor) || {},
-                    cliente: clientes.find(c => c?.key === cv.key_cliente) || {},
-                    subtotal: totales?.subtotal || "0",
-                    descuento: totales?.descuento || "0",
-                };
-            })
-        );
-
-        console.log('✅ Datos cargados exitosamente:', ventasEnriquecidas.length, "ventas.");
-        return ventasEnriquecidas;
-
-    } catch (error) {
-        console.error("❌ Error en loadInitialData:", error?.message || error, error);
-        SPopup.alert("Error al cargar los datos. Intenta nuevamente.");
-        return [];
     }
-}
 
 
     // async loadInitialData() {
@@ -354,7 +354,14 @@ export default class tabla extends Component {
                     cellStyle={{ alignItems: "flex-end" }}
                     format={(e) => e.row?.moneda?.observacion + " " + SMath.formatMoney(e.data)}
                 />
+                <DinamicTable.Col wrap key="descuento" label="Descuento" width={60} data={(e) => e.row?.descuento ?? ""}
+                    // cellStyle={{
+                    //     alignItems: "flex-end",
+                    //     backgroundColor: STheme.color.danger + "33"
 
+                    // }}
+                    format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
+                />
 
                 <DinamicTable.Col key="monto_amortizado" wrap label="Monto Pagado" width={60} data={(e) => e.row?.monto_amortizado ?? ""}
                     cellStyle={{
@@ -408,6 +415,7 @@ export default class tabla extends Component {
                     }}
                     format={(e) => !e.data ? "" : SMath.formatMoney(e.data)}
                 />
+
 
                 <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
                     customComponent={e => <>

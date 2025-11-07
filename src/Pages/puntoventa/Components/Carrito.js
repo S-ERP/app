@@ -7,6 +7,7 @@ import ResumenTotales from './Carrito/ResumenTotales';
 import TecladoNumerico from './Carrito/TecladoNumerico';
 import MDL from '../../../MDL';
 import FotoCliente from './Foto/FotoCliente';
+import SelecionarDescuento from '../../venta/Components/SelecionarDescuento';
 
 
 export default class Carrito extends Component {
@@ -14,6 +15,7 @@ export default class Carrito extends Component {
     descuentoManual = "";
     conFactura = false;
     cliente = {};
+    descuentoSeleccionado = null;
 
     ajustarCarrito = () => {
         if (!this.props.conStock) return;
@@ -351,6 +353,8 @@ export default class Carrito extends Component {
                             </SScrollView2>
                         </SView>
                         <SHr height={5} />
+
+                        <SHr height={5} />
                         <ResumenTotales
                             subtotal={subtotal}
                             subtotalMoneda={subtotalMoneda}
@@ -362,7 +366,17 @@ export default class Carrito extends Component {
                         />
                         <SView col={"xs-12"} row center>
                             <SView col={"md-12 xl-6"} height={70}>
-                                <SView col={"xs-10"} center>
+                                <SHr />
+                                <SelecionarDescuento onSelect={(descuento) => {
+                                    if (descuento != this.descuentoSeleccionado) {
+                                        this.descuentoSeleccionado = descuento;
+                                        this.forceUpdate();
+                                        console.log("Descuento seleccionado:", descuento);
+                                    }
+
+                                }} />
+
+                                {/* <SView col={"xs-10"} center>
                                     <SInput
                                         label={"Descuento VIP (Bs):"}
                                         disabled={true}
@@ -384,7 +398,7 @@ export default class Carrito extends Component {
                                             this.forceUpdate();
                                         }}
                                     />
-                                </SView>
+                                </SView> */}
                             </SView>
                             <SView col={"md-12 xl-6"} height={60} center row>
                                 <SView col={"md-6"} center>
@@ -439,6 +453,7 @@ export default class Carrito extends Component {
                     carrito={this.carrito}
                     numeroIva={this._numeroIva}
                     totalImpuesto={totalImpuesto}
+                    descuentoSeleccionado={this.descuentoSeleccionado}
                     descuento={this.descuentoManual}
                     totalFinal={totalFinal}
                     conFactura={this.conFactura}
