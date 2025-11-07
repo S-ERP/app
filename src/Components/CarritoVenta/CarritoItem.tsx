@@ -30,7 +30,7 @@ const CarritoItem = () => {
                     translateY.value = 20;
                 }
             })
-            SStorage.getItem("carrito_compra_pos", (saved) => {
+            SStorage.getItem("carrito_venta_pos", (saved) => {
                 try {
                     if (saved) {
                         const { x, y } = JSON.parse(saved);
@@ -57,7 +57,7 @@ const CarritoItem = () => {
 
     const savePosition = async (x: any, y: any) => {
         try {
-            SStorage.setItem("carrito_compra_pos", JSON.stringify({ x, y }));
+            SStorage.setItem("carrito_venta_pos", JSON.stringify({ x, y }));
             // await AsyncStorage.setItem("carrito_pos", JSON.stringify({ x, y }));
         } catch (e) {
             console.warn("Error al guardar posición:", e);
@@ -125,15 +125,13 @@ const CarritoItem = () => {
                 ]}
             >
                 <SView width={50} height={50} center style={{
-                    backgroundColor: STheme.color.error,
+                    backgroundColor: STheme.color.success,
                     borderRadius: 8,
                     justifyContent: "center",
                     alignItems: "center",
                 }}>
-                    <SIconApp name="compraCarro" fill={STheme.color.white} width={35} height={35} style={{left:6, position:"absolute"}} />
+                    <SIconApp name="ventaCarro" fill={STheme.color.white} width={35} height={35} style={{ left: 6, position: "absolute" }} />
                 </SView>
-
-
                 <SView style={{
                     width: 25,
                     height: 25,
@@ -145,7 +143,8 @@ const CarritoItem = () => {
                     top: -14,
                     right: -14
                 }}>
-                    <SText fontSize={10} center color={STheme.color.primary} bold>{MDL.carrito.carrito_compra.cantidad_items}</SText>
+                    {/* <SText fontSize={10} center color={STheme.color.primary} bold>{MDL.carrito.carrito_compra.cantidad_items}</SText> */}
+                    <SText fontSize={10} center color={STheme.color.primary} bold>{MDL.carrito.carrito_venta.cantidad_items}</SText>
                 </SView>
             </Animated.View>
         </GestureDetector>

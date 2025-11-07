@@ -6,5 +6,5 @@ export type Carrito = {
 
 
 export type EventListener = {
-    type: "handleChange"
+    type: "handleChange" | "handleChangeVenta"
 } 
