@@ -67,13 +67,13 @@ export default class Categoria extends Component {
                 backgroundColor={STheme.color.darkGray}
                 row
                 center
-                style={{ paddingHorizontal: 8, paddingVertical: 8 }}
+                //style={{ paddingHorizontal: 8, paddingVertical: 8 }}
             >
                 <SView col={"xs-12 md-9"} row>
                     <ScrollView
                         horizontal
                         scroll={false}
-                        style={{ flex: 1 }}
+                        style={{ flex: 1, paddingTop:10, paddingLeft:10 }}
                         contentContainerStyle={{ minWidth: "100%" }}
                     >
                         {categorias.map((cat) => (
@@ -113,7 +113,7 @@ export default class Categoria extends Component {
 
                 </SView>
 
-                <SView col={"xs-12 md-3"} row backgroundColor='transparent' style={{ justifyContent: "space-between" }}>
+                <SView col={"xs-12 md-3"} row backgroundColor='transparent' style={{ justifyContent: "space-between" ,paddingLeft:5}}>
                     <SView col={"xs-12"} row center backgroundColor='transparent' >
                         <SView col={"xs-12"} row center height={32} style={{ borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, backgroundColor: STheme.color.background }} >
                             <SInput
