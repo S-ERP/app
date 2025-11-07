@@ -138,27 +138,24 @@ export default class ChatById extends Component {
         }
 
         return (
-            <SView col="xs-12" row style={{ backgroundColor: STheme.color.card, padding: 8 }}>
-                <SView col="xs-8" row style={{ justifyContent: "flex-start" }} onPress={() => {
-                    // console.log(data, this.state.data)
-                }}>
-                    <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.red }} center>
+            <SView width={40} height={40} style={{ borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card }} center>
+                <SImage
+                    enablePreview
+                    src={MDL.whatsapp.device.getUrlImage(idDevice, idchat) || require("../../Assets/img/imprimir.png")}
+                    style={{ resizeMode: "cover" }}
+                    onError={() => {
+                        this.setState({ fallbackImage: true });
+                    }}
+                >
+                    {this.state?.fallbackImage &&
                         <SImage
-                            enablePreview
-                            src={MDL.whatsapp.device.getUrlImage(idDevice, idchat)}
+                            src={require("../../Assets/img/imprimir.png")}
                             style={{ resizeMode: "cover" }}
                         />
-                    </SView>
-                    <SView flex row style={{ marginLeft: 16 }} center>
-                        <SText col="xs-12" color={STheme.color.text} fontSize={14} bold>{data?.name || "Sin nombre"}</SText>
-                        {/* <SText col="xs-12" color="white" fontSize={12} bold>últ. vez {lastSeenText}</SText> */}
-                        {/* <SText col="xs-12" color="white" fontSize={12} bold>En línea</SText> */}
-                    </SView>
-                </SView>
-                <SView col="xs-4" row center style={{ justifyContent: "flex-end" }}>
-                    <SIcon name="drive-menu" fill={STheme.color.text} width={18} height={18} />
-                </SView>
+                    }
+                </SImage>
             </SView>
+
         );
     }
 
