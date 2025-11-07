@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { SHr, SInput, SInput2, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SImage, SInput, SInput2, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
 import { ScrollView } from 'react-native-gesture-handler';
+import Model from '../../../Model';
+import SSocket from 'servisofts-socket';
 
 
 export default class Categoria extends Component {
@@ -64,25 +66,27 @@ export default class Categoria extends Component {
         return (
             <SView
                 col={"xs-12 md-12"}
-                backgroundColor={STheme.color.darkGray}
+                // backgroundColor={STheme.color.darkGray}
                 row
                 center
-                style={{ paddingHorizontal: 8, paddingVertical: 8 }}
+                //style={{ paddingHorizontal: 8, paddingVertical: 8 }}
+                style={{ paddingTop: 10, borderBottomWidth: 1, borderBottomColor: STheme.color.card, paddingBottom: 10 }}
             >
-                <SView col={"xs-12 md-9"} row>
+                <SHr height={5} />
+                <SView col={"xs-12 md-9"} row >
                     <ScrollView
                         horizontal
                         scroll={false}
-                        style={{ flex: 1 }}
+                        style={{ flex: 1, paddingLeft: 10 }}
                         contentContainerStyle={{ minWidth: "100%" }}
                     >
                         {categorias.map((cat) => (
-                            <SView
+                            <SView row
                                 key={cat.key}
                                 onPress={() => this.handlePress(cat.key)}
                                 style={{
-                                    paddingVertical: 4,
-                                    paddingHorizontal: 8,
+                                    paddingVertical: 3,
+                                    paddingHorizontal: 4,
                                     borderRadius: 20,
                                     marginRight: 8,
                                     backgroundColor:
@@ -96,8 +100,13 @@ export default class Categoria extends Component {
                                 }}
                                 center
                             >
+                                <SView width={27} height={27} style={{ borderColor: STheme.color.background + "70", backgroundColor: STheme.color.card, borderWidth: 0.3, borderRadius: 50, overflow: "hidden" }}>
+                                    <SImage src={Model.tipo_producto._get_image_download_path(SSocket.api, cat?.key)} style={{ overflow: "hidden", resizeMode: "cover", borderRadius: 8, width: "100%" }} />
+                                </SView>
+                                <SView width={3} />
                                 <SText
                                     fontSize={12} center
+                                    style={{ paddingRight: 2 }}
                                     color={
                                         this.selectedCategory === cat.key
                                             ? STheme.color.background
@@ -113,13 +122,13 @@ export default class Categoria extends Component {
 
                 </SView>
 
-                <SView col={"xs-12 md-3"} row backgroundColor='transparent' style={{ justifyContent: "space-between" }}>
-                    <SView col={"xs-12"} row center backgroundColor='transparent' >
-                        <SView col={"xs-12"} row center height={32} style={{ borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, backgroundColor: STheme.color.background }} >
+                <SView col={"xs-12 md-3"} row backgroundColor='transparent' style={{ paddingLeft: 5, paddingRight: 5, top: -5 }}>
+                    <SView col={"xs-12"} row backgroundColor='transparent' >
+                        <SView col={"xs-12"} row center height={35} style={{ borderRadius: 20, borderWidth: 1, borderColor: STheme.color.card, backgroundColor: STheme.color.background }} >
                             <SInput
                                 placeholder="Buscar Producto" center height={30}
                                 iconR={<SIconApp name="Search" style={{ paddingRight: 8 }} width={16} height={16} fill={"#6B7280"} />}
-                                style={{ fontSize: 12, backgroundColor: STheme.color.background, borderRadius: 8, }}
+                                style={{ fontSize: 12, backgroundColor: STheme.color.background, borderRadius: 20, }}
                                 value={this.props.value} onChangeText={this.props.onChangeText}
                                 onKeyPress={(e) => {
                                     if (e.nativeEvent.key === "Escape") this.props.onChangeText?.("");
