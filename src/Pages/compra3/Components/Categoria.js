@@ -70,7 +70,7 @@ export default class Categoria extends Component {
                 row
                 center
                 //style={{ paddingHorizontal: 8, paddingVertical: 8 }}
-                style={{ borderTopWidth: 1, borderColor: STheme.color.card, paddingTop: 10, borderBottomWidth: 1, borderBottomColor: STheme.color.card, paddingBottom: 10 }}
+                style={{ paddingTop: 10, borderBottomWidth: 1, borderBottomColor: STheme.color.card, paddingBottom: 10 }}
             >
                 <SHr height={5} />
                 <SView col={"xs-12 md-9"} row >
