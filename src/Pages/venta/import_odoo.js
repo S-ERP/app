@@ -77,7 +77,7 @@ export default class import_odoo extends React.Component {
                             width={200} />
                         <DinamicTable.Col key={"detalles"} label={"detalles"}
                             width={500}
-                            data={e => e.row.detalles}
+                            data={e => JSON.stringify(e.row.detalles)}
                             customComponent={e => {
                                 return <>
                                     {(e.row.detalles ?? []).map(a => {
@@ -85,7 +85,7 @@ export default class import_odoo extends React.Component {
                                         <SText backgroundColor={STheme.colorFromText(a.producto) + "66"} style={{
                                             padding: 2,
                                             margin: 2,
-                                        }}>{a.producto}</SText>
+                                        }}>{a.producto} - Bs.{a.precio_unitario} X {a.cantidad} = {a.total}</SText>
                                     </SView>
                                     })}
                                 </>
