@@ -17,6 +17,7 @@ import edit from "./edit";
 import editar_plan_pagos from "./editar_plan_pagos";
 import lista from "./lista";
 import tabla from "./tabla";
+import import_odoo from "./import_odoo";
 const model = Model.compra_venta;
 
 export const Parent = {
@@ -38,6 +39,7 @@ export default SPage.combinePages("venta",
         "denegado": denegado,
         "profile": profile,
         "tabla": tabla,
+        import_odoo,
         editar_plan_pagos,
         ...detalle,
     }
