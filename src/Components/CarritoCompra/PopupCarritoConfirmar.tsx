@@ -1,5 +1,5 @@
 import React from "react";
-import { SHr, SImage, SInput, SMath, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SHr, SImage, SInput, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
@@ -38,7 +38,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     }
     inputNombre: SInput | null = null;
     inputAlmacen: SelectorAlmacen | undefined;
-
+    proveedor: any;
     state: { almacen: any, moneda: any } = {
         almacen: null,
         moneda: null
@@ -103,7 +103,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             const data = {
                 "descripcion": "Compra De Prueba Ricky",
                 "observacion": "Observacion de la compra de prueba ricky",
-                "key_proveedor": null,
+                "key_proveedor": this.proveedor?.key,
                 "key_usuario": MDL.usuario.session?.key,
                 "facturar": false,
                 "facturar_luego": false,
@@ -172,6 +172,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         <SInput icon={<SText color={STheme.color.lightGray} bold>{"# NIT:"}</SText>} placeholder={"Escriba el nit del proveedor"}
                             onChangeText={(e) => {
                                 MDL.crm.cliente.buscar_nit(e).then(proveedor => {
+                                    this.proveedor = proveedor;
                                     if (this.inputNombre) {
                                         this.inputNombre.setValue(proveedor.razon_social ?? proveedor.nombres)
                                     }
@@ -182,6 +183,22 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             onSubmitEditing={() => {
                                 if (this.inputNombre) this.inputNombre.focus()
                             }}
+                            iconR={<SView
+                                card style={{
+                                    width: 40, height: 40
+                                }} onPress={() => {
+                                    SNavigation.navigate("/cliente", {
+                                        onSelect: (proveedor: any) => {
+                                            if (this.inputNombre) {
+                                                this.proveedor = proveedor;
+                                                this.inputNombre.setValue(proveedor.razon_social ?? proveedor.nombres)
+                                            }
+                                            SNavigation.goBack();
+                                        }
+                                    })
+                                }}>
+                                <SIconApp name="Search" />
+                            </SView>}
                         />
                     </SView>
                     <SHr h={4} />

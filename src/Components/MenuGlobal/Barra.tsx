@@ -136,21 +136,23 @@ export default class Barra extends React.Component {
                     <Page label={"Compras"}
                         icon={<ImagePage key_page="c0a4c4e6-082f-4f23-a755-01369653ee49" />}
                     >
-                        <Page label={"Proveedores"} url={"/proveedor"} permiso="page" />
-                        <Page label={"Compras"} url={"/compra"} permiso="ver" />
+                        {/* <Page label={"Proveedores"} url={"/proveedor"} permiso="page" /> */}
+                        {/* <Page label={"Compras"} url={"/compra"} permiso="ver" /> */}
+                        <Page label={"Historial de Compras"} url={"/compra/tabla"} permiso="ver" permiso_url="/compra" />
                         <Page label={"Compras Rapida"} url={"/compra2"} permiso="ver" permiso_url="/compra" />
                         <Page label={"Compras Rapida New"} url={"/compra3"} permiso="ver" permiso_url="/compra" />
-                        <Page label={"Tabla"} url={"/compra/tabla"} permiso="ver" permiso_url="/compra" />
+                        
 
                     </Page>
                     <Page label={"Ventas"}
                         icon={<ImagePage key_page="8becb109-9987-4520-840d-7f0efdb6e3c6" />}
                     >
                         <Page label={"Clientes"} url={"/cliente"} permiso="ver" />
-                        <Page label={"Ventas"} url={"/venta"} permiso="ver" />
-                        <Page label={"Ventas Rapida"} url={"/puntoventa"} permiso="ver" permiso_url="/venta" />
-                        <Page label={"Tabla"} url={"/venta/tabla"} permiso="ver" permiso_url="/venta" />
+                        <Page label={"Historial de Ventas"} url={"/venta/tabla"} permiso="ver" permiso_url="/venta" />
+                        {/* <Page label={"Ventas"} url={"/venta"} permiso="ver" /> */}
                         <Page label={"Descuento"} url={"/descuento"} permiso="ver" permiso_url="/descuento" />
+
+                        <Page label={"Ventas Rapida"} url={"/puntoventa"} permiso="ver" permiso_url="/venta" />
                     </Page>
 
                     <Page label={"Facturacion"}

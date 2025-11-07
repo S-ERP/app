@@ -6,10 +6,12 @@ import { DinamicTable } from "servisofts-table";
 import Config from "../Config";
 type ColProps = {
     key: string,
-    col?: string
+    col?: string,
+    width?: number,
 }
 type ImportarExcelProps = {
     cols: ColProps[],
+    onSave?: (data: any[]) => void
 }
 export default class ImportarExcel extends React.Component<ImportarExcelProps & { data: any }> {
     static open(props: ImportarExcelProps) {
@@ -51,7 +53,7 @@ export default class ImportarExcel extends React.Component<ImportarExcelProps & 
             key={c.key}
             label={c.key}
             data={a => a.row[c.col]}
-            width={120}
+            width={c.width ?? 120}
 
         >
             <SView padding={1} col={"xs-12"}>
@@ -90,7 +92,21 @@ export default class ImportarExcel extends React.Component<ImportarExcelProps & 
                 <SView flex />
                 <SText card padding={8}>{"CANCELAR"}</SText>
                 <SView flex />
-                <SText card padding={8}>{"GUARDAR"}</SText>
+                <SText card padding={8} onPress={() => {
+                    const data = this.props.data;
+                    const dataMapped = data.map((row: any) => {
+                        const newRow: any = {};
+                        this.props.cols.forEach(c => {
+                            newRow[c.key] = row[c.col];
+                        });
+                        return newRow;
+                    });
+                    if (this.props.onSave) {
+                        this.props.onSave(dataMapped);
+                    }
+                    SPopup.close("importar-excel");
+                    console.log("data to import", dataMapped);
+                }}>{"GUARDAR"}</SText>
                 <SView flex />
             </SView>
 
