@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ScrollView, Animated } from 'react-native';
-import { SNotification, SPopup, SText, STheme, SView, SIcon, SHr, SDate, SLoad } from 'servisofts-component';
+import { SNotification, SPopup, SText, STheme, SView, SIcon, SHr, SDate, SLoad, SMath } from 'servisofts-component';
 import SIconApp from '../../../Assets/SIconApp';
 import MDL from '../../../MDL';
 import SelectTipoPago from './SelectTipoPago';
@@ -8,7 +8,6 @@ const data = {
     configuracion: {
         estados: {
             Pendiente: { label: "Pendiente", color: "#EAB308", bgColor: "#fef8c3", textColor: "#b58940", icon: "history" }, Pagado: { label: "Pagado", color: "#22C55E", bgColor: "#dafce6", textColor: "#42b88f", icon: "Check" },
-            // Vencido: { label: "Vencido", color: "#F97316", bgColor: "#ee343b", textColor: "#eeccda", icon: "AlertOutline" } 
             Vencido: { label: "Vencido", color: "#F97316", bgColor: "#ee343b", textColor: "#eeccda", icon: "AlertOutline" }
 
         }
@@ -54,6 +53,8 @@ export default class PopupPagoCuota extends Component {
     loadData = async () => {
         const key_compra_venta = this.props.editObject?.key || '1f30bf00-33ba-4466-813b-2870eec111dd';
         try {
+            this.empresa_srl = await MDL.empresa.getFull();
+            if (!this.empresa_srl) throw new Error("No se pudo cargar la empresa");
             const registros = await MDL.compra_venta.getCuotasCompras(key_compra_venta);
             return registros || [];
         } catch (error) {
@@ -88,7 +89,7 @@ export default class PopupPagoCuota extends Component {
                 }
             }
         }
-        return { cant_pendientes, cant_mora, cant_pagado, montototal_pendientes: montototal_pendientes.toFixed(2), montototal_mora: montototal_mora.toFixed(2), montototal_pagado: montototal_pagado.toFixed(2), };
+        return { cant_pendientes, cant_mora, cant_pagado, montototal_pendientes: SMath.formatMoney(montototal_pendientes), montototal_mora: SMath.formatMoney(montototal_mora), montototal_pagado: SMath.formatMoney(montototal_pagado) };
     };
     componentDidMount() {
         this.loadData()
@@ -161,12 +162,32 @@ export default class PopupPagoCuota extends Component {
             }
         }
         const cuotasDetalle = this.cuotasCompras.length > 0 ? this.cuotasCompras : [];
+        const monedas = this.empresa_srl?.monedas || [];
 
         let tieneVencidas = false, tienePendientes = false;
         for (let i = 0; i < cuotasDetalle.length; i++) {
             const c = cuotasDetalle[i];
             if (c.estado === "Vencido") tieneVencidas = true;
             else if (c.estado === "Pendiente") tienePendientes = true;
+
+
+            const monedaItem = monedas.find(m => m.key === c.key_moneda);
+            // c.moneda = monedaItem || {};
+
+            c.moneda = monedaItem.descripcion || {};
+            c.moneda_simbologia = monedaItem.observacion || {};
+            c.moneda_tipo_cambio = monedaItem.tipo_cambio || {};
+            c.moneda_tipo = monedaItem.tipo || {};
+
+
+            c.monto = c.monto || 0;
+            // c.monto_base = SMath.formatMoney(monedaItem.tipo_cambio * c.monto);
+            // c.monto_base = SMath.formatMoney(monedaItem.tipo_cambio * c.monto, 2);
+            c.monto_base = monedaItem.tipo_cambio * c.monto_total || 0;
+            // c.monto_total = c.monto_total || 0;
+            // c.monto_total_base = c.monto_total_base || 0;
+
+
         }
         let estadoCompra = "Pagado";
         if (tieneVencidas || tienePendientes) estadoCompra = "Pendiente";
@@ -221,8 +242,21 @@ export default class PopupPagoCuota extends Component {
                         <SView>{this.labelEstadoItem(cuota.estado, isVencida)}</SView>
                     </SView>
                     <SHr h={4} />
+
+
+
+
+
+
                     <SView row style={{ justifyContent: "space-between" }}>
-                        <SText fontSize={14} color={COLOR_TEXT}> Vencimiento: <SText bold>{new SDate(cuota.vencimiento, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText> </SText> <SText fontSize={16} bold color={COLOR_TEXT}> {monedaSymbol} {parseFloat(cuota.monto).toFixed(2)} </SText>
+                        <SText fontSize={14} color={COLOR_TEXT}> Vencimiento: <SText bold>{new SDate(cuota.vencimiento, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText> </SText>
+
+                        <SText fontSize={16} bold color={COLOR_TEXT}> {cuota.moneda_simbologia} {cuota.monto} </SText>
+                        {/* <SText fontSize={16} bold color={COLOR_TEXT}> {compra.moneda_base.observacion} {SMath.formatMoney(cuota.monto_base)} </SText> */}
+
+                        <SView style={{ position: "absolute", right: 0, top: 20 }} >
+                            {cuota.moneda_tipo != "base" ? <SText fontSize={16} bold color={COLOR_TEXT}> {compra.moneda_base.observacion} {SMath.formatMoney(cuota.monto_base)} </SText> : ""}
+                        </SView>
                     </SView>
                     {isPaid ? (
                         <SText fontSize={14} color={COLOR_TEXT}> Pagado: <SText bold color={data.configuracion.estados.Pagado.color}> {new SDate(cuota.fechaPago, 'yyyy-MM-dd').toString('dd/MM/yyyy')} </SText> </SText>
@@ -280,7 +314,7 @@ export default class PopupPagoCuota extends Component {
                         <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }} backgroundColor='transparent'>
                             <SView col={'xs-9'}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Total:</SText>
-                                <SText fontSize={16} bold color={COLOR_TEXT}> {compra.moneda} {compra.total.toFixed(2)} </SText>
+                                <SText fontSize={16} bold color={COLOR_TEXT}>{compra.moneda} {SMath.formatMoney(compra.total)} </SText>
                             </SView>
                             <SView col={'xs-3'}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Estado:</SText> {this.labelEstadoHeader(compra.estado)}
@@ -336,8 +370,10 @@ export default class PopupPagoCuota extends Component {
             </SView>
         );
     }
+
     botonFooterPagar = (estado, MontoSeleccionado, moneda) => {
         const compra = this.getCompraData();
+
         const selectedCuotas = [];
         for (let i = 0; i < compra.cuotasDetalle.length; i++) {
             const c = compra.cuotasDetalle[i];
@@ -348,7 +384,7 @@ export default class PopupPagoCuota extends Component {
         const isAnyCuotaSelected = selectedCuotas.length > 0;
         return (
             <SView col={'xs-12 sm-4'} center>
-                <SText fontSize={14} bold color={COLOR_TEXT}> {isAnyCuotaSelected ? `${moneda} ${MontoSeleccionado}` : 'Selecciona una cuota'} </SText>
+                <SText fontSize={14} bold color={COLOR_TEXT}>{isAnyCuotaSelected ? `${moneda} ${MontoSeleccionado}` : 'Selecciona una cuota'} </SText>
                 <SHr h={8} />
                 <SView
                     onPress={async () => {
@@ -367,22 +403,24 @@ export default class PopupPagoCuota extends Component {
                             console.log("=== Abriendo SelectTipoPago ===");
                             console.log({ activa, compra, MontoSeleccionado, moneda, selectedCuotas });
 
-
                             SelectTipoPago.openPopup({
                                 key_punto_venta: activa?.key_punto_venta,
                                 key_moneda: compra.moneda,
                                 montoMaximo: MontoSeleccionado,
                                 monedaSymbol: moneda,
                                 onSelect: (item) => {
-                                    const cuotaKeys = selectedCuotas.map(cuota => cuota.key);
+
                                     const hoy = new SDate().toString('yyyy-MM-dd hh:mm:ss');
+                                    const cuotasData = selectedCuotas.map(({ key, key_moneda, monto, monto_base }) => ({ key, key_moneda, monto_extranjera: monto, monto_nacional: monto_base }));
                                     const keyTipoPago = Object.keys(item)[0];
                                     const monto = item[keyTipoPago];
 
-                                    console.log("Cuota keys a pagar:", cuotaKeys);
-                                    console.log("Fecha actual:", hoy);
-                                    console.log("Key tipo de pago:", keyTipoPago);
-                                    console.log("Monto a pagar:", monto);
+
+                                    const enviarar = { tipos_pago: item, fecha: hoy, cuotas: cuotasData, };
+                                    console.group("Detalles del pago", enviarar);
+
+
+                                    // MDL.caja.pagoCuotas(enviarar);
 
                                 },
                             });
@@ -417,17 +455,35 @@ export default class PopupPagoCuota extends Component {
         const compra = this.getCompraData();
         let MontoSeleccionado = 0;
         let MontoSaldo = 0;
+
         for (let i = 0; i < compra.cuotasDetalle.length; i++) {
             const cuota = compra.cuotasDetalle[i];
             if (cuota.estado !== 'Pagado') {
+
+                console.log("aaaaaaaaaaaa " + i)
                 MontoSaldo += parseFloat(cuota.monto || 0);
+                // console.log("bbbbbbbb " + cuota.monto)
                 if (this.selectedCuotas[cuota.numero]) {
-                    MontoSeleccionado += parseFloat(cuota.monto || 0);
+                    MontoSeleccionado += parseFloat(cuota.monto_base || 0);
+                    // MontoSeleccionado += parseFloat(cuota.monto_base || 0);
+
+                    console.log("ccccccccc " + cuota.monto_base)
+                    // MontoSeleccionado += parseFloat(cuota.monto_base || 0);
                 }
             }
         }
+
+
         MontoSeleccionado = MontoSeleccionado.toFixed(2);
+        // MontoSeleccionado = SMath.formatMoney(MontoSeleccionado);
         MontoSaldo = MontoSaldo.toFixed(2);
+        // MontoSaldo = SMath.formatMoney(MontoSaldo);
+        const monedas = this.empresa_srl?.monedas || [];
+
+        const monedaItem = monedas.find(m => m.tipo === "base");
+        compra.moneda_base = monedaItem || {};
+
+
         const filteredCuotas = [];
         for (let i = 0; i < compra.cuotasDetalle.length; i++) {
             const cuota = compra.cuotasDetalle[i];
