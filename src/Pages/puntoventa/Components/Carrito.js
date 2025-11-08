@@ -106,49 +106,50 @@ export default class Carrito extends Component {
     }
 
     addProducto = (producto) => {
-        // console.log("🎪🎪🎪 addProducto", producto);
-        // const index = this.carrito.findIndex((p) => p.key === producto.key);
-        // if (index >= 0) {
-        //     const item = this.carrito[index];
-        //     if (this.props.conStock) {
-        //         if (item.cantidad < item.stock) {
-        //             item.cantidad += 1;
-        //         } else {
-        //             SNotification.send({
-        //                 title: "CARRITO Stock insuficiente",
-        //                 body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: ${item.stock} unidades.`,
-        //                 color: STheme.color.danger,
-        //                 time: 3000,
-        //             });
-        //             return;
-        //         }
-        //     } else {
-        //         item.cantidad += 1;
-        //     }
-        // } else {
-        //     if (this.props.conStock && (!producto.stock || producto.stock <= 0)) {
-        //         SNotification.send({
-        //             title: "CARRITO Sin stock",
-        //             body: `No hay stock disponible para ${producto.descripcion}.`,
-        //             color: STheme.color.danger,
-        //             time: 3000,
-        //         });
-        //         return;
-        //     }
-        //     this.carrito.push({
-        //         ...producto,
-        //         cantidad: 1,
-        //         precio_venta: producto.precio_venta,
-        //         precio_venta_moneda: producto.precio_venta_moneda || (this.props.selectedMoneda
-        //             ? producto.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
-        //             : producto.precio_venta),
-        //         monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
-        //     });
-        //     this.forceUpdate();
+        console.log("🎪🎪🎪 addProducto", producto);
+        const index = this.carrito.findIndex((p) => p.key === producto.key);
+        if (index >= 0) {
+            const item = this.carrito[index];
+            if (this.props.conStock) {
+                if (item.cantidad < item.stock) {
+                    item.cantidad += 1;
+                } else {
+                    SNotification.send({
+                        title: "CARRITO Stock insuficiente",
+                        body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: ${item.stock} unidades.`,
+                        color: STheme.color.danger,
+                        time: 3000,
+                    });
+                    return;
+                }
+            } else {
+                item.cantidad += 1;
+            }
+        } else {
+            if (this.props.conStock && (!producto.stock || producto.stock <= 0)) {
+                SNotification.send({
+                    title: "CARRITO Sin stock",
+                    body: `No hay stock disponible para ${producto.descripcion}.`,
+                    color: STheme.color.danger,
+                    time: 3000,
+                });
+                return;
+            }
+            this.carrito.push({
+                ...producto,
+                cantidad: 1,
+                precio_venta: producto.precio_venta,
+                precio_venta_moneda: producto.precio_venta_moneda || (this.props.selectedMoneda
+                    ? producto.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
+                    : producto.precio_venta),
+                monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
+            });
+            this.forceUpdate();
 
-        // }
-        // this.getCarritoItemCount();
-        // this.forceUpdate();
+        }
+        this.getCarritoItemCount();
+        this.forceUpdate();
+        
         console.log("producto", producto)
         MDL.carrito.agregarItemAlCarritoDeVentas({
             modelo: producto,
