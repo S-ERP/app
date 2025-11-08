@@ -230,11 +230,12 @@ export default class PopupPagoCuota extends Component {
                     <SHr h={4} />
                     <SView row style={{ justifyContent: "space-between" }}>
                         <SText fontSize={14} color={COLOR_TEXT}> Vencimiento: <SText bold>{new SDate(cuota.vencimiento, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText> </SText>
-                        <SText fontSize={16} bold color={COLOR_TEXT}> {cuota.moneda_simbologia} {cuota.monto} </SText>
-                        { }
-                        <SView style={{ position: "absolute", right: 0, top: 20 }} >
-                            {cuota.moneda_tipo != "base" ? <SText fontSize={16} bold color={COLOR_TEXT}> {compra.moneda_base.observacion} {SMath.formatMoney(cuota.monto_base)} </SText> : ""}
-                        </SView>
+                        <SText fontSize={16} bold color={COLOR_TEXT}> {compra.moneda_base.observacion} {SMath.formatMoney(cuota.monto_base)} </SText>
+
+                        <SView style={{ position: "absolute", right: 0, top: 20 }} > {cuota.moneda_tipo != "base" ? <SText fontSize={14} bold color={"orange"}> {cuota.moneda_simbologia} {SMath.formatMoney(cuota.monto)} </SText> : ""} </SView>
+
+                        {/* <SView style={{ position: "absolute", right: 0, top: 20 }} > {cuota.moneda_tipo != "base" ? <SText fontSize={16} bold color={COLOR_TEXT}> {compra.moneda_base.observacion} {SMath.formatMoney(cuota.monto_base)} </SText> : ""} </SView> */}
+
                     </SView>
                     {isPaid ? (
                         <SText fontSize={14} color={COLOR_TEXT}> Pagado: <SText bold color={data.configuracion.estados.Pagado.color}> {new SDate(cuota.fechaPago, 'yyyy-MM-dd').toString('dd/MM/yyyy')} </SText> </SText>
