@@ -42,11 +42,14 @@ export default class FormRegistroDescuento extends Component<FormRegistroDescuen
     componentDidMount(): void {
         MDL.contabilidad.getCuentasCache().then((cuentas) => {
             console.log("Cuentas cargadas en FormRegistroDescuento", cuentas);
-            this.setState({ cuentas });
+            this.setState({ cuentas:Object.values(cuentas) });
 
         })
     }
 
+    cuentaToString(cuenta: any) {
+        return `${cuenta.codigo} - ${cuenta.descripcion}`;
+    }
     render() {
 
         const { defaultData } = this.props;
@@ -84,7 +87,7 @@ export default class FormRegistroDescuento extends Component<FormRegistroDescuen
                         label: "Cuenta",
                         required: true, defaultValue: defaultData?.key_cuenta_contable,
                         type: "select2",
-                        options: this.state.cuentas.map((cuenta) => cuenta.codigo),
+                        options: this.state.cuentas.map((cuenta) => this.cuentaToString(cuenta)),
                         placeholder: "Cuenta contable",
                         // iconR: <SText>{"BOB"}</SText>,
                         onSubmitEditing: () => {
@@ -97,7 +100,8 @@ export default class FormRegistroDescuento extends Component<FormRegistroDescuen
                 }}
                 onSubmit={(e: any) => {
 
-                    const data = { ...defaultData, ...e };
+                    const cuentaSeleccionada = this.state.cuentas.find((cuenta) => this.cuentaToString(cuenta) === e.key_cuenta_contable);
+                    const data = { ...defaultData, ...e, key_cuenta_contable: cuentaSeleccionada?.key };
                     const prom = data?.key ? MDL.compra_venta.editarDescuento(data) : MDL.compra_venta.registrarDescuento(data);
 
                     SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
