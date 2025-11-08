@@ -12,9 +12,24 @@ type Props = {
     editObject?: any,
     onCancel?: Function,
     onSuccess?: Function,
+
 }
 
+
 export default class PopupCrearPuntoVenta extends Component<Props> {
+    state: any = {
+        sucursales: []  // inicializamos vacio
+    }
+    componentDidMount(): void {
+        MDL.empresa.getAllSucursales().then(item => {
+            this.setState({
+                sucursales: Object.values(item).map((suc: any) => ({
+                    key: suc.key?.toString(),  // ⚡ convertir key a string
+                    content: `Suc.- ${suc.descripcion}`
+                }))
+            });
+        }).catch(e => console.error(e));
+    }
 
     static open(props: Props) {
         SPopup.open({
@@ -46,7 +61,12 @@ export default class PopupCrearPuntoVenta extends Component<Props> {
     render() {
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props.editObject ? "Editar" : "Crear"}{" Punto de Venta"}</SText>
-            <SForm ref={(ref: any) => this.form = ref} inputs={{
+            <SForm ref={(ref: any) => this.form = ref} 
+            row 
+            style={{
+                justifyContent: "space-between",
+            }}
+            inputs={{
                 "descripcion": {
                     label: "Nombre del Punto de venta *", placeholder: "Ingresa el nombre del Punto de venta", isRequired: true, autoFocus: true,
                     defaultValue: this.props.editObject?.descripcion,
@@ -55,9 +75,21 @@ export default class PopupCrearPuntoVenta extends Component<Props> {
                     }
                 },
                 "codigo_facturacion": {
-                    label: "Codigo SIAT", placeholder: "", defaultValue: this.props.editObject?.codigo_facturacion, col: "xs-5", onSubmitEditing: () => {
+                    label: "Codigo SIAT", placeholder: "SIAT", defaultValue: this.props.editObject?.codigo_facturacion, col: "xs-5.5", onSubmitEditing: () => {
                         if (this.form) this.form.focus("observacion");
                     }
+                },
+                "key_sucursal": {
+                    label: "Sucursal",
+                    placeholder: "Seleccione sucursal",
+                    type: "select",
+                    col: "xs-5.5",
+                    style: { paddingStart: 0, fontSize: 10, color: STheme.color.text},
+                    labelStyle: { top: -10, },
+                    inputStyle: { paddingStart: 8, fontSize: 10 },
+                    options: this.state.sucursales,   // siempre array
+                    defaultValue: this.props.editObject?.key_sucursal?.toString() ?? null,
+                    isRequired: true,
                 },
                 "observacion": {
                     label: "Detalles", placeholder: "Ingresa mas detalles sobre el punton de venta", type: "textArea", defaultValue: this.props.editObject?.observacion,
