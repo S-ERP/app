@@ -9,6 +9,7 @@ import PButtom from '../../../Components/PButtom';
 // import SIconApp from '../../../Assets/SIconApp';
 // import TextAreaPopup from '../../../Components/QueryTool/TextAreaPopup';
 import TextAreaPopupOpenIcon from '../../../Components/QueryTool/TextAreaPopupOpenIcon';
+import SelectorCuentaContable from '../../../Components/Selectores/SelectorCuentaContable';
 
 
 type FormRegistroDescuentoType = {
@@ -39,17 +40,8 @@ export default class FormRegistroDescuento extends Component<FormRegistroDescuen
         cuentas: [] as any[],
     }
 
-    componentDidMount(): void {
-        MDL.contabilidad.getCuentasCache().then((cuentas) => {
-            console.log("Cuentas cargadas en FormRegistroDescuento", cuentas);
-            this.setState({ cuentas:Object.values(cuentas) });
+    cuenta: any;
 
-        })
-    }
-
-    cuentaToString(cuenta: any) {
-        return `${cuenta.codigo} - ${cuenta.descripcion}`;
-    }
     render() {
 
         const { defaultData } = this.props;
@@ -83,25 +75,28 @@ export default class FormRegistroDescuento extends Component<FormRegistroDescuen
                             if (this.form) this.form.focus("key_cuenta_contable");
                         }
                     },
-                    "key_cuenta_contable": {
-                        label: "Cuenta",
-                        required: true, defaultValue: defaultData?.key_cuenta_contable,
-                        type: "select2",
-                        options: this.state.cuentas.map((cuenta) => this.cuentaToString(cuenta)),
-                        placeholder: "Cuenta contable",
-                        // iconR: <SText>{"BOB"}</SText>,
-                        onSubmitEditing: () => {
-                            if (this.form) this.form.submit();
-                        }
-                    },
+                    // "key_cuenta_contable": {
+                    //     label: "Cuenta",
+                    //     required: true, defaultValue: defaultData?.key_cuenta_contable,
+                    //     type: "select2",
+                    //     options: this.state.cuentas.map((cuenta) => this.cuentaToString(cuenta)),
+                    //     placeholder: "Cuenta contable",
+                    //     // iconR: <SText>{"BOB"}</SText>,
+                    //     onSubmitEditing: () => {
+                    //         if (this.form) this.form.submit();
+                    //     }
+                    // },
 
 
 
                 }}
                 onSubmit={(e: any) => {
 
-                    const cuentaSeleccionada = this.state.cuentas.find((cuenta) => this.cuentaToString(cuenta) === e.key_cuenta_contable);
-                    const data = { ...defaultData, ...e, key_cuenta_contable: cuentaSeleccionada?.key };
+                    // const cuentaSeleccionada = this.state.cuentas.find((cuenta) => this.cuentaToString(cuenta) === e.key_cuenta_contable);
+                    const data = { ...defaultData, ...e };
+                    if(this.cuenta){
+                        data.key_cuenta_contable = this.cuenta?.key;
+                    }
                     const prom = data?.key ? MDL.compra_venta.editarDescuento(data) : MDL.compra_venta.registrarDescuento(data);
 
                     SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
@@ -139,7 +134,14 @@ export default class FormRegistroDescuento extends Component<FormRegistroDescuen
                 }}
             />
 
-
+            <SelectorCuentaContable
+                defaultValueTypeKey={defaultData?.key_cuenta_contable}
+                label={"Cuenta Contable gasto"}
+                placeholder={"Selecciona una cuenta de gastos"}
+                onChangeSelect={cuenta => {
+                    this.cuenta = cuenta;
+                }}
+            />
             <SHr />
             <SView row col={"xs-12"}>
                 {this.props.onCancel && <>

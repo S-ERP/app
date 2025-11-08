@@ -22,7 +22,12 @@ export default class root extends React.Component {
             type: "getAll",
             key_empresa: MDL.empresa.select.key,
         })
-        return Object.values(resp.data);
+
+        const cuentas = await MDL.contabilidad.getCuentasCache();
+        return Object.values(resp.data).map(desc => {
+            desc.cuenta_contable = cuentas[desc.key_cuenta_contable];
+            return desc;
+        });
     }
     render() {
         return <SPage title={"Descuento"} disableScroll>
@@ -151,16 +156,17 @@ export default class root extends React.Component {
                     key={"monto"}
                     label={"Monto"}
                     data={e => e.row.monto}></DinamicTable.Col>
+
+                <DinamicTable.Col
+                    key={"key_cuenta_contable"}
+                    label={"Cuenta"}
+                    width={200}
+                    data={e => `${e.row.cuenta_contable?.codigo} - ${e.row.cuenta_contable?.descripcion}`}></DinamicTable.Col>
                 <DinamicTable.Col key={"fecha_on"} label="Fecha"
                     width={110} dataType="date"
                     // textStyle={{ fontSize: 10 }}
                     data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
                     dateFormat="yyyy-MM-dd hh:mm" />
-                <DinamicTable.Col
-                    key={"key_cuenta_contable"}
-                    label={"Cuenta"}
-                    width={200}
-                    data={e => e.row.key_cuenta_contable}></DinamicTable.Col>
                 {/* <DinamicTable.Col
                     key={"key_tipo_cliente"}
                     label={"key_tipo_cliente"}

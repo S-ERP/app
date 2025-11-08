@@ -105,10 +105,25 @@ export default class caja extends MDLAbstract<EventListener> {
       service: "caja",
       component: "caja_detalle",
       type: "registro",
+      tipo: caja_detalle.tipo,
       // key_punto_venta: key_punto_venta,
       data: caja_detalle,
       key_empresa: MDL.empresa.select?.key,
       key_usuario: MDL.usuario.session?.key,
+    })
+    this.dispatchEvent({ type: "onDetalleChange" })
+    return resp.data
+  }
+  async anular_venta({ key_compra_venta = "" }) {
+
+    const resp: any = await SSocket.sendPromise({
+      service: "caja",
+      component: "caja_detalle",
+      type: "anularVenta",
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+      key_compra_venta: key_compra_venta,
+      key_caja: MDL.caja.activa?.key,
     })
     this.dispatchEvent({ type: "onDetalleChange" })
     return resp.data

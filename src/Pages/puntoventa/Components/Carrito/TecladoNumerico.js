@@ -80,6 +80,10 @@ export default class TecladoNumerico extends Component {
             monto_factura: conFactura ? SMath.formatMoney(totalFinal, 2) : SMath.formatMoney(0, 2),
             monedaSymbol: this.props.monedaSymbol || 'Bs', // Incluir el símbolo de la moneda
         };
+        let descuentos = null;
+        if(this.props.descuentoSeleccionado){
+            descuentos = [this.props.descuentoSeleccionado];
+        }
         const datos = {
             key_sucursal,
             detalle,
@@ -88,7 +92,7 @@ export default class TecladoNumerico extends Component {
             key_moneda: this.props?.moneda?.key,
             key_cajero,
             caja,
-            descuentos: [this.props.descuentoSeleccionado]
+            descuentos: descuentos
 
         };
 
