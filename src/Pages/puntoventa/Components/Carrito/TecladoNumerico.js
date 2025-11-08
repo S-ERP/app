@@ -88,6 +88,8 @@ export default class TecladoNumerico extends Component {
             key_moneda: this.props?.moneda?.key,
             key_cajero,
             caja,
+            descuentos: [this.props.descuentoSeleccionado]
+
         };
 
         SNotification.send({
@@ -151,13 +153,21 @@ export default class TecladoNumerico extends Component {
                                 const key_punto_venta = MDL.caja.activa.key_punto_venta;
                                 const monedaSymbol = this.props.monedaSymbol || 'Bs';
 
-                                const montoTotal_MN = parseFloat(subtotal.toFixed(2));
-                                const montoTotal_ME = parseFloat(subtotalMoneda.toFixed(2));
+                                let montoTotal_MN = parseFloat(subtotal.toFixed(2));
+                                let montoTotal_ME = parseFloat(subtotalMoneda.toFixed(2));
                                 console.log("abrir popup WEB 🎭🎭🎭🎭🎭🎭🎭🎭🎭");
                                 console.log("key_punto_venta", key_punto_venta);
                                 console.log("montoTotal_MN", montoTotal_MN);
                                 console.log("montoTotal_ME", montoTotal_ME);
                                 console.log("monedaSymbol", monedaSymbol);
+                                let porcentajeDescuento = 0;
+                                if (this.props.descuentoSeleccionado) {
+                                    if (this.props.descuentoSeleccionado.porcentaje) {
+                                        porcentajeDescuento = this.props.descuentoSeleccionado.porcentaje;
+                                        montoTotal_MN -= (montoTotal_MN * porcentajeDescuento);
+                                        montoTotal_ME -= (montoTotal_ME * porcentajeDescuento);
+                                    }
+                                }
 
                                 SelectTipoPago.openPopup({
                                     key_punto_venta: key_punto_venta,
@@ -200,8 +210,10 @@ export default class TecladoNumerico extends Component {
                 </SView>
                 {subtotal ? (
                     <SView col={"xs-12 md-0"} height={42} center backgroundColor={STheme.color.darkGray} border={STheme.color.card} style={{ borderRadius: 2, margin: 2 }} onPress={() => {
+
                         if (!this.tipos_pago) {
-                            console.log("abrir popup");
+
+
 
 
                             if (!this.tipos_pago) {
@@ -210,7 +222,7 @@ export default class TecladoNumerico extends Component {
 
                                 const montoTotal_MN = parseFloat(subtotal.toFixed(2));
                                 const montoTotal_ME = parseFloat(subtotalMoneda.toFixed(2));
-                                console.log("abrir popup WEB 🎭🎭🎭🎭🎭🎭🎭🎭🎭");
+                                console.log("abrir popup WEB 🎭🎭🎭🎭🎭🎭🎭🎭🎭", this.props.descuentoSeleccionado);
                                 console.log("key_punto_venta", key_punto_venta);
                                 console.log("montoTotal_MN", montoTotal_MN);
                                 console.log("montoTotal_ME", montoTotal_ME);
