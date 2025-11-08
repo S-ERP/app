@@ -156,21 +156,26 @@ export default class root extends React.Component {
                     // textStyle={{ fontSize: 10 }}
                     data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date}
                     dateFormat="yyyy-MM-dd hh:mm" />
+                <DinamicTable.Col
+                    key={"key_cuenta_contable"}
+                    label={"Cuenta"}
+                    width={200}
+                    data={e => e.row.key_cuenta_contable}></DinamicTable.Col>
                 {/* <DinamicTable.Col
                     key={"key_tipo_cliente"}
                     label={"key_tipo_cliente"}
                     data={e => ""}></DinamicTable.Col> */}
             </DinamicTable>
             {/* {MDL.rolesPermisos.getPermiso({ url: URL, permiso: "new", }) && */}
-                <FloatButtom
-                    onPress={() => {
-                        FormRegistroDescuento.open({
-                            onRegister: (e) => {
-                                this.DinamicTable.loadData();
-                            },
-                        });
-                    }}
-                />
+            <FloatButtom
+                onPress={() => {
+                    FormRegistroDescuento.open({
+                        onRegister: (e) => {
+                            this.DinamicTable.loadData();
+                        },
+                    });
+                }}
+            />
             {/* } */}
         </SPage>
     }

@@ -35,7 +35,17 @@ export default class FormRegistroDescuento extends Component<FormRegistroDescuen
         })
     }
     form: SForm | null = null;
+    state = {
+        cuentas: [] as any[],
+    }
 
+    componentDidMount(): void {
+        MDL.contabilidad.getCuentasCache().then((cuentas) => {
+            console.log("Cuentas cargadas en FormRegistroDescuento", cuentas);
+            this.setState({ cuentas });
+
+        })
+    }
 
     render() {
 
@@ -55,17 +65,28 @@ export default class FormRegistroDescuento extends Component<FormRegistroDescuen
                         }
                     },
                     "porcentaje": {
-                        label: "Porcentaje", autoFocus: true, required: true, defaultValue: defaultData?.porcentaje,
+                        label: "Porcentaje", required: true, defaultValue: defaultData?.porcentaje,
                         iconR: <SText>{"%"}</SText>,
-                        placeholder:"0.00 - 1.00",
+                        placeholder: "0.00 - 1.00",
                         onSubmitEditing: () => {
                             if (this.form) this.form.focus("monto");
                         }
                     },
                     "monto": {
-                        label: "Monto", autoFocus: true, required: true, defaultValue: defaultData?.monto,
-                        placeholder:"0.00 - 10000.00",
+                        label: "Monto", required: true, defaultValue: defaultData?.monto,
+                        placeholder: "0.00 - 10000.00",
                         iconR: <SText>{"BOB"}</SText>,
+                        onSubmitEditing: () => {
+                            if (this.form) this.form.focus("key_cuenta_contable");
+                        }
+                    },
+                    "key_cuenta_contable": {
+                        label: "Cuenta",
+                        required: true, defaultValue: defaultData?.key_cuenta_contable,
+                        type: "select2",
+                        options: this.state.cuentas.map((cuenta) => cuenta.codigo),
+                        placeholder: "Cuenta contable",
+                        // iconR: <SText>{"BOB"}</SText>,
                         onSubmitEditing: () => {
                             if (this.form) this.form.submit();
                         }
