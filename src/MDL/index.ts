@@ -13,6 +13,7 @@ import caja from "./caja";
 import pizarra from "./pizarra";
 import erp from "./erp";
 import carrito from "./carrito"
+// import carrito_venta from "./carrito_venta"
 // import punto_venta from "../Model/empresa/punto_venta";
 export const MDL = {
   usuario: new usuario(),
@@ -29,7 +30,8 @@ export const MDL = {
   caja: new caja(),
   pizarra: new pizarra(),
   erp: new erp(),
-  carrito: new carrito()
+  carrito: new carrito(),
+  // carrito_venta: new carrito_venta()
 };
 
 export const componentDidMount = async () => {

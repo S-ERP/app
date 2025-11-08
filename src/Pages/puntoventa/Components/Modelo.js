@@ -78,7 +78,7 @@ export default class Modelo extends Component {
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter((m) => m.key_tipo_producto === tipoKey);
         productosFiltrados = productosFiltrados.filter((m) => m.precio_venta > 0);
 
-        if (this.props.conStock) {
+        if (this.props.conStock) { 
             productosFiltrados = productosFiltrados.filter((m) => m.stock > 0);
         }
 

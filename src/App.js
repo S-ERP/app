@@ -17,6 +17,7 @@ import * as MDL from './MDL';
 import MenuGlobal from './Components/MenuGlobal';
 import PopupEditarTema from './Pages/empresa/Components/PopupEditarTema';
 import CarritoCompra from './Components/CarritoCompra';
+import CarritoVenta from './Components/CarritoVenta';
 // import SplashScreen from 'react-native-splash-screen'
 setProps(Config.socket);
 
@@ -76,6 +77,7 @@ const App = (props) => {
                         />
                     </MenuGlobal>
                     <CarritoCompra/>
+                    <CarritoVenta/>
                 </DataBaseContainer>
                 {/* <SUploadContainer /> */}
                 <Socket store={store} />
