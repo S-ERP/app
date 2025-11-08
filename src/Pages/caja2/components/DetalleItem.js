@@ -95,7 +95,7 @@ export default class DetalleItem extends Component<{
         borderColor: borderColor
       }} onPress={() => Linking.openURL(url)}>
         <SIconApp name={icon} fill={iconColor} width={12} height={12} style={{ marginRight: 3 }} />
-        <SText fontSize={10} color={iconColor} bold>{documento_name?.substring(0,7)}.{displayExt}</SText>
+        <SText fontSize={10} color={iconColor} bold>{documento_name?.substring(0, 7)}.{displayExt}</SText>
         <SIconApp name={"downImgNube"} fill={iconColor} width={12} height={12} style={{ marginLeft: 3 }} />
       </SView>
     );
@@ -193,12 +193,20 @@ export default class DetalleItem extends Component<{
               </>
             }
 
-            {item?.data?.key_compra_venta &&
+            {item?.key_compra_venta &&
               <>
                 <View style={styles.etiqueta}>
                   <SText fontSize={10}
-                    onPress={() => SNavigation.navigate("/compra/profile", { pk: item?.data?.key_compra_venta })}>
-                    Compra
+                    onPress={() => {
+                      if (item.tipo == "compra") {
+                        SNavigation.navigate("/compra/profile", { pk: item?.key_compra_venta })
+                      } else if (item.tipo == "venta") {
+                        SNavigation.navigate("/venta/profile", { pk: item?.key_compra_venta })
+                      }
+
+
+                    }}>
+                    {item.tipo}
                   </SText>
                 </View>
                 <SView width={8} />

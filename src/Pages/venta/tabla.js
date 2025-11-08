@@ -264,6 +264,22 @@ export default class tabla extends Component {
                                     ReciboCarta.imprimir(e?.row?.key)
                                 }
                             },
+                            {
+                                label: "Anular la venta",
+                                icon: <SIconApp name='Delete' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    MDL.caja.anular_venta({
+                                        key_compra_venta: e.row.key
+
+                                    }).then(e=>{
+                                        if(this.DinamicTable){
+                                            this.DinamicTable.loadData();
+                                        }
+                                    }).catch(e=>{
+
+                                    })
+                                }
+                            },
                         ]
                     });
                 }}
