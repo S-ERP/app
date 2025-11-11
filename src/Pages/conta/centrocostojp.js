@@ -5,6 +5,7 @@ import {
 import MDL from "../../MDL";
 import FloatMenu from "../../Components/FloatMenu";
 import SIconApp from "../../Assets/SIconApp";
+import SelectorCliente from "../../Components/Selectores/SelectorCliente";
 
 export default class centro_costo extends React.Component {
 
@@ -246,6 +247,7 @@ export default class centro_costo extends React.Component {
             <SPage title={"Centro de costo"}>
                 <SView padding={16} style={{ maxWidth: 600, alignSelf: "center" }}>
                     {/* Crear tipo */}
+
                     <SInput
                         ref={ref => this.ref_tipo = ref}
                         placeholder="Escribe el tipo"
