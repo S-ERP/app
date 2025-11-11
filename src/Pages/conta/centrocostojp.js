@@ -25,7 +25,16 @@ export default class centro_costo extends React.Component {
         this.forceUpdate();
     }
 
-    renderTipo(tipo) {
+    renderTipo(tipo, index) {
+        const colores = [
+            STheme.color.primary,
+            STheme.color.success,
+
+            STheme.color.warning,
+            STheme.color.danger,
+        ];
+        const colorDominante = colores[index % colores.length];
+
         return (
             <SView
                 key={tipo.key}
@@ -34,6 +43,8 @@ export default class centro_costo extends React.Component {
                     borderRadius: 12,
                     padding: 12,
                     marginBottom: 12,
+                    borderWidth: 2,
+                    borderColor: colorDominante + "33", // sutil
                     shadowColor: "#000",
                     shadowOpacity: 0.1,
                     shadowRadius: 4,
@@ -41,8 +52,13 @@ export default class centro_costo extends React.Component {
                 }}
             >
                 {/* Header tipo */}
-                <SView row center style={{ justifyContent: "space-between" }}>
-                    <SText bold fontSize={16}>{tipo.descripcion}</SText>
+                <SView row center style={{
+                    justifyContent: "space-between",
+                    backgroundColor: colorDominante + "22",
+                    borderRadius: 8,
+                    padding: 8,
+                }}>
+                    <SText bold fontSize={16} color={colorDominante}>{tipo.descripcion}</SText>
                     <SView
                         onPress={(e) => {
                             FloatMenu.open({
@@ -60,7 +76,7 @@ export default class centro_costo extends React.Component {
                             });
                         }}
                     >
-                        <SIconApp name="More" width={18} height={18} />
+                        <SIconApp name="More" width={18} height={18} fill={colorDominante} />
                     </SView>
                 </SView>
 
@@ -68,7 +84,6 @@ export default class centro_costo extends React.Component {
 
                 {/* Centros de costo */}
                 {tipo.centros.map((cc) => {
-                    // Estado de edición inline
                     if (cc.isEditing) {
                         return (
                             <SView
@@ -87,7 +102,6 @@ export default class centro_costo extends React.Component {
                                     style={{ flex: 1, marginRight: 8 }}
                                 />
                                 <SView row>
-                                    {/* GUARDAR */}
                                     <SView
                                         width={28}
                                         height={28}
@@ -104,15 +118,11 @@ export default class centro_costo extends React.Component {
                                                 this.forceUpdate();
                                                 return;
                                             }
-
                                             try {
-                                                // 🔹 Actualizar en BD
                                                 await MDL.contabilidad.centro_costo.editar({
                                                     key: cc.key,
                                                     descripcion: newValue,
                                                 });
-
-                                                // 🔹 Actualizar solo en memoria sin recargar todo
                                                 cc.descripcion = newValue;
                                                 cc.isEditing = false;
                                                 this.forceUpdate();
@@ -124,7 +134,6 @@ export default class centro_costo extends React.Component {
                                         <SText color={STheme.color.white}>✔</SText>
                                     </SView>
 
-                                    {/* CANCELAR */}
                                     <SView
                                         width={28}
                                         height={28}
@@ -145,7 +154,6 @@ export default class centro_costo extends React.Component {
                         );
                     }
 
-                    // 🔹 Vista normal
                     return (
                         <SView
                             key={cc.key}
@@ -154,6 +162,8 @@ export default class centro_costo extends React.Component {
                                 justifyContent: "space-between",
                                 alignItems: "center",
                                 paddingVertical: 4,
+                                borderLeftWidth: 4,
+                                borderLeftColor: colorDominante,
                                 borderBottomWidth: 0.5,
                                 borderColor: STheme.color.gray
                             }}
@@ -192,12 +202,11 @@ export default class centro_costo extends React.Component {
                             }}
                         >
                             <SText fontSize={14}>{cc.descripcion}</SText>
-                            <SIconApp name="DotsVertical" width={16} height={16} />
+                            <SIconApp name="DotsVertical" width={16} height={16} fill={colorDominante} />
                         </SView>
                     );
                 })}
 
-                {/* Input para nuevo centro */}
                 <SHr h={8} />
                 <SInput
                     ref={ref => this._ref[tipo.key] = ref}
@@ -209,7 +218,7 @@ export default class centro_costo extends React.Component {
                             height={30}
                             center
                             style={{
-                                backgroundColor: STheme.color.primary,
+                                backgroundColor: colorDominante,
                                 borderRadius: 6
                             }}
                             onPress={() => {
@@ -239,7 +248,6 @@ export default class centro_costo extends React.Component {
                     {/* Crear tipo */}
                     <SInput
                         ref={ref => this.ref_tipo = ref}
-
                         placeholder="Escribe el tipo"
                         customStyle="secondary"
                         iconR={
@@ -267,7 +275,7 @@ export default class centro_costo extends React.Component {
                         }
                     />
                     <SHr h={16} />
-                    {this.centro_costo_tipo.map(tipo => this.renderTipo(tipo))}
+                    {this.centro_costo_tipo.map((tipo, i) => this.renderTipo(tipo, i))}
                 </SView>
             </SPage>
         );
