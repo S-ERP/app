@@ -13,6 +13,7 @@ import vendido from "./vendido";
 import denegado from "./denegado";
 import pendientes from "./pendientes";
 import profile from "./profile";
+import profile2 from "./profile2/root";
 import edit from "./edit";
 import editar_plan_pagos from "./editar_plan_pagos";
 import lista from "./lista";
@@ -38,6 +39,7 @@ export default SPage.combinePages("venta",
         "pendientes": pendientes,
         "denegado": denegado,
         "profile": profile,
+        "profile2": profile2,
         "tabla": tabla,
         import_odoo,
         editar_plan_pagos,
