@@ -62,8 +62,10 @@ export default class PopupPagoCuota extends Component {
         this.showAllPendingCuotas = false;
     }
 
+
+    // TODO ricardo me djo que solo use this.props.editObject?.key y haga una consulta para traer todo las cutas con la key nomas
     loadData = async () => {
-        const key_compra_venta = this.props.editObject?.key || '1f30bf00-33ba-4466-813b-2870eec111dd';
+        const key_compra_venta = this.props.editObject?.key;
         try {
             this.empresa_srl = await MDL.empresa.getFull();
             if (!this.empresa_srl) throw new Error("No se pudo cargar la empresa");
@@ -166,7 +168,10 @@ export default class PopupPagoCuota extends Component {
     componentDidMount() {
         this.loadData().then(resp => {
             this.cuotasCompras = resp;
+
             this.compraData = this.getCompraData(); // ← UNA SOLA VEZ
+
+            console.log("mira esto ❤❤❤❤❤❤❤ " + JSON.stringify(this.getCompraData))
 
             this.setState({
                 loading: false,
@@ -184,6 +189,9 @@ export default class PopupPagoCuota extends Component {
         return vencimientoDate.isBefore(today);
     };
 
+    // if (cuotaDate.isBefore(selectedDate) || cuotaDate == selectedDate) {
+
+
     selectPreviousCuotas = (cuotaSeleccionada) => {
         const fechaSel = new SDate(cuotaSeleccionada.vencimiento, 'yyyy-MM-dd');
         const nuevo = { ...this.state.selectedCuotas };
@@ -191,7 +199,7 @@ export default class PopupPagoCuota extends Component {
         this.compraData.cuotasDetalle.forEach(c => {
             if (c.estadoReal !== 'Pagado') {
                 const fechaC = new SDate(c.vencimiento, 'yyyy-MM-dd');
-                if (fechaC.isBefore(fechaSel) || fechaC.isSame(fechaSel)) {
+                if (fechaC.isBefore(fechaSel) || fechaC == (fechaSel)) {
                     nuevo[c.numero] = true;
                 }
             }
@@ -207,7 +215,7 @@ export default class PopupPagoCuota extends Component {
         this.compraData.cuotasDetalle.forEach(c => {
             if (c.estadoReal !== 'Pagado') {
                 const fechaC = new SDate(c.vencimiento, 'yyyy-MM-dd');
-                if (fechaC.isBefore(fechaSel) || fechaC.isSame(fechaSel)) {
+                if (fechaC.isBefore(fechaSel) || fechaC == (fechaSel)) {
                     nuevo[c.numero] = false;
                 }
             }
@@ -315,77 +323,90 @@ export default class PopupPagoCuota extends Component {
     };
 
     cabecera(compra) {
-        const { cant_pendientes, cant_mora, cant_pagado, montototal_pendientes, montototal_mora, montototal_pagado } = this.state;
-        const simboloBase = compra.moneda_base?.observacion || 'BOB';
-
+        // const { cant_pendientes, cant_mora, cant_pagado, montototal_pendientes, montototal_mora, montototal_pagado } = this.state;
+        // const simboloBase = compra.moneda_base?.observacion || 'BOB';
+        // const { cant_pendientes, cant_mora, cant_pagado, montototal_pendientes, montototal_mora, montototal_pagado } = this.pr;
+        const _________compra = this.props.editObject;
+        console.log("💢💢💢 " + JSON.stringify(_________compra))
+        const monedas = this.empresa_srl?.monedas || [];
+        const m = monedas.find(x => x.key === _________compra.key_moneda) || {};
+        const monedaBase = monedas.find(m => m.tipo === "base") || { observacion: "BOB", tipo_cambio: 1 };
         return (
             <>
                 <SView row center style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: COLOR_BORDER }}>
                     <SView flex>
-                        <SText col={'xs-12'} fontSize={20} bold color={COLOR_TEXT} numberOfLines={1}>
-                            Gestión de Cuotas - Compra #{compra.id}
-                        </SText>
+                        <SText col={'xs-12'} fontSize={20} bold color={COLOR_TEXT} numberOfLines={1}> Gestión de Cuotas - Compra #{_________compra.id} </SText>
                     </SView>
-                    <SView width={40} style={{ overflow: "hidden", alignItems: "flex-end" }}>
-                        <SView width={24} height={24} onPress={this.props.onCancel} style={{ opacity: 0.6 }} activeOpacity={0.7}>
-                            <SIcon name="Close" fill={COLOR_TEXT} width={24} height={24} />
-                        </SView>
-                    </SView>
+
+                    <SView width={40} style={{ overflow: "hidden", alignItems: "flex-end" }}> <SView width={24} height={24} onPress={this.props.onCancel} style={{ opacity: 0.6 }} activeOpacity={0.7}> <SIcon name="Close" fill={COLOR_TEXT} width={24} height={24} /> </SView> </SView>
                 </SView>
 
                 <SHr h={16} />
                 <SView col={'xs-12'} style={{ paddingHorizontal: 12 }}>
                     <SView col={'xs-12'} style={{ backgroundColor: COLOR_CARD, borderRadius: 8, padding: 12 }}>
                         <SText fontSize={16} bold color={COLOR_TEXT}>
-                            Detalles de la {this.props?.editObject?.pagado ? "venta" : "compra"}
+                            {/* Detalles de la {this.props?.editObject?.pagado ? "venta" : "compra"} */}
+                            Detalles de la compra
                         </SText>
                         <SHr h={4} />
 
                         <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
                             <SView col={'xs-9'}>
-                                <SText fontSize={12} color={COLOR_TEXT}>Total ({compra.moneda}):</SText>
-                                <SText fontSize={14} color={COLOR_TEXT}>{compra.moneda} {SMath.formatMoney(compra.total)}</SText>
-                                <SText fontSize={12} color={COLOR_TEXT}>Equivalente en {simboloBase}:</SText>
+                                <SText fontSize={12} color={COLOR_TEXT}>Total ({_________compra.cuotas_total.monto}) {monedaBase.observacion}:</SText>
+                                <SText fontSize={14} color={COLOR_TEXT}>{m.observacion} {SMath.formatMoney(_________compra.informacion.precio_unitario)}</SText>
+                                <SText fontSize={12} color={COLOR_TEXT}>Equivalente en {monedaBase.observacion}:</SText>
                                 <SText fontSize={16} bold color={COLOR_TEXT}>
-                                    {simboloBase} {SMath.formatMoney(compra.total_base)}
+                                    {monedaBase.observacion} {SMath.formatMoney(_________compra.cuotas_total.monto)}
                                 </SText>
                             </SView>
                             <SView col={'xs-3'}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Estado:</SText>
                                 {this.labelEstadoHeader(compra.estado)}
+                                {/* tengo que verlo???? colo sale1 */}
                             </SView>
                         </SView>
 
                         <SHr h={4} />
                         <SView col={'xs-12'}>
-                            <SText fontSize={12} color={COLOR_TEXT}> Descripción: <SText bold>{compra.descripcion}</SText> </SText>
+                            <SText fontSize={12} color={COLOR_TEXT}>Descripción: <SText bold>{_________compra.descripcion}</SText> </SText>
+                            <SText fontSize={12} color={COLOR_TEXT}>Obs: <SText bold>{_________compra.observacion}</SText> </SText>
                             <SHr h={4} />
-                            <SText fontSize={12} color={COLOR_TEXT}> Fecha: <SText bold>{new SDate(compra.fecha, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText> </SText>
+                            <SText fontSize={12} color={COLOR_TEXT}>Fecha: <SText bold>{new SDate(_________compra.fecha_on, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText> </SText>
                         </SView>
-
                         <SHr h={4} />
                         <SView col={'xs-12'} row style={{ flexWrap: 'wrap' }}>
                             <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Cuotas Pagadas:</SText>
-                                {this.state.loading ? (
-                                    <SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />
-                                ) : (
+                                {this.state.loading ? (<SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />) : (<SText fontSize={14} bold color={COLOR_TEXT}> {_________compra.cuotas_en_amortizacion.cantidad} ({monedaBase.observacion} {SMath.formatMoney(_________compra.cuotas_en_amortizacion.monto ?? 0)}) </SText>)}
+                            </SView>
+
+
+
+                            {/* <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
+                                <SText fontSize={12} color={COLOR_TEXT}>Cuotas Pagadas:</SText>
+                                {this.state.loading ? (<SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />) : (
                                     <SText fontSize={14} bold color={COLOR_TEXT}>
                                         {cant_pagado} ({simboloBase} {montototal_pagado})
                                     </SText>
                                 )}
-                            </SView>
+                            </SView> */}
+
+
+                            {/* _________compra.cuotas_en_mora.monto */}
+
                             <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Cuotas en Mora:</SText>
-                                {this.state.loading ? (
-                                    <SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />
-                                ) : (
-                                    <SText fontSize={14} bold color={COLOR_TEXT}>
-                                        {cant_mora} ({simboloBase} {montototal_mora})
-                                    </SText>
-                                )}
+                                {this.state.loading ? (<SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />) : (<SText fontSize={14} bold color={COLOR_TEXT}> {_________compra.cuotas_en_mora.cantidad} ({monedaBase.observacion} {SMath.formatMoney(_________compra.cuotas_en_mora.monto ?? 0)}) </SText>)}
                             </SView>
+
+
                             <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
+                                <SText fontSize={12} color={COLOR_TEXT}>Cuotas Pendientes:</SText>
+                                {this.state.loading ? (<SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />) : (<SText fontSize={14} bold color={COLOR_TEXT}> {_________compra.cuotas_en_pendientes.cantidad} ({monedaBase.observacion} {SMath.formatMoney(_________compra.cuotas_en_pendientes.monto ?? 0)}) </SText>)}
+                            </SView>
+
+
+                            {/* <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Cuotas Pendientes:</SText>
                                 {this.state.loading ? (
                                     <SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />
@@ -394,7 +415,7 @@ export default class PopupPagoCuota extends Component {
                                         {cant_pendientes} ({simboloBase} {montototal_pendientes})
                                     </SText>
                                 )}
-                            </SView>
+                            </SView> */}
                         </SView>
                     </SView>
                 </SView>
