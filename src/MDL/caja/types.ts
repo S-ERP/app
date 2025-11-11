@@ -12,12 +12,12 @@ export type Caja = {
 
 export type CajaDetalle = {
   key?: string,
-  key_caja: string,
-  fecha: string,
-  descripcion: string,
-  monto: number,
-  tipo: "egreso_banco" | "ingreso_banco",
-  key_tipo_pago: string,
+  key_caja?: string,
+  fecha?: string,
+  descripcion?: string,
+  monto?: number,
+  tipo?: "egreso_banco" | "ingreso_banco" | "anular_venta",
+  key_tipo_pago?: string,
   key_moneda?:string,
   key_cuenta_banco?: string,
 }

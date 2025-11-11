@@ -18,7 +18,7 @@ export default class SelecionarDescuento extends Component<{ onSelect?: (descuen
             key_empresa: MDL.empresa?.select?.key
         }).then(e => {
             const descuentos = Object.values(e.data)
-             this.props.onSelect && this.props.onSelect(descuentos[0]);
+            //  this.props.onSelect && this.props.onSelect(descuentos[0]);
             this.setState({ descuentos: descuentos })
         })
     }
@@ -33,7 +33,7 @@ export default class SelecionarDescuento extends Component<{ onSelect?: (descuen
                     customStyle={"erp"}
                     label={"Descuento:"}
                     options={this.state.descuentos.map(item => this.toString(item))}
-                    defaultValue={this.toString(this.state.descuentos[0])}
+                    // defaultValue={this.toString(this.state.descuentos[0])}
                     onChangeText={e => {
                         const encontrado = this.state.descuentos.find(item => this.toString(item) === e);
                         if (encontrado) {

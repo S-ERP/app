@@ -80,6 +80,10 @@ export default class TecladoNumerico extends Component {
             monto_factura: conFactura ? SMath.formatMoney(totalFinal, 2) : SMath.formatMoney(0, 2),
             monedaSymbol: this.props.monedaSymbol || 'Bs', // Incluir el símbolo de la moneda
         };
+        let descuentos = null;
+        if (this.props.descuentoSeleccionado) {
+            descuentos = [this.props.descuentoSeleccionado];
+        }
         const datos = {
             key_sucursal,
             detalle,
@@ -88,7 +92,7 @@ export default class TecladoNumerico extends Component {
             key_moneda: this.props?.moneda?.key,
             key_cajero,
             caja,
-            descuentos: [this.props.descuentoSeleccionado]
+            descuentos: descuentos
 
         };
 
@@ -164,8 +168,8 @@ export default class TecladoNumerico extends Component {
                                 if (this.props.descuentoSeleccionado) {
                                     if (this.props.descuentoSeleccionado.porcentaje) {
                                         porcentajeDescuento = this.props.descuentoSeleccionado.porcentaje;
-                                        montoTotal_MN -= (montoTotal_MN * porcentajeDescuento);
-                                        montoTotal_ME -= (montoTotal_ME * porcentajeDescuento);
+                                        montoTotal_MN -= Math.round((montoTotal_MN * porcentajeDescuento) * 100) / 100;
+                                        montoTotal_ME -= Math.round((montoTotal_ME * porcentajeDescuento) * 100) / 100;
                                     }
                                 }
 
