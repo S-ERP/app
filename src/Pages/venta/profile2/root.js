@@ -59,7 +59,7 @@ export default class Root extends Component {
         // if (!compra_venta_detalle) return null;
         console.log("DOS")
 
-        console.log("TA:", t)
+        console.log("AQUÍ ME TIRO: Model.compra_venta_detalle.Action.getTotales", t)
         if (!t) return <SLoad />;
         console.log("TRES")
         // if (!data) return;
