@@ -7,6 +7,7 @@ import { FlatList } from "react-native";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
+import SelectorCliente from "../Selectores/SelectorCliente";
 
 type PopupCarritoConfirmarProps = {
 
@@ -169,41 +170,15 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     <SText color={STheme.color.lightGray}>{"Datos del proveedor:"}</SText>
                     <SHr />
                     <SView row>
-                        <SInput icon={<SText color={STheme.color.lightGray} bold>{"# NIT:"}</SText>} placeholder={"Escriba el nit del proveedor"}
-                            onChangeText={(e) => {
-                                MDL.crm.cliente.buscar_nit(e).then(proveedor => {
-                                    this.proveedor = proveedor;
-                                    if (this.inputNombre) {
-                                        this.inputNombre.setValue(proveedor.razon_social ?? proveedor.nombres)
-                                    }
-                                }).catch(error => {
-                                    console.error(error);
-                                })
-                            }}
-                            onSubmitEditing={() => {
-                                if (this.inputNombre) this.inputNombre.focus()
-                            }}
-                            iconR={<SView
-                                card style={{
-                                    width: 40, height: 40
-                                }} onPress={() => {
-                                    SNavigation.navigate("/cliente", {
-                                        onSelect: (proveedor: any) => {
-                                            if (this.inputNombre) {
-                                                this.proveedor = proveedor;
-                                                this.inputNombre.setValue(proveedor.razon_social ?? proveedor.nombres)
-                                            }
-                                            SNavigation.goBack();
-                                        }
-                                    })
-                                }}>
-                                <SIconApp name="Search" />
-                            </SView>}
+                        <SelectorCliente    
+                            
+                            icon={<SText color={STheme.color.lightGray} bold>{"Cliente:"}</SText>}
+                           
                         />
                     </SView>
                     <SHr h={4} />
                     <SView row>
-                        <SInput ref={ref => this.inputNombre = ref} icon={<SText color={STheme.color.lightGray} bold>{"Nombre:"}</SText>} placeholder={"Escriba el nombre del proveedor"} />
+                        <SInput ref={ref => this.inputNombre = ref} icon={<SText color={STheme.color.lightGray} bold>{"Nombre:"}</SText>} placeholder={"NIT"} />
                     </SView>
                 </SView>
                 <SHr />

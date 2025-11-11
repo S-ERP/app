@@ -27,17 +27,17 @@ class index extends DPA.profile {
             // proveedor: {}
         }
     }
-    componentDidMount(){
-        if(!Model.usuario.Action.getKey()){
+    componentDidMount() {
+        if (!Model.usuario.Action.getKey()) {
             SNavigation.navigate("/login");
         }
     }
-    $allowEdit() {
-        return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "edit" })
-    }
-    $allowDelete() {
-        return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "delete" })
-    }
+    // $allowEdit() {
+    //     return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "edit" })
+    // }
+    // $allowDelete() {
+    //     return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "delete" })
+    // }
     $allowAccess() {
         return Model.usuarioPage.Action.getPermiso({ url: Parent.path, permiso: "ver" })
     }
@@ -53,10 +53,7 @@ class index extends DPA.profile {
             key_compra_venta: this.pk
         })
         if (!this.empresa) return null;
-         console.log("compra_venta_detalle", this.compra_venta_detalle)
         if (!this.compra_venta_detalle) return null;
-        console.log("t", t)
-        console.log("dataqq", data)
         if (!t) return null;
         if (!data) return null;
         // this.calcularTotal();
@@ -79,11 +76,11 @@ class index extends DPA.profile {
         return data
     }
 
-    $header() {
-        if (!this.data) return;
-        var statesInfo = Model.compra_venta.Action.getStateInfo()[this?.data?.state];
-        return <StateTiqueta label={statesInfo.label} color={statesInfo.color} width={150} />
-    }
+    // $header() {
+    //     if (!this.data) return;
+    //     var statesInfo = Model.compra_venta.Action.getStateInfo()[this?.data?.state];
+    //     return <StateTiqueta label={statesInfo.label} color={statesInfo.color} width={150} />
+    // }
     $render() {
         this.data = this.$getData()
         if (!this.data) return <SLoad />
@@ -91,13 +88,14 @@ class index extends DPA.profile {
         if (!ITEM) {
             ITEM = States["default"];
         }
-        return <ITEM data={this.data} />
+        return <SView col={"xs-12"} flex><ITEM data={this.data} /></SView>
+
         return <SView col={"xs-12"} center flex>
             <SScrollView2 disableHorizontal >
                 <SView col={"xs-12"} center flex>
-                    <Container>
-                        <ITEM data={this.data} />
-                    </Container>
+                    {/* <Container> */}
+                    <ITEM data={this.data} />
+                    {/* </Container> */}
                 </SView>
             </SScrollView2>
         </SView>

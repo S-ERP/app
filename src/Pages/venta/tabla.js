@@ -289,9 +289,15 @@ export default class tabla extends Component {
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
                 <DinamicTable.Col key={"-keyprofile"} label='Ver' width={40} data={(e) => e.row?.key}
-                    customComponent={e => <SView row center card padding={2} onPress={() => { SNavigation.navigate("/venta/profile", { pk: e.row.key }) }}>
-                        <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
-                    </SView>} />
+                    customComponent={e => <>
+                        <SView row center card padding={2} onPress={() => { SNavigation.navigate("/venta/profile", { pk: e.row.key }) }}>
+                            <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
+                        </SView>
+                        <SHr/>
+                        <SView row center  padding={2} onPress={() => { SNavigation.navigate("/venta/profile2", { pk: e.row.key }) }} backgroundColor={STheme.color.background}>
+                            <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
+                        </SView>
+                    </>} />
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
 
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e?.data)} />
