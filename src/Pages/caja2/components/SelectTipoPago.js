@@ -139,7 +139,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     }}>
                         <SIconApp name={item?.tipo_pago?.icon || "Ajustes"} />
                     </View>
-                    <SView col={"xs-12"} center row backgroundColor={STheme.color.card} padding={2} style={{ bottom: 0, position: "absolute", minHeight: 52 , overflow: "hidden", borderBottomLeftRadius:6, borderBottomRightRadius:6}}>
+                    <SView col={"xs-12"} center row backgroundColor={STheme.color.card} padding={2} style={{ bottom: 0, position: "absolute", minHeight: 52, overflow: "hidden", borderBottomLeftRadius: 6, borderBottomRightRadius: 6 }}>
                         <SView col={"xs-12"} backgroundColor={"transparent"}  >
                             {/* <SText key={item.key_tipo_pago} col={"xs-12"} style={{ textAlign: "center" }}>{item?.descripcion}</SText> */}
                             <SText key={item.key_tipo_pago} col={"xs-12"} numberOfLines={2} style={{ textAlign: "center" }}>{item?.descripcion}</SText>
@@ -209,6 +209,15 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
         </SView>
     }
 
+    calcularMontoInsertado() {
+        // ((this.pvtp ?? []).filter(a => a.__select).map(item => parseFloat(item.monto) ?? 0).reduce((a, b) => a + b, 0))
+        let montoTotal = 0;
+        const selecteds = this.pvtp.filter(a => !!a.__select);
+        selecteds.forEach(item => {
+            montoTotal += parseFloat(item.monto)
+        });
+        return MDL.contabilidad.round(montoTotal);
+    }
     render() {
         return <SView col={"xs-12"} padding={6} flex>
             <SView col={"xs-12"} row style={{ padding: 2 }}>
@@ -232,7 +241,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                 }} card>
                     <SText fontSize={15} color={STheme.color.lightGray}>{"Monto Insertado: "}</SText>
                     <SView width={4} />
-                    <SText bold fontSize={18}>{this.moneda?.observacion} {((this.pvtp ?? []).filter(a => a.__select).map(item => parseFloat(item.monto) ?? 0).reduce((a, b) => a + b, 0))}</SText>
+                    <SText bold fontSize={18}>{this.moneda?.observacion} {this.calcularMontoInsertado()}</SText>
                     <SView width={16} />
                     <SText>{this.moneda?.descripcion}</SText>
                 </SView>
@@ -254,9 +263,9 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
             <SView row col={"xs-12"} padding={4} style={{
                 justifyContent: "flex-end"
             }}>
-                <SText padding={16}  onPress={() => {
+                <SText padding={16} onPress={() => {
                     SelectTipoPago.closePopup();
-                }} backgroundColor={STheme.color.danger} style={{borderRadius:4}} >{"Cancelar"}</SText>
+                }} backgroundColor={STheme.color.danger} style={{ borderRadius: 4 }} >{"Cancelar"}</SText>
                 <SView width={32} />
                 <SText padding={16} card onPress={() => {
                     let montoTotal = 0;
@@ -265,7 +274,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     selecteds.forEach(item => {
                         console.log(item);
                         elm[item.key] = {
-                            monto_nacional: parseFloat(item.monto),
+                            monto_nacional: MDL.contabilidad.round(parseFloat(item.monto)),
                             monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda.tipo_cambio ?? 1)))
                         }
                         // montoTotal += SMath.formatMoney((item.monto+2000), 2);
