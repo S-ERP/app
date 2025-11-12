@@ -130,7 +130,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             })
 
             SelectTipoPago.closePopup();
-            SNotification.remove("compra_rapida");
+            SNotification.remove("venta_rapida");
             SPopup.close("PopupCarritoConfirmar");
             SPopup.close("PopupCarrito");
             MDL.carrito.limpiarCarritoCompras();
