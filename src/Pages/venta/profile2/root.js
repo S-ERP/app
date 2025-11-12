@@ -23,9 +23,7 @@ export default class Root extends Component {
                 total_a_pagar: 0,
                 credito_fiscal: 0,
             },
-            datas: {}
-           
-            // proveedor: {}
+        
         }
         this.pk = SNavigation.getParam("pk");
 
@@ -35,48 +33,27 @@ export default class Root extends Component {
         if (!Model.usuario.Action.getKey()) {
             SNavigation.navigate("/login");
         }
-        // this.getData();
         this.loadData();
 
     }
 
-    loadData() {
-        let pk = SNavigation.getParam("pk");
-        console.log("PK", pk)
-        let empresa = Model.empresa.Action.getSelect();
-        let data = Parent.model.Action.getByKey(pk);
-        // let compra_venta_detalle = Model.compra_venta_detalle.Action.getAll({
-        //     key_compra_venta: SNavigation.getParam("pk")
-        // })
+    async loadData() {
+        let empresa = MDL.empresa.select
+        let data = await MDL.compra_venta.getJson(this.pk);
+        let t =  MDL.compra_venta.getTotales(data.detalle)
 
-        let t = Model.compra_venta_detalle.Action.getTotales({
-            key_compra_venta: pk
-        })
+        if (!empresa) return;
+        if (!t) return;
 
+        if (!data) return;
 
-        console.log("CERO")
-        if (!empresa) return null
-        console.log("UNO")
-
-        // if (!this.compra_venta_detalleempresa)
-        // if (!compra_venta_detalle) return null;
-        console.log("DOS")
-
-        console.log("AQUÍ ME TIRO: Model.compra_venta_detalle.Action.getTotales", t)
-        if (!t) return null;
-        console.log("TRES")
-        // if (!data) return;
-
-        if (!data) return null
-        console.log("CUATRO")
-
-        // this.calcularTotal();
         if (!t.total_a_pagar) {
             t.total_a_pagar = 0;
         }
         if (this.state.totales.total_a_pagar != t.total_a_pagar) {
             this.state.totales = t;
-            this.setState({ ...this.state })
+            // this.setState({ ...this.state })
+             this.forceUpdate()
         }
 
         if (!this.state.curState) {
@@ -87,27 +64,22 @@ export default class Root extends Component {
             }
         }
 
-        this.setState({
-            datas: {
-                ...data,
-                empresa: this.empresa
-            }
-        })
-        console.log("DATAaaaa", this.state.datas)
-
-         console.log("CINCaO")
+        this.state.datas = {
+            ...data,
+            empresa: empresa
+        }
+        this.forceUpdate()
+      
     }
 
 
 
     render() {
-        console.log("STATE0", this.state)
-        console.log("STATE", this.state.datas)
 
         let dataOk = this.state.datas;
-        if (!dataOk) return ;
+        if (!dataOk) return;
 
-
+        console.log("STATEOK", dataOk?.state)
         var ITEM = States[dataOk?.state];
         if (!ITEM) {
             ITEM = States["default"];

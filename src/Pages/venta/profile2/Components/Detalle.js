@@ -202,11 +202,11 @@ export default class Detalle extends Component {
     }
     render() {
         this.data = this.props.data;
-        this.compra_venta_detalle = Model.compra_venta_detalle.Action.getAllConProductos({
-            key_compra_venta: this.data.key
-        })
-        console.log(this.compra_venta_detalle)
-        if (!this.compra_venta_detalle) return <SLoad />
+        // this.compra_venta_detalle = Model.compra_venta_detalle.Action.getAllConProductos({
+        //     key_compra_venta: this.data.key
+        // })
+        // console.log(this.compra_venta_detalle)
+        if (!this.data) return <SLoad />
         return <SView col={"xs-12"} center>
             <SHr />
             <SText bold >DETALLE</SText>
@@ -215,7 +215,7 @@ export default class Detalle extends Component {
             {this.headerTable()}
             <SView col={"xs-12"} height={4} style={{borderBottomWidth:1, borderBottomColor:STheme.color.card, borderStyle:"dashed"}}/>
             <SList
-                data={this.compra_venta_detalle}
+                data={this.data.detalle}
                 filter={obj => obj.estado != 0 && obj.key_compra_venta == this.data.key}
                 order={[{ "key": "fecha_on", order: "asc" }]}
                 render={(obj) => {
