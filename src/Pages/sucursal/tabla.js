@@ -141,7 +141,7 @@ export default class tabla extends Component {
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
 
-            <DinamicTable.Col key="sucursal" label="Sucursal" width={150} data={(e) => e.row?.key ?? ""}
+            <DinamicTable.Col key="sucursal" label="Sucursal" width={200} data={(e) => e.row?.key ?? ""}
                 customComponent={e => <>
                     {(e.row?.key) ?
                         <SView col={"xs-12"} row  >
@@ -159,7 +159,7 @@ export default class tabla extends Component {
 
             <DinamicTable.Col key="observacion" label="Observación" width={120} data={(e) => e.row?.observacion} />
             <DinamicTable.Col key="telefono" label="Teléfono" width={150} data={(e) => e.row?.telefono} />
-            <DinamicTable.Col key="direccion" label="Dirección" width={100} data={(e) => e.row?.direccion} />
+            <DinamicTable.Col key="direccion" label="Dirección" width={200} data={(e) => e.row?.direccion} />
             <DinamicTable.Col key="municipio" label="Municipio" width={100} data={(e) => e.row?.municipio} />
             <DinamicTable.Col key="correo" label="Correo" width={100} data={(e) => e.row?.correo} />
             <DinamicTable.Col key="lat" label="Lat" width={40} data={(e) => e.row?.lat} />
@@ -182,7 +182,7 @@ export default class tabla extends Component {
                 </>}
             />
 
-            <DinamicTable.Col key="empresa" label="Empresa" width={180} data={(e) => e.row?.key_empresa ?? ""}
+            {/* <DinamicTable.Col key="empresa" label="Empresa" width={180} data={(e) => e.row?.key_empresa ?? ""}
                 customComponent={e => <>
                     {(e.row?.key_empresa) ?
                         <SView col={"xs-12"} row  >
@@ -196,7 +196,7 @@ export default class tabla extends Component {
                             <SText center color={STheme.color.text} style={{ fontSize: 15, textTransform: "capitalize" }} >{e.row?.razon_social}</SText>
                         </SView> : null}
                 </>}
-            />
+            /> */}
 
         </DinamicTable>
     }

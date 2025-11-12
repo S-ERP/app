@@ -256,7 +256,7 @@ export default class libro_diario extends React.Component {
 
                     />
                     <DinamicTable.Col key="tags"
-                        wrap
+                        wrap={false}
                         label="Tags"
                         width={500}
                         data={e => JSON.stringify(e.row?.tags, "\n", "\t")}
