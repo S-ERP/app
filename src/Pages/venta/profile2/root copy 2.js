@@ -22,9 +22,7 @@ export default class Root extends Component {
                 gifcard: 0,
                 total_a_pagar: 0,
                 credito_fiscal: 0,
-            },
-            datas: {}
-           
+            }
             // proveedor: {}
         }
         this.pk = SNavigation.getParam("pk");
@@ -36,11 +34,17 @@ export default class Root extends Component {
             SNavigation.navigate("/login");
         }
         // this.getData();
-        this.loadData();
 
     }
 
-    loadData() {
+     async loadData() {
+        let pk = SNavigation.getParam("pk");
+        console.log("PK", pk)
+     }
+
+
+
+    render() {
         let pk = SNavigation.getParam("pk");
         console.log("PK", pk)
         let empresa = Model.empresa.Action.getSelect();
@@ -52,10 +56,8 @@ export default class Root extends Component {
         let t = Model.compra_venta_detalle.Action.getTotales({
             key_compra_venta: pk
         })
-
-
         console.log("CERO")
-        if (!empresa) return null
+        if (!empresa) return <SLoad />
         console.log("UNO")
 
         // if (!this.compra_venta_detalleempresa)
@@ -63,11 +65,11 @@ export default class Root extends Component {
         console.log("DOS")
 
         console.log("AQUÍ ME TIRO: Model.compra_venta_detalle.Action.getTotales", t)
-        if (!t) return null;
+        if (!t) return <SLoad />;
         console.log("TRES")
         // if (!data) return;
 
-        if (!data) return null
+        if (!data) return <SLoad />
         console.log("CUATRO")
 
         // this.calcularTotal();
@@ -87,28 +89,20 @@ export default class Root extends Component {
             }
         }
 
-        this.setState({
-            datas: {
-                ...data,
-                empresa: this.empresa
-            }
-        })
-        console.log("DATAaaaa", this.state.datas)
 
-         console.log("CINCaO")
-    }
-
-
-
-    render() {
-        console.log("STATE0", this.state)
-        console.log("STATE", this.state.datas)
-
-        let dataOk = this.state.datas;
-        if (!dataOk) return ;
+        let datas = {
+            ...data,
+            empresa: empresa
+        }
+        if (!datas) return <SLoad />;
+        console.log("CINCO")
+        // var ITEM = States[this.data?.state];
+        // if (!ITEM) {
+        //     ITEM = States["default"];
+        // }
 
 
-        var ITEM = States[dataOk?.state];
+        var ITEM = States[datas.state];
         if (!ITEM) {
             ITEM = States["default"];
         }
@@ -116,7 +110,7 @@ export default class Root extends Component {
             <SPage title={"Detalle de Venta"}  >
                 <SView col={"xs-12"} padding={15} >
                     <SView col="xs-12" center  >
-                        <ITEM data={dataOk} />
+                        <ITEM data={datas} />
                     </SView>
                 </SView>
             </SPage>
