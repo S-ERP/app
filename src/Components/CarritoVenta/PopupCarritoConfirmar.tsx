@@ -7,6 +7,7 @@ import { FlatList } from "react-native";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
+import SelectorCliente from "../Selectores/SelectorCliente";
 
 type PopupCarritoConfirmarProps = {
 
@@ -103,7 +104,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             const data = {
                 "descripcion": "Venta De Prueba Ricky",
                 "observacion": "Observacion de la venta de prueba ricky",
-                "key_proveedor": this.proveedor?.key,
+                "key_cliente": this.proveedor?.key,
                 "key_usuario": MDL.usuario.session?.key,
                 "facturar": false,
                 "facturar_luego": false,
@@ -129,7 +130,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             })
 
             SelectTipoPago.closePopup();
-            SNotification.remove("compra_rapida");
+            SNotification.remove("venta_rapida");
             SPopup.close("PopupCarritoConfirmar");
             SPopup.close("PopupCarrito");
             MDL.carrito.limpiarCarritoCompras();
@@ -166,10 +167,21 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             <SHr h={1} color={STheme.color.card} />
             <SView flex>
                 <SView padding={8}>
-                    <SText color={STheme.color.lightGray}>{"Datos del proveedor:"}</SText>
-                    <SHr />
+                   
+
+<SView row>
+    <SelectorCliente
+        icon={<SText color={STheme.color.lightGray} bold>{"Cliente:"}</SText>}
+        onChangeSelect={(cliente) => {
+            console.log("✅ Cliente seleccionado:", cliente);
+            this.proveedor = cliente;
+        }}
+    />
+</SView>
+<SHr h={4} />
+  
                     <SView row>
-                        <SInput icon={<SText color={STheme.color.lightGray} bold>{"# NIT:"}</SText>} placeholder={"Escriba el nit del proveedor"}
+                        <SInput icon={<SText color={STheme.color.lightGray} bold>{"# NIT:"}</SText>} placeholder={"Escriba el nit"}
                             onChangeText={(e) => {
                                 MDL.crm.cliente.buscar_nit(e).then(proveedor => {
                                     this.proveedor = proveedor;
@@ -202,9 +214,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         />
                     </SView>
                     <SHr h={4} />
-                    <SView row>
-                        <SInput ref={ref => this.inputNombre = ref} icon={<SText color={STheme.color.lightGray} bold>{"Nombre:"}</SText>} placeholder={"Escriba el nombre del proveedor"} />
-                    </SView>
+
                 </SView>
                 <SHr />
                 <SView padding={8}>

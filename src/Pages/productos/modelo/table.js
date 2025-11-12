@@ -244,12 +244,14 @@ export default class table extends Component {
                         srcPreview={SSocket.api.inventario + "marca/" + e.row.key_marca + "?date=" + this.state.time}
                     />}
                 />
+                <DinamicTable.Col key={"codigo_ref"} label='Cod. Ref.' width={60} data={(e) => e.row.codigo_ref} />
                 <DinamicTable.Col key={"nombre"} label='Nombre' width={200} data={(e) => e.row.descripcion} wrap textStyle={{ fontWeight: "bold" }}
                     customComponent={e => <ImageLabel {...e}
                         src={SSocket.api.inventario + "modelo/.128_" + e.row.key + "?date=" + this.state.time}
                         srcPreview={SSocket.api.inventario + "modelo/" + e.row.key + "?date=" + this.state.time}
                     />}
                 />
+
                 <DinamicTable.Col key={"observacion"} label='Observacion' width={150} data={(e) => e.row.observacion} />
                 <DinamicTable.Col key={"precio_compra"} label='P. Compra' width={70}
                     textStyle={{ color: STheme.color.danger }}
