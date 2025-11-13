@@ -22,8 +22,8 @@ export default class Root extends Component {
                 gifcard: 0,
                 total_a_pagar: 0,
                 credito_fiscal: 0,
-            },
-        
+            }
+            // proveedor: {}
         }
         this.pk = SNavigation.getParam("pk");
 
@@ -33,27 +33,52 @@ export default class Root extends Component {
         if (!Model.usuario.Action.getKey()) {
             SNavigation.navigate("/login");
         }
-        this.loadData();
+        // this.getData();
 
     }
 
-    async loadData() {
-        let empresa = MDL.empresa.select
-        let data = await MDL.compra_venta.getJson(this.pk);
-        let t =  MDL.compra_venta.getTotales(data.detalle)
+     async loadData() {
+        let pk = SNavigation.getParam("pk");
+        console.log("PK", pk)
+     }
 
-        if (!empresa) return;
-        if (!t) return;
 
-        if (!data) return;
 
+    render() {
+        let pk = SNavigation.getParam("pk");
+        console.log("PK", pk)
+        let empresa = Model.empresa.Action.getSelect();
+        let data = Parent.model.Action.getByKey(pk);
+        // let compra_venta_detalle = Model.compra_venta_detalle.Action.getAll({
+        //     key_compra_venta: SNavigation.getParam("pk")
+        // })
+
+        let t = Model.compra_venta_detalle.Action.getTotales({
+            key_compra_venta: pk
+        })
+        console.log("CERO")
+        if (!empresa) return <SLoad />
+        console.log("UNO")
+
+        // if (!this.compra_venta_detalleempresa)
+        // if (!compra_venta_detalle) return null;
+        console.log("DOS")
+
+        console.log("AQUÍ ME TIRO: Model.compra_venta_detalle.Action.getTotales", t)
+        if (!t) return <SLoad />;
+        console.log("TRES")
+        // if (!data) return;
+
+        if (!data) return <SLoad />
+        console.log("CUATRO")
+
+        // this.calcularTotal();
         if (!t.total_a_pagar) {
             t.total_a_pagar = 0;
         }
         if (this.state.totales.total_a_pagar != t.total_a_pagar) {
             this.state.totales = t;
-            // this.setState({ ...this.state })
-             this.forceUpdate()
+            this.setState({ ...this.state })
         }
 
         if (!this.state.curState) {
@@ -64,23 +89,20 @@ export default class Root extends Component {
             }
         }
 
-        this.state.datas = {
+
+        let datas = {
             ...data,
             empresa: empresa
         }
-        this.forceUpdate()
-      
-    }
+        if (!datas) return <SLoad />;
+        console.log("CINCO")
+        // var ITEM = States[this.data?.state];
+        // if (!ITEM) {
+        //     ITEM = States["default"];
+        // }
 
 
-
-    render() {
-
-        let dataOk = this.state.datas;
-        if (!dataOk) return;
-
-        console.log("STATEOK", dataOk?.state)
-        var ITEM = States[dataOk?.state];
+        var ITEM = States[datas.state];
         if (!ITEM) {
             ITEM = States["default"];
         }
@@ -88,7 +110,7 @@ export default class Root extends Component {
             <SPage title={"Detalle de Venta"}  >
                 <SView col={"xs-12"} padding={15} >
                     <SView col="xs-12" center  >
-                        <ITEM data={dataOk} />
+                        <ITEM data={datas} />
                     </SView>
                 </SView>
             </SPage>

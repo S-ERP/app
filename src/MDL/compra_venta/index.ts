@@ -109,6 +109,40 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       key_empresa: Model.empresa.Action.getKey(),
     }).then((resp: any) => resp.data);
   }
+  getJson(value: any) {
+    return SSocket.sendPromise({
+      service: "compra_venta",
+      component: "compra_venta",
+      type: "getJson",
+      key: value,
+      key_empresa: Model.empresa.Action.getKey(),
+    }).then((resp: any) => resp.data);
+  }
+
+  getTotales(value: any) {
+          // console.log("key_compra_venta", key_compra_venta)
+          var compra_venta_detalle = value
+          // console.log("compra_venta_detalle", compra_venta_detalle)
+          if (!compra_venta_detalle) return null;
+          var t = {
+              subtotal: 0,
+              descuento: 0,
+              total: 0,
+              gifcard: 0,
+              total_a_pagar: 0,
+              credito_fiscal: 0,
+          }
+          Object.values(compra_venta_detalle).map(((obj: any) => {
+              if (!obj.estado) return;
+              const { precio_unitario, precio_facturado, cantidad, descuento } = obj;
+              const precio = ((precio_unitario * cantidad) - (descuento ?? 0));
+              t.subtotal += precio;
+          }))
+          t.total = t.subtotal - t.descuento
+          t.total_a_pagar = t.total - t.gifcard
+          // t.credito_fiscal = t.total_a_pagar
+          return t;
+      }
 
   async getByKeyComraVenta(value: any) {
     const resp: any = await SSocket.sendPromise({

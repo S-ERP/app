@@ -169,13 +169,16 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 <SView padding={8}>
                     <SText color={STheme.color.lightGray}>{"Datos del proveedor:"}</SText>
                     <SHr />
-                    <SView row>
-                        <SelectorCliente    
-                            
-                            icon={<SText color={STheme.color.lightGray} bold>{"Cliente:"}</SText>}
-                           
-                        />
-                    </SView>
+<SView row>
+    <SelectorCliente
+        icon={<SText color={STheme.color.lightGray} bold>{"Cliente:"}</SText>}
+        onChangeSelect={(cliente) => {
+            console.log("✅ Cliente seleccionado:", cliente);
+            this.proveedor = cliente;
+        }}
+    />
+</SView>
+
                     <SHr h={4} />
                     <SView row>
                         <SInput ref={ref => this.inputNombre = ref} icon={<SText color={STheme.color.lightGray} bold>{"Nombre:"}</SText>} placeholder={"NIT"} />
