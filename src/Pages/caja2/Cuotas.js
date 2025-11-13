@@ -77,7 +77,7 @@ export default class Cuotas extends Component {
                 acc.cant_pendientes += item.cuotas_en_pendientes?.cantidad || 0;
                 acc.cant_mora += item.cuotas_en_mora?.cantidad || 0;
                 acc.cant_pagado += item.cuotas_en_amortizacion?.cantidad || 0;
-                
+
                 acc.total_pendientes += parseFloat(item.cuotas_en_pendientes?.monto || 0);
                 acc.total_mora += parseFloat(item.cuotas_en_mora?.monto || 0);
                 acc.total_pagado += parseFloat(item.cuotas_en_amortizacion?.monto || 0);
@@ -277,16 +277,16 @@ export default class Cuotas extends Component {
                                 style={{ backgroundColor: COLORS.CARD, borderRadius: 6, borderWidth: 1, borderColor: COLORS.BORDER, padding: 16 }}
                             >
                                 <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
-                                    <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}>{key_proveedor ? `aaaaaaaaaCompra #${index + 1}` : `Venta #${index + 1}`}</SText>
+                                    <SText {...TYPOGRAPHY.TITLE} color={COLORS.TEXT}>{key_proveedor ? `Compra #${index + 1}` : `Venta #${index + 1}`}</SText>
                                     {this.labelEstado(____________deudaTotal > 0 ? 'pendiente' : 'pagado')}
                                 </SView>
 
                                 <SHr h={8} />
                                 <SText {...TYPOGRAPHY.BODY} color={COLORS.TEXT} numberOfLines={1}> {compras.descripcion || 'Sin descripción'} </SText>
-                        
-                                <SHr h={2} />
-                                <SText {...TYPOGRAPHY.BODY} color={"blue"} numberOfLines={1}> {compras.observacion || 'Sin obser'} </SText>
-                        
+
+                                {/* <SHr h={2} />
+                                <SText {...TYPOGRAPHY.BODY} color={"blue"} numberOfLines={1}> {compras.observacion || 'Sin obser'} </SText> */}
+
                                 <SHr h={12} />
                                 <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
                                     <SText {...TYPOGRAPHY.LABEL}>Fecha:</SText>
@@ -330,6 +330,7 @@ export default class Cuotas extends Component {
                                                             ...compras,
                                                             id: index + 1,
                                                             pagado: false,
+                                                            esCompra: key_proveedor ? true : false
                                                         },
                                                         onSuccess: () => {
                                                             this.setState({ loading: true });
@@ -357,6 +358,8 @@ export default class Cuotas extends Component {
                                                             id: index + 1,
                                                             // moneda: compra?.moneda || monedaDefault,
                                                             pagado: true,
+                                                            esCompra: key_proveedor ? true : false
+
                                                         },
                                                         onSuccess: () => {
                                                             this.setState({ loading: true });
