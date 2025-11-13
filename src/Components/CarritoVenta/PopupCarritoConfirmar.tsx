@@ -8,6 +8,7 @@ import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
 import SelectorCliente from "../Selectores/SelectorCliente";
+import { cli } from "webpack";
 
 type PopupCarritoConfirmarProps = {
 
@@ -167,33 +168,44 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             <SHr h={1} color={STheme.color.card} />
             <SView flex>
                 <SView padding={8}>
-                   
 
-<SView row>
-    <SelectorCliente
-        icon={<SText color={STheme.color.lightGray} bold>{"Cliente:"}</SText>}
-        onChangeSelect={(cliente) => {
-            console.log("✅ Cliente seleccionado:", cliente);
-            this.proveedor = cliente;
-        }}
-    />
-</SView>
-<SHr h={4} />
-  
+
+                    <SView row>
+                        <SelectorCliente
+                            ref={ref => this.inputCliente = ref}
+                            icon={<SText color={STheme.color.lightGray} bold>{"Cliente:"}</SText>}
+                            onChangeSelect={(cliente) => {
+                                console.log("✅ Cliente seleccionado:", cliente);
+                                if (this.inputNit && cliente) {
+                                    if (this.proveedor?.nit !== cliente.nit) {
+                                        this.inputNit.setValue(cliente?.nit || "");
+                                    }
+                                }
+                                this.proveedor = cliente;
+
+                            }}
+                        />
+                    </SView>
+                    <SHr h={4} />
+
                     <SView row>
                         <SInput icon={<SText color={STheme.color.lightGray} bold>{"# NIT:"}</SText>} placeholder={"Escriba el nit"}
+                            ref={ref => this.inputNit = ref}
                             onChangeText={(e) => {
                                 MDL.crm.cliente.buscar_nit(e).then(proveedor => {
                                     this.proveedor = proveedor;
-                                    if (this.inputNombre) {
-                                        this.inputNombre.setValue(proveedor.razon_social ?? proveedor.nombres)
+                                    // if (this.inputNombre) {
+                                    //     this.inputNombre.setValue(proveedor.razon_social ?? proveedor.nombres)
+                                    // }
+                                    if (this.inputCliente) {
+                                        this.inputCliente.setSelect(proveedor);
                                     }
                                 }).catch(error => {
                                     console.error(error);
                                 })
                             }}
                             onSubmitEditing={() => {
-                                if (this.inputNombre) this.inputNombre.focus()
+                                // if (this.inputNombre) this.inputNombre.focus()
                             }}
                             iconR={<SView
                                 card style={{
@@ -201,7 +213,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                 }} onPress={() => {
                                     SNavigation.navigate("/cliente", {
                                         onSelect: (proveedor: any) => {
-                                            if (this.inputNombre) {
+                                            if (this.inputNombre && proveedor) {
                                                 this.proveedor = proveedor;
                                                 this.inputNombre.setValue(proveedor.razon_social ?? proveedor.nombres)
                                             }

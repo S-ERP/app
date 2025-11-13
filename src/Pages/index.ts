@@ -58,6 +58,7 @@ import uploadv2 from "./uploadv2";
 import drive from "./drive";
 import drive2 from "./drive2";
 import qr_reader from "./qr_reader";
+import pasarela from "./pasarela";
 // Three js
 // import three from './three';
 // import mesh from './mesh';
@@ -187,5 +188,6 @@ export default SPage.combinePages("/", {
   "iconosss":IconosAlvaro,
   alvaro,
   ...social_media,
+  ...pasarela,
   ...contactos
 });
