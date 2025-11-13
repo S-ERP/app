@@ -165,9 +165,15 @@ export default class tabla extends Component {
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
                 <DinamicTable.Col key={"-keyprofile"} label='Verwwwwww' width={40} data={(e) => e.row?.key}
-                    customComponent={e => <SView row center card padding={2} onPress={() => { SNavigation.navigate("/compra/profile", { pk: e.row.key }) }}>
-                        <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
-                    </SView>} />
+                    customComponent={e => <>
+                        <SView row center card padding={2} onPress={() => { SNavigation.navigate("/compra/profile", { pk: e.row.key }) }}>
+                            <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
+                        </SView>
+                        <SHr/>
+                        <SView row center card padding={2} onPress={() => { SNavigation.replace("/venta/profile2", { pk: e.row.key }) }}>
+                            <SIconApp name='Eyes' height={14} fill={STheme.color.darkGray} ></SIconApp>
+                        </SView>
+                    </>} />
                 <DinamicTable.Col key={"fecha_on"} label="Fecha"
                     width={110} dataType="date"
                     textStyle={{ fontSize: 10 }}

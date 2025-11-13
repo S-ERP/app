@@ -10,7 +10,7 @@ export default class Detalle extends Component {
         };
     }
     data = {}
-    detalle_item({ key, key_usuario, nombre, precio, cantidad, descuento, tipo }) {
+    detalle_item({ key, key_usuario, nombre, precio, cantidad, descuento, tipo,key_modelo }) {
         var onPress = null;
         if (!this.props.disabled) {
             onPress = () => {
@@ -25,7 +25,9 @@ export default class Detalle extends Component {
                 <SView flex height card style={{
                     overflow: 'hidden',
                 }}>
-                    <SImage src={SSocket.api.root + "usuario/" + key_usuario} />
+                    {/* <SImage src={SSocket.api.root + "usuario/" + key_usuario}  /> */}
+                    <SImage src={SSocket.api.inventario + "modelo/.128_" + key_modelo}  />
+                    
                 </SView>
             </SView>
             <SView flex>
@@ -202,11 +204,11 @@ export default class Detalle extends Component {
     }
     render() {
         this.data = this.props.data;
-        this.compra_venta_detalle = Model.compra_venta_detalle.Action.getAllConProductos({
-            key_compra_venta: this.data.key
-        })
-        console.log(this.compra_venta_detalle)
-        if (!this.compra_venta_detalle) return <SLoad />
+        // this.compra_venta_detalle = Model.compra_venta_detalle.Action.getAllConProductos({
+        //     key_compra_venta: this.data.key
+        // })
+        console.log("DETALLE:",this.data.detalle)
+        if (!this.data) return <SLoad />
         return <SView col={"xs-12"} center>
             <SHr />
             <SText bold >DETALLE</SText>
@@ -215,7 +217,7 @@ export default class Detalle extends Component {
             {this.headerTable()}
             <SView col={"xs-12"} height={4} style={{borderBottomWidth:1, borderBottomColor:STheme.color.card, borderStyle:"dashed"}}/>
             <SList
-                data={this.compra_venta_detalle}
+                data={this.data.detalle}
                 filter={obj => obj.estado != 0 && obj.key_compra_venta == this.data.key}
                 order={[{ "key": "fecha_on", order: "asc" }]}
                 render={(obj) => {
@@ -226,7 +228,8 @@ export default class Detalle extends Component {
                         precio: obj.precio_unitario,
                         key_usuario: obj.key_usuario,
                         descuento: obj.descuento,
-                        tipo: obj.tipo
+                        tipo: obj.tipo,
+                        key_modelo:obj.key_modelo
                     })
                 }}
             />

@@ -3,6 +3,7 @@ import { SDate, SHr, SImage, SInput, SList, SLoad, SMath, SNavigation, SOrdenado
 import SSocket from 'servisofts-socket'
 import Components from '../../../../Components';
 import Model from '../../../../Model';
+import MDL from '../../../../MDL';
 const PERIODICIDAD_DATA = {
     "day": {
         label: "Día", label_plural: "días", add: (date, i) => {
@@ -382,14 +383,9 @@ export default class PlanPagos extends Component {
     render() {
         this.data = this.props.data;
 
-        var t = Model.compra_venta_detalle.Action.getTotales({
-            key_compra_venta: this.data.key
-        })
+        let t= MDL.compra_venta.getTotales(this.data.detalle)
 
-
-        var cuotas = Model.cuota.Action.getAllByKeyCompraVenta({
-            key_compra_venta: this.data.key
-        })
+        let cuotas = this.data.cuotas
         if (!t) return null;
         if (!cuotas) {
             this.state.cuotas = null;

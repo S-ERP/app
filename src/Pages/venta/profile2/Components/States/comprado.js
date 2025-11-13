@@ -14,6 +14,8 @@ import SSocket from 'servisofts-socket';
 import Separador1 from './Components/Separador1';
 import TotalesVenta from '../TotalesVenta';
 import MDL from '../../../../../MDL';
+import ComprobanteRollo from '../../../../../Components/PDF/compra/ComprobanteRollo';
+import ComprobanteCarta from '../../../../../Components/PDF/compra/ComprobanteCarta';
 
 
 export default class index extends Component {
@@ -99,13 +101,13 @@ export default class index extends Component {
                     </SView>
                     <SView col={"xs-12"} center row>
                         <SView card style={{ padding: 16, marginBottom: 10 }}>
-                            <SView onPress={() => ReciboRollo.imprimir(this.data.key)}>
+                            <SView onPress={() => ComprobanteRollo.imprimir(this.data.key)}>
                                 <SText>DESCARGAR PDF ROLLO</SText>
                             </SView>
                         </SView>
                         <SView width={8} />
                         <SView card style={{ padding: 16, marginBottom: 10 }}>
-                            <SView onPress={() => ReciboCarta.imprimir(this.data.key)}>
+                            <SView onPress={() => ComprobanteCarta.imprimir(this.data.key)}>
                                 <SText>DESCARGAR PDF CARTA</SText>
                             </SView>
                         </SView>

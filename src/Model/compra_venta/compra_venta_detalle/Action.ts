@@ -42,6 +42,7 @@ export default class Action extends SAction {
     getAll({ key_compra_venta }) {
         var reducer = this._getReducer();
         if (reducer.key_compra_venta != key_compra_venta) {
+            //AQUI COMENTÉ LÍNEA 46
             reducer.data = null;
             reducer.key_compra_venta = key_compra_venta;
         }
@@ -50,9 +51,11 @@ export default class Action extends SAction {
         })
     }
     getTotales({ key_compra_venta }) {
+        // console.log("key_compra_venta", key_compra_venta)
         var compra_venta_detalle = Model.compra_venta_detalle.Action.getAll({
             key_compra_venta: key_compra_venta
         })
+        // console.log("compra_venta_detalle", compra_venta_detalle)
         if (!compra_venta_detalle) return null;
         var t = {
             subtotal: 0,
