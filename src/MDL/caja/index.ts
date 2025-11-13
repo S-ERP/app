@@ -4,14 +4,20 @@ import MDLAbstract from "../MDLAbstract";
 import SSocket from "servisofts-socket";
 import MDL from "..";
 import { SDate } from "servisofts-component";
+import pasarela from "./pasarela";
+import pasarela_empresa from "./pasarela_empresa";
 
 export default class caja extends MDLAbstract<EventListener> {
 
   activa: Caja | null = null;
+  pasarela = new pasarela();
+  pasarela_empresa = new pasarela_empresa();
 
   async componentDidMount() {
     try {
       await this.getActiva();
+      await this.pasarela.componentDidMount();
+      await this.pasarela_empresa.componentDidMount()
     } catch (error) {
       console.error(error);
     }

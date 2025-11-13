@@ -19,6 +19,13 @@ export default class SelectorCliente extends React.Component<SelectorClienteProp
     componentDidMount() {
         this.loadData();
     }
+    setSelect(elm: any) {
+        this.state.select = elm;
+        if (this.input) this.input.setValue(this.toString(elm));
+        if (this.props.onChangeSelect) {
+            // this.props.onChangeSelect(elm);
+        }
+    }
 
     async loadData() {
         try {
@@ -60,7 +67,7 @@ export default class SelectorCliente extends React.Component<SelectorClienteProp
 
     toString(e: any) {
         // Intenta distintas propiedades comunes
-        return e?.razon_social ?? e?.nombre ?? e?.descripcion ?? "Sin nombre";
+        return e?.razon_social ?? e?.nombres ?? e?.descripcion ?? "Sin nombre";
     }
 
     render() {
