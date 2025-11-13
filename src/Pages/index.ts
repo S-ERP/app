@@ -191,6 +191,6 @@ export default SPage.combinePages("/", {
   alvaro,
   ...social_media,
   ...pasarela,
-  ...contactos
+  ...contactos,
   ...tableros,
 });
