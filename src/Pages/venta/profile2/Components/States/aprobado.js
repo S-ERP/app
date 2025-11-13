@@ -10,6 +10,10 @@ import Proveedor from '../Proveedor';
 
 
 import Components from '../../../../../Components';
+import Estado from './Components/Estado';
+import Separador1 from './Components/Separador1';
+import TotalesVenta from '../TotalesVenta';
+import PlanPagos from '../PlanPagos';
 
 export default class index extends Component {
     constructor(props) {
@@ -77,43 +81,43 @@ export default class index extends Component {
 
         this.isSuperAdmin = !!permiso;
         // var statei = Model.compra_venta.Action.getStateInfo(this.data.state)
-        return (<SView col={"xs-12"} center>
-            <SView col={"xs-12"} center card style={{ padding: 14, }}>
+        return (<SView col={"xs-12 sm-11 md-8 lg-8 xl-6"} card>
+            <Estado data={this.data} />
+            <SView col={"xs-12"} center style={{ padding: 14, }}>
                 <SHr />
                 <SText center bold fontSize={18}>{this.data?.descripcion}</SText>
                 <SHr />
                 <SText center >{this.data?.observacion}</SText>
-                <Components.compra_venta.Separador data={this.data} />
-                <Components.compra_venta.Estado data={this.data} />
-                <Components.compra_venta.Separador data={this.data} />
+                <Separador1 />
                 <Proveedor data={this.data} disabled />
-                <Components.compra_venta.Separador data={this.data} />
+                <Separador1 />
                 <Cliente data={this.data} disabled />
-                <Components.compra_venta.Separador data={this.data} />
-                <Components.compra_venta.Conyuge data={this.data} disabled={!this.isAdmin} />
-                <Components.compra_venta.Separador data={this.data} />
+                <Separador1 />
+                {/* <Components.compra_venta.Conyuge data={this.data} disabled={!this.isAdmin} />
+                <Separador1 />
                 <Components.compra_venta.Garante data={this.data} disabled={!this.isAdmin} />
-                <Components.compra_venta.Separador data={this.data} />
+                <Separador1 /> */}
                 <Detalle data={this.data} disabled />
-                <Components.compra_venta.Separador data={this.data} />
-                <Components.compra_venta.Totales data={this.data} disabled />
-                <Components.compra_venta.Separador data={this.data} />
-                {/* <PlanPagos ref={ref => this.pp = ref} data={this.data} disabled={!this.isAdmin} /> */}
-                <Components.compra_venta.PlanDePagos ref={ref => this.pp = ref} data={this.data} disabled />
-                <Components.compra_venta.Separador data={this.data} />
-                <Components.compra_venta.QRVenta data={this.data} />
-                <Components.compra_venta.Separador data={this.data} />
-                {/* <Separador data={this.data}/> */}
-                {this.getActions()}
+                <Separador1 />
+                <TotalesVenta data={this.data} />
+                <Separador1 />
+                <SHr height={10} />
+                <PlanPagos ref={ref => this.pp = ref} data={this.data} disabled />
+                <Separador1 />
+                <SView col={"xs-12"} style={{ alignItems: "flex-end", paddingBottom: 10, paddingTop: 10 }}>
+                    <Components.compra_venta.QRVenta data={this.data} />
+                </SView>
+                <Separador1 />
+                {/* {this.getActions()} */}
             </SView>
             <SHr height={16} />
-            <Components.compra_venta.Exportar data={this.data} />
+            {/* <Components.compra_venta.Exportar data={this.data} />
             <SHr height={50} />
             <Components.compra_venta.Participantes data={this.data} />
             <SHr height={50} />
             <SView col={"xs-12"} center card>
                 <Components.compra_venta.Comentarios data={this.data} />
-            </SView>
+            </SView> */}
         </SView>
         );
     }
