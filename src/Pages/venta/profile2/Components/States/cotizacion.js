@@ -91,11 +91,11 @@ export default class index extends Component {
             <SHr height={16} />
             <Components.compra_venta.Exportar data={this.data} />
             <SHr height={50} />
-            <Components.compra_venta.Participantes data={this.data} />
+            {/* <Components.compra_venta.Participantes data={this.data} />
             <SHr height={50} />
             <SView col={"xs-12"} center card>
                 <Components.compra_venta.Comentarios data={this.data} />
-            </SView>
+            </SView> */}
         </SView>
         );
     }
