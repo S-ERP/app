@@ -58,6 +58,8 @@ import uploadv2 from "./uploadv2";
 import drive from "./drive";
 import drive2 from "./drive2";
 import qr_reader from "./qr_reader";
+import pasarela from "./pasarela";
+import tableros from "./tableros";
 // Three js
 // import three from './three';
 // import mesh from './mesh';
@@ -96,6 +98,7 @@ import descuento from "./descuento";
 import excel from "./excel";
 import tag from "./tag";
 import test3 from "./test3";
+import tabla from "./inventario/almacen/tabla";
 
 export default SPage.combinePages("/", {
   // "":Example,
@@ -187,5 +190,7 @@ export default SPage.combinePages("/", {
   "iconosss":IconosAlvaro,
   alvaro,
   ...social_media,
-  ...contactos
+  ...pasarela,
+  ...contactos,
+  ...tableros,
 });

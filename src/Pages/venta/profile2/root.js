@@ -85,7 +85,7 @@ export default class Root extends Component {
             ITEM = States["default"];
         }
         return (
-            <SPage title={"Detalle de Venta"}  >
+            <SPage title={"Detalle"}  >
                 <SView col={"xs-12"} padding={15} >
                     <SView col="xs-12" center  >
                         <ITEM data={dataOk} />
