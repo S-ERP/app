@@ -25,7 +25,7 @@ export default class tabla_venta extends React.Component {
                         <SView col={{ xs: 12, md: 6 }} card center height={250} style={{ paddingRight: 8 }}>
                             <SText>Gráfico 1</SText>
                         </SView>
-
+                        <SHr />
                         <SView col={{ xs: 12, md: 6 }} card center height={250} style={{ paddingLeft: 8 }}>
                             <SText>Gráfico 2</SText>
                         </SView>
