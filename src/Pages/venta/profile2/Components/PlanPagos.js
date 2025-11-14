@@ -76,21 +76,21 @@ export default class PlanPagos extends Component {
         }}>
             <SView row justifyContent="space-between" >
                 <SText bold># {codigo} - {descripcion}</SText>
-                <SText col={"xs-12"} flex bold style={{ alignItems: "flex-end" }}>{SMath.formatMoney(monto)}</SText>
+                <SText col={"xs-12"} flex bold style={{ alignItems: "flex-end" }}>Monto: {SMath.formatMoney(monto)}</SText>
             </SView>
 
             <SText color={STheme.color.lightGray} fontSize={10}>
                 {new SDate(fecha, "yyyy-MM-dd").toString("dd de MONTH, yyyy")}
             </SText>
 
-            <SView row justifyContent="space-between" style={{ paddingBottom: 5, paddingTop: 5 }}>
-                <SText fontSize={12}>Capital: {isNaN(capital) ? 0 : capital}</SText>
+            <SView row justifyContent="space-between" style={{ paddingBottom: 3, paddingTop: 3 }}>
+                <SText fontSize={10} color={STheme.color.lightGray}>Capital: {isNaN(capital) ? 0 : capital}</SText>
                 <SView width={10} style={{ borderRightWidth: 1, borderRightColor: STheme.color.lightGray }} />
                 <SView width={10} />
-                <SText fontSize={12}>Interés: {isNaN(interes) ? 0 : interes}</SText>
+                <SText fontSize={10} color={STheme.color.lightGray}>Interés: {isNaN(interes) ? 0 : interes}</SText>
                 <SView width={10} style={{ borderRightWidth: 1, borderRightColor: STheme.color.lightGray }} />
                 <SView width={10} />
-                <SText fontSize={12}>Saldo: {isNaN(saldo_capital) ? 0 : saldo_capital}</SText>
+                <SText fontSize={10} color={STheme.color.lightGray}>Saldo: {isNaN(saldo_capital) ? 0 : saldo_capital}</SText>
             </SView>
 
             <SText fontSize={12}>Pagos acumulados: {pagos_acumulados ?? 0}</SText>

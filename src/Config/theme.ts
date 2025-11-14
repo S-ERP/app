@@ -38,7 +38,7 @@ const theme: SThemeThemes = {
         // card: '#00000010',
         card: '#00000015',
         font: "Roboto",
-        accent: "#B5B5B7"
+        accent: "#B5B5B7",
     },
     dark: {
         barStyle: 'light-content',
@@ -53,5 +53,13 @@ const theme: SThemeThemes = {
         // card: '#ffffff10'
         accent: "#3A3A3A"
     }
+
+
 }
-export default theme;
+
+export  const ColorCompraVenta = {
+
+    compra: "#a741e6",
+    venta: "#71af4a"
+}
+export default theme ;

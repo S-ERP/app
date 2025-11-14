@@ -89,7 +89,7 @@ export default class index extends Component {
                 <PlanPagos ref={ref => this.pp = ref} data={this.data} disabled />
                 <Separador1 />
                 <SView col={"xs-12"} style={{ alignItems: "flex-end", paddingBottom: 10, paddingTop: 10 }}>
-                    <Components.compra_venta.QRVenta data={this.data} />
+                    <Components.compra_venta.QRCompra data={this.data} />
                 </SView>
                 <Separador1 />
 
@@ -111,7 +111,7 @@ export default class index extends Component {
                                 <SText>DESCARGAR PDF CARTA</SText>
                             </SView>
                         </SView>
-                        <SView width={8} />
+                        {/* <SView width={8} />
                         <SView style={{ marginBottom: 10, overflow: "hidden", borderRadius: 4 }} backgroundColor={STheme.color.background}>
                             <Components.compra_venta.GenerarAsiento data={this.data} />
                         </SView>
@@ -121,7 +121,7 @@ export default class index extends Component {
                             Model.compra_venta.Action.changeState({ data: this.data, state: "cotizacion" })
                         }}>
                             <SText bold color={STheme.color.danger}>VOLVER A COTIZACIÓN</SText>
-                        </SView>
+                        </SView> */}
                     </SView>
                 </SView>
              

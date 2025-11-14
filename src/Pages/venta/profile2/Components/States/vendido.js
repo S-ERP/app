@@ -109,7 +109,7 @@ export default class index extends Component {
                                 <SText>DESCARGAR PDF CARTA</SText>
                             </SView>
                         </SView>
-                        <SView width={8} />
+                        {/* <SView width={8} />
                         <SView style={{ marginBottom: 10, overflow: "hidden", borderRadius: 4 }} backgroundColor={STheme.color.background}>
                             <Components.compra_venta.GenerarAsiento data={this.data} />
                         </SView>
@@ -119,7 +119,7 @@ export default class index extends Component {
                             Model.compra_venta.Action.changeState({ data: this.data, state: "cotizacion" })
                         }}>
                             <SText bold color={STheme.color.danger}>VOLVER A COTIZACIÓN</SText>
-                        </SView>
+                        </SView> */}
                     </SView>
                 </SView>
              

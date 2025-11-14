@@ -15,6 +15,7 @@ import FormularioIngrediente from "../Components/FormularioIngrediente";
 import SelectMenu from "./SelectMenu";
 import Elaborar from "../Components/Elaborar";
 import PopupComprar from "../Components/PopupComprar";
+import theme, { ColorCompraVenta } from "../../../Config/theme";
 
 export default class pizarra extends React.Component {
     state = {
@@ -541,7 +542,7 @@ const NodoModelo = (props) => {
             {modelo?.precio_compra &&
                 <SText bold style={{
                     fontSize: 12,
-                    color: STheme.color.danger
+                    color: ColorCompraVenta.compra
                 }}>BOB {modelo?.precio_compra}</SText>
             }
 
@@ -551,7 +552,7 @@ const NodoModelo = (props) => {
                 <SView style={{ alignItems: "flex-end" }}>
                     <SText bold style={{
                         fontSize: 12,
-                        color: STheme.color.success,
+                        color: ColorCompraVenta.venta,
                         alignContent: "flex-end"
                     }}>BOB {modelo?.precio_venta}</SText>
 
