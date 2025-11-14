@@ -53,6 +53,7 @@ export default class root extends React.Component {
                                         title: "Not Implemet",
                                         time: 5000,
                                     })
+                                    // MDL.compra_venta.execute_function("")
                                     // FormularioPasarela.open({
                                     //     editObject: e.row,
                                     //     onSuccess: (e) => {
