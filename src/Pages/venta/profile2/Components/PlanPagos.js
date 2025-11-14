@@ -48,7 +48,10 @@ export default class PlanPagos extends Component {
         interes,
         capital,
         saldo_capital,
-        pagos_acumulados
+        pagos_acumulados,
+        total_a_pagar,
+        saldo
+
     }) {
         // return <SView col={"xs-12"} row>
         //     <SView flex>
@@ -67,7 +70,7 @@ export default class PlanPagos extends Component {
         //     <SHr />
         //     <SHr height={1} color={STheme.color.card} />
         // </SView>
-        return <SView col={"xs-12"} padding={6} style={{
+        return <SView col={"xs-12"} padding={5} style={{
             backgroundColor: STheme.color.card,
             borderRadius: 8,
             marginBottom: 2,
@@ -76,14 +79,15 @@ export default class PlanPagos extends Component {
         }}>
             <SView row justifyContent="space-between" >
                 <SText bold># {codigo} - {descripcion}</SText>
-                <SText col={"xs-12"} flex bold style={{ alignItems: "flex-end" }}>Monto: {SMath.formatMoney(monto)}</SText>
+                <SText col={"xs-12"} flex  style={{ alignItems: "flex-end" }}>Monto: {SMath.formatMoney(monto)}</SText>
+               
             </SView>
 
             <SText color={STheme.color.lightGray} fontSize={10}>
                 {new SDate(fecha, "yyyy-MM-dd").toString("dd de MONTH, yyyy")}
             </SText>
 
-            <SView row justifyContent="space-between" style={{ paddingBottom: 3, paddingTop: 3 }}>
+            <SView row justifyContent="space-between" style={{ paddingTop: 3 }}>
                 <SText fontSize={10} color={STheme.color.lightGray}>Capital: {isNaN(capital) ? 0 : capital}</SText>
                 <SView width={10} style={{ borderRightWidth: 1, borderRightColor: STheme.color.lightGray }} />
                 <SView width={10} />
@@ -91,9 +95,10 @@ export default class PlanPagos extends Component {
                 <SView width={10} style={{ borderRightWidth: 1, borderRightColor: STheme.color.lightGray }} />
                 <SView width={10} />
                 <SText fontSize={10} color={STheme.color.lightGray}>Saldo: {isNaN(saldo_capital) ? 0 : saldo_capital}</SText>
+                 <SText col={"xs-12"} flex bold style={{ alignItems: "flex-end" }}>Saldo: {SMath.formatMoney(saldo)}</SText>
             </SView>
 
-            <SText fontSize={12}>Pagos acumulados: {pagos_acumulados ?? 0}</SText>
+            {/* <SText fontSize={12}>Pagos acumulados: {pagos_acumulados ?? 0}</SText> */}
         </SView>
     }
 
@@ -118,6 +123,9 @@ export default class PlanPagos extends Component {
             data={this.state.cuotas}
             render={(data, key, i) => {
                 var saldo_capital = this.state.totales.subtotal;
+                var total_a_pagar = this.state.totales.total_a_pagar;
+                var saldo= this.state.totales.total_a_pagar - data.pagos_acumulados;
+                console.log("RESULT ", saldo, total_a_pagar, data.pagos_acumulados)
                 console.log("CUOTAS", data)
                 // capital_amortizado += capital;
                 // saldo_capital -= capital;
@@ -129,7 +137,9 @@ export default class PlanPagos extends Component {
                     interes: SMath.formatMoney(data.monto_interes),
                     capital: SMath.formatMoney(data.monto_capital),
                     saldo_capital: SMath.formatMoney(data.saldo_capital),
-                    pagos_acumulados: SMath.formatMoney(data.pagos_acumulados)
+                    pagos_acumulados: SMath.formatMoney(data.pagos_acumulados),
+                    total_a_pagar: SMath.formatMoney(total_a_pagar),
+                    saldo: saldo
                 })
             }}
         />
@@ -383,7 +393,7 @@ export default class PlanPagos extends Component {
     render() {
         this.data = this.props.data;
 
-        let t= MDL.compra_venta.getTotales(this.data.detalle)
+        let t = MDL.compra_venta.getTotales(this.data)
 
         let cuotas = this.data.cuotas
         if (!t) return null;

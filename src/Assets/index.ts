@@ -305,6 +305,9 @@ import downImgNube, { ReactComponent as downImgNubeW, } from "./svg/downImgNube.
 
 import compraCarro, { ReactComponent as compraCarroW, } from "./svg/compraCarro.svg";
 import ventaCarro, { ReactComponent as ventaCarroW, } from "./svg/ventaCarro.svg";
+import iconPdf, { ReactComponent as iconPdfW, } from "./svg/iconPdf.svg";
+import iconDescarga, { ReactComponent as iconDescargaW, } from "./svg/iconDescarga.svg";
+import iconDescarga2, { ReactComponent as iconDescarga2W, } from "./svg/iconDescarga2.svg";
 
 
 
@@ -496,6 +499,10 @@ export const svg = {
 
   compraCarro: { Native: compraCarro, Web: compraCarroW },
   ventaCarro: { Native: ventaCarro, Web: ventaCarroW },
+  iconPdf: { Native: iconPdf, Web: iconPdfW },
+  iconDescarga: { Native: iconDescarga, Web: iconDescargaW },
+  iconDescarga2: { Native: iconDescarga2, Web: iconDescarga2W },
+
 
 
   ...blender,

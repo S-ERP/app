@@ -22,8 +22,9 @@ export default class TotalesVenta extends Component {
         // var t = Model.compra_venta_detalle.Action.getTotales({
         //     key_compra_venta: this.data.key
         // })
-        let t = MDL.compra_venta.getTotales(this.data.detalle)
-        console.log("DETALLE", this.data.detalle)
+        console.log("AAA", this.data)
+        let t = MDL.compra_venta.getTotales(this.data)
+        // console.log("DETALLE", this.data.detalle)
         console.log("TOTALES", t)
 
         if (!t) return null;
@@ -49,6 +50,7 @@ export default class TotalesVenta extends Component {
     }
     render() {
         this.data = this.props.data;
+         console.log("AAA", this.data)
         return this.totales()
     }
 }

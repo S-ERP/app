@@ -40,7 +40,7 @@ export default class Root extends Component {
     async loadData() {
         let empresa = MDL.empresa.select
         let data = await MDL.compra_venta.getJson(this.pk);
-        let t =  MDL.compra_venta.getTotales(data.detalle)
+        let t =  MDL.compra_venta.getTotales(data)
 
         if (!empresa) return;
         if (!t) return;
