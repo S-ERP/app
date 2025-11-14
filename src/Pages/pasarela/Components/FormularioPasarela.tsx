@@ -111,6 +111,10 @@ export default class FormularioPasarela extends Component<Props> {
                         this.setState({ pasarela: pasarela })
                     }}
                 />
+                <SText style={{
+                    color: STheme.color.lightGray,
+                    fontSize:12
+                }}>{this.state.pasarela?.observacion}</SText>
                 <SForm ref={(ref: any) => this.form = ref} row
                     style={{
                         justifyContent: "space-between",

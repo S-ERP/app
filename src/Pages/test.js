@@ -20,6 +20,8 @@ export default class test extends Component {
   }
 
   componentDidMount() {
+
+    // MDL.compra_venta.execute_function("test_ricky", [MDL.empresa.select.key, "vendido"])
     // MDL.compra_venta.getJson("16f484d3-2f91-4d9a-b754-092a0363ae39")
   }
   cosasDeTest() {

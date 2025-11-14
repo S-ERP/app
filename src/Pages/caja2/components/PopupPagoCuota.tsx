@@ -474,10 +474,13 @@ export default class PopupPagoCuota extends Component {
                                         monto_nacional: monto_base.toFixed(2)
                                     }));
                                     const enviar = { tipos_pago: item, cuotas: cuotasData };
+                                    // const enviar = { tipos_pago: item, cuotas: cuotasData, descripcion: "pollito frito" };
+
+                                    console.log("pintando " + JSON.stringify(enviar))
 
                                     SSocket.sendPromise({
                                         service: "caja",
-                                        component: "caja",
+                                        component: "caja_detalle",
                                         type: "amortizarCuotaCompra",
                                         data: enviar,
                                         key_usuario: MDL.usuario.session?.key,
@@ -486,7 +489,9 @@ export default class PopupPagoCuota extends Component {
                                     }).then(resp => {
                                         if (resp?.estado === "exito") {
                                             SNotification.send({ title: "Éxito", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
-                                            this.props.onSuccess?.();
+                                            // this.props.onSuccess?.();
+                                            if (this.props.onSuccess) this.props.onSuccess(resp)
+                                            SelectTipoPago.closePopup();
                                         }
                                     }).catch(err => {
                                         SNotification.send({ title: 'Error', body: err?.message || 'Falló el pago.', color: STheme.color.danger });

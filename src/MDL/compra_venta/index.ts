@@ -120,29 +120,29 @@ export default class compra_venta extends MDLAbstract<EventListener> {
   }
 
   getTotales(value: any) {
-          // console.log("key_compra_venta", key_compra_venta)
-          var compra_venta_detalle = value
-          // console.log("compra_venta_detalle", compra_venta_detalle)
-          if (!compra_venta_detalle) return null;
-          var t = {
-              subtotal: 0,
-              descuento: 0,
-              total: 0,
-              gifcard: 0,
-              total_a_pagar: 0,
-              credito_fiscal: 0,
-          }
-          Object.values(compra_venta_detalle).map(((obj: any) => {
-              if (!obj.estado) return;
-              const { precio_unitario, precio_facturado, cantidad, descuento } = obj;
-              const precio = ((precio_unitario * cantidad) - (descuento ?? 0));
-              t.subtotal += precio;
-          }))
-          t.total = t.subtotal - t.descuento
-          t.total_a_pagar = t.total - t.gifcard
-          // t.credito_fiscal = t.total_a_pagar
-          return t;
-      }
+    // console.log("key_compra_venta", key_compra_venta)
+    var compra_venta_detalle = value
+    // console.log("compra_venta_detalle", compra_venta_detalle)
+    if (!compra_venta_detalle) return null;
+    var t = {
+      subtotal: 0,
+      descuento: 0,
+      total: 0,
+      gifcard: 0,
+      total_a_pagar: 0,
+      credito_fiscal: 0,
+    }
+    Object.values(compra_venta_detalle).map(((obj: any) => {
+      if (!obj.estado) return;
+      const { precio_unitario, precio_facturado, cantidad, descuento } = obj;
+      const precio = ((precio_unitario * cantidad) - (descuento ?? 0));
+      t.subtotal += precio;
+    }))
+    t.total = t.subtotal - t.descuento
+    t.total_a_pagar = t.total - t.gifcard
+    // t.credito_fiscal = t.total_a_pagar
+    return t;
+  }
 
   async getByKeyComraVenta(value: any) {
     const resp: any = await SSocket.sendPromise({
@@ -279,24 +279,43 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
+  async execute_function(func: string, params: string[]) {
+    let newParams:any = [];
+    if (params) {
+      params.map(p => {
+        if(typeof p == "string"){
+          p = "'" + p + "'"
+        }
+        newParams.push(p)
+      })
+    }
+    const resp: any = await SSocket.sendPromise({
+      service: "compra_venta",
+      component: "reporte",
+      type: "execute_function",
+      func: func,
+      params: newParams,
+    });
+    return resp.data || [];
+  }
 
   //DESCUENTOS
 
-    async registrarDescuento(data: Descuento) {
-        data.key_empresa = Model.empresa.Action.getKey();
-        const resp: any = await SSocket.sendPromise({ service: "compra_venta", component: "descuento", type: "registro", data: data, key_usuario: Model.usuario.Action.getKey()  , key_empresa: Model.empresa.Action.getKey()})
-        return resp.data;
-    }
-    async editarDescuento(data: Descuento) {
-        data.key_empresa = Model.empresa.Action.getKey();
-        const resp: any = await SSocket.sendPromise({ service: "compra_venta", component: "descuento", type: "editar", data: data, key_usuario: Model.usuario.Action.getKey() });
-        return resp.data;
-    }
-    async eliminarDescuento(data: Descuento) {
-        data.key_empresa = Model.empresa.Action.getKey();
-        const resp: any = await SSocket.sendPromise({ service: "compra_venta", component: "descuento", type: "editar", data: { ...data, estado: 0 }, key_usuario: Model.usuario.Action.getKey() });
-        return resp.data;
-    }
+  async registrarDescuento(data: Descuento) {
+    data.key_empresa = Model.empresa.Action.getKey();
+    const resp: any = await SSocket.sendPromise({ service: "compra_venta", component: "descuento", type: "registro", data: data, key_usuario: Model.usuario.Action.getKey(), key_empresa: Model.empresa.Action.getKey() })
+    return resp.data;
+  }
+  async editarDescuento(data: Descuento) {
+    data.key_empresa = Model.empresa.Action.getKey();
+    const resp: any = await SSocket.sendPromise({ service: "compra_venta", component: "descuento", type: "editar", data: data, key_usuario: Model.usuario.Action.getKey() });
+    return resp.data;
+  }
+  async eliminarDescuento(data: Descuento) {
+    data.key_empresa = Model.empresa.Action.getKey();
+    const resp: any = await SSocket.sendPromise({ service: "compra_venta", component: "descuento", type: "editar", data: { ...data, estado: 0 }, key_usuario: Model.usuario.Action.getKey() });
+    return resp.data;
+  }
 
 
 
