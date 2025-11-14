@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { SImage, SPage, SText, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket'
+import theme, { ColorCompraVenta } from "../../Config/theme";
 class QRVenta extends Component {
     constructor(props) {
         super(props);
@@ -25,8 +26,9 @@ class QRVenta extends Component {
                 // "colorBackground":"#000000",
                 "body": "Dot",
                 "content": content,
-                "colorBody2": "#80D034",
-                "colorBody": "#80D034",
+                // "colorBody2": "#80D034",
+                "colorBody2": ColorCompraVenta.venta,
+                "colorBody": ColorCompraVenta.venta,
                 "type_color": "solid",
             }
         })

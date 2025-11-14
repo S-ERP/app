@@ -52,25 +52,22 @@ export default class PopupPagoCuota extends Component {
         this.state = {
             loading: true,
             selectedCuotas: {},
-            cant_pendientes: 0, cant_mora: 0, cant_pagado: 0,
-            montototal_pendientes: 0, montototal_mora: 0, montototal_pagado: 0,
+            showPaidCuotas: props.editObject?.pagado || false,
+            showAllPendingCuotas: false,
         };
         this.fadeAnim = new Animated.Value(1);
         this.cuotasCompras = [];
-        this.compraData = null; // ← Aquí guardamos getCompraData()
-        this.showPaidCuotas = this.props.editObject?.pagado ? true : false;
-        this.showAllPendingCuotas = false;
+        this.compraData = null;
     }
 
-
-    // TODO ricardo me djo que solo use this.props.editObject?.key y haga una consulta para traer todo las cutas con la key nomas
     loadData = async () => {
         const key_compra_venta = this.props.editObject?.key;
         try {
-            this.empresa_srl = await MDL.empresa.getFull();
-            if (!this.empresa_srl) throw new Error("No se pudo cargar la empresa");
+            const empresa_srl = await MDL.empresa.getFull();
+            if (!empresa_srl) throw new Error("No se pudo cargar la empresa");
+            this.empresa_srl = empresa_srl;
             const registros = await MDL.compra_venta.getCuotasCompras(key_compra_venta);
-            return registros || [];
+            return { empresa_srl, cuotas: registros || [] };
         } catch (error) {
             console.error('Error in loadData:', error);
             SNotification.send({
@@ -80,13 +77,15 @@ export default class PopupPagoCuota extends Component {
                 color: STheme.color.danger,
                 position: 'top',
             });
-            return [];
+            return { empresa_srl: null, cuotas: [] };
         }
     };
 
-    getCompraData = () => {
+    getCompraData = (cuotasCompras, empresa_srl) => {
+        if (!empresa_srl || !cuotasCompras?.length) return null;
+
         const compra = this.props.editObject || {};
-        const monedas = this.empresa_srl?.monedas || [];
+        const monedas = empresa_srl.monedas || [];
         const monedaBase = monedas.find(m => m.tipo === "base") || { observacion: "BOB", tipo_cambio: 1 };
 
         // --- Totales de la compra ---
@@ -102,11 +101,11 @@ export default class PopupPagoCuota extends Component {
         }
 
         const hoy = new SDate();
-        const cuotasProcesadas = (this.cuotasCompras || []).map(c => {
+        const cuotasProcesadas = cuotasCompras.map(c => {
             const m = monedas.find(x => x.key === c.key_moneda) || {};
             const tc = m.tipo_cambio || 1;
             const monto = parseFloat(c.monto || 0);
-            const monto_base = monto * tc;
+            const monto_base = c.monto_base || (monto * tc);
             const monto_total = parseFloat(c.monto_total || 0) || monto;
             const monto_total_base = monto_total * tc;
 
@@ -166,31 +165,22 @@ export default class PopupPagoCuota extends Component {
     };
 
     componentDidMount() {
-        this.loadData().then(resp => {
-            this.cuotasCompras = resp;
+        this.loadData().then(({ empresa_srl, cuotas }) => {
+            this.cuotasCompras = cuotas;
+            this.compraData = this.getCompraData(cuotas, empresa_srl);
 
-            this.compraData = this.getCompraData(); // ← UNA SOLA VEZ
-
-            console.log("mira esto ❤❤❤❤❤❤❤ " + JSON.stringify(this.getCompraData))
+            console.log("mira esto ❤❤❤❤❤❤❤", JSON.stringify(this.compraData, null, 2));
 
             this.setState({
                 loading: false,
-                ...this.compraData.resumen,
-                selectedCuotas: {}
+                ...this.compraData?.resumen || {},
+                selectedCuotas: {},
+                showPaidCuotas: this.props.editObject?.pagado || false,
             });
         }).catch(() => {
             this.setState({ loading: false });
         });
     }
-
-    isCuotaVencida = (vencimiento) => {
-        const today = new SDate();
-        const vencimientoDate = new SDate(vencimiento, 'yyyy-MM-dd');
-        return vencimientoDate.isBefore(today);
-    };
-
-    // if (cuotaDate.isBefore(selectedDate) || cuotaDate == selectedDate) {
-
 
     selectPreviousCuotas = (cuotaSeleccionada) => {
         const fechaSel = new SDate(cuotaSeleccionada.vencimiento, 'yyyy-MM-dd');
@@ -199,7 +189,7 @@ export default class PopupPagoCuota extends Component {
         this.compraData.cuotasDetalle.forEach(c => {
             if (c.estadoReal !== 'Pagado') {
                 const fechaC = new SDate(c.vencimiento, 'yyyy-MM-dd');
-                if (fechaC.isBefore(fechaSel) || fechaC == (fechaSel)) {
+                if (fechaC.isBefore(fechaSel) || fechaC.isSame(fechaSel)) {
                     nuevo[c.numero] = true;
                 }
             }
@@ -215,7 +205,7 @@ export default class PopupPagoCuota extends Component {
         this.compraData.cuotasDetalle.forEach(c => {
             if (c.estadoReal !== 'Pagado') {
                 const fechaC = new SDate(c.vencimiento, 'yyyy-MM-dd');
-                if (fechaC.isBefore(fechaSel) || fechaC == (fechaSel)) {
+                if (fechaC.isBefore(fechaSel) || fechaC.isSame(fechaSel)) {
                     nuevo[c.numero] = false;
                 }
             }
@@ -224,25 +214,30 @@ export default class PopupPagoCuota extends Component {
         this.setState({ selectedCuotas: nuevo });
     };
 
-    Item = ({ cuota, compra }) => {
-        const simboloBase = compra.moneda_base?.observacion || 'BOB';
-        const isPaid = cuota.estadoReal === 'Pagado';
-        const isVencida = cuota.estadoReal === 'Vencido';
-        const estadoConfig = data.configuracion.estados[cuota.estadoReal] || data.configuracion.estados.Pendiente;
+    Item = ({ cuota }) => {
+        const isPaid = cuota.estadoReal === "Pagado";
+        const isSelected = this.state.selectedCuotas[cuota.numero];
+
+        const fechaVencimiento = new SDate(cuota.vencimiento, 'yyyy-MM-dd').toString('dd/MM/yyyy');
+        const fechaPago = cuota.fechaPago ? new SDate(cuota.fechaPago, 'yyyy-MM-dd').toString('dd/MM/yyyy') : null;
+
+        const monedaBase = this.compraData.moneda_base;
+        const monedaCuota = this.compraData.cuotasDetalle.find(m => m.key_moneda === cuota.key_moneda)?.moneda_simbologia || '';
+
+        const cuotaStyle = {
+            backgroundColor: isSelected ? STheme.color.card : STheme.color.lightGray + '55',
+            borderColor: isSelected ? STheme.color.success : STheme.color.success + '55',
+            borderRadius: 8,
+            padding: 16,
+            borderWidth: 1,
+            marginBottom: 12,
+        };
 
         return (
             <Animated.View style={{ opacity: this.fadeAnim }}>
                 <SView
-                    key={`cuota-${cuota.numero}`}
                     col={'xs-12'}
-                    style={{
-                        backgroundColor: this.state.selectedCuotas[cuota.numero] ? STheme.color.card : STheme.color.lightGray + '55',
-                        borderColor: this.state.selectedCuotas[cuota.numero] ? STheme.color.success : STheme.color.success + '55',
-                        borderRadius: 8,
-                        padding: 16,
-                        borderWidth: 1,
-                        marginBottom: 12,
-                    }}
+                    style={cuotaStyle}
                     onPress={() => {
                         if (isPaid || this.state.loading) return;
                         const nuevo = { ...this.state.selectedCuotas };
@@ -258,40 +253,32 @@ export default class PopupPagoCuota extends Component {
                     activeOpacity={0.7}
                 >
                     <SView row center style={{ justifyContent: "space-between" }}>
-                        <SView flex row style={{ paddingTop: 4 }}>
-                            <SText fontSize={16} bold color={COLOR_TEXT}>Cuota #{cuota.numero}</SText>
-                        </SView>
+                        <SView flex row><SText fontSize={16} bold color={COLOR_TEXT}>Cuota #{cuota.numero}</SText> </SView>
                         <SView>{this.labelEstadoItem(cuota.estadoReal)}</SView>
                     </SView>
                     <SHr h={4} />
+
                     <SView row style={{ justifyContent: "space-between" }}>
-                        <SText fontSize={14} color={COLOR_TEXT}>
-                            Vencimiento: <SText bold>{new SDate(cuota.vencimiento, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText>
-                        </SText>
-                        <SText fontSize={16} bold color={COLOR_TEXT}>
-                            {simboloBase} {SMath.formatMoney(cuota.monto_base)}
-                        </SText>
-                        {cuota.moneda_tipo !== "base" && (
-                            <SView style={{ position: "absolute", right: 0, top: 20 }}>
-                                <SText fontSize={14} bold color={"orange"}>
-                                    {cuota.moneda_simbologia} {SMath.formatMoney(cuota.monto)}
-                                </SText>
-                            </SView>
-                        )}
+                        <SView>
+                            <SText fontSize={14} color={COLOR_TEXT}>Vencimiento: <SText bold>{fechaVencimiento}</SText> </SText>
+
+                            {isPaid ? (<SText fontSize={14} color={COLOR_TEXT}>Pagado: <SText bold color={data.configuracion.estados.Pagado.color}> {fechaPago}</SText></SText>)
+                                : (<SText fontSize={14} color={COLOR_TEXT}><SText bold color={data.configuracion.estados[cuota.estadoReal].color}>{cuota.estadoReal === "Vencido" ? 'En mora' : 'Pendiente de pago'}</SText></SText>)}
+                        </SView>
+
+                        <SView col={"xs-8"} style={{ alignItems: 'flex-end' }} border={"transparent"}>
+                            {cuota.key_moneda === monedaBase.key ? (
+                                <SText fontSize={16} bold color={STheme.color.text}>  {monedaBase.observacion} {SMath.formatMoney(cuota.monto_base)}</SText>
+                            ) : (
+                                <>
+
+                                    <SText fontSize={16} bold color={STheme.color.text}> {monedaCuota} {SMath.formatMoney(cuota.monto)}</SText>
+                                    <SText fontSize={14} bold color={"#FF7F50"}> T/C({cuota.tipo_cambio})  {monedaBase.observacion} {SMath.formatMoney(cuota.monto_base)}</SText>
+                                    {cuota.tipo_cambio !== cuota.moneda_tipo_cambio && (<SText fontSize={13} bold color={"#2bc73bff"} center> <SIconApp name='Reload' width={10} height={10} fill='#2bc73bff' /> Actual T/C({cuota.moneda_tipo_cambio})  {monedaBase.observacion} {SMath.formatMoney(cuota.monto * cuota.moneda_tipo_cambio)}</SText>)}
+                                </>
+                            )}
+                        </SView>
                     </SView>
-                    {isPaid ? (
-                        <SText fontSize={14} color={COLOR_TEXT}>
-                            Pagado: <SText bold color={data.configuracion.estados.Pagado.color}>
-                                {new SDate(cuota.fechaPago, 'yyyy-MM-dd').toString('dd/MM/yyyy')}
-                            </SText>
-                        </SText>
-                    ) : (
-                        <SText fontSize={14} color={COLOR_TEXT}>
-                            Estado: <SText bold color={estadoConfig.color}>
-                                {isVencida ? 'En mora' : 'Pendiente de pago'}
-                            </SText>
-                        </SText>
-                    )}
                 </SView>
             </Animated.View>
         );
@@ -322,100 +309,108 @@ export default class PopupPagoCuota extends Component {
         );
     };
 
-    cabecera(compra) {
-        // const { cant_pendientes, cant_mora, cant_pagado, montototal_pendientes, montototal_mora, montototal_pagado } = this.state;
-        // const simboloBase = compra.moneda_base?.observacion || 'BOB';
-        // const { cant_pendientes, cant_mora, cant_pagado, montototal_pendientes, montototal_mora, montototal_pagado } = this.pr;
-        const _________compra = this.props.editObject;
-        console.log("💢💢💢 " + JSON.stringify(_________compra))
-        const monedas = this.empresa_srl?.monedas || [];
-        const m = monedas.find(x => x.key === _________compra.key_moneda) || {};
-        const monedaBase = monedas.find(m => m.tipo === "base") || { observacion: "BOB", tipo_cambio: 1 };
+    cabecera() {
+        if (!this.compraData) return null;
+        const compra = this.props.editObject;
+        // const m = this.compraData.moneda_base;
+        const api_empresa = this.empresa_srl?.monedas || [];
+
+        const moneda = api_empresa.find(x => x.key === compra.key_moneda) || {};
+        const monedaBase = api_empresa.find(m => m.tipo === "base") || {};
+
+        const estadoReal = compra.pagado === true ? "Pagado" : "Pendiente";
+
+        // key_moneda
+        // const monedaBase = this.compraData.moneda_base;
+        // const monedaCuota = this.compraData.cuotasDetalle.find(m => m.key_moneda === cuota.key_moneda)?.moneda_simbologia || '';
+
+
+        console.log("mirala todo " + JSON.stringify(monedaBase))
+
+
         return (
             <>
                 <SView row center style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: COLOR_BORDER }}>
                     <SView flex>
-                        <SText col={'xs-12'} fontSize={20} bold color={COLOR_TEXT} numberOfLines={1}> Gestión de Cuotas - Compra #{_________compra.id} </SText>
+                        <SText col={'xs-12'} fontSize={20} bold color={COLOR_TEXT} numberOfLines={1}>
+                            Gestión de Cuotas - {compra.esCompra ? "Compra a credito" : "Venta a credito"} #{compra.id}
+                        </SText>
                     </SView>
-
-                    <SView width={40} style={{ overflow: "hidden", alignItems: "flex-end" }}> <SView width={24} height={24} onPress={this.props.onCancel} style={{ opacity: 0.6 }} activeOpacity={0.7}> <SIcon name="Close" fill={COLOR_TEXT} width={24} height={24} /> </SView> </SView>
+                    <SView width={40} style={{ alignItems: "flex-end" }}>
+                        <SView width={24} height={24} onPress={this.props.onCancel} style={{ opacity: 0.6 }} activeOpacity={0.7}>
+                            <SIcon name="Close" fill={COLOR_TEXT} width={24} height={24} />
+                        </SView>
+                    </SView>
                 </SView>
 
                 <SHr h={16} />
                 <SView col={'xs-12'} style={{ paddingHorizontal: 12 }}>
                     <SView col={'xs-12'} style={{ backgroundColor: COLOR_CARD, borderRadius: 8, padding: 12 }}>
-                        <SText fontSize={16} bold color={COLOR_TEXT}>
-                            {/* Detalles de la {this.props?.editObject?.pagado ? "venta" : "compra"} */}
-                            Detalles de la compra
-                        </SText>
+                        <SText fontSize={16} bold color={COLOR_TEXT}>Detalles de la {compra.esCompra ? "compra" : "venta"}</SText>
                         <SHr h={4} />
 
                         <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
                             <SView col={'xs-9'}>
-                                <SText fontSize={12} color={COLOR_TEXT}>Total ({_________compra.cuotas_total.monto}) {monedaBase.observacion}:</SText>
-                                <SText fontSize={14} color={COLOR_TEXT}>{m.observacion} {SMath.formatMoney(_________compra.informacion.precio_unitario)}</SText>
-                                <SText fontSize={12} color={COLOR_TEXT}>Equivalente en {monedaBase.observacion}:</SText>
+                                <SText fontSize={12} color={COLOR_TEXT}>Total:</SText>
+                                <SText fontSize={14} color={COLOR_TEXT}>
+                                    {moneda.observacion} {SMath.formatMoney(compra.detalle_items?.monto ?? 0)}
+                                </SText>
+                                <SText fontSize={12} color={COLOR_TEXT}>Equivalente en {moneda.observacion}:</SText>
                                 <SText fontSize={16} bold color={COLOR_TEXT}>
-                                    {monedaBase.observacion} {SMath.formatMoney(_________compra.cuotas_total.monto)}
+                                    {monedaBase.observacion} {SMath.formatMoney(compra.detalle_items?.monto_base ?? 0)}
                                 </SText>
                             </SView>
-                            <SView col={'xs-3'}>
+                            <SView col={'xs-3'}  >
                                 <SText fontSize={12} color={COLOR_TEXT}>Estado:</SText>
-                                {this.labelEstadoHeader(compra.estado)}
-                                {/* tengo que verlo???? colo sale1 */}
+                                {this.labelEstadoHeader(estadoReal)}
                             </SView>
                         </SView>
 
                         <SHr h={4} />
                         <SView col={'xs-12'}>
-                            <SText fontSize={12} color={COLOR_TEXT}>Descripción: <SText bold>{_________compra.descripcion}</SText> </SText>
-                            <SText fontSize={12} color={COLOR_TEXT}>Obs: <SText bold>{_________compra.observacion}</SText> </SText>
+                            <SText fontSize={12} color={COLOR_TEXT}>
+                                Descripción: <SText bold>{compra.descripcion}</SText>
+                            </SText>
+                            <SText fontSize={11} color={COLOR_TEXT}>
+                                Observación: {compra.detalle_items?.descripcion || 'N/A'}
+                            </SText>
                             <SHr h={4} />
-                            <SText fontSize={12} color={COLOR_TEXT}>Fecha: <SText bold>{new SDate(_________compra.fecha_on, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText> </SText>
+                            <SText fontSize={12} color={COLOR_TEXT}>
+                                Fecha: <SText bold>{new SDate(compra.fecha_on, 'yyyy-MM-dd').toString('dd/MM/yyyy')}</SText>
+                            </SText>
                         </SView>
                         <SHr h={4} />
                         <SView col={'xs-12'} row style={{ flexWrap: 'wrap' }}>
                             <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Cuotas Pagadas:</SText>
-                                {this.state.loading ? (<SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />) : (<SText fontSize={14} bold color={COLOR_TEXT}> {_________compra.cuotas_en_amortizacion.cantidad} ({monedaBase.observacion} {SMath.formatMoney(_________compra.cuotas_en_amortizacion.monto ?? 0)}) </SText>)}
-                            </SView>
-
-
-
-                            {/* <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
-                                <SText fontSize={12} color={COLOR_TEXT}>Cuotas Pagadas:</SText>
-                                {this.state.loading ? (<SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />) : (
+                                {this.state.loading ? (
+                                    <SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />
+                                ) : (
                                     <SText fontSize={14} bold color={COLOR_TEXT}>
-                                        {cant_pagado} ({simboloBase} {montototal_pagado})
+                                        {compra.cuotas_en_amortizacion?.cantidad ?? 0} ({monedaBase.observacion} {SMath.formatMoney(compra.cuotas_en_amortizacion?.monto ?? 0)})
                                     </SText>
                                 )}
-                            </SView> */}
-
-
-                            {/* _________compra.cuotas_en_mora.monto */}
-
+                            </SView>
                             <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Cuotas en Mora:</SText>
-                                {this.state.loading ? (<SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />) : (<SText fontSize={14} bold color={COLOR_TEXT}> {_________compra.cuotas_en_mora.cantidad} ({monedaBase.observacion} {SMath.formatMoney(_________compra.cuotas_en_mora.monto ?? 0)}) </SText>)}
+                                {this.state.loading ? (
+                                    <SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />
+                                ) : (
+                                    <SText fontSize={14} bold color={COLOR_TEXT}>
+                                        {compra.cuotas_en_mora?.cantidad ?? 0} ({monedaBase.observacion} {SMath.formatMoney(compra.cuotas_en_mora?.monto ?? 0)})
+                                    </SText>
+                                )}
                             </SView>
-
-
                             <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
-                                <SText fontSize={12} color={COLOR_TEXT}>Cuotas Pendientes:</SText>
-                                {this.state.loading ? (<SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />) : (<SText fontSize={14} bold color={COLOR_TEXT}> {_________compra.cuotas_en_pendientes.cantidad} ({monedaBase.observacion} {SMath.formatMoney(_________compra.cuotas_en_pendientes.monto ?? 0)}) </SText>)}
-                            </SView>
-
-
-                            {/* <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Cuotas Pendientes:</SText>
                                 {this.state.loading ? (
                                     <SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />
                                 ) : (
                                     <SText fontSize={14} bold color={COLOR_TEXT}>
-                                        {cant_pendientes} ({simboloBase} {montototal_pendientes})
+                                        {compra.cuotas_en_pendientes?.cantidad ?? 0} ({monedaBase.observacion} {SMath.formatMoney(compra.cuotas_en_pendientes?.monto ?? 0)})
                                     </SText>
                                 )}
-                            </SView> */}
+                            </SView>
                         </SView>
                     </SView>
                 </SView>
@@ -424,29 +419,27 @@ export default class PopupPagoCuota extends Component {
     }
 
     togglePaidCuotas = () => {
-        this.showPaidCuotas = !this.showPaidCuotas;
-        this.forceUpdate();
+        this.setState(prev => ({ showPaidCuotas: !prev.showPaidCuotas }));
     };
 
     toggleAllPendingCuotas = () => {
-        this.showAllPendingCuotas = !this.showAllPendingCuotas;
-        this.forceUpdate();
+        this.setState(prev => ({ showAllPendingCuotas: !prev.showAllPendingCuotas }));
     };
 
     botonFooterPagar = () => {
         if (!this.compraData) return null;
-        const compra = this.compraData;
-        const simboloBase = compra.moneda_base?.observacion || 'BOB';
+        const { cuotasDetalle, moneda_base } = this.compraData;
+        const simboloBase = moneda_base?.observacion || 'BOB';
 
         let MontoSeleccionado = 0;
-        compra.cuotasDetalle.forEach(c => {
+        cuotasDetalle.forEach(c => {
             if (this.state.selectedCuotas[c.numero] && c.estadoReal !== 'Pagado') {
                 MontoSeleccionado += c.monto_base;
             }
         });
         MontoSeleccionado = MontoSeleccionado.toFixed(2);
 
-        const selectedCuotas = compra.cuotasDetalle.filter(c => this.state.selectedCuotas[c.numero] && c.estadoReal !== 'Pagado');
+        const selectedCuotas = cuotasDetalle.filter(c => this.state.selectedCuotas[c.numero] && c.estadoReal !== 'Pagado');
         const isAnySelected = selectedCuotas.length > 0;
 
         return (
@@ -470,7 +463,7 @@ export default class PopupPagoCuota extends Component {
 
                             SelectTipoPago.openPopup({
                                 key_punto_venta: activa.key_punto_venta,
-                                key_moneda: compra.moneda_base.key,
+                                key_moneda: moneda_base.key,
                                 montoMaximo: MontoSeleccionado,
                                 monedaSymbol: simboloBase,
                                 onSelect: (item) => {
@@ -481,10 +474,13 @@ export default class PopupPagoCuota extends Component {
                                         monto_nacional: monto_base.toFixed(2)
                                     }));
                                     const enviar = { tipos_pago: item, cuotas: cuotasData };
+                                    // const enviar = { tipos_pago: item, cuotas: cuotasData, descripcion: "pollito frito" };
+
+                                    console.log("pintando " + JSON.stringify(enviar))
 
                                     SSocket.sendPromise({
                                         service: "caja",
-                                        component: "caja",
+                                        component: "caja_detalle",
                                         type: "amortizarCuotaCompra",
                                         data: enviar,
                                         key_usuario: MDL.usuario.session?.key,
@@ -493,7 +489,9 @@ export default class PopupPagoCuota extends Component {
                                     }).then(resp => {
                                         if (resp?.estado === "exito") {
                                             SNotification.send({ title: "Éxito", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
-                                            this.props.onSuccess?.();
+                                            // this.props.onSuccess?.();
+                                            if (this.props.onSuccess) this.props.onSuccess(resp)
+                                            SelectTipoPago.closePopup();
                                         }
                                     }).catch(err => {
                                         SNotification.send({ title: 'Error', body: err?.message || 'Falló el pago.', color: STheme.color.danger });
@@ -525,32 +523,31 @@ export default class PopupPagoCuota extends Component {
         if (this.state.loading || !this.compraData) {
             return <SView col={'xs-12'} flex center><SLoad /></SView>;
         }
-        const compra = this.compraData;
 
-        const filteredCuotas = compra.cuotasDetalle.filter(c => {
-            if (c.estadoReal === 'Pagado') return this.showPaidCuotas;
+        const { cuotasDetalle } = this.compraData;
+        const filteredCuotas = cuotasDetalle.filter(c => {
+            if (c.estadoReal === 'Pagado') return this.state.showPaidCuotas;
             if (c.estadoReal === 'Vencido') return true;
-            return this.showAllPendingCuotas || c.numero <= 2;
+            return this.state.showAllPendingCuotas || c.numero <= 2;
         });
 
-        const hasPaidCuotas = compra.cuotasDetalle.some(c => c.estadoReal === 'Pagado');
-        const hasMoreThanTwoFuturePending = compra.cuotasDetalle.some(c => c.estadoReal === 'Pendiente' && c.numero > 2);
-
+        const hasPaidCuotas = cuotasDetalle.some(c => c.estadoReal === 'Pagado');
+        const hasMoreThanTwoFuturePending = cuotasDetalle.some(c => c.estadoReal === 'Pendiente' && c.numero > 2);
         const paddingBottom = filteredCuotas.length <= 1 ? 240 : 320;
 
         return (
             <SView col={'xs-12'} flex>
                 <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexGrow: 1, paddingBottom }}>
-                    {this.cabecera(compra)}
+                    {this.cabecera()}
                     <SHr h={12} />
                     <SView col={'xs-12'} style={{ paddingHorizontal: 16 }}>
                         {filteredCuotas.length > 0 ? (
                             filteredCuotas.map(cuota => (
-                                <this.Item key={`cuota-${cuota.numero}`} cuota={cuota} compra={compra} />
+                                <this.Item key={`cuota-${cuota.numero}`} cuota={cuota} />
                             ))
                         ) : (
                             <SText center fontSize={14} color={COLOR_TEXT} style={{ padding: 16 }}>
-                                No hay cuotas asociadas.
+                                No hay cuotas para mostrar.
                             </SText>
                         )}
                     </SView>
@@ -569,7 +566,7 @@ export default class PopupPagoCuota extends Component {
                                 borderWidth: 1, borderColor: STheme.color.lightGray, marginRight: 8, height: 40,
                             }} onPress={this.togglePaidCuotas} activeOpacity={0.7}>
                                 <SText fontSize={14} color={STheme.color.lightGray}>
-                                    {this.showPaidCuotas ? '- Pagadas' : '+ Pagadas'}
+                                    {this.state.showPaidCuotas ? '- Pagadas' : '+ Pagadas'}
                                 </SText>
                             </SView>
                         )}

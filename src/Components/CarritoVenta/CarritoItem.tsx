@@ -11,6 +11,7 @@ import { SNavigation, SPopup, SStorage, SText, STheme, SView } from "servisofts-
 import MDL from "../../MDL";
 import SIconApp from "../../Assets/SIconApp";
 import PopupCarrito from "./PopupCarrito";
+import theme, { ColorCompraVenta } from "../../Config/theme";
 
 const { width, height } = Dimensions.get("window");
 
@@ -125,7 +126,7 @@ const CarritoItem = () => {
                 ]}
             >
                 <SView width={50} height={50} center style={{
-                    backgroundColor: STheme.color.success,
+                    backgroundColor: ColorCompraVenta.venta,
                     borderRadius: 8,
                     justifyContent: "center",
                     alignItems: "center",

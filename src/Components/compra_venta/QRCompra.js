@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { SImage, SPage, SText, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket'
+import theme, { ColorCompraVenta } from "../../Config/theme";
 class QRCompra extends Component {
     constructor(props) {
         super(props);
@@ -25,7 +26,8 @@ class QRCompra extends Component {
                 // "colorHeader": "#ffffff",
                 "body": "Dot",
                 "content": content,
-                "colorBody2": "#AD44E7",
+                // "colorBody2": "#AD44E7",
+                "colorBody2": ColorCompraVenta.compra,
                 "colorBody": "#FFFFFF",
                 "type_color": "radial",
             }

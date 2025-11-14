@@ -38,7 +38,7 @@ export default class Action extends SAction {
             "cotizacion": { color: STheme.color.lightGray, label: "Cotizacion" },
             "aprobado": { color: STheme.color.warning, label: "Aprobado" },
             "denegado": { color: STheme.color.danger, label: "Denegado" },
-            "comprado": { color: STheme.color.success, label: "Comprado" },
+            "comprado": { color: "#a741e6", label: "Comprado" },
             "vendido": { color: STheme.color.success, label: "Vendido" },
         }
         if (!key) return statesi;

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SHr, SImage, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SImage, SPage, SText, STheme, SView } from 'servisofts-component';
 import Components from '../../../../../Components';
 import Model from '../../../../../Model';
 import Cliente from '../Cliente';
@@ -89,7 +89,7 @@ export default class index extends Component {
                 <PlanPagos ref={ref => this.pp = ref} data={this.data} disabled />
                 <Separador1 />
                 <SView col={"xs-12"} style={{ alignItems: "flex-end", paddingBottom: 10, paddingTop: 10 }}>
-                    <Components.compra_venta.QRVenta data={this.data} />
+                    <Components.compra_venta.QRCompra data={this.data} />
                 </SView>
                 <Separador1 />
 
@@ -100,18 +100,22 @@ export default class index extends Component {
                         <SHr />
                     </SView>
                     <SView col={"xs-12"} center row>
-                        <SView card style={{ padding: 16, marginBottom: 10 }}>
+                        <SView card style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.barColor}} row center>
+                             <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25}/>
+                                                        <SView width={8} />
                             <SView onPress={() => ComprobanteRollo.imprimir(this.data.key)}>
                                 <SText>DESCARGAR PDF ROLLO</SText>
                             </SView>
                         </SView>
                         <SView width={8} />
-                        <SView card style={{ padding: 16, marginBottom: 10 }}>
+                        <SView card style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.barColor }} row center>
+                             <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25}/>
+                                                        <SView width={8} />
                             <SView onPress={() => ComprobanteCarta.imprimir(this.data.key)}>
                                 <SText>DESCARGAR PDF CARTA</SText>
                             </SView>
                         </SView>
-                        <SView width={8} />
+                        {/* <SView width={8} />
                         <SView style={{ marginBottom: 10, overflow: "hidden", borderRadius: 4 }} backgroundColor={STheme.color.background}>
                             <Components.compra_venta.GenerarAsiento data={this.data} />
                         </SView>
@@ -121,7 +125,7 @@ export default class index extends Component {
                             Model.compra_venta.Action.changeState({ data: this.data, state: "cotizacion" })
                         }}>
                             <SText bold color={STheme.color.danger}>VOLVER A COTIZACIÓN</SText>
-                        </SView>
+                        </SView> */}
                     </SView>
                 </SView>
              
