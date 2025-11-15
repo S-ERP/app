@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SIcon, SNavigation, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SIcon, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import MDL from '../../MDL';
 import FloatButtom from '../../Components/FloatButtom';
@@ -31,6 +31,7 @@ export default class tipo_pago extends Component {
             const empresa = await MDL.empresa.getFull();
             const base = empresa.monedas.find(a => a.tipo == "base");
             const cuentas = await MDL.contabilidad.getCuentas();
+            const pasarela_empresa = await MDL.caja.pasarela_empresa.getAll();
             const arr = Object.values(empresa_tipo_pago).map(a => {
                 a.cuenta = cuentas[a.key_cuenta_contable]
                 a.tipo_pago = tipo_pago[a.key_tipo_pago]
@@ -50,6 +51,10 @@ export default class tipo_pago extends Component {
                         // })
                     })
                 })
+
+                if (a.key_pasarela_empresa) {
+                    a.pasarela = pasarela_empresa.find(pe => pe.key == a?.key_pasarela_empresa);
+                }
 
                 if (a.key_moneda) {
                     a.moneda = empresa.monedas.find(b => b.key == a.key_moneda);
@@ -76,6 +81,11 @@ export default class tipo_pago extends Component {
                 {...Config.table.applyTheme()}
                 selectType='single'
                 loadData={this.loadData.bind(this)}
+                loadInitialState={async () => {
+                    return {
+                        sorters: [{ key: "descripcion", order: 'asc', type: "string" }]
+                    }
+                }}
                 onSelect={e => {
                     if (MDL.rolesPermisos.getPermiso({ url: "/empresa/tipo_pago", permiso: 'edit' })) {
                         FloatMenu.open({
@@ -92,7 +102,47 @@ export default class tipo_pago extends Component {
                                             }
                                         })
                                     }
-                                }
+                                },
+                                {
+                                    label: "Eliminar", icon: <SIconApp name='Delete' />,
+                                    onPress: () => {
+                                        SPopup.confirm({
+                                            title: "Eliminar Tipo de Pago",
+                                            message: "¿Estás seguro de eliminar este tipo de pago?",
+                                            onPress: () => {
+                                                MDL.caja.empresa_tipo_pago_save({
+                                                    ...e.row,
+                                                    estado: 0,
+                                                }).then((resp: any) => {
+                                                    this.DinamicTable.loadData();
+                                                }).catch(e => {
+
+                                                })
+                                            }
+                                        })
+                                    }
+                                },
+                                {
+                                    label: "Duplicar", icon: <SIconApp name='Add' />,
+                                    onPress: () => {
+                                        MDL.caja.empresa_tipo_pago_save({
+                                            ...e.row,
+                                            key: null,
+                                            descripcion: e.row.descripcion + " (copy)"
+                                        }).then((resp: any) => {
+                                            this.DinamicTable.loadData();
+                                        }).catch(e => {
+
+                                        })
+                                        // PopupCrearTipoPago.open({
+                                        //     editObject: e.row,
+                                        //     onSuccess: async () => {
+                                        //         this.DinamicTable.loadData();
+                                        //     }
+                                        // })
+                                    }
+                                },
+
                             ]
                         })
                     }
@@ -105,13 +155,8 @@ export default class tipo_pago extends Component {
                         fontSize: 10,
                         color: STheme.color.lightGray,
                     }} />
-                <DinamicTable.Col key={"Descripcion"} label='Descripcion'
-                    width={150}
-                    textStyle={{
-                        fontWeight: "bold"
-                    }}
-                    data={e => e.row.descripcion} />
                 <DinamicTable.Col key={"tipo_pago"} label='Tipo Pago' data={e => e.row?.tipo_pago?.descripcion}
+                    width={70}
                     cellStyle={{
                         alignItems: "center"
                     }}
@@ -119,26 +164,49 @@ export default class tipo_pago extends Component {
                         const color = (e.row?.tipo_pago?.color ?? STheme.colorFromText(e.data))
                         return <SView style={{
                             padding: 2, backgroundColor: color + "44",
+                            paddingHorizontal: 4,
                             borderWidth: 1,
                             borderColor: color,
                             borderRadius: 4,
                         }}>
                             <SText style={{
-                                fontSize: 12,
+                                fontSize: 10,
+                                fontWeight: "bold",
                                 color: STheme.color.text,
                             }}>{e.data}</SText>
                         </SView>
                     }}
                 />
-                <DinamicTable.Col key={"moneda"} label='Moneda' data={e => e.row.moneda?.descripcion} />
-                <DinamicTable.Col key={"moneda_cuenta"} label='Moneda de la cuenta' data={e => e.row.moneda_cuenta?.descripcion} />
-                <DinamicTable.Col key={"cuenta_contable"}
+                <DinamicTable.Col key={"descripcion"} label='Descripcion'
+                    width={260}
                     wrap
+                    textStyle={{
+                        // fontWeight: "bold"
+                    }}
+                    data={e => e.row.descripcion} />
+
+                <DinamicTable.Col key={"moneda"} width={80} label='Moneda' data={e => e.row.moneda?.descripcion}
+                    textStyle={{
+                        fontSize: 12,
+                        textAlign: "center"
+                    }} />
+                {/* <DinamicTable.Col key={"moneda_cuenta"} label='Moneda de la cuenta' data={e => e.row.moneda_cuenta?.descripcion} /> */}
+                <DinamicTable.Col key={"cuenta_contable"}
+                    wrap={false}
                     label='Cuenta Contable'
                     width={200}
                     data={e => `${e.row.cuenta?.codigo} - ${e.row.cuenta?.descripcion}`}
                     textStyle={{
                         fontSize: 10
+                    }} />
+                <DinamicTable.Col key={"key_pasarela_empresa"}
+                    wrap
+                    label='Pasarela de pagos'
+                    width={140}
+                    data={e => e.row?.pasarela?.descripcion}
+                    textStyle={{
+                        fontWeight: "bold",
+                        fontSize: 12
                     }} />
                 <DinamicTable.Col
                     key={"puntos_ventas"}

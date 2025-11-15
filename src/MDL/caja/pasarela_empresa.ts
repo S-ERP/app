@@ -5,7 +5,7 @@ import SSocket from "servisofts-socket";
 import MDL from "..";
 
 
-export default class pasarela extends MDLAbstract<EventListener> {
+export default class pasarela_empresa extends MDLAbstract<EventListener> {
 
   async componentDidMount() {
 

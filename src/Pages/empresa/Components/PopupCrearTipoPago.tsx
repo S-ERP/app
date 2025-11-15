@@ -5,6 +5,7 @@ import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
 import InputFoto from '../../../Components/InputFoto';
 import tipo_pago from '../../../Components/empresa/tipo_pago';
+import SelectorPasarelaEmpresa from '../../../Components/Selectores/SelectorPasarelaEmpresa';
 type Props = {
     key_empresa: string,
     editObject?: any,
@@ -104,9 +105,10 @@ export default class PopupCrearTipoPago extends Component<Props> {
     }
     render() {
         return <SView col={"xs-12"} center padding={16}>
-            <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Almacén"}</SText>
+            <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Tipo De Pago"}</SText>
             <ScrollView>
-                <SForm ref={(ref: any) => this.form = ref}
+                <SForm
+                    ref={(ref: any) => this.form = ref}
                     row
                     style={{
                         justifyContent: "space-between",
@@ -128,6 +130,15 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             options: this.state.tipo_pago.map(a => a.descripcion),   // siempre array
                             defaultValue: this.state.tipo_pago.find(a => a.key == this.props.editObject?.key_tipo_pago)?.descripcion,
                             isRequired: true,
+                            onChangeText: (e) => {
+                                const tp = this.state.tipo_pago.find(a => a.descripcion == e);
+                                if (this.state.tp != tp) {
+                                    this.setState({
+                                        tp: tp
+                                    })
+                                    console.log(tp);
+                                }
+                            }
                         },
                         "descripcion": {
                             col: "xs-12",
@@ -164,6 +175,23 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             },
                             defaultValue: cuentaToText(this.state.cuentas.find(c => c.key == this.props.editObject?.key_cuenta_contable)),
                             options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0).map(cuentaToText),
+                            onChangeText: (e) => {
+                                const cuenta = findCuentaText(this.state.cuentas, e);
+                                let mt = "";
+                                if (cuenta) {
+                                    const moneda = this.state.monedas.find(c => c.key == cuenta?.key_moneda);
+                                    mt = monedaToText(moneda);
+                                }
+                                this.form?.setValues({
+                                    key_moneda: mt
+                                })
+                                // if (this.state.cuenta != cuenta) {
+                                //     this.setState({
+                                //         cuenta: cuenta
+                                //     })
+                                //     console.log(cuenta);
+                                // }
+                            },
                             isRequired: true,
 
                         },
@@ -190,6 +218,7 @@ export default class PopupCrearTipoPago extends Component<Props> {
                         data.key_cuenta_contable = cuenta?.key;
                         data.key_tipo_pago = this.state.tipo_pago.find(a => a.descripcion == data.key_tipo_pago)?.key;
                         data.key_moneda = moneda?.key;
+                        data.key_pasarela_empresa = this.state.pasarela_empresa?.key;
                         console.log(data);
                         SNotification.send({
                             key: "tipo_pago",
@@ -231,6 +260,14 @@ export default class PopupCrearTipoPago extends Component<Props> {
                         })
                     }}
                 />
+                {this.state?.tp?.key == "banco" ? <SelectorPasarelaEmpresa
+                    label={"Pasarela de pagos"}
+                    placeholder={"Seleccione una pasarela de pagos"}
+                    defaultValueTypeKey={this.props.editObject?.key_pasarela_empresa}
+                    onChangeSelect={e => {
+                        this.setState({ pasarela_empresa: e })
+                    }}
+                /> : <SHr h={40} />}
             </ScrollView>
             <SHr h={16} />
             <SView row col={"xs-12"}>
