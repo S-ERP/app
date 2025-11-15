@@ -4,6 +4,7 @@ import SSocket from 'servisofts-socket'
 import Components from '../../../../Components';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
+import { err } from 'react-native-svg';
 const PERIODICIDAD_DATA = {
     "day": {
         label: "Día", label_plural: "días", add: (date, i) => {
@@ -33,8 +34,18 @@ export default class PlanPagos extends Component {
         };
     }
     componentDidMount() {
+        this.getMonedas()
 
+    }
 
+    async getMonedas() {
+        try {
+            let monedas = await MDL.empresa.getMonedas();
+            this.setState({ monedas: monedas });
+        } catch (error) {
+            console.log(error)
+            // return []
+        }
     }
     getCuotasArray() {
         return this.state.cuotas
@@ -50,7 +61,9 @@ export default class PlanPagos extends Component {
         saldo_capital,
         pagos_acumulados,
         total_a_pagar,
-        saldo
+        saldo,
+        moneda, 
+        amortizado
 
     }) {
         // return <SView col={"xs-12"} row>
@@ -79,8 +92,8 @@ export default class PlanPagos extends Component {
         }}>
             <SView row justifyContent="space-between" >
                 <SText bold># {codigo} - {descripcion}</SText>
-                <SText col={"xs-12"} flex  style={{ alignItems: "flex-end" }}>Monto: {SMath.formatMoney(monto)}</SText>
-               
+                <SText col={"xs-12"} flex style={{ alignItems: "flex-end" }}>Monto: {moneda} {(monto)}</SText>
+
             </SView>
 
             <SText color={STheme.color.lightGray} fontSize={10}>
@@ -88,17 +101,15 @@ export default class PlanPagos extends Component {
             </SText>
 
             <SView row justifyContent="space-between" style={{ paddingTop: 3 }}>
-                <SText fontSize={10} color={STheme.color.lightGray}>Capital: {isNaN(capital) ? 0 : capital}</SText>
+                {/* <SText fontSize={10} color={STheme.color.lightGray}>Capital: {isNaN(capital) ? 0 : capital}</SText>
                 <SView width={10} style={{ borderRightWidth: 1, borderRightColor: STheme.color.lightGray }} />
                 <SView width={10} />
                 <SText fontSize={10} color={STheme.color.lightGray}>Interés: {isNaN(interes) ? 0 : interes}</SText>
                 <SView width={10} style={{ borderRightWidth: 1, borderRightColor: STheme.color.lightGray }} />
-                <SView width={10} />
-                <SText fontSize={10} color={STheme.color.lightGray}>Saldo: {isNaN(saldo_capital) ? 0 : saldo_capital}</SText>
-                 <SText col={"xs-12"} flex bold style={{ alignItems: "flex-end" }}>Saldo: {SMath.formatMoney(saldo)}</SText>
+                <SView width={10} /> */}
+                <SText  color={STheme.color.text}>Amortizado: {moneda} {isNaN(amortizado) ? 0 : SMath.formatMoney(amortizado)}</SText>
+                <SText col={"xs-12"} flex bold style={{ alignItems: "flex-end" }}>Saldo: {moneda} {(saldo)}</SText>
             </SView>
-
-            {/* <SText fontSize={12}>Pagos acumulados: {pagos_acumulados ?? 0}</SText> */}
         </SView>
     }
 
@@ -121,25 +132,32 @@ export default class PlanPagos extends Component {
 
         return <SList
             data={this.state.cuotas}
-            render={(data, key, i) => {
+            render={(cuota, key, i) => {
                 var saldo_capital = this.state.totales.subtotal;
                 var total_a_pagar = this.state.totales.total_a_pagar;
-                var saldo= this.state.totales.total_a_pagar - data.pagos_acumulados;
-                console.log("RESULT ", saldo, total_a_pagar, data.pagos_acumulados)
-                console.log("CUOTAS", data)
-                // capital_amortizado += capital;
-                // saldo_capital -= capital;
+                var saldo = 0;
+                var monto = 0;
+
+                let moneda = this.state.monedas.find(m => m.key === cuota.key_moneda);
+                console.log("RESULT ", cuota, saldo, monto)
+                // return <SText>moneda:{moneda.observacion}  monto: {cuota.monto}, amortizado: {cuota.total_amortizado}, saldo: {cuota.monto - cuota.total_amortizado}</SText>
+
+
+               
                 return this.totales_item({
-                    codigo: data.codigo,
-                    descripcion: data.descripcion,
-                    monto: data.monto,
-                    fecha: data.fecha,
-                    interes: SMath.formatMoney(data.monto_interes),
-                    capital: SMath.formatMoney(data.monto_capital),
-                    saldo_capital: SMath.formatMoney(data.saldo_capital),
-                    pagos_acumulados: SMath.formatMoney(data.pagos_acumulados),
+                    codigo: cuota.codigo,
+                    descripcion: cuota.descripcion,
+                    // monto: data.monto,
+                    monto: SMath.formatMoney(cuota.monto),
+                    fecha: cuota.fecha,
+                    interes: SMath.formatMoney(cuota.monto_interes),
+                    capital: SMath.formatMoney(cuota.monto_capital),
+                    saldo_capital: SMath.formatMoney(cuota.saldo_capital),
+                    pagos_acumulados: SMath.formatMoney(cuota.pagos_acumulados),
                     total_a_pagar: SMath.formatMoney(total_a_pagar),
-                    saldo: saldo
+                    saldo: SMath.formatMoney(cuota.monto - cuota.total_amortizado),
+                    amortizado: (!cuota.total_amortizado) ? 0 : cuota.total_amortizado,
+                    moneda: moneda.observacion
                 })
             }}
         />
@@ -390,12 +408,31 @@ export default class PlanPagos extends Component {
             <SText fontSize={16} bold >Bs. {SMath.formatMoney(PMT)}</SText>
         </SView>
     }
+
+
+
     render() {
         this.data = this.props.data;
 
         let t = MDL.compra_venta.getTotales(this.data)
 
         let cuotas = this.data.cuotas
+        console.log("CUOTAS", cuotas)
+        // let moneda =  MDL.empresa.getMonedas().find(m => m.key === this.data.key_moneda);
+        // let moneda = this.getMonedas().find(m => m.key === this.data.key_moneda);
+
+        let monedas = this.state.monedas
+        console.log("MONEDAS", monedas)
+        if (!monedas) return null;
+        console.log("MONEDAhhh", this.data.key_moneda)
+        let moneda = monedas.find(m => m.key === this.data.key_moneda);
+        console.log("MONEDA DETALLE", moneda)
+        this.state.moneda = moneda;
+        //   console.log("MONEDA-STATE", this.state?.monedas)
+        // if (!moneda) return null;
+
+
+        // this.state.moneda = moneda;
         if (!t) return null;
         if (!cuotas) {
             this.state.cuotas = null;
