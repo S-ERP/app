@@ -444,6 +444,7 @@ export default class PopupPagoCuota extends Component {
         const selectedCuotas = cuotasDetalle.filter(c => this.state.selectedCuotas[c.numero] && c.estadoReal !== 'Pagado');
         const isAnySelected = selectedCuotas.length > 0;
 
+        // bolivia
         return (
             <SView col={'xs-12 sm-4'} center>
                 <SText fontSize={14} bold color={COLOR_TEXT}>
