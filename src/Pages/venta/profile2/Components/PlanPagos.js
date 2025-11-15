@@ -422,11 +422,8 @@ export default class PlanPagos extends Component {
         // let moneda = this.getMonedas().find(m => m.key === this.data.key_moneda);
 
         let monedas = this.state.monedas
-        console.log("MONEDAS", monedas)
         if (!monedas) return null;
-        console.log("MONEDAhhh", this.data.key_moneda)
         let moneda = monedas.find(m => m.key === this.data.key_moneda);
-        console.log("MONEDA DETALLE", moneda)
         this.state.moneda = moneda;
         //   console.log("MONEDA-STATE", this.state?.monedas)
         // if (!moneda) return null;

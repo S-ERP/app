@@ -67,7 +67,7 @@ export default class root extends React.Component {
                                 onPress: () => {
                                     PagarConPasarela.open({
                                         key_pasarela_empresa: e.row.key,
-                                        monto: 10
+                                        monto: 40
                                     })
                                     // SNotification.send({
                                     //     title: "Not Implemet",
