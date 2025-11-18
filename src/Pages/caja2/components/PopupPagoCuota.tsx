@@ -270,7 +270,7 @@ export default class PopupPagoCuota extends Component {
 
                         <SView col={"xs-8"} style={{ alignItems: 'flex-end' }} border={"transparent"}>
                             {cuota.key_moneda === monedaBase.key ? (
-                                <SText fontSize={16} bold color={STheme.color.text}> aaa {monedaBase.observacion} {SMath.formatMoney(cuota.saldo)}</SText>
+                                <SText fontSize={16} bold color={STheme.color.text}>{monedaBase.observacion} {SMath.formatMoney(cuota.saldo)}</SText>
                                 // <SText fontSize={16} bold color={STheme.color.text}> aaa {monedaBase.observacion} {cuota.estadoReal =="Pagado" ? cuota.monto_total_base : SMath.formatMoney(cuota.monto_base)}</SText>
                                 // <SText fontSize={16} bold color={STheme.color.text}> aaa {monedaBase.observacion} {SMath.formatMoney(cuota.monto_base)}</SText>
                                 // <SText fontSize={16} bold color={STheme.color.text}>  {monedaBase.observacion} {SMath.formatMoney(cuota.monto_base)}</SText>
@@ -354,12 +354,14 @@ export default class PopupPagoCuota extends Component {
                         <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
                             <SView col={'xs-9'}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Total:</SText>
-                                <SText fontSize={14} color={COLOR_TEXT}>
-                                    {moneda.observacion} {SMath.formatMoney(compra.detalle_items?.monto ?? 0)}
-                                </SText>
+
+                                <SText fontSize={14} color={COLOR_TEXT}>{moneda.observacion} {SMath.formatMoney(compra.detalle_items?.monto ?? 0)} </SText>
+                                {/* <SText fontSize={14} color={COLOR_TEXT}> T/C {SMath.formatMoney(compra.detalle_items2?.tipo_cambio ?? 0)} </SText> */}
+
                                 <SText fontSize={12} color={COLOR_TEXT}>Equivalente en {moneda.observacion}:</SText>
                                 <SText fontSize={16} bold color={COLOR_TEXT}>
                                     {monedaBase.observacion} {SMath.formatMoney(compra.detalle_items?.monto_base ?? 0)}
+                                    {/* <SText fontSize={14} color={COLOR_TEXT}> {moneda.observacion} {SMath.formatMoney(compra.detalle_items2?.monto_total_base ?? 0)} </SText> */}
                                 </SText>
                             </SView>
                             <SView col={'xs-3'}  >
@@ -387,20 +389,43 @@ export default class PopupPagoCuota extends Component {
                                 <SText fontSize={12} color={COLOR_TEXT}>Cuotas Pagadas:</SText>
                                 {this.state.loading ? (
                                     <SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />
-                                ) : (
-                                    <SText fontSize={14} bold color={COLOR_TEXT}>
-                                        {compra.cuotas_en_amortizacion?.cantidad ?? 0} ({monedaBase.observacion} {SMath.formatMoney(compra.cuotas_en_amortizacion?.monto ?? 0)})
-                                    </SText>
+                                ) : (<>
+
+                                    <SView col={'xs-12'} row>
+                                        <SView width={14}  >
+                                            <SText fontSize={14} color={COLOR_TEXT} bold>{compra.cuotas_en_amortizacion?.cantidad ?? 0}  </SText>
+                                        </SView>
+                                        <SView flex  >
+                                            <SText fontSize={14} color={COLOR_TEXT} bold >({monedaBase.observacion} {SMath.formatMoney(compra.cuotas_en_amortizacion?.monto_base ?? 0)})</SText>
+                                            {monedaBase.observacion != moneda.observacion ? <SText fontSize={12} color={COLOR_TEXT}   >({moneda.observacion} {SMath.formatMoney(compra.cuotas_en_amortizacion?.monto ?? 0)})</SText> : null}
+                                            {/* <SText fontSize={14} color={COLOR_TEXT} bold >({monedaBase.observacion} {SMath.formatMoney(compra.detalle_items2?.total_amortizado_base ?? 0)})</SText> */}
+                                            {/* <SText fontSize={13} color={COLOR_TEXT}   >{moneda.observacion} ({SMath.formatMoney(compra.detalle_items2?.total_amortizado ?? 0)}) </SText> */}
+                                        </SView>
+                                    </SView>
+
+
+
+                                </>
                                 )}
                             </SView>
                             <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Cuotas en Mora:</SText>
                                 {this.state.loading ? (
                                     <SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />
-                                ) : (
-                                    <SText fontSize={14} bold color={COLOR_TEXT}>
-                                        {compra.cuotas_en_mora?.cantidad ?? 0} ({monedaBase.observacion} {SMath.formatMoney(compra.cuotas_en_mora?.monto ?? 0)})
-                                    </SText>
+                                ) : (<>
+                                    <SView col={'xs-12'} row>
+                                        <SView width={14}  >
+                                            <SText fontSize={14} color={COLOR_TEXT} bold>{compra.cuotas_en_mora?.cantidad ?? 0}  </SText>
+                                        </SView>
+                                        <SView flex  >
+
+                                            <SText fontSize={14} color={COLOR_TEXT} bold >({monedaBase.observacion} {SMath.formatMoney(compra.cuotas_en_mora?.monto_base ?? 0)})</SText>
+                                            {monedaBase.observacion != moneda.observacion ? <SText fontSize={12} color={COLOR_TEXT}   >({moneda.observacion} {SMath.formatMoney(compra.cuotas_en_mora?.monto ?? 0)})</SText> : null}
+                                            {/* <SText fontSize={14} color={COLOR_TEXT} bold >({monedaBase.observacion} {SMath.formatMoney(compra.detalle_items2?.saldo_base ?? 0)})</SText> */}
+                                            {/* <SText fontSize={13} color={COLOR_TEXT}   >{moneda.observacion} ({SMath.formatMoney(compra.detalle_items2?.saldo ?? 0)}) </SText> */}
+                                        </SView>
+                                    </SView>
+                                </>
                                 )}
                             </SView>
                             <SView col={'xs-6 sm-4'} style={{ marginBottom: 8 }}>
@@ -408,9 +433,22 @@ export default class PopupPagoCuota extends Component {
                                 {this.state.loading ? (
                                     <SLoad type='skeleton' style={{ width: 100, height: 16, marginTop: 4 }} />
                                 ) : (
-                                    <SText fontSize={14} bold color={COLOR_TEXT}>
-                                        {compra.cuotas_en_pendientes?.cantidad ?? 0} ({monedaBase.observacion} {SMath.formatMoney(compra.cuotas_en_pendientes?.monto ?? 0)})
-                                    </SText>
+                                    <>
+                                        <SView col={'xs-12'} row>
+                                            <SView width={14}  >
+                                                <SText fontSize={14} color={COLOR_TEXT} bold>{compra.cuotas_en_pendientes?.cantidad ?? 0}  </SText>
+                                            </SView>
+                                            <SView flex  >
+
+                                                <SText fontSize={14} color={COLOR_TEXT} bold >({monedaBase.observacion} {SMath.formatMoney(compra.cuotas_en_pendientes?.monto_base ?? 0)})</SText>
+                                                {monedaBase.observacion != moneda.observacion ? <SText fontSize={12} color={COLOR_TEXT}>({moneda.observacion} {SMath.formatMoney(compra.cuotas_en_pendientes?.monto ?? 0)})</SText> : null}
+                                                {/* <SText fontSize={14} color={COLOR_TEXT} bold >({monedaBase.observacion} {SMath.formatMoney(compra.detalle_items2?.saldo_base ?? 0)})</SText> */}
+                                                {/* <SText fontSize={13} color={COLOR_TEXT}   >{moneda.observacion} ({SMath.formatMoney(compra.detalle_items2?.saldo ?? 0)}) </SText> */}
+                                            </SView>
+                                        </SView>
+                                    </>
+
+
                                 )}
                             </SView>
                         </SView>

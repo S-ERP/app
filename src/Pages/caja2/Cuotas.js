@@ -68,10 +68,19 @@ export default class Cuotas extends Component {
 
             this.setState({ key_proveedor, key_cliente, loading: true });
             const registros = key_proveedor ? await MDL.compra_venta.getTransaccionCuotasCompras(key_proveedor) : await MDL.compra_venta.getTransaccionCuotasVentas(key_cliente);
+
+            const empresa_srl = await MDL.empresa.getFull();
+            if (!empresa_srl) throw new Error("No se pudo cargar la empresa");
+            this.empresa_srl = empresa_srl;
+
             if (!Array.isArray(registros) || registros.length === 0) {
                 console.warn('No hay registros válidos');
                 return this.getDefaultData();
             }
+
+
+
+
             const globalSummary = registros.reduce((acc, item) => {
                 const moneda = item?.key_moneda || 'BOB';
                 acc.cant_pendientes += item.cuotas_en_pendientes?.cantidad || 0;
@@ -263,12 +272,21 @@ export default class Cuotas extends Component {
                 </SView>
             );
         }
+
+        const api_empresa = this.empresa_srl?.monedas || [];
+
+        const monedaBase = api_empresa.find(m => m.tipo === "base") || {};
+
         return (
             <SView col={'xs-12'} style={{ padding: 8 }}>
                 <SView col={'xs-12'} row style={{ flexWrap: 'wrap' }}>
                     {filteredCompras.map((compras, index) => {
                         const ____________deudaTotal = compras.cuotas_en_pendientes?.monto || compras.cuotas_en_mora?.monto;
                         const ____________deudaTotalCantidad = (compras.cuotas_en_pendientes?.cantidad || compras.cuotas_en_mora?.cantidad).toFixed(0);
+
+                        const moneda = api_empresa.find(x => x.key === compras.key_moneda) || {};
+
+
                         return (
                             <SView
                                 key={compras.key || `compra-${index}`}
@@ -293,29 +311,41 @@ export default class Cuotas extends Component {
                                     <SText {...TYPOGRAPHY.BODY}>{new SDate(compras.fecha_on || new Date()).toString('dd/MM/yyyy')}</SText>
                                 </SView>
                                 <SHr h={8} />
-                                <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
+                                <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }} border={"transparent"} >
+
                                     <SText {...TYPOGRAPHY.LABEL}>{key_proveedor ? "Total compra" : "Total venta"}:</SText>
-                                    <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>
-                                        {/* {compras.moneda || monedaDefault} {SMath.formatMoney((compras.detalles?.[0]?.precio_unitario * compras.detalles?.[0]?.cantidad) || 0)} */}
-                                        {compras.moneda || monedaDefault} {SMath.formatMoney(compras.cuotas_total?.monto || 0)}
-                                    </SText>
+                                    <SView style={{ alignItems: 'flex-end' }}>
+
+                                        <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>{monedaBase.observacion} {SMath.formatMoney(compras.cuotas_total?.monto_base || 0)}</SText>
+                                        <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT} fontSize={10} >({moneda.observacion} {SMath.formatMoney(compras.cuotas_total?.monto || 0)})</SText>
+                                    </SView>
+
+                                    {/* <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}> {compras.moneda || monedaDefault} {SMath.formatMoney(compras.cuotas_total?.monto || 0)} </SText> */}
+
+
+                                    {/* <SText {...TYPOGRAPHY.BODY} color={____________deudaTotal > 0 ? COLORS.VENCIDO : COLORS.TEXT} fontSize={12}> ({moneda.observacion} {SMath.formatMoney(compras.cuotas_en_pendientes?.monto || compras.cuotas_en_mora?.monto || "0")}) </SText> */}
+
 
 
                                 </SView>
                                 <SHr h={8} />
                                 <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
                                     <SText {...TYPOGRAPHY.LABEL}>Cuotas pendientes:</SText>
-                                    <SView>
+                                    <SView style={{ alignItems: 'flex-end' }}>
                                         <SText {...TYPOGRAPHY.BODY} color={COLORS.TEXT}>{(____________deudaTotalCantidad) || 0} {____________deudaTotalCantidad > 0 ? 'cuotas' : 'cuota'}</SText>
                                     </SView>
                                 </SView>
                                 <SHr h={8} />
-                                <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }}>
+                                <SView col={'xs-12'} row style={{ justifyContent: 'space-between' }} border={"transparent"}>
                                     <SText {...TYPOGRAPHY.LABEL}>Deuda total:</SText>
-                                    <SView>
-                                        <SText {...TYPOGRAPHY.BODY} color={____________deudaTotal > 0 ? COLORS.VENCIDO : COLORS.TEXT}>
-                                            {compras.moneda || monedaDefault} {SMath.formatMoney(compras.cuotas_en_pendientes?.monto || compras.cuotas_en_mora?.monto || "0")}
-                                        </SText>
+                                    <SView style={{ alignItems: 'flex-end' }}>
+
+                                        {/* <SText fontSize={14} color={COLOR_TEXT} bold >({monedaBase.observacion} {SMath.formatMoney(compra.cuotas_en_mora?.monto_base ?? 0)})</SText> */}
+                                        {/* {monedaBase.observacion != moneda.observacion ? <SText fontSize={12} color={COLOR_TEXT}   >({moneda.observacion} {SMath.formatMoney(compra.cuotas_en_mora?.monto ?? 0)})</SText> : null} */}
+
+
+                                        <SText {...TYPOGRAPHY.BODY} color={____________deudaTotal > 0 ? COLORS.VENCIDO : COLORS.TEXT} bold> {monedaBase.observacion} {SMath.formatMoney(compras.cuotas_en_pendientes?.monto_base || compras.cuotas_en_mora?.monto_base || "0")} </SText>
+                                        <SText {...TYPOGRAPHY.BODY} color={____________deudaTotal > 0 ? COLORS.VENCIDO : COLORS.TEXT} fontSize={12}> ({moneda.observacion} {SMath.formatMoney(compras.cuotas_en_pendientes?.monto || compras.cuotas_en_mora?.monto || "0")}) </SText>
                                     </SView>
                                 </SView>
                                 <SHr h={16} />
