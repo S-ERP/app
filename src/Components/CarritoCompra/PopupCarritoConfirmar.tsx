@@ -6,6 +6,7 @@ import SIconApp from "../../Assets/SIconApp";
 import { FlatList } from "react-native";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
+import SelectTipoPago2 from "../../Pages/caja2/components/SelectTipoPago2";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
 import SelectorCliente from "../Selectores/SelectorCliente";
 
@@ -81,6 +82,39 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             });
         }
     }
+    handleOnPress2 = async () => {
+        try {
+            // const monedas = await MDL.empresa.getMonedas();
+            // const moneda = monedas.find((m: any) => m.tipo == "base");
+            // const key_moneda = "2f6b73df-8004-41c1-aa5f-1a81d79d1a8f"
+            const key_moneda = this.state.moneda.key
+            const almacen = this.state.almacen;
+            if (!almacen) {
+                throw "Debe seleccionar un almacen"
+            }
+            if (!key_moneda) {
+                throw "Debe seleccionar una moneda"
+            }
+            SelectTipoPago2.openPopup({
+                key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
+                montoMaximo: MDL.carrito.carrito_compra.monto_total,
+                key_moneda: key_moneda,
+                onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda),
+                solo_para_caja: false,
+
+            });
+        } catch (error: any) {
+            console.error("Error al realizar la compra:", error);
+            SNotification.send({
+                key: "compra_rapida",
+                title: "Error al realizar la compra",
+                body: error?.error || JSON.stringify(error),
+                color: STheme.color.danger,
+                time: 4000,
+            });
+        }
+    }
+
     handleSubmit = async (tipos_pago: any, key_moneda: string) => {
         try {
             const almacen = this.state.almacen;
@@ -228,6 +262,12 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     this.handleOnPress();
                 }}>
                     <SText>{"Confirmar la compra"}</SText>
+                </SView>
+                <SView width={5}/>
+                <SView padding={8} card onPress={() => {
+                    this.handleOnPress2();
+                }}>
+                    <SText>{"Confirmar 2"}</SText>
                 </SView>
             </SView>
         </SView >
