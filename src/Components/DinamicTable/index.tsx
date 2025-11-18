@@ -9,7 +9,7 @@ type DinamicTableProps = {
 export default function DinamicTable({ data = [], header = [] }: DinamicTableProps) {
     return (
         <SView col={"xs-12"} card padding={8}>
-            <SText bold>Tabla de ejemplo</SText>
+            
             <SHr />
             {header.length > 0 && (
                 <SView row style={{ borderBottomWidth: 1, paddingBottom: 4 }}>
