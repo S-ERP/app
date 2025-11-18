@@ -87,13 +87,13 @@ export default class Cuotas extends Component {
                 acc.cant_mora += item.cuotas_en_mora?.cantidad || 0;
                 acc.cant_pagado += item.cuotas_en_amortizacion?.cantidad || 0;
 
-                acc.total_pendientes += parseFloat(item.cuotas_en_pendientes?.monto || 0);
-                acc.total_mora += parseFloat(item.cuotas_en_mora?.monto || 0);
-                acc.total_pagado += parseFloat(item.cuotas_en_amortizacion?.monto || 0);
+                acc.total_pendientes += parseFloat(item.cuotas_en_pendientes?.monto_base || 0);
+                acc.total_mora += parseFloat(item.cuotas_en_mora?.monto_base || 0);
+                acc.total_pagado += parseFloat(item.cuotas_en_amortizacion?.monto_base || 0);
                 acc.deudaTotal[moneda] = (acc.deudaTotal[moneda] || 0)
-                    + parseFloat(item.cuotas_en_pendientes?.monto || 0)
-                    + parseFloat(item.cuotas_en_mora?.monto || 0)
-                    + parseFloat(item.cuotas_en_amortizacion?.monto || 0);
+                    + parseFloat(item.cuotas_en_pendientes?.monto_base || 0)
+                    + parseFloat(item.cuotas_en_mora?.monto_base || 0)
+                    + parseFloat(item.cuotas_en_amortizacion?.monto_base || 0);
                 return acc;
             }, {
                 cant_pendientes: 0,
@@ -185,7 +185,7 @@ export default class Cuotas extends Component {
         if (loading || !data) return this.renderLoading();
         const { cliente, proveedor, monedaDefault, compras, cant_pendientes, cant_mora, cant_pagado, montototal_pendientes, montototal_mora, montototal_pagado } = data;
         const filteredCompras = showPaid ? compras : compras.filter(item => item?.cuotas_en_mora?.monto > 0 || item?.cuotas_en_pendientes?.monto > 0);
-        const totalPagado = showPaid ? montototal_pagado : filteredCompras.reduce((sum, item) => sum + parseFloat(item.cuotas_en_amortizacion?.monto || 0), 0).toFixed(2);
+        const totalPagado = showPaid ? montototal_pagado : filteredCompras.reduce((sum, item) => sum + parseFloat(item.cuotas_en_amortizacion?.monto_base || 0), 0).toFixed(2);
         const cantidadCompras = filteredCompras.length;
         const cuotas = showPaid ? { cant_pendientes: data.cant_pendientes, cant_mora: data.cant_mora, cant_pagado: data.cant_pagado }
             : filteredCompras.reduce(
@@ -317,7 +317,8 @@ export default class Cuotas extends Component {
                                     <SView style={{ alignItems: 'flex-end' }}>
 
                                         <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}>{monedaBase.observacion} {SMath.formatMoney(compras.cuotas_total?.monto_base || 0)}</SText>
-                                        <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT} fontSize={10} >({moneda.observacion} {SMath.formatMoney(compras.cuotas_total?.monto || 0)})</SText>
+
+                                        {moneda != monedaBase ? <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT} fontSize={10} >({moneda.observacion} {SMath.formatMoney(compras.cuotas_total?.monto || 0)})</SText> : <SHr height={12}/>}
                                     </SView>
 
                                     {/* <SText {...TYPOGRAPHY.VALUE} color={COLORS.TEXT}> {compras.moneda || monedaDefault} {SMath.formatMoney(compras.cuotas_total?.monto || 0)} </SText> */}
@@ -345,7 +346,7 @@ export default class Cuotas extends Component {
 
 
                                         <SText {...TYPOGRAPHY.BODY} color={____________deudaTotal > 0 ? COLORS.VENCIDO : COLORS.TEXT} bold> {monedaBase.observacion} {SMath.formatMoney(compras.cuotas_en_pendientes?.monto_base || compras.cuotas_en_mora?.monto_base || "0")} </SText>
-                                        <SText {...TYPOGRAPHY.BODY} color={____________deudaTotal > 0 ? COLORS.VENCIDO : COLORS.TEXT} fontSize={12}> ({moneda.observacion} {SMath.formatMoney(compras.cuotas_en_pendientes?.monto || compras.cuotas_en_mora?.monto || "0")}) </SText>
+                                        {moneda != monedaBase ?    <SText {...TYPOGRAPHY.BODY} color={____________deudaTotal > 0 ? COLORS.VENCIDO : COLORS.TEXT} fontSize={10}> ({moneda.observacion} {SMath.formatMoney(compras.cuotas_en_pendientes?.monto || compras.cuotas_en_mora?.monto || "0")}) </SText>: <SHr height={12}/>}
                                     </SView>
                                 </SView>
                                 <SHr h={16} />
