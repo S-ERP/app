@@ -382,6 +382,7 @@ export default class pizarra extends React.Component {
                         this.setState({
                             filtro: e
                         })
+                        this.componentDidMount()
                     }} />
             </SView>
             <SView width={8} />
@@ -552,7 +553,7 @@ const NodoModelo = (props) => {
                 <SView style={{ alignItems: "flex-end" }}>
                     <SText bold style={{
                         fontSize: 12,
-                        color: ColorCompraVenta.venta ,
+                        color: ColorCompraVenta.venta,
                         alignContent: "flex-end"
                     }}>BOB {modelo?.precio_venta}</SText>
 
