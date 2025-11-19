@@ -90,7 +90,7 @@ export default class tabla_venta extends React.Component {
                 mes: this.formatFecha(item.mes ?? item.periodo),
                 cantidad_ventas: item.cantidad_ventas ?? item.total_ventas ?? 0,
                 total_bs: item.total_bs ?? item.total ?? 0,
-                promedio_venta: item.promedio_venta ?? 0
+
             }));
             if (this._mounted) this.setState({ dataVentasPorMes: data, loadingVentasPorMes: false });
         } catch (e) {
@@ -107,7 +107,7 @@ export default class tabla_venta extends React.Component {
                 metodo_pago: item.metodo_pago ?? item.tipo_pago ?? "N/A",
                 total_ventas: item.total_ventas ?? item.cantidad ?? 0,
                 total_bs: item.total_bs ?? item.total ?? 0,
-                porcentaje: item.porcentaje ?? 0
+
             }));
             if (this._mounted) this.setState({ dataVentasPorMetodoPago: data, loadingVentasPorMetodoPago: false });
         } catch (e) {
@@ -192,7 +192,7 @@ export default class tabla_venta extends React.Component {
                                 { key: "mes", label: "Mes" },
                                 { key: "cantidad_ventas", label: "Cantidad de Ventas" },
                                 { key: "total_bs", label: "Total (Bs.)" },
-                                { key: "promedio_venta", label: "Promedio por Venta" },
+
                             ]
                         )}
 
@@ -204,7 +204,7 @@ export default class tabla_venta extends React.Component {
                                 { key: "metodo_pago", label: "Método de Pago" },
                                 { key: "total_ventas", label: "Total Ventas" },
                                 { key: "total_bs", label: "Total (Bs.)" },
-                                { key: "porcentaje", label: "Porcentaje" },
+
                             ]
                         )}
                     </SView>
