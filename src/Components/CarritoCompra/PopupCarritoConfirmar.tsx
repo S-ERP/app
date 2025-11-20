@@ -41,9 +41,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     inputNombre: SInput | null = null;
     inputAlmacen: SelectorAlmacen | undefined;
     proveedor: any;
-    state: { almacen: any, moneda: any } = {
+    state: { almacen: any, moneda: any, factura: boolean } = {
         almacen: null,
-        moneda: null
+        moneda: null,
+        factura: false,
     }
 
     componentDidMount(): void {
@@ -201,25 +202,57 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             <SHr h={1} color={STheme.color.card} />
             <SView flex>
                 <SView padding={8}>
-                    <SText color={STheme.color.lightGray}>{"Datos del proveedor:"}</SText>
-                    <SHr />
-<SView row>
-    <SelectorCliente
-        icon={<SText color={STheme.color.lightGray} bold>{"Cliente:"}</SText>}
-        onChangeSelect={(cliente) => {
-            console.log("✅ Cliente seleccionado:", cliente);
-            this.proveedor = cliente;
-        }}
-    />
-</SView>
-
-                    <SHr h={4} />
-                    <SView row>
-                        <SInput ref={ref => this.inputNombre = ref} icon={<SText color={STheme.color.lightGray} bold>{"Nombre:"}</SText>} placeholder={"NIT"} />
+                    <SView row col={"xs-12"}>
+                        <SText col={"xs-6"} color={STheme.color.lightGray}>{"Datos del proveedor:"}</SText>
+                        <SView col={"xs-6"} row style={{ alignItems: "flex-end", justifyContent: "flex-end", alignContent: "flex-start" }}>
+                            <SInput
+                                height={30}
+                                style={{
+                                    marginTop: 0
+                                }}
+                                label={"Con factura"}
+                                type="checkBox"
+                                labelStyle={{ left: 12 }}
+                                onChangeText={(val) => {
+                                    this.setState({ factura: val })
+                                    this.forceUpdate();
+                                }}
+                            />
+                        </SView>
                     </SView>
+
+                    <SHr />
+                    <SView row>
+                        <SelectorCliente
+                            icon={<SText color={STheme.color.lightGray} bold>{"Cliente:"}</SText>}
+                            onChangeSelect={(cliente) => {
+                                console.log("✅ Cliente seleccionado:", cliente);
+                                if (this.inputNit && cliente) {
+                                    if (this.proveedor?.nit !== cliente.nit) {
+                                        this.inputNit.setValue(cliente?.nit || "");
+                                        this.inputRazonSocial.setValue(cliente?.razon_social || "");
+                                    }
+                                }
+                                this.proveedor = cliente;
+                            }}
+                        />
+                    </SView>
+                    {(this.state.factura) ? <>
+                        <SHr h={10} />
+                        <SView row>
+                            <SInput ref={ref => this.inputRazonSocial = ref} icon={<SText color={STheme.color.lightGray} bold>{"Razón Social:"}</SText>} placeholder={"Razón Social"} />
+                        </SView>
+                        <SHr h={10} />
+                        <SView row>
+                            <SInput ref={ref => this.inputNit = ref} icon={<SText color={STheme.color.lightGray} bold>{"NIT:"}</SText>} placeholder={"NIT"} />
+                        </SView>
+                    </> : null}
+
+
+
                 </SView>
                 <SHr />
-                <SView padding={8}>
+                <SView style={{padding:10, paddingBottom:5, paddingTop:5}}>
                     <SText color={STheme.color.lightGray}>{"Seleccione el almacen"}</SText>
                     <SelectorAlmacen
                         selectFirst
@@ -236,7 +269,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     />
 
                 </SView>
-                <SView padding={8}>
+                <SView style={{padding:10, paddingBottom:5, paddingTop:5}}>
                     <SelectorMoneda
                         findInitialSelect={(arr) => {
                             return arr.find(a => a.tipo == "base")
@@ -259,12 +292,52 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             <SHr h={1} color={STheme.color.card} />
             <SView col={"xs-12"} row center height={40}>
                 <SView padding={8} card onPress={() => {
+                    if (this.state.factura) {
+                        if ((this.proveedor.razon_social != this.inputRazonSocial?.getValue()) || (this.proveedor.nit != this.inputNit?.getValue())) {
+                            this.proveedor.razon_social = this.inputRazonSocial.getValue();
+                            this.proveedor.nit = this.inputNit.getValue();
+                            console.log("CAMBIOS CLIENTE", this.proveedor)
+                            MDL.crm.cliente.editar(this.proveedor).then((resp: any) => {
+
+
+                            }).catch((e: any) => {
+                                console.error("Error al guardar el cliente:", e);
+                                SNotification.send({
+                                    title: "Error",
+                                    body: "No se pudo guardar el cliente.",
+                                    time: 3000,
+                                    color: STheme.color.danger,
+                                });
+                            })
+                            console.log("modificar cliente")
+                        }
+                    }
                     this.handleOnPress();
                 }}>
                     <SText>{"Confirmar la compra"}</SText>
                 </SView>
-                <SView width={5}/>
+                <SView width={5} />
                 <SView padding={8} card onPress={() => {
+                    if (this.state.factura) {
+                        if ((this.proveedor.razon_social != this.inputRazonSocial?.getValue()) || (this.proveedor.nit != this.inputNit?.getValue())) {
+                            this.proveedor.razon_social = this.inputRazonSocial.getValue();
+                            this.proveedor.nit = this.inputNit.getValue();
+                            console.log("CAMBIOS CLIENTE", this.proveedor)
+                            MDL.crm.cliente.editar(this.proveedor).then((resp: any) => {
+
+
+                            }).catch((e: any) => {
+                                console.error("Error al guardar el cliente:", e);
+                                SNotification.send({
+                                    title: "Error",
+                                    body: "No se pudo guardar el cliente.",
+                                    time: 3000,
+                                    color: STheme.color.danger,
+                                });
+                            })
+                            console.log("modificar cliente")
+                        }
+                    }
                     this.handleOnPress2();
                 }}>
                     <SText>{"Confirmar 2"}</SText>

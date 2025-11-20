@@ -67,7 +67,7 @@ export default class SelectorCliente extends React.Component<SelectorClienteProp
 
     toString(e: any) {
         // Intenta distintas propiedades comunes
-        return e?.razon_social ?? e?.nombres ?? e?.descripcion ?? "Sin nombre";
+        return  e?.nombres ?? e?.razon_social ?? e?.descripcion ?? "Sin nombre";
     }
 
     render() {
