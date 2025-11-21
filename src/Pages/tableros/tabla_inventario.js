@@ -43,7 +43,7 @@ export default class tabla_inventario extends React.Component {
 
     loadProductosMayorStock = async (keyEmpresa) => {
         try {
-            const res = await MDL.compra_venta.execute_function("productos_mayor_stock", [keyEmpresa]);
+            const res = await MDL.compra_venta.execute_function("productos_mayor_stock_compra_venta", [keyEmpresa]);
             const raw = Array.isArray(res) ? res : (res?.data ?? res?.result ?? []);
             const data = raw.map(item => ({
                 producto: item.producto ?? "Sin nombre",
@@ -58,7 +58,7 @@ export default class tabla_inventario extends React.Component {
 
     loadValorInventario = async (keyEmpresa) => {
         try {
-            const res = await MDL.compra_venta.execute_function("valor_inventario", [keyEmpresa]);
+            const res = await MDL.compra_venta.execute_function("valor_compra_venta", [keyEmpresa]);
             const raw = Array.isArray(res) ? res : (res?.data ?? res?.result ?? []);
             const data = raw.map(item => ({
                 producto: item.producto ?? "Sin nombre",
