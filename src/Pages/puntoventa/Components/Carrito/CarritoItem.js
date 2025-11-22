@@ -20,7 +20,7 @@ export default class CarritoItem extends Component {
                 <SView flex row center>
                     <SView col={"xs-12"} row>
                         <SText col={"xs-12"} fontSize={12}>{item.descripcion}</SText>
-                        <SText col={"xs-12"} fontSize={12}>{_simbolo} {_precioMoneda} /Und</SText>
+                        <SText col={"xs-12"} fontSize={12}>{_simbolo} {SMath.formatMoney(_precioMoneda, 2)} /Und</SText>
                     </SView>
                 </SView>
                 <SView col={"md-5.5 lg-4.5 xl-3.5"} row center>
@@ -57,7 +57,7 @@ export default class CarritoItem extends Component {
                 </SView>
                 <SView col={"md-2 xl-2.5"} center>
                     <SView col={"xs-12"} style={{ justifyContent: "flex-start" }}>
-                        <SText col={"xs-12"} fontSize={11} bold>{_simbolo} {(item.precio_venta_moneda * item.cantidad)}</SText>
+                        <SText col={"xs-12"} fontSize={11} bold>{_simbolo} {SMath.formatMoney(item.precio_venta_moneda * item.cantidad, 2)}</SText>
                     </SView>
                 </SView>
                 <SView width={10} height={"100%"} center onPress={onEliminar}  >
