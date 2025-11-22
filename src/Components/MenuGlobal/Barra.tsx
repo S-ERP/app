@@ -257,6 +257,7 @@ export default class Barra extends React.Component {
                         <Page label={"Compras"} url={"/tableros/tabla_compra"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Productos"} url={"/tableros/tabla_productos"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Inventario"} url={"/tableros/tabla_inventario"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Valor de Stock"} url={"/tableros/tabla_valor_stock"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                     </Page>
                         
 

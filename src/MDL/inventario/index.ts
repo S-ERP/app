@@ -42,6 +42,25 @@ export default class inventario extends MDLAbstract<EventListener> {
     console.log("getAllModeloStock", resp.data);
     return Object.values(resp.data || {});
   }
+    async execute_function(func: string, params: string[]) {
+      let newParams:any = [];
+      if (params) {
+        params.map(p => {
+          if(typeof p == "string"){
+            p = "'" + p + "'"
+          }
+          newParams.push(p)
+        })
+      }
+      const resp: any = await SSocket.sendPromise({
+        service: "inventario",
+        component: "reporte",
+        type: "execute_function",
+        func: func,
+        params: newParams,
+      });
+      return resp.data || [];
+    }
   async getAllModeloStock(_key_almacen: string) {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",

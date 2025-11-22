@@ -3,7 +3,7 @@ import { SPage, SView, SText, SHr } from "servisofts-component";
 import DinamicTable from "../../Components/DinamicTable";
 import MDL from "../../MDL";
 
-export default class tabla_inventario extends React.Component {
+export default class tabla_valor_stock extends React.Component {
     state = {
         dataProductosMayorStock: [],
         dataValorInventario: [],
@@ -36,39 +36,27 @@ export default class tabla_inventario extends React.Component {
 
         // Cargar las dos funciones en paralelo
         await Promise.all([
-            this.loadProductosMayorStock(selected.key),
+
             this.loadValorInventario(selected.key)
         ]);
     };
 
-    loadProductosMayorStock = async (keyEmpresa) => {
-        try {
-            const res = await MDL.compra_venta.execute_function("productos_mayor_stock_compra_venta", [keyEmpresa]);
-            const raw = Array.isArray(res) ? res : (res?.data ?? res?.result ?? []);
-            const data = raw.map(item => ({
-                producto: item.producto ?? "Sin nombre",
-                stock_actual: item.stock_actual ?? 0
-            }));
-            if (this._mounted) this.setState({ dataProductosMayorStock: data, loadingProductosMayorStock: false });
-        } catch (e) {
-            console.error("Error en productos_mayor_stock:", e);
-            if (this._mounted) this.setState({ loadingProductosMayorStock: false });
-        }
-    };
 
     loadValorInventario = async (keyEmpresa) => {
         try {
-            const res = await MDL.compra_venta.execute_function("valor_compra_venta", [keyEmpresa]);
+            // Cambiar por el nombre correcto de la función que creamos
+            const res = await MDL.inventario.execute_function("calcular_valor_stock", [keyEmpresa]);
             const raw = Array.isArray(res) ? res : (res?.data ?? res?.result ?? []);
             const data = raw.map(item => ({
-                producto: item.producto ?? "Sin nombre",
+                key_modelo: item.key_modelo ?? "",
+                modelo: item.modelo ?? "Sin nombre",
                 stock_actual: item.stock_actual ?? 0,
-                precio_compra: item.precio_compra ?? 0,
+                precio_compra_unitario: item.precio_compra_unitario ?? 0,
                 valor_inventario: item.valor_inventario ?? 0
             }));
             if (this._mounted) this.setState({ dataValorInventario: data, loadingValorInventario: false });
         } catch (e) {
-            console.error("Error en valor_inventario:", e);
+            console.error("Error en fn_calcular_valor_inventario_json:", e);
             if (this._mounted) this.setState({ loadingValorInventario: false });
         }
     };
@@ -146,39 +134,31 @@ export default class tabla_inventario extends React.Component {
         const totalUnidades = this.calcularTotalUnidades();
 
         return (
-            <SPage title="Tablero de Inventario">
+            <SPage title="Valor del Stock">
+
 
                 {/* Versión para móviles (una debajo de otra) */}
                 <SView hide={["md", "lg", "xl"]}>
-                    {this.renderTabla(
-                        "Productos con Mayor Stock",
-                        dataProductosMayorStock,
-                        loadingProductosMayorStock,
-                        [
-                            { key: "producto", label: "Producto" },
-                            { key: "stock_actual", label: "Stock Actual" },
-                        ]
-                    )}
 
                     {this.renderTabla(
-                        "Valor del Inventario",
+                        "Valor del Inventario por Modelo",
                         dataValorInventario,
                         loadingValorInventario,
                         [
-                            { key: "producto", label: "Producto" },
+                            { key: "modelo", label: "Modelo" },
                             { key: "stock_actual", label: "Stock" },
-                            { key: "precio_compra", label: "Precio Compra" },
+                            { key: "precio_compra_unitario", label: "Precio Unitario" },
                             { key: "valor_inventario", label: "Valor Total" },
                         ],
                         {
-                            precio_compra: (value) => this.formatCurrency(value),
+                            precio_compra_unitario: (value) => this.formatCurrency(value),
                             valor_inventario: (value) => this.formatCurrency(value)
                         }
                     )}
                 </SView>
 
 
-            </SPage>
+            </SPage >
         );
     }
 }
