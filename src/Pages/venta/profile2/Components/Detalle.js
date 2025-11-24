@@ -3,6 +3,7 @@ import { SDate, SHr, SImage, SList, SLoad, SMath, SNavigation, SPopup, SText, ST
 import SSocket from 'servisofts-socket'
 import Model from '../../../../Model';
 import PopupDetalleItem from './PopupDetalleItem';
+import MDL from '../../../../MDL';
 export default class Detalle extends Component {
     constructor(props) {
         super(props);
@@ -10,8 +11,31 @@ export default class Detalle extends Component {
         };
     }
     data = {}
-    detalle_item({ key, key_usuario, nombre, precio, cantidad, descuento, tipo,key_modelo }) {
+    componentDidMount() {
+        this.getMonedas()
+
+    }
+    async getMonedas() {
+        try {
+            let monedas = await MDL.empresa.getMonedas();
+            this.setState({ monedas: monedas });
+        } catch (error) {
+            console.log(error)
+            // return []
+        }
+    }
+
+    detalle_item({ key, key_usuario, nombre, precio, cantidad, descuento, tipo, key_modelo, key_moneda }) {
         var onPress = null;
+
+        // console.log("MONEDA DETALLE", key_moneda)
+
+        if (!this.state.monedas) return null;
+            let moneda = this.state.monedas.find(m => m.key === this.data.key_moneda);
+            // console.log("MONEDA DETALLEssssssssssssssssss", moneda)
+
+
+
         if (!this.props.disabled) {
             onPress = () => {
                 SPopup.open({
@@ -26,18 +50,19 @@ export default class Detalle extends Component {
                     overflow: 'hidden',
                 }}>
                     {/* <SImage src={SSocket.api.root + "usuario/" + key_usuario}  /> */}
-                    <SImage src={SSocket.api.inventario + "modelo/.128_" + key_modelo}  />
-                    
+                    <SImage src={SSocket.api.inventario + "modelo/.128_" + key_modelo} />
+
                 </SView>
             </SView>
             <SView flex>
                 <SText bold >{nombre}</SText>
-                <SText>{SMath.formatMoney(precio)} X {parseInt(cantidad)} </SText>
+                {/* <SText>{SMath.formatMoney(precio)} bs X {parseInt(cantidad)} Unid </SText> */}
+                <SText>{SMath.formatMoney(precio)} {moneda.observacion} X {parseInt(cantidad)} Unid </SText>
                 <SText fontSize={10} bold color={STheme.color.lightGray}>{tipo}</SText>
             </SView>
             <SView width={8} />
             <SView col={"xs-3"} style={{ alignItems: 'end', textAlign: "end" }}>
-                <SText style={{ alignItems: 'end', textAlign: "end" }}>{SMath.formatMoney((precio * cantidad))}</SText>
+                <SText style={{ alignItems: 'end', textAlign: "end" }}>{SMath.formatMoney((precio * cantidad))} {moneda.observacion}</SText>
                 {descuento ? <SText color={STheme.color.danger}>- {SMath.formatMoney(descuento)}</SText> : null}
             </SView>
         </SView>
@@ -193,11 +218,11 @@ export default class Detalle extends Component {
         </SView>
     }
     headerTable() {
-        return <SView col={"xs-12"} row center style={{paddingBottom:5, borderBottomWidth:1, borderBottomColor:STheme.color.card, borderStyle:"dashed"}}>
+        return <SView col={"xs-12"} row center style={{ paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: STheme.color.card, borderStyle: "dashed" }}>
             <SView col={"xs-9"} >
                 <SText bold >Precio x Cantidad</SText>
             </SView>
-            <SView col={"xs-3"} style={{alignItems:"flex-end"}}>
+            <SView col={"xs-3"} style={{ alignItems: "flex-end" }}>
                 <SText bold>Importe</SText>
             </SView>
         </SView>
@@ -207,15 +232,16 @@ export default class Detalle extends Component {
         // this.compra_venta_detalle = Model.compra_venta_detalle.Action.getAllConProductos({
         //     key_compra_venta: this.data.key
         // })
-        console.log("DETALLE:",this.data.detalle)
+        console.log("DETALLEssssssssss:", this.data)
+        console.log("DETALLE:", this.data.detalle)
         if (!this.data) return <SLoad />
         return <SView col={"xs-12"} center>
             <SHr />
             <SText bold >DETALLE</SText>
-            <SHr height={10}/>
+            <SHr height={10} />
             <SHr />
             {this.headerTable()}
-            <SView col={"xs-12"} height={4} style={{borderBottomWidth:1, borderBottomColor:STheme.color.card, borderStyle:"dashed"}}/>
+            <SView col={"xs-12"} height={4} style={{ borderBottomWidth: 1, borderBottomColor: STheme.color.card, borderStyle: "dashed" }} />
             <SList
                 data={this.data.detalle}
                 filter={obj => obj.estado != 0 && obj.key_compra_venta == this.data.key}
@@ -229,7 +255,8 @@ export default class Detalle extends Component {
                         key_usuario: obj.key_usuario,
                         descuento: obj.descuento,
                         tipo: obj.tipo,
-                        key_modelo:obj.key_modelo
+                        key_modelo: obj.key_modelo
+                        // key_moneda: obj.key_moneda
                     })
                 }}
             />
