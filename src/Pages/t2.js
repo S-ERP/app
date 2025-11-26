@@ -2,12 +2,13 @@ import React, { Component, useState } from 'react';
 import { Dimensions, View } from 'react-native';
 import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { connect } from 'react-redux';
-import { SButtom, SHr, SIcon, SImage, SPage, SSPiner, SText, SView } from 'servisofts-component';
+import { SButtom, SHr, SIcon, SImage, SPage, SSPiner, SText, STheme, SView } from 'servisofts-component';
 import { Slider } from '../Components/RangeSlider';
 import { Svg } from 'react-native-svg';
 import SSocket from 'servisofts-socket';
 import MDL from '../MDL';
 import InputFoto from '../Components/InputFoto';
+import SCharts from 'servisofts-charts';
 // import BarcodeScanner from '../Components/BarcodeScanner';
 
 
@@ -120,13 +121,44 @@ class Test extends Component {
     }
     render() {
         return (
-            <SPage title={'Test'} center>
-                <InputFoto style={{
+            <SPage title={'Test'} center disableScroll>
+                {/* <InputFoto style={{
                     width: 300,
                     height: 300,
                     borderWidth: 1,
                     borderColor: "#f00",
-                }} />
+                }} /> */}
+                <SView style={{
+                    width: 400,
+                    height: 300
+                }}>
+                    <SCharts
+                        type='Column'
+                        showControl
+                        strokeWidth={1}
+                        space={0.1}
+                        padding={0.7}
+                        showLabel
+                        // showPercent
+                        showGuide
+                        showValue
+                        textColor={STheme.color.text}
+                        colors={[
+                            "#ff00ff",
+                            "#00ffff",
+                            "#ffff00",
+                            "#ff8800",
+                            "#00ff00",
+                        ]}
+                        data={{
+                            "manzana": 50,
+                            "banana": 30,
+                            "cereza": 20,
+                            "durazno": 15,
+                            "uva": 40
+                        }} />
+                </SView>
+
             </SPage >
         );
     }
