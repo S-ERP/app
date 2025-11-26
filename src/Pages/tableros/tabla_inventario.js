@@ -1,7 +1,8 @@
 import React from "react";
 import { SPage, SView, SText, SHr } from "servisofts-component";
-import DinamicTable from "../../Components/DinamicTable";
+import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default class tabla_inventario extends React.Component {
     state = {
@@ -34,7 +35,6 @@ export default class tabla_inventario extends React.Component {
             return;
         }
 
-        // Cargar las dos funciones en paralelo
         await Promise.all([
             this.loadProductosMayorStock(selected.key),
             this.loadValorInventario(selected.key)
@@ -80,40 +80,6 @@ export default class tabla_inventario extends React.Component {
         });
     };
 
-    renderTabla(titulo, data, loading, headers, formatters = {}) {
-        if (loading) {
-            return (
-                <SView col={"xs-12"} padding={8}>
-                    <SText fontSize={16} bold>{titulo}</SText>
-                    <SHr />
-                    <SText>Cargando...</SText>
-                </SView>
-            );
-        }
-
-        if (data.length === 0) {
-            return (
-                <SView col={"xs-12"} padding={8}>
-                    <SText fontSize={16} bold>{titulo}</SText>
-                    <SHr />
-                    <SText>No hay datos disponibles</SText>
-                </SView>
-            );
-        }
-
-        return (
-            <SView col={"xs-12"} padding={8}>
-                <SText fontSize={16} bold>{titulo}</SText>
-                <SHr />
-                <DinamicTable
-                    data={data}
-                    header={headers}
-                    formatters={formatters}
-                />
-            </SView>
-        );
-    }
-
     calcularTotalInventario() {
         const { dataValorInventario } = this.state;
         return dataValorInventario.reduce((total, item) => total + (item.valor_inventario || 0), 0);
@@ -145,39 +111,165 @@ export default class tabla_inventario extends React.Component {
         const totalProductos = this.calcularTotalProductos();
         const totalUnidades = this.calcularTotalUnidades();
 
+        const size = 80;
+        const cellstyle = { padding: 4 };
+
         return (
             <SPage title="Tablero de Inventario">
-
-                {/* Versión para móviles (una debajo de otra) */}
-                <SView hide={["md", "lg", "xl"]}>
-                    {this.renderTabla(
-                        "Productos con Mayor Stock",
-                        dataProductosMayorStock,
-                        loadingProductosMayorStock,
-                        [
-                            { key: "producto", label: "Producto" },
-                            { key: "stock_actual", label: "Stock Actual" },
-                        ]
-                    )}
-
-                    {this.renderTabla(
-                        "Valor del Inventario",
-                        dataValorInventario,
-                        loadingValorInventario,
-                        [
-                            { key: "producto", label: "Producto" },
-                            { key: "stock_actual", label: "Stock" },
-                            { key: "precio_compra", label: "Precio Compra" },
-                            { key: "valor_inventario", label: "Valor Total" },
-                        ],
-                        {
-                            precio_compra: (value) => this.formatCurrency(value),
-                            valor_inventario: (value) => this.formatCurrency(value)
-                        }
-                    )}
-                </SView>
+                <ScrollView>
+                    <SView col={"xs-12"} padding={16}>
+                        <SText fontSize={18} bold>Tablero de Inventario</SText>
+                        <SHr />
 
 
+
+                        <SHr />
+
+                        {/* Tabla de Productos con Mayor Stock */}
+                        <SView col={"xs-12"} padding={8}>
+                            <SText fontSize={16} bold>Productos con Mayor Stock</SText>
+                            <SHr />
+                            {loadingProductosMayorStock ? (
+                                <SText>Cargando...</SText>
+                            ) : dataProductosMayorStock.length === 0 ? (
+                                <SText>No hay datos disponibles</SText>
+                            ) : (
+                                <DinamicTable
+                                    language={"es"}
+                                    hiddenMenu
+                                    textTitleStyle={{ fontSize: 12, lineHeight: 14 }}
+                                    colors={{ header: "#2E86AB", textHeader: "white" }}
+                                    cellStyle={{ padding: 4 }}
+                                    textStyle={{ fontSize: 10 }}
+                                    loadData={async () => {
+                                        return dataProductosMayorStock.sort((a, b) => b.stock_actual - a.stock_actual);
+                                    }}
+                                >
+                                    <DinamicTable.Col
+                                        key="producto"
+                                        label='Producto'
+                                        width={200}
+                                        data={e => e.row.producto}
+                                        footerComponent={(e) => {
+                                            return <SView style={{ alignItems: "center" }}>
+                                                <SText style={e.dinamicTable.textStyle}>{"Total"}</SText>
+                                            </SView>
+                                        }}
+                                    />
+                                    <DinamicTable.Col
+                                        key="stock_actual"
+                                        label='Stock Actual'
+                                        width={size}
+                                        wrap
+                                        cellStyle={cellstyle}
+                                        data={e => e.row.stock_actual.toLocaleString('es-ES')}
+                                        footerComponent={(e) => {
+                                            let total = 0;
+                                            e.dinamicTable.data.map(a => {
+                                                total += a.stock_actual || 0
+                                            })
+                                            return <SView style={{ alignItems: "center" }}>
+                                                <SText style={e.dinamicTable.textStyle}>{total.toLocaleString('es-ES')}</SText>
+                                            </SView>
+                                        }}
+                                    />
+                                </DinamicTable>
+                            )}
+                        </SView>
+
+                        <SHr />
+
+                        {/* Tabla de Valor del Inventario */}
+                        <SView col={"xs-12"} padding={8}>
+                            <SText fontSize={16} bold>Valor del Inventario</SText>
+                            <SHr />
+                            {loadingValorInventario ? (
+                                <SText>Cargando...</SText>
+                            ) : dataValorInventario.length === 0 ? (
+                                <SText>No hay datos disponibles</SText>
+                            ) : (
+                                <DinamicTable
+                                    language={"es"}
+                                    hiddenMenu
+                                    textTitleStyle={{ fontSize: 12, lineHeight: 14 }}
+                                    colors={{ header: "#2E86AB", textHeader: "white" }}
+                                    cellStyle={{ padding: 4 }}
+                                    textStyle={{ fontSize: 10 }}
+                                    loadData={async () => {
+                                        return dataValorInventario.sort((a, b) => b.valor_inventario - a.valor_inventario);
+                                    }}
+                                >
+                                    <DinamicTable.Col
+                                        key="producto"
+                                        label='Producto'
+                                        width={150}
+                                        data={e => e.row.producto}
+                                        footerComponent={(e) => {
+                                            return <SView style={{ alignItems: "center" }}>
+                                                <SText style={e.dinamicTable.textStyle}>{"Total"}</SText>
+                                            </SView>
+                                        }}
+                                    />
+                                    <DinamicTable.Col
+                                        key="stock_actual"
+                                        label='Stock'
+                                        width={60}
+                                        wrap
+                                        cellStyle={cellstyle}
+                                        data={e => e.row.stock_actual.toLocaleString('es-ES')}
+                                        footerComponent={(e) => {
+                                            let total = 0;
+                                            e.dinamicTable.data.map(a => {
+                                                total += a.stock_actual || 0
+                                            })
+                                            return <SView style={{ alignItems: "center" }}>
+                                                <SText style={e.dinamicTable.textStyle}>{total.toLocaleString('es-ES')}</SText>
+                                            </SView>
+                                        }}
+                                    />
+                                    <DinamicTable.Col
+                                        key="precio_compra"
+                                        label='Precio Compra'
+                                        width={size}
+                                        wrap
+                                        cellStyle={cellstyle}
+                                        data={e => this.formatCurrency(e.row.precio_compra)}
+                                        footerComponent={(e) => {
+                                            let total = 0;
+                                            let count = 0;
+                                            e.dinamicTable.data.map(a => {
+                                                total += a.precio_compra || 0;
+                                                count++;
+                                            })
+                                            const promedio = count > 0 ? total / count : 0;
+                                            return <SView style={{ alignItems: "center" }}>
+                                                <SText style={e.dinamicTable.textStyle}>{this.formatCurrency(promedio)}</SText>
+                                            </SView>
+                                        }}
+                                    />
+                                    <DinamicTable.Col
+                                        key="valor_inventario"
+                                        label='Valor Total'
+                                        width={size}
+                                        wrap
+                                        cellStyle={cellstyle}
+                                        data={e => this.formatCurrency(e.row.valor_inventario)}
+                                        footerComponent={(e) => {
+                                            let total = 0;
+                                            e.dinamicTable.data.map(a => {
+                                                total += a.valor_inventario || 0
+                                            })
+                                            return <SView style={{ alignItems: "center" }}>
+                                                <SText style={e.dinamicTable.textStyle}>{this.formatCurrency(total)}</SText>
+                                            </SView>
+                                        }}
+                                    />
+                                </DinamicTable>
+                            )}
+                        </SView>
+
+                    </SView>
+                </ScrollView>
             </SPage>
         );
     }

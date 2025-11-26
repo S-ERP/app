@@ -1,7 +1,8 @@
 import React from "react";
 import { SPage, SView, SText, SHr } from "servisofts-component";
-import DinamicTable from "../../Components/DinamicTable";
+import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default class tabla_compra extends React.Component {
     state = {
@@ -34,7 +35,6 @@ export default class tabla_compra extends React.Component {
             return;
         }
 
-        // Cargar las dos funciones en paralelo
         await Promise.all([
             this.loadUltimasCompras(selected.key),
             this.loadComprasPorMes(selected.key)
@@ -106,39 +106,6 @@ export default class tabla_compra extends React.Component {
         return estados[estado] || "Desconocido";
     };
 
-    renderTabla(titulo, data, loading, headers) {
-        if (loading) {
-            return (
-                <SView col={"xs-12"} padding={8}>
-                    <SText fontSize={16} bold>{titulo}</SText>
-                    <SHr />
-                    <SText>Cargando...</SText>
-                </SView>
-            );
-        }
-
-        if (data.length === 0) {
-            return (
-                <SView col={"xs-12"} padding={8}>
-                    <SText fontSize={16} bold>{titulo}</SText>
-                    <SHr />
-                    <SText>No hay datos disponibles</SText>
-                </SView>
-            );
-        }
-
-        return (
-            <SView col={"xs-12"} padding={8}>
-                <SText fontSize={16} bold>{titulo}</SText>
-                <SHr />
-                <DinamicTable
-                    data={data}
-                    header={headers}
-                />
-            </SView>
-        );
-    }
-
     componentWillUnmount() {
         this._mounted = false;
     }
@@ -151,40 +118,167 @@ export default class tabla_compra extends React.Component {
             loadingComprasPorMes
         } = this.state;
 
+        const size = 80;
+        const cellstyle = { padding: 4 };
+
         return (
             <SPage title="Estadísticas de Compras">
-                <SView col={"xs-12"} padding={16}>
-                    <SText fontSize={18} bold>Estadísticas de Compras</SText>
-                    <SHr />
+                <ScrollView>
+                    <SView col={"xs-12"} padding={16}>
+                        <SText fontSize={18} bold>Estadísticas de Compras</SText>
+                        <SHr />
 
+                        {/* Tabla de Últimas 10 Compras */}
+                        <SView col={"xs-12"} padding={8}>
+                            <SText fontSize={16} bold>Últimas 10 Compras</SText>
+                            <SHr />
+                            {loadingUltimasCompras ? (
+                                <SText>Cargando...</SText>
+                            ) : dataUltimasCompras.length === 0 ? (
+                                <SText>No hay datos disponibles</SText>
+                            ) : (
+                                <DinamicTable
+                                    language={"es"}
+                                    hiddenMenu
+                                    textTitleStyle={{ fontSize: 12, lineHeight: 14 }}
+                                    colors={{ header: "#2E86AB", textHeader: "white" }}
+                                    cellStyle={{ padding: 4 }}
+                                    textStyle={{ fontSize: 10 }}
+                                    loadData={async () => {
+                                        return dataUltimasCompras.sort((a, b) => new Date(b.fecha_on) - new Date(a.fecha_on));
+                                    }}
+                                >
+                                    <DinamicTable.Col
+                                        key="fecha_on"
+                                        label='Fecha'
+                                        width={100}
+                                        data={e => e.row.fecha_on}
+                                        footerComponent={(e) => {
+                                            return <SView style={{ alignItems: "center" }}>
+                                                <SText style={e.dinamicTable.textStyle}>{"Total"}</SText>
+                                            </SView>
+                                        }}
+                                    />
+                                    <DinamicTable.Col
+                                        key="descripcion"
+                                        label='Descripción'
+                                        width={150}
+                                        wrap
+                                        cellStyle={cellstyle}
+                                        data={e => e.row.descripcion}
+                                        footerComponent={(e) => {
+                                            return <SView style={{ alignItems: "center" }}>
+                                                <SText style={e.dinamicTable.textStyle}>{"-"}</SText>
+                                            </SView>
+                                        }}
+                                    />
+                                    <DinamicTable.Col
+                                        key="tipo_pago"
+                                        label='Tipo Pago'
+                                        width={size}
+                                        wrap
+                                        cellStyle={cellstyle}
+                                        data={e => e.row.tipo_pago}
+                                        footerComponent={(e) => {
+                                            return <SView style={{ alignItems: "center" }}>
+                                                <SText style={e.dinamicTable.textStyle}>{"-"}</SText>
+                                            </SView>
+                                        }}
+                                    />
+                                    <DinamicTable.Col
+                                        key="total_bs"
+                                        label='Total (Bs.)'
+                                        width={size}
+                                        wrap
+                                        cellStyle={cellstyle}
+                                        data={e => `Bs. ${Number(e.row.total_bs).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}
+                                        footerComponent={(e) => {
+                                            let total = 0;
+                                            e.dinamicTable.data.map(a => {
+                                                total += a.total_bs || 0
+                                            })
+                                            return <SView style={{ alignItems: "center" }}>
+                                                <SText style={e.dinamicTable.textStyle}>{`Bs. ${Number(total).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}</SText>
+                                            </SView>
+                                        }}
+                                    />
+                                </DinamicTable>
+                            )}
+                        </SView>
 
+                        <SHr />
 
-                    {/* Versión para móviles (una debajo de otra) */}
-                    <SView hide={["md", "lg", "xl"]}>
-                        {this.renderTabla(
-                            "Últimas 10 Compras",
-                            dataUltimasCompras,
-                            loadingUltimasCompras,
-                            [
-                                { key: "fecha_on", label: "Fecha" },
-                                { key: "descripcion", label: "Descripción" },
+                        {/* Tabla de Compras por Mes */}
+                        <SView col={"xs-12"} padding={8}>
+                            <SText fontSize={16} bold>Compras por Mes</SText>
+                            <SHr />
+                            {loadingComprasPorMes ? (
+                                <SText>Cargando...</SText>
+                            ) : dataComprasPorMes.length === 0 ? (
+                                <SText>No hay datos disponibles</SText>
+                            ) : (
+                                <DinamicTable
+                                    language={"es"}
+                                    hiddenMenu
+                                    textTitleStyle={{ fontSize: 12, lineHeight: 14 }}
+                                    colors={{ header: "#2E86AB", textHeader: "white" }}
+                                    cellStyle={{ padding: 4 }}
+                                    textStyle={{ fontSize: 10 }}
+                                    loadData={async () => {
+                                        return dataComprasPorMes.sort((a, b) => new Date(b.mes) - new Date(a.mes));
+                                    }}
+                                >
+                                    <DinamicTable.Col
+                                        key="mes_formateado"
+                                        label='Mes'
+                                        width={120}
+                                        data={e => e.row.mes_formateado}
+                                        footerComponent={(e) => {
+                                            return <SView style={{ alignItems: "center" }}>
+                                                <SText style={e.dinamicTable.textStyle}>{"Total"}</SText>
+                                            </SView>
+                                        }}
+                                    />
+                                    <DinamicTable.Col
+                                        key="cantidad_compras"
+                                        label='Cant. Compras'
+                                        width={size}
+                                        wrap
+                                        cellStyle={cellstyle}
+                                        data={e => e.row.cantidad_compras}
+                                        footerComponent={(e) => {
+                                            let total = 0;
+                                            e.dinamicTable.data.map(a => {
+                                                total += a.cantidad_compras || 0
+                                            })
+                                            return <SView style={{ alignItems: "center" }}>
+                                                <SText style={e.dinamicTable.textStyle}>{total}</SText>
+                                            </SView>
+                                        }}
+                                    />
+                                    <DinamicTable.Col
+                                        key="total_bs"
+                                        label='Total (Bs.)'
+                                        width={size}
+                                        wrap
+                                        cellStyle={cellstyle}
+                                        data={e => `Bs. ${Number(e.row.total_bs).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}
+                                        footerComponent={(e) => {
+                                            let total = 0;
+                                            e.dinamicTable.data.map(a => {
+                                                total += a.total_bs || 0
+                                            })
+                                            return <SView style={{ alignItems: "center" }}>
+                                                <SText style={e.dinamicTable.textStyle}>{`Bs. ${Number(total).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}</SText>
+                                            </SView>
+                                        }}
+                                    />
+                                </DinamicTable>
+                            )}
+                        </SView>
 
-                                { key: "total_bs", label: "Total (Bs.)" },
-                            ]
-                        )}
-
-                        {this.renderTabla(
-                            "Compras por Mes",
-                            dataComprasPorMes,
-                            loadingComprasPorMes,
-                            [
-                                { key: "mes_formateado", label: "Mes" },
-                                { key: "cantidad_compras", label: "Cantidad Compras" },
-                                { key: "total_bs", label: "Total (Bs.)" },
-                            ]
-                        )}
                     </SView>
-                </SView>
+                </ScrollView>
             </SPage>
         );
     }
