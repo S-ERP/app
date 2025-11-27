@@ -1,168 +1,185 @@
-import React, { Component, useState } from 'react';
-import { Dimensions, View } from 'react-native';
-import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { SButtom, SHr, SIcon, SImage, SPage, SSPiner, SText, STheme, SView } from 'servisofts-component';
-import { Slider } from '../Components/RangeSlider';
-import { Svg } from 'react-native-svg';
 import SSocket from 'servisofts-socket';
 import MDL from '../MDL';
-import InputFoto from '../Components/InputFoto';
 import SCharts from 'servisofts-charts';
-// import BarcodeScanner from '../Components/BarcodeScanner';
-
-
-const calculateTransformationMatrix = (p1, p2, p3, p4) => {
-    // Calcular las longitudes de los lados
-    const width = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-    const height = Math.sqrt(Math.pow(p4.x - p1.x, 2) + Math.pow(p4.y - p1.y, 2));
-
-    // Calcular ángulo de rotación
-    const angleRad = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-    const angle = angleRad * (180 / Math.PI); // Convertir a grados si se desea
-
-    // Calcular la matriz de transformación
-    const transformMatrix = [
-        Math.cos(angleRad), -Math.sin(angleRad), // Escala y rotación en el eje X
-        Math.sin(angleRad), Math.cos(angleRad),  // Escala y rotación en el eje Y
-        p1.x, p1.y  // Traslación en X y Y (posición del punto P1)
-    ];
-
-    return { transformMatrix, width, height };
-};
-
-
-export const SlideValue = ({ animatedValue, label, maxValue = 100, minValue = -100, step = 0.1 }) => {
-    const [value, setValue] = useState(animatedValue.value)
-    return <SView row padding={4}>
-        <SText width={100}>{label}</SText>
-        <Slider width={300} step={step} maxValue={maxValue} minValue={minValue} initialValue={animatedValue.value}
-            onIndexChange={e => {
-                setValue(e);
-                animatedValue.value = e
-            }} />
-        <SView width={8} />
-        <SText width={60}>{value.toFixed(2)}</SText>
-    </SView>
-}
-
-const Elemento = () => {
-    const translateX = useSharedValue(0)
-    const translateY = useSharedValue(0)
-    // const translateZ = useSharedValue(0)
-    const rotateX = useSharedValue(0)
-    const rotateY = useSharedValue(0)
-    const rotateZ = useSharedValue(0)
-    const scale = useSharedValue(1)
-    const perspective = useSharedValue(1)
-    const skewX = useSharedValue(0)
-    const skewY = useSharedValue(0)
-
-    const transformMatrix = calculateTransformationMatrix(
-        { x: 10, y: 10 },
-        { x: 200, y: 10 },
-        { x: 200, y: 200 },
-        { x: 10, y: 250 },
-    )
-    const animatedStyle = useAnimatedStyle(() => {
-        return {
-            width: 100,
-            height: 100,
-            transform: [
-                { perspective: perspective.value },
-                { translateX: translateX.value },
-                { translateY: translateY.value },
-                { rotateX: `${rotateX.value}rad` },
-                { rotateY: `${rotateY.value}rad` },
-                { rotateZ: `${rotateZ.value}rad` },
-                { scale: scale.value },
-                { skewX: `${skewX.value}deg` },
-                { skewY: `${skewY.value}deg` },
-            ],
-        };
-    });
-    const unGradoEnRadian = 0.0174533;
-    return <SView col={"xs-12"} height center>
-
-        <Animated.View style={[{
-            width: 200,
-            height: 200,
-            position: "absolute",
-            backgroundColor: "#f9f",
-        }, animatedStyle]}>
-            <SImage src={"https://drive.servisofts.com/http/texture/ricky.jpeg"} />
-        </Animated.View>
-        <SView col={"xs-12"} height padding={8}>
-            <SlideValue label={"scale"} animatedValue={scale} />
-            <SlideValue label={"translateX"} animatedValue={translateX} />
-            <SlideValue label={"translateY"} animatedValue={translateY} />
-            {/* <SlideValue label={"translateZ"} animatedValue={translateZ} /> */}
-            <SlideValue label={"rotateX"} animatedValue={rotateX} minValue={unGradoEnRadian * -60} maxValue={unGradoEnRadian * 60} />
-            <SlideValue label={"rotateY"} animatedValue={rotateY} minValue={unGradoEnRadian * -60} maxValue={unGradoEnRadian * 60} />
-            <SlideValue label={"rotateZ"} animatedValue={rotateZ} minValue={unGradoEnRadian * -60} maxValue={unGradoEnRadian * 60} />
-            <SlideValue label={"skewX"} animatedValue={skewX} minValue={unGradoEnRadian * -60} maxValue={unGradoEnRadian * 60} />
-            <SlideValue label={"skewX"} animatedValue={skewY} minValue={unGradoEnRadian * -60} maxValue={unGradoEnRadian * 60} />
-            <SlideValue label={"perspective"} animatedValue={perspective} minValue={1} maxValue={1000} />
-        </SView>
-    </SView>
-}
 
 class Test extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            loading: true,
+            chartData: {},
+            selectedFunction: "ventas_por_dia",
+            functions: [
+                { key: "ventas_por_dia", label: "Ventas por Día" },
+                { key: "ventas_por_mes", label: "Ventas por Mes" },
+                { key: "ventas_por_metodo_pago", label: "Ventas por Método Pago" },
+                { key: "productos_mas_vendidos", label: "Productos Más Vendidos" },
+                { key: "productos_mayor_beneficio", label: "Productos Mayor Beneficio" }
+            ]
         };
     }
 
     componentDidMount() {
-        // MDL.qr_reader.addEventListener("read", (e) => {
-        //     console.log("QR Code Read:", e);
-        // })
+        this.loadChartData();
     }
+
+    loadChartData = async () => {
+        this.setState({ loading: true });
+
+        try {
+            // Esperar selección de empresa
+            await new Promise(resolve => setTimeout(resolve, 100));
+            const selected = MDL.empresa.select;
+            if (!selected) {
+                this.setState({ loading: false, chartData: {} });
+                return;
+            }
+
+            const data = await this.executeFunction(this.state.selectedFunction, selected.key);
+            const chartData = this.transformDataForChart(data, this.state.selectedFunction);
+
+            this.setState({ chartData, loading: false });
+        } catch (error) {
+            console.error("Error cargando datos:", error);
+            this.setState({ loading: false, chartData: {} });
+        }
+    };
+
+    executeFunction = async (functionName, keyEmpresa) => {
+        try {
+            const res = await MDL.compra_venta.execute_function(functionName, [keyEmpresa]);
+            return Array.isArray(res) ? res : (res?.data ?? res?.result ?? []);
+        } catch (e) {
+            console.error(`Error en ${functionName}:`, e);
+            return [];
+        }
+    };
+
+    transformDataForChart = (data, functionType) => {
+        if (!data || data.length === 0) return {};
+
+        const limitedData = data.slice(0, 5); // Máximo 5 elementos
+
+        switch (functionType) {
+            case "ventas_por_dia":
+                return limitedData.reduce((acc, item) => {
+                    const fecha = item.fecha?.split('T')[0]?.split('-').reverse().join('/') || "Sin fecha";
+                    acc[fecha] = item.total_ventas ?? item.cantidad ?? 0;
+                    return acc;
+                }, {});
+
+            case "ventas_por_mes":
+                return limitedData.reduce((acc, item) => {
+                    const mes = item.mes_formateado ?? item.mes?.split('-')[1] + '/' + item.mes?.split('-')[0] ?? "Sin mes";
+                    acc[mes] = item.cantidad_ventas ?? item.total_ventas ?? 0;
+                    return acc;
+                }, {});
+
+            case "ventas_por_metodo_pago":
+                return limitedData.reduce((acc, item) => {
+                    const metodo = (item.metodo_pago ?? "Sin método").substring(0, 12);
+                    acc[metodo] = item.total_ventas ?? item.cantidad ?? 0;
+                    return acc;
+                }, {});
+
+            case "productos_mas_vendidos":
+                return limitedData.reduce((acc, item) => {
+                    const producto = (item.producto ?? "Sin nombre").substring(0, 12);
+                    acc[producto] = item.cantidad_total_vendida ?? 0;
+                    return acc;
+                }, {});
+
+            case "productos_mayor_beneficio":
+                return limitedData.reduce((acc, item) => {
+                    const producto = (item.producto ?? "Sin nombre").substring(0, 12);
+                    acc[producto] = item.beneficio_promedio ?? 0;
+                    return acc;
+                }, {});
+
+            default:
+                return {};
+        }
+    };
+
+    handleFunctionChange = (functionKey) => {
+        this.setState({ selectedFunction: functionKey }, this.loadChartData);
+    };
+
     render() {
+        const { loading, chartData, selectedFunction, functions } = this.state;
+
         return (
-            <SPage title={'Test'} center disableScroll>
-                {/* <InputFoto style={{
-                    width: 300,
-                    height: 300,
-                    borderWidth: 1,
-                    borderColor: "#f00",
-                }} /> */}
-                <SView style={{
-                    width: 400,
-                    height: 300
-                }}>
-                    <SCharts
-                        type='Column'
-                        showControl
-                        strokeWidth={1}
-                        space={0.1}
-                        padding={0.7}
-                        showLabel
-                        // showPercent
-                        showGuide
-                        showValue
-                        textColor={STheme.color.text}
-                        colors={[
-                            "#ff00ff",
-                            "#00ffff",
-                            "#ffff00",
-                            "#ff8800",
-                            "#00ff00",
-                        ]}
-                        data={{
-                            "manzana": 50,
-                            "banana": 30,
-                            "cereza": 20,
-                            "durazno": 15,
-                            "uva": 40
-                        }} />
+            <SView flex backgroundColor={STheme.color.background}>
+                {/* Header fijo */}
+                <SView height={60} backgroundColor={STheme.color.primary} center>
+                    <SText bold color='white' fontSize={18}>Gráficos de Datos</SText>
                 </SView>
 
-            </SPage >
+                {/* Selector de funciones */}
+                <SView padding={8}>
+                    <SText bold fontSize={14} center>Seleccionar Función:</SText>
+                    <SHr />
+                    <SView row center wrap>
+                        {functions.map((func) => (
+                            <SButtom key={func.key}
+                                onPress={() => this.handleFunctionChange(func.key)}
+                                style={{
+                                    margin: 2,
+                                    padding: 6,
+                                    backgroundColor: selectedFunction === func.key ? STheme.color.primary : "#E0E0E0",
+                                    borderRadius: 4,
+                                }}
+                            >
+                                <SText color={selectedFunction === func.key ? "white" : "#333"} fontSize={10}>
+                                    {func.label}
+                                </SText>
+                            </SButtom>
+                        ))}
+                    </SView>
+                </SView>
+
+                <SHr />
+
+                {/* Gráfico */}
+                <SView flex center padding={8}>
+                    {loading ? (
+                        <SView center>
+                            <SSPiner />
+                            <SText>Cargando...</SText>
+                        </SView>
+                    ) : Object.keys(chartData).length === 0 ? (
+                        <SText>No hay datos</SText>
+                    ) : (
+                        <SView width={350} height={250}>
+                            <SText bold center fontSize={14} margin={4}>
+                                {functions.find(f => f.key === selectedFunction)?.label}
+                            </SText>
+                            <SCharts
+                                type='Pie'
+                                showControl={false}
+                                strokeWidth={1}
+                                space={0.2}
+                                padding={0.6}
+                                showLabel={true}
+                                showGuide={true}
+                                showValue={true}
+                                textColor={STheme.color.text}
+                                colors={["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7"]}
+                                data={chartData}
+                            />
+                        </SView>
+                    )}
+                </SView>
+
+
+            </SView>
         );
     }
 }
+
 const initStates = (state) => {
     return { state }
 };
