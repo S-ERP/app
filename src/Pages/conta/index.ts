@@ -10,8 +10,9 @@ import report_config from "./report_config";
 import centro_costo from "./centro_costo";
 import centrocostojp from "./centrocostojp";
 import diario from "./diario"
-export default SPage.combinePages("conta",{
-    "":root,
+import gestion from "./gestion"
+export default SPage.combinePages("conta", {
+    "": root,
     cuentas,
     cuentas_t,
     dimension,
@@ -20,5 +21,7 @@ export default SPage.combinePages("conta",{
     diario,
     centro_costo,
     centrocostojp,
-    ...report_config
+    ...gestion,
+    ...report_config,
+
 })
