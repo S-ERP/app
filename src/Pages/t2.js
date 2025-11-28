@@ -153,12 +153,12 @@ class Test extends Component {
                     ) : Object.keys(chartData).length === 0 ? (
                         <SText>No hay datos</SText>
                     ) : (
-                        <SView width={350} height={250}>
+                        <SView width={800} height={450}>
                             <SText bold center fontSize={14} margin={4}>
                                 {functions.find(f => f.key === selectedFunction)?.label}
                             </SText>
                             <SCharts
-                                type='Pie'
+                                type='Line'
                                 showControl={false}
                                 strokeWidth={1}
                                 space={0.2}

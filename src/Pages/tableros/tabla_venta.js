@@ -1,8 +1,9 @@
 import React from "react";
-import { SPage, SView, SText, SHr } from "servisofts-component";
+import { SPage, SView, SText, SHr, STheme } from "servisofts-component";
 import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
+import SCharts from "servisofts-charts";
 
 export default class tabla_venta extends React.Component {
     state = {
@@ -57,7 +58,7 @@ export default class tabla_venta extends React.Component {
             if (this._mounted) this.setState({ dataVentasPorDia: data, loadingVentasPorDia: false });
         } catch (e) {
             console.error("Error en ventas_por_dia:", e);
-            if (this._mounted) this.setState({ loadingVentasPorDia: false });
+            if (this._mounted) this.setState({ dataVentasPorDia: [], loadingVentasPorDia: false });
         }
     };
 
@@ -73,7 +74,7 @@ export default class tabla_venta extends React.Component {
             if (this._mounted) this.setState({ dataVentasPorMes: data, loadingVentasPorMes: false });
         } catch (e) {
             console.error("Error en ventas_por_mes:", e);
-            if (this._mounted) this.setState({ loadingVentasPorMes: false });
+            if (this._mounted) this.setState({ dataVentasPorMes: [], loadingVentasPorMes: false });
         }
     };
 
@@ -89,7 +90,7 @@ export default class tabla_venta extends React.Component {
             if (this._mounted) this.setState({ dataVentasPorMetodoPago: data, loadingVentasPorMetodoPago: false });
         } catch (e) {
             console.error("Error en ventas_por_metodo_pago:", e);
-            if (this._mounted) this.setState({ loadingVentasPorMetodoPago: false });
+            if (this._mounted) this.setState({ dataVentasPorMetodoPago: [], loadingVentasPorMetodoPago: false });
         }
     };
 
@@ -107,6 +108,17 @@ export default class tabla_venta extends React.Component {
         return "N/A";
     };
 
+    // Transformar datos para SCharts (formato correcto: objeto {label: value})
+    transformDataForChart = (data) => {
+        if (!data || !Array.isArray(data)) return {};
+
+        return data.reduce((acc, item) => {
+            const fecha = this.formatFecha(item.fecha);
+            acc[fecha] = item.total || 0;
+            return acc;
+        }, {});
+    }
+
     render() {
         const {
             dataVentasPorDia,
@@ -119,6 +131,9 @@ export default class tabla_venta extends React.Component {
 
         const size = 80;
         const cellstyle = { padding: 4 };
+
+        // Transformar datos para el gráfico
+        const chartData = this.transformDataForChart(dataVentasPorDia);
 
         return (
             <SPage title="Estadísticas de Ventas">
@@ -133,66 +148,22 @@ export default class tabla_venta extends React.Component {
                             <SHr />
                             {loadingVentasPorDia ? (
                                 <SText>Cargando...</SText>
-                            ) : dataVentasPorDia.length === 0 ? (
+                            ) : Object.keys(chartData).length === 0 ? (
                                 <SText>No hay datos disponibles</SText>
                             ) : (
-                                <DinamicTable
-                                    language={"es"}
-                                    hiddenMenu
-                                    textTitleStyle={{ fontSize: 12, lineHeight: 14 }}
-                                    colors={{ header: "#2E86AB", textHeader: "white" }}
-                                    cellStyle={{ padding: 4 }}
-                                    textStyle={{ fontSize: 10 }}
-                                    loadData={async () => {
-                                        return dataVentasPorDia.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-                                    }}
-                                >
-                                    <DinamicTable.Col
-                                        key="fecha"
-                                        label='Fecha'
-                                        width={100}
-                                        data={e => this.formatFecha(e.row.fecha)}
-                                        footerComponent={(e) => {
-                                            return <SView style={{ alignItems: "center" }}>
-                                                <SText style={e.dinamicTable.textStyle}>{"Total"}</SText>
-                                            </SView>
-                                        }}
-                                    />
-                                    <DinamicTable.Col
-                                        key="cantidad"
-                                        label='Cant. Ventas'
-                                        width={size}
-                                        wrap
-                                        cellStyle={cellstyle}
-                                        data={e => e.row.cantidad}
-                                        footerComponent={(e) => {
-                                            let total = 0;
-                                            e.dinamicTable.data.map(a => {
-                                                total += a.cantidad || 0
-                                            })
-                                            return <SView style={{ alignItems: "center" }}>
-                                                <SText style={e.dinamicTable.textStyle}>{total}</SText>
-                                            </SView>
-                                        }}
-                                    />
-                                    <DinamicTable.Col
-                                        key="total"
-                                        label='Monto Total'
-                                        width={size}
-                                        wrap
-                                        cellStyle={cellstyle}
-                                        data={e => `Bs. ${Number(e.row.total).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}
-                                        footerComponent={(e) => {
-                                            let total = 0;
-                                            e.dinamicTable.data.map(a => {
-                                                total += a.total || 0
-                                            })
-                                            return <SView style={{ alignItems: "center" }}>
-                                                <SText style={e.dinamicTable.textStyle}>{`Bs. ${Number(total).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}</SText>
-                                            </SView>
-                                        }}
-                                    />
-                                </DinamicTable>
+                                <SCharts
+                                    type='Line'
+                                    showControl={false}
+                                    strokeWidth={1}
+                                    space={0.2}
+                                    padding={0.6}
+                                    showLabel={true}
+                                    showGuide={true}
+                                    showValue={true}
+                                    textColor={STheme.color.text}
+                                    colors={["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7"]}
+                                    data={chartData}  // ← FORMA CORRECTA para SCharts
+                                />
                             )}
                         </SView>
 
