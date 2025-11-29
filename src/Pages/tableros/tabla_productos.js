@@ -1,8 +1,9 @@
 import React from "react";
-import { SPage, SView, SText, SHr } from "servisofts-component";
+import { SPage, SView, SText, SHr, STheme } from "servisofts-component";
 import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
+import SCharts from "servisofts-charts";
 
 export default class tabla_productos extends React.Component {
     state = {
@@ -74,12 +75,37 @@ export default class tabla_productos extends React.Component {
         }
     };
 
+    formatFecha = (fechaISO) => {
+        if (!fechaISO) return "N/A";
+        if (typeof fechaISO === 'string' && !fechaISO.includes('T')) {
+            return fechaISO;
+        }
+        if (typeof fechaISO === 'string' && fechaISO.includes('T')) {
+            return fechaISO.split('T')[0];
+        }
+        if (fechaISO instanceof Date) {
+            return fechaISO.toISOString().split('T')[0];
+        }
+        return "N/A";
+    };
+
     formatCurrency = (amount) => {
         return "Bs. " + (parseFloat(amount) || 0).toLocaleString('es-BO', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
     };
+
+    // CORRECCIÓN: Función específica para transformar datos de productos con mayor beneficio
+    transformDataForProductosChart = (data) => {
+        if (!data || !Array.isArray(data)) return {};
+
+        return data.reduce((acc, item) => {
+            const producto = (item.producto || "Sin nombre").substring(0, 15); // Limitar longitud del nombre
+            acc[producto] = item.beneficio_promedio || 0;
+            return acc;
+        }, {});
+    }
 
     componentWillUnmount() {
         this._mounted = false;
@@ -95,6 +121,13 @@ export default class tabla_productos extends React.Component {
 
         const size = 80;
         const cellstyle = { padding: 4 };
+
+        // CORRECCIÓN: Usar la función correcta para transformar los datos
+        const chartData = this.transformDataForProductosChart(dataProductosMayorBeneficio);
+
+        // Agregar console.log para debug
+        console.log("Datos de productos mayor beneficio:", dataProductosMayorBeneficio);
+        console.log("Datos transformados para gráfico:", chartData);
 
         return (
             <SPage title="Estadísticas de Productos">
@@ -174,98 +207,28 @@ export default class tabla_productos extends React.Component {
 
                         <SHr />
 
-                        {/* Tabla de Productos con Mayor Beneficio */}
+                        {/* CORRECCIÓN: Cambiar título y usar gráfico de barras para productos */}
                         <SView col={"xs-12"} padding={8}>
                             <SText fontSize={16} bold>Productos con Mayor Beneficio</SText>
                             <SHr />
                             {loadingProductosMayorBeneficio ? (
                                 <SText>Cargando...</SText>
-                            ) : dataProductosMayorBeneficio.length === 0 ? (
+                            ) : Object.keys(chartData).length === 0 ? (
                                 <SText>No hay datos disponibles</SText>
                             ) : (
-                                <DinamicTable
-                                    language={"es"}
-                                    hiddenMenu
-                                    textTitleStyle={{ fontSize: 12, lineHeight: 14 }}
-                                    colors={{ header: "#2E86AB", textHeader: "white" }}
-                                    cellStyle={{ padding: 4 }}
-                                    textStyle={{ fontSize: 10 }}
-                                    loadData={async () => {
-                                        return dataProductosMayorBeneficio.sort((a, b) => b.beneficio_promedio - a.beneficio_promedio);
-                                    }}
-                                >
-                                    <DinamicTable.Col
-                                        key="producto"
-                                        label='Producto'
-                                        width={150}
-                                        data={e => e.row.producto}
-                                        footerComponent={(e) => {
-                                            return <SView style={{ alignItems: "center" }}>
-                                                <SText style={e.dinamicTable.textStyle}>{"Promedio"}</SText>
-                                            </SView>
-                                        }}
-                                    />
-                                    <DinamicTable.Col
-                                        key="precio_compra_promedio"
-                                        label='Precio Compra'
-                                        width={size}
-                                        wrap
-                                        cellStyle={cellstyle}
-                                        data={e => this.formatCurrency(e.row.precio_compra_promedio)}
-                                        footerComponent={(e) => {
-                                            let total = 0;
-                                            let count = 0;
-                                            e.dinamicTable.data.map(a => {
-                                                total += a.precio_compra_promedio || 0;
-                                                count++;
-                                            })
-                                            const promedio = count > 0 ? total / count : 0;
-                                            return <SView style={{ alignItems: "center" }}>
-                                                <SText style={e.dinamicTable.textStyle}>{this.formatCurrency(promedio)}</SText>
-                                            </SView>
-                                        }}
-                                    />
-                                    <DinamicTable.Col
-                                        key="precio_venta_promedio"
-                                        label='Precio Venta'
-                                        width={size}
-                                        wrap
-                                        cellStyle={cellstyle}
-                                        data={e => this.formatCurrency(e.row.precio_venta_promedio)}
-                                        footerComponent={(e) => {
-                                            let total = 0;
-                                            let count = 0;
-                                            e.dinamicTable.data.map(a => {
-                                                total += a.precio_venta_promedio || 0;
-                                                count++;
-                                            })
-                                            const promedio = count > 0 ? total / count : 0;
-                                            return <SView style={{ alignItems: "center" }}>
-                                                <SText style={e.dinamicTable.textStyle}>{this.formatCurrency(promedio)}</SText>
-                                            </SView>
-                                        }}
-                                    />
-                                    <DinamicTable.Col
-                                        key="beneficio_promedio"
-                                        label='Beneficio'
-                                        width={size}
-                                        wrap
-                                        cellStyle={cellstyle}
-                                        data={e => this.formatCurrency(e.row.beneficio_promedio)}
-                                        footerComponent={(e) => {
-                                            let total = 0;
-                                            let count = 0;
-                                            e.dinamicTable.data.map(a => {
-                                                total += a.beneficio_promedio || 0;
-                                                count++;
-                                            })
-                                            const promedio = count > 0 ? total / count : 0;
-                                            return <SView style={{ alignItems: "center" }}>
-                                                <SText style={e.dinamicTable.textStyle}>{this.formatCurrency(promedio)}</SText>
-                                            </SView>
-                                        }}
-                                    />
-                                </DinamicTable>
+                                <SCharts
+                                    type='Bar'  // Cambiar a Bar para mejor visualización de productos
+                                    showControl={false}
+                                    strokeWidth={1}
+                                    space={0.2}
+                                    padding={0.6}
+                                    showLabel={true}
+                                    showGuide={true}
+                                    showValue={true}
+                                    textColor={STheme.color.text}
+                                    colors={["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7"]}
+                                    data={chartData}
+                                />
                             )}
                         </SView>
 
