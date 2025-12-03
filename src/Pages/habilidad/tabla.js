@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import MDL from '../../MDL';
 import FloatButtom from '../../Components/FloatButtom';
 import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
-import PopupRegistrarHabilidad from '../empresa/Components/PopupRegistrarHabilidad';
+import PopupRegistrarHabilidad from './Components/PopupRegistrarHabilidad';
+import SSocket from 'servisofts-socket';
 
 export default class tabla extends Component {
     componentDidMount() {
@@ -48,7 +49,7 @@ export default class tabla extends Component {
         return (
             <SPage title={"Habilidades"} disableScroll>
                 {/* Header */}
-                <SView row center style={{
+                {/* <SView row center style={{
                     padding: 16,
                     borderBottomWidth: 1,
                     borderBottomColor: STheme.color.card,
@@ -56,7 +57,7 @@ export default class tabla extends Component {
                 }}>
                     <SText fontSize={16} bold>Lista de Habilidades</SText>
                     <SView flex />
-                </SView>
+                </SView> */}
 
                 {/* Tabla */}
                 <DinamicTable
@@ -97,6 +98,28 @@ export default class tabla extends Component {
                                             // Lógica para eliminar
                                             // Necesitarías implementar MDL.habilidad.eliminar()
                                             console.log("Eliminar:", e.row);
+
+                                            SPopup.confirm({
+                                                title: "Eliminar Habilidad",
+                                                message: "¿Estás seguro de eliminar esta habilidad?",
+                                                onPress: () => {
+                                                    const habilidad_ = {
+                                                        ...e.row,
+                                                        estado: 0,
+                                                    }
+                                                    SSocket.sendPromise({
+                                                        component: "habilidad",
+                                                        type: "editar",
+                                                        data: habilidad_,
+                                                        key_usuario: MDL.usuario.session?.key,
+                                                    }).then(e => {
+                                                        this.DinamicTable.loadData();
+                                                    }).catch(e => {
+                                                        console.error("response", e);
+                                                    })
+
+                                                }
+                                            })
                                         }
                                     }
                                 ]
@@ -136,8 +159,12 @@ export default class tabla extends Component {
                         width={80}
                         data={e => e.row.estado == 1 ? "Activo" : "Inactivo"}
                         textStyle={{
-                            fontSize: 10,
-                            color: e => e.row.estado == 1 ? STheme.color.success : STheme.color.danger,
+                            fontSize: 12,
+                            // color: e => e.row.estado == 1 ? STheme.color.success : STheme.color.danger,
+                        }}
+                        customComponent={(e) => {
+                            return (<SText color={e.row.estado == 1 ? STheme.color.success : STheme.color.danger}>{e.row.estado == 1 ? "Activo" : "Inactivo"}</SText>)
+
                         }}
                     />
                 </DinamicTable>

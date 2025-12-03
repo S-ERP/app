@@ -22,8 +22,8 @@ export default class PopupRegistrarHabilidad extends Component<Props> {
                     borderWidth: 1,
                     backgroundColor: STheme.color.background
                 }} withoutFeedback>
-                    <PopupRegistrarHabilidad 
-                        {...props} 
+                    <PopupRegistrarHabilidad
+                        {...props}
                         onCancel={() => {
                             SPopup.close("PopupRegistrarHabilidad");
                             if (props.onCancel) props.onCancel();
@@ -60,18 +60,18 @@ export default class PopupRegistrarHabilidad extends Component<Props> {
     handleGuardar = async () => {
         const { descripcion, isSaving, isEditing } = this.state;
         const { editObject } = this.props;
-        
+
         if (isSaving) return;
-        
+
         if (!descripcion || descripcion.trim() === '') {
             return;
         }
-        
+
         this.setState({ isSaving: true });
-        
+
         try {
             const habilidadNombre = descripcion.trim();
-            
+
             if (isEditing && editObject) {
                 // MODE: EDITAR - Actualizar registro existente
                 const dataToSend = {
@@ -79,29 +79,29 @@ export default class PopupRegistrarHabilidad extends Component<Props> {
                     descripcion: habilidadNombre,
                     estado: editObject.estado || 1,
                 };
-                
+
                 // IMPORTANTE: Necesitas tener un método 'editar' en MDL.habilidad
                 // Si no existe, necesitas crearlo similar a 'registro'
                 await MDL.habilidad.editar(dataToSend);
-                
+
             } else {
                 // MODE: CREAR - Nuevo registro
                 const dataToSend = {
                     descripcion: habilidadNombre,
                     estado: 1,
                 };
-                
+
                 await MDL.habilidad.registro(dataToSend);
             }
-            
+
             // Limpiar el input
             this.setState({ descripcion: "" });
-            
+
             // Notificar éxito
             if (this.props.onSuccess) {
                 this.props.onSuccess();
             }
-            
+
         } catch (error) {
             console.error("Error al guardar habilidad:", error);
         } finally {
@@ -119,7 +119,7 @@ export default class PopupRegistrarHabilidad extends Component<Props> {
                     {isEditing ? "Editar Habilidad" : "Registrar Nueva Habilidad"}
                 </SText>
                 <SHr />
-                
+
                 <SInput
                     ref={(ref: any) => this.inputRef = ref}
                     placeholder="Nombre de la habilidad"
@@ -128,34 +128,49 @@ export default class PopupRegistrarHabilidad extends Component<Props> {
                         this.setState({ descripcion: text });
                     }}
                     onSubmitEditing={this.handleGuardar}
-                    style={{
-                        width: "100%",
-                        marginBottom: 16,
-                        color: STheme.color.danger,
-                        borderWidth: 1,
-                        borderColor: STheme.color.card,
-                        borderRadius: 4,
-                        paddingHorizontal: 8,
-                        backgroundColor: STheme.color.white
-                    }}
+                    // style={{
+                    //     width: "100%",
+                    //     marginBottom: 16,
+                    //     color: STheme.color.danger,
+                    //     borderWidth: 1,
+                    //     borderColor: STheme.color.card,
+                    //     borderRadius: 4,
+                    //     paddingHorizontal: 8,
+                    //     backgroundColor: STheme.color.white
+                    // }}
+                    customStyle={"default"}
                     autoFocus={true}
                 />
-                
+
                 {isEditing && editObject && (
                     <SView style={{ marginBottom: 16 }}>
                         <SText fontSize={10} color={STheme.color.lightGray}>
-                          
+
                         </SText>
                     </SView>
                 )}
-                
+
                 <SHr h={16} />
-                
                 <SView row col={"xs-12"}>
+                    {this.props.onCancel && <>
+                        <Btn type='danger' label='CANCELAR' onPress={() => {
+                            if (this.props.onCancel) this.props.onCancel()
+                        }} />
+                        <SView width={8} />
+                    </>}
+                    <Btn type='primary' label='GUARDAR'
+                        // onPress={() => {
+                        //     if (this.form) this.form.submit();
+                        // }}
+                        onPress={this.handleGuardar}
+                    />
+                </SView>
+
+                {/* <SView row col={"xs-12"}>
                     {this.props.onCancel && (
                         <>
-                            <SButtom 
-                                type='danger' 
+                            <SButtom
+                                type='danger'
                                 onPress={() => {
                                     if (this.props.onCancel) this.props.onCancel();
                                 }}
@@ -166,7 +181,7 @@ export default class PopupRegistrarHabilidad extends Component<Props> {
                             </SButtom>
                         </>
                     )}
-                    
+
                     <SButtom 
                         type='primary' 
                         onPress={this.handleGuardar}
@@ -177,8 +192,29 @@ export default class PopupRegistrarHabilidad extends Component<Props> {
                             {isSaving ? "Guardando..." : (isEditing ? "Actualizar" : "Guardar")}
                         </SText>
                     </SButtom>
-                </SView>
+                </SView> */}
             </SView>
         );
+    }
+}
+
+
+class Btn extends React.Component<any> {
+    render() {
+        const styles: any = {
+
+        }
+
+        if (this.props.type == "danger") {
+            styles.backgroundColor = STheme.color.danger;
+        }
+        if (this.props.type == "primary") {
+            styles.backgroundColor = STheme.color.primary;
+            styles.borderColor = STheme.color.text;
+            styles.borderWidth = 1;
+        }
+        return <SView flex card height={30} center onPress={this.props.onPress} style={styles}>
+            <SText>{this.props.label}</SText>
+        </SView>
     }
 }
