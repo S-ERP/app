@@ -89,6 +89,7 @@ export default class Barra extends React.Component {
                         <Page label={"Pizarra"} url={"/empresa/config2"} permiso={"ver"} permiso_url="/empresa/config" />
                         <Page label={"Monedas"} url={"/empresa/moneda"} permiso={"ver"} permiso_url="/empresa/moneda" />
                         <Page label={"Tipos de pagos"} url={"/empresa/tipo_pago"} permiso={"ver"} />
+                        <Page label={"Habilidades"} url={"/habilidad/tabla"} permiso={"ver"} permiso_url="/habilidad/tabla" />
                         <Page label={"Pasarelas"} url={"/pasarela"} permiso={"ver"} />
                     </Page>
                     <Page label={"Contabilidad"}
@@ -260,6 +261,8 @@ export default class Barra extends React.Component {
                         <Page label={"Inventario"} url={"/tableros/tabla_inventario"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Valor de Stock"} url={"/tableros/tabla_valor_stock"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                     </Page>
+
+
                         
 
 

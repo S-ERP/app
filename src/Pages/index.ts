@@ -98,8 +98,7 @@ import descuento from "./descuento";
 import excel from "./excel";
 import tag from "./tag";
 import test3 from "./test3";
-import tabla from "./inventario/almacen/tabla";
-
+import tabla from "./habilidad";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -110,7 +109,8 @@ export default SPage.combinePages("/", {
   pizarra2,
   // "": lobyRoot,
   root: Root,
-  ricky,
+  ...ricky,
+  ...tabla, 
   anim1,
   home,
   home2,
