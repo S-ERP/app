@@ -32,7 +32,7 @@ export default class table extends Component {
         return tipos;
     }
     render() {
-        return <SPage title={"Tipos de productos"} disableScroll>
+        return <SPage title={"Tipos de productosoooooooo"} disableScroll>
             <DinamicTable
                 ref={ref => this.table = ref}
                 {...Config.table.applyTheme()}
@@ -113,12 +113,28 @@ export default class table extends Component {
                     textStyle={{
                         fontSize: 14,
                     }} />
+
+
+
+                <DinamicTable.Col key={"codigo_facturacion"} label="codigo_facturacion"
+                    width={200}
+                    textStyle={{
+                        color: STheme.color.lightGray
+                    }}
+                    data={e => e.row.codigo_facturacion ? `${e.row.codigo_facturacion}` : ""} />
+
+
+
                 <DinamicTable.Col key={"key_cuenta_contable"} label="key_cuenta_contable"
                     width={200}
                     textStyle={{
                         color: STheme.color.lightGray
                     }}
                     data={e => e.row.cuenta_contable ? `${e.row.cuenta_contable.codigo} ${e.row.cuenta_contable.descripcion}` : ""} />
+
+      
+                {/* codigo_facturacion */}
+
                 <DinamicTable.Col key={"key_cuenta_contable_ganancia"} label="key_cuenta_contable_ganancia"
                     width={200}
                     textStyle={{
