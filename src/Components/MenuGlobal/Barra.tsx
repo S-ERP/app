@@ -89,6 +89,7 @@ export default class Barra extends React.Component {
                         <Page label={"Pizarra"} url={"/empresa/config2"} permiso={"ver"} permiso_url="/empresa/config" />
                         <Page label={"Monedas"} url={"/empresa/moneda"} permiso={"ver"} permiso_url="/empresa/moneda" />
                         <Page label={"Tipos de pagos"} url={"/empresa/tipo_pago"} permiso={"ver"} />
+                        <Page label={"Habilidades"} url={"/habilidad/tabla"} permiso={"ver"} permiso_url="/habilidad/tabla" />
                         <Page label={"Pasarelas"} url={"/pasarela"} permiso={"ver"} />
                     </Page>
                     <Page label={"Contabilidad"}
@@ -110,6 +111,7 @@ export default class Barra extends React.Component {
                         <Page label={"Balance general"} url={"/conta/balance"} permiso="ver" />
                         <Page label={"Libro Diario"} url={"/conta/libro_diario"} permiso="ver" />
                         <Page label={"Cuentas T"} url={"/conta/cuentas_t"} permiso_url={"/conta/cuentas_t"} permiso="ver" />
+                        <Page label={"Gestiones"} url={"/conta/gestion"}  permiso="ver" />
                         <Page label={"Sistema Antiguo"} url={"/contabilidad"} permiso="ver" />
 
                         {/* </Page> */}
@@ -257,7 +259,10 @@ export default class Barra extends React.Component {
                         <Page label={"Compras"} url={"/tableros/tabla_compra"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Productos"} url={"/tableros/tabla_productos"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Inventario"} url={"/tableros/tabla_inventario"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Valor de Stock"} url={"/tableros/tabla_valor_stock"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                     </Page>
+
+
                         
 
 

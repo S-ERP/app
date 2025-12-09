@@ -6,6 +6,7 @@ import cuenta_contable from "./cuenta_contable";
 import centro_costo_tipo from "./centro_costo_tipo";
 import centro_costo from "./centro_costo";
 import diario from "./diario";
+import gestion from "./gestion";
 
 export default class contabilidad extends MDLAbstract<EventListener> {
   color_tipo = {
@@ -19,6 +20,8 @@ export default class contabilidad extends MDLAbstract<EventListener> {
   centro_costo_tipo = new centro_costo_tipo();
   centro_costo = new centro_costo();
   diario = new diario();
+  gestion = new gestion();
+
 
   async componentDidMount() {
     this.cuenta_contable.componentDidMount();

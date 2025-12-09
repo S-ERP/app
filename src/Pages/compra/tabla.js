@@ -164,7 +164,7 @@ export default class tabla extends Component {
                 }}
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
-                <DinamicTable.Col key={"-keyprofile"} label='Verwwwwww' width={40} data={(e) => e.row?.key}
+                <DinamicTable.Col key={"-keyprofile"} label='Ver' width={40} data={(e) => e.row?.key}
                     customComponent={e => <>
                         {/* <SView row center card padding={2} onPress={() => { SNavigation.navigate("/compra/profile", { pk: e.row.key }) }}>
                             <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>

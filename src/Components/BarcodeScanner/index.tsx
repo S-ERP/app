@@ -55,7 +55,7 @@ export default class BarcodeScanner extends React.Component<BarcodeScannerProps,
         audio.load();
         const dimen = this.dimensions;
         this.scanner.start(
-            { facingMode: "environment" }, // cámara trasera
+            { facingMode: { ideal: "environment" } }, // cámara trasera
             {
                 fps: 10,
 
@@ -65,7 +65,7 @@ export default class BarcodeScanner extends React.Component<BarcodeScannerProps,
                     height: Math.min(dimen.width, dimen.height) * 0.8,
                 },
                 videoConstraints: {
-                    facingMode: "environment", // cámara trasera
+                    facingMode: { ideal: "environment" }, // cámara trasera
                 }
             },
             (decodedText) => {
