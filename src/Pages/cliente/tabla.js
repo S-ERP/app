@@ -240,6 +240,14 @@ export default class ListaClientes extends Component {
                 loadData={() => this.loadInitialData()}
             >
                 <DinamicTable.Col key="index" label="#" width={40} data={e => e.index + 1} />
+                {/* <DinamicTable.Col
+                    key="key-"
+                    label="Ver"
+                    width={40}
+                    data={e => ""}
+                    customComponent={e => <SView row center card padding={2} onPress={() => { SNavigation.navigate("/crm/detalle", { key: e.row.key }) }}>
+                        <SIcon name='Eyes' height={14} fill={STheme.color.lightGray} ></SIcon>
+                    </SView>} /> */}
                 <DinamicTable.Col
                     key="key"
                     label="Foto"
@@ -261,6 +269,7 @@ export default class ListaClientes extends Component {
                         </SView>
                     )}
                 />
+
                 <DinamicTable.Col key="nombres" label="Nombre Completo" width={120} data={e => e.row?.nombres} />
                 <DinamicTable.Col key="telefono" label="Teléfono" width={120} data={e => e.row?.telefono} />
                 <DinamicTable.Col key="correo" label="Correo" width={150} data={e => e.row?.correo} />
