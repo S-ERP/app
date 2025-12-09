@@ -89,7 +89,7 @@ export default class Barra extends React.Component {
                         <Page label={"Pizarra"} url={"/empresa/config2"} permiso={"ver"} permiso_url="/empresa/config" />
                         <Page label={"Monedas"} url={"/empresa/moneda"} permiso={"ver"} permiso_url="/empresa/moneda" />
                         <Page label={"Tipos de pagos"} url={"/empresa/tipo_pago"} permiso={"ver"} />
-                        <Page label={"Habilidades"} url={"/habilidad/tabla"} permiso={"ver"} permiso_url="/habilidad/tabla" />
+
                         <Page label={"Pasarelas"} url={"/pasarela"} permiso={"ver"} />
                     </Page>
                     <Page label={"Contabilidad"}
@@ -111,7 +111,7 @@ export default class Barra extends React.Component {
                         <Page label={"Balance general"} url={"/conta/balance"} permiso="ver" />
                         <Page label={"Libro Diario"} url={"/conta/libro_diario"} permiso="ver" />
                         <Page label={"Cuentas T"} url={"/conta/cuentas_t"} permiso_url={"/conta/cuentas_t"} permiso="ver" />
-                        <Page label={"Gestiones"} url={"/conta/gestion"}  permiso="ver" />
+                        <Page label={"Gestiones"} url={"/conta/gestion"} permiso="ver" />
                         <Page label={"Sistema Antiguo"} url={"/contabilidad"} permiso="ver" />
 
                         {/* </Page> */}
@@ -144,7 +144,7 @@ export default class Barra extends React.Component {
                         <Page label={"Historial de Compras"} url={"/compra/tabla"} permiso="ver" permiso_url="/compra" />
                         <Page label={"Compras Rapida"} url={"/compra2"} permiso="ver" permiso_url="/compra" />
                         <Page label={"Compras Rapida New"} url={"/compra3"} permiso="ver" permiso_url="/compra" />
-                        
+
 
                     </Page>
                     <Page label={"Ventas"}
@@ -263,7 +263,7 @@ export default class Barra extends React.Component {
                     </Page>
 
 
-                        
+
 
 
 
@@ -289,6 +289,7 @@ export default class Barra extends React.Component {
                     >
                         {/* <Page label={"All"} url={"/usuario"} permiso="ver" /> */}
                         <Page label={"Usuarios"} url={"/usuario/table"} permiso="ver" permiso_url="/usuario" />
+                        <Page label={"Habilidades"} url={"/habilidad/tabla"} permiso={"ver"} permiso_url="/habilidad/tabla" />
                         <Page label={"Roles y Permisos"} url={"/rol"} permiso="ver" />
                     </Page>
                     {/* <Page label={"Roles y Permisos"} url={"/rol"}

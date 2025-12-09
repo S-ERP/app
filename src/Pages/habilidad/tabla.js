@@ -154,18 +154,19 @@ export default class tabla extends Component {
                         data={e => e.row.descripcion}
                     />
                     <DinamicTable.Col
-                        key={"estado"}
-                        label='Estado'
-                        width={80}
-                        data={e => e.row.estado == 1 ? "Activo" : "Inactivo"}
+                        key={"key_"}
+                        label='Cantidad usuarios'
+                        width={110}
+                        // data={e => e.row.estado == 1 ? MDL.habilidad_usuarios.getCantidadPorHabilidad(e.row.key) : 0}
+                        data={e => e.row.estado}
                         textStyle={{
                             fontSize: 12,
                             // color: e => e.row.estado == 1 ? STheme.color.success : STheme.color.danger,
                         }}
-                        customComponent={(e) => {
-                            return (<SText color={e.row.estado == 1 ? STheme.color.success : STheme.color.danger}>{e.row.estado == 1 ? "Activo" : "Inactivo"}</SText>)
+                        // customComponent={(e) => {
+                        //     return (<SText color={e.row.estado == 1 ? STheme.color.success : STheme.color.danger}>{e.row.estado == 1 ? "Activo" : "Inactivo"}</SText>)
 
-                        }}
+                        // }}
                     />
                 </DinamicTable>
 
