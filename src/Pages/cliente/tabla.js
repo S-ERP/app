@@ -9,6 +9,7 @@ import FloatMenu from '../../Components/FloatMenu';
 import PopupCrearCliente from './Components/PopupCrearCliente';
 import SIconApp from '../../Assets/SIconApp';
 import label from '../ajustes/label';
+import AdminsitrarHabilidades from './Components/AdministrarHabilidades';
 
 const URL = "/crm/cliente";
 
@@ -79,11 +80,17 @@ export default class ListaClientes extends Component {
             // Obtener resumen de cuotas
             const registros = await MDL.compra_venta.getCuotasResumenTotal_ventas();
 
+            const habilidad = await MDL.habilidad.getAllWithUsuarios();
+            // result.forEach(user => {
+            //     const habilidadesUsuario = habilidad.filter(hab => hab.key_usuarios?.includes(user.key));
+            //     user.habilidades = habilidadesUsuario;
+            // });
             // Mapear clientes con sus datos asociados
             return Object.values(clientes).map(cliente => {
                 cliente.usuario = usuarios.find(u => u.key === cliente.key_usuario) || null;
                 cliente.resumen_cuota = registros.find(r => r.key_cliente === cliente.key) || null;
                 cliente.ventas = transacciones ? transacciones.filter(t => t.key_cliente === cliente.key) : [];
+                cliente.habilidades = habilidad.filter(hab => hab.key_usuarios?.includes(cliente.key));
                 return cliente;
             });
         } catch (error) {
@@ -197,6 +204,32 @@ export default class ListaClientes extends Component {
                             }
                         })
                     }
+
+                    options.push({
+                        label: "Administrar Habilidades",
+                        icon: <SIcon name="Engranaje" fill={STheme.color.text} />,
+                        // icon: "Add",
+                        onPress: () => {
+
+                            AdminsitrarHabilidades.open({
+                                key_usuario: e.row.key,
+                                onSuccess: () => {
+                                    this.DinamicTable.loadData();
+                                }
+                            });
+                            // console.log("AQUIiii", this.state.data);
+                            // RolesDelUsuario.open({
+                            //     data: e.row,
+                            //     keyUsers: this.keyUsers,
+                            //     // data: this.keyUsers,
+                            //     onRegister: (e) => {
+                            //         console.log("QUEEE", e)
+                            //         this.table.loadData();
+                            //     }
+                            // })
+
+                        }
+                    })
 
                     FloatMenu.open({
                         e: evt,
@@ -399,6 +432,12 @@ export default class ListaClientes extends Component {
                         ) : null
                     }
                 />
+                <DinamicTable.Col
+                    key='key-habilidades'
+                    label='# habilidades'
+                    data={e => (e.row.habilidades ?? []).map(h => h.descripcion)}
+                    wrap
+                    width={300} />
             </DinamicTable>
         );
     }

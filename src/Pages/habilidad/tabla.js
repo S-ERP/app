@@ -7,6 +7,7 @@ import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import PopupRegistrarHabilidad from './Components/PopupRegistrarHabilidad';
 import SSocket from 'servisofts-socket';
+import Config from '../../Config';
 
 export default class tabla extends Component {
     componentDidMount() {
@@ -62,6 +63,7 @@ export default class tabla extends Component {
                 {/* Tabla */}
                 <DinamicTable
                     ref={ref => this.DinamicTable = ref}
+                    {...Config.table.applyTheme()}
                     loadData={this.loadData.bind(this)}
                     loadInitialState={async () => {
                         return {

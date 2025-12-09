@@ -10,7 +10,9 @@ export type PipelineProps = {
     loadData: () => Promise<any>;
     stageKeyExtractor: (stage: any) => string;
     dataKeyExtractor: (data: any) => string;
-    dataStageKeyExtractor: (data: any) => string;
+    isInStage: (stage: any, data: any) => boolean;
+    // dataStageKeyExtractor: (data: any) => string;
+
     renderStageHeader?: (stage: any) => React.ReactNode;
     customItem?: any;
     stageStyle?: ViewStyle;
@@ -61,14 +63,14 @@ const Stage = (props: { pipeline: Pipeline, stage: any }) => {
             ).fill(0)}
             renderItem={({ item }) => {
                 return <SView style={{ ...props.pipeline.props.cardStyle }}  >
-                    <SLoad type="skeleton" style={{  width: "100%" , height: "100%" }} />
+                    <SLoad type="skeleton" style={{ width: "100%", height: "100%" }} />
                 </SView>
             }}
             ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
         />}
         {data != null &&
             <FlatList
-                data={data.filter((d: any) => props.pipeline.props.dataStageKeyExtractor(d) == props.pipeline.props.stageKeyExtractor(props.stage))}
+                data={data.filter((d: any) => props.pipeline.props.isInStage(props.stage, d))}
                 renderItem={({ item }) => {
                     return <Item data={item} pipeline={props.pipeline} stage={props.stage} />
                 }}
