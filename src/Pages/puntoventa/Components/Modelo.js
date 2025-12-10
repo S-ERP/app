@@ -78,7 +78,7 @@ export default class Modelo extends Component {
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter((m) => m.key_tipo_producto === tipoKey);
         productosFiltrados = productosFiltrados.filter((m) => m.precio_venta > 0);
 
-        if (this.props.conStock) { 
+        if (this.props.conStock) {
             productosFiltrados = productosFiltrados.filter((m) => m.stock > 0);
         }
 
@@ -158,14 +158,26 @@ export default class Modelo extends Component {
                                                 borderRadius: 4,
                                             }}
                                         >
-                                            <FotoModelo data={producto} prefix={".512_"}/>
+                                            <FotoModelo data={producto} prefix={".512_"} />
                                         </SView>
                                         <SView col={"xs-12"} padding={4}>
                                             <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                                                 <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1} >{monedaSymbol} {precioFormateado}</SText>
-                                                <SText style={{ alignItems: "flex-end", textAlign: "flex-end" }} clean fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"} >
-                                                    {producto?.stock} Und
-                                                </SText>
+
+
+                                                {producto?.tipo_producto?.tipo !== "servicio" && (
+                                                    <SText
+                                                        style={{ alignItems: "flex-end", textAlign: "flex-end" }}
+                                                        clean
+                                                        fontSize={13}
+                                                        numberOfLines={1}
+                                                        bold
+                                                        color={producto?.stock > 0 ? "#10B981" : "#EF4444"}
+                                                    >
+                                                        {producto?.stock} Und
+                                                    </SText>
+                                                )}
+
                                             </SView>
                                             <SView col={"xs-12"}>
                                                 <SText fontSize={14} color={STheme.color.text} numberOfLines={1} >{producto?.descripcion}</SText>
