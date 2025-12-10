@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SHr, SIcon, SImage, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SImage, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import Components from '../../../../../Components';
 import Model from '../../../../../Model';
 import Cliente from '../Cliente';
@@ -28,6 +28,10 @@ export default class index extends Component {
         let miSucursal = sucursal.find(s => s.key == this.props.data.key_sucursal)
         this.setState({ miSucursal })
 
+        const resp = await MDL.compra_venta.factura(this.props.data.key);
+        // const resp = await MDL.compra_venta.factura("4e96e813-41f2-4825-bd6b-6f6aaaa0517f");
+        this.setState({ factura: resp });
+
     }
 
     render() {
@@ -35,6 +39,7 @@ export default class index extends Component {
         let permiso = Model.usuarioPage.Action.getPermiso({ url: "/venta", permiso: "admin" })
         this.isAdmin = !!permiso ? true : Model.compra_venta_participante.Action.allowAdmin({ key_compra_venta: this.props.data.key });
         this.isSuperAdmin = !!permiso;
+        const { factura } = this.state;
 
         this.sucursal = this.state?.miSucursal;
         return (<SView col={"xs-12 sm-11 md-8 lg-8 xl-6"} card >
@@ -94,12 +99,35 @@ export default class index extends Component {
                 <SView col={"xs-12"} row center>
                     <SView col={"xs-12"} center>
                         <SHr />
+                        <SText bold>ACCIONESwwwww</SText>
+                        <SHr />
+                    </SView>
+                    <SView col={"xs-12"} center row>
+                        <SView card style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.barColor }} row center>
+                            <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25} />
+                            <SView width={8} />
+                            <SView onPress={() => {
+                                const descpomponer = JSON.stringify(factura, null, 2);
+                                console.log(descpomponer)
+                                SPopup.info(descpomponer)
+                            }
+                            }>
+                                <SText>fACTURAR</SText>
+                            </SView>
+                        </SView>
+
+
+                    </SView>
+                </SView>
+                <SView col={"xs-12"} row center>
+                    <SView col={"xs-12"} center>
+                        <SHr />
                         <SText bold>ACCIONES</SText>
                         <SHr />
                     </SView>
                     <SView col={"xs-12"} center row>
                         <SView card style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.barColor }} row center>
-                            <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25}/>
+                            <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25} />
                             <SView width={8} />
                             <SView onPress={() => ReciboRollo.imprimir(this.data.key)}>
                                 <SText>DESCARGAR PDF ROLLO</SText>
@@ -107,7 +135,7 @@ export default class index extends Component {
                         </SView>
                         <SView width={8} />
                         <SView card style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.barColor }} row center>
-                             <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25}/>
+                            <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25} />
                             <SView width={8} />
                             <SView onPress={() => ReciboCarta.imprimir(this.data.key)}>
                                 <SText>DESCARGAR PDF CARTA</SText>
@@ -126,7 +154,7 @@ export default class index extends Component {
                         </SView> */}
                     </SView>
                 </SView>
-             
+
                 <SHr height={15} />
             </SView>
         </SView>
