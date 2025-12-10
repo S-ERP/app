@@ -217,9 +217,9 @@ export default class DashboardCard extends Component {
                 {card.habilidades && (card.habilidades ?? []).map((habilidad) => (
                     <SView row style={{
                         padding: 3,
-                        backgroundColor: STheme.colorFromText(habilidad.descripcion) + "6b",
+                        backgroundColor: STheme.colorFromText(habilidad?.descripcion ?? "") + "6b",
                         borderWidth: 1,
-                        borderColor: STheme.colorFromText(habilidad.descripcion),
+                        borderColor: STheme.colorFromText(habilidad?.descripcion ?? ""),
                         borderRadius: 4,
                         marginRight: 4,
                         marginBottom: 4

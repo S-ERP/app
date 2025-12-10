@@ -3,7 +3,6 @@ import { UIManager, findNodeHandle } from 'react-native';
 import { SHr, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { FlatList, ScrollView, Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, runOnJS } from 'react-native-reanimated';
-import Components from '../../Components';
 import MDL from '../../MDL';
 import Etiqueta from './Components/Etiqueta';
 import DashboardCard from './Components/DashboardCard';
@@ -11,7 +10,6 @@ import FormRegistroTipoCliente from '../crm/Components/FormRegistroTipoCliente';
 import SIconApp from '../../Assets/SIconApp';
 import FloatMenu from '../../Components/FloatMenu';
 import FloatButtom from '../../Components/FloatButtom';
-import AdminsitrarHabilidades from '../cliente/Components/AdministrarHabilidades';
 
 // ✅ STAGE CONVERTIDO A CLASE CON CALLBACK PARA PADRE
 class Stage extends Component {
@@ -236,7 +234,7 @@ export default class root extends Component {
         ]);
         const habilidad = await MDL.habilidad.getAllWithUsuarios();
         clientes.forEach(cliente => {
-            cliente.habilidades = habilidad.filter(h => h.key_usuarios?.includes(cliente.key)) ?? [];
+            cliente.habilidades = (habilidad ?? []).filter(h => h.key_usuarios?.includes(cliente.key)) ?? [];
         });
         this.setState({
             tipo_cliente: tipos,
