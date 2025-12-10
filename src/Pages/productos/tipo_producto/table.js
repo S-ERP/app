@@ -114,33 +114,11 @@ export default class table extends Component {
                         fontSize: 14,
                     }} />
 
+                <DinamicTable.Col key={"unidad_medida_facturacion"} label="unidad_medida_facturacion" width={200} textStyle={{ color: STheme.color.lightGray }} data={e => e.row.unidad_medida_facturacion ? `${e.row.unidad_medida_facturacion}` : ""} />
+                <DinamicTable.Col key={"codigo_facturacion"} label="codigo_facturacion" width={200} textStyle={{ color: STheme.color.lightGray }} data={e => e.row.codigo_facturacion ? `${e.row.codigo_facturacion}` : ""} />
 
-
-                <DinamicTable.Col key={"codigo_facturacion"} label="codigo_facturacion"
-                    width={200}
-                    textStyle={{
-                        color: STheme.color.lightGray
-                    }}
-                    data={e => e.row.codigo_facturacion ? `${e.row.codigo_facturacion}` : ""} />
-
-
-
-                <DinamicTable.Col key={"key_cuenta_contable"} label="key_cuenta_contable"
-                    width={200}
-                    textStyle={{
-                        color: STheme.color.lightGray
-                    }}
-                    data={e => e.row.cuenta_contable ? `${e.row.cuenta_contable.codigo} ${e.row.cuenta_contable.descripcion}` : ""} />
-
-      
-                {/* codigo_facturacion */}
-
-                <DinamicTable.Col key={"key_cuenta_contable_ganancia"} label="key_cuenta_contable_ganancia"
-                    width={200}
-                    textStyle={{
-                        color: STheme.color.lightGray
-                    }}
-                    data={e => e.row.cuenta_contable_ganancia ? `${e.row.cuenta_contable_ganancia.codigo} ${e.row.cuenta_contable_ganancia.descripcion}` : ""} />
+                <DinamicTable.Col key={"key_cuenta_contable"} label="key_cuenta_contable" width={200} textStyle={{ color: STheme.color.lightGray }} data={e => e.row.cuenta_contable ? `${e.row.cuenta_contable.codigo} ${e.row.cuenta_contable.descripcion}` : ""} />
+                <DinamicTable.Col key={"key_cuenta_contable_ganancia"} label="key_cuenta_contable_ganancia" width={200} textStyle={{ color: STheme.color.lightGray }} data={e => e.row.cuenta_contable_ganancia ? `${e.row.cuenta_contable_ganancia.codigo} ${e.row.cuenta_contable_ganancia.descripcion}` : ""} />
                 <DinamicTable.Col key={"key_cuenta_contable_costo"} label="key_cuenta_contable_costo"
                     width={200}
                     textStyle={{
