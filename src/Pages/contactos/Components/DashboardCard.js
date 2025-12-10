@@ -6,6 +6,7 @@ import SIconApp from '../../../Assets/SIconApp';
 import MDL from '../../../MDL';
 import FloatMenu from '../../../Components/FloatMenu';
 import FormRegistroCliente from '../../crm/Components/FormRegistroCliente';
+import AdminsitrarHabilidades from '../../cliente/Components/AdministrarHabilidades';
 
 export default class DashboardCard extends Component {
     constructor(props) {
@@ -23,7 +24,7 @@ export default class DashboardCard extends Component {
             <SView style={{ backgroundColor: STheme.color.background + "66", borderColor: STheme.color.card, borderWidth: 1, minHeight: 70, padding: 8, borderRadius: 8, cursor: "grab", }} row
 
                 onPress={(e) => {
-                    console.log("AQUI",e)
+                    console.log("AQUI", e)
                     // const { row, evt } = e;
                     const menuOptions = [
                         // {
@@ -102,6 +103,35 @@ export default class DashboardCard extends Component {
 
                             },
                         },
+
+                        {
+                            label: "Administrar Habilidades",
+                            icon: <SIcon name="Engranaje" fill={STheme.color.text} />,
+                            // icon: "Add",
+                            onPress: () => {
+                                AdminsitrarHabilidades.open({
+                                    key_usuario: card.key,
+                                    onSuccess: (e) => {
+                                        if (this.props.refresh) this.props.refresh()
+                                        // if(!card.habilidades) card.habilidades = [];
+                                        // card.habilidades.push(e)
+                                        // this.forceUpdate();
+                                        // this.DinamicTable.loadData();
+                                    }
+                                });
+                                // console.log("AQUIiii", this.state.data);
+                                // RolesDelUsuario.open({
+                                //     data: e.row,
+                                //     keyUsers: this.keyUsers,
+                                //     // data: this.keyUsers,
+                                //     onRegister: (e) => {
+                                //         console.log("QUEEE", e)
+                                //         this.table.loadData();
+                                //     }
+                                // })
+
+                            }
+                        }
                     ];
 
                     FloatMenu.open({ e: e, label: 'Opciones Contacto - ' + card?.nombres, options: menuOptions, });
@@ -173,7 +203,7 @@ export default class DashboardCard extends Component {
                         marginRight: 4,
                         marginBottom: 4
                     }} center>
-                        <SIcon name="history" width={12} height={14} fill={STheme.color.lightGray}/>
+                        <SIcon name="history" width={12} height={14} fill={STheme.color.lightGray} />
                         <SView width={4} />
                         <SText style={{ maxWidth: 90 }}
                             fontSize={10}
@@ -184,6 +214,25 @@ export default class DashboardCard extends Component {
                         </SText>
                     </SView>
                 </SView>
+                {card.habilidades && (card.habilidades ?? []).map((habilidad) => (
+                    <SView row style={{
+                        padding: 3,
+                        backgroundColor: STheme.colorFromText(habilidad.descripcion) + "6b",
+                        borderWidth: 1,
+                        borderColor: STheme.colorFromText(habilidad.descripcion),
+                        borderRadius: 4,
+                        marginRight: 4,
+                        marginBottom: 4
+                    }} center>
+                        <SText style={{ maxWidth: 90 }}
+                            fontSize={10}
+                            numberOfLines={1}
+                            color={STheme.color.lightGray}
+                        >
+                            {habilidad.descripcion}
+                        </SText>
+                    </SView>
+                ))}
             </SView>
         );
     }

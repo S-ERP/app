@@ -121,6 +121,7 @@ export default class ListaClientes extends Component {
                 colors={Config.table.colors()}
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
+                loadData={() => this.loadInitialData()}
                 loadInitialState={async () => ({
                     sorters: [{ key: 'fecha_on', order: 'asc', type: 'date' }],
                 })}
@@ -237,7 +238,6 @@ export default class ListaClientes extends Component {
                         options,
                     });
                 }}
-                loadData={() => this.loadInitialData()}
             >
                 <DinamicTable.Col key="index" label="#" width={40} data={e => e.index + 1} />
                 {/* <DinamicTable.Col
