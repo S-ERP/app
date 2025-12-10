@@ -5,11 +5,7 @@ import MDL from '../../../MDL';
 import Btn from '../../empresa/config/Components/Btn';
 import InputFoto from '../../../Components/InputFoto';
 
-type Props = {
-    editObject?: any,
-    onCancel?: Function,
-    onSuccess?: Function,
-}
+type Props = { editObject?: any, onCancel?: Function, onSuccess?: Function, }
 
 const cuentaToText = (c: any) => c ? `${c.codigo} - ${c.descripcion}` : "";
 const findCuentaText = (arr: any[], text: string) => arr.find(c => cuentaToText(c) === text) ?? null;
@@ -19,15 +15,7 @@ export default class FormularioTipoProducto extends Component<Props> {
     static open(props: Props) {
         SPopup.open({
             key: "FormularioTipoProducto",
-            content: <SView style={{
-                width: "100%",
-                maxHeight: "100%",
-                maxWidth: 500,
-                borderRadius: 8,
-                borderColor: STheme.color.card,
-                borderWidth: 1,
-                backgroundColor: STheme.color.background
-            }} withoutFeedback>
+            content: <SView style={{ width: "100%", maxHeight: "100%", maxWidth: 500, borderRadius: 8, borderColor: STheme.color.card, borderWidth: 1, backgroundColor: STheme.color.background }} withoutFeedback>
                 <FormularioTipoProducto
                     {...props}
                     onCancel={() => {
@@ -47,11 +35,13 @@ export default class FormularioTipoProducto extends Component<Props> {
         tipo: MDL.inventario.TIPOS_DE_PRODUCTOS[0].key,
         cuentas: null,
         productosServicios: [],
-        codigoProducto: this.props.editObject?.codigo_facturacion ?? ""
+        unidadMedida: [],
+        codigoProductoSeleccionado: this.props.editObject?.codigo_facturacion ?? "",
+        unidadMedidaSeleccionada: this.props.editObject?.unidad_medida_facturacion ?? ""
     }
 
     componentDidMount(): void {
-        // Cuentas contables
+
         MDL.contabilidad.getCuentas().then(cuentas => {
             const arrCuentas = Object.values(cuentas);
             arrCuentas.forEach((cuenta: any) => {
@@ -61,18 +51,32 @@ export default class FormularioTipoProducto extends Component<Props> {
             this.setState({ cuentas: arrCuentas.sort((a: any, b: any) => (a.codigo > b.codigo ? 1 : -1)) });
         }).catch(console.error);
 
-        // Paramétrica productosServicios
+
         MDL.factura.getParametrica({ ambiente: 2, parametrica: "productosServicios" })
             .then(parametricas => {
-                this.parametricas = { productosServicios: parametricas };
                 this.setState({ productosServicios: parametricas });
 
-                // Inicializar códigoProducto si estamos editando
                 if (this.props.editObject?.codigo_facturacion) {
-                    const prod = parametricas.find((p: any) => p.codigoProducto === this.props.editObject?.codigo_facturacion);
-                    if (prod) this.setState({ codigoProducto: prod.codigoProducto });
+                    const prod = parametricas.find((p: any) =>
+                        p.codigoProducto === this.props.editObject.codigo_facturacion
+                    );
+                    if (prod) this.setState({ codigoProductoSeleccionado: prod.codigoProducto });
                 }
             }).catch(console.error);
+
+
+        MDL.factura.getParametrica({ ambiente: 2, parametrica: "unidadMedida" })
+            .then(parametricas => {
+                this.setState({ unidadMedida: parametricas });
+
+                if (this.props.editObject?.unidad_medida_facturacion) {
+                    const unidad = parametricas.find((u: any) =>
+                        u.codigoClasificador === this.props.editObject.unidad_medida_facturacion
+                    );
+                    if (unidad) this.setState({ unidadMedidaSeleccionada: unidad.codigoClasificador });
+                }
+            }).catch(console.error);
+
     }
 
     _ref: any = {}
@@ -107,7 +111,7 @@ export default class FormularioTipoProducto extends Component<Props> {
                         },
 
                         tipo: {
-                            col: "xs-5.8",
+                            col: "xs-12",
                             type: "select2",
                             label: "Tipo",
                             defaultValue: this.props.editObject?.tipo ?? "inventario",
@@ -115,47 +119,34 @@ export default class FormularioTipoProducto extends Component<Props> {
                             onChangeText: (text: string) => this.setState({ tipo: text })
                         },
 
-                        // "codigo_facturacionwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww2": {
-                        //     col: "xs-12",
-                        //     type: "select",
-                        //     label: "Código Facturación2222222",
-                        //     options: this.state.productosServicios.map(a => ({
-                        //         key: a.codigoProducto,
-                        //         content: `${a.codigoProducto} - ${a.descripcionProducto}`
-                        //     })),
-                        //     defaultValue: this.props.editObject?.codigo_facturacion ?? "",
-                        // },
-
-
                         codigo_facturacion: {
-                            col: "xs-12",
+                            col: "xs-5.8",
                             type: "select2",
                             label: "Código Facturación",
-
-
                             options: this.state.productosServicios.map(a => ({
                                 key: a.codigoProducto,
                                 content: `${a.codigoProducto} - ${a.descripcionProducto}`
                             })),
-
                             defaultValue: this.props.editObject?.codigo_facturacion ?? "",
-
-                            // defaultValue: (() => {
-                            //     const prod = this.state.productosServicios.find(
-                            //         (p: any) => p.codigoProducto === this.props.editObject?.codigo_facturacion
-                            //     );
-                            //     return prod ? `${prod.codigoProducto} - ${prod.descripcionProducto}` : "";
-                            // })(),
-
-
-
                             onChangeText: (text: string) => {
                                 const codigo = text.split(" - ")[0];
-                                this.setState({ codigoProducto: codigo });
+                                this.setState({ codigoProductoSeleccionado: codigo });
                             }
+                        },
 
-
-
+                        unidad_medida_facturacion: {
+                            col: "xs-5.8",
+                            type: "select2",
+                            label: "Unidad Medida Facturación",
+                            options: this.state.unidadMedida.map(a => ({
+                                key: a.codigoClasificador,
+                                content: `${a.codigoClasificador} - ${a.descripcion}`
+                            })),
+                            defaultValue: this.props.editObject?.unidad_medida_facturacion ?? "",
+                            onChangeText: (text: string) => {
+                                const codigo = text.split(" - ")[0];
+                                this.setState({ unidadMedidaSeleccionada: codigo });
+                            }
                         },
 
                         ...tipo?.cuentas?.includes("key_cuenta_contable_ganancia") ? {
@@ -164,7 +155,6 @@ export default class FormularioTipoProducto extends Component<Props> {
                                 type: "select2",
                                 label: "Cuenta de Ganancia",
                                 defaultValue: cuentaToText(this.state.cuentas.find(c => c.key === this.props.editObject?.key_cuenta_contable_ganancia)),
-                                // defaultValue: cuentaToText(this.state.cuentas.find(c => c.key === this.props.editObject?.key_cuenta_contable_ganancia)),
                                 options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0 && c.tipo === "INGRESO").map(cuentaToText)
                             }
                         } : {},
@@ -195,7 +185,8 @@ export default class FormularioTipoProducto extends Component<Props> {
                             ...(this.props.editObject ?? { key_empresa: MDL.empresa.select?.key }),
                             descripcion: data.descripcion,
                             tipo: data.tipo,
-                            codigo_facturacion: this.state.codigoProducto, // solo la key
+                            codigo_facturacion: this.state.codigoProductoSeleccionado,
+                            unidad_medida_facturacion: this.state.unidadMedidaSeleccionada,
                             key_cuenta_contable_ganancia: findCuentaText(this.state.cuentas, data.key_cuenta_contable_ganancia)?.key,
                             key_cuenta_contable_costo: findCuentaText(this.state.cuentas, data.key_cuenta_contable_costo)?.key,
                             key_cuenta_contable: findCuentaText(this.state.cuentas, data.key_cuenta_contable)?.key

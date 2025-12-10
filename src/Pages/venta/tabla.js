@@ -48,6 +48,8 @@ const clienteEjemplo = {
     "imgen": "https://i.pinimg.com/736x/d9/d8/8e/d9d88e3d1f74e2b8ced3df051cecb81d.jpg",
 }
 export default class tabla extends Component {
+
+
     renderUsuario(srcKey) {
         const pintar = <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
             <SImage src={`${SSocket.api.root}usuario/${srcKey}`} style={{ resizeMode: "cover" }} />
@@ -250,6 +252,20 @@ export default class tabla extends Component {
                                 }
                             },
                             {
+                                label: "Facturar",
+                                icon: <SIconApp name='addTarea' fill="#e4e4e4ff" />,
+                                onPress: async () => {
+                                    try {
+                                        const resp = await MDL.compra_venta.factura(e?.row?.key);
+                                        const respFormateado = JSON.stringify(resp, null, 2);
+                                        SPopup.info(respFormateado);
+                                    } catch (error) {
+                                        console.error("Error al facturar:", error);
+                                        SPopup.alert("❌ Error al crear la factura. Intenta nuevamente.");
+                                    }
+                                }
+                            },
+                            {
                                 label: "Imprimir tamaño rollo",
                                 icon: <SIcon name='imprimir' fill={STheme.color.text} />,
                                 onPress: () => {
@@ -271,11 +287,11 @@ export default class tabla extends Component {
                                     MDL.caja.anular_venta({
                                         key_compra_venta: e.row.key
 
-                                    }).then(e=>{
-                                        if(this.DinamicTable){
+                                    }).then(e => {
+                                        if (this.DinamicTable) {
                                             this.DinamicTable.loadData();
                                         }
-                                    }).catch(e=>{
+                                    }).catch(e => {
 
                                     })
                                 }

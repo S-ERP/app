@@ -3,7 +3,6 @@ import { UIManager, findNodeHandle } from 'react-native';
 import { SHr, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { FlatList, ScrollView, Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, runOnJS } from 'react-native-reanimated';
-import Components from '../../Components';
 import MDL from '../../MDL';
 import Etiqueta from './Components/Etiqueta';
 import DashboardCard from './Components/DashboardCard';
@@ -74,7 +73,7 @@ class Stage extends Component {
                 icon: <SIconApp name="crmeliminar" fill={STheme.color.danger} height={16} />,
                 onPress: () => {
                     SPopup.confirm({
-                        title: (<SView center style={{ textAlign: 'center', gap: 16, paddingTop: 18, paddingBottom: 14, paddingHorizontal: 20 }}> 
+                        title: (<SView center style={{ textAlign: 'center', gap: 16, paddingTop: 18, paddingBottom: 14, paddingHorizontal: 20 }}>
                             <SView col="xs-12" row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                                 <SView flex>
                                     <SText style={{ fontSize: 18, fontWeight: 'bold', color: STheme.color.text }}> Eliminar tipo contacto</SText>
@@ -117,6 +116,7 @@ class Stage extends Component {
                     });
                 },
             },
+
         ];
 
         FloatMenu.open({
@@ -232,6 +232,10 @@ export default class root extends Component {
             MDL.crm.cliente.getAll(),
             MDL.crm.tipoCliente.getAll()
         ]);
+        const habilidad = await MDL.habilidad.getAllWithUsuarios();
+        clientes.forEach(cliente => {
+            cliente.habilidades = (habilidad ?? []).filter(h => h.key_usuarios?.includes(cliente.key)) ?? [];
+        });
         this.setState({
             tipo_cliente: tipos,
             clientes
@@ -407,6 +411,7 @@ const DraggableCarta = React.forwardRef(({ stage, card, onDrop, onDragStart, onD
                     data_stage={stage}
                     onRemoveCliente={onRemoveCliente}
                     onLoadData={onLoadData} // ✅ PROP NUEVA PARA RECARGAR
+                    refresh={onLoadData}
                 />
             </Animated.View>
         </GestureDetector>

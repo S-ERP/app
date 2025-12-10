@@ -86,7 +86,7 @@ export default class Modelo extends Component {
             const search = this.props.searchText.toLowerCase();
             productosFiltrados = productosFiltrados.filter(
                 (p) =>
-                    p.descripcion?.toLowerCase().includes(search) ||
+                    p?.descripcion?.toLowerCase().includes(search) ||
                     p.tipo_producto?.descripcion?.toLowerCase().includes(search) ||
                     p.marca?.descripcion?.toLowerCase().includes(search) ||
                     p.observacion?.toLowerCase().includes(search)

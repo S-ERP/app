@@ -124,6 +124,7 @@ export default class tabla extends Component {
                                             })
                                         }
                                     }
+                                    
                                 ]
                             });
                         }

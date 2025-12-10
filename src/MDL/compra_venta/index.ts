@@ -284,10 +284,10 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     return resp.data || [];
   }
   async execute_function(func: string, params: string[]) {
-    let newParams:any = [];
+    let newParams: any = [];
     if (params) {
       params.map(p => {
-        if(typeof p == "string"){
+        if (typeof p == "string") {
           p = "'" + p + "'"
         }
         newParams.push(p)
@@ -321,7 +321,20 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     return resp.data;
   }
 
+  async factura(value: any) {
+    const resp: any = await SSocket.sendPromise({
+      service: "compra_venta",
+      component: "compra_venta",
+      type: "factura",
+      key: value,
+      key_empresa: Model.empresa.Action.getKey(),
+    });
 
+    return resp.data;
+  }
+
+
+ 
 
 
 }
