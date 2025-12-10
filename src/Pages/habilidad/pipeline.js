@@ -1,28 +1,27 @@
 import React from "react";
 import { SPage, SText, STheme, SView } from "servisofts-component";
-import Pipeline from "../Components/Pipeline";
+import Pipeline from "../../Components/Pipeline";
+import MDL from "../../MDL";
 export default class index extends React.Component {
     render() {
         return <SPage title={"Servisofts page"} disableScroll>
             <Pipeline
 
                 // Configuraciones de la data
-                stageKeyExtractor={(stage: any) => stage.id.toString()}
-                dataKeyExtractor={(data: any) => data.id.toString()}
-                dataStageKeyExtractor={(data: any) => data.stage_id.toString()}
+                stageKeyExtractor={(stage: any) => stage.key.toString()}
+                dataKeyExtractor={(data: any) => data.key.toString()}
+                isInStage={(stage, data) => {
+                    return stage.usuarios.includes(data.key);
+                }}
                 loadStages={async () => {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    return [{ id: 1, name: "Stage 1" }, { id: 2, name: "Stage 2" }];
+                    const habilidad = await MDL.habilidad.getAllWithUsuarios();
+                    return habilidad.map((obj: any) => {
+                        return { key: obj.key, name: obj.descripcion, usuarios: obj.key_usuarios || []}
+                    });
                 }}
                 loadData={async () => {
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-                    return [
-                        { id: 1, name: "Data 1", stage_id: 2, },
-                        { id: 2, name: "Data 2", stage_id: 1 },
-                        { id: 3, name: "Data 3", stage_id: 2 },
-                        { id: 4, name: "Data 4", stage_id: 1 },
-                        { id: 5, name: "Data 5", stage_id: 2 },
-                    ];
+                    const usuarios = await MDL.usuario.getAll()
+                    return Object.values(usuarios)
                 }}
                 //Configuraciones de estilos
                 stageStyle={{
@@ -57,7 +56,7 @@ export default class index extends React.Component {
 const ElementItem = (props: any) => {
     const { stage, pipeline, data } = props;
     return <SView col={"xs-12"} flex center >
-        <SText>{data.name}</SText>
-        <SText>{stage.name}</SText>
+        <SText>{data.Nombres} {data.Apellidos}</SText>
+        {/* <SText>{stage.name}</SText> */}
     </SView>
 }

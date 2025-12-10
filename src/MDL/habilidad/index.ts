@@ -6,8 +6,34 @@ import { SDate } from "servisofts-component";
 export default class caja extends MDLAbstract<any> {
   async componentDidMount() {
   }
-  
+
   async getAll() {
+    const resp: any = await SSocket.sendPromise({
+      component: "habilidad",
+      type: "getAll",
+      key_empresa: MDL.empresa.select?.key,
+    })
+    return Object.values(resp.data || {})
+  }
+  async getAllWithUsuarios() {
+    const resp: any = await SSocket.sendPromise({
+      component: "habilidad_usuario",
+      type: "getAllWithUsuario",
+      key_empresa: MDL.empresa.select?.key,
+    })
+    return resp.data
+  }
+  async getAllByUsuario(key_usuario: string) {
+    const resp: any = await SSocket.sendPromise({
+      component: "habilidad_usuario",
+      type: "getAllByUsuario",
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: key_usuario,
+    })
+    return Object.values(resp.data || {})
+  }
+
+  async getAllHabilidadesByUsuario(key_usuario: string) {
     const resp: any = await SSocket.sendPromise({
       component: "habilidad",
       type: "getAll",

@@ -130,7 +130,7 @@ export default class Modelo extends Component {
                                             if (this.props.conStock && producto.stock <= 0) {
                                                 SNotification.send({
                                                     title: "Sin stock",
-                                                    body: `No hay stock disponible para ${producto.descripcion}.`,
+                                                    body: `No hay stock disponible para ${producto?.descripcion}.`,
                                                     color: STheme.color.danger,
                                                     time: 3000,
                                                 });
@@ -168,8 +168,8 @@ export default class Modelo extends Component {
                                                 </SText>
                                             </SView>
                                             <SView col={"xs-12"}>
-                                                <SText fontSize={14} color={STheme.color.text} numberOfLines={1} >{producto.descripcion}</SText>
-                                                <SText fontSize={10} clean color={STheme.color.lightGray} numberOfLines={1} >{producto.marca.descripcion}, {producto.tipo_producto.descripcion}, {producto.observacion}
+                                                <SText fontSize={14} color={STheme.color.text} numberOfLines={1} >{producto?.descripcion}</SText>
+                                                <SText fontSize={10} clean color={STheme.color.lightGray} numberOfLines={1} >{producto.marca?.descripcion}, {producto.tipo_producto?.descripcion}, {producto.observacion}
                                                 </SText>
                                             </SView>
                                         </SView>

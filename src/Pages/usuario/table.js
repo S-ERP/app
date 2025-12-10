@@ -63,6 +63,12 @@ export default class table extends Component {
                 usr.roles = roles;
                 return usr;
             }).filter(u => u && u.estado === "1");
+
+            // const habilidad = await MDL.habilidad.getAllWithUsuarios();
+            // result.forEach(user => {
+            //     const habilidadesUsuario = habilidad.filter(hab => hab.key_usuarios?.includes(user.key));
+            //     user.habilidades = habilidadesUsuario;
+            // });
             return result;
         } catch (error) {
             console.error("Error loading data:", error);
@@ -205,6 +211,8 @@ export default class table extends Component {
 
                                 }
                             },
+                           
+
 
 
                         ]
@@ -273,6 +281,12 @@ export default class table extends Component {
                     label='# roles'
                     data={e => (e.row.roles ?? []).map(r => r.rol?.descripcion)}
                     width={150} />
+                {/* <DinamicTable.Col
+                    key='key-habilidades'
+                    label='# habilidades'
+                    data={e => (e.row.habilidades ?? []).map(h => h.descripcion)}
+                    wrap
+                    width={300} /> */}
             </DinamicTable>
             <FloatButtom onPress={() => {
                 // SNavigation.navigate('/registro')

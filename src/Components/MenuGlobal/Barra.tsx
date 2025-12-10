@@ -89,7 +89,7 @@ export default class Barra extends React.Component {
                         <Page label={"Pizarra"} url={"/empresa/config2"} permiso={"ver"} permiso_url="/empresa/config" />
                         <Page label={"Monedas"} url={"/empresa/moneda"} permiso={"ver"} permiso_url="/empresa/moneda" />
                         <Page label={"Tipos de pagos"} url={"/empresa/tipo_pago"} permiso={"ver"} />
-                        <Page label={"Habilidades"} url={"/habilidad/tabla"} permiso={"ver"} permiso_url="/habilidad/tabla" />
+
                         <Page label={"Pasarelas"} url={"/pasarela"} permiso={"ver"} />
                     </Page>
                     <Page label={"Contabilidad"}
@@ -111,7 +111,7 @@ export default class Barra extends React.Component {
                         <Page label={"Balance general"} url={"/conta/balance"} permiso="ver" />
                         <Page label={"Libro Diario"} url={"/conta/libro_diario"} permiso="ver" />
                         <Page label={"Cuentas T"} url={"/conta/cuentas_t"} permiso_url={"/conta/cuentas_t"} permiso="ver" />
-                        <Page label={"Gestiones"} url={"/conta/gestion"}  permiso="ver" />
+                        <Page label={"Gestiones"} url={"/conta/gestion"} permiso="ver" />
                         <Page label={"Sistema Antiguo"} url={"/contabilidad"} permiso="ver" />
 
                         {/* </Page> */}
@@ -144,7 +144,7 @@ export default class Barra extends React.Component {
                         <Page label={"Historial de Compras"} url={"/compra/tabla"} permiso="ver" permiso_url="/compra" />
                         <Page label={"Compras Rapida"} url={"/compra2"} permiso="ver" permiso_url="/compra" />
                         <Page label={"Compras Rapida New"} url={"/compra3"} permiso="ver" permiso_url="/compra" />
-                        
+
 
                     </Page>
                     <Page label={"Ventas"}
@@ -209,6 +209,9 @@ export default class Barra extends React.Component {
                         }
                     >
                         <Page label={"Agenda"} url={"/contactos"} permiso="page" permiso_url="/contactos" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Lista"} url={"/contactos/table"} permiso="page" permiso_url="/contactos" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Habilidades"} url={"/habilidad/tabla"} permiso={"ver"} permiso_url="/habilidad/tabla" />
+
                         {/* <Page label={"Caja movimientos"} url={"/caja/reporte_movimientos"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} /> */}
 
                     </Page>
@@ -263,7 +266,7 @@ export default class Barra extends React.Component {
                     </Page>
 
 
-                        
+
 
 
 
