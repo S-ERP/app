@@ -12,6 +12,7 @@ import Model from '../Model';
 import FloatButtom from '../Components/FloatButtom';
 import TurnoComponent from '../Components/TurnoComponent';
 import Container from '../Components/Container';
+import FloatMenu from '../Components/FloatMenu';
 
 
 export default class Turnos extends Component {
@@ -65,9 +66,78 @@ export default class Turnos extends Component {
 
             ref={ref => this.DinamicTable = ref}
             onSelect={(e) => {
-                // <TurnoComponent></TurnoComponent>
-                this.mostrarPopup(e.row.key)
-                // console.log("Selected turno:", e.row.key);
+
+                const { row, evt } = e;
+                const nombreTurno = `TURNO: ${row?.nombre ?? 'Sin nombre'}`;
+                const options = [];
+
+                // Opción de editar turno
+                // if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'delete' })) {
+                options.push({
+                    label: 'Editar',
+                    icon: <SIcon name="Edit" fill={STheme.color.text} />,
+                    onPress: () => {
+                        // const cliente = { ...row, key_usuario: MDL.usuario.session?.key };
+                        // PopupCrearCliente.open({
+                        //     editObject: cliente,
+                        //     key_empresa: cliente.key_empresa,
+                        //     onSuccess: () => this.DinamicTable.loadData(),
+                        // });
+                        this.mostrarPopup(e.row.key)
+
+                    },
+                });
+                // }
+
+                // Opción de eliminar turno
+                // if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'delete' })) {
+                options.push({
+                    label: 'Eliminar',
+                    icon: <SIcon name="Delete" fill={STheme.color.text} />,
+                    onPress: () => {
+                        SPopup.confirm({
+                            title: 'Eliminar Cliente',
+                            message: `¿Estás seguro de eliminar a ${nombreTurno}?`,
+                            onPress: () => {
+                                SSocket.sendPromise({
+                                    service: 'empresa',
+                                    component: 'horario_atencion',
+                                    type: '_editarTurnosHorariosAtencion',
+                                    data: { ...row, estado: 0 },
+                                })
+                                    .then(() => {
+                                        SNotification.send({
+                                            key: 'eliminar_ok',
+                                            title: 'Éxito',
+                                            body: `${nombreTurno} fue eliminado correctamente.`,
+                                            time: 1500,
+                                            color: STheme.color.success,
+                                        });
+                                        this.DinamicTable.loadData();
+                                    })
+                                    .catch(err => {
+                                        console.error('Error al eliminar turno:', err);
+                                        SNotification.send({
+                                            key: 'eliminar_error',
+                                            title: 'Error',
+                                            body: 'Ocurrió un error al eliminar. Intenta nuevamente.',
+                                            time: 3000,
+                                            color: STheme.color.danger,
+                                        });
+                                    });
+                            },
+                        });
+                    },
+                });
+                // }
+
+                FloatMenu.open({
+                    e: evt,
+                    label: nombreTurno,
+                    options,
+                });
+
+                // this.mostrarPopup(e.row.key)
             }}
 
 
@@ -97,13 +167,25 @@ export default class Turnos extends Component {
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
             {/* <DinamicTable.Col key="key_turno" label="key_turno" width={180}  /> */}
-            <DinamicTable.Col key="key_turno" label="key_turno" width={150} data={(e) => e.row?.key} />
-
-
-            <DinamicTable.Col key={"foto"} label='User'
+            <DinamicTable.Col key="key_turno" label="key_turno" width={50} data={(e) => e.row?.key} />
+            <DinamicTable.Col key="nombre" label="Turno" width={150} data={(e) => e.row?.nombre} />
+            <DinamicTable.Col key="horario" label="Horario" width={150} data={(e) => e.row?.horario} />
+            <DinamicTable.Col key="atiende_feriado" label="¿Feriado?" width={100} data={(e) => (e.row?.atiende_feriado === 0) ? "No" : "Sí"} />
+            <DinamicTable.Col key="dia" label="# Días" width={80} data={(e) => e.row?.dia} />
+            <DinamicTable.Col
+                key="fecha_on"
+                label="F. Creación"
+                width={120}
+                dataType="date"
+                data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date}
+                textStyle={{ fontSize: 12, color: STheme.color.lightGray }}
+                dateFormat="yyyy-MM-dd hh:mm"
+            />
+            {/* <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.key_usuario} /> */}
+            <DinamicTable.Col key={"foto"} label='Admin'
                 data={(e) => e.row?.key_usuario}
-                width={35}
-                customComponent={e => <SView style={{
+                width={120}
+                customComponent={e => <SView row center><SView style={{
                     width: 24,
                     height: 24,
                     borderRadius: 100,
@@ -113,15 +195,12 @@ export default class Turnos extends Component {
                     <SImage src={SSocket.api.root + "usuario/" + e.data} style={{
                         resizeMode: "cover",
                     }} />
+
+                </SView>
+                    <SView width={8} />
+                    <SText numberOfLines={1}>{e.row?.usuario.Nombres}</SText>
                 </SView>} />
-            {/* <DinamicTable.Col key="nombre" label="Día" width={100} data={(e) => e.row?.nombre} /> */}
-            <DinamicTable.Col key="horario" label="Horario" width={150} data={(e) => e.row?.horario} />
-            <DinamicTable.Col key="nombre" label="Turno" width={150} data={(e) => e.row?.nombre} />
-            <DinamicTable.Col key="atiende_feriado" label="¿Feriado?" width={100} data={(e) => e.row?.atiende_feriado} />
-            <DinamicTable.Col key="dia" label="Día #" width={80} data={(e) => e.row?.dia} />
-            <DinamicTable.Col key="registrado_el" label="Fecha Registro" width={120} data={(e) => e.row?.registrado_el} />
-            <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.key_usuario} />
-            <DinamicTable.Col key="asdsad" label="Usuario" width={250} data={(e) => e.row?.usuario.Nombres} />
+            {/* <DinamicTable.Col key="asdsad" label="Usuario" width={250} data={(e) => e.row?.usuario.Nombres} /> */}
 
 
         </DinamicTable>
