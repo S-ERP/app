@@ -72,6 +72,9 @@ export default class cliente {
     });
     return resp.data;
   }
+
+ 
+
   async eliminar(data: Cliente) {
     data.key_empresa = Model.empresa.Action.getKey();
     const resp: any = await SSocket.sendPromise({

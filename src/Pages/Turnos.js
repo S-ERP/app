@@ -223,22 +223,7 @@ export default class Turnos extends Component {
             <DinamicTable.Col key="nombre" label="Turno" width={150} data={(e) => e.row?.nombre} />
             <DinamicTable.Col key="dia" label="# Días" width={80} data={(e) => new Set(e.row.horario_atencion.map(h => h.dia)).size} />
             <DinamicTable.Col key="horario" label="Horario" width={450}
-                // data={(e) => {
-                //     let dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-                //     // e.row?.horario_atencion.map(item => `${item.dia} ${item.hora_inicio} - ${item.hora_fin}`).join(', ')
-                //     e.row?.horario_atencion
-                //         ?.map(item => {
-                //             const dia = dias[item.dia];
-                //             const inicio = item.hora_inicio.slice(0, 5);
-                //             const fin = item.hora_fin.slice(0, 5);
-
-                //             return `${dia} (${inicio} - ${fin})`;
-                //         })
-                //         .join(', ');
-                // }}
                 data={(e) => e.row?.horario_atencion.map(item => `${dias[item.dia]} (${item.hora_inicio.slice(0, 5)} - ${item.hora_fin.slice(0, 5)})`).join(', ')}
-            // format={"hh:mm"}
-
             />
             <DinamicTable.Col key="atiende_feriado" label="¿Feriado?" width={100} data={(e) => (e.row?.atiende_feriado === 0) ? "No" : "Sí"} />
 
