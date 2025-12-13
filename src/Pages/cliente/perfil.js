@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SDate, SHr, SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SIcon, SImage, SLoad, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from "servisofts-socket";
 import MDL from '../../MDL';
@@ -17,73 +17,86 @@ export default class Perfil extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            data: {}
         };
-        this.data = {
-            "apellidos": null,
-            "descripcion": null,
-            "distrito": null,
-            "estado": 1,
-            "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
-            "lng": null,
-            "key_empresa": "893a748e-a9ed-444c-ab13-a09b3e88626f",
-            "fecha_on": "2025-12-08T22:57:28.073",
-            "direccion": "Barrio Convifag Norte Calle 8",
-            "fecha_nacimiento": null,
-            "razon_social": "Servisofts SRL",
-            "provincia": null,
-            "currier": null,
-            "nombres": "Servisofts SRL",
-            "correo": "servisofts.srl@gmail.com",
-            "nit": "454561021",
-            "departamento": "Santa Cruz",
-            "tipo_cliente": [
-                {
-                    "descripcion": "Proveedores nacionales",
-                    "estado": 1,
-                    "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
-                    "color": "#07E91E",
-                    "key_empresa": "893a748e-a9ed-444c-ab13-a09b3e88626f",
-                    "key_cliente_tipo_cliente": "39b273ba-33c3-461c-9705-c59cf3cbd7fb",
-                    "fecha_on": "2025-12-08T22:53:22.429",
-                    "titulo": "Proveedores Nacionales",
-                    "orden": null,
-                    "key": "163d53ec-66d9-4eee-9fb9-97286d2ed79e"
-                }
-            ],
-            "sexo": null,
-            "telefono": "+591 75395848",
-            "key_servicio": null,
-            "key": "ceecb8c6-ed0e-44c0-b38f-5f9f6079d9e5",
-            "lat": null
-        }
+
+        this.key = SNavigation.getParam("key");
     }
-    onSelect = SNavigation.getParam("onSelect");
 
 
     componentDidMount() {
-        // Verificar permiso de visualización
-        MDL.rolesPermisos
-            .getPermisoAsync({ url: URL, permiso: 'ver' })
-            .then(e => {
-                if (!e) {
-                    // SNavigation.goBack();
-                    return;
-                }
-                this.forceUpdate();
-            })
-            .catch(error => {
-                console.error('Error al verificar permisos:', error);
-                SNotification.send({
-                    title: 'Error',
-                    body: 'No se pudo verificar los permisos.',
-                    time: 3000,
-                    color: STheme.color.danger,
-                });
+        this.loadData();
+
+    }
+
+    // async loadData() {
+    //     let habilidad = await MDL.habilidad.getAllWithUsuarios();
+    //     let ventas = await MDL.compra_venta.getTransaccion('venta', '2024-09-01', '2026-09-05');
+    //     // Obtener resumen de cuotas
+    //     let registros = await MDL.compra_venta.getCuotasResumenTotal_ventas();
+
+    //     await MDL.crm.cliente.getByKey(SNavigation.getParam("key")).then(e => {
+    //         // this.setState({ data: e });
+    //         console.log("Cliente data:", e);
+    //         e.habilidades = habilidad.filter(hab => hab.key_usuarios?.includes(e.key));
+    //         e.ventas = ventas.filter(venta => venta.key_cliente == e.key);
+    //         e.resumen_cuotas = registros ? registros.find(reg => reg.key_cliente == e.key) : [];
+    //         // this.setState({ data: e });
+    //         this.state.data = e;
+    //         this.forceUpdate();
+
+    //     }).catch(error => {
+    //         console.error('Error al cargar datos del cliente:', error);
+    //         SNotification.send({
+    //             title: 'Error',
+    //             body: 'No se pudo cargar los datos del cliente.',
+    //             time: 3000,
+    //             color: STheme.color.danger,
+    //         });
+    //     });
+
+
+
+
+    //     // this.forceUpdate();
+    // }
+
+    loadData = async () => {
+        try {
+            let habilidad = await MDL.habilidad.getAllWithUsuarios();
+            let ventas = await MDL.compra_venta.getTransaccion('venta', '2024-09-01', '2026-09-05');
+            let registros = await MDL.compra_venta.getCuotasResumenTotal_ventas();
+
+            let e = await MDL.crm.cliente.getByKey(this.key);
+
+            e.habilidades = habilidad.filter(hab => hab.key_usuarios?.includes(e.key));
+            e.ventas = ventas.filter(venta => venta.key_cliente == e.key);
+            e.resumen_cuotas = registros ? registros.find(reg => reg.key_cliente == e.key) : [];
+
+
+            this.setState({ data: e });
+
+        } catch (error) {
+            console.error('Error al cargar datos del cliente:', error);
+            SNotification.send({
+                title: 'Error',
+                body: 'No se pudo cargar los datos del cliente.',
+                time: 3000,
+                color: STheme.color.danger,
             });
+        }
     }
 
 
+
     render() {
+        console.log("this.data", this.state.data);
+        // console.log("this.habilidad", this.state.habilidad);
+
+        if (!this.state.data) return <SView />
+        this.data = this.state.data;
+        this.habilidad = this.state.habilidad;
+
         return (
             <SPage title="Perfil del Cliente" >
                 <SView col={"xs-12"} row padding={10}>
@@ -91,18 +104,18 @@ export default class Perfil extends Component {
                         <Resumen cliente={this.data} />
                     </SView>
                     <SView col={"xs-4.5"} padding={5} >
-                        <InfoGeneral cliente={this.data} />
+                        <InfoGeneral cliente={this.data} onReload={this.loadData} />
                     </SView>
-                     <SView col={"xs-4.5"} padding={5}>
+                    <SView col={"xs-4.5"} padding={5}>
                         <Calendario cliente={this.data} />
                     </SView>
                     <SView col={"xs-4"} padding={5} height={300}>
-                        <Habilidades cliente={this.data} />
+                        <Habilidades cliente={this.data} onReload={this.loadData} />
                     </SView>
                     <SView col={"xs-4"} padding={5}>
                         <Horarios cliente={this.data} />
                     </SView>
-                     <SView col={"xs-4"} padding={5}>
+                    <SView col={"xs-4"} padding={5}>
                         <CompraVentas cliente={this.data} />
                     </SView>
                 </SView>
@@ -142,7 +155,7 @@ const Resumen = ({ cliente }) => {
     </SView>
 }
 
-const InfoGeneral = ({ cliente }) => {
+const InfoGeneral = ({ cliente, onReload }) => {
     return <SView col={"xs-12"} card padding={15} height>
         <SView width={30} height={30} style={{
             position: "absolute",
@@ -150,6 +163,20 @@ const InfoGeneral = ({ cliente }) => {
             right: 5,
         }}
             onPress={() => {
+                // Opción de editar cliente
+                console.log("cliente", cliente);
+                if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
+
+                    // const cliente = { ...row, key_usuario: MDL.usuario.session?.key };
+                    // const cliente = { cliente, key_usuario: MDL.usuario.session?.key };
+                    // console.log("cliente", cliente);
+                    PopupCrearCliente.open({
+                        editObject: cliente,
+                        key_empresa: cliente.key_empresa,
+                        onSuccess: () => onReload(),
+                    });
+
+                }
 
             }} center>
             <SIcon name='crmeditar' width={20} height={20} fill={STheme.color.text} />
@@ -196,7 +223,7 @@ const InfoGeneral = ({ cliente }) => {
     </SView>
 }
 
-const Habilidades = ({ cliente }) => {
+const Habilidades = ({ cliente, onReload }) => {
     return <SView col={"xs-12"} card padding={15} height>
         <SView width={30} height={30} style={{
             position: "absolute",
@@ -204,26 +231,33 @@ const Habilidades = ({ cliente }) => {
             right: 5,
         }}
             onPress={() => {
-                SPopup.open({
-                    key: "popup_habilidades",
-                    // content: <AdministrarHabilidades cliente={cliente} />
-                })
+                AdminsitrarHabilidades.open({
+                    key_usuario: cliente.key,
+                    onSuccess: () => {
+                        onReload();
+                    }
+                });
             }} center>
             <SIcon name='crmeditar' width={20} height={20} fill={STheme.color.text} />
         </SView>
         <SText bold fontSize={16}>Habilidades</SText>
-        <SHr height={10} />
-        {/* <DinamicTable
-            data={MDL.habilidad.getAllByCliente(cliente.key)}
-            limit={10}
-            orderBy={"orden"}
-            order={"asc"}
-            columns={[
-                { key: "index", label: "#", width: 40, data: e => e.index + 1 },
-                { key: "nombre", label: "Nombre", width: 200, data: e => e.nombre },
-                { key: "nivel", label: "Nivel", width: 100, data: e => e.nivel },
-            ]}
-        /> */}
+        <SHr height={30} />
+        <SView col={"xs-12"} >
+
+            {cliente?.habilidades?.map((hab, index) => {
+                return <SView col={"xs-6"} key={index} flex
+                    style={{
+                        padding: 5,
+                        borderWidth: 1,
+                        borderColor: STheme.color.card,
+                        borderRadius: 4,
+                        marginBottom: 5,
+                        backgroundColor: STheme.color.card,
+                    }}>
+                    <SText style={{ textTransform: "uppercase" }}>{hab?.descripcion}</SText>
+                </SView>
+            })}
+        </SView>
     </SView>
 }
 
@@ -255,9 +289,33 @@ const Calendario = ({ cliente }) => {
 }
 
 const CompraVentas = ({ cliente }) => {
-    return <SView col={"xs-12"} card padding={15} height>
+    return <SView col={"xs-12"} card padding={15} height row>
         <SText bold fontSize={16}>Compra / Venta</SText>
-        <SHr height={10} />
+        <SHr height={20} />
+        <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_pagado)}`} color={STheme.color.success} title="Monto Pagado" />
+        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_pagada} color={STheme.color.success} title="Cuotas Pagadas" />
+        <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_en_mora)}`} color={STheme.color.danger} title="Monto en Mora" />
+        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_en_mora} color={STheme.color.danger} title="Cuotas en Mora" />
+        <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_pendiente)}`} color={STheme.color.warning} title="Monto Pendiente" />
+        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_pendiente} color={STheme.color.warning} title="Cuotas Pendientes" />
+
+    </SView>
+}
+
+const BloqueVentas = ({ dato, color, title }) => {
+    return <SView col={"xs-6"} padding={5}>
+        <SText col={"xs-12"} bold>{title}</SText>
+        <SView col={"xs-12"}
+            style={{
+                padding: 5,
+                borderWidth: 1,
+                borderColor: color,
+                borderRadius: 4,
+                marginBottom: 5,
+                backgroundColor: color + "22",
+            }}>
+            <SText style={{ textTransform: "uppercase" }}>{dato}</SText>
+        </SView>
     </SView>
 }
 

@@ -138,7 +138,7 @@ export default class Modelo extends Component {
                                         style={{
                                             minWidth: "100%",
                                             overflow: "hidden",
-                                            marginBottom:15
+                                            marginBottom: 15
                                         }}
                                         onPress={() => {
 
@@ -181,14 +181,22 @@ export default class Modelo extends Component {
                                         </SView>
                                         <SView col={"xs-12"} padding={4}>
                                             <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
-                                                {producto.precio_compra ? <SText fontSize={16}  color={STheme.color.text} numberOfLines={1} bold>{producto?.precio_compra ? producto?.precio_compra : "---"} {monedaSymbol}</SText> : <SText fontSize={15}  color={STheme.color.text} numberOfLines={1} >GRATIS</SText>}
-                                                <SView flex/>
-                                                <SText style={{ alignItems: "flex-end", textAlign: "flex-end" }}  fontSize={14} bold numberOfLines={1}  color={producto?.stock > 0 ? "#10B981" : "#EF4444"} >
-                                                    {producto?.stock} Und
-                                                </SText>
+                                                {producto.precio_compra ? <SText fontSize={16} color={STheme.color.text} numberOfLines={1} bold>{producto?.precio_compra ? producto?.precio_compra : "---"} {monedaSymbol}</SText> : <SText fontSize={15} color={STheme.color.text} numberOfLines={1} >GRATIS</SText>}
+                                                <SView flex />
+                                                {producto?.tipo_producto?.tipo !== "servicio" && (
+                                                    <SText
+                                                        style={{ alignItems: "flex-end", textAlign: "flex-end" }}
+                                                        fontSize={14}
+                                                        bold
+                                                        numberOfLines={1}
+                                                        color={producto?.stock > 0 ? "#10B981" : "#EF4444"}
+                                                    >
+                                                        {producto?.stock} Und
+                                                    </SText>
+                                                )}
                                             </SView>
                                             <SView col={"xs-12"}>
-                                                <SHr height={5}/>
+                                                <SHr height={5} />
                                                 <SText fontSize={13} color={STheme.color.text} numberOfLines={1} >{producto?.descripcion}</SText>
                                                 <SText fontSize={11} color={STheme.color.lightGray} numberOfLines={1} >{proveedores}</SText>
 
