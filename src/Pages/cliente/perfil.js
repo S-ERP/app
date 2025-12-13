@@ -145,7 +145,7 @@ const Resumen = ({ cliente }) => {
                     borderColor: STheme.color.primary,
                 }}
             >
-                <SImage src={SSocket.api.root + "usuario/" + cliente?.key} style={{ resizeMode: 'cover' }} enablePreview/>
+                <SImage src={SSocket.api.root + "usuario/" + cliente?.key} style={{ resizeMode: 'cover' }} enablePreview />
             </SView>
         </SView>
         <SHr height={10} />
@@ -161,10 +161,14 @@ const Resumen = ({ cliente }) => {
 
 const InfoGeneral = ({ cliente, onReload }) => {
     return <SView col={"xs-12"} card padding={15} height>
-        <SView width={30} height={30} style={{
+        <SView width={40} height={40} style={{
             position: "absolute",
-            top: 5,
-            right: 5,
+            top: 0,
+            right: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+            zIndex: 10
         }}
             onPress={() => {
                 // Opción de editar cliente
@@ -229,10 +233,14 @@ const InfoGeneral = ({ cliente, onReload }) => {
 
 const Habilidades = ({ cliente, onReload }) => {
     return <SView col={"xs-12"} card padding={15} height>
-        <SView width={30} height={30} style={{
+        <SView width={40} height={40} style={{
             position: "absolute",
-            top: 5,
-            right: 5,
+            top: 0,
+            right: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+            zIndex: 10
         }}
             onPress={() => {
                 AdminsitrarHabilidades.open({
@@ -246,7 +254,8 @@ const Habilidades = ({ cliente, onReload }) => {
         </SView>
         <SText bold fontSize={16}>Habilidades</SText>
         <SHr height={30} />
-        <SView col={"xs-12"} >
+        <SView col={"xs-12"}  >
+            {cliente?.habilidades?.length === 0 && (<SText fontSize={16} color={STheme.color.lightGray}>No se han asignado habilidades.</SText>)}
 
             {cliente?.habilidades?.map((hab, index) => {
                 return <SView col={"xs-6"} key={index} flex
@@ -297,10 +306,14 @@ const Horarios = ({ cliente, onReload }) => {
     }
     let dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
     return <SView col={"xs-12"} card padding={15} height>
-        <SView width={30} height={30} style={{
+        <SView width={40} height={40} style={{
             position: "absolute",
-            top: 5,
-            right: 5,
+            top: 0,
+            right: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+            zIndex: 10
         }}
             onPress={() => {
                 // SPopup.open({
@@ -337,7 +350,8 @@ const Horarios = ({ cliente, onReload }) => {
             <SIcon name='crmeditar' width={20} height={20} fill={STheme.color.text} />
         </SView>
         <SText bold fontSize={16}>Horarios de atención</SText>
-        <SView col={"xs-12"} center height>
+        <SView col={"xs-12"}  >
+            <SHr height={30} />
             {cliente?.turno ? (<SView col={"xs-12"} row>
                 <SView col={"xs-6"} row >
                     <SText col={"xs-12"} color={STheme.color.lightGray}>Turno: </SText>
@@ -350,17 +364,17 @@ const Horarios = ({ cliente, onReload }) => {
                 <SHr height={10} />
                 <SView col={"xs-12"}>
                     {Object.keys(dataTurnOrdenado).map((dia) => (
-                        <SView col={"xs-12"} row key={dia} 
-                        style={{
-                            marginBottom: 5,
-                            // padding: 5,
-                            borderWidth: 1,
-                            borderColor: STheme.color.card,
-                            borderRadius: 4,
-                            backgroundColor: STheme.color.card,
-                            overflow: "hidden",
-                        }}>
-                            <SView col={"xs-4"} backgroundColor={STheme.color.background+"80"} padding={5} center>
+                        <SView col={"xs-12"} row key={dia}
+                            style={{
+                                marginBottom: 5,
+                                // padding: 5,
+                                borderWidth: 1,
+                                borderColor: STheme.color.card,
+                                borderRadius: 4,
+                                backgroundColor: STheme.color.card,
+                                overflow: "hidden",
+                            }}>
+                            <SView col={"xs-4"} backgroundColor={STheme.color.background + "80"} padding={5} center>
                                 <SText bold>{dias[dia]}</SText>
                             </SView>
                             <SView col={"xs-8"} row padding={5}>
