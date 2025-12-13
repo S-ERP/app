@@ -18,7 +18,7 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
             throw "No hay empresa seleccionada";
         }
         const state = Model.usuarioPage.Action._getState();
-        console.log("RolesPermisos", state.usuarioPageReducer)
+        // console.log("RolesPermisos", state.usuarioPageReducer)
 
         if (state.usuarioPageReducer.data) {
             return state.usuarioPageReducer.data;
@@ -34,7 +34,7 @@ export default class RolesPermisos extends MDLAbstract<EventListener> {
             "key_empresa": key_empresa
         })
 
-        console.log("Permisos cargados", resp);
+        // console.log("Permisos cargados", resp);
         if (!resp.data) {
             throw "No se pudieron cargar los permisos";
         }

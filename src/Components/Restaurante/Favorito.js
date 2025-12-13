@@ -64,7 +64,7 @@ class index extends Component<FavoritoPropsType> {
                         key_usuario: Model.usuario.Action.getKey(),
                     }).then(resp => {
                         this.setState({ loading: false })
-                        console.log("entro");
+                        // console.log("entro");
                     }).catch(e => {
                         console.log("entro errror");
                         this.setState({ loading: false })
@@ -77,7 +77,7 @@ class index extends Component<FavoritoPropsType> {
                         },
                         key_usuario: Model.usuario.Action.getKey(),
                     }).then(resp => {
-                        console.log("entro");
+                        // console.log("entro");
                         this.setState({ loading: false })
                     }).catch(e => {
                         console.log("entro errror");

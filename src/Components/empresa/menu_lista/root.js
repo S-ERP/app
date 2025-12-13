@@ -27,14 +27,14 @@ export default class root extends Component<indexPropsType> {
             // key_empresa: MDL.empresa.select.key,
             key_usuario: MDL.usuario.session.key
         }).then(em => {
-            console.log("empresasss", em);
+            // console.log("empresasss", em);
             this.setState({
                 data: Object.values(em.data).sort((a, b) => {
-                    console.log("ENTRO")
+                    // console.log("ENTRO")
                     return new Date(b.fecha_ultima_visita) - new Date(a.fecha_ultima_visita);
                 })
             });
-            console.log("ENTROOOO")
+            // console.log("ENTROOOO")
 
         }).catch(em => {
             console.error(em);
@@ -109,7 +109,7 @@ export default class root extends Component<indexPropsType> {
     render() {
         let miEmpresa = MDL.empresa.select;
         if (!miEmpresa) return null;
-        console.log("DATA EMPRESAS", this.state.data);
+        // console.log("DATA EMPRESAS", this.state.data);
         return (
             <SView col={"xs-12"} card onPress={() => {
                 this.openPopup();
