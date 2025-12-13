@@ -49,8 +49,8 @@ export default class Barra extends React.Component {
         })
     }
     render() {
-        console.log("eee", this.state.closeWidth)
-        console.log("aae", this.state.openWidth)
+        // console.log("eee", this.state.closeWidth)
+        // console.log("aae", this.state.openWidth)
 
 
         return <View style={{

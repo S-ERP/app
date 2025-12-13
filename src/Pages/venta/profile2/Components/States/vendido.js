@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { SHr, SIcon, SImage, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { View, Text, Linking } from 'react-native';
+import { SHr, SIcon, SImage, SNotification, SPage, SPopup, SSCrollView, SScrollView2, SText, STheme, SView, SButtom, SDate, SMath, STable, STable2 } from 'servisofts-component';
 import Components from '../../../../../Components';
 import Model from '../../../../../Model';
 import Cliente from '../Cliente';
@@ -28,10 +28,73 @@ export default class index extends Component {
         let miSucursal = sucursal.find(s => s.key == this.props.data.key_sucursal)
         this.setState({ miSucursal })
 
-        const resp = await MDL.compra_venta.factura(this.props.data.key);
-        // const resp = await MDL.compra_venta.factura("4e96e813-41f2-4825-bd6b-6f6aaaa0517f");
-        this.setState({ factura: resp });
 
+    }
+
+    openPdfFromBase64(base64) {
+        // Extraer la parte del contenido base64 (sin el encabezado "data:application/pdf;base64,")
+        const base64Content = base64.split(",")[1];
+
+        // Decodificar base64 a un array de bytes
+        const byteCharacters = atob(base64Content);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+
+        // Crear un Blob a partir del array de bytes
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+        // Crear una URL temporal para el Blob
+        const blobUrl = URL.createObjectURL(blob);
+
+        // Abrir el PDF en una nueva pestaña
+        // window.open(blobUrl);
+
+        const width = 512;
+        const height = 512;
+        const left = (screen.width / 2) - (width / 2);
+        const top = (screen.height / 2) - (height / 2);
+        window.open(blobUrl, "fact", `width=${width},height=${height},top=${top},left=${left}`);
+        // Limpia la URL cuando ya no la necesitas (opcional)
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 60000); // 60s
+    }
+
+    imprimirFactura(cuf) {
+        SNotification.send({
+            key: "imprimir",
+            title: "Imprimiendo factura",
+            type: "loading"
+        })
+        SSocket.sendPromise({
+            service: "facturacion",
+            component: "factura",
+            type: "imprimir",
+            key_empresa: Model.empresa.Action.getKey(),
+            key_usuario: Model.usuario.Action.getKey(),
+            cuf: cuf,
+        }).then(e => {
+            console.log(e);
+            const b64 = e.data.pdf
+            const pdf = `data:application/pdf;base64,${b64}`
+            this.openPdfFromBase64(pdf)
+            SNotification.send({
+                key: "imprimir",
+                title: "Factura impresa con éxito",
+                body: cuf,
+                color: STheme.color.success,
+                time: 5000,
+            })
+        }).catch(e => {
+            SNotification.send({
+                key: "imprimir",
+                title: "No se pudo imprimir la factura.",
+                body: e.error,
+                color: STheme.color.error,
+                time: 5000,
+            })
+        })
     }
 
     render() {
@@ -39,7 +102,7 @@ export default class index extends Component {
         let permiso = Model.usuarioPage.Action.getPermiso({ url: "/venta", permiso: "admin" })
         this.isAdmin = !!permiso ? true : Model.compra_venta_participante.Action.allowAdmin({ key_compra_venta: this.props.data.key });
         this.isSuperAdmin = !!permiso;
-        const { factura } = this.state;
+        // const { factura } = this.state;
 
         this.sucursal = this.state?.miSucursal;
         return (<SView col={"xs-12 sm-11 md-8 lg-8 xl-6"} card >
@@ -96,23 +159,37 @@ export default class index extends Component {
                 </SView>
                 <Separador1 />
 
+
+                {/* si ya tiene 2 facturas, no tiene que facturar */}
                 <SView col={"xs-12"} row center>
                     <SView col={"xs-12"} center>
                         <SHr />
-                        <SText bold>ACCIONESwwwww</SText>
+                        <SText bold>ACCIONES</SText>
                         <SHr />
                     </SView>
                     <SView col={"xs-12"} center row>
-                        <SView card style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.barColor }} row center>
-                            <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25} />
+                        <SView card style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.background }} row center>
+                            <SIcon name={"imprimir"} fill={STheme.color.text} width={25} height={25} />
                             <SView width={8} />
                             <SView onPress={() => {
-                                const descpomponer = JSON.stringify(factura, null, 2);
-                                console.log(descpomponer)
-                                SPopup.info(descpomponer)
-                            }
-                            }>
-                                <SText>fACTURAR</SText>
+                                try {
+                                    MDL.compra_venta.factura(this.props.data.key).then((resp) => {
+                                        console.clear();
+                                        console.log("%c" + JSON.stringify(resp, null, 2), "color: #2ECC40; font-weight: bold;");
+                                        SPopup.info(JSON.stringify(resp, null, 2));
+                                        console.log("prrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
+                                        console.log(resp.data.cuf)
+                                        this.imprimirFactura(resp.data.cuf)
+                                    }).catch((e) => {
+                                        console.error(e)
+                                    })
+
+                                } catch (error) {
+                                    console.error(error);
+                                    SPopup.error("Error al facturar");
+                                }
+                            }} >
+                                <SText>FACTURAR</SText>
                             </SView>
                         </SView>
 

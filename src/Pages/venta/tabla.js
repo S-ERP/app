@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath, SNotification } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
 import SIconApp from '../../Assets/SIconApp';
@@ -226,6 +226,74 @@ export default class tabla extends Component {
             </SView>
         </SView>
     }
+
+    openPdfFromBase64(base64) {
+        // Extraer la parte del contenido base64 (sin el encabezado "data:application/pdf;base64,")
+        const base64Content = base64.split(",")[1];
+
+        // Decodificar base64 a un array de bytes
+        const byteCharacters = atob(base64Content);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+
+        // Crear un Blob a partir del array de bytes
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+        // Crear una URL temporal para el Blob
+        const blobUrl = URL.createObjectURL(blob);
+
+        // Abrir el PDF en una nueva pestaña
+        // window.open(blobUrl);
+
+        const width = 512;
+        const height = 512;
+        const left = (screen.width / 2) - (width / 2);
+        const top = (screen.height / 2) - (height / 2);
+        window.open(blobUrl, "fact", `width=${width},height=${height},top=${top},left=${left}`);
+        // Limpia la URL cuando ya no la necesitas (opcional)
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 60000); // 60s
+    }
+
+    imprimirFactura(cuf) {
+        SNotification.send({
+            key: "imprimir",
+            title: "Imprimiendo factura",
+            type: "loading"
+        })
+        SSocket.sendPromise({
+            service: "facturacion",
+            component: "factura",
+            type: "imprimir",
+            key_empresa: Model.empresa.Action.getKey(),
+            key_usuario: Model.usuario.Action.getKey(),
+            cuf: cuf,
+        }).then(e => {
+            console.log(e);
+            const b64 = e.data.pdf
+            const pdf = `data:application/pdf;base64,${b64}`
+            this.openPdfFromBase64(pdf)
+            SNotification.send({
+                key: "imprimir",
+                title: "Factura impresa con éxito",
+                body: cuf,
+                color: STheme.color.success,
+                time: 5000,
+            })
+        }).catch(e => {
+            SNotification.send({
+                key: "imprimir",
+                title: "No se pudo imprimir la factura.",
+                body: e.error,
+                color: STheme.color.error,
+                time: 5000,
+            })
+        })
+    }
+
+
     mostrarTabla() {
         return (
             <DinamicTable
@@ -251,14 +319,33 @@ export default class tabla extends Component {
                                     SNavigation.navigate("/venta/profile", { pk: e?.row?.key })
                                 }
                             },
+
+
+                            //        {
+                            //     label: "Imprimir Recibo tamaño rollo",
+                            //     icon: <SIcon name='imprimir' fill={STheme.color.text} />,
+                            //     onPress: () => {
+                            //         ReciboRollo.imprimir(e?.row?.key)
+                            //     }
+                            // },
+
+
                             {
-                                label: "Facturar",
-                                icon: <SIconApp name='addTarea' fill="#e4e4e4ff" />,
+                                label: "Imprimir Factura tamaño carta",
+                                icon: <SIconApp name='imprimir' fill="#e4e4e4ff" />,
                                 onPress: async () => {
                                     try {
-                                        const resp = await MDL.compra_venta.factura(e?.row?.key);
-                                        const respFormateado = JSON.stringify(resp, null, 2);
-                                        SPopup.info(respFormateado);
+                                        // const resp = await MDL.compra_venta.factura(e?.row?.key);
+                                        // const respFormateado = JSON.stringify(resp, null, 2);
+                                        // // 🟡🟡🟡🟡 seguimos trabajndo
+                                        // SPopup.info(respFormateado);
+
+                                        // ReciboRollo.imprimir(e.row?.factura?.cuf)
+                                        // FacturaRollo
+
+                                        this.imprimirFactura(e.row?.factura?.cuf)
+
+
                                     } catch (error) {
                                         console.error("Error al facturar:", error);
                                         SPopup.alert("❌ Error al crear la factura. Intenta nuevamente.");
@@ -266,7 +353,7 @@ export default class tabla extends Component {
                                 }
                             },
                             {
-                                label: "Imprimir tamaño rollo",
+                                label: "Imprimir Recibo tamaño rollo",
                                 icon: <SIcon name='imprimir' fill={STheme.color.text} />,
                                 onPress: () => {
                                     ReciboRollo.imprimir(e?.row?.key)
@@ -274,7 +361,7 @@ export default class tabla extends Component {
                             },
 
                             {
-                                label: "Imprimir tamaño carta",
+                                label: "Imprimir Recibo tamaño carta",
                                 icon: <SIcon name='imprimir' fill={STheme.color.text} />,
                                 onPress: () => {
                                     ReciboCarta.imprimir(e?.row?.key)
@@ -315,6 +402,28 @@ export default class tabla extends Component {
                         </SView>
                     </>} />
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
+
+
+                <DinamicTable.Col key="facturado" label="Facturado" width={60} data={(e) => e.row?.factura?.cuf}
+                    customComponent={e => <>
+                        {(e.row?.factura) ?
+                            <SView col={"xs-12"} center row  >
+                                <SView width={5} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>✅</SText>
+                            </SView> : null}
+                    </>}
+                />
+
+                <DinamicTable.Col key="nrofactura" label="Nro. Factura" width={80} data={(e) => e.row?.factura?.numero}
+                    customComponent={e => <>
+                        {(e.row?.factura?.numero) ?
+                            <SView col={"xs-12"} center row  >
+                                <SView width={5} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.factura?.numero}</SText>
+                            </SView> : null}
+                    </>}
+                />
+
 
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e?.data)} />
 
