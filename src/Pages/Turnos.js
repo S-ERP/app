@@ -13,6 +13,7 @@ import FloatButtom from '../Components/FloatButtom';
 import TurnoComponent from '../Components/TurnoComponent';
 import Container from '../Components/Container';
 import FloatMenu from '../Components/FloatMenu';
+import item from './contabilidad/gestion/item';
 
 
 export default class Turnos extends Component {
@@ -44,6 +45,7 @@ export default class Turnos extends Component {
 
 
     mostrarTabla() {
+        let dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
         return <DinamicTable
             key="tabla"
             ref={ref => this.DinamicTable = ref}
@@ -141,37 +143,105 @@ export default class Turnos extends Component {
             }}
 
 
+            // loadData={async () => {
+            //     const all = await MDL.empresa.getTurnosHorariosAtencion();
+
+            //     // 🔁 OPCIONAL: si querés usar clientes en lugar de usuarios
+            //     // const usuarios = await MDL.crm.cliente.getAll();
+            //     const usuarios = await MDL.usuario.getByKeys(Object.keys(all));
+
+            //     const data = Object.entries(all).flatMap(([key_usuario, turnos]) => {
+            //         const usuario = usuarios.find(u => u.key === key_usuario);
+            //         return turnos.map((item, index) => ({
+            //             ...item,
+            //             key_usuario,
+            //             usuario, // ✅ Aquí sí incluimos el objeto completo
+            //             index
+            //         }));
+            //     });
+
+
+
+            //     console.log("fregadooo", data);
+            //     return data;
+            // }}
+
+            // loadData={async () => {
+            //     const all = await MDL.empresa.getTurnosHorariosAtencion();
+
+            //     // Obtener usuarios por key
+            //     const usuarios = await MDL.usuario.getByKeys(
+            //         Object.values(all).map(t => t.key_usuario)
+            //     );
+
+            //     const data = Object.values(all).flatMap((turno) => {
+            //         const usuario = usuarios.find(u => u.key === turno.key_usuario);
+
+            //         return turno.horario_atencion.map((horario, index) => ({
+            //             ...horario,               // dia, hora_inicio, hora_fin, etc
+            //             turno_nombre: turno.nombre,
+            //             atiende_feriado: turno.atiende_feriado,
+            //             key_turno: turno.key,
+            //             key_empresa: turno.key_empresa,
+            //             usuario,                  // objeto usuario completo
+            //             index
+            //         }));
+            //     });
+
+            //     console.log("DATA FINAL", data);
+            //     return data;
+            // }}
+
             loadData={async () => {
                 const all = await MDL.empresa.getTurnosHorariosAtencion();
 
-                // 🔁 OPCIONAL: si querés usar clientes en lugar de usuarios
-                // const usuarios = await MDL.crm.cliente.getAll();
-                const usuarios = await MDL.usuario.getByKeys(Object.keys(all));
+                // Obtener usuarios por key_usuario de los turnos
+                const usuarios = await MDL.usuario.getByKeys(
+                    Object.values(all).map(t => t.key_usuario)
+                );
 
-                const data = Object.entries(all).flatMap(([key_usuario, turnos]) => {
-                    const usuario = usuarios.find(u => u.key === key_usuario);
-                    return turnos.map((item, index) => ({
-                        ...item,
-                        key_usuario,
-                        usuario, // ✅ Aquí sí incluimos el objeto completo
+                const data = Object.values(all).map((turno, index) => {
+                    const usuario = usuarios.find(u => u.key === turno.key_usuario);
+
+                    return {
+                        ...turno,              // mantiene horario_atencion
+                        usuario,               // objeto usuario completo
                         index
-                    }));
+                    };
                 });
 
-
-
-                console.log("fregado", data);
+                console.log("DATA FINAL", data);
                 return data;
             }}
+
+
 
         >
             <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
             {/* <DinamicTable.Col key="key_turno" label="key_turno" width={180}  /> */}
             <DinamicTable.Col key="key_turno" label="key_turno" width={50} data={(e) => e.row?.key} />
             <DinamicTable.Col key="nombre" label="Turno" width={150} data={(e) => e.row?.nombre} />
-            <DinamicTable.Col key="horario" label="Horario" width={150} data={(e) => e.row?.horario} />
+            <DinamicTable.Col key="dia" label="# Días" width={80} data={(e) => new Set(e.row.horario_atencion.map(h => h.dia)).size} />
+            <DinamicTable.Col key="horario" label="Horario" width={450}
+                // data={(e) => {
+                //     let dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+                //     // e.row?.horario_atencion.map(item => `${item.dia} ${item.hora_inicio} - ${item.hora_fin}`).join(', ')
+                //     e.row?.horario_atencion
+                //         ?.map(item => {
+                //             const dia = dias[item.dia];
+                //             const inicio = item.hora_inicio.slice(0, 5);
+                //             const fin = item.hora_fin.slice(0, 5);
+
+                //             return `${dia} (${inicio} - ${fin})`;
+                //         })
+                //         .join(', ');
+                // }}
+                data={(e) => e.row?.horario_atencion.map(item => `${dias[item.dia]} (${item.hora_inicio.slice(0, 5)} - ${item.hora_fin.slice(0, 5)})`).join(', ')}
+            // format={"hh:mm"}
+
+            />
             <DinamicTable.Col key="atiende_feriado" label="¿Feriado?" width={100} data={(e) => (e.row?.atiende_feriado === 0) ? "No" : "Sí"} />
-            <DinamicTable.Col key="dia" label="# Días" width={80} data={(e) => e.row?.dia} />
+
             <DinamicTable.Col
                 key="fecha_on"
                 label="F. Creación"
