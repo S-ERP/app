@@ -66,6 +66,7 @@ export default class Cliente extends Component {
     render() {
         this.empresa = MDL.empresa.select;
         this.data = this.props.data;
+        console.log("Dataaaaaaaaaaaaaa", this.data)
         this.data.cliente = this.state.cliente;
         console.log("CLIENTE", this.data.cliente)
         if (!this.data?.cliente) {
@@ -107,7 +108,7 @@ export default class Cliente extends Component {
         if (key_sucursal) {
             urlFoto = SSocket.api.empresa + "sucursal/" + key_sucursal;
         } else if (key) {
-            urlFoto = SSocket.api.root + "usuario/" + key;
+            urlFoto = SSocket.api.root + "usuario/" + key_usuario;
         } else if (key_usuario) {
             urlFoto = SSocket.api.root + "usuario/" + key_usuario;
         }
@@ -118,22 +119,45 @@ export default class Cliente extends Component {
                 <SHr />
             </SView>
             <SView col={"xs-12"} row onPress={onPress} center>
-                <SView col={"xs-12 sm-7 md-7 lg-7 xl-7"} row style={{paddingBottom:6}}>
-                    <SView width={35} height={35} style={{  borderRadius: 100, overflow: 'hidden', backgroundColor: STheme.color.card }}>
-                        <SImage src={urlFoto} enablePreview style={{ borderRadius: 100, overflow: 'hidden', resizeMode: "cover"}} />
+                <SView col={"xs-12  "} row border={"transparent"} >
+
+                    <SView row width={44} border={"transparent"}  >
+                        <SView width={35} height={35} style={{ borderRadius: 100, overflow: 'hidden', backgroundColor: STheme.color.card }}>
+                            <SImage src={urlFoto} enablePreview style={{ borderRadius: 100, overflow: 'hidden', resizeMode: "cover" }} />
+                        </SView>
                     </SView>
-                    <SView width={8} />
-                    <SText center>{nombres} {apellidos}</SText>
-                    <SHr height={1} />
-                    <SText center>Email: {correo}</SText>
+
+                    {/* <SHr width={5} /> */}
+                    <SView row flex style={{ justifyContent: "space-between" }} >
+
+                        <SView row col={"xs-5"} border={"transparent"}  >
+                            <SHr />
+                            <SText center>Nombre: {nombres} {apellidos}</SText>
+                            <SHr />
+                            <SText center>Email: {correo}</SText>
+                            <SHr />
+                            <SText center>Telefono: {telefono}</SText>
+                            <SHr />
+                            <SText center>Dirección: {direccion}</SText>
+                        </SView>
+
+                        <SView row col={"xs-5"} border={"transparent"}  >
+                            <SHr />
+                            <SText center>Datos Factura</SText>
+                            <SHr />
+                            <SText center>NIT/CI/CEX:: {nit}</SText>
+                            <SHr />
+                            <SText center>razon_social: {razon_social}</SText>
+                            <SHr />
+                            <SHr />
+                            {/* <SText center>Dirección: {direccion}</SText> */}
+                        </SView>
+                    </SView>
+
+
+
                 </SView>
-                <SView col={"xs-12 sm-5 md-5 lg-5 xl-5"} style={{paddingBottom:6}}>
-                    <SText >{`NIT/CI/CEX: ${nit}`}</SText>
-                    <SHr />
-                    <SText  >{telefono ? `Teléfono: ${telefono}` : ""}</SText>
-                </SView>
-                <SText col={"xs-12"}>Dirección: {direccion}</SText>
-                <SHr />
+
             </SView>
             <SHr />
         </SView>

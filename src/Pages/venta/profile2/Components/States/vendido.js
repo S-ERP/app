@@ -105,8 +105,28 @@ export default class index extends Component {
         // const { factura } = this.state;
 
         this.sucursal = this.state?.miSucursal;
+        // console.clear();
+        // console.log("%c" + JSON.stringify(this.data, null, 2), "color: #2ECC40; font-weight: bold;");
+
         return (<SView col={"xs-12 sm-11 md-8 lg-8 xl-6"} card >
-            <Estado data={this.data} />
+
+
+            <SView col={"xs-12"} padding={10} row style={{ justifyContent: "space-between" }}>
+
+                {this.data?.factura?.cuf ? <>
+                    <SView width={170} center
+                        style={{ backgroundColor: STheme.color.card, borderBottomLeftRadius: 10, borderBottomRightRadius: 10, marginRight: 8, borderBottomColor: STheme.color.card, borderBottomWidth: 3 }}
+                        padding={5}>
+                        <SText bold fontSize={18} style={{ textTransform: "uppercase" }}>Factura Nro. {this.data?.factura?.numero}</SText>
+                    </SView>
+                </> : null}
+                <Estado data={this.data} />
+            </SView>
+
+
+
+
+            {/* <Estado data={this.data} /> */}
             <SView col={"xs-12"} padding={10} row>
                 <SView style={{ paddingRight: 15 }} center>
                     <SView width={70} height={70} style={{
@@ -138,6 +158,7 @@ export default class index extends Component {
                 </SView>
                 <SHr height={10} />
                 <Separador1 />
+
                 <SView col={"xs-12"} row center>
                     {(this.data.tipo == "venta") ?
                         <Cliente data={this.data} disabled /> :
@@ -161,57 +182,78 @@ export default class index extends Component {
 
 
                 {/* si ya tiene 2 facturas, no tiene que facturar */}
+
+
+
                 <SView col={"xs-12"} row center>
                     <SView col={"xs-12"} center>
                         <SHr />
                         <SText bold>ACCIONES</SText>
                         <SHr />
                     </SView>
-                    <SView col={"xs-12"} center row>
-                        <SView card style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.background }} row center>
-                            <SIcon name={"imprimir"} fill={STheme.color.text} width={25} height={25} />
-                            <SView width={8} />
-                            <SView onPress={() => {
-                                try {
-                                    MDL.compra_venta.factura(this.props.data.key).then((resp) => {
-                                        console.clear();
-                                        console.log("%c" + JSON.stringify(resp, null, 2), "color: #2ECC40; font-weight: bold;");
-                                        SPopup.info(JSON.stringify(resp, null, 2));
-                                        console.log("prrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
-                                        console.log(resp.data.cuf)
-                                        this.imprimirFactura(resp.data.cuf)
-                                    }).catch((e) => {
-                                        console.error(e)
-                                    })
 
-                                } catch (error) {
-                                    console.error(error);
-                                    SPopup.error("Error al facturar");
-                                }
-                            }} >
-                                <SText>FACTURAR</SText>
+
+
+                    <SView col={"xs-12"} center row>
+                        <SView col={"xs-12"} card style={{ padding: 10, marginBottom: 10, backgroundColor: this.data?.factura?.cuf ? STheme.color.card : STheme.color.barColor }} row center>
+                            <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25} />
+                            <SView width={8} />
+                            <SView
+                                onPress={async () => {
+                                    try {
+                                        const factura = this.data?.factura;
+                                        if (factura?.cuf) {
+                                            this.imprimirFactura(factura.cuf);
+                                            return;
+                                        }
+
+                                        const resp = await MDL.compra_venta.factura(this.props.data.key);
+
+                                        console.log("%c" + JSON.stringify(resp, null, 2), "color: #2ECC40; font-weight: bold;");
+
+                                        if (resp?.data?.cuf) {
+                                            this.imprimirFactura(resp.data.cuf);
+                                        } else {
+                                            SNotification.send({
+                                                key: "imprimir",
+                                                title: "Error al facturar",
+                                                body: "No se recibió el CUF desde el servidor.",
+                                                color: STheme.color.warning,
+                                                time: 5000,
+                                            });
+                                        }
+
+                                    } catch (error) {
+                                        console.error(error);
+                                        SNotification.send({
+                                            key: "imprimir",
+                                            title: "Error al facturar",
+                                            body: error?.error || "Ocurrió un error inesperado",
+                                            color: STheme.color.error,
+                                            time: 5000,
+                                        });
+                                    }
+                                }}
+                            // onPress={() => ReciboRollo.imprimir(this.data.key)}
+                            >
+                                <SText bold> {this.data?.factura?.cuf ? "DESCARGAR FACTURA" : "FACTURAR E IMPRIMIR"} </SText>
                             </SView>
                         </SView>
+                    </SView>
 
 
-                    </SView>
-                </SView>
-                <SView col={"xs-12"} row center>
-                    <SView col={"xs-12"} center>
-                        <SHr />
-                        <SText bold>ACCIONES</SText>
-                        <SHr />
-                    </SView>
-                    <SView col={"xs-12"} center row>
-                        <SView card style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.barColor }} row center>
+
+                    <SView col={"xs-12"} center row style={{ justifyContent: "space-between" }}>
+                        <SView col={"xs-5.5"} style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.card, borderColor: STheme.color.card, borderWidth: 1 }} row center>
                             <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25} />
                             <SView width={8} />
                             <SView onPress={() => ReciboRollo.imprimir(this.data.key)}>
                                 <SText>DESCARGAR PDF ROLLO</SText>
                             </SView>
                         </SView>
-                        <SView width={8} />
-                        <SView card style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.barColor }} row center>
+
+
+                        <SView col={"xs-5.5"} style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.card, borderColor: STheme.color.card, borderWidth: 1 }} row center>
                             <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25} />
                             <SView width={8} />
                             <SView onPress={() => ReciboCarta.imprimir(this.data.key)}>

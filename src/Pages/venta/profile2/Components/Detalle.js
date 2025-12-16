@@ -232,8 +232,8 @@ export default class Detalle extends Component {
         // this.compra_venta_detalle = Model.compra_venta_detalle.Action.getAllConProductos({
         //     key_compra_venta: this.data.key
         // })
-        console.log("DETALLEssssssssss:", this.data)
-        console.log("DETALLE:", this.data.detalle)
+        // console.log("DETALLEssssssssss:", this.data)
+        // console.log("DETALLE:", this.data.detalle)
         if (!this.data) return <SLoad />
         return <SView col={"xs-12"} center>
             <SHr />
