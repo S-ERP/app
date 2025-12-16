@@ -19,7 +19,7 @@ export default class Estado extends Component {
                 backgroundColor: statei.color + "76",
                 borderBottomLeftRadius:10, 
                 borderBottomRightRadius:10, 
-                marginRight:8,
+                // marginRight:8,
                 borderBottomColor: STheme.color.card,
                 borderBottomWidth:3
             }} 
