@@ -74,6 +74,66 @@ export default class inventario extends MDLAbstract<EventListener> {
     console.log("getAllModeloStock", resp.data);
     return Object.values(resp.data || {});
   }
+
+  //   async getAllModeloCliente(_key_almacen: string) {
+  //   const resp: any = await SSocket.sendPromise({
+  //     version: "1.0",
+  //     service: "inventario",
+  //     component: "modelo_cliente",
+  //     type: "getAllStock",
+  //     key_empresa: MDL.empresa.select?.key,
+  //     key_usuario: MDL.usuario.session?.key,
+  //     key_almacen: _key_almacen,
+  //   });
+  //   console.log("getAllModeloStock", resp.data);
+  //   return Object.values(resp.data || {});
+  // }
+
+  async getModelosByCliente(key_cliente: string) {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "modelo_cliente",
+      type: "getByKeyCliente",
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+      key_cliente: key_cliente,
+    });
+    console.log("getModelosByCliente", resp.data);
+    return Object.values(resp.data || {});
+  }
+
+   async saveModeloCliente(modelo_cliente: {
+    key?: string,
+    // key_modelo: string,
+    key_cliente: string,
+    estado?: number
+  }) {
+    // if (modelo_cliente.key) {
+    //   const resp: any = await SSocket.sendPromise({
+    //     version: "1.0",
+    //     service: "inventario",
+    //     component: "modelo_cliente",
+    //     type: "editar",
+    //     data: modelo_cliente,
+    //     key_empresa: MDL.empresa.select?.key,
+    //     key_usuario: MDL.usuario.session?.key,
+    //   });
+    //   return resp.data;
+    // } else {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "modelo_cliente",
+        type: "registro",
+        data: modelo_cliente,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    // }
+  }
+
   async getAllModeloStockBySucursal(key_sucursal: string) {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",

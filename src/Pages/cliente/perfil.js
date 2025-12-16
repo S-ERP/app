@@ -11,6 +11,7 @@ import SIconApp from '../../Assets/SIconApp';
 import label from '../ajustes/label';
 import AdminsitrarHabilidades from './Components/AdministrarHabilidades';
 import TurnoComponent from '../../Components/TurnoComponent';
+import PopupArticulos from './Components/PopupArticulos';
 
 const URL = "/crm/cliente";
 
@@ -68,6 +69,7 @@ export default class Perfil extends Component {
             let ventas = await MDL.compra_venta.getTransaccion('venta', '2024-09-01', '2026-09-05');
             let registros = await MDL.compra_venta.getCuotasResumenTotal_ventas();
             let turnos = await MDL.empresa.getTurnosHorariosAtencion();
+            let articulos = await MDL.inventario.getModelosByCliente(this.key);
 
             let e = await MDL.crm.cliente.getByKey(this.key);
 
@@ -76,7 +78,8 @@ export default class Perfil extends Component {
             e.resumen_cuotas = registros ? registros.find(reg => reg.key_cliente == e.key) : [];
             e.turno = turnos ? Object.values(turnos).find(t => t.key == e.key_turno) : null;
             // e.horario_atencion = turnos ? turnos.filter(t => t.key_usuario == e.key) : null;
-
+            e.articulos = articulos;
+            console.log("articulos", articulos);
 
             this.setState({ data: e });
 
@@ -121,6 +124,9 @@ export default class Perfil extends Component {
                     </SView>
                     <SView col={"xs-4"} padding={5}>
                         <CompraVentas cliente={this.data} />
+                    </SView>
+                    <SView col={"xs-4"} padding={5}>
+                        <Articulos cliente={this.data} onReload={this.loadData} />
                     </SView>
                 </SView>
 
@@ -406,12 +412,12 @@ const CompraVentas = ({ cliente }) => {
     return <SView col={"xs-12"} card padding={15} height row>
         <SText bold fontSize={16}>Compra / Venta</SText>
         <SHr height={20} />
-        <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_pagado)}`} color={STheme.color.success} title="Monto Pagado" />
-        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_pagada} color={STheme.color.success} title="Cuotas Pagadas" />
-        <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_en_mora)}`} color={STheme.color.danger} title="Monto en Mora" />
-        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_en_mora} color={STheme.color.danger} title="Cuotas en Mora" />
-        <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_pendiente)}`} color={STheme.color.warning} title="Monto Pendiente" />
-        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_pendiente} color={STheme.color.warning} title="Cuotas Pendientes" />
+        <BloqueVentas dato={`Bs ${SMath.formatMoney((cliente?.resumen_cuotas?.monto_pagado ?? 0))}`} color={STheme.color.success} title="Monto Pagado" />
+        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_pagada ?? "--"} color={STheme.color.success} title="Cuotas Pagadas" />
+        <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_en_mora ?? 0)}`} color={STheme.color.danger} title="Monto en Mora" />
+        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_en_mora ?? "--"} color={STheme.color.danger} title="Cuotas en Mora" />
+        <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_pendiente ?? 0)}`} color={STheme.color.warning} title="Monto Pendiente" />
+        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_pendiente ?? "--"} color={STheme.color.warning} title="Cuotas Pendientes" />
 
     </SView>
 }
@@ -430,6 +436,50 @@ const BloqueVentas = ({ dato, color, title }) => {
             }}>
             <SText style={{ textTransform: "uppercase" }}>{dato}</SText>
         </SView>
+    </SView>
+}
+
+const Articulos = ({ cliente, onReload }) => {
+    return <SView col={"xs-12"} card padding={15} height>
+        <SView width={40} height={40} style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+            zIndex: 10
+        }}
+            onPress={() => {
+                PopupArticulos.open({
+                    key_cliente: cliente.key,
+                    onSuccess: () => {
+                        onReload();
+                    }
+                });
+            }} center>
+            <SIcon name='crmeditar' width={20} height={20} fill={STheme.color.text} />
+        </SView>
+        <SText bold fontSize={16}>Artículos</SText>
+        <SHr height={10} />
+        {/* {cliente?.articulos?.length > 0 && (
+            <SView col={"xs-12"}  >
+                {cliente?.articulos?.map((art, index) => {
+                    return <SView col={"xs-12"} key={index} flex
+                        style={{
+                            padding: 5,
+                            borderWidth: 1,
+                            borderColor: STheme.color.card,
+                            borderRadius: 4,
+                            marginBottom: 5,
+                            backgroundColor: STheme.color.card,
+                        }}>
+                        <SText style={{ textTransform: "uppercase" }}>{art?.descripcion}</SText>
+                    </SView>
+                })}
+            </SView>
+        )} */}
+        {cliente?.articulos ?? (<SText fontSize={16} color={STheme.color.lightGray}>No se han asignado artículos.</SText>)}
     </SView>
 }
 
