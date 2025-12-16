@@ -41,11 +41,18 @@ export default class TurnoComponent extends Component {
         });
     }
 
+    // onReloadFromChild = (res: any) => {
+    //     if (this.props.onReload) {
+    //         this.props.onReload(res);
+    //     }
+    // };
+
+
     render() {
         return <SView col={"xs-12"} flex>
             <SHr height={18} />
             <SView col={"xs-11.5"} row>
-                <SView flex row ><SIcon name='clock' width={18} style={{ paddingRight: 8,  }} stroke='white' />
+                <SView flex row ><SIcon name='clock' width={18} style={{ paddingRight: 8, }} stroke='white' />
                     <SText fontSize={18} bold>Configurar Nuevo Horario</SText>
                     {/* <SText fontSize={18} bold><SIcon name='clock' width={18} style={{ paddingRight: 4, marginTop: 20, }} stroke='white' /> Configurar Nuevo Horario</SText> */}
                 </SView>
@@ -88,7 +95,7 @@ export default class TurnoComponent extends Component {
                 <SHr height={24} />
             </SView>
             <SHr height={18} />
-            <ListaDeDias turnoComponent={this} />
+            <ListaDeDias turnoComponent={this}  />
         </SView>
     }
 }

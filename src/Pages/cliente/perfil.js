@@ -10,6 +10,7 @@ import PopupCrearCliente from './Components/PopupCrearCliente';
 import SIconApp from '../../Assets/SIconApp';
 import label from '../ajustes/label';
 import AdminsitrarHabilidades from './Components/AdministrarHabilidades';
+import TurnoComponent from '../../Components/TurnoComponent';
 
 const URL = "/crm/cliente";
 
@@ -66,12 +67,15 @@ export default class Perfil extends Component {
             let habilidad = await MDL.habilidad.getAllWithUsuarios();
             let ventas = await MDL.compra_venta.getTransaccion('venta', '2024-09-01', '2026-09-05');
             let registros = await MDL.compra_venta.getCuotasResumenTotal_ventas();
+            let turnos = await MDL.empresa.getTurnosHorariosAtencion();
 
             let e = await MDL.crm.cliente.getByKey(this.key);
 
             e.habilidades = habilidad.filter(hab => hab.key_usuarios?.includes(e.key));
             e.ventas = ventas.filter(venta => venta.key_cliente == e.key);
             e.resumen_cuotas = registros ? registros.find(reg => reg.key_cliente == e.key) : [];
+            e.turno = turnos ? Object.values(turnos).find(t => t.key == e.key_turno) : null;
+            // e.horario_atencion = turnos ? turnos.filter(t => t.key_usuario == e.key) : null;
 
 
             this.setState({ data: e });
@@ -95,7 +99,7 @@ export default class Perfil extends Component {
 
         if (!this.state.data) return <SView />
         this.data = this.state.data;
-        this.habilidad = this.state.habilidad;
+        // this.habilidad = this.state.habilidad;
 
         return (
             <SPage title="Perfil del Cliente" >
@@ -113,7 +117,7 @@ export default class Perfil extends Component {
                         <Habilidades cliente={this.data} onReload={this.loadData} />
                     </SView>
                     <SView col={"xs-4"} padding={5}>
-                        <Horarios cliente={this.data} />
+                        <Horarios cliente={this.data} onReload={this.loadData} />
                     </SView>
                     <SView col={"xs-4"} padding={5}>
                         <CompraVentas cliente={this.data} />
@@ -141,7 +145,7 @@ const Resumen = ({ cliente }) => {
                     borderColor: STheme.color.primary,
                 }}
             >
-                <SImage src={`${cliente?.key}?date=${new Date().getTime()}`} style={{ resizeMode: 'cover' }} />
+                <SImage src={SSocket.api.root + "usuario/" + cliente?.key} style={{ resizeMode: 'cover' }} enablePreview />
             </SView>
         </SView>
         <SHr height={10} />
@@ -157,10 +161,14 @@ const Resumen = ({ cliente }) => {
 
 const InfoGeneral = ({ cliente, onReload }) => {
     return <SView col={"xs-12"} card padding={15} height>
-        <SView width={30} height={30} style={{
+        <SView width={40} height={40} style={{
             position: "absolute",
-            top: 5,
-            right: 5,
+            top: 0,
+            right: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+            zIndex: 10
         }}
             onPress={() => {
                 // Opción de editar cliente
@@ -225,10 +233,14 @@ const InfoGeneral = ({ cliente, onReload }) => {
 
 const Habilidades = ({ cliente, onReload }) => {
     return <SView col={"xs-12"} card padding={15} height>
-        <SView width={30} height={30} style={{
+        <SView width={40} height={40} style={{
             position: "absolute",
-            top: 5,
-            right: 5,
+            top: 0,
+            right: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+            zIndex: 10
         }}
             onPress={() => {
                 AdminsitrarHabilidades.open({
@@ -242,7 +254,8 @@ const Habilidades = ({ cliente, onReload }) => {
         </SView>
         <SText bold fontSize={16}>Habilidades</SText>
         <SHr height={30} />
-        <SView col={"xs-12"} >
+        <SView col={"xs-12"}  >
+            {cliente?.habilidades?.length === 0 && (<SText fontSize={16} color={STheme.color.lightGray}>No se han asignado habilidades.</SText>)}
 
             {cliente?.habilidades?.map((hab, index) => {
                 return <SView col={"xs-6"} key={index} flex
@@ -261,22 +274,123 @@ const Habilidades = ({ cliente, onReload }) => {
     </SView>
 }
 
-const Horarios = ({ cliente }) => {
+const horaToMinutos = (hora) => {
+    const [h, m, s] = hora.split(":").map(Number);
+    return h * 60 + m + (s || 0) / 60;
+};
+const agruparPorDia = (data) => {
+    return data.reduce((acc, item) => {
+        if (!acc[item.dia]) acc[item.dia] = [];
+        acc[item.dia].push(item);
+        return acc;
+    }, {});
+};
+const ordenarHorariosPorDia = (data) => {
+    const agrupado = agruparPorDia(data);
+
+    Object.keys(agrupado).forEach((dia) => {
+        agrupado[dia].sort(
+            (a, b) =>
+                horaToMinutos(a.hora_inicio) -
+                horaToMinutos(b.hora_inicio)
+        );
+    });
+
+    return agrupado;
+};
+
+const Horarios = ({ cliente, onReload }) => {
+    let dataTurnOrdenado = [];
+    if (cliente?.turno) {
+        dataTurnOrdenado = ordenarHorariosPorDia(cliente.turno.horario_atencion);
+    }
+    let dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
     return <SView col={"xs-12"} card padding={15} height>
-        <SView width={30} height={30} style={{
+        <SView width={40} height={40} style={{
             position: "absolute",
-            top: 5,
-            right: 5,
+            top: 0,
+            right: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+            zIndex: 10
         }}
             onPress={() => {
+                // SPopup.open({
+                //     key: "popup_habilidades",
+                //     // content: <AdministrarHabilidades cliente={cliente} />
+                // })
                 SPopup.open({
-                    key: "popup_habilidades",
-                    // content: <AdministrarHabilidades cliente={cliente} />
-                })
+                    key: "popup_config_horario",
+                    content: (
+                        <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
+                            <SView col={"xs-12"} height={600} center >
+                                <TurnoComponent key_turno={cliente?.key_turno} onReload={async (res) => {
+                                    console.log("✅ Resultado recibido en Turnos.js:", res);
+                                    cliente.horario_atencion = res;
+                                    let data = {
+                                        key: cliente.key,
+                                        key_turno: res.key,
+                                        key_usuario: MDL.usuario.session?.key,
+
+                                    }
+                                    await MDL.crm.cliente.editar(data).then(e => {
+                                        console.log("✅ Horario de atención actualizado en el cliente:", e)
+                                        onReload();
+                                    }).catch(err => {
+                                        console.error("Error al actualizar el horario de atención en el cliente:", err)
+                                    });
+                                }}
+                                ></TurnoComponent>
+                            </SView>
+                        </SView>
+                    )
+                });
             }} center>
             <SIcon name='crmeditar' width={20} height={20} fill={STheme.color.text} />
         </SView>
         <SText bold fontSize={16}>Horarios de atención</SText>
+        <SView col={"xs-12"}  >
+            <SHr height={30} />
+            {cliente?.turno ? (<SView col={"xs-12"} row>
+                <SView col={"xs-6"} row >
+                    <SText col={"xs-12"} color={STheme.color.lightGray}>Turno: </SText>
+                    <SText col={"xs-12"} bold>{cliente?.turno?.nombre}</SText>
+                </SView>
+                <SView col={"xs-6"} row style={{ alignItems: "flex-end" }}>
+                    <SText col={"xs-12"} style={{ alignItems: "flex-end" }} color={STheme.color.lightGray}>¿Atención en feriado?</SText>
+                    <SText col={"xs-12"} style={{ alignItems: "flex-end" }}>{cliente?.turno?.atiende_feriado === 0 ? "No" : "Sí"}</SText>
+                </SView>
+                <SHr height={10} />
+                <SView col={"xs-12"}>
+                    {Object.keys(dataTurnOrdenado).map((dia) => (
+                        <SView col={"xs-12"} row key={dia}
+                            style={{
+                                marginBottom: 5,
+                                // padding: 5,
+                                borderWidth: 1,
+                                borderColor: STheme.color.card,
+                                borderRadius: 4,
+                                backgroundColor: STheme.color.card,
+                                overflow: "hidden",
+                            }}>
+                            <SView col={"xs-4"} backgroundColor={STheme.color.background + "80"} padding={5} center>
+                                <SText bold>{dias[dia]}</SText>
+                            </SView>
+                            <SView col={"xs-8"} row padding={5}>
+                                {dataTurnOrdenado[dia].map((horario, index) => (
+                                    <SView col={"xs-12"} row key={index} padding={5}>
+                                        <SText>{`${horario.hora_inicio.slice(0, 5)} - ${horario.hora_fin.slice(0, 5)}`}</SText>
+                                    </SView>
+                                ))}
+                            </SView>
+                        </SView>
+                    ))}</SView>
+            </SView>
+            ) : (
+                <SText fontSize={16} color={STheme.color.lightGray}>No se ha configurado un horario de atención.</SText>
+            )}
+        </SView>
         <SHr height={10} />
     </SView>
 }

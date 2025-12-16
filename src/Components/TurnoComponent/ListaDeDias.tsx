@@ -62,7 +62,7 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                                 const existeTurnoProyecto = this.props.turnoComponent.props.turno;
                                 const existeProyecto_key = this.props?.turnoComponent?.props?.key_proyecto;
                                 console.log("traendo todo " + existeTurnoProyecto, " - " + existeProyecto_key)
-                                this.props.turnoComponent.props.onReload();
+                                this.props.turnoComponent.props.onReload(res);
                                 this.forceUpdate();
                                 SPopup.close("popup_config_horario");
                             }).catch((err) => {
@@ -74,13 +74,14 @@ export default class ListaDeDias extends Component<ListaDeDiasProps, any> {
                         if (!isTurnoExistente) {
                             MDL.empresa.registroTurnosHorariosAtencion(data as any).then((res) => {
                                 console.log("🟢 Nuevo turno registrado: " + res);
+                                console.log(res);
                                 SPopup.close("popup_config_horario");
                                 MDL.crm.proyecto.editar({ key: this.props?.turnoComponent?.props?.key_proyecto, key_turno: res?.key }).then((e) => {
 
                                     const existeTurnoProyecto = this.props.turnoComponent.props.turno;
                                     const existeProyecto_key = this.props?.turnoComponent?.props?.key_proyecto;
                                     console.log("traendo todo " + existeTurnoProyecto, " - " + existeProyecto_key)
-                                    this.props.turnoComponent.props.onReload();
+                                    this.props.turnoComponent.props.onReload(res);
                                     this.forceUpdate();
                                     console.log("🟢 Proyecto actualizado con nuevo turno: " + e);
                                 });
