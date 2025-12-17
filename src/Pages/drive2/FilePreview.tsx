@@ -77,6 +77,11 @@ const PreviewDefault = ({ file, type = "MD" }: { file: FileItemType, type: TextA
 const PreviewDefault_TEXT = (p: any) => {
     return <PreviewDefault {...p} type='TEXT'/>
 }
+const PreviewDefault_NO_SUPORTED = (p: any) => {
+    return <SView col={"xs-12"} height center>
+        <SText>No se puede previsualizar este archivo</SText>
+    </SView>
+}
 const PreviewDefault_MD = (p: any) => {
     return <PreviewDefault {...p} type='MD'/>
 }
@@ -99,7 +104,7 @@ const ExtencionPreview: any = [
     [/\.(js|jsx|ts|tsx)$/i, PreviewDefault_JS],
     [/\.(md|markdown|MD|MARKDOWN)$/i,PreviewDefault_MD],
     // Otros: por defecto
-    [/.*/i, PreviewDefault_TEXT]
+    [/.*/i, PreviewDefault_NO_SUPORTED]
 ]
 
 

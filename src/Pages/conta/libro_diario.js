@@ -24,6 +24,7 @@ export default class libro_diario extends React.Component {
         try {
             const empresa = await MDL.empresa.getFull();
             const data = await MDL.contabilidad.reporte_libro_diario();
+            const cliente = await MDL.crm.cliente.getAll();
             const monedabase = empresa.monedas.find(b => b.tipo == "base")
             let tagsKeys = {};
             data.map(a => {
@@ -31,6 +32,9 @@ export default class libro_diario extends React.Component {
                 a.moneda_base = monedabase
                 if (a.tags) {
                     tagsKeys = { ...tagsKeys, ...a.tags }
+                    if(a.tags.key_cliente){
+                        a.cliente = cliente.find(c => c.key == a.tags.key_cliente)
+                    }
                 }
             })
 
@@ -131,6 +135,10 @@ export default class libro_diario extends React.Component {
                             color: STheme.color.lightGray,
                         }} />
                     <DinamicTable.Col key="diario" label="Diario" data={e => e.row?.diario?.descripcion} width={150}
+                        textStyle={{
+                            color: STheme.color.lightGray,
+                        }} />
+                    <DinamicTable.Col key="cliente" label="Cliente" data={e => e.row?.cliente?.nombres} width={150}
                         textStyle={{
                             color: STheme.color.lightGray,
                         }} />
