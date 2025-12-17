@@ -42,25 +42,25 @@ export default class inventario extends MDLAbstract<EventListener> {
     console.log("getAllModeloStock", resp.data);
     return Object.values(resp.data || {});
   }
-    async execute_function(func: string, params: string[]) {
-      let newParams:any = [];
-      if (params) {
-        params.map(p => {
-          if(typeof p == "string"){
-            p = "'" + p + "'"
-          }
-          newParams.push(p)
-        })
-      }
-      const resp: any = await SSocket.sendPromise({
-        service: "inventario",
-        component: "reporte",
-        type: "execute_function",
-        func: func,
-        params: newParams,
-      });
-      return resp.data || [];
+  async execute_function(func: string, params: string[]) {
+    let newParams: any = [];
+    if (params) {
+      params.map(p => {
+        if (typeof p == "string") {
+          p = "'" + p + "'"
+        }
+        newParams.push(p)
+      })
     }
+    const resp: any = await SSocket.sendPromise({
+      service: "inventario",
+      component: "reporte",
+      type: "execute_function",
+      func: func,
+      params: newParams,
+    });
+    return resp.data || [];
+  }
   async getAllModeloStock(_key_almacen: string) {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
@@ -103,7 +103,7 @@ export default class inventario extends MDLAbstract<EventListener> {
     return Object.values(resp.data || {});
   }
 
-   async saveModeloCliente(modelo_cliente: {
+  async saveModeloCliente(modelo_cliente: {
     key?: string,
     // key_modelo: string,
     key_cliente: string,
@@ -132,6 +132,25 @@ export default class inventario extends MDLAbstract<EventListener> {
       });
       return resp.data;
     // }
+  }
+
+  async editModeloCliente(modelo_cliente: {
+    key?: string,
+    // key_modelo: string,
+    key_cliente: string,
+    estado?: number
+  }) {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "modelo_cliente",
+        type: "editar",
+        data: modelo_cliente,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+
   }
 
   async getAllModeloStockBySucursal(key_sucursal: string) {
