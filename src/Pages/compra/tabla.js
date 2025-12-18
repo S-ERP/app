@@ -170,7 +170,7 @@ export default class tabla extends Component {
                             <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
                         </SView>
                         <SHr/> */}
-                        <SView row center card padding={2} onPress={() => { SNavigation.replace("/venta/profile2", { pk: e.row.key }) }}>
+                        <SView row center card padding={2} onPress={() => { SNavigation.navigate("/venta/profile2", { pk: e.row.key }) }}>
                             <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
                         </SView>
                     </>} />

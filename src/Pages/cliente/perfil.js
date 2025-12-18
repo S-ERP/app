@@ -11,6 +11,8 @@ import SIconApp from '../../Assets/SIconApp';
 import label from '../ajustes/label';
 import AdminsitrarHabilidades from './Components/AdministrarHabilidades';
 import TurnoComponent from '../../Components/TurnoComponent';
+import PopupArticulos from './Components/PopupArticulos';
+import all from '../usuario/all';
 
 const URL = "/crm/cliente";
 
@@ -18,7 +20,8 @@ export default class Perfil extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: {}
+            data: {},
+            allArticulos: []
         };
 
         this.key = SNavigation.getParam("key");
@@ -68,6 +71,10 @@ export default class Perfil extends Component {
             let ventas = await MDL.compra_venta.getTransaccion('venta', '2024-09-01', '2026-09-05');
             let registros = await MDL.compra_venta.getCuotasResumenTotal_ventas();
             let turnos = await MDL.empresa.getTurnosHorariosAtencion();
+            let allArticulos = await MDL.inventario.getAllModeloStock();
+
+            let articulos = await MDL.inventario.getModelosByCliente(this.key);
+
 
             let e = await MDL.crm.cliente.getByKey(this.key);
 
@@ -76,9 +83,18 @@ export default class Perfil extends Component {
             e.resumen_cuotas = registros ? registros.find(reg => reg.key_cliente == e.key) : [];
             e.turno = turnos ? Object.values(turnos).find(t => t.key == e.key_turno) : null;
             // e.horario_atencion = turnos ? turnos.filter(t => t.key_usuario == e.key) : null;
+            let art = articulos.map(a => {
+                return {
+                    ...a,
+                    modelo: allArticulos.find(m => m.key == a.key_modelo) || { descripcion: "MODELO ELIMINADO" },
+                }
+            });
 
+            e.articulos = art;
+            console.log("articulos", articulos);
 
             this.setState({ data: e });
+            this.setState({ allArticulos: allArticulos });
 
         } catch (error) {
             console.error('Error al cargar datos del cliente:', error);
@@ -121,6 +137,9 @@ export default class Perfil extends Component {
                     </SView>
                     <SView col={"xs-4"} padding={5}>
                         <CompraVentas cliente={this.data} />
+                    </SView>
+                    <SView col={"xs-4"} padding={5}>
+                        <Articulos cliente={this.data} onReload={this.loadData} />
                     </SView>
                 </SView>
 
@@ -406,12 +425,12 @@ const CompraVentas = ({ cliente }) => {
     return <SView col={"xs-12"} card padding={15} height row>
         <SText bold fontSize={16}>Compra / Venta</SText>
         <SHr height={20} />
-        <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_pagado)}`} color={STheme.color.success} title="Monto Pagado" />
-        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_pagada} color={STheme.color.success} title="Cuotas Pagadas" />
-        <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_en_mora)}`} color={STheme.color.danger} title="Monto en Mora" />
-        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_en_mora} color={STheme.color.danger} title="Cuotas en Mora" />
-        <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_pendiente)}`} color={STheme.color.warning} title="Monto Pendiente" />
-        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_pendiente} color={STheme.color.warning} title="Cuotas Pendientes" />
+        <BloqueVentas dato={`Bs ${SMath.formatMoney((cliente?.resumen_cuotas?.monto_pagado ?? 0))}`} color={STheme.color.success} title="Monto Pagado" />
+        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_pagada ?? "--"} color={STheme.color.success} title="Cuotas Pagadas" />
+        <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_en_mora ?? 0)}`} color={STheme.color.danger} title="Monto en Mora" />
+        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_en_mora ?? "--"} color={STheme.color.danger} title="Cuotas en Mora" />
+        <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_pendiente ?? 0)}`} color={STheme.color.warning} title="Monto Pendiente" />
+        <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_pendiente ?? "--"} color={STheme.color.warning} title="Cuotas Pendientes" />
 
     </SView>
 }
@@ -430,6 +449,106 @@ const BloqueVentas = ({ dato, color, title }) => {
             }}>
             <SText style={{ textTransform: "uppercase" }}>{dato}</SText>
         </SView>
+    </SView>
+}
+
+const Articulos = ({ cliente, onReload }) => {
+    return <SView col={"xs-12"} card padding={15} height>
+        <SView width={40} height={40} style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+            zIndex: 10
+        }}
+            onPress={() => {
+                PopupArticulos.open({
+                    key_cliente: cliente.key,
+                    onSuccess: () => {
+                        onReload();
+                    }
+                });
+            }} center>
+            <SIcon name='crmeditar' width={20} height={20} fill={STheme.color.text} />
+        </SView>
+        <SText bold fontSize={16}>Artículos</SText>
+        <SHr height={25} />
+        {cliente?.articulos?.length > 0 && (
+            <SView col={"xs-12"}  >
+                {cliente?.articulos?.map((articulo, index) => {
+                    console.log("cliente-articulo", cliente?.articulos);
+
+                    return <SView col={"xs-12"} key={index} row
+                        style={{
+                            padding: 5,
+                            borderWidth: 1,
+                            borderColor: STheme.color.card,
+                            borderRadius: 4,
+                            marginBottom: 15,
+                            backgroundColor: STheme.color.card,
+
+                        }} center onPress={() => {
+                            console.log("articulo", articulo?.modelo?.descripcion);
+                            console.log("articulo key", index);
+                            //remove index from cliente.articulos
+                            // let newdata = cliente?.articulos.filter((_, i) => i !== index);
+                            let newdata = { ...articulo, estado: 0 };
+
+                            console.log("newdata", newdata);
+                            // MDL.inventario.editModeloCliente(Object.assign({}, newdata)).then((resp) => {
+                            SPopup.confirm({
+                                title: "Eliminar Artículo",
+                                message: `¿Estás seguro de eliminar el artículo "${articulo?.modelo?.descripcion}" del cliente?`,
+                                onPress: () => {
+
+                                    MDL.inventario.editModeloCliente(newdata).then((resp) => {
+                                        console.log("Artículo del cliente eliminado", resp);
+                                        SNotification.send({
+                                            title: 'Éxito',
+                                            body: 'Artículo del cliente eliminado correctamente.',
+                                            time: 3000,
+                                            color: STheme.color.success,
+                                        });
+                                        onReload();
+                                    }).catch((err) => {
+                                        console.error("Error al eliminar el artículo del cliente", err);
+                                        SNotification.send({
+                                            title: 'Error',
+                                            body: 'No se pudo eliminar el artículo del cliente.',
+                                            time: 3000,
+                                            color: STheme.color.danger,
+                                        });
+                                    });
+                                }
+                            });
+
+                        }}>
+                        <SView width={25} height={25} center style={{
+                            backgroundColor: STheme.color.danger,
+                            borderRadius: 50,
+                            position: "absolute",
+                            top: -10,
+                            right: -10,
+                            cursor: "pointer",
+                        }}>
+                            <SIcon name='remove' width={25} height={25} fill={STheme.color.text} />
+                        </SView>
+                        <SImage src={SSocket.api.inventario + "modelo/.128_" + articulo?.modelo?.key} style={{
+                            width: 50, height: 50, resizeMode: "contain", borderWidth: 1,
+                            borderColor: STheme.color.card, borderRadius: 4
+                        }} />
+                        <SView width={5} />
+                        <SView flex >
+                            <SText style={{ textTransform: "uppercase" }}>{articulo?.modelo?.descripcion}</SText>
+                            <SText >{SMath.formatMoney(articulo?.modelo?.precio_venta ?? 0)}</SText>
+                        </SView>
+                    </SView>
+                })}
+            </SView>
+        )}
+        {(!cliente.articulos || cliente.articulos.length === 0) && (<SText fontSize={16} color={STheme.color.lightGray}>No se han asignado artículos.</SText>)}
     </SView>
 }
 

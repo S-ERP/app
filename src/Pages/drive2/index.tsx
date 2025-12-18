@@ -7,6 +7,10 @@ import FilePreview from "./FilePreview";
 
 export default class index extends React.Component {
 
+    state = {
+        selectedFile: null as string | null
+    }
+
     filePreview: FilePreview | undefined;
     renderContent1 = () => {
         return <View style={{ width: "100%", height: "100%", }}>
@@ -16,9 +20,18 @@ export default class index extends React.Component {
                     height: "100%",
                 }}>
                 <ScrollView >
-                    <FileItem path="" name="" open type="directory" onOpen={(file) => {
-                        if (this.filePreview) this.filePreview.selectFile(file);
-                    }} />
+                    <FileItem 
+                        path="" 
+                        name="" 
+                        open 
+                        type="directory" 
+                        selectedPath={this.state.selectedFile}
+                        onSelect={(path) => this.setState({ selectedFile: path })}
+                        onOpen={(file) => {
+                            this.setState({ selectedFile: file.path ?? "" });
+                            if (this.filePreview) this.filePreview.selectFile(file);
+                        }} 
+                    />
                 </ScrollView>
             </ScrollView>
         </View>

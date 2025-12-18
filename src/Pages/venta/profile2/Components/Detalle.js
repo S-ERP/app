@@ -25,14 +25,17 @@ export default class Detalle extends Component {
         }
     }
 
-    detalle_item({ key, key_usuario, nombre, precio, cantidad, descuento, tipo, key_modelo, key_moneda }) {
+    detalle_item(p = { key, key_usuario, nombre, precio, cantidad, descuento, tipo, key_modelo, key_moneda }) {
+        const { key, key_usuario, nombre, precio, cantidad, descuento, tipo, key_modelo, key_moneda } = p;
         var onPress = null;
-
+        if(this.props.onPress){
+            onPress = this.props.onPress.bind(this, p);
+        }
         // console.log("MONEDA DETALLE", key_moneda)
 
         if (!this.state.monedas) return null;
-            let moneda = this.state.monedas.find(m => m.key === this.data.key_moneda);
-            // console.log("MONEDA DETALLEssssssssssssssssss", moneda)
+        let moneda = this.state.monedas.find(m => m.key === this.data.key_moneda);
+        // console.log("MONEDA DETALLEssssssssssssssssss", moneda)
 
 
 

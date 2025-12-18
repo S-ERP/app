@@ -347,7 +347,22 @@ export default class FormularioModelo extends Component<Props> {
                         placeholder: "Duracion del producto o servicio",
                         onSubmitEditing: () => {
                             // if (this.form) this.form.submit();
-                            if (this.form) this.form.focus("precio_compra");
+                            if (this.form) this.form.focus("cantidad_suscriptores");
+                        }
+                    },
+                    "cantidad_suscriptores": {
+                        col: "xs-5.5",
+                        style: {
+                            // maxWidth: 200,
+                        },
+                        // type: "select2",
+                        defaultValue: (!this.props.editObject?.cantidad_suscriptores ? "" : this.props.editObject?.cantidad_suscriptores),
+                        label: "Cantidad de suscriptores",
+                        // options: ["horas", "dias", "semanas", "meses", "anos"],
+                        placeholder: "Cantidad de suscriptores",
+                        onSubmitEditing: () => {
+                            // if (this.form) this.form.submit();
+                            if (this.form) this.form.focus("observacion");
                         }
                     },
                     "observacion": {
@@ -356,7 +371,8 @@ export default class FormularioModelo extends Component<Props> {
                         label: "Detalles", placeholder: "Detalles adicionales",
                         type: "textArea",
                         onSubmitEditing: () => {
-                            if (this.form) this.form.submit();
+                            // if (this.form) this.form.submit();
+                            if (this.form) this.form.focus("precio_compra");
                         },
                         iconR: <TextAreaPopupOpenIcon
                             type={"MD"}
@@ -385,7 +401,7 @@ export default class FormularioModelo extends Component<Props> {
                         defaultValue: (!this.props.editObject?.precio_venta ? "" : parseFloat(this.props.editObject?.precio_venta ?? 0).toFixed(2)),
                         label: "Precio venta", placeholder: "0,00", type: "money",
                         onSubmitEditing: () => {
-                            if (this.form) this.form.focus("observacion");
+                            // if (this.form) this.form.focus("observacion");
                             // if (this.form) this.form.submit();
                         }
                     },
@@ -422,6 +438,7 @@ export default class FormularioModelo extends Component<Props> {
                         precio_venta: parseFloat(data.precio_venta ?? 0),
                         duracion: parseInt(data.duracion ?? "0"),
                         duracion_medida: data.duracion_medida,
+                        cantidad_suscriptores: data.cantidad_suscriptores,
                         codigo_ref: data.codigo_ref,
                     }
                     if (this.props.editObject) {
