@@ -108,9 +108,13 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             const data = {
                 "descripcion": "Venta De Prueba Ricky",
                 "observacion": "Observacion de la venta de prueba ricky",
+                "facturar": this.state.factura ? true : false,
+                cliente: {
+                    nit: this.inputNit?.getValue() || "",
+                    razon_social: this.inputRazonSocial?.getValue() || ""
+                },
                 "key_cliente": this.proveedor?.key,
                 "key_usuario": MDL.usuario.session?.key,
-                "facturar": false,
                 "facturar_luego": false,
                 "key_caja": MDL.caja.activa?.key,
                 "key_almacen": almacen.key,
@@ -133,11 +137,26 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 "data": data
             })
 
+            console.clear();
+            console.log("%c" + JSON.stringify(compraResp, null, 2), "color: #2ECC40; font-weight: bold;");
+
             SelectTipoPago.closePopup();
             SNotification.remove("venta_rapida");
             SPopup.close("PopupCarritoConfirmar");
             SPopup.close("PopupCarrito");
-            MDL.carrito.limpiarCarritoCompras();
+            MDL.carrito.limpiarCarritoVentas();
+            MDL.carrito.limpiarCarritoCompras();//este esta limpinado el carrito lateral..... pronto se borrara
+
+            SPopup.confirm({
+                title: "¡Venta realizada con éxito!",
+                message: "¿Deseas ir a la venta ahora?",
+                onPress: () => {
+                    SNavigation.navigate("/venta/profile2", { pk: compraResp?.data?.key_compra_venta });
+                    console.clear();
+                    console.log("%c" + "ingresar_texto", `color: #2ECC40; font-weight: bold;`);
+                }
+            });
+
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
         } catch (error: any) {
             console.error("Error al realizar la venta:", error);
@@ -175,17 +194,18 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     <SView row col={"xs-12"}>
                         <SText col={"xs-6"} color={STheme.color.lightGray}>{"Datos del Cliente:"}</SText>
                         <SView col={"xs-6"} row style={{ alignItems: "flex-end", justifyContent: "flex-end", alignContent: "flex-start" }}>
-                            <SInput
-                                height={30}
-                                style={{
-                                    marginTop: 0
-                                }}
+
+                            <SInput height={20} style={{ marginTop: 0 }} labelStyle={{ left: 12 }}
+                                // backgroundColor="red"
                                 label={"Con factura"}
                                 type="checkBox"
-                                labelStyle={{ left: 12 }}
                                 onChangeText={(val) => {
-                                    this.setState({ factura: val })
-                                    this.forceUpdate();
+                                    this.setState({ factura: val }, () => {
+                                        if (val && this.proveedor) {
+                                            this.inputRazonSocial?.setValue(this.proveedor.razon_social || "");
+                                            this.inputNit?.setValue(this.proveedor.nit || "");
+                                        }
+                                    });
                                 }}
                             />
                         </SView>
@@ -222,12 +242,15 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                 onChangeText={(e) => {
                                     MDL.crm.cliente.buscar_nit(e).then(proveedor => {
                                         this.proveedor = proveedor;
-                                        // if (this.inputNombre) {
-                                        //     this.inputNombre.setValue(proveedor.razon_social ?? proveedor.nombres)
-                                        // }
+
                                         if (this.inputCliente) {
                                             this.inputCliente.setSelect(proveedor);
+                                            this.inputRazonSocial.setValue(proveedor?.razon_social || "");
                                         }
+
+
+
+
                                     }).catch(error => {
                                         console.error(error);
                                     })
@@ -241,10 +264,20 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                     }} onPress={() => {
                                         SNavigation.navigate("/cliente", {
                                             onSelect: (proveedor: any) => {
-                                                if (this.inputNombre && proveedor) {
-                                                    this.proveedor = proveedor;
-                                                    this.inputNombre.setValue(proveedor.razon_social ?? proveedor.nombres)
+
+
+                                                this.proveedor = proveedor;
+
+
+                                                if (this.inputCliente) {
+                                                    this.inputCliente.setSelect(proveedor);
+                                                    this.inputRazonSocial?.setValue(proveedor?.razon_social || "");
+                                                    this.inputNit?.setValue(proveedor?.nit || "");
                                                 }
+
+                                                this.forceUpdate(); // <-- fuerza el re-render para que los cambios se reflejen
+
+
                                                 SNavigation.goBack();
                                             }
                                         })
@@ -260,7 +293,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
 
                 </SView>
                 <SHr />
-                <SView style={{padding:10, paddingBottom:5, paddingTop:5}}>
+                <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
                     <SText color={STheme.color.lightGray}>{"Seleccione el almacén"}</SText>
                     <SelectorAlmacen
                         selectFirst
@@ -277,7 +310,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     />
 
                 </SView>
-                <SView style={{padding:10, paddingBottom:5, paddingTop:5}}>
+                <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
                     <SelectorMoneda
                         findInitialSelect={(arr) => {
                             return arr.find(a => a.tipo == "base")
@@ -306,8 +339,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             this.proveedor.nit = this.inputNit.getValue();
                             console.log("CAMBIOS CLIENTE", this.proveedor)
                             MDL.crm.cliente.editar(this.proveedor).then((resp: any) => {
-
-
                             }).catch((e: any) => {
                                 console.error("Error al guardar el cliente:", e);
                                 SNotification.send({
@@ -320,9 +351,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             console.log("modificar cliente")
                         }
                     }
+
+
+                    // console.clear();
+                    // console.log("%c" + JSON.stringify(this.proveedor, null, 2), "color: #2ECC40; font-weight: bold;");
                     this.handleOnPress();
-
-
                 }}>
                     <SText>{"Confirmar la venta"}</SText>
                 </SView>
@@ -330,3 +363,14 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         </SView >
     }
 }
+
+// tengo que crear sniper para crear un tabla con json quemado
+// con scroll
+// con boton
+// que escriba transparente
+
+
+// ¡Sí! 😄 Lo que buscas es básicamente que Visual Studio Code te avise cuando estás usando algo que no ha sido importado o que no existe en tu proyecto. Esto depende de varias cosas:
+// 1️⃣ Usar TypeScript o JS con tipos
+// Si tu proyecto es JavaScript puro, VSCode no siempre detecta errores de importación.
+// Si lo configuras con TypeScript o usas JSDoc en JS, entonces VSCode puede hacer chequeo de tipos y símbolos.

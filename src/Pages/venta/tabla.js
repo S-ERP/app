@@ -404,7 +404,7 @@ export default class tabla extends Component {
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
 
 
-                <DinamicTable.Col key="facturado" label="Facturado" width={60} data={(e) => e.row?.factura?.cuf}
+                {/* <DinamicTable.Col key="facturado" label="Facturado" width={60} data={(e) => e.row?.factura?.cuf}
                     customComponent={e => <>
                         {(e.row?.factura) ?
                             <SView col={"xs-12"} center row  >
@@ -412,14 +412,64 @@ export default class tabla extends Component {
                                 <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>✅</SText>
                             </SView> : null}
                     </>}
-                />
+                /> */}
 
                 <DinamicTable.Col key="nrofactura" label="Nro. Factura" width={80} data={(e) => e.row?.factura?.numero}
                     customComponent={e => <>
                         {(e.row?.factura?.numero) ?
                             <SView col={"xs-12"} center row  >
                                 <SView width={5} />
-                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.factura?.numero}</SText>
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>✅ {e.row?.factura?.numero}</SText>
+                            </SView> : null}
+                    </>}
+                />
+
+                <DinamicTable.Col key="facturar" wrap label="Venta con factura" width={60} data={(e) => e.row?.facturar}
+                    customComponent={e => <>
+                        {(e.row?.facturar) ?
+                            <SView col={"xs-12"} center row  >
+                                <SText flex style={e.textStyle}>si</SText>
+                            </SView> : null} </>}
+                />
+
+
+                <DinamicTable.Col key="facturar" wrap label="Venta contabilizar" width={75} center data={(e) => e.row?.facturar}
+                    customComponent={e => <>
+                        {(e.row?.facturar) ?
+                            <SView col={"xs-12"} center row  >
+                                <SView width={50} center row backgroundColor={"#295ff5ff"} style={{ borderRadius: 4, padding: 5 }}
+                                    onPress={async function () {
+                                        // 🔁 variable estática del onPress
+                                        if (this.__pressed === undefined) {
+                                            this.__pressed = false;
+                                        }
+                                        if (e.row?.factura?.numero) {
+                                            SNotification.send({
+                                                key: "fact",
+                                                title: "Acción no permitida",
+                                                body: "Existe una factura asociada. Anule primero.",
+                                                color: STheme.color.warning,
+                                                time: 5000,
+                                            });
+                                            return;
+                                        }
+                                        if (!this.__pressed) {
+                                            console.log("🟢 PRIMER CLICK → CONTABILIZAR", e.row?.key);
+                                            const resp = await MDL.compra_venta._contabilizar(e.row?.key);
+                                            console.log(resp)
+                                            SNotification.send({ key: "fact", title: "Acción " + resp, body: "Existe una factura asociada. Anule primero.", color: STheme.color.success, time: 5000, });
+                                            this.__pressed = true;
+                                        } else {
+                                            console.log("🔴 SEGUNDO CLICK → DESCONTABILIZAR", e.row?.key);
+                                            const resp = await MDL.compra_venta._desContabilizar(e.row?.key);
+                                            SNotification.send({ key: "fact", title: "Acción " + resp, body: "Existe una factura asociada. Anule primero.", color: STheme.color.success, time: 5000, });
+                                            console.log(resp)
+                                            this.__pressed = false;
+                                        }
+                                    }}
+                                >
+                                    <SText flex style={e.textStyle}>switch</SText>
+                                </SView>
                             </SView> : null}
                     </>}
                 />

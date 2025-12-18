@@ -329,12 +329,36 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       key: value,
       key_empresa: Model.empresa.Action.getKey(),
     });
-
     return resp.data;
   }
 
 
- 
+  async _contabilizar(value: any) {
+
+    // para que funcione no debe de tener factura
+    // const resp: any = await SSocket.sendPromise({
+    //   service: "compra_venta",
+    //   component: "compra_venta",
+    //   type: "factura",
+    //   key: value,
+    //   key_empresa: Model.empresa.Action.getKey(),
+    // });
+    // return resp.data;
+    return "contabilizando";
+  }
+  async _desContabilizar(value: any) {
+
+    // para que funcione no debe de tener factura
+    // const resp: any = await SSocket.sendPromise({
+    //   service: "compra_venta",
+    //   component: "compra_venta",
+    //   type: "factura",
+    //   key: value,
+    //   key_empresa: Model.empresa.Action.getKey(),
+    // });
+    // return resp.data;
+    return "Des_contabilizando";
+  }
 
 
 }
