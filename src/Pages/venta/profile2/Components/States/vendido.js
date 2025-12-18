@@ -14,6 +14,7 @@ import SSocket from 'servisofts-socket';
 import Separador1 from './Components/Separador1';
 import TotalesVenta from '../TotalesVenta';
 import MDL from '../../../../../MDL';
+import PopupSuscriptor from '../PopupSuscriptor';
 
 
 export default class index extends Component {
@@ -167,7 +168,11 @@ export default class index extends Component {
                 </SView>
 
                 <Separador1 />
-                <Detalle data={this.data} disabled />
+                <Detalle data={this.data} disabled onPress={(data) => {
+                    PopupSuscriptor.open({
+                        data: data,
+                    })
+                }}/>
                 <Separador1 />
                 <Separador1 />
                 <TotalesVenta data={this.data} />
