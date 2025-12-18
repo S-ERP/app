@@ -124,14 +124,25 @@ export default class Page extends React.Component<PageProps> {
                 height: this.size,
                 flexDirection: "row",
                 alignItems: "center",
+                cursor: "pointer",
                 backgroundColor: this.state.active ? STheme.color.card : "transparent",
-            }} onPress={() => {
-                if(this.props.onPress){
+            }} onMouseDown={(e) => {
+                if (this.props.onPress) {
                     this.props.onPress();
                     return;
                 }
                 if (this.props.url) {
+                    if (e.button == 1) {
+                        // SNavigation.openDeepLink(this.props.url, this.props.params);
+                        // SNavigation.navigate(this.props.url, this.props.params);
+                        // window.open(this.props.url, '_blank');
+                        const encodedParams = new URLSearchParams(this.props.params).toString();
+                        window.open(`${window.location.origin}${this.props.url}?${encodedParams}`, '_blank');
+                        return;
+                    }
+                    if (e.button != 0) return;
                     SNavigation.navigate(this.props.url, this.props.params);
+
                 } else {
                     if (MenuGlobal.INSTACE?._barra) {
                         if (!MenuGlobal.INSTACE?._barra.state.open) {

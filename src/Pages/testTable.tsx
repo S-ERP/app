@@ -9,7 +9,8 @@ export default class index extends React.Component {
                 // Configuraciones de la data
                 stageKeyExtractor={(stage: any) => stage.id.toString()}
                 dataKeyExtractor={(data: any) => data.id.toString()}
-                dataStageKeyExtractor={(data: any) => data.stage_id.toString()}
+                isInStage={(stage,data)=>stage.id ==data.stage_id}
+                // dataStageKeyExtractor={(data: any) => data.stage_id.toString()}
                 loadStages={async () => {
                     await new Promise(resolve => setTimeout(resolve, 100));
                     return [{ id: 1, name: "Stage 1" }, { id: 2, name: "Stage 2" }];
