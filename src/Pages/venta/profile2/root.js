@@ -88,7 +88,9 @@ export default class Root extends Component {
             <SPage title={"Detalle"}  >
                 <SView col={"xs-12"} padding={15} >
                     <SView col="xs-12" center  >
-                        <ITEM data={dataOk} />
+                        <ITEM data={dataOk} onReload={()=>{
+                            this.loadData()
+                        }} />
                     </SView>
                 </SView>
             </SPage>

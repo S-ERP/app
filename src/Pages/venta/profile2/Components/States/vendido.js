@@ -21,6 +21,8 @@ export default class index extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            data: props.data,
+            miSucursal: null
         };
     }
 
@@ -30,6 +32,12 @@ export default class index extends Component {
         this.setState({ miSucursal })
 
 
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.data !== this.props.data) {
+            this.setState({ data: this.props.data });
+        }
     }
 
     openPdfFromBase64(base64) {
@@ -100,6 +108,9 @@ export default class index extends Component {
 
     render() {
         this.data = this.props.data;
+        const sucursal = this.state.miSucursal;
+        const data = this.props.data;
+
         let permiso = Model.usuarioPage.Action.getPermiso({ url: "/venta", permiso: "admin" })
         this.isAdmin = !!permiso ? true : Model.compra_venta_participante.Action.allowAdmin({ key_compra_venta: this.props.data.key });
         this.isSuperAdmin = !!permiso;
@@ -172,7 +183,7 @@ export default class index extends Component {
                     PopupSuscriptor.open({
                         data: data,
                     })
-                }}/>
+                }} />
                 <Separador1 />
                 <Separador1 />
                 <TotalesVenta data={this.data} />
@@ -216,8 +227,16 @@ export default class index extends Component {
 
                                         console.log("%c" + JSON.stringify(resp, null, 2), "color: #2ECC40; font-weight: bold;");
 
-                                        if (resp?.data?.cuf) {
-                                            this.imprimirFactura(resp.data.cuf);
+                                        if (resp?.data?.cuf || resp?.estado === 'exito') {
+
+                                            // 🔁 RECARGAR DATA PARA EVITAR DOBLE FACTURA
+                                            if (this.props.onReload) {
+                                                await this.props.onReload();
+                                            }
+
+                                            const cuf = resp?.data?.cuf || this.props.data?.factura?.cuf;
+                                            this.imprimirFactura(cuf);
+
                                         } else {
                                             SNotification.send({
                                                 key: "imprimir",
@@ -227,6 +246,7 @@ export default class index extends Component {
                                                 time: 5000,
                                             });
                                         }
+
 
                                     } catch (error) {
                                         console.error(error);
