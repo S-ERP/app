@@ -258,8 +258,8 @@ export default class Detalle extends Component {
                         key_usuario: obj.key_usuario,
                         descuento: obj.descuento,
                         tipo: obj.tipo,
-                        key_modelo: obj.key_modelo
-                        // key_moneda: obj.key_moneda
+                        key_modelo: obj.key_modelo,
+                        moneda: this.data.moneda
                     })
                 }}
             />

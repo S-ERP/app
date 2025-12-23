@@ -48,9 +48,11 @@ export default class FechasBetween extends Component<TypeProps> {
                     height: 40,
                     // backgroundColor: "#ff0000",
                     alignItems: "center",
-                    justifyContent: "center"
+                    // justifyContent: "center"
+                    justifyContent: "space-between"
                 }} row>
-                <SView col={"xs-6 md-4 xl-3"} style={{ height: "100%", padding: 4, }}>
+                <SView col={"xs-5.8"} style={{ height: "100%", }}>
+                    {/* <SView col={"xs-6 md-4 xl-3"} style={{ height: "100%", padding: 4, }}> */}
                     <SInput
                         type="date"
                         // customStyle: "primary",
@@ -71,7 +73,8 @@ export default class FechasBetween extends Component<TypeProps> {
                         }}
                     />
                 </SView>
-                <SView col={"xs-6 md-4 xl-3"} style={{ height: "100%", padding: 4, }}>
+                 <SView col={"xs-5.8"} style={{ height: "100%", }}>
+                    {/* <SView col={"xs-6 md-4 xl-3"} style={{ height: "100%", padding: 4, }}> */}
                     <SInput
                         type="date"
                         // customStyle: "primary",
