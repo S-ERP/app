@@ -23,7 +23,7 @@ export default class Root extends Component {
                 total_a_pagar: 0,
                 credito_fiscal: 0,
             },
-        
+
         }
         this.pk = SNavigation.getParam("pk");
 
@@ -40,10 +40,14 @@ export default class Root extends Component {
     async loadData() {
         let empresa = MDL.empresa.select
         let data = await MDL.compra_venta.getJson(this.pk);
-        let t =  MDL.compra_venta.getTotales(data)
+        let t = MDL.compra_venta.getTotales(data)
+
+        let monedas = await MDL.empresa.getMonedas();
+
 
         if (!empresa) return;
         if (!t) return;
+        if (!monedas) return;
 
         if (!data) return;
 
@@ -53,7 +57,7 @@ export default class Root extends Component {
         if (this.state.totales.total_a_pagar != t.total_a_pagar) {
             this.state.totales = t;
             // this.setState({ ...this.state })
-             this.forceUpdate()
+            this.forceUpdate()
         }
 
         if (!this.state.curState) {
@@ -64,12 +68,17 @@ export default class Root extends Component {
             }
         }
 
+        let moneda = monedas.find(m => m.key === data.key_moneda);
+
+
+
         this.state.datas = {
             ...data,
-            empresa: empresa
+            empresa: empresa,
+            moneda
         }
         this.forceUpdate()
-      
+
     }
 
 
@@ -88,7 +97,7 @@ export default class Root extends Component {
             <SPage title={"Detalle"}  >
                 <SView col={"xs-12"} padding={15} >
                     <SView col="xs-12" center  >
-                        <ITEM data={dataOk} onReload={()=>{
+                        <ITEM data={dataOk} onReload={() => {
                             this.loadData()
                         }} />
                     </SView>
