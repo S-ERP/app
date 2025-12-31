@@ -184,6 +184,12 @@ export default class PopupSuscriptor extends Component {
 
     render() {
         const _item = this.props.data;
+
+        console.clear();
+        console.log("%c" + JSON.stringify(_item?.sucursal, null, 2), "color: #2e4bccff; font-weight: bold;");
+
+        console.log("%c" + _item.sucursal?.key, `color: #2ECC40; font-weight: bold;`);
+
         const _item2 = this.state?.data_modelo?.modelo;
         const _cantidad_suscriptores_permitida = _item2?.cantidad_suscriptores;
 
@@ -316,9 +322,12 @@ export default class PopupSuscriptor extends Component {
 
                                     // Muestra la cantidad permitida y la cantidad actual de suscriptores
                                     // console.log(`%cCantidad permitida de suscriptores: ${_cantidad_suscriptores_permitida}`, 'color: #2ECC40; font-weight: bold;');
-                                    // console.log(`%cCantidad de suscriptores actuales: ${cantidad_suscripto}`, 'color: #2ECC40; font-weight: bold;');
 
 
+                                    console.clear();
+                                    console.log("%c" + JSON.stringify(this.props.data, null, 2), "color: #2ECC40; font-weight: bold;");
+
+                                    // return
 
 
 
@@ -345,6 +354,7 @@ export default class PopupSuscriptor extends Component {
                                                 key_cliente: this.state.selectedCliente?.value,
                                                 fecha_inicio: this.state.fecha_inicio,
                                                 fecha_fin: this.state.fecha_fin,
+                                                key_sucursal: _item.sucursal?.key,
                                             },
                                             key_usuario: MDL.usuario.session.key,
                                         }).then((resp) => {

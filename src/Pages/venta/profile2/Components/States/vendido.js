@@ -107,8 +107,9 @@ export default class index extends Component {
     }
 
     render() {
-        this.data = this.props.data;
-        const sucursal = this.state.miSucursal;
+        const prueba = this.props.data;
+        // const sucursal = this.statess.miSucursal;
+
         const data = this.props.data;
 
         let permiso = Model.usuarioPage.Action.getPermiso({ url: "/venta", permiso: "admin" })
@@ -117,8 +118,12 @@ export default class index extends Component {
         // const { factura } = this.state;
 
         this.sucursal = this.state?.miSucursal;
-        // console.clear();
-        // console.log("%c" + JSON.stringify(this.data, null, 2), "color: #2ECC40; font-weight: bold;");
+
+        this.data = { ...prueba, sucursal: this.state?.miSucursal };
+
+
+        console.clear();
+        console.log("%c" + JSON.stringify(this.data, null, 2), "color: #cc532eff; font-weight: bold;");
 
         return (<SView col={"xs-12 sm-11 md-8 lg-8 xl-6"} card >
 
@@ -180,9 +185,8 @@ export default class index extends Component {
 
                 <Separador1 />
                 <Detalle data={this.data} disabled onPress={(data) => {
-                    PopupSuscriptor.open({
-                        data: data,
-                    })
+                    // PopupSuscriptor.open({ data:this.data })
+                    PopupSuscriptor.open({ data: data, })
                 }} />
                 <Separador1 />
                 <Separador1 />
