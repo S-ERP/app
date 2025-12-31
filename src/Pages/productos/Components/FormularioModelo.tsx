@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import { SForm, SHr, SIcon, SInput, SNotification, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
+import { SForm, SHr, SLoad, SNotification, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
 import Btn from '../../empresa/config/Components/Btn';
 import SIconApp from '../../../Assets/SIconApp';
-import BarcodeScanner from '../../../Components/BarcodeScanner';
 import InputFoto from '../../../Components/InputFoto';
 import BarcodeIcon from '../../../Components/BarcodeScanner/BarcodeIcon';
 import TextAreaPopupOpenIcon from '../../../Components/QueryTool/TextAreaPopupOpenIcon';
+import InputSelector from '../../../Components/Selectores/InputSelector';
 
 type Props = {
     editObject?: any,
@@ -17,7 +16,6 @@ type Props = {
 }
 
 export default class FormularioModelo extends Component<Props> {
-
     static open(props: Props) {
         SPopup.open({
             key: "FormularioModelo",
@@ -39,12 +37,10 @@ export default class FormularioModelo extends Component<Props> {
                         SPopup.close("FormularioModelo")
                         if (props.onSuccess) props.onSuccess(e)
                     }}
-
                 />
             </SView>
         })
     }
-
     state = {
         key_marca: this.props.editObject?.key_marca,
         key_tipo_producto: this.props.editObject?.key_tipo_producto,
@@ -56,8 +52,11 @@ export default class FormularioModelo extends Component<Props> {
     qr_reader_listener: any;
     // qr_reader_listener_picture: any;
     componentDidMount(): void {
+        // Cargar monedas
+        MDL.empresa.getFull().then((resp: any) => {
+            this.setState({ monedas: resp.monedas || [] });
+        }).catch(console.error);
         MDL.inventario.getAllMarca().then((resp: any) => {
-
             this.state.marcas = resp;
             if (this.form && this.props.editObject) {
                 const marca = resp.find((item: any) => item.key == this.props.editObject.key_marca);
@@ -70,7 +69,6 @@ export default class FormularioModelo extends Component<Props> {
             console.error("Error al cargar marcas", e);
         })
         MDL.inventario.getAllTipoProducto().then((resp: any) => {
-
             this.state.tipo_productos = resp;
             if (this.form && this.props.editObject) {
                 const tipo_producto = resp.find((item: any) => item.key == this.props.editObject.key_tipo_producto);
@@ -82,17 +80,13 @@ export default class FormularioModelo extends Component<Props> {
         }).catch((e: any) => {
             console.error("Error al cargar marcas", e);
         })
-
-
     }
-
-
     buildCustmomInputs() {
-
     }
     _ref: any = {}
     form: SForm | undefined = undefined;
     render() {
+        if (!this.state.monedas) return <SLoad />
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props.editObject ? "Editar" : "Crear"}{" Modelo"}</SText>
             <SForm ref={(ref: any) => this.form = ref} row
@@ -100,14 +94,13 @@ export default class FormularioModelo extends Component<Props> {
                     justifyContent: "space-between",
                 }}
                 inputs={{
-
                     "marca": {
                         col: "xs-12 sm-5.8",
                         style: { paddingStart: 0, },
                         labelStyle: { top: -10, },
                         inputStyle: { paddingStart: 8 },
                         icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
-                            {/* <SInput ref={ref => this._ref.image_marca = ref} type='image' height={50} defaultValue={(SSocket.api as any).inventario + "marca/" + this.props.editObject?.key_marca} /> */}
+                            { }
                             <InputFoto
                                 ref={ref => this._ref.image_marca = ref}
                                 src={(SSocket.api as any).inventario + "marca/.128_" + this.props.editObject?.key_marca}
@@ -127,7 +120,6 @@ export default class FormularioModelo extends Component<Props> {
                             if (key_marca) {
                                 this._ref.image_marca.setValue((SSocket.api as any).inventario + "marca/.128_" + key_marca);
                                 this._ref.image_marca.forceUpdate();
-
                             } else {
                                 if (this._ref.image_marca.getValue() != "") {
                                     this._ref.image_marca.setValue("");
@@ -186,7 +178,7 @@ export default class FormularioModelo extends Component<Props> {
                         labelStyle: { top: -10, },
                         inputStyle: { paddingStart: 8 },
                         icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
-                            {/* <SInput ref={ref => this._ref.image_tipo_producto = ref} type='image' height={50} defaultValue={(SSocket.api as any).inventario + "tipo_producto/" + this.props.editObject?.key_marca} /> */}
+                            { }
                             <InputFoto
                                 ref={ref => this._ref.image_tipo_producto = ref}
                                 src={(SSocket.api as any).inventario + "tipo_producto/.128_" + this.props.editObject?.key_tipo_producto}
@@ -264,7 +256,6 @@ export default class FormularioModelo extends Component<Props> {
                         labelStyle: { top: -10, },
                         inputStyle: { paddingStart: 8 },
                         icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
-                            {/* <SInput ref={ref => this._ref.image_modelo = ref} type='image' height={50} defaultValue={(SSocket.api as any).inventario + "modelo/" + this.props.editObject?.key}/> */}
                             <InputFoto
                                 ref={ref => this._ref.image_modelo = ref}
                                 src={(SSocket.api as any).inventario + "modelo/.128_" + this.props.editObject?.key}
@@ -282,23 +273,15 @@ export default class FormularioModelo extends Component<Props> {
                     },
                     "codigo_ref": {
                         col: "xs-5.5",
-                        style: {
-                            // maxWidth: 200,
-                        },
                         icon: <SView />,
                         defaultValue: (!this.props.editObject?.codigo_ref ? "" : this.props.editObject?.codigo_ref),
                         label: "Codigo de Referencia", placeholder: "[ 000 ]",
                         onSubmitEditing: () => {
-                            // if (this.form) this.form.submit();
                             if (this.form) this.form.focus("precio_compra");
                         }
                     },
-
                     "barcode": {
                         col: "xs-5.5",
-                        style: {
-                            // maxWidth: 200,
-                        },
                         iconR: <BarcodeIcon onChange={e => {
                             SNotification.send({
                                 title: "Código de barra leído",
@@ -316,52 +299,37 @@ export default class FormularioModelo extends Component<Props> {
                         defaultValue: (!this.props.editObject?.barcode ? "" : this.props.editObject?.barcode),
                         label: "Codigo de barra", placeholder: "0000000000",
                         onSubmitEditing: () => {
-                            // if (this.form) this.form.submit();
                             if (this.form) this.form.focus("precio_compra");
                         }
                     },
-
                     "duracion": {
-                        col: "xs-5.5",
-                        style: {
-                            // maxWidth: 200,
-                        },
+                        col: "xs-1.5",
                         type: "number",
                         icon: <SView />,
                         defaultValue: (!this.props.editObject?.duracion ? "" : this.props.editObject?.duracion),
                         label: "Duracion", placeholder: "Duracion del producto o servicio",
                         onSubmitEditing: () => {
-                            // if (this.form) this.form.submit();
                             if (this.form) this.form.focus("precio_compra");
                         }
                     },
                     "duracion_medida": {
-                        col: "xs-5.5",
-                        style: {
-                            // maxWidth: 200,
-                        },
+                        col: "xs-3.5",
                         type: "select2",
+                        style: { right: 8, },
                         defaultValue: (!this.props.editObject?.duracion_medida ? "" : this.props.editObject?.duracion_medida),
-                        label: "Duracion",
+                        label: "Duracion medida",
                         options: ["horas", "dias", "semanas", "meses", "anos"],
                         placeholder: "Duracion del producto o servicio",
                         onSubmitEditing: () => {
-                            // if (this.form) this.form.submit();
                             if (this.form) this.form.focus("cantidad_suscriptores");
                         }
                     },
                     "cantidad_suscriptores": {
                         col: "xs-5.5",
-                        style: {
-                            // maxWidth: 200,
-                        },
-                        // type: "select2",
                         defaultValue: (!this.props.editObject?.cantidad_suscriptores ? "" : this.props.editObject?.cantidad_suscriptores),
                         label: "Cantidad de suscriptores",
-                        // options: ["horas", "dias", "semanas", "meses", "anos"],
                         placeholder: "Cantidad de suscriptores",
                         onSubmitEditing: () => {
-                            // if (this.form) this.form.submit();
                             if (this.form) this.form.focus("observacion");
                         }
                     },
@@ -371,7 +339,6 @@ export default class FormularioModelo extends Component<Props> {
                         label: "Detalles", placeholder: "Detalles adicionales",
                         type: "textArea",
                         onSubmitEditing: () => {
-                            // if (this.form) this.form.submit();
                             if (this.form) this.form.focus("precio_compra");
                         },
                         iconR: <TextAreaPopupOpenIcon
@@ -387,7 +354,7 @@ export default class FormularioModelo extends Component<Props> {
                             }} />
                     },
                     "precio_compra": {
-                        col: "xs-5.5 sm-4",
+                        col: "xs-5.5 sm-3",
                         defaultValue: (!this.props.editObject?.precio_compra ? "" : parseFloat(this.props.editObject?.precio_compra ?? 0).toFixed(2)),
                         icon: <SIconApp name='Egreso' width={20} />,
                         label: "Precio compra", placeholder: "0,00", type: "money",
@@ -395,17 +362,56 @@ export default class FormularioModelo extends Component<Props> {
                             if (this.form) this.form.focus("precio_venta");
                         }
                     },
+                    "precio_compra_moneda": {
+                        col: "xs-12 sm-2.5",
+                        type: "custom",
+                        style: { right: 4, },
+                        defaultValue: (!this.props.editObject?.precio_compra_moneda ? "" : this.props.editObject?.precio_compra_moneda),
+                        customInputClass: InputSelector,
+                        label: "Moneda compra",
+                        options: this.state.monedas?.map((m: any) => {
+                            return { label: m.observacion, value: m.key }
+                        }) || [],
+                        placeholder: "Selecciona moneda",
+                        onSubmitEditing: () => {
+                            if (this.form) this.form.focus("cantidad_suscriptores");
+                        }
+                    },
                     "precio_venta": {
-                        col: "xs-5.5 sm-4",
+                        col: "xs-5.5 sm-3",
+                        style: { left: 4, },
                         icon: <SIconApp name='Ingreso' width={20} />,
                         defaultValue: (!this.props.editObject?.precio_venta ? "" : parseFloat(this.props.editObject?.precio_venta ?? 0).toFixed(2)),
                         label: "Precio venta", placeholder: "0,00", type: "money",
+                        // iconR: <SView style={{
+                        //width: 80, height: 40,
+                        //backgroundColor: STheme.color.card
+                        // }} >
+                        //<InputSelector type='custom'
+                        //customStyle={"erp"}
+                        //label={"moneda:"}
+                        //options={this.state.monedas?.map((m: any) => {
+                        //return { label: m.observacion, value: m.key }
+                        //}) || []}
+                        //defaultValue={(!this.props.editObject?.precio_venta_moneda ? "" : this.props.editObject?.precio_venta_moneda)}
+                        ///>
+                        // </SView>
+                        // ,
+                    },
+                    "precio_venta_moneda": {
+                        col: "xs-12 sm-2.5",
+                        type: "custom",
+                        defaultValue: (!this.props.editObject?.precio_venta_moneda ? "" : this.props.editObject?.precio_venta_moneda),
+                        customInputClass: InputSelector,
+                        label: "Moneda venta",
+                        options: this.state.monedas?.map((m: any) => {
+                            return { label: m.observacion, value: m.key }
+                        }) || [],
+                        placeholder: "Selecciona moneda",
                         onSubmitEditing: () => {
-                            // if (this.form) this.form.focus("observacion");
-                            // if (this.form) this.form.submit();
+                            if (this.form) this.form.focus("cantidad_suscriptores");
                         }
                     },
-
                 }}
                 onSubmit={(data: any) => {
                     if (!this.state.key_marca) {
@@ -426,10 +432,10 @@ export default class FormularioModelo extends Component<Props> {
                         });
                         return;
                     }
-
-                    console.log(data)
                     const modelo: any = {
                         key_marca: this.state.key_marca,
+                        precio_venta_moneda: data?.precio_venta_moneda,
+                        precio_compra_moneda: data?.precio_compra_moneda,
                         key_tipo_producto: this.state.key_tipo_producto,
                         descripcion: data.descripcion,
                         observacion: data.observacion,
@@ -458,7 +464,6 @@ export default class FormularioModelo extends Component<Props> {
                                 await Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).inventario + "upload/modelo/" + resp.key)
                             }
                         }
-
                         if (this._ref.image_marca) {
                             const value = this._ref.image_marca.getValue();
                             if (Array.isArray(value)) {
@@ -471,8 +476,6 @@ export default class FormularioModelo extends Component<Props> {
                                 await Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).inventario + "upload/tipo_producto/" + resp.key_tipo_producto)
                             }
                         }
-
-
                         console.log("Modelo guardado:", resp);
                         if (this.props.onSuccess) {
                             this.props.onSuccess(resp);
@@ -488,10 +491,7 @@ export default class FormularioModelo extends Component<Props> {
                             color: STheme.color.danger,
                         });
                     })
-
-
                 }}
-
             />
             <SHr h={16} />
             <SView row col={"xs-12"}>
@@ -501,11 +501,9 @@ export default class FormularioModelo extends Component<Props> {
                     }} />
                     <SView width={8} />
                 </>}
-
                 <Btn type='primary' label='GUARDAR' onPress={() => {
                     if (this.form) this.form.submit();
                 }} />
-
             </SView>
         </SView>
     }

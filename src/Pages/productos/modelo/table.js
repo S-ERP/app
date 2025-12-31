@@ -14,7 +14,6 @@ import PopupModeloCardex from '../Components/PopupModeloCardex';
 import PopupCrearProveedor from './Components/PopupCrearProveedor';
 import PopupTag from '../../tag/Components/PopupTag';
 import PopupAgregarTags from './Components/PopupAgregarTags';
-
 export default class table extends Component {
     constructor(props) {
         super(props);
@@ -27,9 +26,19 @@ export default class table extends Component {
     }
     modelos = null;
     async loadData() {
-        const modelos = await MDL.inventario.getAllModeloStock();
-        this.modelos = modelos;
-        return modelos;
+        try {
+            let monedas = await MDL.empresa.getMonedas();
+            const modelos = await MDL.inventario.getAllModeloStock();
+            const data_mejorada = modelos.map(e => ({
+                ...e,
+                compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
+                venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || {}
+            }));
+            this.modelos = data_mejorada;
+            return data_mejorada;
+        } catch (error) {
+            console.log(error)
+        }
     }
     renderColorPreview(nombre: string, color: string) {
         const displayName = nombre?.trim() || "Etiqueta de ejemplo";
@@ -61,20 +70,20 @@ export default class table extends Component {
                         label: e.row.descripcion,
                         options: [
                             // {
-                            //     label: "Agregar inventario",
-                            //     icon: <SIconApp name='Add' fill={STheme.color.text} />,
-                            //     onPress: () => {
-                            //         FormularioAgregarInventario.open({
-                            //             editObject: e.row,
-                            //             onSuccess: () => {
-                            //                 if (this.table) {
-                            //                     this.table.loadData();
-                            //                     // this.state.time = new Date().getTime();
-                            //                 }
-                            //             }
-                            //         })
-                            //         // SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto });
-                            //     }
+                            //label: "Agregar inventario",
+                            //icon: <SIconApp name='Add' fill={STheme.color.text} />,
+                            //onPress: () => {
+                            //FormularioAgregarInventario.open({
+                            //editObject: e.row,
+                            //onSuccess: () => {
+                            //if (this.table) {
+                            //this.table.loadData();
+                            //// this.state.time = new Date().getTime();
+                            //}
+                            //}
+                            //})
+                            //// SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto });
+                            //}
                             // },
                             {
                                 label: "Editar",
@@ -88,11 +97,9 @@ export default class table extends Component {
                                                 // this.state.time = new Date().getTime();
                                             }
                                         }
-
                                     })
                                 }
                             },
-
                             {
                                 label: "Eliminar",
                                 icon: <SIconApp name='Delete' />,
@@ -119,7 +126,6 @@ export default class table extends Component {
                                 onPress: () => {
                                     SNavigation.navigate("/proveedor", {
                                         onSelect: (prov) => {
-
                                             MDL.inventario.saveModeloProveedor({
                                                 key_modelo: e.row.key,
                                                 key_proveedor: prov.key,
@@ -128,9 +134,6 @@ export default class table extends Component {
                                     });
                                 }
                             },
-
-
-
                             {
                                 label: "Agregar Tag",
                                 icon: <SIconApp name="Tag" fill={STheme.color.text} />,
@@ -138,7 +141,6 @@ export default class table extends Component {
                                     const currentTags = (e.row.tags || [])
                                         .map(t => t?.tags || t)
                                         .filter(t => t?.key);
-
                                     console.log("gamboa " + JSON.stringify(currentTags))
                                     PopupAgregarTags.open({
                                         selectedTags: currentTags,
@@ -146,41 +148,34 @@ export default class table extends Component {
                                         onSuccess: async (selected) => {
                                             // const nuevos = selected.map(t => t?.tags || t).filter(t => t?.key);
                                             // const actuales = currentTags;
-
                                             // const nuevosKeys = nuevos.map(t => t.key);
                                             // const actualesKeys = actuales.map(t => t.key);
-
                                             // // LOGS CLAROS
                                             // console.log("TODOS LOS TAGS:", actuales.map(t => ({ key: t.key, nombre: t.nombre })));
                                             // console.log("NUEVOS:", nuevos.filter(t => !actualesKeys.includes(t.key)).map(t => ({ key: t.key, nombre: t.nombre })));
                                             // console.log("QUITADOS:", actuales.filter(t => !nuevosKeys.includes(t.key)).map(t => ({ key: t.key, nombre: t.nombre, key_modelo_tag: t.key_modelo_tag })));
-
                                             // // AGREGAR
                                             // for (let t of nuevos.filter(t => !actualesKeys.includes(t.key))) {
-                                            //     await MDL.inventario.modelo_tag.registrar({
-                                            //         key_modelo: e.row.key,
-                                            //         key_tag: t.key,
-                                            //     });
+                                            //await MDL.inventario.modelo_tag.registrar({
+                                            //key_modelo: e.row.key,
+                                            //key_tag: t.key,
+                                            //});
                                             // }
-
                                             // // ELIMINAR (estado: 0)
                                             // for (let t of actuales.filter(t => !nuevosKeys.includes(t.key))) {
-                                            //     if (t.key_modelo_tag) {
-                                            //         await MDL.inventario.modelo_tag.editar({
-                                            //             key: t.key_modelo_tag,
-                                            //             estado: 0
-                                            //         }).catch(() => SPopup.alert("Error al quitar etiqueta"));
-                                            //     }
+                                            //if (t.key_modelo_tag) {
+                                            //await MDL.inventario.modelo_tag.editar({
+                                            //key: t.key_modelo_tag,
+                                            //estado: 0
+                                            //}).catch(() => SPopup.alert("Error al quitar etiqueta"));
+                                            //}
                                             // }
-
                                             this.table?.loadData();
                                         },
                                         onCancel: () => { }
                                     });
                                 },
                             },
-
-
                             {
                                 label: "Ingrediente",
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
@@ -204,12 +199,10 @@ export default class table extends Component {
                                     SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto });
                                 }
                             },
-
                             {
                                 label: "Ver desglose",
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
-
                                     PopupDesglose.open({
                                         key_modelo: e.row.key
                                     })
@@ -219,17 +212,13 @@ export default class table extends Component {
                                 label: "Ver Cardex",
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
-
                                     PopupModeloCardex.open({
                                         key_modelo: e.row.key
                                     })
                                 }
                             },
-
                         ]
                     });
-
-
                 }}
             >
                 <DinamicTable.Col key="index" label="#" textStyle={{ color: STheme.color.lightGray, fontSize: 10 }} width={30} data={(e) => e.index + 1} />
@@ -251,15 +240,29 @@ export default class table extends Component {
                         srcPreview={SSocket.api.inventario + "modelo/" + e.row.key + "?date=" + this.state.time}
                     />}
                 />
-
                 <DinamicTable.Col key={"observacion"} label='Observacion' width={150} data={(e) => e.row.observacion} />
-                <DinamicTable.Col key={"precio_compra"} label='P. Compra' width={70}
+                <DinamicTable.Col key={"precio_compra_"} label='P. Compra' width={100}
                     textStyle={{ color: STheme.color.danger }}
-                    data={(e) => e.row.precio_compra && SMath.formatMoney(e.row.precio_compra)}
+                    data={(e) => e.row?.precio_compra} wrap
+                    customComponent={e =>
+                        <SView row center>
+                            <SText flex style={{ color: STheme.color.danger, fontSize: 14 }} numberOfLines={0} >{e.row?.precio_compra ? SMath.formatMoney(e.row?.precio_compra) : ""}  {e.row?.compra_moneda?.observacion ? e.row?.compra_moneda?.observacion : ""}</SText>
+                        </SView>}
                 />
-                <DinamicTable.Col key={"precio_venta"} label='P. Venta'
+                <DinamicTable.Col key={"precio_venta_"} label='P. Venta' width={100}
                     textStyle={{ color: STheme.color.success }}
-                    width={70} data={(e) => e.row.precio_venta && SMath.formatMoney(e.row.precio_venta)} />
+                    data={(e) => e.row?.precio_venta} wrap
+                    customComponent={e => <SText style={{ color: STheme.color.success, fontSize: 14 }} numberOfLines={0} >{e.row?.precio_venta ? SMath.formatMoney(e.row?.precio_venta) : ""}  {e.row?.precio_venta ? e.row?.venta_moneda?.observacion : ""}</SText>
+                    }
+                />
+                {/* 
+<DinamicTable.Col key={"precio_compra"} label='P. Compra' width={70}
+textStyle={{ color: STheme.color.danger }}
+data={(e) => e.row.precio_compra && SMath.formatMoney(e.row.precio_compra)}
+/>
+<DinamicTable.Col key={"precio_venta"} label='P. Venta'
+textStyle={{ color: STheme.color.success }}
+width={70} data={(e) => e.row.precio_venta && SMath.formatMoney(e.row.precio_venta)} /> */}
                 <DinamicTable.Col key={"stock"} label='stock'
                     dataType='number'
                     width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
@@ -306,7 +309,6 @@ export default class table extends Component {
                         </SView>
                     )}
                 />
-
                 <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable' width={150}
                     data={(e) => e.row?.tipo_producto?.tipo}
                     cellStyle={{ alignItems: "center", justifyContent: "flex-start", flexDirection: "row" }}
