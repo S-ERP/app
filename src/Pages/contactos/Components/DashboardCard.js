@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SDate, SHr, SIcon, SImage, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SIcon, SImage, SNotification, SPopup, SText, STheme, SView,SNavigation } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Etiqueta from './Etiqueta';
 import SIconApp from '../../../Assets/SIconApp';
@@ -34,6 +34,13 @@ export default class DashboardCard extends Component {
                         //         alert("trabajandolo")
                         //     },
                         // },
+                          {
+    label: 'Ver',
+    icon: <SIconApp name="Eyes" fill="#e4e4e4ff" width={16} />,
+    onPress: () => {
+      SNavigation.navigate("/cliente/perfil", { key: card.key });
+    }
+  },
                         {
                             label: 'Editar Contacto',
                             icon: <SIconApp name="Pencil" fill="#e4e4e4ff" width={16} />,
