@@ -5,9 +5,8 @@ import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import { FlatList } from "react-native";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
-
+import InputSelector from "../Selectores/InputSelector";
 type PopupCarritoProps = {
-
 }
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     static open(props: PopupCarritoProps) {
@@ -27,8 +26,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     borderRadius: 8,
                     borderWidth: 1,
                     borderColor: STheme.color.card,
-                    cursor: "default",
-                    userSelect: "text"
+                    // cursor: "default",
+                    // userSelect: "text"
                 }} withoutFeedback>
                     <PopupCarrito {...props} />
                 </SView>
@@ -38,7 +37,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         this.forceUpdate();
     }
     componentDidMount(): void {
-
         MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this))
     }
     componentWillUnmount(): void {
@@ -67,7 +65,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                 <SText color={STheme.color.lightGray} fontSize={12}>{"Productos"} ({MDL.carrito.carrito_venta.cantidad_items})</SText>
                 <SView flex />
                 <SText color={STheme.color.lightGray} fontSize={12}>{"Sub Total"}</SText>
-
             </SView>
             <SHr />
             <SHr h={1} color={STheme.color.card} />
@@ -92,7 +89,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                             onPress: () => {
                                 MDL.carrito.limpiarCarritoVentas();
                                 SPopup.close("PopupCarrito")
-
                             }
                         })
                     }}>
@@ -105,7 +101,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         }}
                         padding={4} card onPress={() => {
                             PopupCarritoConfirmar.open({
-
                             })
                         }}>
                         <SText fontSize={12}>{"Confirmar la venta"}</SText>
@@ -115,15 +110,10 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         </SView>
     }
 }
-
 const ItemComp = (props: any) => {
-
     const cantidadRef = React.useRef<any>(null);
     const precioRef = React.useRef<any>(null);
-
     const { item } = props;
-
-
     if (cantidadRef.current) {
         if (cantidadRef.current.getValue() != item.cantidad) {
             cantidadRef.current.setValue(item.cantidad);
@@ -134,8 +124,6 @@ const ItemComp = (props: any) => {
             precioRef.current.setValue(item.precio);
         }
     }
-
-
     return <SView padding={8}>
         <SView row center>
             <SView center style={{
@@ -153,7 +141,6 @@ const ItemComp = (props: any) => {
                 borderRadius: 4, overflow: "hidden",
                 borderColor: STheme.color.card,
                 borderWidth: 1,
-
             }}>
                 <SImage src={SSocket.api.inventario + "modelo/" + item.modelo.key} style={{
                     resizeMode: "cover"
@@ -183,13 +170,11 @@ const ItemComp = (props: any) => {
                                 } else {
                                     item.precio = parseFloat(e ?? "1")
                                 }
-
                                 MDL.carrito.calcularValoresCarritDeVentas();
                             }}
                         />
                     </SView>
                     <SView width={4} />
-                    {/* <SText fontSize={12} color={STheme.color.lightGray}>{"\t"}x{"\t"}</SText> */}
                     <SView width={60}>
                         <SInput ref={cantidadRef} style={{
                             height: 16,
@@ -207,7 +192,6 @@ const ItemComp = (props: any) => {
                                 } else {
                                     item.cantidad = parseFloat(e ?? "1")
                                 }
-
                                 MDL.carrito.calcularValoresCarritDeVentas();
                             }}
                         />
@@ -221,12 +205,25 @@ const ItemComp = (props: any) => {
                         }}>BS {SMath.formatMoney(item.precio * item.cantidad)} </SText>
                     </SView>
                 </SView>
-                {/* <SView width={4} /> */}
 
+                <SView height={4} />
+                {item?.modelo?.contactos?.length > 0 && (
+                    <SView style={{ width: 200, height: 24, backgroundColor: STheme.color.card }}>
+                        <InputSelector
+                            style={{ fontSize: 12, }}
+                            type="custom"
+                            customStyle="erp"
+                            label="Contactos:"
+                            placeholder="Selecciona un contacto"
+                            options={item.modelo.contactos.map((c) => ({ label: c.nombre, value: c.key, }))}
+                            defaultValue={item.contactoSeleccionado || ""}
+                            onChange={(selected) => {
+                                item.contactoSeleccionado = selected;
+                            }}
+                        />
+                    </SView>
+                )}
             </SView>
-
         </SView>
-        {/* <SHr /> */}
-        {/* <SHr h={1} color={STheme.color.card} /> */}
     </SView >
 }

@@ -75,6 +75,21 @@ export default class inventario extends MDLAbstract<EventListener> {
     return Object.values(resp.data || {});
   }
 
+
+  async getContactosByModelo(_key_modelo: string) {
+    const resp: any = await SSocket.sendPromise({
+      service: "inventario",
+      component: "reporte",
+      type: "execute_function",
+      func: "_get_contactos_bymodelo",
+      params: ["'" + _key_modelo + "'"],
+
+    });
+    console.log("_get_contactos_bymodelo", resp.data);
+    return Object.values(resp.data || {});
+  }
+
+
   //   async getAllModeloCliente(_key_almacen: string) {
   //   const resp: any = await SSocket.sendPromise({
   //     version: "1.0",
@@ -121,16 +136,16 @@ export default class inventario extends MDLAbstract<EventListener> {
     //   });
     //   return resp.data;
     // } else {
-      const resp: any = await SSocket.sendPromise({
-        version: "1.0",
-        service: "inventario",
-        component: "modelo_cliente",
-        type: "registro",
-        data: modelo_cliente,
-        key_empresa: MDL.empresa.select?.key,
-        key_usuario: MDL.usuario.session?.key,
-      });
-      return resp.data;
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "modelo_cliente",
+      type: "registro",
+      data: modelo_cliente,
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
+    return resp.data;
     // }
   }
 
@@ -140,16 +155,16 @@ export default class inventario extends MDLAbstract<EventListener> {
     key_cliente: string,
     estado?: number
   }) {
-      const resp: any = await SSocket.sendPromise({
-        version: "1.0",
-        service: "inventario",
-        component: "modelo_cliente",
-        type: "editar",
-        data: modelo_cliente,
-        key_empresa: MDL.empresa.select?.key,
-        key_usuario: MDL.usuario.session?.key,
-      });
-      return resp.data;
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "modelo_cliente",
+      type: "editar",
+      data: modelo_cliente,
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
+    return resp.data;
 
   }
 
