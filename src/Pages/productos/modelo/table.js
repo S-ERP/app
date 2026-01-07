@@ -27,12 +27,17 @@ export default class table extends Component {
     modelos = null;
     async loadData() {
         try {
-            let monedas = await MDL.empresa.getMonedas();
+            const monedas = await MDL.empresa.getMonedas();
             const modelos = await MDL.inventario.getAllModeloStock();
+            const clientes = await MDL.crm.cliente.getAll();
             const data_mejorada = modelos.map(e => ({
                 ...e,
                 compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
-                venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || {}
+                venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || {},
+                contactos: e.contactos?.map(contacto => ({
+                    ...contacto,
+                    cliente: clientes.find(a => a?.key === contacto.key_cliente) || {},
+                }))
             }));
             this.modelos = data_mejorada;
             return data_mejorada;
@@ -45,9 +50,7 @@ export default class table extends Component {
         const backgroundColor = `${color}33`;
         return (
             <SView height={18} center style={{ backgroundColor, borderRadius: 20, borderWidth: 1, borderColor: color, flexDirection: "row", alignItems: "center", paddingHorizontal: 6, }} >
-                <SText color={STheme.color.text} fontSize={10} numberOfLines={1}>
-                    {displayName}
-                </SText>
+                <SText color={STheme.color.text} fontSize={10} numberOfLines={1}> {displayName} </SText>
             </SView>
         );
     }
@@ -69,22 +72,6 @@ export default class table extends Component {
                         height: 330,
                         label: e.row.descripcion,
                         options: [
-                            // {
-                            //label: "Agregar inventario",
-                            //icon: <SIconApp name='Add' fill={STheme.color.text} />,
-                            //onPress: () => {
-                            //FormularioAgregarInventario.open({
-                            //editObject: e.row,
-                            //onSuccess: () => {
-                            //if (this.table) {
-                            //this.table.loadData();
-                            //// this.state.time = new Date().getTime();
-                            //}
-                            //}
-                            //})
-                            //// SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto });
-                            //}
-                            // },
                             {
                                 label: "Editar",
                                 icon: <SIconApp name='Edit' />,
@@ -94,7 +81,6 @@ export default class table extends Component {
                                         onSuccess: () => {
                                             if (this.table) {
                                                 this.table.loadData();
-                                                // this.state.time = new Date().getTime();
                                             }
                                         }
                                     })
@@ -146,30 +132,6 @@ export default class table extends Component {
                                         selectedTags: currentTags,
                                         key_modelo: e.row.key,
                                         onSuccess: async (selected) => {
-                                            // const nuevos = selected.map(t => t?.tags || t).filter(t => t?.key);
-                                            // const actuales = currentTags;
-                                            // const nuevosKeys = nuevos.map(t => t.key);
-                                            // const actualesKeys = actuales.map(t => t.key);
-                                            // // LOGS CLAROS
-                                            // console.log("TODOS LOS TAGS:", actuales.map(t => ({ key: t.key, nombre: t.nombre })));
-                                            // console.log("NUEVOS:", nuevos.filter(t => !actualesKeys.includes(t.key)).map(t => ({ key: t.key, nombre: t.nombre })));
-                                            // console.log("QUITADOS:", actuales.filter(t => !nuevosKeys.includes(t.key)).map(t => ({ key: t.key, nombre: t.nombre, key_modelo_tag: t.key_modelo_tag })));
-                                            // // AGREGAR
-                                            // for (let t of nuevos.filter(t => !actualesKeys.includes(t.key))) {
-                                            //await MDL.inventario.modelo_tag.registrar({
-                                            //key_modelo: e.row.key,
-                                            //key_tag: t.key,
-                                            //});
-                                            // }
-                                            // // ELIMINAR (estado: 0)
-                                            // for (let t of actuales.filter(t => !nuevosKeys.includes(t.key))) {
-                                            //if (t.key_modelo_tag) {
-                                            //await MDL.inventario.modelo_tag.editar({
-                                            //key: t.key_modelo_tag,
-                                            //estado: 0
-                                            //}).catch(() => SPopup.alert("Error al quitar etiqueta"));
-                                            //}
-                                            // }
                                             this.table?.loadData();
                                         },
                                         onCancel: () => { }
@@ -246,23 +208,15 @@ export default class table extends Component {
                     data={(e) => e.row?.precio_compra} wrap
                     customComponent={e =>
                         <SView row center>
-                            <SText flex style={{ color: STheme.color.danger, fontSize: 14 }} numberOfLines={0} >{e.row?.precio_compra ? SMath.formatMoney(e.row?.precio_compra) : ""}  {e.row?.compra_moneda?.observacion ? e.row?.compra_moneda?.observacion : ""}</SText>
+                            <SText flex style={{ color: STheme.color.danger, fontSize: 14 }} numberOfLines={0} >{e.row?.precio_compra ? SMath.formatMoney(e.row?.precio_compra) : ""}{e.row?.compra_moneda?.observacion ? e.row?.compra_moneda?.observacion : ""}</SText>
                         </SView>}
                 />
                 <DinamicTable.Col key={"precio_venta_"} label='P. Venta' width={100}
                     textStyle={{ color: STheme.color.success }}
                     data={(e) => e.row?.precio_venta} wrap
-                    customComponent={e => <SText style={{ color: STheme.color.success, fontSize: 14 }} numberOfLines={0} >{e.row?.precio_venta ? SMath.formatMoney(e.row?.precio_venta) : ""}  {e.row?.precio_venta ? e.row?.venta_moneda?.observacion : ""}</SText>
+                    customComponent={e => <SText style={{ color: STheme.color.success, fontSize: 14 }} numberOfLines={0} >{e.row?.precio_venta ? SMath.formatMoney(e.row?.precio_venta) : ""}{e.row?.precio_venta ? e.row?.venta_moneda?.observacion : ""}</SText>
                     }
                 />
-                {/* 
-<DinamicTable.Col key={"precio_compra"} label='P. Compra' width={70}
-textStyle={{ color: STheme.color.danger }}
-data={(e) => e.row.precio_compra && SMath.formatMoney(e.row.precio_compra)}
-/>
-<DinamicTable.Col key={"precio_venta"} label='P. Venta'
-textStyle={{ color: STheme.color.success }}
-width={70} data={(e) => e.row.precio_venta && SMath.formatMoney(e.row.precio_venta)} /> */}
                 <DinamicTable.Col key={"stock"} label='stock'
                     dataType='number'
                     width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
@@ -319,6 +273,31 @@ width={70} data={(e) => e.row.precio_venta && SMath.formatMoney(e.row.precio_ven
                     }}
                 />
                 <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row?.barcode} />
+
+
+                <DinamicTable.Col
+                    key={"contactos_"}
+                    label='Contactos'
+                    width={120}
+                    data={(e) => (e.row.contactos ?? []).map(p => p?.key_cliente)}
+                    customComponent={e => (
+                        <SView row>
+                            {(e.row.contactos ?? []).map((p, index) => {
+                                return <SView center row>
+                                    <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} center row >
+                                        {p?.key_cliente ? (<SImage src={`${SSocket.api.root}usuario/${p?.key_cliente}`} style={{ resizeMode: "cover" }} />) : null}
+                                    </SView>
+                                    <SView width={5} />
+                                    {/* <SText fontSize={10} numberOfLines={1} >{p?.cliente?.nombres}</SText> */}
+                                </SView>
+                                // return <SView style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }} >
+                                //     <SText fontSize={10} numberOfLines={1} >{p?.cliente?.nombres}</SText>
+                                // </SView>
+                            })}
+                        </SView>
+                    )}
+                />
+
             </DinamicTable>
             <FloatButtom onPress={() => {
                 PopupDetalleModelo.open({
