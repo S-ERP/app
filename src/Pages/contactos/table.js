@@ -1,5 +1,5 @@
 import React from "react";
-import { SImage, SPage, SText, STheme, SView } from "servisofts-component";
+import { SIcon, SImage, SNavigation, SPage, SText, STheme, SView } from "servisofts-component";
 import { DinamicTable } from "servisofts-table";
 import MDL from "../../MDL";
 import Config from "../../Config";
@@ -43,6 +43,14 @@ export default class table extends React.Component {
                         </SView>
                     )}
                 />
+                                <DinamicTable.Col
+                                    key="key-"
+                                    label="Ver"
+                                    width={40}
+                                    data={e => ""}
+                                    customComponent={e => <SView row center card padding={2} onPress={() => { SNavigation.navigate("/cliente/perfil", { key: e.row.key }) }}>
+                                        <SIcon name='Eyes' height={14} fill={STheme.color.lightGray} ></SIcon>
+                                    </SView>} />
                 <DinamicTable.Col key={"nombre"} label="Nombre" data={e => e.row.nombres} width={200} />
                 {/* <DinamicTable.Col key={"apellido"} label="Apellido" data={e => e.row.apellidos} /> */}
                 <DinamicTable.Col key={"telefono"} label="Teléfono" data={e => e.row.telefono} width={120} />
