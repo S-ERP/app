@@ -8,18 +8,14 @@ import TecladoNumerico from './Carrito/TecladoNumerico';
 import MDL from '../../../MDL';
 import FotoCliente from './Foto/FotoCliente';
 import SelecionarDescuento from '../../venta/Components/SelecionarDescuento';
-
-
 export default class Carrito extends Component {
     carrito = [];
     descuentoManual = "";
     conFactura = false;
     cliente = {};
     descuentoSeleccionado = null;
-
     ajustarCarrito = () => {
         if (!this.props.conStock) return;
-
         this.carrito = this.carrito.filter((item) => {
             if (!item.stock || item.stock <= 0) {
                 SNotification.send({
@@ -30,7 +26,6 @@ export default class Carrito extends Component {
                 });
                 return false;
             }
-
             if (item.cantidad > item.stock) {
                 item.cantidad = item.stock;
                 SNotification.send({
@@ -42,10 +37,8 @@ export default class Carrito extends Component {
             }
             return true;
         });
-
         this.forceUpdate();
     };
-
     componentDidMount() {
         this.loadData();
         this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
@@ -53,7 +46,6 @@ export default class Carrito extends Component {
             this.forceUpdate();
         });
     }
-
     componentDidUpdate(prevProps) {
         if (prevProps.selectedMoneda !== this.props.selectedMoneda) {
             this.carrito = this.carrito.map((item) => ({
@@ -70,13 +62,11 @@ export default class Carrito extends Component {
             this.forceUpdate();
         }
     }
-
     componentWillUnmount() {
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
     }
-
     async loadData() {
         const enviroments = await MDL.contabilidad.getEnviroment();
         this._enviromentsIva = parseFloat(enviroments?.IVA?.observacion) / 100;
@@ -87,13 +77,7 @@ export default class Carrito extends Component {
         this.forceUpdate();
     }
 
-    // setCarrito(nuevoCarrito) {
-    //     this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
-    //     this.forceUpdate();
-    // }
-
     setCarrito(nuevoCarrito) {
-        console.log("🎨🎨🎨🎨🎨🎨setCarrito", nuevoCarrito);
         this.carrito = Array.isArray(nuevoCarrito)
             ? nuevoCarrito.map(item => ({
                 ...item,
@@ -106,64 +90,75 @@ export default class Carrito extends Component {
             : [];
         this.forceUpdate();
     }
-
-    addProducto = (producto) => {
-        console.log("🎪🎪🎪 addProducto", producto);
-        const index = this.carrito.findIndex((p) => p.key === producto.key);
-        if (index >= 0) {
-            const item = this.carrito[index];
-            if (this.props.conStock) {
-                if (item.cantidad < item.stock) {
-                    item.cantidad += 1;
+    addProducto = async (producto) => {
+        try {
+            const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
+            const clientes = await MDL.crm.cliente.getAll();
+            const contactos = contactosKeys.map(key => {
+                const cliente = clientes.find(c => c.key === key);
+                return cliente
+                    ? { key: cliente.key, nombre: cliente.nombres || cliente.razon_social || key, cliente }
+                    : { key, nombre: key, cliente: null };
+            });
+            producto = {
+                ...producto,
+                contactos
+                // contactos: [{ key: "e68d...", nombre: "Juan" }, { key: "268b...", nombre: "María" }]
+            };
+            const index = this.carrito.findIndex((p) => p.key === producto.key);
+            if (index >= 0) {
+                const item = this.carrito[index];
+                if (this.props.conStock) {
+                    if (item.cantidad < item.stock) {
+                        item.cantidad += 1;
+                    } else {
+                        SNotification.send({
+                            title: "CARRITO Stock insuficiente",
+                            body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: ${item.stock} unidades.`,
+                            color: STheme.color.danger,
+                            time: 3000,
+                        });
+                        return;
+                    }
                 } else {
+                    item.cantidad += 1;
+                }
+            } else {
+
+                if (this.props.conStock && (!producto.stock || producto.stock <= 0)) {
                     SNotification.send({
-                        title: "CARRITO Stock insuficiente",
-                        body: `No hay suficiente stock para ${producto.descripcion}. Stock máximo permitido: ${item.stock} unidades.`,
+                        title: "CARRITO Sin stock",
+                        body: `No hay stock disponible para ${producto.descripcion}.`,
                         color: STheme.color.danger,
                         time: 3000,
                     });
                     return;
                 }
-            } else {
-                item.cantidad += 1;
-            }
-        } else {
-            if (this.props.conStock && (!producto.stock || producto.stock <= 0)) {
-                SNotification.send({
-                    title: "CARRITO Sin stock",
-                    body: `No hay stock disponible para ${producto.descripcion}.`,
-                    color: STheme.color.danger,
-                    time: 3000,
+                this.carrito.push({
+                    ...producto,
+                    cantidad: 1,
+                    precio_venta: producto.precio_venta,
+                    precio_venta_moneda: producto.precio_venta_moneda || (this.props.selectedMoneda
+                        ? producto.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
+                        : producto.precio_venta),
+                    monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
                 });
-                return;
+
             }
-            this.carrito.push({
-                ...producto,
+            this.getCarritoItemCount();
+            // this.forceUpdate();
+            MDL.carrito.agregarItemAlCarritoDeVentas({
+                modelo: producto,
                 cantidad: 1,
-                precio_venta: producto.precio_venta,
-                precio_venta_moneda: producto.precio_venta_moneda || (this.props.selectedMoneda
-                    ? producto.precio_venta / (this.props.selectedMoneda.tipo_cambio || 1)
-                    : producto.precio_venta),
-                monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
+                precio: producto.precio_venta
             });
-            this.forceUpdate();
-
+        } catch (err) {
+            console.error("❌ Error al obtener contactos:", err);
         }
-        this.getCarritoItemCount();
-        this.forceUpdate();
-        
-        console.log("producto", producto)
-        MDL.carrito.agregarItemAlCarritoDeVentas({
-            modelo: producto,
-            cantidad: 1,
-            precio: producto.precio_venta
-        })
     };
-
     aumentarCantidad = (producto) => {
         const index = this.carrito.findIndex((p) => p.key === producto.key);
         if (index < 0) return;
-
         const item = this.carrito[index];
         if (this.props.conStock) {
             if (item.cantidad < item.stock) {
@@ -182,14 +177,11 @@ export default class Carrito extends Component {
             this.forceUpdate();
         }
     };
-
     disminuirCantidad = (producto) => {
         const index = this.carrito.findIndex((p) => p.key === producto.key);
         if (index < 0) return;
-
         const item = this.carrito[index];
         item.cantidad -= 1;
-
         if (item.cantidad <= 0) {
             this.carrito.splice(index, 1);
             SNotification.send({
@@ -201,7 +193,6 @@ export default class Carrito extends Component {
         }
         this.forceUpdate();
     };
-
     eliminarItem = (producto) => {
         const index = this.carrito.findIndex((p) => p.key === producto.key);
         if (index >= 0) {
@@ -209,7 +200,6 @@ export default class Carrito extends Component {
             this.forceUpdate();
         }
     };
-
     vaciarCarrito = () => {
         this.carrito = [];
         this.descuentoManual = "";
@@ -220,10 +210,8 @@ export default class Carrito extends Component {
         MDL.compra_venta.updateCarritoItems(0)
         this.forceUpdate();
     };
-
     calcularSubtotal = () => this.carrito.reduce((t, i) => t + i.precio_venta * i.cantidad, 0);
     calcularSubtotalMoneda = () => this.carrito.reduce((t, i) => t + i.precio_venta_moneda * i.cantidad, 0);
-
     calcularTotalConIVA = (subtotal) => {
         if (!this._enviromentsIva) return subtotal;
         if (this.conFactura) {
@@ -231,14 +219,11 @@ export default class Carrito extends Component {
         }
         return subtotal;
     };
-
     calcularIVA = (subtotal) => {
         if (!this._enviromentsIva) return 0;
         return subtotal * this._enviromentsIva;
     };
-
     calcularTotalConDescuento = (total) => total - parseFloat(this.descuentoManual || "0");
-
     renderItemCarrito = ({ item }) => (
         <CarritoItem
             item={item}
@@ -247,17 +232,14 @@ export default class Carrito extends Component {
             onEliminar={() => this.eliminarItem(item)}
         />
     );
-
     getCarritoItems() {
-        return this.carrito; // Devuelve los ítems del carrito
+        return this.carrito;  
     }
-
     getCarritoItemCount() {
         const cant = this.carrito.reduce((total, item) => total + item.cantidad, 0);
         MDL.compra_venta.updateCarritoItems(cant)
         return cant;
     }
-
     renderCarrito = () => {
         const subtotal = this.calcularSubtotal();
         const subtotalMoneda = this.calcularSubtotalMoneda();
@@ -266,7 +248,6 @@ export default class Carrito extends Component {
         const totalDescuento = this.descuentoManual || 0;
         const totalFinal = this.calcularTotalConDescuento(totalConIVA);
         const monedaSymbol = this.carrito.length > 0 ? this.carrito[0].monedaSymbol || "Bs" : "Bs";
-
         return (
             <>
                 {subtotal <= 0 ? (
@@ -360,7 +341,6 @@ export default class Carrito extends Component {
                             </SScrollView2>
                         </SView>
                         <SHr height={5} />
-
                         <SHr height={5} />
                         <ResumenTotales
                             subtotal={subtotal}
@@ -378,34 +358,32 @@ export default class Carrito extends Component {
                                     if (descuento != this.descuentoSeleccionado) {
                                         this.descuentoSeleccionado = descuento;
                                         this.forceUpdate();
-                                        console.log("Descuento seleccionado:", descuento);
+
                                     }
-
                                 }} />
-
                                 {/* <SView col={"xs-10"} center>
-                                    <SInput
-                                        label={"Descuento VIP (Bs):"}
-                                        disabled={true}
-                                        height={40}
-                                        placeholder={"0"}
-                                        defaultValue={this.descuentoManual ?? null}
-                                        type="number"
-                                        border={this.descuentoManual > 0 ? "yellow" : STheme.color.card}
-                                        style={{ borderRadius: 8 }}
-                                        value={this.descuentoManual?.toString()}
-                                        onChangeText={(text) => {
-                                            let valor = Number(text);
-                                            if (valor > subtotalMoneda) {
-                                                valor = subtotalMoneda;
-                                            } else if (valor < 0) {
-                                                valor = 0;
-                                            }
-                                            this.descuentoManual = valor;
-                                            this.forceUpdate();
-                                        }}
-                                    />
-                                </SView> */}
+<SInput
+label={"Descuento VIP (Bs):"}
+disabled={true}
+height={40}
+placeholder={"0"}
+defaultValue={this.descuentoManual ?? null}
+type="number"
+border={this.descuentoManual > 0 ? "yellow" : STheme.color.card}
+style={{ borderRadius: 8 }}
+value={this.descuentoManual?.toString()}
+onChangeText={(text) => {
+let valor = Number(text);
+if (valor > subtotalMoneda) {
+valor = subtotalMoneda;
+} else if (valor < 0) {
+valor = 0;
+}
+this.descuentoManual = valor;
+this.forceUpdate();
+}}
+/>
+</SView> */}
                             </SView>
                             <SView col={"md-12 xl-6"} height={60} center row>
                                 <SView col={"md-6"} center>
@@ -478,7 +456,6 @@ export default class Carrito extends Component {
             </>
         );
     };
-
     render() {
         return <>{this.renderCarrito()}</>;
     }
