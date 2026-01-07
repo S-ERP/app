@@ -1,6 +1,7 @@
 import SSocket from "servisofts-socket";
 import MDLAbstract from "../MDLAbstract";
 import { EventListener } from "./types";
+import { SStorage } from "servisofts-component";
 
 export type CarritoItem = {
   modelo: { descripcion: string, key: string, estado?: number },
@@ -109,6 +110,8 @@ export default class carrito extends MDLAbstract<EventListener> {
       this.carrito_venta.items.splice(index, 1);
     }
     this.calcularValoresCarritDeVentas();
+    // const dataSelect_ = this.carrito_venta.items;
+    // SStorage.setItem("dataSelectServicios", JSON.stringify(dataSelect_));
 
 
   }

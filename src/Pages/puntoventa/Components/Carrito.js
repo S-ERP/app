@@ -107,8 +107,24 @@ export default class Carrito extends Component {
         this.forceUpdate();
     }
 
+    addProductoServicio = (producto) => {
+        this.getCarritoItemCount();
+        this.forceUpdate();
+        console.log("🎪🎪🎪 addProducto2", producto);
+        MDL.carrito.agregarItemAlCarritoDeVentas({
+            modelo: producto,
+            cantidad: 1,
+            precio: producto.precio_venta
+        })
+    }
+
+    removeProductoServicio = (producto) => {
+         MDL.carrito.removerItemAlCarritoDeVentas(producto);
+    }
+
+
     addProducto = (producto) => {
-        console.log("🎪🎪🎪 addProducto", producto);
+        console.log("🎪🎪🎪 addProductooo", producto);
         const index = this.carrito.findIndex((p) => p.key === producto.key);
         if (index >= 0) {
             const item = this.carrito[index];
@@ -151,7 +167,7 @@ export default class Carrito extends Component {
         }
         this.getCarritoItemCount();
         this.forceUpdate();
-        
+
         console.log("producto", producto)
         MDL.carrito.agregarItemAlCarritoDeVentas({
             modelo: producto,

@@ -9,6 +9,8 @@ import Model from "../../../Model";
 import { Parent } from "..";
 import habilidad from '../../habilidad';
 import { Container } from '../../../Components';
+import Carrito from '../../puntoventa/Components/Carrito';
+import { SStorage } from 'servisofts-component';
 
 
 export default class servicios extends Component {
@@ -30,6 +32,7 @@ export default class servicios extends Component {
 
         }
         this.pk = SNavigation.getParam("pk");
+        this.carro = new Carrito();
 
     }
 
@@ -38,6 +41,7 @@ export default class servicios extends Component {
             SNavigation.navigate("/login");
         }
         this.loadData();
+
 
     }
 
@@ -56,64 +60,18 @@ export default class servicios extends Component {
         this.setState({ articulosCliente: art });
         console.log("articulosCliente", art);
 
+        const dataSelect_ = await SStorage.getItem("dataSelectServicios");
+        if (dataSelect_) {
+            this.setState({ dataSelect: JSON.parse(dataSelect_) });
+        }
         this.forceUpdate()
 
     }
 
-    getBtnFooter() {
-        if (this.state.dataSelect.length == 0) return null;
-        let total = 0;
-        let cantidad = 0;
-        let precio = 0;
-        this.state.dataSelect.map((obj) => {
-            precio = !obj.modelo.precio_venta ? 0 : obj.modelo.precio_venta;
-            total += parseFloat(precio);
-            cantidad += 1;
-        });
 
-        return <SView col={"xs-12"} center backgroundColor={STheme.color.primary}
-            style={{
-                // height: 70,
-            }}>
-            <Container>
-                <SHr height={10} />
-                <SView col={'xs-12'} row center>
-                    <SView flex height={47}>
-                        <SText
-                            color={STheme.color.secondary}
-                            font={'Roboto'}
-                            fontSize={15}>{`${cantidad} items`}</SText>
-                        <SText
-                            color={STheme.color.secondary}
-                            font={'Roboto'}
-                            fontSize={22}>{`Bs. ${total.toFixed(2)}`}</SText>
-                    </SView>
-                    <SView flex height={40} style={{
-                        backgroundColor: STheme.color.info,
-                        borderRadius: 8,
-                        borderWidth: 1,
-                        borderColor: '#eeeeee',
-                    }} onPress={() => {
-                        if (this.state?.dataSelect.length == 0) {
-                            SPopup.alert("Debe seleccionar al menos un servicio")
-                            return;
-                        }
-                        SNavigation.navigate("/ficha/horarios", { codesp: this.codesp, codmed: this.codmed, nrosuc: this.nrosuc });
-                    }} center>
-                        <SText
-                            center
-                            color={STheme.color.white}
-                            font={'Roboto'}
-                            fontSize={17}>
-                            SOLICITAR
-                        </SText>
-                    </SView>
-                </SView>
-                <SHr height={10} />
-            </Container >
 
-        </SView >
-    }
+
+
 
     onSelectItem = (item, checked) => {
         this.setState(prev => {
@@ -123,10 +81,17 @@ export default class servicios extends Component {
                 // evitar duplicados
                 if (!dataSelect.find(d => d.key === item.key)) {
                     dataSelect.push(item);
+                    this.carro.addProductoServicio(item.modelo);
+                    // this.carro.addProductoServicio(obj.item.modelo);
+
                 }
             } else {
                 dataSelect = dataSelect.filter(d => d.key !== item.key);
+                this.carro.removeProductoServicio(item);
             }
+
+            SStorage.setItem("dataSelectServicios", JSON.stringify(dataSelect));
+            // SStorage.setItem("dataSelectServicios", dataSelect);
 
             return { dataSelect };
         });
@@ -136,21 +101,25 @@ export default class servicios extends Component {
 
 
     render() {
-
+        console.log("dataSelect", this.state.dataSelect);
 
         return (
-            <SPage title={"Servicios"} footer={this.getBtnFooter()} >
+            <SPage title={"Servicios"}
+            // footer={this.getBtnFooter()} 
+            >
                 <SView col={"xs-12"} padding={15} >
                     <SView col="xs-12" center  >
                         <FlatList style={{ width: "100%" }}
                             data={this.state.articulosCliente}
                             renderItem={(obj) => {
                                 return <Item item={obj.item}
+                                    ref={(ref) => (this.modeloRef = ref)}
                                     check={this.state.dataSelect.some(d => d.key === obj.item.key)}
                                     onSelect={this.onSelectItem}
                                     onPress={() => {
-                                        // console.log("onChange", e);
-                                        // obj.item._selected = e;
+
+                                        console.log("SERVICIO CARRITO", obj.item.modelo);
+                                        // this.carro.addProductoServicio(obj.item.modelo);
                                         this.forceUpdate();
                                     }} />
                             }}
@@ -162,9 +131,10 @@ export default class servicios extends Component {
     }
 }
 
-const Item = ({ item, check, onSelect }) => {
+const Item = ({ item, check, onSelect, onPress }) => {
     // let dataSelect = [];
     let key = item.key;
+    console.log("check: ", check);
     return (
         <SView row center col={"xs-12"} style={{
 
@@ -173,7 +143,16 @@ const Item = ({ item, check, onSelect }) => {
             backgroundColor: STheme.color.card,
             marginBottom: 10,
             borderRadius: 4,
-        }} onPress={() => onSelect(item, !check)} >
+        }}
+            // onPress={() => onSelect(item, !check)}
+            onPress={() => {
+
+
+                onPress();
+                onSelect(item, !check);
+            }}
+
+        >
             <SView col={"xs-9"} row padding={10}>
                 <SView width={40} height={40}
                     style={{
@@ -211,7 +190,8 @@ const Item = ({ item, check, onSelect }) => {
                             width={30}
                             height={30}
                             type={"checkBox"}
-                            defaultValue={!!check}
+                            // defaultValue={!!check}
+                            value={!!check}
                             onChangeText={(e) => {
                                 onSelect(item, e);
                             }}
