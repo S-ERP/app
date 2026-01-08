@@ -90,6 +90,22 @@ export default class Carrito extends Component {
             : [];
         this.forceUpdate();
     }
+
+    addProductoServicio = (producto) => {
+        this.getCarritoItemCount();
+        this.forceUpdate();
+        console.log("🎪🎪🎪 addProducto2", producto);
+        MDL.carrito.agregarItemAlCarritoDeVentas({
+            modelo: producto,
+            cantidad: 1,
+            precio: producto.precio_venta
+        })
+    }
+
+    removeProductoServicio = (producto) => {
+        MDL.carrito.removerItemAlCarritoDeVentas(producto);
+    }
+
     addProducto = async (producto) => {
         try {
             const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
