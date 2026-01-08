@@ -106,6 +106,21 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         </SView>
     }
 }
+
+const clienteFeliz = (data: any) => {
+    return <SView col="xs-12" row>
+        <SView style={{ width: 18, height: 18, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} > {data.key ? (<SImage src={`${SSocket.api.root}usuario/${data.key}`} style={{ resizeMode: "cover" }} />) : null} </SView>
+        <SView width={5} />
+        <SText flex numberOfLines={1} style={{ fontSize: 14 }}> {data.nombre} </SText>
+    </SView>
+}
+
+// label: <> <SView col="xs-12" row>
+//     <SView style={{ width: 18, height: 18, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} > {c.key ? (<SImage src={`${SSocket.api.root}usuario/${c.key}`} style={{ resizeMode: "cover" }} />) : null} </SView>
+//     <SView width={5} />
+//     <SText flex numberOfLines={1} style={{ fontSize: 14 }}> {c.nombre} </SText>
+// </SView> </>,
+
 const ItemComp = (props: any) => {
     const cantidadRef = React.useRef<any>(null);
     const precioRef = React.useRef<any>(null);
@@ -201,10 +216,34 @@ const ItemComp = (props: any) => {
                             placeholder="Selecciona un contacto"
                             options={item.modelo.contactos.map((c) => ({
                                 label: c.nombre,
+
+                                // label: <> <SView col="xs-12" row>
+                                //     <SView style={{ width: 18, height: 18, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} > {c.key ? (<SImage src={`${SSocket.api.root}usuario/${c.key}`} style={{ resizeMode: "cover" }} />) : null} </SView>
+                                //     <SView width={5} />
+                                //     <SText flex numberOfLines={1} style={{ fontSize: 14 }}> {c.nombre} </SText>
+                                // </SView> </>,
+
                                 customComponent: (e) => {
+                                    // return <SView col="xs-12" row>
+                                    //     <SView
+                                    //         style={{
+                                    //             width: 24,
+                                    //             height: 24,
+                                    //             borderRadius: 100,
+                                    //             overflow: "hidden",
+                                    //             backgroundColor: STheme.color.card + "66",
+                                    //         }}
+                                    //     >
+                                    //         {e.data.key ? (
+                                    //             <SImage src={`${SSocket.api.root}usuario/${e.data.key}`} style={{ resizeMode: "cover" }} />) : null} </SView>
+
+                                    //     <SView width={5} />
+                                    //     <SText flex numberOfLines={1} style={{ fontSize: 10 }}> {e.data.nombre} </SText>
+                                    //     <SText flex numberOfLines={1} style={{ fontSize: 10 }}>Comisión ({e.data.comision})%</SText>
+                                    // </SView>
                                     return <SText style={{ fontSize: 11, color: STheme.color.lightGray, }} >Comisión ({e.data.comision})%</SText>
                                 },
-                                value: c.key,
+                                value: c.key_modelo_cliente,
                                 data: c,
                             }))}
 
