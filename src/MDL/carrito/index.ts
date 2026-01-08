@@ -14,6 +14,7 @@ export type CarritoItemVenta = {
   modelo: { descripcion: string, key: string, estado?: number },
   cantidad: number,
   precio: number,
+  key_modelo_cliente: string,
 
 }
 

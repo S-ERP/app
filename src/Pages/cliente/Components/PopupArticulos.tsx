@@ -7,6 +7,7 @@ import MDL from '../../../MDL';
 import Btn from './Btn';
 import InputFoto from '../../../Components/InputFoto';
 import SIconApp from '../../../Assets/SIconApp';
+import InputSelector from '../../../Components/Selectores/InputSelector';
 type Props = {
     key_cliente: string,
     editObject?: any,
@@ -23,9 +24,21 @@ export default class PopupArticulos extends Component<Props> {
         articulo: [],
         descripcion_modelo: "",
         descripcion_marca: "",
+        cuentas: [],
     }
     componentDidMount(): void {
 
+        MDL.contabilidad.getCuentas().then((resp: any) => {
+            this.setState({
+                cuentas: Object.values(resp).sort((a: any, b: any) => {
+                    if (a.codigo > b.codigo) return 1;
+                    if (a.codigo < b.codigo) return -1;
+                    return 0;
+                })
+            });
+        }).catch((e: any) => {
+            console.error("Error al cargar cuentas contables", e);
+        })
         MDL.inventario.getAllModeloStock().then((resp: any) => {
 
             this.state.articulo = resp;
@@ -71,7 +84,7 @@ export default class PopupArticulos extends Component<Props> {
     render() {
         console.log("ARTICULOS ", this.state.articulo);
         return <SView col={"xs-12"} center padding={16}>
-            <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Artículoaaaaaaaaaa"}</SText>
+            <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Artículo"}</SText>
             <ScrollView>
                 <SForm ref={(ref: any) => this.form = ref} row style={{ justifyContent: "space-between" }}
                     inputs={{
@@ -173,6 +186,24 @@ export default class PopupArticulos extends Component<Props> {
                             //     if (value < 0 || value > 100) return "Debe estar entre 0 y 100";
                             //     return true;
                             // }
+                        },
+                        "key_cuenta_contable": {
+                            label: "Cuenta Contable",
+                            type: "custom",
+                            customInputClass: InputSelector,
+                            style: {
+                                width: "100%",
+                            },
+                            options: this.state.cuentas.map((cuenta: any) => {
+                                return {
+                                    label: `${cuenta.codigo} - ${cuenta.descripcion}`,
+                                    value: cuenta.key,
+                                    customComponent: (e: any) => {
+                                        return <SText fontSize={12} color={STheme.color.lightGray}>{e.data.tipo}</SText>
+                                    },
+                                    data: cuenta
+                                }
+                            })
                         }
 
                     }}

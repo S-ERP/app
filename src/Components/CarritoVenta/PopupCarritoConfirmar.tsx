@@ -102,7 +102,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     "descuento": 0,
                     "descripcion": ci.modelo.descripcion,
                     "key_modelo": ci.modelo.key,
-                    "moneda": key_moneda
+                    "moneda": key_moneda,
+                    // @
+                    "key_modelo_cliente": ci?.key_modelo_cliente
                 }
             })
             const data = {
