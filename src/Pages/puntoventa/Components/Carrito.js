@@ -91,16 +91,89 @@ export default class Carrito extends Component {
         this.forceUpdate();
     }
 
-    addProductoServicio = (producto) => {
-        this.getCarritoItemCount();
-        this.forceUpdate();
-        console.log("🎪🎪🎪 addProducto2", producto);
-        MDL.carrito.agregarItemAlCarritoDeVentas({
-            modelo: producto,
-            cantidad: 1,
-            precio: producto.precio_venta
-        })
-    }
+    // addProductoServicio = (producto) => {
+    //     try {
+
+    //         const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
+    //         const clientes = await MDL.crm.cliente.getAll();
+    //         const contactos = contactosKeys.map((item) => {
+    //             const keyCliente = item.key_cliente;
+    //             const comision = item.comision ?? 0;
+
+    //             const cliente = clientes.find(c => c.key === keyCliente);
+
+    //             return cliente
+    //                 ? {
+    //                     key: cliente.key,
+    //                     nombre: cliente.nombres || cliente.razon_social || keyCliente,
+    //                     comision,
+    //                     cliente
+    //                 }
+    //                 : {
+    //                     key: keyCliente,
+    //                     nombre: keyCliente,
+    //                     comision,
+    //                     cliente: null
+    //                 };
+    //         });
+    //         producto = {
+    //             ...producto,
+    //             contactos
+    //         };
+
+    //         this.getCarritoItemCount();
+    //         // this.forceUpdate();
+    //         console.log("🎪🎪🎪 addProducto2", producto);
+    //         MDL.carrito.agregarItemAlCarritoDeVentas({
+    //             modelo: producto,
+    //             cantidad: 1,
+    //             precio: producto.precio_venta
+    //         })
+
+    //     } catch (err) {
+    //         console.error("❌ Error al obtener contactos:", err);
+    //     }
+
+
+
+
+
+    // }
+
+    addProductoServicio = async (producto) => {
+        try {
+            const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
+            const clientes = await MDL.crm.cliente.getAll();
+            const contactos = contactosKeys.map((item) => {
+                const keyCliente = item.key_cliente;
+                const comision = item.comision ?? 0;
+                const cliente = clientes.find(c => c.key === keyCliente);
+                return cliente ? { key: cliente.key, nombre: cliente.nombres || cliente.razon_social || keyCliente, comision, cliente } : { key: keyCliente, nombre: keyCliente, comision, cliente: null };
+            });
+            const contactoSeleccionado =
+                contactos.find(c => (c.comision || 0) > 0) || contactos[0] || null;
+            const productoFinal = {
+                ...producto,
+                contactos,
+                contactoSeleccionado: contactoSeleccionado?.key || null,
+                contacto: contactoSeleccionado || null,
+                comision: contactoSeleccionado?.comision || 0
+            };
+
+            this.getCarritoItemCount();
+            this.forceUpdate(); // opcional, si tu UI depende de esto
+
+            console.log("🎪🎪🎪 addProductoServicio", productoFinal);
+            MDL.carrito.agregarItemAlCarritoDeVentas({
+                modelo: productoFinal,
+                cantidad: 1,
+                precio: producto.precio_venta
+            });
+
+        } catch (err) {
+            console.error("❌ Error al obtener contactos:", err);
+        }
+    };
 
     removeProductoServicio = (producto) => {
         MDL.carrito.removerItemAlCarritoDeVentas(producto);
@@ -110,43 +183,16 @@ export default class Carrito extends Component {
         try {
             const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
             const clientes = await MDL.crm.cliente.getAll();
-
             const contactos = contactosKeys.map((item) => {
                 const keyCliente = item.key_cliente;
                 const comision = item.comision ?? 0;
-
                 const cliente = clientes.find(c => c.key === keyCliente);
-
-                return cliente
-                    ? {
-                        key: cliente.key,
-                        nombre: cliente.nombres || cliente.razon_social || keyCliente,
-                        comision,
-                        cliente
-                    }
-                    : {
-                        key: keyCliente,
-                        nombre: keyCliente,
-                        comision,
-                        cliente: null
-                    };
+                return cliente ? { key: cliente.key, nombre: cliente.nombres || cliente.razon_social || keyCliente, comision, cliente } : { key: keyCliente, nombre: keyCliente, comision, cliente: null };
             });
-
-
-            // const contactos = contactosKeys.map(key => {
-            //     const cliente = clientes.find(c => c.key === key);
-            //     return cliente
-            //         ? { key: cliente.key, nombre: cliente.nombres || cliente.razon_social || key, cliente }
-            //         : { key, nombre: key, cliente: null };
-            // });
             producto = {
                 ...producto,
                 contactos
-                // contactos: [{ key: "e68d...", nombre: "Juan" }, { key: "268b...", nombre: "María" }]
             };
-
-            console.clear();
-            console.log("%c" + JSON.stringify(producto, null, 2), "color: #d35b0bff; font-weight: bold;");
             const index = this.carrito.findIndex((p) => p.key === producto.key);
             if (index >= 0) {
                 const item = this.carrito[index];
