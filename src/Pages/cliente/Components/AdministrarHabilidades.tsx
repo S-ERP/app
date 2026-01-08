@@ -90,8 +90,10 @@ export default class AdminsitrarHabilidades extends React.Component<AdminsitrarH
         // Aquí puedes agregar la lógica para manejar las habilidades seleccionadas
     }
     render() {
-        return <SView col={"xs-12"} style={{
+        return <SView col={"xs-12"}  style={{
             backgroundColor: STheme.color.background,
+            width: "100%",
+            maxHeight: "100%",
             borderRadius: 8,
             padding: 16,
             maxWidth: 500,
@@ -194,7 +196,7 @@ const Item = (props) => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
         }
-        
+
         if (props.onChange) {
             props.onChange(selected);
         }

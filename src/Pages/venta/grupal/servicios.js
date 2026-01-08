@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SHr, SIcon, SImage, SInput, SLoad, SNavigation, SNotification, SPage, SText, STheme, SThread, SView } from "servisofts-component";
+import { SBuscador, SHr, SIcon, SImage, SInput, SLoad, SNavigation, SNotification, SPage, SText, STheme, SThread, SView } from "servisofts-component";
 import MDL from "../../../MDL";
 import SIconApp from "../../../Assets/SIconApp";
 import { Dimensions, FlatList } from "react-native";
@@ -107,24 +107,35 @@ export default class servicios extends Component {
             <SPage title={"Servicios"}
             // footer={this.getBtnFooter()} 
             >
-                <SView col={"xs-12"} padding={15} >
-                    <SView col="xs-12" center  >
-                        <FlatList style={{ width: "100%" }}
-                            data={this.state.articulosCliente}
-                            renderItem={(obj) => {
-                                return <Item item={obj.item}
-                                    ref={(ref) => (this.modeloRef = ref)}
-                                    check={this.state.dataSelect.some(d => d.key === obj.item.key)}
-                                    onSelect={this.onSelectItem}
-                                    onPress={() => {
+                <SView col={"xs-12"} style={{ paddingTop: 15 }} >
+                    <Container>
+                        <SView col="xs-12" center  >
+                            <SBuscador
+                                height={28}
+                                data={this.state.cards ?? []}
+                                onChange={e => {
+                                    this.setState({ busqueda: e })
+                                }}
+                            />
+                            <SHr height={10} />
+                            <FlatList style={{ width: "100%" }}
+                                data={SBuscador.filter({ data: this.state.articulosCliente ?? [], txt: this.state.busqueda })}
+                                // data={this.state.articulosCliente}
+                                renderItem={(obj) => {
+                                    return <Item item={obj.item}
+                                        ref={(ref) => (this.modeloRef = ref)}
+                                        check={this.state.dataSelect.some(d => d.key === obj.item.key)}
+                                        onSelect={this.onSelectItem}
+                                        onPress={() => {
 
-                                        console.log("SERVICIO CARRITO", obj.item.modelo);
-                                        // this.carro.addProductoServicio(obj.item.modelo);
-                                        this.forceUpdate();
-                                    }} />
-                            }}
-                        />
-                    </SView>
+                                            console.log("SERVICIO CARRITO", obj.item.modelo);
+                                            // this.carro.addProductoServicio(obj.item.modelo);
+                                            this.forceUpdate();
+                                        }} />
+                                }}
+                            />
+                        </SView>
+                    </Container>
                 </SView>
             </SPage>
         );
@@ -170,13 +181,13 @@ const Item = ({ item, check, onSelect, onPress }) => {
                 <SView width={8} />
                 <SText flex fontSize={16} bold>{item?.modelo?.descripcion}</SText>
             </SView>
-            <SView col={"xs-3"} row height>
+            <SView col={"xs-3"} row height center>
                 <SView col={"xs-8"} center height backgroundColor={STheme.color.card} padding={5}>
                     <SText fontSize={16} color={STheme.color.white} >Bs. {(item?.modelo?.precio_venta ?? 0).toFixed(2)}</SText>
                 </SView>
                 <SView col={"xs-4"} center height >
                     {/* <SHr height={2}/> */}
-                    <SView col={"xs-12"} center height={42} style={{
+                    <SView col={"xs-12"} center height={40} style={{
                         borderWidth: 2,
                         borderLeftWidth: 0,
                         borderColor: STheme.color.card,
@@ -187,8 +198,8 @@ const Item = ({ item, check, onSelect, onPress }) => {
                         {/* {this.state.check ? <SIcon name={"chek"} height={20} /> : null} */}
                         <SInput
                             col={""}
-                            width={30}
-                            height={30}
+                            width={20}
+                            height={20}
                             type={"checkBox"}
                             // defaultValue={!!check}
                             value={!!check}

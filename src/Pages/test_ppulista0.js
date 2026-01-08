@@ -219,7 +219,9 @@ const SelectorCliente = (props) => {
   }}>
     <InputSelector
       options={state.clientes.map(cliente => ({
-        label: cliente.nombres ?? "-", value: cliente.key, customComponent: (e) => {
+        label: cliente.nombres ?? "-", value: cliente.key,
+        
+        customComponent: (e) => {
           return <>
             <SText fontSize={12} color={STheme.color.card}>{cliente.correo}</SText>
             <SText fontSize={12} color={STheme.color.card}>{cliente.telefono}</SText>

@@ -48,11 +48,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             <SHr />
             <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
             <SView style={{
-                padding: 4,
-                width: 33, height: 33,
-                position: "absolute",
-                right: 0,
-                top: 0,
+                padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0,
             }} onPress={() => {
                 SPopup.close("PopupCarrito")
             }}>
@@ -110,6 +106,21 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         </SView>
     }
 }
+
+const clienteFeliz = (data: any) => {
+    return <SView col="xs-12" row>
+        <SView style={{ width: 18, height: 18, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} > {data.key ? (<SImage src={`${SSocket.api.root}usuario/${data.key}`} style={{ resizeMode: "cover" }} />) : null} </SView>
+        <SView width={5} />
+        <SText flex numberOfLines={1} style={{ fontSize: 14 }}> {data.nombre} </SText>
+    </SView>
+}
+
+// label: <> <SView col="xs-12" row>
+//     <SView style={{ width: 18, height: 18, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} > {c.key ? (<SImage src={`${SSocket.api.root}usuario/${c.key}`} style={{ resizeMode: "cover" }} />) : null} </SView>
+//     <SView width={5} />
+//     <SText flex numberOfLines={1} style={{ fontSize: 14 }}> {c.nombre} </SText>
+// </SView> </>,
+
 const ItemComp = (props: any) => {
     const cantidadRef = React.useRef<any>(null);
     const precioRef = React.useRef<any>(null);
@@ -124,24 +135,18 @@ const ItemComp = (props: any) => {
             precioRef.current.setValue(item.precio);
         }
     }
+    // console.clear();
+    console.log("%c" + JSON.stringify(item), `color: #cf0cbfff; font-weight: bold;`);
     return <SView padding={8}>
         <SView row center>
             <SView center style={{
-                width: 20,
-                height: 20,
-                padding: 2,
+                width: 20, height: 20, padding: 2,
             }} onPress={() => {
                 MDL.carrito.removerItemAlCarritoDeVentas(item);
             }}>
                 <SIconApp name="Close" fill={STheme.color.warning} />
             </SView>
-            <SView center style={{
-                width: 35,
-                height: 35,
-                borderRadius: 4, overflow: "hidden",
-                borderColor: STheme.color.card,
-                borderWidth: 1,
-            }}>
+            <SView center style={{ width: 35, height: 35, borderRadius: 4, overflow: "hidden", borderColor: STheme.color.card, borderWidth: 1, }}>
                 <SImage src={SSocket.api.inventario + "modelo/" + item.modelo.key} style={{
                     resizeMode: "cover"
                 }} />
@@ -176,13 +181,7 @@ const ItemComp = (props: any) => {
                     </SView>
                     <SView width={4} />
                     <SView width={60}>
-                        <SInput ref={cantidadRef} style={{
-                            height: 16,
-                            fontSize: 12,
-                            padding: 0,
-                            paddingRight: 4,
-                            textAlign: "right",
-                        }}
+                        <SInput ref={cantidadRef} style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right", }}
                             type="money2"
                             icon={<SText width={15} fontSize={10} color={STheme.color.lightGray}>{"x"}</SText>}
                             defaultValue={item.cantidad}
@@ -217,18 +216,42 @@ const ItemComp = (props: any) => {
                             placeholder="Selecciona un contacto"
                             options={item.modelo.contactos.map((c) => ({
                                 label: c.nombre,
+
+                                // label: <> <SView col="xs-12" row>
+                                //     <SView style={{ width: 18, height: 18, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} > {c.key ? (<SImage src={`${SSocket.api.root}usuario/${c.key}`} style={{ resizeMode: "cover" }} />) : null} </SView>
+                                //     <SView width={5} />
+                                //     <SText flex numberOfLines={1} style={{ fontSize: 14 }}> {c.nombre} </SText>
+                                // </SView> </>,
+
                                 customComponent: (e) => {
-                                    // aqui debo validar sin no hay e.data.comision esta null o esta en 0
+                                    // return <SView col="xs-12" row>
+                                    //     <SView
+                                    //         style={{
+                                    //             width: 24,
+                                    //             height: 24,
+                                    //             borderRadius: 100,
+                                    //             overflow: "hidden",
+                                    //             backgroundColor: STheme.color.card + "66",
+                                    //         }}
+                                    //     >
+                                    //         {e.data.key ? (
+                                    //             <SImage src={`${SSocket.api.root}usuario/${e.data.key}`} style={{ resizeMode: "cover" }} />) : null} </SView>
+
+                                    //     <SView width={5} />
+                                    //     <SText flex numberOfLines={1} style={{ fontSize: 10 }}> {e.data.nombre} </SText>
+                                    //     <SText flex numberOfLines={1} style={{ fontSize: 10 }}>Comisión ({e.data.comision})%</SText>
+                                    // </SView>
                                     return <SText style={{ fontSize: 11, color: STheme.color.lightGray, }} >Comisión ({e.data.comision})%</SText>
                                 },
-                                value: c.key,
+                                value: c.key_modelo_cliente,
                                 data: c,
                             }))}
 
                             // options={item.modelo.contactos.map((c) => ({ label: c.nombre +" Comision "+c.comision+"%", value: c.key, }))}
                             defaultValue={item.contactoSeleccionado || ""}
-                            onChange={(selected) => {
-                                item.contactoSeleccionado = selected;
+                            onSelect={(selected) => {
+                                console.log("Se selcciono el cliente", selected)
+                                item.key_modelo_cliente = selected.value;
                             }}
                         />
                     </SView>

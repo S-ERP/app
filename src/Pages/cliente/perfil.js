@@ -120,25 +120,25 @@ export default class Perfil extends Component {
         return (
             <SPage title="Perfil del Cliente" >
                 <SView col={"xs-12"} row padding={10}>
-                    <SView col={"xs-3"} padding={5}>
+                    <SView col={"xs-12 md-6 lg-3"} padding={5}>
                         <Resumen cliente={this.data} />
                     </SView>
-                    <SView col={"xs-4.5"} padding={5} >
+                    <SView col={"xs-12 md-6 lg-4.5"} padding={5} >
                         <InfoGeneral cliente={this.data} onReload={this.loadData} />
                     </SView>
-                    <SView col={"xs-4.5"} padding={5}>
+                    <SView col={"xs-12 md-6 lg-4.5"} padding={5}>
                         <Calendario cliente={this.data} />
                     </SView>
-                    <SView col={"xs-4"} padding={5} height={300}>
+                    <SView col={"xs-12 md-6 lg-4"} padding={5} height={300}>
                         <Habilidades cliente={this.data} onReload={this.loadData} />
                     </SView>
-                    <SView col={"xs-4"} padding={5}>
+                    <SView col={"xs-12 md-6 lg-4"} padding={5}>
                         <Horarios cliente={this.data} onReload={this.loadData} />
                     </SView>
-                    <SView col={"xs-4"} padding={5}>
+                    <SView col={"xs-12 md-6 lg-4"} padding={5}>
                         <CompraVentas cliente={this.data} />
                     </SView>
-                    <SView col={"xs-4"} padding={5}>
+                    <SView col={"xs-12 md-12 lg-5"} padding={5}>
                         <Articulos cliente={this.data} onReload={this.loadData} />
                     </SView>
                 </SView>
@@ -277,7 +277,7 @@ const Habilidades = ({ cliente, onReload }) => {
             {cliente?.habilidades?.length === 0 && (<SText fontSize={16} color={STheme.color.lightGray}>No se han asignado habilidades.</SText>)}
 
             {cliente?.habilidades?.map((hab, index) => {
-                return <SView col={"xs-6"} key={index} flex
+                return <SView col={"xs-12"} key={index} flex
                     style={{
                         padding: 5,
                         borderWidth: 1,
@@ -541,14 +541,23 @@ const Articulos = ({ cliente, onReload }) => {
                         }} />
                         <SView width={5} />
                         <SView flex >
-                            <SText style={{ textTransform: "uppercase" }}>{articulo?.modelo?.descripcion}</SText>
-                            <SText >{SMath.formatMoney(articulo?.modelo?.precio_venta ?? 0)}</SText>
+                            <SText >{articulo?.modelo?.descripcion}</SText>
+                            <SHr h={4}/>
+                            <SView col={"xs-12"} row>
+                                <SView flex>
+                                    <SText >{SMath.formatMoney(articulo?.modelo?.precio_venta ?? 0)}</SText>
+                                </SView>
+                                <SView width={100} style={{ alignItems: "flex-end" }}>
+                                    <SText style={{ fontSize: 12, color:STheme.color.lightGray }}>Comisión {articulo?.comision ?? 0}%</SText>
+                                </SView>
+                            </SView>
+                            <SView col={"xs-12"} row>
+                                <SText fontSize={8} color={STheme.color.lightGray}>{articulo.key_cuenta_contable}</SText>                              
+                            </SView>
+
                         </SView>
 
-                        <SView width={100} style={{ alignItems: "flex-end" }}>
-                            <SText style={{ textTransform: "uppercase" }}>Comisión (%)</SText>
-                            <SText style={{ textTransform: "uppercase" }}>{articulo?.comision}</SText>
-                        </SView>
+
 
                     </SView>
                 })}
