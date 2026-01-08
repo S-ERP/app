@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SHr, SIcon, SImage, SInput, SLoad, SNavigation, SNotification, SPage, SText, STheme, SThread, SView } from "servisofts-component";
+import { SBuscador, SHr, SIcon, SImage, SInput, SLoad, SNavigation, SNotification, SPage, SText, STheme, SThread, SView } from "servisofts-component";
 import MDL from "../../../MDL";
 import SIconApp from "../../../Assets/SIconApp";
 import { Dimensions, FlatList } from "react-native";
@@ -8,6 +8,7 @@ import Model from "../../../Model";
 // import States from "./Components/States";
 import { Parent } from "..";
 import habilidad from '../../habilidad';
+import { Container } from '../../../Components';
 
 
 export default class medicos extends Component {
@@ -24,6 +25,7 @@ export default class medicos extends Component {
                 total_a_pagar: 0,
                 credito_fiscal: 0,
             },
+            search: "",
 
         }
         this.pk = SNavigation.getParam("pk");
@@ -71,7 +73,7 @@ export default class medicos extends Component {
         this.setState({ medicosConHabilidad: medicosConHabilidad });
         console.log("medicosConHabilidad", medicosConHabilidad);
 
-        
+
         this.forceUpdate()
 
     }
@@ -83,20 +85,33 @@ export default class medicos extends Component {
 
         return (
             <SPage title={"Médicos"}  >
-                <SView col={"xs-12"} padding={15} >
-                    <SView col="xs-12" center  >
-                        <FlatList style={{ width: "100%" }}
-                            data={this.state.medicosConHabilidad}
-                            renderItem={(obj) => {
-                                return <Item item={obj.item} selectAll={this.state.selectAll} onChange={(e) => {
-                                    // console.log("onChange", e);
-                                    // obj.item._selected = e;
-                                    SNavigation.navigate("/venta/grupal/servicios", { pk: obj.item.key });
-                                    this.forceUpdate();
-                                }} />
-                            }}
-                        />
-                    </SView>
+                <SView col={"xs-12"} style={{ paddingTop: 15 }} >
+                    <Container>
+                        <SView col="xs-12" center  >
+                            <SBuscador
+                                height={28}
+                                data={this.state.cards ?? []}
+                                onChange={e => {
+                                    this.setState({ busqueda: e })
+                                }}
+                            />
+                            <SHr height={10} />
+                            <FlatList style={{ width: "100%" }}
+                                data={SBuscador.filter({ data: this.state.medicosConHabilidad ?? [], txt: this.state.busqueda })}
+
+                                // data={this.state.medicosConHabilidad}
+                                renderItem={(obj) => {
+                                    return <Item item={obj.item} selectAll={this.state.selectAll} onChange={(e) => {
+                                        // console.log("onChange", e);
+                                        // obj.item._selected = e;
+                                        SNavigation.navigate("/venta/grupal/servicios", { pk: obj.item.key });
+                                        this.forceUpdate();
+                                    }} />
+                                }}
+                            />
+                        </SView>
+                    </Container>
+
                 </SView>
             </SPage>
         );

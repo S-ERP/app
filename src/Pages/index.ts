@@ -100,6 +100,8 @@ import tag from "./tag";
 import test3 from "./test3";
 import tabla from "./habilidad";
 import Suscriptores from "./cliente/suscriptores";
+import suscriptores from "./cliente/suscriptores";
+import Suscriptores100 from "./cliente/Suscriptores100";
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -181,7 +183,7 @@ export default SPage.combinePages("/", {
   icons,
   ...crm,
   "pdf/factura": factura,
-  "suscriptores": Suscriptores,
+  "suscriptores": Suscriptores100,
   plantilla,
   Turnos,
   ...server,

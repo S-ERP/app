@@ -91,64 +91,16 @@ export default class Carrito extends Component {
         this.forceUpdate();
     }
 
-    // addProductoServicio = (producto) => {
-    //     try {
-
-    //         const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
-    //         const clientes = await MDL.crm.cliente.getAll();
-    //         const contactos = contactosKeys.map((item) => {
-    //             const keyCliente = item.key_cliente;
-    //             const comision = item.comision ?? 0;
-
-    //             const cliente = clientes.find(c => c.key === keyCliente);
-
-    //             return cliente
-    //                 ? {
-    //                     key: cliente.key,
-    //                     nombre: cliente.nombres || cliente.razon_social || keyCliente,
-    //                     comision,
-    //                     cliente
-    //                 }
-    //                 : {
-    //                     key: keyCliente,
-    //                     nombre: keyCliente,
-    //                     comision,
-    //                     cliente: null
-    //                 };
-    //         });
-    //         producto = {
-    //             ...producto,
-    //             contactos
-    //         };
-
-    //         this.getCarritoItemCount();
-    //         // this.forceUpdate();
-    //         console.log("🎪🎪🎪 addProducto2", producto);
-    //         MDL.carrito.agregarItemAlCarritoDeVentas({
-    //             modelo: producto,
-    //             cantidad: 1,
-    //             precio: producto.precio_venta
-    //         })
-
-    //     } catch (err) {
-    //         console.error("❌ Error al obtener contactos:", err);
-    //     }
-
-
-
-
-
-    // }
-
     addProductoServicio = async (producto) => {
         try {
             const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
             const clientes = await MDL.crm.cliente.getAll();
             const contactos = contactosKeys.map((item) => {
                 const keyCliente = item.key_cliente;
+                const key_modelo_cliente = item.key_modelo_cliente; // <-- clave modelo-cliente
                 const comision = item.comision ?? 0;
                 const cliente = clientes.find(c => c.key === keyCliente);
-                return cliente ? { key: cliente.key, nombre: cliente.nombres || cliente.razon_social || keyCliente, comision, cliente } : { key: keyCliente, nombre: keyCliente, comision, cliente: null };
+                return cliente ? { key: cliente.key, nombre: cliente.nombres || cliente.razon_social || keyCliente, comision, cliente, key_modelo_cliente } : { key: keyCliente, nombre: keyCliente, comision, cliente: null, key_modelo_cliente };
             });
             const contactoSeleccionado =
                 contactos.find(c => (c.comision || 0) > 0) || contactos[0] || null;
@@ -181,18 +133,43 @@ export default class Carrito extends Component {
 
     addProducto = async (producto) => {
         try {
+            // Obtener contactos relacionados con el modelo del producto
             const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
             const clientes = await MDL.crm.cliente.getAll();
+
+            // Mapear contactos con información del cliente
             const contactos = contactosKeys.map((item) => {
                 const keyCliente = item.key_cliente;
+                const key_modelo_cliente = item.key_modelo_cliente; // <-- clave modelo-cliente
                 const comision = item.comision ?? 0;
                 const cliente = clientes.find(c => c.key === keyCliente);
-                return cliente ? { key: cliente.key, nombre: cliente.nombres || cliente.razon_social || keyCliente, comision, cliente } : { key: keyCliente, nombre: keyCliente, comision, cliente: null };
+
+                return cliente
+                    ? {
+                        key: cliente.key,
+                        nombre: cliente.nombres || cliente.razon_social || keyCliente,
+                        comision,
+                        cliente,
+                        key_modelo_cliente // <-- agregamos la propiedad aquí
+                    }
+                    : {
+                        key: keyCliente,
+                        nombre: keyCliente,
+                        comision,
+                        cliente: null,
+                        key_modelo_cliente
+                    };
             });
+
+            // Agregar contactos al producto
             producto = {
                 ...producto,
                 contactos
             };
+
+            console.log("%c" + JSON.stringify(producto, null, 2), "color: #e1f100ff; font-weight: bold;");
+
+            // Verificar si el producto ya está en el carrito
             const index = this.carrito.findIndex((p) => p.key === producto.key);
             if (index >= 0) {
                 const item = this.carrito[index];
@@ -212,7 +189,6 @@ export default class Carrito extends Component {
                     item.cantidad += 1;
                 }
             } else {
-
                 if (this.props.conStock && (!producto.stock || producto.stock <= 0)) {
                     SNotification.send({
                         title: "CARRITO Sin stock",
@@ -231,19 +207,22 @@ export default class Carrito extends Component {
                         : producto.precio_venta),
                     monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
                 });
-
             }
+
             this.getCarritoItemCount();
-            // this.forceUpdate();
+
+            // Agregar producto al carrito en el modelo
             MDL.carrito.agregarItemAlCarritoDeVentas({
                 modelo: producto,
                 cantidad: 1,
                 precio: producto.precio_venta
             });
+
         } catch (err) {
             console.error("❌ Error al obtener contactos:", err);
         }
     };
+
     aumentarCantidad = (producto) => {
         const index = this.carrito.findIndex((p) => p.key === producto.key);
         if (index < 0) return;
