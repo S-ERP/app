@@ -541,14 +541,23 @@ const Articulos = ({ cliente, onReload }) => {
                         }} />
                         <SView width={5} />
                         <SView flex >
-                            <SText style={{ textTransform: "uppercase" }}>{articulo?.modelo?.descripcion}</SText>
-                            <SText >{SMath.formatMoney(articulo?.modelo?.precio_venta ?? 0)}</SText>
+                            <SText >{articulo?.modelo?.descripcion}</SText>
+                            <SHr h={4}/>
+                            <SView col={"xs-12"} row>
+                                <SView flex>
+                                    <SText >{SMath.formatMoney(articulo?.modelo?.precio_venta ?? 0)}</SText>
+                                </SView>
+                                <SView width={100} style={{ alignItems: "flex-end" }}>
+                                    <SText style={{ fontSize: 12, color:STheme.color.lightGray }}>Comisión {articulo?.comision ?? 0}%</SText>
+                                </SView>
+                            </SView>
+                            <SView col={"xs-12"} row>
+                                <SText fontSize={8} color={STheme.color.lightGray}>{articulo.key_cuenta_contable}</SText>                              
+                            </SView>
+
                         </SView>
 
-                        <SView width={100} style={{ alignItems: "flex-end" }}>
-                            <SText style={{ textTransform: "uppercase" }}>Comisión (%)</SText>
-                            <SText style={{ textTransform: "uppercase" }}>{articulo?.comision}</SText>
-                        </SView>
+
 
                     </SView>
                 })}

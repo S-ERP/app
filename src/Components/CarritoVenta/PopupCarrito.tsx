@@ -210,8 +210,9 @@ const ItemComp = (props: any) => {
 
                             // options={item.modelo.contactos.map((c) => ({ label: c.nombre +" Comision "+c.comision+"%", value: c.key, }))}
                             defaultValue={item.contactoSeleccionado || ""}
-                            onChange={(selected) => {
-                                item.contactoSeleccionado = selected;
+                            onSelect={(selected) => {
+                                console.log("Se selcciono el cliente", selected)
+                                item.key_modelo_cliente = selected.value;
                             }}
                         />
                     </SView>
