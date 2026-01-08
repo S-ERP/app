@@ -22,7 +22,8 @@ export default {
     cellStyle: () => {
         return {
             borderWidth: 0,
-            borderBottomWidth: 1,
+            // borderBottomWidth: 1,
+            // borderColor:
             // borderLeftWidth: 1,
             // padding: 4,
             // justifyContent: "flex-start"
