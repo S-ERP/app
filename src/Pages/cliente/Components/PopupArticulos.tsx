@@ -71,7 +71,7 @@ export default class PopupArticulos extends Component<Props> {
     render() {
         console.log("ARTICULOS ", this.state.articulo);
         return <SView col={"xs-12"} center padding={16}>
-            <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Artículo"}</SText>
+            <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Artículoaaaaaaaaaa"}</SText>
             <ScrollView>
                 <SForm ref={(ref: any) => this.form = ref} row style={{ justifyContent: "space-between" }}
                     inputs={{
@@ -154,6 +154,26 @@ export default class PopupArticulos extends Component<Props> {
                             }
                         },
 
+                        "comision": {
+                            label: "Comisión (%)",
+                            placeholder: "Ej: 10",
+                            type: "number",
+                            col: "xs-12",
+                            isRequired: true,
+                            inputStyle: { paddingStart: 8 },
+                            labelStyle: { top: -10 },
+                            // onChangeText: (value: string) => {
+                            //     const num = Number(value);
+                            //     if (num < 0 || num > 100) return;
+                            //     this.setState({ comision: num });
+                            // },
+                            // validate: (value: any) => {
+                            //     if (value === undefined || value === null) return "La comisión es requerida";
+                            //     if (isNaN(value)) return "Debe ser un número";
+                            //     if (value < 0 || value > 100) return "Debe estar entre 0 y 100";
+                            //     return true;
+                            // }
+                        }
 
                     }}
                     onSubmit={(data: any) => {

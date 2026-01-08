@@ -215,7 +215,17 @@ const ItemComp = (props: any) => {
                             customStyle="erp"
                             label="Contactos:"
                             placeholder="Selecciona un contacto"
-                            options={item.modelo.contactos.map((c) => ({ label: c.nombre, value: c.key, }))}
+                            options={item.modelo.contactos.map((c) => ({
+                                label: c.nombre,
+                                customComponent: (e) => {
+                                    // aqui debo validar sin no hay e.data.comision esta null o esta en 0
+                                    return <SText style={{ fontSize: 11, color: STheme.color.lightGray, }} >Comisión ({e.data.comision})%</SText>
+                                },
+                                value: c.key,
+                                data: c,
+                            }))}
+
+                            // options={item.modelo.contactos.map((c) => ({ label: c.nombre +" Comision "+c.comision+"%", value: c.key, }))}
                             defaultValue={item.contactoSeleccionado || ""}
                             onChange={(selected) => {
                                 item.contactoSeleccionado = selected;

@@ -544,6 +544,12 @@ const Articulos = ({ cliente, onReload }) => {
                             <SText style={{ textTransform: "uppercase" }}>{articulo?.modelo?.descripcion}</SText>
                             <SText >{SMath.formatMoney(articulo?.modelo?.precio_venta ?? 0)}</SText>
                         </SView>
+
+                        <SView width={100} style={{ alignItems: "flex-end" }}>
+                            <SText style={{ textTransform: "uppercase" }}>Comisión (%)</SText>
+                            <SText style={{ textTransform: "uppercase" }}>{articulo?.comision}</SText>
+                        </SView>
+
                     </SView>
                 })}
             </SView>
