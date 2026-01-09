@@ -15,7 +15,7 @@ export default class FiltroStock extends Component {
  render() {
     return (
         <SView col={"xs-12"} height={48} style={{ paddingHorizontal: 4 }}>
-            <SText fontSize={9} color={STheme.color.lightGray} style={{ marginBottom: 3, marginLeft: 2 }} bold > ESTADO DE STOCK </SText>
+            <SText fontSize={9} color={STheme.color.lightGray} style={{ marginBottom: 3, marginLeft: 2 }} bold numberOfLines={1} > ESTADO DE STOCK </SText>
 
             <SView
                 width={"100%"}

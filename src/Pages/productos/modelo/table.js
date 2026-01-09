@@ -76,7 +76,7 @@ export default class table extends Component {
         const displayName = nombre?.trim() || "Etiqueta de ejemplo";
         const backgroundColor = `${color}33`;
         return (
-            <SView height={18} center style={{ backgroundColor, borderRadius: 20, borderWidth: 1, borderColor: color, flexDirection: "row", alignItems: "center", paddingHorizontal: 6, }} >
+            <SView height={18} center style={{ backgroundColor, borderRadius: 4, borderWidth: 1, borderColor: color, flexDirection: "row", alignItems: "center", paddingHorizontal: 6, }} >
                 <SText color={STheme.color.text} fontSize={10} numberOfLines={1}> {displayName} </SText>
             </SView>
         );
@@ -100,7 +100,7 @@ export default class table extends Component {
                     paddingHorizontal: 12,
                 }}
             >
-                <SView col={"xs-12 sm-5 lg-2"} row center style={{ flexWrap: "wrap", gap: 12 }}>
+                <SView col={"xs-12 sm-5 lg-1.6"} row center style={{ flexWrap: "wrap", gap: 12 }}>
                     <FiltroAlmacen onSelect={(almacen) => {
                         this.state.selectedAlmacen = almacen;
                         this.forceUpdate();
@@ -108,7 +108,7 @@ export default class table extends Component {
                     }} />
                 </SView>
                 <SView width={8} height={8} />
-                <SView col={"xs-12 sm-5 lg-2"} row center style={{ flexWrap: "wrap", gap: 12 }}>
+                <SView col={"xs-12 sm-5 lg-1"} row center style={{ flexWrap: "wrap", gap: 12 }}>
                     <FiltroStock onSelect={(item) => {
                         this.setState({ selectedStock: item.key }, () => {
                             this.table.loadData();
@@ -118,11 +118,11 @@ export default class table extends Component {
             </SView>
 
             <SHr height={8} />
-            <SView row style={{ gap: 16, flexWrap: "wrap",paddingHorizontal: 4 }}>
+            {/* <SView row style={{ gap: 16, flexWrap: "wrap", paddingHorizontal: 4 }}>
                 <SText fontSize={13} color={STheme.color.lightGray}> Almacén: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedAlmacen?.nombre || "Todos"} </SText> </SText>
                 <SText fontSize={13} color={STheme.color.lightGray}> Stock: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedStock || "Todos"} </SText> </SText>
             </SView>
-            <SHr height={8} />
+            <SHr height={8} /> */}
 
 
 
@@ -290,30 +290,20 @@ export default class table extends Component {
                 <DinamicTable.Col key={"stock"} label='Stock'
                     dataType='number'
                     width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
+
                 <DinamicTable.Col key={"proveedores"} label='Proveedores'
                     width={120}
                     data={(e) => (e.row.proveedores ?? []).map(p => p?.proveedor?.razon_social)}
                     customComponent={e => <SView row>
                         {(e.row.proveedores ?? []).map(p => {
-                            return <SView style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }}
-                                onPress={() => {
-                                    PopupCrearProveedor.open({
-                                        proveedor: p?.proveedor,
-                                        producto_key: e?.row?.key,
-                                        precio_compra: e?.row?.precio_compra,
-                                        producto_descripcion: e?.row?.descripcion,
-                                        key_empresa: e?.row?.key_empresa,
-                                        onSuccess: async () => {
-                                            this.table.loadData();
-                                        },
-                                    });
-                                }}
-                            >
-                                <SText fontSize={10} numberOfLines={1} >{p?.proveedor?.razon_social}</SText>
+                            return <SView center row>
+                                <SView style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }} center row >
+                                    <SText fontSize={10} numberOfLines={1} style={{ textTransform: "uppercase" }} >{p?.proveedor?.razon_social}</SText>
+                                </SView>
+                                <SView width={5} />
                             </SView>
                         })}
-                    </SView>
-                    }
+                    </SView>}
                 />
                 <DinamicTable.Col key="tags" label="Tags" width={120} data={e => (e.row?.tags ?? []).map(p => p?.tags?.nombre)}
                     customComponent={e => (
@@ -338,11 +328,11 @@ export default class table extends Component {
                     cellStyle={{ alignItems: "center", justifyContent: "flex-start", flexDirection: "row" }}
                     customComponent={e => {
                         return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(e.data) + "44", borderWidth: 1, borderColor: STheme.colorFromText(e.data) }}>
-                            <SText fontSize={10}>{e.data}</SText>
+                            <SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
                         </SView>
                     }}
                 />
-                <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row?.barcode} />
+                <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row.barcode ? "#" + e.row.barcode : null} />
 
 
                 <DinamicTable.Col
@@ -361,6 +351,30 @@ export default class table extends Component {
                                     {/* <SText fontSize={10} numberOfLines={1} >{p?.cliente?.nombres}</SText> */}
                                 </SView>
                                 // return <SView style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }} >
+                                //     <SText fontSize={10} numberOfLines={1} >{p?.cliente?.nombres}</SText>
+                                // </SView>
+                            })}
+                        </SView>
+                    )}
+                />
+
+                <DinamicTable.Col
+                    key={"contactos2_"}
+                    label='Contactos'
+                    width={120}
+                    data={(e) => (e.row.contactos ?? []).map(p => p?.key_cliente)}
+                    customComponent={e => (
+                        <SView row>
+                            {(e.row.contactos ?? []).map((p, index) => {
+
+                                return <SView center row>
+                                    <SView style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }} center row >
+                                        <SText fontSize={10} numberOfLines={1} style={{ textTransform: "uppercase" }} >{p?.cliente?.nombres}</SText>
+                                    </SView>
+                                    <SView width={5} />
+                                </SView>
+
+                                // return <SView center row>
                                 //     <SText fontSize={10} numberOfLines={1} >{p?.cliente?.nombres}</SText>
                                 // </SView>
                             })}
