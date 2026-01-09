@@ -1,6 +1,6 @@
-import React, { Component, createRef } from 'react';
+import React, { Component, createRef, useState } from 'react';
 import { UIManager, findNodeHandle } from 'react-native';
-import { SHr, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SInput, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { FlatList, ScrollView, Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, runOnJS } from 'react-native-reanimated';
 import MDL from '../../MDL';
@@ -10,13 +10,16 @@ import FormRegistroTipoCliente from '../crm/Components/FormRegistroTipoCliente';
 import SIconApp from '../../Assets/SIconApp';
 import FloatMenu from '../../Components/FloatMenu';
 import FloatButtom from '../../Components/FloatButtom';
+import all from '../usuario/all';
 
 // ✅ STAGE CONVERTIDO A CLASE CON CALLBACK PARA PADRE
 class Stage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedStageKey: null
+            selectedStageKey: null,
+            mostrar: false,
+            clientes: [],
         };
     }
 
@@ -127,9 +130,14 @@ class Stage extends Component {
     };
 
     render() {
-        const { stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard, cardRefs, onDeleteStage, onAddCliente, onRemoveCliente, onLoadData } = this.props;
+        const { stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard, cardRefs, onDeleteStage, onAddCliente, onRemoveCliente, onLoadData, allClientes } = this.props;
+        console.log("sddd", this.props)
         const isSelected = this.state.selectedStageKey === stage.key;
-
+        console.log("ALL", allClientes)
+        const clientesFiltrados = allClientes.filter(
+            c => !cards.some(cardItem => cardItem.key === c.key)
+        );
+        // allClientes = clientesFiltrados;
         return (
             <SView
                 style={{
@@ -160,10 +168,30 @@ class Stage extends Component {
                         {stage?.states?.map((state, index) =>
                             <Etiqueta key={index} tipo_leads={state} size={8} style={{ marginRight: 4, marginTop: 4 }} />
                         )}
+                        {!this.state.mostrar ? <SView style={{ alignItems: "flex-end" }} col={"xs-12"} marginTop={8} >
+                            <SView center style={{ width: 100, height: 20, borderRadius: 4, backgroundColor: STheme.color.card }} onPress={(e) => {
+                                this.setState({ mostrar: !this.state.mostrar })
+                            }} row>
+                                <SIconApp name="Muser" width={10} height={10} fill={STheme.color.text} />
+                                <SView width={4} />
+                                <SText fontSize={10}>Agregar contacto</SText>
+                            </SView>
+                        </SView> : <SView style={{ alignItems: "flex-end" }} col={"xs-12"} marginTop={8} >
+                            <SView center style={{ width: 100, height: 20, borderRadius: 4, backgroundColor: STheme.color.card }} onPress={(e) => {
+                                this.setState({ mostrar: !this.state.mostrar })
+                            }} row>
+                                <SIconApp name="Cerrar" width={10} height={10} fill={STheme.color.text} />
+                                <SView width={4} />
+                                <SText fontSize={10}>Cerrar contacto</SText>
+                            </SView>
+                        </SView>}
+                        
+                        <AgregarContacto estado={this.state.mostrar} clientes={clientesFiltrados} stage={stage} onAddCliente={onAddCliente} />
                     </SView>
+
                 </SView>
 
-                <SView width={10} height={4}  ></SView>
+                {/* <SView width={10} height={4}  ></SView> */}
 
                 <FlatList
                     contentContainerStyle={{ padding: 4 }}
@@ -187,6 +215,87 @@ class Stage extends Component {
     }
 }
 
+const AgregarContacto = ({ estado, clientes, stage, onAddCliente }) => {
+    console.log("clientes", clientes)
+    // let proveedor = null;
+    // let verBoton = false;
+    const [verBoton, setVerBoton] = useState(false);
+    const [proveedor, setProveedor] = useState(null);
+    if (estado) {
+        return (
+            <SView row col={"xs-12"} style={{
+                marginTop: 5,
+                padding: 5,
+                borderWidth: 1,
+                borderColor: STheme.color.card,
+                backgroundColor: STheme.color.card,
+                marginBottom: 5,
+                borderRadius: 4,
+            }} >
+                <SInput
+                    // ref={ref => this.inputCliente = ref}
+                    icon={<SText color={STheme.color.lightGray} bold>{"Contacto:"}</SText>}
+                    placeholder={"Escriba el nombre del contacto"}
+                    height={30}
+                    type="select2"
+                    options={clientes.map(c => (c?.nombres || "").trim()).filter(a => !!a)}
+                    onChangeText={(text) => {
+                        const t = (text || "").trim();
+                        // buscar match exacto (case-insensitive)
+                        const encontrado = (clientes || []).find(c =>
+                            ((c?.nombres || "").trim().toLowerCase() === t.toLowerCase())
+                        );
+
+                        if (encontrado) {
+                            // ✅ existe: setea proveedor y limpia "nuevo"
+                            setProveedor(encontrado);
+                            setVerBoton(true);
+                        } else {
+                            // ✅ no existe: habilita +
+                            proveedor = null;
+                        }
+                    }}
+
+                />
+
+          
+                {verBoton && (<SView col={"xs-12"} style={{ alignItems: "flex-end" }}>
+                    <SHr h={8} />
+                    <SView height={20} width={100} center style={{
+                        borderRadius: 4,
+                        backgroundColor: STheme.color.primary,
+                    }} onPress={() => {
+                        if (proveedor) {
+                             MDL.crm.tipoCliente.addToCliente({
+                                key_cliente: proveedor.key,
+                                key_tipo_cliente: stage.key
+                            }).then((response) => {
+                                onAddCliente(stage.key, proveedor.key);
+                                SNotification.send({
+                                    title: "✅ Cliente agregado",
+                                    color: STheme.color.success,
+                                    time: 1500
+                                });
+                            }).catch(err => {
+                                SNotification.send({
+                                    title: "❌ Error",
+                                    body: err,
+                                    color: STheme.color.danger
+                                });
+                            });
+                        }
+                    }}>
+                        <SText fontSize={10} color={STheme.color.text} >Aceptar</SText>
+                    </SView>
+                </SView>)}
+
+            </SView>
+        );
+    } else {
+        return null
+    }
+}
+
 export default class root extends Component {
     stageRefs = {};
     cardRefs = {};
@@ -201,7 +310,8 @@ export default class root extends Component {
             dpto: "all",
             tipo_cliente: [],
             clientes: [],
-            selectedStageKey: null // ✅ ESTADO CENTRALIZADO
+            selectedStageKey: null, // ✅ ESTADO CENTRALIZADO
+            allClientes: [],
         };
 
         // 🚨 ✅ BIND TODO AQUÍ - ESTO SOLUCIONA EL ERROR
@@ -213,6 +323,7 @@ export default class root extends Component {
         this.handleDrop = this.handleDrop.bind(this);
         this.handleDragStart = this.handleDragStart.bind(this);
         this.handleDragMove = this.handleDragMove.bind(this);
+        this.handleAllCliente = this.handleAllCliente.bind(this);
     }
 
     componentDidMount() {
@@ -228,9 +339,10 @@ export default class root extends Component {
     }
 
     async loadData() {
-        const [clientes, tipos] = await Promise.all([
+        const [clientes, tipos, allClientes] = await Promise.all([
             MDL.crm.cliente.getAll(),
-            MDL.crm.tipoCliente.getAll()
+            MDL.crm.tipoCliente.getAll(),
+            MDL.crm.cliente.getAll(),
         ]);
         const habilidad = await MDL.habilidad.getAllWithUsuarios();
         clientes.forEach(cliente => {
@@ -238,9 +350,14 @@ export default class root extends Component {
         });
         this.setState({
             tipo_cliente: tipos,
-            clientes
+            clientes,
+            allClientes
         });
     }
+    handleAllCliente() {
+        return this.state.allClientes;
+    }
+
 
     handleRemoveCliente(keyClienteTipo) {
         if (!keyClienteTipo) return;
@@ -327,6 +444,7 @@ export default class root extends Component {
     }
 
     render() {
+        console.log("CLIENTES: ", this.state.allClientes)
         return (
             <SPage title={'Agenda de contactos'}>
                 <SHr h={12} />
@@ -360,6 +478,7 @@ export default class root extends Component {
                                 onRemoveCliente={this.handleRemoveCliente}
                                 onStageSelect={this.handleStageSelect}
                                 onLoadData={this.loadData} // ✅ PROP NUEVA PARA RECARGAR
+                                allClientes={this.state.allClientes}
                             />
                         </SView>
                     ))}
