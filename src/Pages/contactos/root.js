@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react';
+import React, { Component, createRef, useState } from 'react';
 import { UIManager, findNodeHandle } from 'react-native';
 import { SHr, SInput, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { FlatList, ScrollView, Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -168,7 +168,7 @@ class Stage extends Component {
                         {stage?.states?.map((state, index) =>
                             <Etiqueta key={index} tipo_leads={state} size={8} style={{ marginRight: 4, marginTop: 4 }} />
                         )}
-                        <SView style={{ alignItems: "flex-end" }} col={"xs-12"} marginTop={8} >
+                        {!this.state.mostrar ? <SView style={{ alignItems: "flex-end" }} col={"xs-12"} marginTop={8} >
                             <SView center style={{ width: 100, height: 20, borderRadius: 4, backgroundColor: STheme.color.card }} onPress={(e) => {
                                 this.setState({ mostrar: !this.state.mostrar })
                             }} row>
@@ -176,7 +176,16 @@ class Stage extends Component {
                                 <SView width={4} />
                                 <SText fontSize={10}>Agregar contacto</SText>
                             </SView>
-                        </SView>
+                        </SView> : <SView style={{ alignItems: "flex-end" }} col={"xs-12"} marginTop={8} >
+                            <SView center style={{ width: 100, height: 20, borderRadius: 4, backgroundColor: STheme.color.card }} onPress={(e) => {
+                                this.setState({ mostrar: !this.state.mostrar })
+                            }} row>
+                                <SIconApp name="Cerrar" width={10} height={10} fill={STheme.color.text} />
+                                <SView width={4} />
+                                <SText fontSize={10}>Cerrar contacto</SText>
+                            </SView>
+                        </SView>}
+                        
                         <AgregarContacto estado={this.state.mostrar} clientes={clientesFiltrados} stage={stage} onAddCliente={onAddCliente} />
                     </SView>
 
@@ -208,7 +217,10 @@ class Stage extends Component {
 
 const AgregarContacto = ({ estado, clientes, stage, onAddCliente }) => {
     console.log("clientes", clientes)
-    let proveedor = null;
+    // let proveedor = null;
+    // let verBoton = false;
+    const [verBoton, setVerBoton] = useState(false);
+    const [proveedor, setProveedor] = useState(null);
     if (estado) {
         return (
             <SView row col={"xs-12"} style={{
@@ -229,7 +241,6 @@ const AgregarContacto = ({ estado, clientes, stage, onAddCliente }) => {
                     options={clientes.map(c => (c?.nombres || "").trim()).filter(a => !!a)}
                     onChangeText={(text) => {
                         const t = (text || "").trim();
-
                         // buscar match exacto (case-insensitive)
                         const encontrado = (clientes || []).find(c =>
                             ((c?.nombres || "").trim().toLowerCase() === t.toLowerCase())
@@ -237,17 +248,25 @@ const AgregarContacto = ({ estado, clientes, stage, onAddCliente }) => {
 
                         if (encontrado) {
                             // ✅ existe: setea proveedor y limpia "nuevo"
-                            proveedor = encontrado;
+                            setProveedor(encontrado);
+                            setVerBoton(true);
+                        } else {
+                            // ✅ no existe: habilita +
+                            proveedor = null;
+                        }
+                    }}
 
-                            // this.setState({
-                            //     key_cliente: encontrado.key,
-                            //     cliente_texto: t,
-                            // });
+                />
 
-                            // si estás en factura, setea nit/razon social
-                            // this.inputRazonSocial?.setValue?.(encontrado?.razon_social || encontrado?.nombres || "");
-                            // this.inputNit?.setValue?.(encontrado?.nit || "");
-                            MDL.crm.tipoCliente.addToCliente({
+          
+                {verBoton && (<SView col={"xs-12"} style={{ alignItems: "flex-end" }}>
+                    <SHr h={8} />
+                    <SView height={20} width={100} center style={{
+                        borderRadius: 4,
+                        backgroundColor: STheme.color.primary,
+                    }} onPress={() => {
+                        if (proveedor) {
+                             MDL.crm.tipoCliente.addToCliente({
                                 key_cliente: proveedor.key,
                                 key_tipo_cliente: stage.key
                             }).then((response) => {
@@ -264,18 +283,12 @@ const AgregarContacto = ({ estado, clientes, stage, onAddCliente }) => {
                                     color: STheme.color.danger
                                 });
                             });
-
-                        } else {
-                            // ✅ no existe: habilita +
-                            proveedor = null;
-                            // this.setState({
-                            //     key_cliente: null,
-                            //     cliente_texto: t,
-                            // });
                         }
-                    }}
+                    }}>
+                        <SText fontSize={10} color={STheme.color.text} >Aceptar</SText>
+                    </SView>
+                </SView>)}
 
-                />
             </SView>
         );
     } else {
