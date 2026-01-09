@@ -14,6 +14,8 @@ import PopupModeloCardex from '../Components/PopupModeloCardex';
 import PopupCrearProveedor from './Components/PopupCrearProveedor';
 import PopupTag from '../../tag/Components/PopupTag';
 import PopupAgregarTags from './Components/PopupAgregarTags';
+import FiltroAlmacen from './Components/FiltroAlmacen';
+import FiltroStock from './Components/FiltroStock';
 export default class table extends Component {
     constructor(props) {
         super(props);
@@ -22,15 +24,18 @@ export default class table extends Component {
             allTags: [],
             selectedTags: props.selectedTags || [],
             search: "",
+            selectedAlmacen: null, // <-- aquí guardamos el almacén seleccionado
+            selectedStock: null, // <-- aquí guardamos el almacén seleccionado
         };
     }
     modelos = null;
     async loadData() {
         try {
             const monedas = await MDL.empresa.getMonedas();
-            const modelos = await MDL.inventario.getAllModeloStock();
+            const modelos = await MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "");
             const clientes = await MDL.crm.cliente.getAll();
-            const data_mejorada = modelos.map(e => ({
+
+            let data_mejorada = modelos.map(e => ({
                 ...e,
                 compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
                 venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || {},
@@ -38,7 +43,29 @@ export default class table extends Component {
                     ...contacto,
                     cliente: clientes.find(a => a?.key === contacto.key_cliente) || {},
                 }))
-            }));
+            })
+            );
+
+            // 🧠 Resumen rápido
+            //
+            // Caso                          let    const
+            // Se reasigna la variable       ✅     ❌
+            // Se modifica contenido interno ❌     ✅
+            // Estilo funcional              ❌     ✅
+            //
+            // 👉 En este caso se usa `let` porque `data_mejorada`
+            //    se reasigna más abajo al aplicar filtros condicionales.
+
+            if (this.state.selectedStock === "con_stock") {
+                data_mejorada = data_mejorada.filter(m => m.stock > 0);
+            }
+
+            if (this.state.selectedStock === "sin_stock") {
+                data_mejorada = data_mejorada.filter(
+                    m => !m.stock || m.stock === 0
+                );
+            }
+
             this.modelos = data_mejorada;
             return data_mejorada;
         } catch (error) {
@@ -54,8 +81,51 @@ export default class table extends Component {
             </SView>
         );
     }
+
+
     render() {
         return <SPage title={"Modelos"} disableScroll >
+
+            <SView
+                row
+                col={"xs-12"}
+                style={{
+                    backgroundColor: "transparent",
+                    // backgroundColor: STheme.color.card,
+                    // backgroundColor: STheme.color.background,s
+                    borderBottomWidth: 1,
+                    borderTopWidth: 1,
+                    borderColor: STheme.color.lightGray + "30",
+                    paddingVertical: 12,
+                    paddingHorizontal: 12,
+                }}
+            >
+                <SView col={"xs-12 sm-5 lg-2"} row center style={{ flexWrap: "wrap", gap: 12 }}>
+                    <FiltroAlmacen onSelect={(almacen) => {
+                        this.state.selectedAlmacen = almacen;
+                        this.forceUpdate();
+                        this.table.loadData();
+                    }} />
+                </SView>
+                <SView width={8} height={8} />
+                <SView col={"xs-12 sm-5 lg-2"} row center style={{ flexWrap: "wrap", gap: 12 }}>
+                    <FiltroStock onSelect={(item) => {
+                        this.setState({ selectedStock: item.key }, () => {
+                            this.table.loadData();
+                        });
+                    }} />
+                </SView>
+            </SView>
+
+            <SHr height={8} />
+            <SView row style={{ gap: 16, flexWrap: "wrap",paddingHorizontal: 4 }}>
+                <SText fontSize={13} color={STheme.color.lightGray}> Almacén: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedAlmacen?.nombre || "Todos"} </SText> </SText>
+                <SText fontSize={13} color={STheme.color.lightGray}> Stock: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedStock || "Todos"} </SText> </SText>
+            </SView>
+            <SHr height={8} />
+
+
+
             <DinamicTable key={"tabla_modelo"}
                 ref={ref => this.table = ref}
                 {...Config.table.applyTheme()}
@@ -202,7 +272,7 @@ export default class table extends Component {
                         srcPreview={SSocket.api.inventario + "modelo/" + e.row.key + "?date=" + this.state.time}
                     />}
                 />
-                <DinamicTable.Col key={"observacion"} label='Observacion' width={150} data={(e) => e.row.observacion} />
+                <DinamicTable.Col key={"observacion"} label='Observación' width={150} data={(e) => e.row.observacion} />
                 <DinamicTable.Col key={"precio_compra_"} label='P. Compra' width={100}
                     textStyle={{ color: STheme.color.danger }}
                     data={(e) => e.row?.precio_compra} wrap
@@ -217,10 +287,10 @@ export default class table extends Component {
                     customComponent={e => <SText style={{ color: STheme.color.success, fontSize: 14 }} numberOfLines={0} >{e.row?.precio_venta ? SMath.formatMoney(e.row?.precio_venta) : ""}{e.row?.precio_venta ? e.row?.venta_moneda?.observacion : ""}</SText>
                     }
                 />
-                <DinamicTable.Col key={"stock"} label='stock'
+                <DinamicTable.Col key={"stock"} label='Stock'
                     dataType='number'
                     width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
-                <DinamicTable.Col key={"proveedores"} label='proveedores'
+                <DinamicTable.Col key={"proveedores"} label='Proveedores'
                     width={120}
                     data={(e) => (e.row.proveedores ?? []).map(p => p?.proveedor?.razon_social)}
                     customComponent={e => <SView row>

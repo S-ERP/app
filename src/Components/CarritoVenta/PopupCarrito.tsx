@@ -107,20 +107,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
 }
 
-const clienteFeliz = (data: any) => {
-    return <SView col="xs-12" row>
-        <SView style={{ width: 18, height: 18, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} > {data.key ? (<SImage src={`${SSocket.api.root}usuario/${data.key}`} style={{ resizeMode: "cover" }} />) : null} </SView>
-        <SView width={5} />
-        <SText flex numberOfLines={1} style={{ fontSize: 14 }}> {data.nombre} </SText>
-    </SView>
-}
-
-// label: <> <SView col="xs-12" row>
-//     <SView style={{ width: 18, height: 18, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} > {c.key ? (<SImage src={`${SSocket.api.root}usuario/${c.key}`} style={{ resizeMode: "cover" }} />) : null} </SView>
-//     <SView width={5} />
-//     <SText flex numberOfLines={1} style={{ fontSize: 14 }}> {c.nombre} </SText>
-// </SView> </>,
-
 const ItemComp = (props: any) => {
     const cantidadRef = React.useRef<any>(null);
     const precioRef = React.useRef<any>(null);
@@ -207,9 +193,10 @@ const ItemComp = (props: any) => {
 
                 <SView height={4} />
                 {item?.modelo?.contactos?.length > 0 && (
-                    <SView style={{ width: 200, height: 24, backgroundColor: STheme.color.card }}>
+                    <SView style={{ width: 280, height: 24, backgroundColor: STheme.color.danger }}>
                         <InputSelector
-                            style={{ fontSize: 12, }}
+                            style={{ fontSize: 12,   }}
+                            // placeholderTextColor={STheme.color.danger}
                             type="custom"
                             customStyle="erp"
                             label="Contactos:"
