@@ -18,6 +18,7 @@ import FiltroAlmacen from './Components/FiltroAlmacen';
 import FiltroStock from './Components/FiltroStock';
 import FiltroTipoContable from './Components/FiltroTipoContable';
 import FiltroTipoProducto from './Components/FiltroTipoProducto';
+import FiltroSelector from './Components/FiltroSelector';
 export default class table extends Component {
     constructor(props) {
         super(props);
@@ -28,6 +29,7 @@ export default class table extends Component {
             search: "",
             selectedAlmacen: null, // <-- aquí guardamos el almacén seleccionado
             selectedStock: null, // <-- aquí guardamos el almacén seleccionado3
+            // selectedStock: { key: "Todos", nombre: "Todos" }, // valor por defecto
             selectedTipoCuenta: { key: "Todos", nombre: "Todos" }, // valor por defecto
             selectedTipoModelo: { key: "Todos", nombre: "Todos" }, // valor por defecto
         };
@@ -46,13 +48,14 @@ export default class table extends Component {
     handleKeyDown = (e) => {
         if (e.key === "Escape") {
             // Resetea filtros a "Todos"
-            this.setState(
-                { selectedAlmacen: null, selectedStock: null, selectedTipoCuenta: { key: "Todos", nombre: "Todos" } },
-                () => {
-                    this.table?.loadData()
-                    if (this.filtroTipoContableRef) this.filtroTipoContableRef.reset();
-                }
-            );
+            console.log("%c" + "presiono el reset",`color: #2ECC40; font-weight: bold;`);
+            // this.setState(
+            //     { selectedAlmacen: null, selectedStock: null, selectedTipoCuenta: { key: "Todos", nombre: "Todos" } },
+            //     () => {
+            //         this.table?.loadData()
+            //         if (this.filtroTipoContableRef) this.filtroTipoContableRef.reset();
+            //     }
+            // );
 
         }
     };
@@ -76,11 +79,11 @@ export default class table extends Component {
 
 
 
-            if (this.state.selectedStock === "con_stock") {
+            if (this.state.selectedStock.key === "con_stock") {
                 data_mejorada = data_mejorada.filter(m => m.stock > 0);
             }
 
-            if (this.state.selectedStock === "sin_stock") {
+            if (this.state.selectedStock.key === "sin_stock") {
                 data_mejorada = data_mejorada.filter(
                     m => !m.stock || m.stock === 0
                 );
@@ -135,39 +138,73 @@ export default class table extends Component {
             }}
             >
                 <SView col={"xs-12 sm-5 lg-1.6"} row center style={{ flexWrap: "wrap", gap: 12 }}>
+
+
                     <FiltroAlmacen onSelect={(almacen) => {
                         this.state.selectedAlmacen = almacen;
+                        // this.state.selectedTipoCuenta = { key: "Todos", nombre: "Todos" };
+                        // this.filtroTipoContableRef.reset();
                         this.forceUpdate();
                         this.table.loadData();
+
+
                     }} />
                 </SView>
                 <SView width={8} height={8} />
                 <SView col={"xs-12 sm-5 lg-1"} row center style={{ flexWrap: "wrap", gap: 12 }}>
-                    <FiltroStock onSelect={(item) => {
+
+                    <FiltroSelector
+                        ref={ref => this.filtroStockRef = ref}
+                        label="Stock"
+                        loadData={async () => [
+                            // { key: "Todos", nombre: "Todos" },
+                            { key: "con_stock", nombre: "Con stock" },
+                            { key: "sin_stock", nombre: "Sin stock" },
+                        ]}
+                        mapOption={a => ({ key: a.key, nombre: a.nombre })}
+                        onSelect={item => this.setState({ selectedStock: item }, () => this.table.loadData())}
+                    />
+                    {/* <FiltroStock onSelect={(item) => {
                         this.setState({ selectedStock: item.key }, () => {
                             this.table.loadData();
                         });
-                    }} />
+                    }} /> */}
                 </SView>
                 <SView width={8} height={8} />
                 <SView col={"xs-12 sm-5 lg-1.6"} row center style={{ flexWrap: "wrap", gap: 12 }}>
-                    <FiltroTipoContable
+
+                    <FiltroSelector
+                        ref={ref => this.filtroTipoContableRef = ref}
+                        label="Tipo"
+                        loadData={async () => MDL.inventario.TIPOS_DE_PRODUCTOS.map(a => ({ key: a.key, nombre: a.key }))}
+                        mapOption={a => ({ key: a.key, nombre: a.nombre })}
+                        onSelect={item => this.setState({ selectedTipoCuenta: item }, () => this.table.loadData())}
+                    />
+
+                    {/* <FiltroTipoContable
                         ref={ref => this.filtroTipoContableRef = ref}
                         onSelect={(item) => {
                             this.setState({ selectedTipoCuenta: item }, () => this.table.loadData());
                         }}
-                    />
+                    /> */}
                 </SView>
 
                 <SView width={8} height={8} />
 
                 <SView col={"xs-12 sm-5 lg-1.6"} row center style={{ flexWrap: "wrap", gap: 12 }}>
-                    <FiltroTipoProducto
+                    <FiltroSelector
+                        ref={ref => this.filtroTipoProductoRef = ref}
+                        label="Tipo Producto"
+                        loadData={MDL.inventario.getAllTipoProducto}
+                        mapOption={a => ({ key: a.descripcion, nombre: a.descripcion })}
+                        onSelect={item => this.setState({ selectedTipoModelo: item }, () => this.table.loadData())}
+                    />
+                    {/* <FiltroTipoProducto
                         ref={ref => this.filtroSeeeer = ref}
                         onSelect={(item) => {
                             this.setState({ selectedTipoModelo: item }, () => this.table.loadData());
                         }}
-                    />
+                    /> */}
                 </SView>
             </SView>
 
@@ -176,7 +213,7 @@ export default class table extends Component {
             <SHr height={8} />
             <SView row style={{ gap: 16, flexWrap: "wrap", paddingHorizontal: 4 }}>
                 <SText fontSize={13} color={STheme.color.lightGray}> Almacén: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedAlmacen?.nombre || "Todos"} </SText> </SText>
-                <SText fontSize={13} color={STheme.color.lightGray}> Stock: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedStock || "Todos"} </SText> </SText>
+                <SText fontSize={13} color={STheme.color.lightGray}> Stock: <SText fontSize={13} bold color={STheme.color.text}> {this.state.nombre || "Todos"} </SText> </SText>
                 <SText fontSize={13} color={STheme.color.lightGray}> Tipo cuenta: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedTipoCuenta?.nombre || "Todos"} </SText> </SText>
                 <SText fontSize={13} color={STheme.color.lightGray}> otr: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedTipoModelo?.nombre || "Todos"} </SText> </SText>
             </SView>
