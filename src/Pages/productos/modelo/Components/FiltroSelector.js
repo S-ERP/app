@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import { SText, STheme, SView } from "servisofts-component";
 import InputSelector from "../../../../Components/Selectores/InputSelector";
 
@@ -9,6 +9,7 @@ export default class FiltroSelector extends Component {
             options: [],
             selectedKey: props.defaultValue || "Todos",
         };
+        this.selectorRef = createRef(); // 🔥 Referencia al InputSelector
     }
 
     componentDidMount() {
@@ -31,14 +32,18 @@ export default class FiltroSelector extends Component {
         }
     }
 
-    // reset() {
-    //     const defaultKey = this.props.defaultValue || "Todos";
-    //      this.state.selectedKey="Todos";
-    //     this.setState({ selectedKey: defaultKey }, () => {
-    //         const defaultOption = this.state.options.find(o => o.key === defaultKey) || { key: defaultKey, nombre: defaultKey };
-    //         this.props.onSelect?.(defaultOption);
-    //     });
-    // }
+    reset() {
+        const defaultOption = { key: "Todos", nombre: "Todos" }; // 🔥 Opción por defecto
+
+        this.setState({ selectedKey: defaultOption.key }, () => {
+            // 🔥 Actualiza el InputSelector directamente
+            if (this.selectorRef.current) {
+                this.selectorRef.current.setValue(defaultOption.key);
+            }
+            // Notifica al padre
+            this.props.onSelect?.(defaultOption);
+        });
+    }
 
     render() {
         const { label } = this.props;
@@ -66,12 +71,12 @@ export default class FiltroSelector extends Component {
                     }}
                 >
                     <InputSelector
+                        ref={this.selectorRef} // 🔥 Pasamos la ref
                         type="custom"
                         customStyle="erp"
                         placeholder={label}
                         placeholderTextColor={STheme.color.lightGray}
-
-                        value={selectedKey}
+                        value={selectedKey} // sigue pasando el selectedKey
                         style={{ fontSize: 13, color: STheme.color.text, paddingHorizontal: 10 }}
                         options={options.map(o => ({ label: o.nombre, value: o.key, data: o }))}
                         onSelect={(selectedItem) => {

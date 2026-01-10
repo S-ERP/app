@@ -48,12 +48,17 @@ export default class table extends Component {
     handleKeyDown = (e) => {
         if (e.key === "Escape") {
             // Resetea filtros a "Todos"
-            console.log("%c" + "presiono el reset",`color: #2ECC40; font-weight: bold;`);
+            console.log("%c" + "presiono el reset", `color: #2ECC40; font-weight: bold;`);
+            this.filtroStockRef.reset();
+            this.filtroTipoContableRef.reset();
+            this.filtroTipoProductoRef.reset();
             // this.setState(
-            //     { selectedAlmacen: null, selectedStock: null, selectedTipoCuenta: { key: "Todos", nombre: "Todos" } },
+            //     { selectedAlmacen: null, selectedStock: null, selectedTipoCuenta: { key: "Todos", nombre: "Todos" },selectedTipoModelo: { key: "Todos", nombre: "Todos" }  },
             //     () => {
             //         this.table?.loadData()
+            //         if (this.filtroStockRef) this.filtroTipoContableRef.reset();
             //         if (this.filtroTipoContableRef) this.filtroTipoContableRef.reset();
+            //         if (this.filtroTipoProductoRef) this.filtroTipoContableRef.reset();
             //     }
             // );
 
@@ -213,7 +218,7 @@ export default class table extends Component {
             <SHr height={8} />
             <SView row style={{ gap: 16, flexWrap: "wrap", paddingHorizontal: 4 }}>
                 <SText fontSize={13} color={STheme.color.lightGray}> Almacén: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedAlmacen?.nombre || "Todos"} </SText> </SText>
-                <SText fontSize={13} color={STheme.color.lightGray}> Stock: <SText fontSize={13} bold color={STheme.color.text}> {this.state.nombre || "Todos"} </SText> </SText>
+                <SText fontSize={13} color={STheme.color.lightGray}> Stock: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedStock?.nombre || "Todos"} </SText> </SText>
                 <SText fontSize={13} color={STheme.color.lightGray}> Tipo cuenta: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedTipoCuenta?.nombre || "Todos"} </SText> </SText>
                 <SText fontSize={13} color={STheme.color.lightGray}> otr: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedTipoModelo?.nombre || "Todos"} </SText> </SText>
             </SView>
