@@ -159,7 +159,7 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                                 this.props.anular({ cuf: factura.data.cuf })
                         }
                     },
-                    factura.state === "emitida" && verificadorAdmin && {
+                    factura.state === "emitida" && {
                         label: "Editar Leyenda",
                         icon: <SIconApp name='crmeditar' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
                         onPress: async () => {

@@ -11,6 +11,7 @@ import SelectTipoAnulacion from './Components/SelectTipoAnulacion';
 import MDL from '../../MDL';
 import { DinamicTable } from 'servisofts-table';
 import BoxMenu from './Components/BoxMenu';
+import SIconApp from '../../Assets/SIconApp';
 
 export default class libro_ventas extends Component {
     constructor(props) {
@@ -20,8 +21,6 @@ export default class libro_ventas extends Component {
         };
     }
     componentDidMount() {
-
-
         MDL.rolesPermisos.getPermisoAsync({ url: "/facturacion/libro_ventas", permiso: "ver" }).then((permit) => {
             if (!permit) {
                 SNavigation.goBack();
@@ -30,8 +29,6 @@ export default class libro_ventas extends Component {
         }).catch(e => {
             console.error(e);
         })
-
-
         MDL.factura.getParametrica({ ambiente: MDL.factura.ambiente, parametrica: "motivoAnulacion" }).then((res) => {
             this.state.parametricas.motivoAnulacion = res;
             this.setState({ ...this.state })
@@ -39,15 +36,10 @@ export default class libro_ventas extends Component {
             console.error(e);
         })
 
-
-        // this.fecha_actual = new SDate("2025-10-28 02:36:47");
         this.fecha_actual = new SDate();
         this.fecha_fin_mes = new SDate(); // Establece al primer día del mes
         this.fecha_fin_mes.addMonth(1).setDay(1).addDay(-1); // Avanza al primer día del próximo mes y retrocede un día
 
-
-
-        // Validar si faltan 10 días o menos para el fin de mes
         this.dias_restantes = this.fecha_fin_mes.diff(this.fecha_actual);
         if (this.dias_restantes <= 10) {
             SNotification.send({
@@ -60,21 +52,7 @@ export default class libro_ventas extends Component {
                 time: 20000,
             });
         }
-
-
     }
-
-    // async loadData() {
-    //     const request = await SSocket.sendPromise({
-    //         service: "facturacion",
-    //         component: "factura",
-    //         type: "getAll",
-    //         estado: "cargando",
-    //         key_usuario: Model.usuario.Action.getKey(),
-    //         key_empresa: Model.empresa.Action.getKey(),
-    //     })
-    //     return Object.values(request.data);
-    // }
 
     async loadData() {
         try {
@@ -86,43 +64,29 @@ export default class libro_ventas extends Component {
                 key_usuario: Model.usuario?.Action?.getKey?.(),
                 key_empresa: Model.empresa?.Action?.getKey?.(),
             });
-
             if (!response?.data) {
                 throw "⚠️ No se recibió data de facturacion.getAll:"
             }
-
-
-            // if ("key_usuario" in response.data) {
-            //     delete response.data.key_usuario;
-            // }
-
             try {
                 let keys = [];
                 Object.values(response.data).map((fac) => {
                     keys.push(fac.key_usuario);
                 })
                 const usuarios = await MDL.usuario.getByKeys(keys)
-
                 Object.values(response.data).map((fac) => {
                     if (fac.key_usuario) {
                         fac._usuario = usuarios.find(usr => usr.key == fac.key_usuario)
                     }
                 })
-
-
             } catch (error) {
                 console.log("se cargo pero sin usuarios")
             }
-
             return Object.values(response.data);
-
         } catch (e) {
             console.error("❌ Error en loadData:", e);
             return [];
         }
     }
-
-
     anular({ cuf }) {
         SPopup.open({
             key: "anularpop",
@@ -165,18 +129,17 @@ export default class libro_ventas extends Component {
     }
 
     render() {
-        const verificadorAdmin = MDL.usuario.session?.key === '1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b';
-
-        // const verificadorAdmin = MDL.usuario.session?.key === '1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b' ? true : false
-        // return <SPage title={"Facturacion - libro ventas " + this.fecha_actual + "--------- Quedan " + this.dias_restantes + " dias ----------- " + this.fecha_fin_mes} disableScroll>
-        return <SPage title={"Facturacion - libro ventas"} disableScroll>
+        return <SPage bold title={"Facturación - Libro ventas"} disableScroll>
             <DinamicTable
                 language='es'
+                center
                 ref={ref => this.table = ref}
                 loadData={this.loadData.bind(this)}
-
                 loadInitialState={async () => {
                     return {
+                        cols: {
+                            "leyenda": { hidden: true }
+                        },
                         filters: [
                             { col: "ambiente", operator: "=", value: [1], type: "number" },
                             { col: "gestion", operator: "contains", value: [new SDate().toString("yyyy-MM")], type: "string" },
@@ -184,10 +147,8 @@ export default class libro_ventas extends Component {
                         sorters: [
                             { key: "numero", type: "number", order: "asc" }
                         ]
-
                     }
                 }}
-
                 colors={{
                     text: STheme.color.text,
                     background: STheme.color.background,
@@ -201,7 +162,6 @@ export default class libro_ventas extends Component {
                 }}
                 selectType='single'
                 onSelect={e => {
-                    console.log("onSelect", e);
                     let top = e.evt.nativeEvent.pageY;
                     const h = Dimensions.get("window").height
                     if (h < top + 140) {
@@ -226,46 +186,33 @@ export default class libro_ventas extends Component {
                             ></BoxMenu>
                         </SView>
                     })
-                    console.log("onSelect", e);
-
                 }}
                 listFooterComponent={() => {
                     return <SHr h={200} />
                 }}
             >
-                <DinamicTable.Col
+                {/* <DinamicTable.Col
                     key='index'
-                    textStyle={{ fontSize: 10, color: STheme.color.lightGray }}
+                    label='#'
+                    textStyle={{ fontSize: 11, color: STheme.color.lightGray }}
                     data={e => e.index + 1}
                     format={e => e.index + 1}
                     width={30}
-
-                />
-                <DinamicTable.Col key="numero" label='Numero' dataType='number' data={e => parseFloat(e.row?.data?.numeroFactura)} width={40} cellStyle={{
-                    alignItems: "flex-end"
-                }} />
-                <DinamicTable.Col key="ambiente" label='Ambiente' dataType='number' data={e => parseFloat(e.row?.ambiente)} width={30} cellStyle={{
-                    alignItems: "center"
-                }}
+                /> */}
+                <DinamicTable.Col key="numero" label='Numero' dataType='number' center data={e => parseFloat(e.row?.data?.numeroFactura)} width={70} cellStyle={{ alignItems: "center" }} />
+                <DinamicTable.Col key="ambiente" label='Ambiente' dataType='number' data={e => parseFloat(e.row?.ambiente)} width={80} cellStyle={{ alignItems: "center" }}
                     customComponent={(e) => {
-                        return <SView width={20} height={20} center style={{ borderRadius: 5, backgroundColor: e.row?.ambiente == 1 ? STheme.color.success : STheme.color.warning, }}>
-                            <SText color={"#fff"} bold fontSize={10}>{e.data}</SText>
+                        return <SView width={50} height={20} center style={{ borderRadius: 5, backgroundColor: e.row?.ambiente == 1 ? STheme.color.success : STheme.color.warning, }}>
+                            <SText color={"#fff"} bold fontSize={10} >{e.data}</SText>
                         </SView>
                     }}
                 />
-                <DinamicTable.Col key="gestion" label='Gestion'
+                <DinamicTable.Col key="gestion" label='Gestión' width={70} cellStyle={{ alignItems: "center" }}
                     data={e => new SDate(e.row?.data?.fechaEmision, "yyyy-MM-ddThh:mm:ss").toString("yyyy-MM")}
-                    width={60}
                 />
-                <DinamicTable.Col key="nit" label='NIT' data={e => e.row?.data?.numeroDocumento}
-                    textStyle={{
-                        fontWeight: "bold"
-                    }}
-                />
-                <DinamicTable.Col key="razonSocial" label='Razon Social' data={e => e.row?.data?.nombreRazonSocial} textStyle={{
-                    fontWeight: "bold"
-                }} />
-                <DinamicTable.Col key="subtotal" label='Sub Total' dataType='number' data={e => {
+                <DinamicTable.Col key="nit" label='NIT' data={e => e.row?.data?.numeroDocumento} textStyle={{ fontWeight: "bold" }} />
+                <DinamicTable.Col key="razonSocial" label='Razon Social' data={e => e.row?.data?.nombreRazonSocial} textStyle={{ fontWeight: "bold" }} />
+                <DinamicTable.Col key="subtotal" label='Sub Total' width={80} dataType='number' data={e => {
                     if (!e.row?.data?.detalle) return 0;
                     let subtotal = 0;
                     e.row.data.detalle.forEach(e => {
@@ -283,13 +230,8 @@ export default class libro_ventas extends Component {
                             <Text style={[e.dinamicTable.textStyle, { alignItems: "flex-end", fontWeight: "bold" }]} >{SMath.formatMoney(total)}</Text>
                         </View>
                     }}
-
                 />
-                <DinamicTable.Col key="estado" label='Estado' data={e => e.row?.state}
-                    width={70}
-                    cellStyle={{
-                        alignItems: "center"
-                    }}
+                <DinamicTable.Col key="estado" label='Estado' data={e => e.row?.state} width={100} cellStyle={{ alignItems: "center" }}
                     customComponent={e => {
                         let color = STheme.color.primary;
                         if (e.data == "enviada") {
@@ -301,21 +243,28 @@ export default class libro_ventas extends Component {
                         } else if (e.data == "anulada") {
                             color = STheme.color.danger
                         }
-                        return <SView backgroundColor={color} width={60} height={18} borderRadius={4} center><SText fontSize={9} color={"#fff"} bold>{(e.data + "").toUpperCase()}</SText></SView>
+                        return <SView backgroundColor={color} width={60} height={18} borderRadius={4} center><SText fontSize={11} color={"#fff"} bold>{(e.data + "").toUpperCase()}</SText></SView>
                     }}
                 />
-
-                <DinamicTable.Col key="cuf" label='CUF' data={e => e.row?.data?.cuf} textStyle={{ fontSize: 9 }} />
-                <DinamicTable.Col key="fecha" label='Fecha'
+                <DinamicTable.Col key="cuf" label='CUF' data={e => e.row?.data?.cuf} width={120} />
+                <DinamicTable.Col key="fecha" label='Fecha Emitida'
                     data={e => new SDate(e.row?.data?.fechaEmision, "yyyy-MM-ddThh:mm:ss").date}
                     width={120}
                     dataType='date'
                     dateFormat='yyyy-MM-dd hh:mm'
                 />
 
+
+                {/* <DinamicTable.Col key="fecha" label="Fecha Creación" width={120} data={(e) => e.row?.data?.fechaEmision}
+                    customComponent={e => <SView center row><SIconApp name='Evento' width={12} height={12} fill={STheme.color.lightGray} />
+                        <SText color={STheme.color.lightGray} > { e.row?.data?.fechaEmision}</SText></SView>}
+                    dataType='date'
+                    dateFormat='yyyy-MM-dd hh:mm'
+                /> */}
+
                 <DinamicTable.Col
                     key="adminas"
-                    label="Adm"
+                    label="Operador"
                     width={190}
                     data={e => `${e.row?._usuario?.Nombres} ${e.row?._usuario?.Apellidos}`} // ✅ Ya está bien
                     customComponent={e => {
@@ -327,7 +276,7 @@ export default class libro_ventas extends Component {
                                     <SImage src={`${SSocket.api.root}usuario/${key}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                                 <SView width={5} />
-                                <SText flex numberOfLines={1}  >
+                                <SText flex numberOfLines={1} style={{ fontSize: 12, color: STheme.color.lightGray }} >
                                     {nombre}
                                 </SText>
                             </SView>
@@ -336,12 +285,8 @@ export default class libro_ventas extends Component {
                         );
                     }}
                 />
-
-
-                {verificadorAdmin ? <DinamicTable.Col key="estadoss" label='Estado🏉' data={e => e.row?.estado} width={60} /> : ""}
-                {verificadorAdmin ? <DinamicTable.Col key="leyenda" label='Leyenda🏉' data={e => e.row?.data?.leyenda} width={400} /> : ""}
+                <DinamicTable.Col key="leyenda" label='Leyenda' data={e => e.row?.data?.leyenda} width={400} />
             </DinamicTable>
-            {/* <SHr h={}/> */}
         </SPage>
     }
 }
