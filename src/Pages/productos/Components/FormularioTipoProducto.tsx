@@ -11,7 +11,7 @@ const cuentaToText = (c: any) => c ? `${c.codigo} - ${c.descripcion}` : "";
 const findCuentaText = (arr: any[], text: string) => arr.find(c => cuentaToText(c) === text) ?? null;
 
 export default class FormularioTipoProducto extends Component<Props> {
-
+no
     static open(props: Props) {
         SPopup.open({
             key: "FormularioTipoProducto",
