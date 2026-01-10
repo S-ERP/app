@@ -11,13 +11,8 @@ import SIconApp from '../../../Assets/SIconApp';
 import PopupDetalleModelo from '../Components/PopupDetalleModelo';
 import PopupDesglose from '../Components/PopupDesglose';
 import PopupModeloCardex from '../Components/PopupModeloCardex';
-import PopupCrearProveedor from './Components/PopupCrearProveedor';
 import PopupTag from '../../tag/Components/PopupTag';
 import PopupAgregarTags from './Components/PopupAgregarTags';
-import FiltroAlmacen from './Components/FiltroAlmacen';
-import FiltroStock from './Components/FiltroStock';
-import FiltroTipoContable from './Components/FiltroTipoContable';
-import FiltroTipoProducto from './Components/FiltroTipoProducto';
 import FiltroSelector from './Components/FiltroSelector';
 export default class table extends Component {
     constructor(props) {
@@ -27,50 +22,32 @@ export default class table extends Component {
             allTags: [],
             selectedTags: props.selectedTags || [],
             search: "",
-            selectedAlmacen: null, // <-- aquí guardamos el almacén seleccionado
-            selectedStock: null, // <-- aquí guardamos el almacén seleccionado3
-            // selectedStock: { key: "Todos", nombre: "Todos" }, // valor por defecto
-            selectedTipoCuenta: { key: "Todos", nombre: "Todos" }, // valor por defecto
-            selectedTipoModelo: { key: "Todos", nombre: "Todos" }, // valor por defecto
+            selectedAlmacen: null,
+            selectedStock: null,
+            selectedTipoCuenta: null,
+            selectedTipoModelo: null,
         };
         this.modelos = null;
     }
-
     componentDidMount() {
-        // Escucha la tecla Escape
         window.addEventListener("keydown", this.handleKeyDown);
     }
-
     componentWillUnmount() {
         window.removeEventListener("keydown", this.handleKeyDown);
     }
-
     handleKeyDown = (e) => {
         if (e.key === "Escape") {
-            // Resetea filtros a "Todos"
-            console.log("%c" + "presiono el reset", `color: #2ECC40; font-weight: bold;`);
-            this.filtroStockRef.reset();
-            this.filtroTipoContableRef.reset();
-            this.filtroTipoProductoRef.reset();
-            // this.setState(
-            //     { selectedAlmacen: null, selectedStock: null, selectedTipoCuenta: { key: "Todos", nombre: "Todos" },selectedTipoModelo: { key: "Todos", nombre: "Todos" }  },
-            //     () => {
-            //         this.table?.loadData()
-            //         if (this.filtroStockRef) this.filtroTipoContableRef.reset();
-            //         if (this.filtroTipoContableRef) this.filtroTipoContableRef.reset();
-            //         if (this.filtroTipoProductoRef) this.filtroTipoContableRef.reset();
-            //     }
-            // );
-
+            this.filtroAlmacenRef?.reset();
+            this.filtroStockRef?.reset();
+            this.filtroTipoContableRef?.reset();
+            this.filtroTipoProductoRef?.reset();
         }
     };
-
     async loadData() {
         try {
             const monedas = await MDL.empresa.getMonedas();
             const modelos = await MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "");
             const clientes = await MDL.crm.cliente.getAll();
-
             let data_mejorada = modelos.map(e => ({
                 ...e,
                 compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
@@ -81,36 +58,24 @@ export default class table extends Component {
                 }))
             })
             );
-
-
-
             if (this.state.selectedStock.key === "con_stock") {
                 data_mejorada = data_mejorada.filter(m => m.stock > 0);
             }
-
             if (this.state.selectedStock.key === "sin_stock") {
                 data_mejorada = data_mejorada.filter(
                     m => !m.stock || m.stock === 0
                 );
             }
-
-
-            // descripcion
             if (this.state.selectedTipoCuenta && this.state.selectedTipoCuenta.key && this.state.selectedTipoCuenta.key !== "Todos") {
                 data_mejorada = data_mejorada.filter(
                     m => m.tipo_producto?.tipo === this.state.selectedTipoCuenta.key
                 );
             }
-
             if (this.state.selectedTipoModelo && this.state.selectedTipoModelo.key && this.state.selectedTipoModelo.key !== "Todos") {
                 data_mejorada = data_mejorada.filter(
                     m => m.tipo_producto?.descripcion === this.state.selectedTipoModelo.key
                 );
             }
-
-            // console.clear();
-            console.log("%c" + JSON.stringify(data_mejorada, null, 2), "color: #2ECC40; font-weight: bold;");
-
             this.modelos = data_mejorada;
             return data_mejorada;
         } catch (error) {
@@ -127,14 +92,10 @@ export default class table extends Component {
         );
     }
 
-
     render() {
-        return <SPage title={"Modelosssssss"} disableScroll >
-
+        return <SPage title={"Modelos"} disableScroll >
             <SView row col={"xs-12"} style={{
                 backgroundColor: "transparent",
-                // backgroundColor: STheme.color.card,
-                // backgroundColor: STheme.color.background,s
                 borderBottomWidth: 1,
                 borderTopWidth: 1,
                 borderColor: STheme.color.lightGray + "30",
@@ -143,41 +104,29 @@ export default class table extends Component {
             }}
             >
                 <SView col={"xs-12 sm-5 lg-1.6"} row center style={{ flexWrap: "wrap", gap: 12 }}>
-
-
-                    <FiltroAlmacen onSelect={(almacen) => {
-                        this.state.selectedAlmacen = almacen;
-                        // this.state.selectedTipoCuenta = { key: "Todos", nombre: "Todos" };
-                        // this.filtroTipoContableRef.reset();
-                        this.forceUpdate();
-                        this.table.loadData();
-
-
-                    }} />
+                    <FiltroSelector
+                        ref={ref => this.filtroAlmacenRef = ref}
+                        label="Almacén"
+                        loadData={MDL.inventario.getAllAlmacen}
+                        mapOption={a => ({ key: a.key, nombre: a.descripcion })}
+                        onSelect={item => this.setState({ selectedAlmacen: item }, () => this.table.loadData())}
+                    />
                 </SView>
                 <SView width={8} height={8} />
                 <SView col={"xs-12 sm-5 lg-1"} row center style={{ flexWrap: "wrap", gap: 12 }}>
-
                     <FiltroSelector
                         ref={ref => this.filtroStockRef = ref}
                         label="Stock"
                         loadData={async () => [
-                            // { key: "Todos", nombre: "Todos" },
                             { key: "con_stock", nombre: "Con stock" },
                             { key: "sin_stock", nombre: "Sin stock" },
                         ]}
                         mapOption={a => ({ key: a.key, nombre: a.nombre })}
                         onSelect={item => this.setState({ selectedStock: item }, () => this.table.loadData())}
                     />
-                    {/* <FiltroStock onSelect={(item) => {
-                        this.setState({ selectedStock: item.key }, () => {
-                            this.table.loadData();
-                        });
-                    }} /> */}
                 </SView>
                 <SView width={8} height={8} />
                 <SView col={"xs-12 sm-5 lg-1.6"} row center style={{ flexWrap: "wrap", gap: 12 }}>
-
                     <FiltroSelector
                         ref={ref => this.filtroTipoContableRef = ref}
                         label="Tipo"
@@ -185,17 +134,8 @@ export default class table extends Component {
                         mapOption={a => ({ key: a.key, nombre: a.nombre })}
                         onSelect={item => this.setState({ selectedTipoCuenta: item }, () => this.table.loadData())}
                     />
-
-                    {/* <FiltroTipoContable
-                        ref={ref => this.filtroTipoContableRef = ref}
-                        onSelect={(item) => {
-                            this.setState({ selectedTipoCuenta: item }, () => this.table.loadData());
-                        }}
-                    /> */}
                 </SView>
-
                 <SView width={8} height={8} />
-
                 <SView col={"xs-12 sm-5 lg-1.6"} row center style={{ flexWrap: "wrap", gap: 12 }}>
                     <FiltroSelector
                         ref={ref => this.filtroTipoProductoRef = ref}
@@ -204,17 +144,8 @@ export default class table extends Component {
                         mapOption={a => ({ key: a.descripcion, nombre: a.descripcion })}
                         onSelect={item => this.setState({ selectedTipoModelo: item }, () => this.table.loadData())}
                     />
-                    {/* <FiltroTipoProducto
-                        ref={ref => this.filtroSeeeer = ref}
-                        onSelect={(item) => {
-                            this.setState({ selectedTipoModelo: item }, () => this.table.loadData());
-                        }}
-                    /> */}
                 </SView>
             </SView>
-
-
-
             <SHr height={8} />
             <SView row style={{ gap: 16, flexWrap: "wrap", paddingHorizontal: 4 }}>
                 <SText fontSize={13} color={STheme.color.lightGray}> Almacén: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedAlmacen?.nombre || "Todos"} </SText> </SText>
@@ -223,7 +154,6 @@ export default class table extends Component {
                 <SText fontSize={13} color={STheme.color.lightGray}> otr: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedTipoModelo?.nombre || "Todos"} </SText> </SText>
             </SView>
             <SHr height={8} />
-
             <DinamicTable key={"tabla_modelo"}
                 ref={ref => this.table = ref}
                 {...Config.table.applyTheme()}
@@ -388,7 +318,6 @@ export default class table extends Component {
                 <DinamicTable.Col key={"stock"} label='Stock'
                     dataType='number'
                     width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
-
                 <DinamicTable.Col key={"proveedores"} label='Proveedores'
                     width={120}
                     data={(e) => (e.row.proveedores ?? []).map(p => p?.proveedor?.razon_social)}
@@ -431,8 +360,6 @@ export default class table extends Component {
                     }}
                 />
                 <DinamicTable.Col key={"barcode"} label='BarCode' width={100} data={(e) => e.row.barcode ? "#" + e.row.barcode : null} />
-
-
                 <DinamicTable.Col
                     key={"contactos_"}
                     label='Contactos'
@@ -446,16 +373,12 @@ export default class table extends Component {
                                         {p?.key_cliente ? (<SImage src={`${SSocket.api.root}usuario/${p?.key_cliente}`} style={{ resizeMode: "cover" }} />) : null}
                                     </SView>
                                     <SView width={5} />
-                                    {/* <SText fontSize={10} numberOfLines={1} >{p?.cliente?.nombres}</SText> */}
+                                    { }
                                 </SView>
-                                // return <SView style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }} >
-                                //     <SText fontSize={10} numberOfLines={1} >{p?.cliente?.nombres}</SText>
-                                // </SView>
                             })}
                         </SView>
                     )}
                 />
-
                 <DinamicTable.Col
                     key={"contactos2_"}
                     label='Contactos'
@@ -464,22 +387,16 @@ export default class table extends Component {
                     customComponent={e => (
                         <SView row>
                             {(e.row.contactos ?? []).map((p, index) => {
-
                                 return <SView center row>
                                     <SView style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }} center row >
                                         <SText fontSize={10} numberOfLines={1} style={{ textTransform: "uppercase" }} >{p?.cliente?.nombres}</SText>
                                     </SView>
                                     <SView width={5} />
                                 </SView>
-
-                                // return <SView center row>
-                                //     <SText fontSize={10} numberOfLines={1} >{p?.cliente?.nombres}</SText>
-                                // </SView>
                             })}
                         </SView>
                     )}
                 />
-
             </DinamicTable>
             <FloatButtom onPress={() => {
                 PopupDetalleModelo.open({

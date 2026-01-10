@@ -7,9 +7,9 @@ export default class FiltroSelector extends Component {
         super(props);
         this.state = {
             options: [],
-            selectedKey: props.defaultValue || "Todos",
+            selectedKey: props.defaultValue ?? "Todos",
         };
-        this.selectorRef = createRef(); // 🔥 Referencia al InputSelector
+        this.selectorRef = createRef();
     }
 
     componentDidMount() {
@@ -19,28 +19,26 @@ export default class FiltroSelector extends Component {
     async loadData() {
         try {
             const data = await this.props.loadData();
-            const options = [{ key: "Todos", nombre: "Todos" }, ...data.map(this.props.mapOption)];
-            this.setState({ options });
-
-            // Notifica al padre el valor por defecto
-            if (this.props.onSelect) {
-                const defaultOption = options.find(o => o.key === this.state.selectedKey);
-                this.props.onSelect(defaultOption);
-            }
+            const options = [{ key: null, nombre: "Todos" }, ...data.map(this.props.mapOption)];
+            this.setState({ options }, () => {
+                if (this.props.onSelect) {
+                    const defaultOption = options.find(o => o.key === this.state.selectedKey) || options[0];
+                    this.props.onSelect(defaultOption);
+                }
+            });
         } catch (error) {
             console.error("Error al cargar opciones:", error);
         }
     }
 
     reset() {
-        const defaultOption = { key: "Todos", nombre: "Todos" }; // 🔥 Opción por defecto
-
+        const defaultOption = { key: null, nombre: "Todos" }; // opción por defecto
         this.setState({ selectedKey: defaultOption.key }, () => {
-            // 🔥 Actualiza el InputSelector directamente
+            // actualiza InputSelector
             if (this.selectorRef.current) {
                 this.selectorRef.current.setValue(defaultOption.key);
             }
-            // Notifica al padre
+            // notifica al padre
             this.props.onSelect?.(defaultOption);
         });
     }
@@ -48,6 +46,7 @@ export default class FiltroSelector extends Component {
     render() {
         const { label } = this.props;
         const { options, selectedKey } = this.state;
+
         return (
             <SView col={"xs-12"} height={48} style={{ paddingHorizontal: 4 }}>
                 <SText fontSize={9} color={STheme.color.lightGray} style={{ marginBottom: 3, marginLeft: 2 }} bold>
@@ -71,12 +70,12 @@ export default class FiltroSelector extends Component {
                     }}
                 >
                     <InputSelector
-                        ref={this.selectorRef} // 🔥 Pasamos la ref
+                        ref={this.selectorRef}
                         type="custom"
                         customStyle="erp"
                         placeholder={label}
                         placeholderTextColor={STheme.color.lightGray}
-                        value={selectedKey} // sigue pasando el selectedKey
+                        value={selectedKey}
                         style={{ fontSize: 13, color: STheme.color.text, paddingHorizontal: 10 }}
                         options={options.map(o => ({ label: o.nombre, value: o.key, data: o }))}
                         onSelect={(selectedItem) => {
