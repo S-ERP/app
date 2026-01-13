@@ -214,6 +214,19 @@ export default class inventario extends MDLAbstract<EventListener> {
     });
     return Object.values(resp.data || {});
   }
+
+  async getAllTipoCosto() {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "tipo_costo",
+      type: "getAll",
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
+    return Object.values(resp.data || {});
+  }
+
   async getAllAlmacen() {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
@@ -402,6 +415,34 @@ export default class inventario extends MDLAbstract<EventListener> {
         component: "tipo_producto",
         type: "registro",
         data: tipo_producto,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    }
+  }
+
+  async saveTipoCosto(tipo_costo: any) {
+    // console.clear();
+    console.log("%c" + JSON.stringify(tipo_costo),`color: #2ECC40; font-weight: bold;`);
+    if (tipo_costo.key) {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "tipo_costo",
+        type: "editar",
+        data: tipo_costo,
+        key_empresa: MDL.empresa.select?.key,
+        key_usuario: MDL.usuario.session?.key,
+      });
+      return resp.data;
+    } else {
+      const resp: any = await SSocket.sendPromise({
+        version: "1.0",
+        service: "inventario",
+        component: "tipo_costo",
+        type: "registro",
+        data: tipo_costo,
         key_empresa: MDL.empresa.select?.key,
         key_usuario: MDL.usuario.session?.key,
       });
