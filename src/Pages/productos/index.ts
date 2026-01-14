@@ -12,6 +12,8 @@ import carrito from "./carrito";
 import ReporteConteoInventario from "../inventario/almacen/ReporteConteoInventario";
 import pizarra from "./pizarra";
 import RegistroInventarios from "../inventario/almacen/RegistroInventarios";
+import tipo_costo from "./tipo_costo";
+import tabla from "./tipo_costo/tabla";
 
 
 
@@ -20,6 +22,7 @@ export default SPage.combinePages("productos",
         "": root,
         catalogo,
         "carrito":carrito,
+        "tipo_costo":tabla,
         pizarra,
         // "reporte_conteo_inventario":RegistroInventarios,
         "reporte_conteo_inventario":ReporteConteoInventario,

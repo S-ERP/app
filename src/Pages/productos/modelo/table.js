@@ -45,43 +45,106 @@ export default class table extends Component {
     };
     async loadData() {
         try {
-            const monedas = await MDL.empresa.getMonedas();
-            const modelos = await MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "");
-            const clientes = await MDL.crm.cliente.getAll();
+            const monedas = await MDL.empresa.getMonedas() ?? [];
+            const modelos = await MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "") ?? [];
+            const clientes = await MDL.crm.cliente.getAll() ?? [];
+
             let data_mejorada = modelos.map(e => ({
                 ...e,
-                compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
-                venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || {},
-                contactos: e.contactos?.map(contacto => ({
+                compra_moneda: monedas.find(m => m?.key === e?.precio_compra_moneda) || {},
+                venta_moneda: monedas.find(m => m?.key === e?.precio_venta_moneda) || {},
+                contactos: (e?.contactos ?? []).map(contacto => ({
                     ...contacto,
-                    cliente: clientes.find(a => a?.key === contacto.key_cliente) || {},
-                }))
-            })
-            );
-            if (this.state.selectedStock.key === "con_stock") {
-                data_mejorada = data_mejorada.filter(m => m.stock > 0);
+                    cliente: clientes.find(a => a?.key === contacto?.key_cliente) || {},
+                })),
+                // Asegúrate de que estas propiedades existan (muy común que fallen)
+                tipo_producto: e?.tipo_producto || {},
+                marca: e?.marca || {},
+                proveedores: e?.proveedores ?? [],
+                tags: e?.tags ?? [],
+                stock: e?.stock ?? 0,
+            }));
+
+            // Filtros más seguros
+            if (this.state.selectedStock?.key === "con_stock") {
+                data_mejorada = data_mejorada.filter(m => Number(m.stock) > 0);
             }
-            if (this.state.selectedStock.key === "sin_stock") {
+            if (this.state.selectedStock?.key === "sin_stock") {
+                data_mejorada = data_mejorada.filter(m => !m.stock || Number(m.stock) === 0);
+            }
+
+            if (this.state.selectedTipoCuenta?.key && this.state.selectedTipoCuenta.key !== "Todos") {
                 data_mejorada = data_mejorada.filter(
-                    m => !m.stock || m.stock === 0
+                    m => m?.tipo_producto?.tipo === this.state.selectedTipoCuenta.key
                 );
             }
-            if (this.state.selectedTipoCuenta && this.state.selectedTipoCuenta.key && this.state.selectedTipoCuenta.key !== "Todos") {
+
+            if (this.state.selectedTipoModelo?.key && this.state.selectedTipoModelo.key !== "Todos") {
                 data_mejorada = data_mejorada.filter(
-                    m => m.tipo_producto?.tipo === this.state.selectedTipoCuenta.key
+                    m => m?.tipo_producto?.descripcion === this.state.selectedTipoModelo.key
                 );
             }
-            if (this.state.selectedTipoModelo && this.state.selectedTipoModelo.key && this.state.selectedTipoModelo.key !== "Todos") {
-                data_mejorada = data_mejorada.filter(
-                    m => m.tipo_producto?.descripcion === this.state.selectedTipoModelo.key
-                );
-            }
+
             this.modelos = data_mejorada;
             return data_mejorada;
+
         } catch (error) {
-            console.log(error)
+            console.error("Error grave en loadData():", error);
+
+            // Opción 1 - más segura y común
+            SPopup.alert(
+                "Error al cargar modelos",
+                "No se pudieron cargar los datos.\n\n" + (error?.message || "Error desconocido")
+            );
+
+            // Opción 2 - si tu versión usa un solo string
+            SPopup.alert(
+                "Error al cargar modelos: " + (error?.message || "Error desconocido")
+            );
+
+            return [];
         }
     }
+    // async loadData() {
+    //     try {
+    //         const monedas = await MDL.empresa.getMonedas();
+    //         const modelos = await MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "");
+    //         const clientes = await MDL.crm.cliente.getAll();
+    //         let data_mejorada = modelos.map(e => ({
+    //             ...e,
+    //             compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
+    //             venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || {},
+    //             contactos: e.contactos?.map(contacto => ({
+    //                 ...contacto,
+    //                 cliente: clientes.find(a => a?.key === contacto.key_cliente) || {},
+    //             }))
+    //         })
+    //         );
+    //         if (this.state.selectedStock.key === "con_stock") {
+    //             data_mejorada = data_mejorada.filter(m => m.stock > 0);
+    //         }
+    //         if (this.state.selectedStock.key === "sin_stock") {
+    //             data_mejorada = data_mejorada.filter(
+    //                 m => !m.stock || m.stock === 0
+    //             );
+    //         }
+    //         if (this.state.selectedTipoCuenta && this.state.selectedTipoCuenta.key && this.state.selectedTipoCuenta.key !== "Todos") {
+    //             data_mejorada = data_mejorada.filter(
+    //                 m => m.tipo_producto?.tipo === this.state.selectedTipoCuenta.key
+    //             );
+    //         }
+    //         if (this.state.selectedTipoModelo && this.state.selectedTipoModelo.key && this.state.selectedTipoModelo.key !== "Todos") {
+    //             data_mejorada = data_mejorada.filter(
+    //                 m => m.tipo_producto?.descripcion === this.state.selectedTipoModelo.key
+    //             );
+    //         }
+    //         this.modelos = data_mejorada;
+    //         return data_mejorada;
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
+
     renderColorPreview(nombre: string, color: string) {
         const displayName = nombre?.trim() || "Etiqueta de ejemplo";
         const backgroundColor = `${color}33`;
@@ -147,13 +210,13 @@ export default class table extends Component {
                 </SView>
             </SView>
             <SHr height={8} />
-            <SView row style={{ gap: 16, flexWrap: "wrap", paddingHorizontal: 4 }}>
+            {/* <SView row style={{ gap: 16, flexWrap: "wrap", paddingHorizontal: 4 }}>
                 <SText fontSize={13} color={STheme.color.lightGray}> Almacén: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedAlmacen?.nombre || "Todos"} </SText> </SText>
                 <SText fontSize={13} color={STheme.color.lightGray}> Stock: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedStock?.nombre || "Todos"} </SText> </SText>
                 <SText fontSize={13} color={STheme.color.lightGray}> Tipo cuenta: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedTipoCuenta?.nombre || "Todos"} </SText> </SText>
                 <SText fontSize={13} color={STheme.color.lightGray}> otr: <SText fontSize={13} bold color={STheme.color.text}> {this.state.selectedTipoModelo?.nombre || "Todos"} </SText> </SText>
             </SView>
-            <SHr height={8} />
+            <SHr height={8} /> */}
             <DinamicTable key={"tabla_modelo"}
                 ref={ref => this.table = ref}
                 {...Config.table.applyTheme()}

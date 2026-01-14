@@ -274,7 +274,7 @@ export default class ReporteConteoInventario extends Component {
             <DinamicTable.Col key="total_perdida" label="T. Pérdidas" center width={80} data={(e) => e.row?.total_perdida || "0"}
                 cellStyle={{ backgroundColor: STheme.color.danger + "33" }}
                 textStyle={{ fontWeight: "bold" }}
-                customComponent={e => <SText style={e.textStyle} center color={(e.row?.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_perdida}</SText>}
+                customComponent={e => <SText style={e.textStyle} center color={(e.row?.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_perdida ? e.row?.total_perdida : null}</SText>}
             />
             <DinamicTable.Col key="total_perdida_costo" label="Costo Pérdidas" center width={100} data={(e) => e.row?.total_perdida_costo || "0"}
                 cellStyle={{ backgroundColor: STheme.color.danger + "33" }}
@@ -292,33 +292,57 @@ export default class ReporteConteoInventario extends Component {
             <DinamicTable.Col key="total_baja" label="T.Baja" width={80} data={(e) => e.row?.total_baja || "0"}
                 cellStyle={{ backgroundColor: STheme.color.warning + "33" }}
                 textStyle={{ fontWeight: "bold" }}
-                customComponent={e => <SText style={e.textStyle} center color={(e.row.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_baja}</SText>}
+                customComponent={e => <SText style={e.textStyle} center color={(e.row.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_baja ? e.row?.total_baja : null}</SText>}
             />
             <DinamicTable.Col key="total_baja_costo" label="T.Baja Costo" width={90} data={(e) => e.row?.total_baja_costo || "0"}
                 cellStyle={{ backgroundColor: STheme.color.warning + "33" }}
                 textStyle={{ fontWeight: "bold" }}
                 customComponent={(e) => {
+
                     return (e.row.total_baja_costo ?
-                        <SText style={e.textStyle} color={(e.row.total_perdida >= 1) ? STheme.color.text : STheme.color.lightGray}> {SMath.formatMoney(e.row.total_baja_costo, 2, "Bs ", "bolivianos")}  </SText>
+                        <SView col={"xs-12"} row center  >
+                            <SIconApp name='Egreso' width={10} />
+                            <SView width={8} />
+                            <SText style={e.textStyle} color={(e.row.total_baja >= 1) ? STheme.color.text : STheme.color.lightGray}>{SMath.formatMoney(e.row.total_baja_costo, 2, "Bs ", "bolivianos")}</SText>
+                        </SView>
+                        : null);
+
+                    // return (e.row.total_baja_costo ?
+                    //     <SText style={e.textStyle} color={(e.row.total_baja >= 1) ? STheme.color.text : STheme.color.lightGray}> {SMath.formatMoney(e.row.total_baja_costo, 2, "Bs ", "bolivianos")}  </SText>
+                    //     : null);
+                }}
+            />
+
+
+            <DinamicTable.Col key="total_excedente" label="T.Excedente" width={80} data={(e) => e.row?.total_excedente || "0"}
+                cellStyle={{ backgroundColor: STheme.color.success + "33" }}
+                textStyle={{ fontWeight: "bold" }}
+                customComponent={e => <SText style={e.textStyle} center color={(e.row.total_excedente >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_excedente ? e.row?.total_excedente : null}</SText>}
+            />
+
+
+
+            <DinamicTable.Col key="total_excedente_costo" label="T.Excedente Costo" width={90} data={(e) => e.row?.total_excedente_costo || "0"}
+                cellStyle={{ backgroundColor: STheme.color.success + "33" }}
+                textStyle={{ fontWeight: "bold" }}
+
+                // customComponent={e => <SText style={e.textStyle} center color={(e.row.total_excedente >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_excedente_costo ? SMath.formatMoney(e.row.total_excedente_costo, 2, "Bs ", "bolivianos") : "00"}</SText>}
+
+                customComponent={(e) => {
+                    // return (e.row.total_excedente_costo ?
+                    //     <SText style={e.textStyle} color={(e.row.total_excedente >= 1) ? STheme.color.text : STheme.color.lightGray}> {e.row.total_excedente_costo ? (SMath.formatMoney(e.row.total_excedente_costo, 2, "Bs ", "bolivianos")) : "0ss"}  </SText>
+                    //     : null);
+                    return (e.row.total_excedente_costo ?
+                        <SView col={"xs-12"} row center  >
+                            <SIconApp name='Ingreso' width={10} />
+                            <SView width={8} />
+                            <SText style={e.textStyle} color={(e.row.total_excedente >= 1) ? STheme.color.text : STheme.color.lightGray}>{SMath.formatMoney(e.row.total_excedente_costo, 2, "Bs ", "bolivianos")}</SText>
+                        </SView>
                         : null);
                 }}
             />
-            <DinamicTable.Col key="total_excedente" label="T.Excedente" width={90} data={(e) => e.row?.total_excedente || "0"}
-                cellStyle={{ backgroundColor: STheme.color.success + "33" }}
-                textStyle={{ fontWeight: "bold" }}
-                customComponent={e => <SText style={e.textStyle} center color={(e.row.total_excedente >= 1) ? STheme.color.text : STheme.color.lightGray}>{e.row?.total_excedente}</SText>}
-            />
-            <DinamicTable.Col key="total_excedente_costo" label="T.Excedente Costo" width={110} data={(e) => e.row?.total_excedente_costo || "0"}
-                cellStyle={{ backgroundColor: STheme.color.success + "33" }}
-                textStyle={{ fontWeight: "bold" }}
-                customComponent={(e) => {
-                    return <SView col={"xs-12"} row center  >
-                        <SIconApp name='Ingreso' width={10} />
-                        <SView width={8} />
-                        <SText style={e.textStyle} color={(e.row.total_excedente_costo >= 1) ? STheme.color.text : STheme.color.lightGray}>{SMath.formatMoney(e.row.total_excedente_costo, 2, "Bs ", "bolivianos")}</SText>
-                    </SView>
-                }}
-            />
+
+
 
             <DinamicTable.Col
                 key="estado"
@@ -372,7 +396,7 @@ export default class ReporteConteoInventario extends Component {
                                 </SView>
                             </SView>
                             <SView width={5} />
-                            <SText  style={e.textStyle} center color={STheme.color.lightGray}>{e.row?.usuario?.Nombres}</SText>
+                            <SText style={e.textStyle} center color={STheme.color.lightGray}>{e.row?.usuario?.Nombres}</SText>
                         </SView> : null}
                 </>}
             />

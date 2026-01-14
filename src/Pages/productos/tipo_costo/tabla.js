@@ -9,10 +9,6 @@ import FloatButtom from '../../../Components/FloatButtom';
 import FloatMenu from '../../../Components/FloatMenu';
 import SIconApp from '../../../Assets/SIconApp';
 import PopupAgregarTipoCosto from './Components/PopupAgregarTipoCosto';
-// import FloatButtom from '../Components/FloatButtom';
-// import TestPopup from './TestPopup';
-// import FloatMenu from '../Components/FloatMenu';
-// import SIconApp from '../Assets/SIconApp';
 export default class Test extends Component {
     constructor(props) {
         super(props);
@@ -135,7 +131,7 @@ export default class Test extends Component {
                     })
                     Menu.push({
                         icon: <SIconApp name='crmeliminar' fill='#ed3a4318' stroke='#ed3a43' width={20} />,
-                        label: "Eliminar Almacen",
+                        label: "Eliminar Tipo de Costo",
                         onPress: () => {
                             SPopup.confirm({
                                 title: "Eliminar Tipo de Costo",
