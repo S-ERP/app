@@ -102,6 +102,8 @@ import tabla from "./habilidad";
 import Suscriptores from "./cliente/suscriptores";
 import suscriptores from "./cliente/suscriptores";
 import Suscriptores100 from "./cliente/Suscriptores100";
+import asistencia from "./asistencia";
+
 export default SPage.combinePages("/", {
   // "":Example,
   // "":three,
@@ -197,4 +199,5 @@ export default SPage.combinePages("/", {
   ...pasarela,
   ...contactos,
   ...tableros,
+  ...asistencia,
 });
