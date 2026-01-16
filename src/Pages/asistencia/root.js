@@ -16,24 +16,9 @@ export default class root extends React.Component {
         this.loadData().then((data) => {
             this.setState({ clientes: data });
         });
-
-        // SSocket.sendPromise({
-        //     service: "inventario",
-        //     component: "suscripcion",
-        //     estado: "cargando",
-        //     type: "getByKeyCliente",
-        //     key_cliente: "e68dffe3-6b6a-4190-8617-5ce2e49c80c1"
-
-        // }).then(e => {
-
-        //     console.log(e);
-        // }).catch(e => {
-        //     console.error(e);
-        // })
     }
     async loadData() {
         const contactos = await MDL.crm.cliente.getAll();
-
         return contactos;
     }
     setResultado = (data) => {
@@ -75,7 +60,6 @@ export default class root extends React.Component {
                 {this.state.resultado && <SView col={"xs-12"} card padding={15}>
                     <SText>Resultado:</SText>
                     <SHr width={30} />
-                    {/* <SText>{JSON.stringify(this.state.resultado)}</SText> */}
                     <SView col={"xs-12"} row>
                         <SView width={70} height={70} center style={{ overflow: "hidden", borderRadius: 100, backgroundColor: STheme.color.card }} padding={5}>
                             <SImage src={SSocket.api.root + "usuario/" + this.state.resultado.key}
@@ -104,9 +88,6 @@ export default class root extends React.Component {
                                 <SText>{this.state.resultado.correo}</SText>
                             </SView>
                         </SView>
-
-
-
                     </SView>
                     <SHr height={20} />
                     <SView col={"xs-12"} style={{
@@ -192,8 +173,6 @@ export default class root extends React.Component {
                                     <SText center color={STheme.color.white}>Registrar asistencia</SText>
                                 </SView>
                             </SView>
-                            {/* <SView width={10} /> */}
-
                         </SView>}
 
 
@@ -233,12 +212,10 @@ const AgregarContacto = ({ clientes, onResultado }) => {
                     );
 
                     if (encontrado) {
-                        // ✅ existe: setea proveedor y limpia "nuevo"
                         console.log("encontrado", encontrado)
                         onResultado(encontrado);
 
                     } else {
-                        // ✅ no existe: habilita +
                         onResultado(null);
 
 
