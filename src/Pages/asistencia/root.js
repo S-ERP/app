@@ -1,19 +1,35 @@
 import React, { useState } from "react";
-import { SForm, SHr, SIcon, SImage, SInput, SNavigation, SPage, SText, STheme, SView } from "servisofts-component";
+import { SForm, SHr, SIcon, SImage, SInput, SNavigation, SPage, SText, STheme, SView, SDate } from "servisofts-component";
 import MDL from "../../MDL";
 
 import { Container } from "../../Components";
 import SSocket from "servisofts-socket";
+import Paquete from "servisofts-component/img/Paquete";
 
 export default class root extends React.Component {
     state = {
         clientes: [],
         resultado: null,
+        paquete: null,
     }
     componentDidMount() {
         this.loadData().then((data) => {
             this.setState({ clientes: data });
         });
+
+        // SSocket.sendPromise({
+        //     service: "inventario",
+        //     component: "suscripcion",
+        //     estado: "cargando",
+        //     type: "getByKeyCliente",
+        //     key_cliente: "e68dffe3-6b6a-4190-8617-5ce2e49c80c1"
+
+        // }).then(e => {
+
+        //     console.log(e);
+        // }).catch(e => {
+        //     console.error(e);
+        // })
     }
     async loadData() {
         const contactos = await MDL.crm.cliente.getAll();
@@ -22,6 +38,27 @@ export default class root extends React.Component {
     }
     setResultado = (data) => {
         this.setState({ resultado: data });
+        SSocket.sendPromise({
+            service: "inventario",
+            component: "suscripcion",
+            estado: "cargando",
+            type: "getByKeyCliente",
+            key_cliente: data.key
+
+        }).then(e => {
+            const hoy = new Date();
+            const vigente = e.data.filter(item => {
+                const inicio = new Date(item.fecha_inicio);
+                const fin = new Date(item.fecha_fin);
+
+                return hoy >= inicio && hoy <= fin;
+            });
+            console.log("paquete actual ", vigente)
+            this.setState({ paquete: vigente[0] });
+        }).catch(e => {
+            console.error(e);
+        })
+
     }
     render() {
         const now = new Date();
@@ -77,26 +114,88 @@ export default class root extends React.Component {
                         borderBottomWidth: 1,
                     }} />
                     <SHr height={20} />
-                    <SView col={"xs-12"}  >
-                        <SForm
-                            row
-                            style={{ justifyContent: "space-between" }}
-                            ref={ref => this.form = ref}
-                            col={"xs-12 sm-8 md-8 lg-8 xl-8"}
-                            inputs={{
-                                fecha_inicio: { col: "xs-5.5", label: "Fecha de Ingreso", type: "fecha", isRequired: true, defaultValue: new Date().toISOString().split("T")[0] },
-                                hora: { col: "xs-5.5", label: "Hora", type: "hour", isRequired: true, defaultValue: hora }
-                            }}
-
-                        />
-                        <SView width={120} height={40} center card backgroundColor={STheme.color.primary} onPress={() => {
-                            SNavigation.navigate("asistencia/nueva", { cliente: this.state.resultado });
-                        }}>
-                            <SText color={STheme.color.white}>Registrar entrada</SText>
+                    <SView col={"xs-12"} center>
+                        <SView width={200} height={40} padding={15} backgroundColor={this.state.paquete ? STheme.color.success + "60" : STheme.color.danger + "60"}
+                            style={{
+                                borderWidth: 1,
+                                borderColor: this.state.paquete ? STheme.color.success : STheme.color.danger,
+                                borderRadius: 4
+                            }} center>
+                            <SText bold fontSize={16}>{this.state.paquete ? "PAQUETE ACTIVO" : "PAQUETE INACTIVO"}</SText>
                         </SView>
-                        {/* <SView width={10} /> */}
-
                     </SView>
+                    <SHr height={20} />
+                    <SView col={"xs-12"} style={{
+                        borderBottomColor: STheme.color.card,
+                        borderBottomWidth: 1,
+                    }} />
+                    <SHr height={20} />
+                    {this.state.paquete?.producto &&
+                        <SView col={"xs-12"} row padding={15} style={{
+                            borderWidth: 1,
+                            borderColor: STheme.color.card,
+                            borderRadius: 4,
+                        }} backgroundColor={STheme.color.card}>
+                            <SView col={"xs-12"} row>
+                                <SText fonSize={16} color={STheme.color.lightGray}>Paquete:</SText>
+                                <SView width={5} />
+                                <SText fonSize={16} bold>{this.state.paquete?.producto?.nombre}</SText>
+                            </SView>
+                            <SHr />
+                            <SView col={"xs-6"} row>
+                                <SText fonSize={16} color={STheme.color.lightGray}>Fecha Inicio:</SText>
+                                <SView width={5} />
+                                <SText fonSize={16} bold>{new SDate(this.state.paquete?.fecha_inicio).toString("dd/MM/yyyy")}</SText>
+                            </SView>
+                            <SView col={"xs-6"} row>
+                                <SText fonSize={16} color={STheme.color.lightGray}>Fecha Fin:</SText>
+                                <SView width={5} />
+                                <SText fonSize={16} bold>{new SDate(this.state.paquete?.fecha_fin).toString("dd/MM/yyyy")}</SText>
+                            </SView>
+                        </SView>
+                    }
+                    <SHr height={20} />
+                    {this.state.paquete &&
+                        <SView col={"xs-12"} style={{
+                            borderWidth: 1,
+                            borderColor: STheme.color.warning,
+                            borderRadius: 4,
+                        }} padding={15}>
+                            <SForm
+                                row
+                                style={{ justifyContent: "space-between" }}
+                                ref={ref => this.form = ref}
+                                col={"xs-12 sm-8 md-8 lg-8 xl-8"}
+                                inputs={{
+                                    fecha_inicio: { col: "xs-5.5", label: "Fecha de Ingreso", type: "fecha", isRequired: true, defaultValue: new Date().toISOString().split("T")[0] },
+                                    hora: { col: "xs-5.5", label: "Hora", type: "hour", isRequired: true, defaultValue: hora }
+                                }}
+
+                            />
+                            <SView col={"xs-12"} style={{
+                                alignItems: "flex-end"
+                            }}>
+                                <SView width={150} height={40} center backgroundColor={STheme.color.primary} onPress={() => {
+                                    // SSocket.sendPromise({
+                                    //     service: "inventario",
+                                    //     component: "suscripcion",
+                                    //     estado: "cargando",
+                                    //     type: "getByKeyCliente",
+                                    //     key_cliente: data.key
+
+                                    // }).then(e => {
+                                    //     console.log(e)
+                                    // }).catch(e => {
+                                    //     console.error(e);
+                                    // })
+                                }} style={{ borderRadius: 4 }} >
+                                    <SText center color={STheme.color.white}>Registrar asistencia</SText>
+                                </SView>
+                            </SView>
+                            {/* <SView width={10} /> */}
+
+                        </SView>}
+
 
                 </SView>}
                 <SHr height={20} />
