@@ -185,7 +185,7 @@ class Stage extends Component {
                                 <SText fontSize={10}>Cerrar contacto</SText>
                             </SView>
                         </SView>}
-                        
+
                         <AgregarContacto estado={this.state.mostrar} clientes={clientesFiltrados} stage={stage} onAddCliente={onAddCliente} />
                     </SView>
 
@@ -252,13 +252,14 @@ const AgregarContacto = ({ estado, clientes, stage, onAddCliente }) => {
                             setVerBoton(true);
                         } else {
                             // ✅ no existe: habilita +
-                            proveedor = null;
+                            // proveedor = null;
+                            setProveedor(null);
                         }
                     }}
 
                 />
 
-          
+
                 {verBoton && (<SView col={"xs-12"} style={{ alignItems: "flex-end" }}>
                     <SHr h={8} />
                     <SView height={20} width={100} center style={{
@@ -266,7 +267,7 @@ const AgregarContacto = ({ estado, clientes, stage, onAddCliente }) => {
                         backgroundColor: STheme.color.primary,
                     }} onPress={() => {
                         if (proveedor) {
-                             MDL.crm.tipoCliente.addToCliente({
+                            MDL.crm.tipoCliente.addToCliente({
                                 key_cliente: proveedor.key,
                                 key_tipo_cliente: stage.key
                             }).then((response) => {
