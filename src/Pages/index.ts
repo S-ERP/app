@@ -99,10 +99,11 @@ import excel from "./excel";
 import tag from "./tag";
 import test3 from "./test3";
 import tabla from "./habilidad";
-import Suscriptores from "./cliente/suscriptores";
-import suscriptores from "./cliente/suscriptores";
+// import Suscriptores from "./cliente/suscriptores";
+// import suscriptores from "./cliente/suscriptores";
 import Suscriptores100 from "./cliente/Suscriptores100";
 import asistencia from "./asistencia";
+import Asistencias from "./cliente/Asistencias";
 
 export default SPage.combinePages("/", {
   // "":Example,
@@ -186,6 +187,7 @@ export default SPage.combinePages("/", {
   ...crm,
   "pdf/factura": factura,
   "suscriptores": Suscriptores100,
+  "asistencias": Asistencias,
   plantilla,
   Turnos,
   ...server,

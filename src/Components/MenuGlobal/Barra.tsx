@@ -152,6 +152,7 @@ export default class Barra extends React.Component {
                     >
                         <Page label={"Clientes"} url={"/cliente"} permiso="ver" />
                         <Page label={"Suscriptores"} url={"/suscriptores"} />
+                        <Page label={"Asistencias"} url={"/asistencias"} />
                         <Page label={"Historial de Ventas"} url={"/venta/tabla"} permiso="ver" permiso_url="/venta" />
                         {/* <Page label={"Ventas"} url={"/venta"} permiso="ver" /> */}
                         <Page label={"Descuento"} url={"/descuento"} permiso="ver" permiso_url="/descuento" />

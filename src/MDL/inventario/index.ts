@@ -5,13 +5,15 @@ import MDL from "..";
 import proveedor from "./proveedor";
 import tag from "./tag";
 import modelo_tag from "./modelo_tag";
+import asistencia from "./asistencia";
 
 export default class inventario extends MDLAbstract<EventListener> {
   async componentDidMount() { }
 
   proveedor = new proveedor();
   tag = new tag();
-  modelo_tag = new modelo_tag();
+  modelo_tag = new modelo_tag(); 
+  asistencia = new asistencia(); 
 
   TIPOS_DE_PRODUCTOS = [
     {
@@ -104,6 +106,20 @@ export default class inventario extends MDLAbstract<EventListener> {
   //   return Object.values(resp.data || {});
   // }
 
+    async getAllAsistencias() {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "asistencia",
+      type: "getAll",
+      key_empresa: MDL.empresa.select?.key,
+      // key_usuario: MDL.usuario.session?.key,
+      // key_cliente: key_cliente,
+    });
+    console.log("getModelosByCliente", resp.data);
+    return Object.values(resp.data || {});
+  }
+  
   async getModelosByCliente(key_cliente: string) {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
@@ -225,6 +241,27 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_usuario: MDL.usuario.session?.key,
     });
     return Object.values(resp.data || {});
+  }
+
+
+  async editSuscripcion(modelo_cliente: {
+    key?: string,
+    key_cliente: string,
+    fecha_inicio: string,
+    fecha_fin: string,
+    estado?: number
+  }) {
+    const resp: any = await SSocket.sendPromise({
+      version: "1.0",
+      service: "inventario",
+      component: "suscripcion",
+      type: "editar",
+      data: modelo_cliente,
+      key_empresa: MDL.empresa.select?.key,
+      key_usuario: MDL.usuario.session?.key,
+    });
+    return resp.data;
+
   }
 
   async getAllAlmacen() {
@@ -424,7 +461,7 @@ export default class inventario extends MDLAbstract<EventListener> {
 
   async saveTipoCosto(tipo_costo: any) {
     // console.clear();
-    console.log("%c" + JSON.stringify(tipo_costo),`color: #2ECC40; font-weight: bold;`);
+    console.log("%c" + JSON.stringify(tipo_costo), `color: #2ECC40; font-weight: bold;`);
     if (tipo_costo.key) {
       const resp: any = await SSocket.sendPromise({
         version: "1.0",
@@ -615,15 +652,33 @@ export default class inventario extends MDLAbstract<EventListener> {
     return resp.data;
     // }
   }
-  async getAll_reporte_conteo_inventario_detallado() {
+  async getAll_reporte_conteo_inventario_detallado(fecha_inicio: string, fecha_fin: string) {
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
       component: "conteo_manual_inventario",
       type: "getAll_reporte_conteo_inventario_detallado",
       key_empresa: MDL.empresa.select?.key,
+      fecha_inicio: fecha_inicio,
+      fecha_fin: fecha_fin,
     });
     return resp.data;
   }
+
+
+  // async getContactosByModelo(_key_modelo: string) {
+  //   const resp: any = await SSocket.sendPromise({
+  //     service: "inventario",
+  //     component: "reporte",
+  //     type: "execute_function",
+  //     func: "_get_contactos_bymodelo",
+  //     params: ["'" + _key_modelo + "'"],
+
+  //   });
+  //   console.log("_get_contactos_bymodelo", resp.data);
+  //   return Object.values(resp.data || {});
+  // }
+
+
   async getByKey_reporte_conteo_inventario_detallado(key_contador: any) {
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
