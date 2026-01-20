@@ -48,17 +48,18 @@ export default class FiltroSelector extends Component {
         const { options, selectedKey } = this.state;
 
         return (
-            <SView col={"xs-12"} height={48} style={{ paddingHorizontal: 4 }}>
-                <SText fontSize={9} color={STheme.color.lightGray} style={{ marginBottom: 3, marginLeft: 2 }} bold>
+            <SView col={"xs-12"} height={48} backgroundColor="transparent" style={{ paddingHorizontal: 2, top:5 }}>
+                <SText fontSize={9} color={STheme.color.lightGray} style={{ marginBottom: 2, marginLeft: 2 }} bold>
                     {label.toUpperCase()}
                 </SText>
 
                 <SView
                     width={"100%"}
-                    height={32}
+                    height={38}
+                    
                     style={{
                         backgroundColor: STheme.color.card,
-                        borderRadius: 4,
+                        borderRadius: 2,
                         borderWidth: 1,
                         borderColor: STheme.color.lightGray + "40",
                         overflow: "hidden",

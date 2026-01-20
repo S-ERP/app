@@ -73,6 +73,21 @@ export default class factura extends MDLAbstract<EventListener> {
         }
         return this.siat;
     }
+
+   async getFacturasFiltro(fecha_inicio: string, fecha_fin: string) {
+    const resp: any = await SSocket.sendPromise({
+        service: "facturacion",
+        component: "reporte",
+        type: "execute_function",
+        func: "get_factura_filtro",
+        params: [
+            "'" + MDL.empresa.select?.key + "'",
+            "'" + fecha_inicio + "'",
+            "'" + fecha_fin + "'"
+        ],
+    });
+    return resp.data || [];
+}
     async getParametricas({ ambiente = 1 }: { ambiente?: number }) {
         await this.getSiat();
         if (ambiente == 2) return this.siat.parametricasPruebas as Parametricas;
