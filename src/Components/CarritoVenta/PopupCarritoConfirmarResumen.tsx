@@ -9,6 +9,7 @@ import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
 import SelectorCliente from "../Selectores/SelectorCliente";
 import SelecionarDescuento from "../../Pages/venta/Components/SelecionarDescuento";
+import almacen from "../../Model/inventario/almacen";
 
 
 type PopupCarritoConfirmarResumenProps = {
@@ -43,7 +44,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
     inputAlmacen: SelectorAlmacen | undefined;
     proveedor: any;
     inputCliente = null;
-    descuentoSeleccionado = null;
+    // descuentoSeleccionado = null;
     state: {
         almacen: any,
         moneda: any,
@@ -92,38 +93,16 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
 
     handleOnPress = async () => {
         try {
-            // const monedas = await MDL.empresa.getMonedas();
-            // const moneda = monedas.find((m: any) => m.tipo == "base");
-            // const key_moneda = "2f6b73df-8004-41c1-aa5f-1a81d79d1a8f"
 
+            const { montoMaximo, key_moneda, porcentajeDescuento, solo_para_caja, cliente, factura, almacen, descuentoSeleccionado } = this.props;
+            console.log("PROPS EN RESUMEN resumen", this.props)
 
-            // const key_moneda = this.state.moneda.key
-            // const almacen = this.state.almacen;
-            // if (!almacen) {
-            //     throw "Debe seleccionar un almacen"
-            // }
-            // if (!key_moneda) {
-            //     throw "Debe seleccionar una moneda"
-            // }
-            // let subtotal = MDL.carrito.carrito_venta.monto_total
-            // let montoTotal_MN = parseFloat(subtotal.toFixed(2));
-            // let porcentajeDescuento = 0;
-            // if (this.descuentoSeleccionado) {
-            //     if (this.descuentoSeleccionado?.porcentaje) {
-            //         console.log(this.descuentoSeleccionado?.porcentaje)
-            //         porcentajeDescuento = this.descuentoSeleccionado?.porcentaje;
-            //         montoTotal_MN -= Math.round((montoTotal_MN * porcentajeDescuento) * 100) / 100;
-            //     }
-            // }
-            // console.log(montoTotal_MN)
-           
-             const { montoMaximo, key_moneda, porcentajeDescuento, solo_para_caja, cliente, factura, almacen } = this.props;
             SelectTipoPago.openPopup({
                 key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
                 // montoMaximo: MDL.carrito.carrito_venta.monto_total,
                 montoMaximo: montoMaximo,
                 key_moneda: key_moneda,
-                onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda),
+                onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda, cliente, factura, almacen, porcentajeDescuento, descuentoSeleccionado),
                 solo_para_caja: solo_para_caja,
 
             });
@@ -138,14 +117,13 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             });
         }
     }
-    handleSubmit = async (tipos_pago: any, key_moneda: string) => {
+    handleSubmit = async (tipos_pago: any, key_moneda: string, cliente: any, factura: boolean, almacen_: any, porcentajeDescuento: any, descuentoSeleccionado: any) => {
         try {
-            const almacen = this.props.almacen;
+            const almacen = almacen_;
             // const almacen = this.state.almacen;
             if (!almacen) {
                 throw "Debe seleccionar un almacen"
             }
-
 
             const detalle = MDL.carrito.carrito_venta.items.map((ci) => {
                 return {
@@ -153,23 +131,37 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     "precio_unitario": ci.precio,
                     "precio_unitario_base": ci.precio,
                     "detalle": "",
-                    "descuento": 0,
+                    // "descuento": porcentajeDescuento,
                     "descripcion": ci.modelo.descripcion,
                     "key_modelo": ci.modelo.key,
-                    "moneda": key_moneda,
+                    // "moneda": key_moneda,
                     // @
-                    "key_modelo_cliente": ci?.key_modelo_cliente
+                    // "key_modelo_cliente": ci?.key_modelo_cliente
                 }
             })
+            // const caja = {
+            //     subtotal: SMath.formatMoney(subtotalMoneda, 2),
+            //     iva: SMath.formatMoney(this.props.totalImpuesto, 2), // Corregido: Usar totalImpuesto
+            //     descuento: SMath.formatMoney(descuento || 0, 2),
+            //     monto_total: SMath.formatMoney(totalFinal, 2), // Usar totalFinal directamente
+            //     montoRecibido: SMath.formatMoney(recibi, 2),
+            //     cambio: SMath.formatMoney(recibi - totalFinal, 2),
+            //     conFactura: factura ? true : false,
+            //     tipos_pago: tipos_pago,
+            //     monto_factura: factura ? SMath.formatMoney(totalFinal, 2) : SMath.formatMoney(0, 2),
+            //     monedaSymbol: this.props.monedaSymbol || 'Bs', // Incluir el símbolo de la moneda
+            // };
             const data = {
                 "descripcion": "Venta De Prueba Ricky",
                 "observacion": "Observacion de la venta de prueba ricky",
-                "facturar": this.state.factura ? true : false,
+                // "facturar": this.state.factura ? true : false,
+                "facturar": factura ? true : false,
                 cliente: {
-                    nit: this.inputNit?.getValue() || "",
-                    razon_social: this.inputRazonSocial?.getValue() || ""
+                    nit: cliente?.nit || "",
+                    razon_social: cliente?.razon_social || ""
                 },
-                "key_cliente": this.proveedor?.key,
+                descuentos: descuentoSeleccionado || [],
+                "key_cliente": cliente?.key,
                 "key_usuario": MDL.usuario.session?.key,
                 "facturar_luego": false,
                 "key_caja": MDL.caja.activa?.key,
@@ -199,6 +191,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             SelectTipoPago.closePopup();
             SNotification.remove("venta_rapida");
             SPopup.close("PopupCarritoConfirmar");
+            SPopup.close("PopupCarritoConfirmarResumen");
             SPopup.close("PopupCarrito");
             MDL.carrito.limpiarCarritoVentas();
             MDL.carrito.limpiarCarritoCompras();//este esta limpinado el carrito lateral..... pronto se borrara
@@ -229,9 +222,9 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         // console.log(this.state.descuentos)
         // const items = MDL.carrito.carrito_compra.items;
         // const { (factura )} = this.props
-        console.log("RENDER POPUP RESUMEN", this.props)
         // const { montoMaximo, key_moneda, porcentajeDescuento } = this.props;
-        const { montoMaximo, key_moneda, porcentajeDescuento, solo_para_caja, cliente, factura } = this.props;
+        console.log("PROPS EN RESUMEN resumen RENDER", this.props)
+        const { montoMaximo, key_moneda, porcentajeDescuento, solo_para_caja, cliente, factura, moneda, almacen, subtotal, descuentoSeleccionado } = this.props;
         return <SView col={"xs-12"} height>
             < SHr />
 
@@ -271,9 +264,60 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                             <SText color={STheme.color.lightGray}>NIT:</SText>
                             <SView width={8} />
                             <SText>{cliente?.nit}</SText>
+                            <SHr h={20} />
                         </SView>}
-                         <SHr h={20} />
+
                         <SView col={"xs-12"} row >
+                            <SText color={STheme.color.lightGray}>Almacen:</SText>
+                            <SView width={8} />
+                            <SText>{almacen?.descripcion}</SText>
+                        </SView>
+                        <SHr h={10} />
+                        <SView col={"xs-12"} row >
+                            <SText color={STheme.color.lightGray}>Descuento:</SText>
+                            <SView width={8} />
+                            <SText>{porcentajeDescuento}</SText>
+                        </SView>
+                        <SHr h={20} />
+
+
+                        <SView
+                            col={"xs-12"}
+                            border={STheme.color.card}
+                            style={{ borderRadius: 8, padding: 8, borderWidth: 2 }}
+                            height={100}
+                        >
+                            <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
+                                <SText fontSize={13} color={STheme.color.text}>Subtotal:</SText>
+                                <SText fontSize={13} bold color={STheme.color.text}>
+                                    {moneda.observacion} {SMath.formatMoney(subtotal, 2)}
+                                </SText>
+                            </SView>
+                            {/* <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
+                                <SText fontSize={12} color={STheme.color.text}>
+                                    IVA ({numeroIva}%)
+                                </SText>
+                                <SText fontSize={13} color={STheme.color.text}>
+                                    + {moneda.monedaSymbol} {SMath.formatMoney(totalImpuesto, 2)}
+                                </SText>
+                            </SView> */}
+                            <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
+                                <SText fontSize={12} color={STheme.color.text}>Descuento:</SText>
+                                <SText fontSize={13} color={STheme.color.text}>
+                                    - {moneda.observacion} {SMath.formatMoney((subtotal * porcentajeDescuento) || 0, 2)}
+                                </SText>
+                            </SView>
+                            <SHr height={3} />
+                            <SView col={"xs-12"} style={{ borderColor: STheme.color.gray, borderBottomWidth: 2 }} />
+                            <SHr height={5} />
+                            <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4, padding: 3 }}>
+                                <SText fontSize={18} color={STheme.color.text}>Total:</SText>
+                                <SText fontSize={18} bold color={STheme.color.text}>
+                                    {moneda.observacion} {SMath.formatMoney(montoMaximo, 2)}
+                                </SText>
+                            </SView>
+                        </SView>
+                        {/* <SView col={"xs-12"} row >
                             <SText color={STheme.color.lightGray}>Descuento:</SText>
                             <SView width={8} />
                             <SText>{porcentajeDescuento}</SText>
@@ -283,7 +327,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                             <SText color={STheme.color.lightGray}>Monto total:</SText>
                             <SView width={8} />
                             <SText>{montoMaximo}</SText>
-                        </SView>
+                        </SView> */}
 
 
 
@@ -308,7 +352,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             <SHr h={1} color={STheme.color.card} />
             <SView col={"xs-12"} row center height={40}>
                 <SView padding={8} card onPress={() => {
-                    
+
 
 
                     // console.clear();
