@@ -12,6 +12,7 @@ import SelecionarDescuento from "../../Pages/venta/Components/SelecionarDescuent
 import PopupCarritoConfirmarResumen from "./PopupCarritoConfirmarResumen";
 import cliente from "../../Model/crm/cliente";
 import factura from "../../Pages/compra/detalle/profile/factura";
+import descuento from "../../Pages/descuento";
 
 
 type PopupCarritoConfirmarProps = {
@@ -109,6 +110,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             let subtotal = MDL.carrito.carrito_venta.monto_total
             let montoTotal_MN = parseFloat(subtotal.toFixed(2));
             let porcentajeDescuento = 0;
+
+           
+
+            let descuentos = [];
             if (this.descuentoSeleccionado) {
                 if (this.descuentoSeleccionado?.porcentaje) {
                     console.log(this.descuentoSeleccionado?.porcentaje)
@@ -116,16 +121,21 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     montoTotal_MN -= Math.round((montoTotal_MN * porcentajeDescuento) * 100) / 100;
                     // montoTotal_ME -= Math.round((montoTotal_ME * porcentajeDescuento) * 100) / 100;
                 }
+                descuentos = [this.descuentoSeleccionado];
             }
             console.log(montoTotal_MN)
             PopupCarritoConfirmarResumen.open({
+                subtotal: subtotal,
                 montoMaximo: montoTotal_MN,
                 key_moneda: key_moneda,
                 porcentajeDescuento: porcentajeDescuento,
+                descuentoSeleccionado: descuentos,
+
                 // onConfirm: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda),
                 solo_para_caja: false,
                 cliente: this.proveedor,
                 factura: this.state.factura,
+                moneda: this.state.moneda,
                 almacen: almacen,
             })
 
@@ -365,10 +375,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                             }).catch((err) => {
                                                 console.error("Error al registrar cliente:", err);
                                                 SNotification.send({
-                                                    title: "Error",
-                                                    body: "No se pudo registrar el cliente.",
-                                                    time: 3000,
-                                                    color: STheme.color.danger,
+                                                    title: "Error, no se pudo crear el cliente",
+                                                    body: err.error,
+                                                    color: STheme.color.error,
+                                                    time: 5000,
                                                 });
                                             });
                                         }}
