@@ -2,9 +2,7 @@ import React, { Component } from "react";
 import { SPopup, SView, SText, STheme, SForm, SHr, SNotification, SImage } from "servisofts-component";
 import MDL from "../../../MDL";
 import SSocket from "servisofts-socket";
-import { Container } from "../../../Components";
 import SIconApp from "../../../Assets/SIconApp";
-
 type Props = {
     onSuccess?: () => void
 }
@@ -23,7 +21,6 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
         SPopup.open({
             key: "PopupRegistrarAsistencia",
             content: (
-
                 <SView style={{
                     width: "100%",
                     height: 550,
@@ -34,7 +31,6 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                     borderWidth: 1,
                     backgroundColor: STheme.color.background
                 }} withoutFeedback >
-
                     <PopupRegistrarAsistencia {...props} />
                 </SView>
             ),
@@ -79,24 +75,6 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
         }).catch(console.error);
     };
 
-    // setResultado = (cliente: any) => {
-    //     this.setState({ resultado: cliente });
-    //     if (!cliente) return;
-
-    //     // Traer paquete activo
-    //     MDL.inventario.suscripcion.getByKeyCliente(cliente.key)
-    //         .then((res: any) => {
-    //             const hoy = new Date();
-    //             const vigente = res?.data?.filter((item: any) => {
-    //                 const inicio = new Date(item.fecha_inicio);
-    //                 const fin = new Date(item.fecha_fin);
-    //                 return hoy >= inicio && hoy <= fin;
-    //             });
-    //             this.setState({ paquete: vigente[0] || null });
-    //         })
-    //         .catch(console.error);
-    // };
-
     registrarAsistencia = () => {
         if (!this.state.resultado || !this.state.paquete || !this.state.selectedSucursal) {
             SNotification.send({
@@ -138,19 +116,13 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
         return (
             <SView col={"xs-12"} center padding={16}>
                 <SText fontSize={16}>{"Registrar Aistsencia"}</SText>
-
-
                 <SView col="xs-12" padding={10}>
                     <SText bold>Buscar Cliente</SText>
                     <AgregarContacto clientes={this.state.clientes} onResultado={this.setResultado} />
                 </SView>
-
                 {this.state.resultado && (
                     <>
-                        {/* CONTENEDOR PRINCIPAL */}
                         <SView col="xs-12" padding={10}>
-
-                            {/* CARD CLIENTE */}
                             <SView col="xs-12" row
                                 style={{
                                     paddingHorizontal: 12,
@@ -161,13 +133,11 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                                     backgroundColor: STheme.color.background,
                                 }}
                             >
-                                {/* AVATAR */}
                                 <SView style={{ width: 64, height: 64, borderRadius: 64, overflow: "hidden", backgroundColor: STheme.color.card, }} >
                                     <SImage src={SSocket.api.root + "usuario/" + this.state.resultado.key} style={{ resizeMode: "cover" }} enablePreview />
                                 </SView>
                                 <SView width={8} />
-                                {/* DATOS CLIENTE */}
-                                <SView col="xs-6" justify="center"   >
+                                <SView col="xs-6" justify="center">
                                     <SView col={"xs-12"} row>
                                         <SText color={STheme.color.lightGray}>Nombres: </SText>
                                         <SText color={STheme.color.text} bold>{this.state.resultado.nombres ?? "---"}</SText>
@@ -186,24 +156,16 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                                     </SView>
                                 </SView>
                                 <SView width={8} />
-                                {/* ESTADO PAQUETE */}
-                                <SView flex center   >
+                                <SView flex center>
                                     <SView padding={8} center style={{ borderRadius: 4, borderWidth: 1, borderColor: this.state.paquete ? STheme.color.success : STheme.color.danger, backgroundColor: (this.state.paquete ? STheme.color.success : STheme.color.danger) + "30", }} >
                                         <SText bold fontSize={11} center>PAQUETE {this.state.paquete ? "ACTIVO" : "INACTIVO"} </SText>
                                     </SView>
                                 </SView>
                             </SView>
-
                             <SHr height={16} />
-
-                            {/* FORM / MENSAJE */}
                             <SView
                                 col="xs-12"
                                 padding={14}
-                                // style={{
-                                //     borderRadius: 8,
-                                //     backgroundColor: STheme.color.card,
-                                // }}
                                 style={{
                                     paddingHorizontal: 12,
                                     paddingVertical: 18,
@@ -215,7 +177,6 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                             >
                                 {this.state.paquete ? (
                                     <>
-
                                         <SForm
                                             ref={ref => this.form = ref}
                                             row
@@ -231,8 +192,6 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                                                             <SIconApp name="Evento" fill={STheme.color.lightGray} />
                                                         </SView>
                                                     ),
-
-
                                                 }
                                                 ,
                                                 hora: {
@@ -242,7 +201,6 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                                                             <SIconApp name="history" fill={STheme.color.lightGray} />
                                                         </SView>
                                                     ),
-
                                                 },
                                                 sucursal: {
                                                     col: "xs-12",
@@ -258,11 +216,8 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                                             }}
                                         />
                                         <SHr height={8} />
-
                                         {this.state.paquete && (
-                                            <SView col="xs-12"   >
-                                                {/* <SView col="xs-12" style={{ alignItems: "flex-end" }} > */}
-                                                {/* <SView width={180} height={40} center backgroundColor={"#292929"} onPress={this.registrarAsistencia} style={{ borderRadius: 4 }}> */}
+                                            <SView col="xs-12">
                                                 <SView width={"100%"} height={40} center backgroundColor={"#292929"} onPress={this.registrarAsistencia} style={{ borderRadius: 4 }}>
                                                     <SText color={STheme.color.white} bold>Registrar asistencia</SText>
                                                 </SView>
@@ -276,7 +231,6 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                                         card
                                         style={{
                                             borderRadius: 6,
-                                            // backgroundColor: STheme.color.card + "30",
                                         }}
                                     >
                                         <SText bold color={STheme.color.lightGray + "30"}>
@@ -285,27 +239,18 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                                     </SView>
                                 )}
                             </SView>
-
-
-
                         </SView>
                     </>
                 )}
-
-
-
             </SView>
         );
     }
 }
-
-// Componente para buscar cliente
 const AgregarContacto = ({ clientes, onResultado }) => {
     return (
-        <SView row col="xs-12" height={54} center style={{ marginTop: 8,padding: 5, borderWidth: 1, borderColor: STheme.color.card, borderRadius: 8 }}>
+        <SView row col="xs-12" height={54} center style={{ marginTop: 8, padding: 5, borderWidth: 1, borderColor: STheme.color.card, borderRadius: 8 }}>
             <SForm
-            // style={}
-            backgroundColor="transparent"
+                backgroundColor="transparent"
                 inputs={{
                     cliente: {
                         type: "select2",
