@@ -8,15 +8,20 @@ import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
 import PopupCrearCliente from './Components/PopupCrearCliente';
 import SIconApp from '../../Assets/SIconApp';
+import label from '../ajustes/label';
 import AdminsitrarHabilidades from './Components/AdministrarHabilidades';
+
 const URL = "/crm/cliente";
+
 export default class ListaClientes extends Component {
     onSelect = SNavigation.getParam("onSelect");
     componentDidMount() {
+        // Verificar permiso de visualización
         MDL.rolesPermisos
             .getPermisoAsync({ url: URL, permiso: 'ver' })
             .then(e => {
                 if (!e) {
+                    // SNavigation.goBack();
                     return;
                 }
                 this.forceUpdate();
@@ -31,12 +36,19 @@ export default class ListaClientes extends Component {
                 });
             });
     }
+
+    /**
+     * Carga los datos iniciales de clientes, usuarios y transacciones.
+     * @returns {Promise<Array>} Lista de clientes con sus datos asociados.
+     */
     async loadInitialData() {
         try {
+            // Cargar clientes y transacciones en paralelo
             const [clientes, transacciones] = await Promise.all([
                 MDL.crm.cliente.getAll(),
-                MDL.compra_venta.getTransaccion('venta', '2024-09-01', '2036-09-05'),
+                MDL.compra_venta.getTransaccion('venta', '2024-09-01', '2026-09-05'),
             ]);
+
             if (!clientes || !Object.keys(clientes).length) {
                 SNotification.send({
                     title: 'Advertencia',
@@ -46,6 +58,7 @@ export default class ListaClientes extends Component {
                 });
                 return [];
             }
+
             if (!transacciones || !transacciones.length) {
                 SNotification.send({
                     title: 'Advertencia',
@@ -54,6 +67,8 @@ export default class ListaClientes extends Component {
                     color: STheme.color.warning,
                 });
             }
+
+            // Obtener usuarios asociados a los clientes
             const keysUsuarios = Object.values(clientes)
                 .map(c => c.key_usuario)
                 .filter(Boolean);
@@ -61,8 +76,16 @@ export default class ListaClientes extends Component {
             if (!usuarios || !Object.keys(usuarios).length) {
                 console.warn('No se encontraron usuarios para los clientes.');
             }
+
+            // Obtener resumen de cuotas
             const registros = await MDL.compra_venta.getCuotasResumenTotal_ventas();
+
             const habilidad = await MDL.habilidad.getAllWithUsuarios();
+            // result.forEach(user => {
+            //     const habilidadesUsuario = habilidad.filter(hab => hab.key_usuarios?.includes(user.key));
+            //     user.habilidades = habilidadesUsuario;
+            // });
+            // Mapear clientes con sus datos asociados
             return Object.values(clientes).map(cliente => {
                 cliente.usuario = usuarios.find(u => u.key === cliente.key_usuario) || null;
                 cliente.resumen_cuota = registros.find(r => r.key_cliente === cliente.key) || null;
@@ -81,6 +104,11 @@ export default class ListaClientes extends Component {
             return [];
         }
     }
+
+    /**
+     * Renderiza la tabla dinámica de clientes.
+     * @returns {JSX.Element} Componente de la tabla.
+     */
     mostrarTabla() {
         return (
             <DinamicTable
@@ -95,15 +123,14 @@ export default class ListaClientes extends Component {
                 textStyle={Config.table.textStyle()}
                 loadData={() => this.loadInitialData()}
                 loadInitialState={async () => ({
-                    sorters: [
-                        { key: "estado_pago", order: "asc", type: "string" },
-                        { key: "nombre_completo", order: "asc", type: "string" },
-                    ]
+                    sorters: [{ key: 'fecha_on', order: 'asc', type: 'date' }],
                 })}
                 onSelect={e => {
                     const { row, evt } = e;
                     const nombreCliente = `CLIENTE: ${row?.nombres ?? 'Sin nombre'}`;
                     const options = [];
+
+                    // Opción de editar cliente
                     if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
                         options.push({
                             label: 'Editar',
@@ -118,6 +145,8 @@ export default class ListaClientes extends Component {
                             },
                         });
                     }
+
+                    // Opción de pagar deuda
                     if (row.ventas.length > 0) {
                         options.push({
                             label: 'Pagar Deuda',
@@ -125,6 +154,8 @@ export default class ListaClientes extends Component {
                             onPress: () => SNavigation.navigate('/caja/cuotas', { key_cliente: row?.key }),
                         });
                     }
+
+                    // Opción de eliminar cliente
                     if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'delete' })) {
                         options.push({
                             label: 'Eliminar',
@@ -165,6 +196,7 @@ export default class ListaClientes extends Component {
                             },
                         });
                     }
+
                     if (this.onSelect) {
                         options.push({
                             label: "select",
@@ -173,18 +205,33 @@ export default class ListaClientes extends Component {
                             }
                         })
                     }
+
                     options.push({
                         label: "Administrar Habilidades",
                         icon: <SIcon name="Engranaje" fill={STheme.color.text} />,
+                        // icon: "Add",
                         onPress: () => {
+
                             AdminsitrarHabilidades.open({
                                 key_usuario: e.row.key,
                                 onSuccess: () => {
                                     this.DinamicTable.loadData();
                                 }
                             });
+                            // console.log("AQUIiii", this.state.data);
+                            // RolesDelUsuario.open({
+                            //     data: e.row,
+                            //     keyUsers: this.keyUsers,
+                            //     // data: this.keyUsers,
+                            //     onRegister: (e) => {
+                            //         console.log("QUEEE", e)
+                            //         this.table.loadData();
+                            //     }
+                            // })
+
                         }
                     })
+
                     FloatMenu.open({
                         e: evt,
                         label: nombreCliente,
@@ -193,22 +240,123 @@ export default class ListaClientes extends Component {
                 }}
             >
                 <DinamicTable.Col key="index" label="#" width={40} data={e => e.index + 1} />
-                <DinamicTable.Col key="key-" label="Ver" width={40} data={e => ""}
+                <DinamicTable.Col
+                    key="key-"
+                    label="Ver"
+                    width={40}
+                    data={e => ""}
                     customComponent={e => <SView row center card padding={2} onPress={() => { SNavigation.navigate("/cliente/perfil", { key: e.row.key }) }}>
                         <SIcon name='Eyes' height={14} fill={STheme.color.lightGray} ></SIcon>
                     </SView>} />
-                <DinamicTable.Col key="key" label="Foto" width={40}
+                <DinamicTable.Col
+                    key="key"
+                    label="Foto"
+                    width={40}
                     data={e => `${SSocket.api.root}usuario/${e.row?.key}`}
                     customComponent={e => (
                         <SView col="xs-12" center row>
-                            <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: 'hidden', backgroundColor: `${STheme.color.card}66`, }} >
+                            <SView
+                                style={{
+                                    width: 24,
+                                    height: 24,
+                                    borderRadius: 100,
+                                    overflow: 'hidden',
+                                    backgroundColor: `${STheme.color.card}66`,
+                                }}
+                            >
                                 <SImage src={`${e.data}?date=${new Date().getTime()}`} style={{ resizeMode: 'cover' }} />
                             </SView>
                         </SView>
                     )}
                 />
-                <DinamicTable.Col key="nombre_completo" label="Nombre Completo" width={120} data={e => e.row?.nombres} />
-                <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={80}
+
+                <DinamicTable.Col key="nombres" label="Nombre Completo" width={120} data={e => e.row?.nombres} />
+                <DinamicTable.Col key="telefono" label="Teléfono" width={120} data={e => e.row?.telefono} />
+                <DinamicTable.Col key="correo" label="Correo" width={150} data={e => e.row?.correo} />
+                <DinamicTable.Col key="nit" label="NIT" width={90} data={e => e.row?.nit} />
+                <DinamicTable.Col key="razon_social" label="Razón Social" width={90} data={e => e.row?.razon_social} />
+                <DinamicTable.Col key="direccion" label="Dirección" width={100} data={e => e.row?.direccion} />
+                <DinamicTable.Col key="fecha_nacimiento" label="F. Nacimiento" width={110} data={e => e.row?.fecha_nacimiento} />
+                <DinamicTable.Col key="sexo" label="Sexo" width={80} data={e => e.row?.sexo} />
+                <DinamicTable.Col key="departamento" label="Departamento" width={100} data={e => e.row?.departamento} />
+                <DinamicTable.Col
+                    key="cuota_1"
+                    wrap
+                    sumExcel
+                    label="Monto Pagado"
+                    width={90}
+                    data={e => e.row?.resumen_cuota?.monto_pagado ?? ''}
+                    cellStyle={{
+                        alignItems: 'flex-end',
+                        backgroundColor: `${STheme.color.success}33`,
+                    }}
+                    format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')}
+                />
+                <DinamicTable.Col
+                    key="cuota_2"
+                    wrap
+                    label="Cuotas Pagadas"
+                    width={60}
+                    data={e => e.row?.resumen_cuota?.cantidad_pagada ?? ''}
+                    cellStyle={{
+                        alignItems: 'flex-end',
+                        backgroundColor: `${STheme.color.success}33`,
+                    }}
+                    format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+                />
+                <DinamicTable.Col
+                    key="cuota_3"
+                    wrap
+                    label="Monto Mora"
+                    width={90}
+                    data={e => e.row?.resumen_cuota?.monto_en_mora ?? ''}
+                    cellStyle={{
+                        alignItems: 'flex-end',
+                        backgroundColor: `${STheme.color.danger}33`,
+                    }}
+                    format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')}
+                />
+                <DinamicTable.Col
+                    key="cuota_4"
+                    wrap
+                    label="Cuotas Mora"
+                    width={60}
+                    data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''}
+                    cellStyle={{
+                        alignItems: 'flex-end',
+                        backgroundColor: `${STheme.color.danger}33`,
+                    }}
+                    format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+                />
+                <DinamicTable.Col
+                    key="cuota_5"
+                    wrap
+                    label="Monto Pendiente"
+                    width={90}
+                    data={e => e.row?.resumen_cuota?.monto_pendiente ?? ''}
+                    cellStyle={{
+                        alignItems: 'flex-end',
+                        backgroundColor: `${STheme.color.warning}33`,
+                    }}
+                    format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')}
+                />
+                <DinamicTable.Col
+                    key="cuota_6"
+                    wrap
+                    label="Cuotas Pendientes"
+                    width={60}
+                    data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''}
+                    cellStyle={{
+                        alignItems: 'flex-end',
+                        backgroundColor: `${STheme.color.warning}33`,
+                    }}
+                    format={e => (e.data ? SMath.formatMoney(e.data) : '')}
+                />
+                <DinamicTable.Col
+                    key="estado_pago"
+                    wrap
+                    label="Estado de Pago"
+                    width={80}
                     data={e => {
                         const resumen = e.row?.resumen_cuota;
                         if (!resumen) return 'Sin Deuda';
@@ -234,20 +382,6 @@ export default class ListaClientes extends Component {
                         );
                     }}
                 />
-                <DinamicTable.Col key="telefono" label="Teléfono" width={120} data={e => e.row?.telefono} />
-                <DinamicTable.Col key="correo" label="Correo" width={150} data={e => e.row?.correo} />
-                <DinamicTable.Col key="nit" label="NIT" width={90} data={e => e.row?.nit} />
-                <DinamicTable.Col key="razon_social" label="Razón Social" width={90} data={e => e.row?.razon_social} />
-                <DinamicTable.Col key="direccion" label="Dirección" width={100} data={e => e.row?.direccion} />
-                <DinamicTable.Col key="fecha_nacimiento" label="F. Nacimiento" width={110} data={e => e.row?.fecha_nacimiento} />
-                <DinamicTable.Col key="sexo" label="Sexo" width={80} data={e => e.row?.sexo} />
-                <DinamicTable.Col key="departamento" label="Departamento" width={100} data={e => e.row?.departamento} />
-                <DinamicTable.Col key="cuota_1" wrap sumExcel label="Monto Pagado" width={90} data={e => e.row?.resumen_cuota?.monto_pagado ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.success}33`, }} format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')} />
-                <DinamicTable.Col key="cuota_2" wrap label="Cuotas Pagadas" width={60} data={e => e.row?.resumen_cuota?.cantidad_pagada ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.success}33`, }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-                <DinamicTable.Col key="cuota_3" wrap label="Monto Mora" width={90} data={e => e.row?.resumen_cuota?.monto_en_mora ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.danger}33`, }} format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')} />
-                <DinamicTable.Col key="cuota_4" wrap label="Cuotas Mora" width={60} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.danger}33`, }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
-                <DinamicTable.Col key="cuota_5" wrap label="Monto Pendiente" width={90} data={e => e.row?.resumen_cuota?.monto_pendiente ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.warning}33`, }} format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')} />
-                <DinamicTable.Col key="cuota_6" wrap label="Cuotas Pendientes" width={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.warning}33`, }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
                 <DinamicTable.Col
                     key="fecha_on"
                     label="F. Creación"
@@ -316,6 +450,7 @@ export default class ListaClientes extends Component {
             </DinamicTable>
         );
     }
+
     render() {
         return (
             <SPage title="Gestión de Clientes" disableScroll>

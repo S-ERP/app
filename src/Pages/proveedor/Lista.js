@@ -8,20 +8,14 @@ import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
 import PopupCrearProveedor from './Components/PopupCrearProveedor';
-
 export default class Lista extends Component {
     onSelect = SNavigation.getParam('onSelect');
-
     constructor(props) {
         super(props);
         this.state = {};
     }
-
-
     async loadInitialData() {
         try {
-            // Obtener proveedores
-            // const proveedores = await MDL.inventario.proveedor.getAllProveedor();
             const proveedores = await MDL.crm.cliente.getAll();
             if (!proveedores || !Object.keys(proveedores).length) {
                 SNotification.send({
@@ -32,8 +26,6 @@ export default class Lista extends Component {
                 });
                 return [];
             }
-
-            // Obtener usuarios asociados a los proveedores
             const keysUsuarios = Object.values(proveedores)
                 .map(p => p.key_usuario)
                 .filter(Boolean);
@@ -41,8 +33,6 @@ export default class Lista extends Component {
             if (!usuarios || !Object.keys(usuarios).length) {
                 console.warn('No se encontraron usuarios para los proveedores.');
             }
-
-            // Obtener transacciones de compra
             const transacciones = await MDL.compra_venta.getTransaccion('compra', '2024-09-01', '2026-09-05');
             if (!transacciones || !transacciones.length) {
                 SNotification.send({
@@ -52,16 +42,11 @@ export default class Lista extends Component {
                     color: STheme.color.warning,
                 });
             }
-
-            // Obtener resumen de cuotas
             const registros = await MDL.compra_venta.getCuotasResumenTotal_compras();
-
-            // Mapear proveedores con sus datos asociados
             return Object.values(proveedores).map(proveedor => {
                 proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario) || null;
                 proveedor.resumen_cuota = registros.find(r => r.key_proveedor === proveedor.key) || null;
                 proveedor.compras = transacciones ? transacciones.filter(t => t.key_proveedor === proveedor.key) : [];
-                // console.log("proveeee", proveedor)
                 return proveedor;
             });
         } catch (error) {
@@ -75,12 +60,6 @@ export default class Lista extends Component {
             return [];
         }
     }
-
-    /**
-     * Renderiza el componente de estado con color y etiqueta.
-     * @param {string} state - Estado a renderizar.
-     * @returns {JSX.Element} Componente visual del estado.
-     */
     renderState(state) {
         const stateInfo = Model.compra_venta.Action.getStateInfo()[state] || {};
         return (
@@ -93,12 +72,6 @@ export default class Lista extends Component {
             </SView>
         );
     }
-
-    /**
-     * Renderiza el componente de tipo de pago con color y etiqueta.
-     * @param {string} value - Tipo de pago.
-     * @returns {JSX.Element} Componente visual del tipo de pago.
-     */
     renderTipoPago(value) {
         const tipoInfo = MDL.compra_venta.getTipoPago()[value] || {};
         return (
@@ -111,11 +84,6 @@ export default class Lista extends Component {
             </SView>
         );
     }
-
-    /**
-     * Renderiza la tabla dinámica de proveedores.
-     * @returns {JSX.Element} Componente de la tabla.
-     */
     mostrarTabla() {
         return (
             <DinamicTable
@@ -128,33 +96,18 @@ export default class Lista extends Component {
                 colors={Config.table.colors()}
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
-                loadInitialState={async () => {
-                    // sorters: [{ key: 'fecha_on', order: 'asc', type: 'date' }],
-                    let filters = []
-                    
-                    // if (this.pagar_proveedor) {
-                    //     filters.push({
-                    //         col: "cuota_6",
-                    //         type: "string",
-                    //         operator: "!=",
-                    //         value: ""
-                    //     })
-                    // }
-
-                    return {
-                        filters: filters,
-                        sorters: [{key:'cuota_6', order:'desc', type:'number'},{ key: 'fecha_on', order: 'asc', type: 'date' } ],
-
-                    }
-                }}
+                loadInitialState={async () => ({
+                    sorters: [
+                        { key: "estado_pago", order: "asc", type: "string" },
+                        { key: "nombre_completo", order: "asc", type: "string" },
+                    ]
+                })}
                 onSelect={e => {
                     if (this.onSelect) {
                         this.onSelect(e.row);
                         SNavigation.goBack();
                         return;
                     }
-
-
                     FloatMenu.open({
                         e: e.evt,
                         label: `Proveedor: ${e.row.razon_social}`,
@@ -237,9 +190,38 @@ export default class Lista extends Component {
                     )}
                 />
                 <DinamicTable.Col key="razon_social" label="Razón Social" width={150} data={e => e.row?.razon_social} />
-
                 <DinamicTable.Col key="nit" label="NIT" width={150} data={e => e.row?.nit} />
-                <DinamicTable.Col key="nombre" label="Nombre de Contacto" width={150} data={e => e.row?.nombre} />
+                <DinamicTable.Col key="nombre_completo" label="Nombre de Contacto" width={150} data={e => e.row?.nombres} />
+                <DinamicTable.Col
+                    key="estado_pago"
+                    wrap
+                    label="Estado de Pago"
+                    width={80}
+                    data={e => {
+                        const resumen = e.row?.resumen_cuota;
+                        if (!resumen) return 'Sin Deuda';
+                        if (resumen.cantidad_en_mora > 0 || resumen.monto_en_mora > 0) return 'En Mora';
+                        if (resumen.monto_pendiente <= 0) return 'Pagado';
+                        return 'Al Día';
+                    }}
+                    customComponent={e => {
+                        const statesTipo = {
+                            'Sin Deuda': { color: STheme.color.gray, label: 'Sin Deuda' },
+                            'Al Día': { color: STheme.color.warning, label: 'Al Día' },
+                            'En Mora': { color: STheme.color.danger, label: 'En Mora' },
+                            'Pagado': { color: STheme.color.success, label: 'Pagado' },
+                        }[e.data] || { color: STheme.color.gray, label: 'Desconocido' };
+                        return (
+                            <SView row center>
+                                <SView backgroundColor={statesTipo.color} width={55} style={{ borderRadius: 4, padding: 5 }} center>
+                                    <SText color={STheme.color.text} fontSize={10}>
+                                        {statesTipo.label}
+                                    </SText>
+                                </SView>
+                            </SView>
+                        );
+                    }}
+                />
                 <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={e => e.row?.telefono} />
                 <DinamicTable.Col
                     key="cuota_1"
@@ -315,36 +297,6 @@ export default class Lista extends Component {
                     format={e => (e.data ? SMath.formatMoney(e.data) : '')}
                 />
                 <DinamicTable.Col
-                    key="estado_pago"
-                    wrap
-                    label="Estado de Pago"
-                    width={80}
-                    data={e => {
-                        const resumen = e.row?.resumen_cuota;
-                        if (!resumen) return 'Sin Deuda';
-                        if (resumen.cantidad_en_mora > 0 || resumen.monto_en_mora > 0) return 'En Mora';
-                        if (resumen.monto_pendiente <= 0) return 'Pagado';
-                        return 'Al Día';
-                    }}
-                    customComponent={e => {
-                        const statesTipo = {
-                            'Sin Deuda': { color: STheme.color.gray, label: 'Sin Deuda' },
-                            'Al Día': { color: STheme.color.warning, label: 'Al Día' },
-                            'En Mora': { color: STheme.color.danger, label: 'En Mora' },
-                            'Pagado': { color: STheme.color.success, label: 'Pagado' },
-                        }[e.data] || { color: STheme.color.gray, label: 'Desconocido' };
-                        return (
-                            <SView row center>
-                                <SView backgroundColor={statesTipo.color} width={55} style={{ borderRadius: 4, padding: 5 }} center>
-                                    <SText color={STheme.color.text} fontSize={10}>
-                                        {statesTipo.label}
-                                    </SText>
-                                </SView>
-                            </SView>
-                        );
-                    }}
-                />
-                <DinamicTable.Col
                     key="pagos"
                     label="Pagos"
                     width={50}
@@ -405,7 +357,6 @@ export default class Lista extends Component {
             </DinamicTable>
         );
     }
-
     render() {
         return (
             <SPage title="Gestión de Proveedores" disableScroll>
