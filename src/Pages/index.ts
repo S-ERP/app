@@ -41,9 +41,7 @@ import loby from "./loby";
 import lobyRoot from "./loby/root";
 import nota from "./nota";
 import chat from "./chat";
-import { Example } from "servisofts-charts";
 import publicacion from "./publicacion";
-
 import invitation from "./invitation";
 import invitacion from "./invitacion";
 import terminos from "./terminos";
@@ -64,27 +62,16 @@ import tableros from "./tableros";
 // import three from './three';
 // import mesh from './mesh';
 // import scene from './scene';
-
 import lote from "./lote";
-
 import restaurante from "./restaurante";
 import whatsapp from "./whatsapp";
-
 import testTable from "./testTable";
 import icons from "./icons";
-
 import factura from "../Components/PDF/factura";
-
 import ricky from "./ricky";
 import crm from "./crm";
 import plantilla from "./crm/plantilla";
 import server from "./server"
-// import turno from "./Turnos";
-// import Proveedor from "../Components/compra_venta/Proveedor";
-// import RegistroInventario from "./inventario/almacen/RegistroInventarios";
-// import ReporteConteoInventario from "./inventario/almacen/ReporteConteoInventario";
-import testpuntoventa from "./testpuntoventa";
-import Main from "./puntoventa/Main";
 import alvaro from "./alvaro";
 import proveedor from "./proveedor";
 import puntoventa from "./puntoventa";
@@ -99,31 +86,22 @@ import excel from "./excel";
 import tag from "./tag";
 import test3 from "./test3";
 import tabla from "./habilidad";
-// import Suscriptores from "./cliente/suscriptores";
-// import suscriptores from "./cliente/suscriptores";
-import Suscriptores100 from "./cliente/Suscriptores100";
 import asistencia from "./asistencia";
 import Asistencias from "./cliente/Asistencias";
+import Suscriptores from "./cliente/Suscriptores";
 
 export default SPage.combinePages("/", {
-  // "":Example,
-  // "":three,
-  // "": test,
-  // "": test,
   "": lobyRoot,
   ...restaurante,
   pizarra2,
-  // "": lobyRoot,
   root: Root,
   ...ricky,
-  ...tabla, 
+  ...tabla,
   anim1,
   home,
   home2,
   home3,
-  // "": menu,
   menu,
-  // "login": login,
   ...login,
   ...loby,
   ...registro,
@@ -134,8 +112,6 @@ export default SPage.combinePages("/", {
   test3: test3,
   start: start,
   wiki: wiki,
-
-  // upload,
   uploadv2,
   t2,
   ...profile,
@@ -177,25 +153,22 @@ export default SPage.combinePages("/", {
   ...mapa,
   ...drive,
   drive2,
-  // ...scene,
-  // ...mesh,
-  // ...three,
   ...lote,
   ...whatsapp,
   testTable,
   icons,
   ...crm,
   "pdf/factura": factura,
-  "suscriptores": Suscriptores100,
+  "suscriptores": Suscriptores,
   "asistencias": Asistencias,
   plantilla,
-  Turnos,
   ...server,
   ...proveedor,
   ...tag,
   ...qr_reader,
   ...puntoventa,
-  "iconosss":IconosAlvaro,
+  Turnos,
+  "iconosss": IconosAlvaro,
   alvaro,
   ...social_media,
   ...pasarela,

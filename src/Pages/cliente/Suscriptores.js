@@ -12,7 +12,7 @@ import Config from '../../Config';
 
 
 
-export default class Suscriptores100 extends Component {
+export default class Suscriptores extends Component {
 
   constructor(props) {
     super(props);
