@@ -115,7 +115,7 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
 
         return (
             <SView col={"xs-12"} center padding={16}>
-                <SText fontSize={16}>{"Registrar Aistsencia"}</SText>
+                <SText fontSize={16}>{"Registrar Asistencia"}</SText>
                 <SView col="xs-12" padding={10}>
                     <SText bold>Buscar Cliente</SText>
                     <AgregarContacto clientes={this.state.clientes} onResultado={this.setResultado} />
@@ -184,16 +184,14 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                                             inputs={{
                                                 fecha: {
                                                     col: "xs-5.5", label: "Fecha", type: "date", defaultValue: new Date().toISOString().split("T")[0],
-
-                                                    style: { pointerEvents: "none", backgroundColor: STheme.color.background, borderColor: STheme.color.card, },
-                                                    inputStyle: { borderColor: STheme.color.card, borderWidth: 1, },
+                                                    style: { pointerEvents: "none", backgroundColor: STheme.color.background, borderColor: STheme.color.card, borderWidth: 1, },
+                                                    inputStyle: { borderWidth: 0, },
                                                     iconR: (
                                                         <SView width={15} height={15} center style={{ marginRight: 8, }} >
                                                             <SIconApp name="Evento" fill={STheme.color.lightGray} />
                                                         </SView>
                                                     ),
-                                                }
-                                                ,
+                                                },
                                                 hora: {
                                                     isRequired: true, col: "xs-5.5", label: "Hora", type: "hour", defaultValue: hora,
                                                     iconR: (
@@ -237,7 +235,8 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                                             Cliente sin paquete activo
                                         </SText>
                                     </SView>
-                                )}
+                                )
+                                }
                             </SView>
                         </SView>
                     </>

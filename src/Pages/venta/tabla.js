@@ -9,6 +9,7 @@ import ReciboCarta from '../../Components/PDF/venta/ReciboCarta';
 import MDL from '../../MDL';
 import FloatMenu from '../../Components/FloatMenu';
 import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
+import FechaFullFilter from '../../Components/FechaFullFilter';
 const proveedorEjemplo =
 {
     "estado": 1,
@@ -632,6 +633,41 @@ export default class tabla extends Component {
     render() {
         return (
             <SPage title="Tabla Gestión de Ventas" disableScroll>
+
+                <SView row col={"xs-12"} style={{ paddingBottom: 8, paddingLeft: 8, borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", }}>
+
+
+                    <SView col={"xs-12 sm-8.2 lg-3.3"} row center   >
+                        <FechaFullFilter
+                            //  fecha_inicio={this.state.fecha_inicio}
+                            //  fecha_fin={this.state.fecha_fin}
+                            onChange={e => this.setState({
+                                fecha_inicio: e.fecha_inicio,
+                                fecha_fin: e.fecha_fin
+                            }, () => {
+                                // if (this.table) this.table.loadData();
+                            })}
+                        />
+                    </SView>
+
+                    <SView width={8} height={"100%"} />
+                    {/* <SView col={"xs-12 sm-5 lg-1"} row center  >
+                                     <FiltroSelector
+                                         ref={ref => this.filtroStockRef = ref}
+                                         label="Stock"
+                                         loadData={async () => [
+                                             { key: "con_stock", nombre: "Con stock" },
+                                             { key: "sin_stock", nombre: "Sin stock" },
+                                         ]}
+                                         mapOption={a => ({ key: a.key, nombre: a.nombre })}
+                                         onSelect={item => this.setState({ selectedStock: item }, () => {
+                                             if (this.table) this.table.loadData();
+                                         })}
+                                     />
+                                 </SView> */}
+                </SView>
+
+
                 {this.mostrarTabla()}
                 <SHr height={20} />
             </SPage>

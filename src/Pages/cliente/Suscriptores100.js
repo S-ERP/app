@@ -81,6 +81,62 @@ export default class Suscriptores100 extends Component {
     );
   }
 
+ renderValidofecha(obj) {
+    if (!obj) return null;
+
+    const now = new Date();
+    const fechaInicio = obj.fecha_inicio ? new Date(obj.fecha_inicio) : null;
+    const fechaFin = obj.fecha_fin ? new Date(obj.fecha_fin) : null;
+
+    let mensaje = "—";
+    let backgroundColor = "#F0F0F0"; // gris por defecto
+
+    if (fechaFin && fechaFin < now) {
+        mensaje = "Vencido";
+        backgroundColor = "#FF4D4F"; // rojo
+    } else if (fechaInicio && fechaInicio <= now && fechaFin && fechaFin >= now) {
+        mensaje = "Activo";
+        backgroundColor = "#52C41A"; // verde
+    } else if (fechaInicio && fechaInicio > now) {
+        mensaje = "Futuro";
+        backgroundColor = "#595959"; // gris oscuro
+    }
+
+    return (
+        <SView col="xs-12" center row style={{ justifyContent: "center" }}>
+            <SView
+                style={{
+                    backgroundColor: backgroundColor,
+                    borderRadius: 12,
+                    paddingHorizontal: 10,
+                    paddingVertical: 4,
+                    minWidth: 60,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 1,
+                    elevation: 1, // para Android
+                }}
+            >
+                <SText
+                    numberOfLines={1}
+                    style={{
+                        fontSize: 11,
+                        color: "white",
+                        fontWeight: "bold",
+                        textAlign: "center",
+                    }}
+                >
+                    {mensaje}
+                </SText>
+            </SView>
+        </SView>
+    );
+}
+
+
   renderSucursal(sucursal = {}) {
     if (!sucursal?.key) return null;
 
@@ -273,6 +329,8 @@ export default class Suscriptores100 extends Component {
         {/* luego traer la marca y el tipo producto */}
         <DinamicTable.Col key={"var1_"} label='Precio' width={70} data={(e) => e.row?.producto?.precio && SMath.formatMoney(e.row?.producto?.precio)} />
         <DinamicTable.Col key="var2_" label="Modelo" width={120} data={e => e.row?.producto?.modelo?.descripcion} />
+
+        <DinamicTable.Col key="estado_fecha_" label="Estado" width={100} data={(e) => e.row?.fecha_fin ?? ""} customComponent={e => this.renderValidofecha(e.row)} />
 
         {/* <DinamicTable.Col key="var3_" label="Unidad de duración" width={120} data={e => e.row?.producto?.modelo?.duracion_medida} /> */}
         {/* <DinamicTable.Col key="var4_" label="Duración" width={120} data={e => e.row?.producto?.modelo?.duracion} /> */}
