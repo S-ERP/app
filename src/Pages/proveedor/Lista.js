@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SView, SText, STheme, SNavigation, SPopup, SHr, SNotification, SImage, SDate, SMath } from 'servisofts-component';
+import { SPage, SView, SText, STheme, SNavigation, SPopup, SHr, SNotification, SImage, SDate, SMath, SIcon } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import { DinamicTable } from 'servisofts-table';
 import MDL from '../../MDL';
@@ -8,12 +8,50 @@ import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import Config from '../../Config';
 import PopupCrearProveedor from './Components/PopupCrearProveedor';
+import FiltroSelector from '../productos/modelo/Components/FiltroSelector';
 export default class Lista extends Component {
     onSelect = SNavigation.getParam('onSelect');
+
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = { selectedEstadoPago: null, };
+        this.DinamicTable = null;
     }
+
+    componentDidMount() {
+        // MDL.rolesPermisos
+        //     .getPermisoAsync({ url: URL, permiso: 'ver' })
+        //     .then(e => {
+        //         if (!e) {
+        //             return;
+        //         }
+        //         this.forceUpdate();
+        //     })
+        //     .catch(error => {
+        //         console.error('Error al verificar permisos:', error);
+        //         SNotification.send({
+        //             title: 'Error',
+        //             body: 'No se pudo verificar los permisos.',
+        //             time: 3000,
+        //             color: STheme.color.danger,
+        //         });
+        //     });
+        window.addEventListener("keydown", this.handleKeyDown);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("keydown", this.handleKeyDown);
+    }
+
+    handleKeyDown = (e) => {
+        if (e.key === "Escape") {
+            this.filtroEstadoRef?.reset();
+            this.setState({ selectedEstadoPago: null }, () => {
+                this.DinamicTable?.loadData();
+            });
+        }
+    };
+
     async loadInitialData() {
         try {
             const proveedores = await MDL.crm.cliente.getAll();
@@ -43,12 +81,45 @@ export default class Lista extends Component {
                 });
             }
             const registros = await MDL.compra_venta.getCuotasResumenTotal_compras();
-            return Object.values(proveedores).map(proveedor => {
+            // return Object.values(proveedores).map(proveedor => {
+            //     proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario) || null;
+            //     proveedor.resumen_cuota = registros.find(r => r.key_proveedor === proveedor.key) || null;
+            //     proveedor.compras = transacciones ? transacciones.filter(t => t.key_proveedor === proveedor.key) : [];
+            //     return proveedor;
+            // });
+            let data = Object.values(proveedores).map(proveedor => {
                 proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario) || null;
                 proveedor.resumen_cuota = registros.find(r => r.key_proveedor === proveedor.key) || null;
                 proveedor.compras = transacciones ? transacciones.filter(t => t.key_proveedor === proveedor.key) : [];
+                // proveedor.habilidades = habilidad.filter(hab => hab.key_usuarios?.includes(proveedor.key));
                 return proveedor;
             });
+
+            // ← Aquí aplicamos el filtro de estado de pago
+            if (this.state.selectedEstadoPago?.key) {
+                const filtro = this.state.selectedEstadoPago.key;
+
+                data = data.filter(cliente => {
+                    const resumen = cliente.resumen_cuota;
+
+                    if (!resumen) {
+                        return filtro === "Sin Deuda";
+                    }
+
+                    if (resumen.cantidad_en_mora > 0 || resumen.monto_en_mora > 0) {
+                        return filtro === "En Mora";
+                    }
+
+                    if (resumen.monto_pendiente <= 0) {
+                        return filtro === "Sin Deuda";
+                    }
+
+                    // Si tiene monto pendiente > 0 y no está en mora → Deudor
+                    return filtro === "Deudor";
+                });
+            }
+
+            return data;
         } catch (error) {
             console.error('Error al cargar los datos iniciales:', error);
             SNotification.send({
@@ -84,6 +155,33 @@ export default class Lista extends Component {
             </SView>
         );
     }
+
+    renderUsuario(usuario = {}) {
+        const nombre = `${usuario?.Nombres || "Sin"} ${usuario?.Apellidos || "usuario"}`;
+        return (
+            <SView col="xs-12" center row>
+                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} >
+                    {usuario?.key ? (<SImage src={`${SSocket.api.root}usuario/${usuario.key}`} style={{ resizeMode: "cover" }} />) : null}
+                </SView>
+                <SView width={5} />
+                <SText flex numberOfLines={1} style={{ fontSize: 13 }} color={STheme.color.lightGray}>{nombre}</SText>
+            </SView>
+        );
+    }
+
+    renderProveedor(proveedor = {}) {
+        const nombre = `${proveedor?.nombres || "Sin Nombre"} ${proveedor?.apellidos || ""}`;
+        return (
+            <SView col="xs-12" center row>
+                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} >
+                    {proveedor?.key ? (<SImage src={`${SSocket.api.root}usuario/${proveedor.key}`} style={{ resizeMode: "cover" }} />) : null}
+                </SView>
+                <SView width={8} />
+                <SText flex numberOfLines={1} style={{ fontSize: 12 }}>{nombre}</SText>
+            </SView>
+        );
+    }
+
     mostrarTabla() {
         return (
             <DinamicTable
@@ -97,6 +195,7 @@ export default class Lista extends Component {
                 cellStyle={Config.table.cellStyle()}
                 textStyle={Config.table.textStyle()}
                 loadInitialState={async () => ({
+                    cols: { "cuota_1": { hidden: true }, "cuota_2": { hidden: true }, },
                     sorters: [
                         { key: "estado_pago", order: "asc", type: "string" },
                         { key: "nombre_completo", order: "asc", type: "string" },
@@ -112,6 +211,13 @@ export default class Lista extends Component {
                         e: e.evt,
                         label: `Proveedor: ${e.row.razon_social}`,
                         options: [
+                            {
+                                label: 'Ver perfil',
+                                icon: <SIcon name="Eyes" fill={STheme.color.text} />,
+                                onPress: () => {
+                                    SNavigation.navigate("/cliente/perfil", { key: e.row.key })
+                                },
+                            },
                             {
                                 icon: <SIconApp name="Edit" />,
                                 label: 'Actualizar Proveedor',
@@ -168,30 +274,7 @@ export default class Lista extends Component {
                 loadData={() => this.loadInitialData()}
             >
                 <DinamicTable.Col key="index" label="#" width={40} data={e => e.index + 1} />
-                <DinamicTable.Col
-                    key="key"
-                    label="Foto"
-                    width={40}
-                    data={e => `${SSocket.api.inventario}proveedor/${e.row?.key}`}
-                    customComponent={e => (
-                        <SView col="xs-12" center row>
-                            <SView
-                                style={{
-                                    width: 24,
-                                    height: 24,
-                                    borderRadius: 100,
-                                    overflow: 'hidden',
-                                    backgroundColor: `${STheme.color.card}66`,
-                                }}
-                            >
-                                <SImage src={`${e.data}?date=${new Date().getTime()}`} style={{ resizeMode: 'cover' }} />
-                            </SView>
-                        </SView>
-                    )}
-                />
-                <DinamicTable.Col key="razon_social" label="Razón Social" width={150} data={e => e.row?.razon_social} />
-                <DinamicTable.Col key="nit" label="NIT" width={150} data={e => e.row?.nit} />
-                <DinamicTable.Col key="nombre_completo" label="Nombre de Contacto" width={150} data={e => e.row?.nombres} />
+                <DinamicTable.Col key="nombre_completo" label="Proveedor" width={200} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderProveedor(e.row)} />
                 <DinamicTable.Col
                     key="estado_pago"
                     wrap
@@ -201,15 +284,15 @@ export default class Lista extends Component {
                         const resumen = e.row?.resumen_cuota;
                         if (!resumen) return 'Sin Deuda';
                         if (resumen.cantidad_en_mora > 0 || resumen.monto_en_mora > 0) return 'En Mora';
-                        if (resumen.monto_pendiente <= 0) return 'Pagado';
-                        return 'Al Día';
+                        if (resumen.monto_pendiente <= 0) return 'Sin Deuda';
+                        return 'Deudor';
                     }}
                     customComponent={e => {
                         const statesTipo = {
                             'Sin Deuda': { color: STheme.color.gray, label: 'Sin Deuda' },
-                            'Al Día': { color: STheme.color.warning, label: 'Al Día' },
+                            'Deudor': { color: STheme.color.warning, label: 'Deudor' },
                             'En Mora': { color: STheme.color.danger, label: 'En Mora' },
-                            'Pagado': { color: STheme.color.success, label: 'Pagado' },
+                            // 'Sin Deuda': { color: STheme.color.success, label: 'Sin Deuda' },
                         }[e.data] || { color: STheme.color.gray, label: 'Desconocido' };
                         return (
                             <SView row center>
@@ -222,81 +305,17 @@ export default class Lista extends Component {
                         );
                     }}
                 />
+                <DinamicTable.Col key="tot-compras" label="T. Compras" width={90} data={e => ""} />
+                <DinamicTable.Col key="nit" label="NIT" width={60} data={e => e.row?.nit} />
+                <DinamicTable.Col key="razon_social" label="Razón Social" width={150} data={e => e.row?.razon_social} />
                 <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={e => e.row?.telefono} />
-                <DinamicTable.Col
-                    key="cuota_1"
-                    wrap
-                    sumExcel
-                    label="Monto Pagado"
-                    width={90}
-                    data={e => e.row?.resumen_cuota?.monto_pagado ?? ''}
-                    cellStyle={{
-                        alignItems: 'flex-end',
-                        backgroundColor: `${STheme.color.success}33`,
-                    }}
-                    format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')}
-                />
-                <DinamicTable.Col
-                    key="cuota_2"
-                    wrap
-                    label="Cuotas Pagadas"
-                    width={60}
-                    data={e => e.row?.resumen_cuota?.cantidad_pagada ?? ''}
-                    cellStyle={{
-                        alignItems: 'flex-end',
-                        backgroundColor: `${STheme.color.success}33`,
-                    }}
-                    format={e => (e.data ? SMath.formatMoney(e.data) : '')}
-                />
-                <DinamicTable.Col
-                    key="cuota_3"
-                    wrap
-                    label="Monto Mora"
-                    width={90}
-                    data={e => e.row?.resumen_cuota?.monto_en_mora ?? ''}
-                    cellStyle={{
-                        alignItems: 'flex-end',
-                        backgroundColor: `${STheme.color.danger}33`,
-                    }}
-                    format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')}
-                />
-                <DinamicTable.Col
-                    key="cuota_4"
-                    wrap
-                    label="Cuotas Mora"
-                    width={60}
-                    data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''}
-                    cellStyle={{
-                        alignItems: 'flex-end',
-                        backgroundColor: `${STheme.color.danger}33`,
-                    }}
-                    format={e => (e.data ? SMath.formatMoney(e.data) : '')}
-                />
-                <DinamicTable.Col
-                    key="cuota_5"
-                    wrap
-                    label="Monto Pendiente"
-                    width={90}
-                    data={e => e.row?.resumen_cuota?.monto_pendiente ?? ''}
-                    cellStyle={{
-                        alignItems: 'flex-end',
-                        backgroundColor: `${STheme.color.warning}33`,
-                    }}
-                    format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')}
-                />
-                <DinamicTable.Col
-                    key="cuota_6"
-                    wrap
-                    label="Cuotas Pendientes"
-                    width={60}
-                    data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''}
-                    cellStyle={{
-                        alignItems: 'flex-end',
-                        backgroundColor: `${STheme.color.warning}33`,
-                    }}
-                    format={e => (e.data ? SMath.formatMoney(e.data) : '')}
-                />
-                <DinamicTable.Col
+                <DinamicTable.Col key="cuota_1" wrap sumExcel label="Monto Pagado" width={90} data={e => e.row?.resumen_cuota?.monto_pagado ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.success}33`, }} format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')} />
+                <DinamicTable.Col key="cuota_2" wrap label="Cuotas Pagadas" width={60} data={e => e.row?.resumen_cuota?.cantidad_pagada ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.success}33`, }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                <DinamicTable.Col key="cuota_3" wrap label="Monto Mora" width={90} data={e => e.row?.resumen_cuota?.monto_en_mora ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.danger}33`, }} format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')} />
+                <DinamicTable.Col key="cuota_4" wrap label="Cuotas Mora" width={60} data={e => e.row?.resumen_cuota?.cantidad_en_mora ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.danger}33`, }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                <DinamicTable.Col key="cuota_5" wrap label="Monto Pendiente" width={90} data={e => e.row?.resumen_cuota?.monto_pendiente ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.warning}33`, }} format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')} />
+                <DinamicTable.Col key="cuota_6" wrap label="Cuotas Pendientes" width={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.warning}33`, }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
+                {/* <DinamicTable.Col
                     key="pagos"
                     label="Pagos"
                     width={50}
@@ -322,44 +341,38 @@ export default class Lista extends Component {
                             </SView>
                         ) : null
                     }
-                />
-                <DinamicTable.Col
-                    key="fecha_on"
-                    label="F. Creación"
-                    width={120}
-                    dataType="date"
-                    data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date}
-                    textStyle={{ fontSize: 12, color: STheme.color.lightGray }}
-                    dateFormat="yyyy-MM-dd hh:mm"
-                />
-                <DinamicTable.Col
-                    key="admin"
-                    label="Admin"
-                    width={120}
-                    data={e => e.row?.usuario?.Nombres ?? ''}
-                    customComponent={e =>
-                        e.row?.key_usuario ? (
-                            <SView col="xs-12" row>
-                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: 'hidden' }}>
-                                    <SImage
-                                        src={`${SSocket.api.root}usuario/${e.row?.key_usuario}`}
-                                        style={{ resizeMode: 'cover' }}
-                                    />
-                                </SView>
-                                <SView width={5} />
-                                <SText center color={STheme.color.lightGray} fontSize={12}>
-                                    {e.row?.usuario?.Nombres}
-                                </SText>
-                            </SView>
-                        ) : null
-                    }
-                />
+                /> */}
+                <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
+                <DinamicTable.Col key="key_usuario" label="Administrador" width={100} data={(e) => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
+
             </DinamicTable>
         );
     }
     render() {
         return (
             <SPage title="Gestión de Proveedores" disableScroll>
+                <SView row col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", paddingVertical: 8, paddingHorizontal: 12, }} >
+                    <SView col={"xs-12 sm-5 lg-2"} row center style={{ flexWrap: "wrap",  }}>
+                        <FiltroSelector
+                            ref={ref => this.filtroEstadoRef = ref}
+                            label="Estado de Pago"
+                            loadData={async () => [
+                                { key: "Sin Deuda", nombre: "Sin Deuda" },
+                                { key: "Deudor", nombre: "Deudor" },
+                                { key: "En Mora", nombre: "En Mora" },
+                            ]}
+                            mapOption={a => ({ key: a.key, nombre: a.nombre })}
+                            onSelect={item => {
+                                this.setState({ selectedEstadoPago: item }, () => {
+                                    this.DinamicTable?.loadData();
+                                });
+                            }}
+                        />
+                    </SView>
+                <SHr height={8} />
+                </SView>
+
+
                 {this.mostrarTabla()}
                 <SHr height={20} />
                 <FloatButtom

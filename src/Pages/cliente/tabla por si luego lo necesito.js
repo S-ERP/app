@@ -341,14 +341,35 @@ export default class ListaClientes extends Component {
                 <DinamicTable.Col key="cuota_6" wrap label="Cuotas Pendientes" width={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.warning}33`, }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
                 <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="key_usuario" label="Administrador" width={100} data={(e) => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
+
+                {/* <DinamicTable.Col key="cobros" label="Pagar Cuotas" width={90} center data={e => e.row?.ventas?.length}
+                    customComponent={e =>
+                        e.row?.ventas?.length > 0 ? (
+                            <SView style={{ width: 28 }} center onPress={() => SNavigation.navigate('/caja/cuotas', { key_cliente: e.row?.key })} >
+                                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: 'hidden', backgroundColor: `${STheme.color.card}66`, }} >
+                                    <SIconApp name="pagoefectivo" fill="#37be01ff" width={24} />
+                                </SView>
+                            </SView>
+                        ) : null
+                    }
+                /> */}
+
             </DinamicTable>
         );
     }
     render() {
         return (
             <SPage title="Gestión de Clientes" disableScroll>
-                <SView row col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", paddingVertical: 8, paddingHorizontal: 12, }} >
-                    <SView col={"xs-12 sm-5 lg-2"} row center style={{ flexWrap: "wrap", }}>
+                <SView row col={"xs-12"} style={{
+                    backgroundColor: "transparent",
+                    borderBottomWidth: 1,
+                    borderTopWidth: 1,
+                    borderColor: STheme.color.lightGray + "30",
+                    paddingVertical: 12,
+                    paddingHorizontal: 12,
+                }}
+                >
+                    <SView col={"xs-12 sm-5 lg-1"} row center style={{ flexWrap: "wrap", gap: 12 }}>
                         <FiltroSelector
                             ref={ref => this.filtroEstadoRef = ref}
                             label="Estado de Pago"
@@ -356,7 +377,7 @@ export default class ListaClientes extends Component {
                                 { key: "Sin Deuda", nombre: "Sin Deuda" },
                                 { key: "Deudor", nombre: "Deudor" },
                                 { key: "En Mora", nombre: "En Mora" },
-                            ]}
+                             ]}
                             mapOption={a => ({ key: a.key, nombre: a.nombre })}
                             onSelect={item => {
                                 this.setState({ selectedEstadoPago: item }, () => {
@@ -365,8 +386,9 @@ export default class ListaClientes extends Component {
                             }}
                         />
                     </SView>
-                    <SHr height={8} />
+                    <SView width={8} height={8} />
                 </SView>
+                <SHr height={8} />
                 {this.mostrarTabla()}
                 {MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'new' }) && (
                     <FloatButtom
