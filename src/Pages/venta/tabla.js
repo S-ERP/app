@@ -10,6 +10,7 @@ import MDL from '../../MDL';
 import FloatMenu from '../../Components/FloatMenu';
 import ReciboRollo from '../../Components/PDF/venta/ReciboRollo';
 import FechaFullFilter from '../../Components/FechaFullFilter';
+import PopupDetalleVenta from './Components/PopupDetalleVenta';
 const proveedorEjemplo =
 {
     "estado": 1,
@@ -140,7 +141,8 @@ export default class tabla extends Component {
                 })
             );
 
-            console.log('✅ Datos cargados exitosamente:', ventasEnriquecidas.length, "ventas.");
+            console.log('✅✅✅ exitosamente:', ventasEnriquecidas, "ventas.");
+            // console.log('✅✅✅ exitosamente:', ventasEnriquecidas.detalles, "ventas.");
             return ventasEnriquecidas;
 
         } catch (error) {
@@ -402,6 +404,8 @@ export default class tabla extends Component {
                             <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
                         </SView>
                     </>} />
+
+
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
 
 
@@ -507,9 +511,23 @@ export default class tabla extends Component {
                     </>}
                 />
 
-                <DinamicTable.Col key="descripcion" label="Descripción" width={150} data={(e) => e.row?.descripcion ?? ""} />
+                {/* <DinamicTable.Col key={"-keyprofiless"} label='Ver' width={40} data={(e) => e.row?.key}
+                    customComponent={e => (
+                        <SView row center card padding={2} onPress={() => {
+                            PopupDetalleVenta.open({
+                                detalles: e.row.detalles,
+                                venta: e.row
+                            })
+                        }} backgroundColor={STheme.color.background}>
+                            <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} />
+                        </SView>
+                    )}
+                /> */}
 
-                {/* <DinamicTable.Col key="tipo_pago" label="Tipo Pago" width={80} data={(e) => e.row?.tipo_pago ?? ""} customComponent={(e) => this.renderTipoPago(e?.data)} /> */}
+
+                <DinamicTable.Col key="descripcion" label="Descripción" width={150} data={(e) => e.row?.descripcion ?? ""} />
+                <DinamicTable.Col key="detalles_" label="Venta Detalles" width={220} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)}
+                    customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
 
                 <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={80}
                     data={(e) => {
