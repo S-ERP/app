@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Asistencias</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            width: 250px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* TABLA */
+        .table-wrapper {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        th {
+            color: white;
+            padding: 18px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 15px 18px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background-color: #f7fafc;
+            cursor: pointer;
+        }
+
+        /* AVATARES Y INFO */
+        .cell-client {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .client-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .client-name {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .client-detail {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .timestamp {
+            color: #718096;
+            font-size: 13px;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            width: 95%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #718096;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #2d3748;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-results {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .result-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-item:hover {
+            background: #edf2f7;
+        }
+
+        .result-item .avatar {
+            width: 36px;
+            height: 36px;
+            font-size: 14px;
+        }
+
+        .selected-client {
+            background: #edf2f7;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .selected-client .avatar {
+            width: 50px;
+            height: 50px;
+            font-size: 18px;
+        }
+
+        .client-details {
+            flex: 1;
+        }
+
+        .client-details p {
+            margin: 4px 0;
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        .client-details .label {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 12px;
+        }
+
+        .divider {
+            height: 2px;
+            background: #e2e8f0;
+            margin: 20px 0;
+        }
+
+        .time-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-register:active {
+            transform: translateY(0);
+        }
+
+        /* BADGE DE ESTADO */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-completed {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .table-wrapper {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+
+            .cell-client {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .time-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1 class="header-title">📋 Reporte de Asistencias</h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <input type="text" placeholder="Buscar cliente...">
+                </div>
+                <button class="btn-add" onclick="openModal()">+ Nueva Asistencia</button>
+            </div>
+        </div>
+
+        <!-- TABLA -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Sucursal</th>
+                        <th>Cliente</th>
+                        <th>Fecha Asistencia</th>
+                        <th>Administrador</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr onclick="openModal()">
+                        <td>4</td>
+                        <td>
+                            <div class="cell-client">
+                                <div class="avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">CM</div>
+                                <span>Casa Matriz</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-client">
+                                <div class="avatar" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">LF</div>
+                                <div class="client-info">
+                                    <span class="client-name">Liceth Flores Santos</span>
+                                    <span class="client-detail">+591 78900000</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <div class="client-name">2026-01-20</div>
+                                <div class="timestamp">00:57</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-client">
+                                <div class="avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">AS</div>
+                                <div class="client-info">
+                                    <span class="client-name">Ing. Álvaro Siles</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-completed">✓ Registrado</span></td>
+                    </tr>
+
+                    <tr onclick="openModal()">
+                        <td>3</td>
+                        <td>
+                            <div class="cell-client">
+                                <div class="avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">CM</div>
+                                <span>Casa Matriz</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-client">
+                                <div class="avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">RR</div>
+                                <div class="client-info">
+                                    <span class="client-name">Roy Ruddy Cliente</span>
+                                    <span class="client-detail">+591 63409994</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <div class="client-name">2026-01-20</div>
+                                <div class="timestamp">00:19</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-client">
+                                <div class="avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">AS</div>
+                                <div class="client-info">
+                                    <span class="client-name">Ing. Álvaro Siles</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-completed">✓ Registrado</span></td>
+                    </tr>
+
+                    <tr onclick="openModal()">
+                        <td>2</td>
+                        <td>
+                            <div class="cell-client">
+                                <div class="avatar" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">W</div>
+                                <span>Warnes</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-client">
+                                <div class="avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">RR</div>
+                                <div class="client-info">
+                                    <span class="client-name">Roy Ruddy Cliente</span>
+                                    <span class="client-detail">+591 63409994</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <div class="client-name">2026-01-20</div>
+                                <div class="timestamp">00:19</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-client">
+                                <div class="avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">AS</div>
+                                <div class="client-info">
+                                    <span class="client-name">Ing. Álvaro Siles</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-completed">✓ Registrado</span></td>
+                    </tr>
+
+                    <tr onclick="openModal()">
+                        <td>1</td>
+                        <td>
+                            <div class="cell-client">
+                                <div class="avatar" style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);">MC</div>
+                                <span>Montero Central</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-client">
+                                <div class="avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">RR</div>
+                                <div class="client-info">
+                                    <span class="client-name">Roy Ruddy Cliente</span>
+                                    <span class="client-detail">+591 63409994</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <div class="client-name">2026-01-20</div>
+                                <div class="timestamp">00:19</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-client">
+                                <div class="avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">AS</div>
+                                <div class="client-info">
+                                    <span class="client-name">Ing. Álvaro Siles</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-completed">✓ Registrado</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Registrar Asistencia</span>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+
+            <!-- BÚSQUEDA DE CLIENTE -->
+            <div class="form-group">
+                <label>Buscar Cliente</label>
+                <input type="text" id="searchClient" placeholder="Escribe el nombre del cliente..." oninput="filterClients()">
+                <div class="search-results" id="searchResults" style="display: none;">
+                    <div class="result-item" onclick="selectClient('Roy Ruddy', '63409994', 'ruddypazd@gmail.com')">
+                        <div class="avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">RR</div>
+                        <div>
+                            <div style="font-weight: 600;">Roy Ruddy</div>
+                            <div style="font-size: 12px; color: #718096;">+591 63409994</div>
+                        </div>
+                    </div>
+                    <div class="result-item" onclick="selectClient('Liceth Flores Santos', '78900000', 'liceth@gmail.com')">
+                        <div class="avatar" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">LF</div>
+                        <div>
+                            <div style="font-weight: 600;">Liceth Flores Santos</div>
+                            <div style="font-size: 12px; color: #718096;">+591 78900000</div>
+                        </div>
+                    </div>
+                    <div class="result-item" onclick="selectClient('Juan Pérez', '75555555', 'juan@gmail.com')">
+                        <div class="avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">JP</div>
+                        <div>
+                            <div style="font-weight: 600;">Juan Pérez</div>
+                            <div style="font-size: 12px; color: #718096;">+591 75555555</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CLIENTE SELECCIONADO -->
+            <div class="selected-client" id="selectedClient" style="display: none;">
+                <div class="avatar" id="clientAvatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">RR</div>
+                <div class="client-details">
+                    <p><span class="label">CLIENTE</span></p>
+                    <p id="clientName">Roy Ruddy</p>
+                    <p><span class="label">TELÉFONO</span></p>
+                    <p id="clientPhone">+591 63409994</p>
+                    <p><span class="label">EMAIL</span></p>
+                    <p id="clientEmail">ruddypazd@gmail.com</p>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- FECHA Y HORA -->
+            <div class="time-inputs">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Fecha</label>
+                    <input type="date" id="fecha" value="2026-01-20">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Hora</label>
+                    <input type="time" id="hora" value="00:00">
+                </div>
+            </div>
+
+            <!-- SUCURSAL -->
+            <div class="form-group">
+                <label>Sucursal</label>
+                <select id="sucursal">
+                    <option value="">Selecciona una sucursal</option>
+                    <option value="Casa Matriz">Casa Matriz</option>
+                    <option value="Warnes">Warnes</option>
+                    <option value="Montero Central">Montero Central</option>
+                    <option value="Santa Cruz">Santa Cruz</option>
+                </select>
+            </div>
+
+            <!-- BOTÓN REGISTRAR -->
+            <button class="btn-register" onclick="registerAttendance()">Registrar Asistencia</button>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.getElementById('selectedClient').style.display = 'none';
+            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('searchClient').value = '';
+        }
+
+        function filterClients() {
+            const search = document.getElementById('searchClient').value.toLowerCase();
+            const results = document.getElementById('searchResults');
+            
+            if (search.length > 0) {
+                results.style.display = 'block';
+            } else {
+                results.style.display = 'none';
+            }
+        }
+
+        function selectClient(name, phone, email) {
+            document.getElementById('selectedClient').style.display = 'flex';
+            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('searchClient').value = '';
+            document.getElementById('clientName').textContent = name;
+            document.getElementById('clientPhone').textContent = '+591 ' + phone;
+            document.getElementById('clientEmail').textContent = email;
+        }
+
+        function registerAttendance() {
+            const clientName = document.getElementById('clientName').textContent;
+            const fecha = document.getElementById('fecha').value;
+            const hora = document.getElementById('hora').value;
+            const sucursal = document.getElementById('sucursal').value;
+
+            if (!clientName || clientName === 'Nombre del cliente' || !fecha || !hora || !sucursal) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+
+            alert(`Asistencia registrada:\n\nCliente: ${clientName}\nFecha: ${fecha}\nHora: ${hora}\nSucursal: ${sucursal}`);
+            closeModal();
+        }
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
