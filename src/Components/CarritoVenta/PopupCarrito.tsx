@@ -26,8 +26,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     borderRadius: 8,
                     borderWidth: 1,
                     borderColor: STheme.color.card,
-                    // cursor: "default",
-                    // userSelect: "text"
                 }} withoutFeedback>
                     <PopupCarrito {...props} />
                 </SView>
@@ -106,7 +104,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         </SView>
     }
 }
-
 const ItemComp = (props: any) => {
     const cantidadRef = React.useRef<any>(null);
     const precioRef = React.useRef<any>(null);
@@ -116,13 +113,13 @@ const ItemComp = (props: any) => {
             cantidadRef.current.setValue(item.cantidad);
         }
     }
+    // 0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣
+    // aqui se ests cambiando porque cuando presiona otra el item, debe de sumar
     if (precioRef.current) {
-        if (precioRef.current.getValue() != item.precio) {
-            precioRef.current.setValue(item.precio);
+        if (precioRef.current.getValue() != item.modelo?.precio_venta_moneda) {
+            precioRef.current.setValue(item.modelo?.precio_venta_moneda);
         }
     }
-    // console.clear();
-    console.log("%c" + JSON.stringify(item), `color: #cf0cbfff; font-weight: bold;`);
     return <SView padding={8}>
         <SView row center>
             <SView center style={{
@@ -154,12 +151,12 @@ const ItemComp = (props: any) => {
                         }}
                             type="money2"
                             icon={<SText width={15} fontSize={10} color={STheme.color.lightGray}>{"BS"}</SText>}
-                            defaultValue={item.precio}
+                            defaultValue={item.modelo.precio_venta_moneda}
                             onChangeText={e => {
                                 if (!e) {
-                                    item.precio = 0
+                                    item.modelo.precio_venta_moneda = 0;
                                 } else {
-                                    item.precio = parseFloat(e ?? "1")
+                                    item.modelo.precio_venta_moneda = parseFloat(e ?? "1");
                                 }
                                 MDL.carrito.calcularValoresCarritDeVentas();
                             }}
@@ -187,57 +184,31 @@ const ItemComp = (props: any) => {
                     }}>
                         <SText fontSize={12} bold style={{
                             textAlign: "right"
-                        }}>BS {SMath.formatMoney(item.precio * item.cantidad)} </SText>
+                        }}>
+                            BS {SMath.formatMoney(item.modelo.precio_venta_moneda * item.cantidad)}
+                        </SText>
+                        { }
                     </SView>
                 </SView>
-
                 <SView height={4} />
                 {item?.modelo?.contactos?.length > 0 && (
                     <SView style={{ width: 280, height: 24, backgroundColor: STheme.color.danger }}>
                         <InputSelector
-                            style={{ fontSize: 12,   }}
-                            // placeholderTextColor={STheme.color.danger}
+                            style={{ fontSize: 12, }}
                             type="custom"
                             customStyle="erp"
                             label="Contactos:"
                             placeholder="Selecciona un contacto"
                             options={item.modelo.contactos.map((c) => ({
                                 label: c.nombre,
-
-                                // label: <> <SView col="xs-12" row>
-                                //     <SView style={{ width: 18, height: 18, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} > {c.key ? (<SImage src={`${SSocket.api.root}usuario/${c.key}`} style={{ resizeMode: "cover" }} />) : null} </SView>
-                                //     <SView width={5} />
-                                //     <SText flex numberOfLines={1} style={{ fontSize: 14 }}> {c.nombre} </SText>
-                                // </SView> </>,
-
                                 customComponent: (e) => {
-                                    // return <SView col="xs-12" row>
-                                    //     <SView
-                                    //         style={{
-                                    //             width: 24,
-                                    //             height: 24,
-                                    //             borderRadius: 100,
-                                    //             overflow: "hidden",
-                                    //             backgroundColor: STheme.color.card + "66",
-                                    //         }}
-                                    //     >
-                                    //         {e.data.key ? (
-                                    //             <SImage src={`${SSocket.api.root}usuario/${e.data.key}`} style={{ resizeMode: "cover" }} />) : null} </SView>
-
-                                    //     <SView width={5} />
-                                    //     <SText flex numberOfLines={1} style={{ fontSize: 10 }}> {e.data.nombre} </SText>
-                                    //     <SText flex numberOfLines={1} style={{ fontSize: 10 }}>Comisión ({e.data.comision})%</SText>
-                                    // </SView>
                                     return <SText style={{ fontSize: 11, color: STheme.color.lightGray, }} >Comisión ({e.data.comision})%</SText>
                                 },
                                 value: c.key_modelo_cliente,
                                 data: c,
                             }))}
-
-                            // options={item.modelo.contactos.map((c) => ({ label: c.nombre +" Comision "+c.comision+"%", value: c.key, }))}
                             defaultValue={item.contactoSeleccionado || ""}
                             onSelect={(selected) => {
-                                console.log("Se selcciono el cliente", selected)
                                 item.key_modelo_cliente = selected.value;
                             }}
                         />
