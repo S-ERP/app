@@ -169,7 +169,13 @@ export default class Main extends Component {
             <SPage disableScroll hidden>
                 <Header onSelect={this.setSucursal} />
                 <SView col="xs-12" row flex>
-                    <SView
+
+                    {/* CARRITO INVISIBLE */}
+                    <SView style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}>
+                        {this.renderCarrito()}
+                    </SView>
+
+                    {/* <SView
                         flex
                         col="xs-12 sm-12 md-4.5 lg-3.5"
                         style={{
@@ -180,9 +186,9 @@ export default class Main extends Component {
                         }}
                     >
                         {this.renderCarrito()}
-                    </SView>
+                    </SView> */}
                     <SView
-                        col="xs-12 sm-12 md-7.5 lg-8.5"
+                        col="xs-12 sm-12 "
                         style={{
                             display: this.state.showCarritoModal ? "none" : "flex",
                             borderRightWidth: 1,
