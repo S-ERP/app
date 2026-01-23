@@ -38,6 +38,9 @@ export default class Categoria extends Component {
             if (!this.selectedMoneda && this.monedas.length > 0) {
                 this.selectedMoneda = this.monedas.find((e) => e.tipo == "base") || this.monedas[0];
                 this.props.onSelectMoneda?.(this.selectedMoneda);
+                MDL.compra_venta.setMonedaSeleccionada(this.selectedMoneda);
+                MDL.compra_venta.dispatchEvent({ type: "moneda_seleccionada" })
+
             }
             this.forceUpdate();
         } catch (error) {
@@ -56,6 +59,9 @@ export default class Categoria extends Component {
         this.selectedMoneda = selectedMoneda;
         this.props.onSelectMoneda?.(selectedMoneda);
         console.log("🎪CATEGORIA🎪. MONEDA " + JSON.stringify(this.selectedMoneda));
+        MDL.compra_venta.setMonedaSeleccionada(this.selectedMoneda);
+        MDL.compra_venta.dispatchEvent({ type: "moneda_seleccionada" })
+
         this.forceUpdate();
     }
 
