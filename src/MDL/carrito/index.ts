@@ -1,3 +1,4 @@
+import MDL from "..";
 import MDLAbstract from "../MDLAbstract";
 import { EventListener } from "./types";
 export type CarritoItem = {
@@ -12,7 +13,27 @@ export type CarritoItemVenta = {
   key_modelo_cliente: string,
 }
 export default class carrito extends MDLAbstract<EventListener> {
-  async componentDidMount() { }
+  selectedMoneda: any = null;
+  eventoMoneda: any = null;
+
+
+  async componentDidMount() {
+    this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
+      const moneda = MDL.compra_venta.getMonedaSeleccionada();
+      // if (moneda) {
+        console.log(JSON.stringify(moneda));
+        this.selectedMoneda = moneda;
+        this.calcularValoresCarritDeVentas();
+      //  }
+
+    });
+  }
+  componentWillUnmount(): void {
+    if (this.evento) {
+      MDL.compra_venta.removeEventListener(this.evento);
+    }
+
+  }
   carrito_compra: {
     items: CarritoItem[],
     cantidad_items: number,
@@ -45,7 +66,7 @@ export default class carrito extends MDLAbstract<EventListener> {
     let monto = 0;
     this.carrito_compra.items.forEach(element => {
       cantidad_items += element.cantidad;
-      monto += element.cantidad * element.modelo?.precio_venta_moneda;;
+      monto += element.cantidad * element.modelo?.precio_venta_moneda;
     });
     this.carrito_compra.cantidad_items = cantidad_items;
     this.carrito_compra.monto_total = monto;
@@ -92,10 +113,22 @@ export default class carrito extends MDLAbstract<EventListener> {
   }
   // aqui hace el calsucolo del subtotal y asi lo lleva a los tipos de pagos
   calcularValoresCarritDeVentas() {
+    // console.clear();
+
+    let aaaaaaaaa = this.selectedMoneda;
+    console.log("%c" + "ingresar_textossssssssssssssssss", `color: #2ECC40; font-weight: bold;`);
+    console.log("%c" + JSON.stringify(aaaaaaaaa.tipo_cambio), `color: #2ECC40; font-weight: bold;`);
+    console.log("%c" + JSON.stringify(aaaaaaaaa.tipo_cambio), `color: #2ECC40; font-weight: bold;`);
     let cantidad_items = 0;
     let monto = 0;
+
+    let aux = 0;
+
     this.carrito_venta.items.forEach(element => {
+          console.log("%c" + JSON.stringify(element?.modelo), `color: #c1cc2e; font-weight: bold;`);
+
       cantidad_items += element.cantidad;
+      // aux = aaaaaaaaa ? element.modelo?.precio_venta_moneda / (this.props.selectedMoneda.tipo_cambio || 1) : element.modelo?.precio_venta_moneda;
       monto += element.cantidad * element.modelo?.precio_venta_moneda;
     });
     this.carrito_venta.cantidad_items = cantidad_items;

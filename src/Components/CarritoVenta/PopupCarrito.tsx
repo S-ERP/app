@@ -6,71 +6,73 @@ import SIconApp from "../../Assets/SIconApp";
 import { FlatList } from "react-native";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 import InputSelector from "../Selectores/InputSelector";
-import FiltroSelector from "../../Pages/productos/modelo/Components/FiltroSelector";
+
 type PopupCarritoProps = {}
+
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
 
-    state = { selectedMoneda: {}, };
+    state = { selectedMoneda: null };
 
     static open(props: PopupCarritoProps) {
         SPopup.open({
             key: "PopupCarrito",
             type: "3",
             content:
-                <SView style={{ position: "absolute", top: 8, right: 8, width: "100%", maxWidth: 300, height: 500, maxHeight: "100%", backgroundColor: STheme.color.background, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, }} withoutFeedback>
+                <SView style={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    width: "100%",
+                    maxWidth: 300,
+                    height: 500,
+                    maxHeight: "100%",
+                    backgroundColor: STheme.color.background,
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: STheme.color.card,
+                }} withoutFeedback>
                     <PopupCarrito {...props} />
                 </SView>
         })
     }
+
     handleChange = () => {
         this.forceUpdate();
     }
+
     componentDidMount(): void {
         MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this));
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
             const moneda = MDL.compra_venta.getMonedaSeleccionada();
-            // if (moneda) {
-            console.log(JSON.stringify(moneda));
-            this.setState({ selectedMoneda: moneda });
-            // }
-
+            this.setState({ selectedMoneda: moneda || null });
         });
     }
-
-
 
     componentWillUnmount(): void {
         MDL.carrito.removeEventListener(this.handleChange.bind(this))
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
-
     }
+
     render() {
         const items = MDL.carrito.carrito_venta.items;
         const { selectedMoneda } = this.state;
 
-        // if(!this.evento)return;
-
-        console.log("--- " + JSON.stringify(selectedMoneda))
         return <SView col={"xs-12"} height>
             <SHr />
             <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
 
-
-            {/* {selectedMoneda && ( */}
+            {/* Moneda seleccionada */}
             <SText center color={STheme.color.lightGray} bold>
-                {"key "}{selectedMoneda.key}
+                {"key "}{selectedMoneda?.key ?? "-"}
             </SText>
             <SText center color={STheme.color.lightGray} bold>
-                {"moneda "}{selectedMoneda.observacion}
+                {"moneda "}{selectedMoneda?.observacion ?? "-"}
             </SText>
-            {/* )} */}
 
-            {/* 81257731-8eb9-4a77-89db-add5dc76ae08 */}
-            {/* EUR */}
-            <SView row col={"xs-12"} style={{ paddingHorizontal: 8, paddingVertical: 8 }}>
-                {/* <FiltroSelector
+
+  {/* <FiltroSelector
                     ref={ref => this.filtroMonedasRef = ref}
                     label="Tipo"
                     loadData={async () => {
@@ -82,42 +84,65 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     }}
                     mapOption={a => ({ key: a.key, nombre: a.nombre })}
                 /> */}
-            </SView>
-            <SView style={{ padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0, }} onPress={() => { SPopup.close("PopupCarrito") }}>
+                
+            <SView style={{ padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0 }} onPress={() => { SPopup.close("PopupCarrito") }}>
                 <SIconApp name="Close" fill={STheme.color.text} />
             </SView>
+
             <SHr />
+
             <SView row col={"xs-12"} style={{ paddingHorizontal: 8 }}>
                 <SText color={STheme.color.lightGray} fontSize={12}>{"Productos"} ({MDL.carrito.carrito_venta.cantidad_items})</SText>
                 <SView flex />
                 <SText color={STheme.color.lightGray} fontSize={12}>{"Sub Total"}</SText>
             </SView>
-            <SHr />
+
             <SHr h={1} color={STheme.color.card} />
-            <FlatList data={items} renderItem={({ item, index }) => { return <ItemComp item={item} moneda={this.state.selectedMoneda} /> }} />
+
+            {/* Lista de items */}
+            <FlatList
+                data={items}
+                renderItem={({ item }) => <ItemComp item={item} moneda={selectedMoneda} />}
+                keyExtractor={(item) => item.modelo.key}
+            />
+
             <SHr h={1} color={STheme.color.card} />
+
+            {/* Total */}
             <SView padding={8}>
-                <SText col={"xs-12"} style={{ textAlign: "right" }}>{"Total:"} {SMath.formatMoney(MDL.carrito.carrito_venta.monto_total)}</SText>
+                <SText col={"xs-12"} style={{ textAlign: "right" }}>
+                    {"Total: "}
+                    {SMath.formatMoney(
+                        items.reduce((acc, item) => {
+                            const precio = selectedMoneda
+                                ? item.modelo.precio_venta_moneda / (selectedMoneda.tipo_cambio || 1)
+                                : item.modelo.precio_venta_moneda;
+                            return acc + precio * item.cantidad;
+                        }, 0)
+                    )}
+                </SText>
             </SView>
+
             <SHr h={1} color={STheme.color.card} />
+
+            {/* Acciones */}
             <SView padding={8}>
                 <SView col={"xs-12"} row flex center>
-                    <SView padding={4} card style={{
-                        backgroundColor: STheme.color.danger
-                    }} onPress={() => {
+                    <SView padding={4} card style={{ backgroundColor: STheme.color.danger }} onPress={() => {
                         SPopup.confirm({
                             title: "Seguro que quieres limpiar el carrito?",
                             onPress: () => {
                                 MDL.carrito.limpiarCarritoVentas();
-                                SPopup.close("PopupCarrito")
+                                SPopup.close("PopupCarrito");
                             }
                         })
                     }}>
                         <SText fontSize={12}>{"Limpiar carrito"}</SText>
                     </SView>
+
                     <SView flex />
-                    <SView style={{ backgroundColor: STheme.color.success }}
-                        padding={4} card onPress={() => { PopupCarritoConfirmar.open({}) }}>
+
+                    <SView style={{ backgroundColor: STheme.color.success }} padding={4} card onPress={() => { PopupCarritoConfirmar.open({}) }}>
                         <SText fontSize={12}>{"Confirmar la venta"}</SText>
                     </SView>
                 </SView>
@@ -126,6 +151,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
 }
 
+/* ------------------ ItemComp ------------------ */
 const ItemComp = (props: any) => {
     const cantidadRef = React.useRef<any>(null);
     const precioRef = React.useRef<any>(null);
@@ -133,14 +159,14 @@ const ItemComp = (props: any) => {
 
     const { item, moneda } = props;
 
-    // Sincronizar cantidad con ref
+    // Sincronizar cantidad
     React.useEffect(() => {
         if (cantidadRef.current && cantidadRef.current.getValue() !== item.cantidad) {
             cantidadRef.current.setValue(item.cantidad);
         }
     }, [item.cantidad]);
 
-    // Sincronizar precio con ref según moneda
+    // Sincronizar precio
     React.useEffect(() => {
         if (precioRef.current) {
             const valor = moneda
@@ -158,7 +184,7 @@ const ItemComp = (props: any) => {
     return (
         <SView padding={8}>
             <SView row center>
-                {/* Botón para remover */}
+                {/* Botón remover */}
                 <SView center style={{ width: 20, height: 20, padding: 2 }} onPress={() => MDL.carrito.removerItemAlCarritoDeVentas(item)}>
                     <SIconApp name="Close" fill={STheme.color.warning} />
                 </SView>
@@ -170,10 +196,9 @@ const ItemComp = (props: any) => {
 
                 <SView width={4} />
                 <SView flex>
-                    {/* Descripción y precio */}
+                    {/* Descripción */}
                     <SText fontSize={14} bold>
-                        {item?.modelo?.descripcion}{" "}
-                        {moneda ? (item.modelo.precio_venta_moneda / (moneda.tipo_cambio || 1)) : item.modelo.precio_venta_moneda}
+                        {item?.modelo?.descripcion}
                     </SText>
 
                     <SHr h={2} />
@@ -185,17 +210,11 @@ const ItemComp = (props: any) => {
                                 ref={precioRef}
                                 style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
                                 type="money2"
-                                icon={
-                                    <SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>
-                                        {moneda ? moneda.observacion : "BS"}
-                                    </SText>
-                                }
+                                icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{moneda ? moneda.observacion : "BS"}</SText>}
                                 value={moneda ? item.modelo.precio_venta_moneda / (moneda.tipo_cambio || 1) : item.modelo.precio_venta_moneda}
                                 onChangeText={(e) => {
                                     const valor = parseFloat(e || "0");
-                                    item.modelo.precio_venta_moneda = moneda
-                                        ? valor * (moneda.tipo_cambio || 1)
-                                        : valor;
+                                    item.modelo.precio_venta_moneda = moneda ? valor * (moneda.tipo_cambio || 1) : valor;
                                     MDL.carrito.calcularValoresCarritDeVentas();
                                 }}
                             />
@@ -220,27 +239,19 @@ const ItemComp = (props: any) => {
 
                         <SView flex />
 
-                        {/* Total */}
-                        {/* <SView width={80} style={{ justifyContent: "center" }}>
-                            <SText fontSize={12} bold style={{ textAlign: "right" }}>
-                                {SMath.formatMoney(item.modelo.precio_venta_moneda * item.cantidad)}
-                            </SText>
-                        </SView> */}
+                        {/* Total del item */}
                         <SView width={80} style={{ justifyContent: "center" }}>
                             <SText fontSize={12} bold style={{ textAlign: "right" }}>
                                 {SMath.formatMoney(
-                                    moneda
-                                        ? (item.modelo.precio_venta_moneda / (moneda.tipo_cambio || 1)) * item.cantidad
-                                        : item.modelo.precio_venta_moneda * item.cantidad
+                                    (moneda ? item.modelo.precio_venta_moneda / (moneda.tipo_cambio || 1) : item.modelo.precio_venta_moneda) * item.cantidad
                                 )}
                             </SText>
                         </SView>
-
                     </SView>
 
                     <SView height={4} />
 
-                    {/* Selector de contactos si existen */}
+                    {/* Selector de contactos */}
                     {item?.modelo?.contactos?.length > 0 && (
                         <SView style={{ width: 280, height: 24, backgroundColor: STheme.color.danger }}>
                             <InputSelector
