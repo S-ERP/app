@@ -40,5 +40,7 @@ export type EventListener = {
   type: "conStock"
 } | {
   type: "carrito_globo"
+}| {
+  type: "moneda_seleccionada"
 }
 
