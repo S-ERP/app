@@ -29,11 +29,11 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this));
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
             const moneda = MDL.compra_venta.getMonedaSeleccionada();
-            if (moneda) {
-                console.log(JSON.stringify(moneda));
-                this.setState({ selectedMoneda: moneda });
-            }
-            
+            // if (moneda) {
+            console.log(JSON.stringify(moneda));
+            this.setState({ selectedMoneda: moneda });
+            // }
+
         });
     }
 
@@ -50,6 +50,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         const items = MDL.carrito.carrito_venta.items;
         const { selectedMoneda } = this.state;
 
+        // if(!this.evento)return;
+
         console.log("--- " + JSON.stringify(selectedMoneda))
         return <SView col={"xs-12"} height>
             <SHr />
@@ -57,15 +59,18 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
 
 
             {/* {selectedMoneda && ( */}
-                <SText center color={STheme.color.lightGray} bold>
-                    {"moneda "}{selectedMoneda.observacion} {selectedMoneda.key}
-                </SText>
+            <SText center color={STheme.color.lightGray} bold>
+                {"key "}{selectedMoneda.key}
+            </SText>
+            <SText center color={STheme.color.lightGray} bold>
+                {"moneda "}{selectedMoneda.observacion}
+            </SText>
             {/* )} */}
 
-{/* 81257731-8eb9-4a77-89db-add5dc76ae08 */}
- {/* EUR */}
+            {/* 81257731-8eb9-4a77-89db-add5dc76ae08 */}
+            {/* EUR */}
             <SView row col={"xs-12"} style={{ paddingHorizontal: 8, paddingVertical: 8 }}>
-                <FiltroSelector
+                {/* <FiltroSelector
                     ref={ref => this.filtroMonedasRef = ref}
                     label="Tipo"
                     loadData={async () => {
@@ -76,7 +81,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         }));
                     }}
                     mapOption={a => ({ key: a.key, nombre: a.nombre })}
-                />
+                /> */}
             </SView>
             <SView style={{ padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0, }} onPress={() => { SPopup.close("PopupCarrito") }}>
                 <SIconApp name="Close" fill={STheme.color.text} />
@@ -89,7 +94,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             </SView>
             <SHr />
             <SHr h={1} color={STheme.color.card} />
-            <FlatList data={items} renderItem={({ item, index }) => { return <ItemComp item={item} /> }} />
+            <FlatList data={items} renderItem={({ item, index }) => { return <ItemComp item={item} moneda={this.state.selectedMoneda} /> }} />
             <SHr h={1} color={STheme.color.card} />
             <SView padding={8}>
                 <SText col={"xs-12"} style={{ textAlign: "right" }}>{"Total:"} {SMath.formatMoney(MDL.carrito.carrito_venta.monto_total)}</SText>
@@ -120,114 +125,145 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         </SView>
     }
 }
+
 const ItemComp = (props: any) => {
     const cantidadRef = React.useRef<any>(null);
     const precioRef = React.useRef<any>(null);
-    const { item } = props;
-    if (cantidadRef.current) {
-        if (cantidadRef.current.getValue() != item.cantidad) {
+    const monedaRef = React.useRef<any>(null);
+
+    const { item, moneda } = props;
+
+    // Sincronizar cantidad con ref
+    React.useEffect(() => {
+        if (cantidadRef.current && cantidadRef.current.getValue() !== item.cantidad) {
             cantidadRef.current.setValue(item.cantidad);
         }
-    }
-    if (precioRef.current) {
-        if (precioRef.current.getValue() != item.modelo?.precio_venta_moneda) {
-            precioRef.current.setValue(item.modelo?.precio_venta_moneda);
+    }, [item.cantidad]);
+
+    // Sincronizar precio con ref según moneda
+    React.useEffect(() => {
+        if (precioRef.current) {
+            const valor = moneda
+                ? item.modelo.precio_venta_moneda / (moneda.tipo_cambio || 1)
+                : item.modelo.precio_venta_moneda;
+            if (precioRef.current.getValue() !== valor) {
+                precioRef.current.setValue(valor);
+            }
         }
-    }
-    return <SView padding={8}>
-        <SView row center>
-            <SView center style={{
-                width: 20, height: 20, padding: 2,
-            }} onPress={() => {
-                MDL.carrito.removerItemAlCarritoDeVentas(item);
-            }}>
-                <SIconApp name="Close" fill={STheme.color.warning} />
-            </SView>
-            <SView center style={{ width: 35, height: 35, borderRadius: 4, overflow: "hidden", borderColor: STheme.color.card, borderWidth: 1, }}>
-                <SImage src={SSocket.api.inventario + "modelo/" + item.modelo.key} style={{
-                    resizeMode: "cover"
-                }} />
-            </SView>
-            <SView width={4} />
-            <SView flex>
-                <SText fontSize={14} bold>{item?.modelo?.descripcion}</SText>
-                <SHr h={2} />
-                <SView row col={"xs-12"} style={{
-                    alignItems: "center"
-                }} >
-                    <SView width={60}>
-                        <SInput ref={precioRef} style={{
-                            height: 16,
-                            fontSize: 12,
-                            padding: 0,
-                            paddingRight: 4,
-                            textAlign: "right",
-                        }}
-                            type="money2"
-                            icon={<SText width={15} fontSize={10} color={STheme.color.lightGray}>{"BS"}</SText>}
-                            defaultValue={item.modelo.precio_venta_moneda}
-                            onChangeText={e => {
-                                if (!e) {
-                                    item.modelo.precio_venta_moneda = 0;
-                                } else {
-                                    item.modelo.precio_venta_moneda = parseFloat(e ?? "1");
-                                }
-                                MDL.carrito.calcularValoresCarritDeVentas();
-                            }}
-                        />
-                    </SView>
-                    <SView width={4} />
-                    <SView width={60}>
-                        <SInput ref={cantidadRef} style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right", }}
-                            type="money2"
-                            icon={<SText width={15} fontSize={10} color={STheme.color.lightGray}>{"x"}</SText>}
-                            defaultValue={item.cantidad}
-                            onChangeText={e => {
-                                if (!e) {
-                                    item.cantidad = 0
-                                } else {
-                                    item.cantidad = parseFloat(e ?? "1")
-                                }
-                                MDL.carrito.calcularValoresCarritDeVentas();
-                            }}
-                        />
-                    </SView>
-                    <SView flex />
-                    <SView width={80} style={{
-                        justifyContent: "center"
-                    }}>
-                        <SText fontSize={12} bold style={{
-                            textAlign: "right"
-                        }}>
-                            BS {SMath.formatMoney(item.modelo.precio_venta_moneda * item.cantidad)}
-                        </SText>
-                    </SView>
+        if (monedaRef.current) {
+            monedaRef.current.setValue(moneda);
+        }
+    }, [moneda, item.modelo.precio_venta_moneda]);
+
+    return (
+        <SView padding={8}>
+            <SView row center>
+                {/* Botón para remover */}
+                <SView center style={{ width: 20, height: 20, padding: 2 }} onPress={() => MDL.carrito.removerItemAlCarritoDeVentas(item)}>
+                    <SIconApp name="Close" fill={STheme.color.warning} />
                 </SView>
-                <SView height={4} />
-                {item?.modelo?.contactos?.length > 0 && (
-                    <SView style={{ width: 280, height: 24, backgroundColor: STheme.color.danger }}>
-                        <InputSelector
-                            style={{ fontSize: 12, }}
-                            type="custom"
-                            customStyle="erp"
-                            label="Contactos:"
-                            placeholder="Selecciona un contacto"
-                            options={item.modelo.contactos.map((c) => ({
-                                label: c.nombre,
-                                customComponent: (e) => {
-                                    return <SText style={{ fontSize: 11, color: STheme.color.lightGray, }} >Comisión ({e.data.comision})%</SText>
-                                },
-                                value: c.key_modelo_cliente,
-                                data: c,
-                            }))}
-                            defaultValue={item.contactoSeleccionado || ""}
-                            onSelect={(selected) => {
-                                item.key_modelo_cliente = selected.value;
-                            }}
-                        />
+
+                {/* Imagen */}
+                <SView center style={{ width: 35, height: 35, borderRadius: 4, overflow: "hidden", borderColor: STheme.color.card, borderWidth: 1 }}>
+                    <SImage src={SSocket.api.inventario + "modelo/" + item.modelo.key} style={{ resizeMode: "cover" }} />
+                </SView>
+
+                <SView width={4} />
+                <SView flex>
+                    {/* Descripción y precio */}
+                    <SText fontSize={14} bold>
+                        {item?.modelo?.descripcion}{" "}
+                        {moneda ? (item.modelo.precio_venta_moneda / (moneda.tipo_cambio || 1)) : item.modelo.precio_venta_moneda}
+                    </SText>
+
+                    <SHr h={2} />
+
+                    <SView row col={"xs-12"} style={{ alignItems: "center" }}>
+                        {/* Precio editable */}
+                        <SView width={60}>
+                            <SInput
+                                ref={precioRef}
+                                style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
+                                type="money2"
+                                icon={
+                                    <SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>
+                                        {moneda ? moneda.observacion : "BS"}
+                                    </SText>
+                                }
+                                value={moneda ? item.modelo.precio_venta_moneda / (moneda.tipo_cambio || 1) : item.modelo.precio_venta_moneda}
+                                onChangeText={(e) => {
+                                    const valor = parseFloat(e || "0");
+                                    item.modelo.precio_venta_moneda = moneda
+                                        ? valor * (moneda.tipo_cambio || 1)
+                                        : valor;
+                                    MDL.carrito.calcularValoresCarritDeVentas();
+                                }}
+                            />
+                        </SView>
+
+                        <SView width={4} />
+
+                        {/* Cantidad editable */}
+                        <SView width={60}>
+                            <SInput
+                                ref={cantidadRef}
+                                style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
+                                type="money2"
+                                icon={<SText width={15} fontSize={10} color={STheme.color.lightGray}>x</SText>}
+                                defaultValue={item.cantidad}
+                                onChangeText={(e) => {
+                                    item.cantidad = parseFloat(e || "0");
+                                    MDL.carrito.calcularValoresCarritDeVentas();
+                                }}
+                            />
+                        </SView>
+
+                        <SView flex />
+
+                        {/* Total */}
+                        {/* <SView width={80} style={{ justifyContent: "center" }}>
+                            <SText fontSize={12} bold style={{ textAlign: "right" }}>
+                                {SMath.formatMoney(item.modelo.precio_venta_moneda * item.cantidad)}
+                            </SText>
+                        </SView> */}
+                        <SView width={80} style={{ justifyContent: "center" }}>
+                            <SText fontSize={12} bold style={{ textAlign: "right" }}>
+                                {SMath.formatMoney(
+                                    moneda
+                                        ? (item.modelo.precio_venta_moneda / (moneda.tipo_cambio || 1)) * item.cantidad
+                                        : item.modelo.precio_venta_moneda * item.cantidad
+                                )}
+                            </SText>
+                        </SView>
+
                     </SView>
-                )}
+
+                    <SView height={4} />
+
+                    {/* Selector de contactos si existen */}
+                    {item?.modelo?.contactos?.length > 0 && (
+                        <SView style={{ width: 280, height: 24, backgroundColor: STheme.color.danger }}>
+                            <InputSelector
+                                style={{ fontSize: 12 }}
+                                type="custom"
+                                customStyle="erp"
+                                label="Contactos:"
+                                placeholder="Selecciona un contacto"
+                                options={item.modelo.contactos.map((c) => ({
+                                    label: c.nombre,
+                                    customComponent: (e) => <SText style={{ fontSize: 11, color: STheme.color.lightGray }}>Comisión ({e.data.comision})%</SText>,
+                                    value: c.key_modelo_cliente,
+                                    data: c,
+                                }))}
+                                defaultValue={item.contactoSeleccionado || ""}
+                                onSelect={(selected) => {
+                                    item.key_modelo_cliente = selected.value;
+                                }}
+                            />
+                        </SView>
+                    )}
+                </SView>
             </SView>
         </SView>
-    </SView >
-}
+    );
+};
