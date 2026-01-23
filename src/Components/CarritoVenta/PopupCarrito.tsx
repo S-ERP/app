@@ -10,27 +10,12 @@ import FiltroSelector from "../../Pages/productos/modelo/Components/FiltroSelect
 type PopupCarritoProps = {
 }
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
-
-
-
     static open(props: PopupCarritoProps) {
         SPopup.open({
             key: "PopupCarrito",
             type: "3",
             content:
-                <SView style={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    width: "100%",
-                    maxWidth: 300,
-                    height: 500,
-                    maxHeight: "100%",
-                    backgroundColor: STheme.color.background,
-                    borderRadius: 8,
-                    borderWidth: 1,
-                    borderColor: STheme.color.card,
-                }} withoutFeedback>
+                <SView style={{ position: "absolute", top: 8, right: 8, width: "100%", maxWidth: 300, height: 500, maxHeight: "100%", backgroundColor: STheme.color.background, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, }} withoutFeedback>
                     <PopupCarrito {...props} />
                 </SView>
         })
@@ -41,9 +26,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     componentDidMount(): void {
         MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this));
     }
-
-
-
     componentWillUnmount(): void {
         MDL.carrito.removeEventListener(this.handleChange.bind(this))
     }
@@ -51,10 +33,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         const items = MDL.carrito.carrito_venta.items;
         return <SView col={"xs-12"} height>
             <SHr />
-            <SText center color={STheme.color.lightGray} bold>{"Carrito de ventasssssssss"}</SText>
-
+            <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
             <SView row col={"xs-12"} style={{ paddingHorizontal: 8, paddingVertical: 8 }}>
- 
                 <FiltroSelector
                     ref={ref => this.filtroMonedasRef = ref}
                     label="Tipo"
@@ -66,22 +46,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         }));
                     }}
                     mapOption={a => ({ key: a.key, nombre: a.nombre })}
-                // onSelect={item =>
-                //     this.setState(
-                //         { selectedTipoCuenta: item },
-                //         () => this.table.loadData()
-                //     )
-                // }
                 />
-
-
             </SView>
-
-
-
-
-
-
             <SView style={{
                 padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0,
             }} onPress={() => {
@@ -145,17 +111,11 @@ const ItemComp = (props: any) => {
     const cantidadRef = React.useRef<any>(null);
     const precioRef = React.useRef<any>(null);
     const { item } = props;
-    // console.clear();
-    console.log("%c" + "-----------------------------", `color: #2ECC40; font-weight: bold;`);
-    console.log(JSON.stringify(item))
-    console.log("%c" + "-----------------------------", `color: #2ECC40; font-weight: bold;`);
     if (cantidadRef.current) {
         if (cantidadRef.current.getValue() != item.cantidad) {
             cantidadRef.current.setValue(item.cantidad);
         }
     }
-    // 0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣
-    // aqui se ests cambiando porque cuando presiona otra el item, debe de sumar
     if (precioRef.current) {
         if (precioRef.current.getValue() != item.modelo?.precio_venta_moneda) {
             precioRef.current.setValue(item.modelo?.precio_venta_moneda);
@@ -228,7 +188,6 @@ const ItemComp = (props: any) => {
                         }}>
                             BS {SMath.formatMoney(item.modelo.precio_venta_moneda * item.cantidad)}
                         </SText>
-                        { }
                     </SView>
                 </SView>
                 <SView height={4} />
