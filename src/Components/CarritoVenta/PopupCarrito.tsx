@@ -7,9 +7,11 @@ import { FlatList } from "react-native";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 import InputSelector from "../Selectores/InputSelector";
 import FiltroSelector from "../../Pages/productos/modelo/Components/FiltroSelector";
-type PopupCarritoProps = {
-}
+type PopupCarritoProps = {}
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
+
+    state = { selectedMoneda: {}, };
+
     static open(props: PopupCarritoProps) {
         SPopup.open({
             key: "PopupCarrito",
@@ -25,15 +27,43 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
     componentDidMount(): void {
         MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this));
+        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
+            const moneda = MDL.compra_venta.getMonedaSeleccionada();
+            if (moneda) {
+                console.log(JSON.stringify(moneda));
+                this.setState({ selectedMoneda: moneda });
+            }
+            
+        });
     }
+
+
+
     componentWillUnmount(): void {
         MDL.carrito.removeEventListener(this.handleChange.bind(this))
+        if (this.evento) {
+            MDL.compra_venta.removeEventListener(this.evento);
+        }
+
     }
     render() {
         const items = MDL.carrito.carrito_venta.items;
+        const { selectedMoneda } = this.state;
+
+        console.log("--- " + JSON.stringify(selectedMoneda))
         return <SView col={"xs-12"} height>
             <SHr />
             <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
+
+
+            {/* {selectedMoneda && ( */}
+                <SText center color={STheme.color.lightGray} bold>
+                    {"moneda "}{selectedMoneda.observacion} {selectedMoneda.key}
+                </SText>
+            {/* )} */}
+
+{/* 81257731-8eb9-4a77-89db-add5dc76ae08 */}
+ {/* EUR */}
             <SView row col={"xs-12"} style={{ paddingHorizontal: 8, paddingVertical: 8 }}>
                 <FiltroSelector
                     ref={ref => this.filtroMonedasRef = ref}
@@ -48,29 +78,18 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     mapOption={a => ({ key: a.key, nombre: a.nombre })}
                 />
             </SView>
-            <SView style={{
-                padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0,
-            }} onPress={() => {
-                SPopup.close("PopupCarrito")
-            }}>
+            <SView style={{ padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0, }} onPress={() => { SPopup.close("PopupCarrito") }}>
                 <SIconApp name="Close" fill={STheme.color.text} />
             </SView>
             <SHr />
-            <SView row col={"xs-12"} style={{
-                paddingHorizontal: 8
-            }}>
+            <SView row col={"xs-12"} style={{ paddingHorizontal: 8 }}>
                 <SText color={STheme.color.lightGray} fontSize={12}>{"Productos"} ({MDL.carrito.carrito_venta.cantidad_items})</SText>
                 <SView flex />
                 <SText color={STheme.color.lightGray} fontSize={12}>{"Sub Total"}</SText>
             </SView>
             <SHr />
             <SHr h={1} color={STheme.color.card} />
-            <FlatList
-                data={items}
-                renderItem={({ item, index }) => {
-                    return <ItemComp item={item} />
-                }}
-            />
+            <FlatList data={items} renderItem={({ item, index }) => { return <ItemComp item={item} /> }} />
             <SHr h={1} color={STheme.color.card} />
             <SView padding={8}>
                 <SText col={"xs-12"} style={{ textAlign: "right" }}>{"Total:"} {SMath.formatMoney(MDL.carrito.carrito_venta.monto_total)}</SText>
@@ -92,14 +111,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         <SText fontSize={12}>{"Limpiar carrito"}</SText>
                     </SView>
                     <SView flex />
-                    <SView
-                        style={{
-                            backgroundColor: STheme.color.success
-                        }}
-                        padding={4} card onPress={() => {
-                            PopupCarritoConfirmar.open({
-                            })
-                        }}>
+                    <SView style={{ backgroundColor: STheme.color.success }}
+                        padding={4} card onPress={() => { PopupCarritoConfirmar.open({}) }}>
                         <SText fontSize={12}>{"Confirmar la venta"}</SText>
                     </SView>
                 </SView>
