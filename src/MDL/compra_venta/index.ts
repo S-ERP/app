@@ -9,6 +9,7 @@ import { SStorage, STheme } from "servisofts-component";
 
 export default class compra_venta extends MDLAbstract<EventListener> {
   sucursalSeleccionada = null;
+  monedaSeleccionada: any = null;
 
   async registrar(data: any) {
     // const sucursal = this.sucursalSeleccionada;
@@ -56,6 +57,17 @@ export default class compra_venta extends MDLAbstract<EventListener> {
   updateCarritoItems(carritoCantidad: any) {
     this.totalItemsCarrito = carritoCantidad;
     this.dispatchEvent({ type: "carrito_globo" })
+  }
+
+  // SET: asigna la moneda seleccionada
+  setMonedaSeleccionada(moneda: any) {
+    this.monedaSeleccionada = moneda;
+    return moneda;
+  }
+
+  // GET: obtiene la moneda seleccionada
+  getMonedaSeleccionada() {
+    return this.monedaSeleccionada;
   }
 
   getStateInfo(key?: string) {
