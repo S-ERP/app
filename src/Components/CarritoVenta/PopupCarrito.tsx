@@ -6,9 +6,13 @@ import SIconApp from "../../Assets/SIconApp";
 import { FlatList } from "react-native";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 import InputSelector from "../Selectores/InputSelector";
+import FiltroSelector from "../../Pages/productos/modelo/Components/FiltroSelector";
 type PopupCarritoProps = {
 }
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
+
+
+
     static open(props: PopupCarritoProps) {
         SPopup.open({
             key: "PopupCarrito",
@@ -35,8 +39,11 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         this.forceUpdate();
     }
     componentDidMount(): void {
-        MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this))
+        MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this));
     }
+
+
+
     componentWillUnmount(): void {
         MDL.carrito.removeEventListener(this.handleChange.bind(this))
     }
@@ -44,7 +51,37 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         const items = MDL.carrito.carrito_venta.items;
         return <SView col={"xs-12"} height>
             <SHr />
-            <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
+            <SText center color={STheme.color.lightGray} bold>{"Carrito de ventasssssssss"}</SText>
+
+            <SView row col={"xs-12"} style={{ paddingHorizontal: 8, paddingVertical: 8 }}>
+ 
+                <FiltroSelector
+                    ref={ref => this.filtroMonedasRef = ref}
+                    label="Tipo"
+                    loadData={async () => {
+                        const monedas = await MDL.empresa.getMonedas();
+                        return monedas.map(a => ({
+                            key: a.key,
+                            nombre: a.observacion
+                        }));
+                    }}
+                    mapOption={a => ({ key: a.key, nombre: a.nombre })}
+                // onSelect={item =>
+                //     this.setState(
+                //         { selectedTipoCuenta: item },
+                //         () => this.table.loadData()
+                //     )
+                // }
+                />
+
+
+            </SView>
+
+
+
+
+
+
             <SView style={{
                 padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0,
             }} onPress={() => {
@@ -108,6 +145,10 @@ const ItemComp = (props: any) => {
     const cantidadRef = React.useRef<any>(null);
     const precioRef = React.useRef<any>(null);
     const { item } = props;
+    // console.clear();
+    console.log("%c" + "-----------------------------", `color: #2ECC40; font-weight: bold;`);
+    console.log(JSON.stringify(item))
+    console.log("%c" + "-----------------------------", `color: #2ECC40; font-weight: bold;`);
     if (cantidadRef.current) {
         if (cantidadRef.current.getValue() != item.cantidad) {
             cantidadRef.current.setValue(item.cantidad);
