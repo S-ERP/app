@@ -10,9 +10,13 @@ import InputSelector from "../Selectores/InputSelector";
 type PopupCarritoProps = {}
 const DEFAULT_MONEDA_KEY = "";
 
+
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
 
     state = { selectedMoneda: null, options: [] };
+    rapido: any;
+    evento: any;
+
     static open(props: PopupCarritoProps) {
         SPopup.open({
             key: "PopupCarrito",
@@ -41,15 +45,28 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
 
     componentDidMount(): void {
-        MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this));
-        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
-            const moneda = MDL.compra_venta.getMonedaSeleccionada();
-            console.log("%c" + JSON.stringify(moneda), `color: #2ECC40; font-weight: bold;`);
-            this.rapido.setValue(moneda?.key)
-            this.setState({ selectedMoneda: moneda || null });
-        });
-        this.cargarMonedas();
+        // Registrar listener de carrito
+        MDL.carrito.addEventListener("handleChange", this.handleChange);
 
+        // Registrar listener de moneda seleccionada
+        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
+            this.cargarMonedaSeleccionada();
+        });
+
+        // Cargar moneda inicial y lista de monedas
+        this.cargarMonedaSeleccionada();
+        this.cargarMonedas();
+    }
+
+    cargarMonedaSeleccionada() {
+        const moneda = MDL.compra_venta.getMonedaSeleccionada();
+        console.log("Cargando moneda seleccionada:", moneda);
+        // this.rapido.setValue(moneda.key);
+
+        if (this.rapido && moneda) {
+            this.rapido.setValue(moneda.key);
+        }
+        this.setState({ selectedMoneda: moneda || null });
     }
 
     async cargarMonedas() {
@@ -61,13 +78,10 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                 m => m.key === DEFAULT_MONEDA_KEY
             );
 
-            console.log("aquiiii")
-            console.log("%c" + JSON.stringify(monedas), `color: #2ECC40; font-weight: bold;`);
-
-            console.log("aquiiii")
+            console.log("Monedas disponibles:", monedas);
             this.setState({
                 options: monedas,
-                selectedMoneda: monedaDefault ?? null
+                selectedMoneda: monedaDefault ?? this.state.selectedMoneda
             });
         } catch (e) {
             console.error("Error cargando monedas:", e);
@@ -75,7 +89,10 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
 
     componentWillUnmount(): void {
-        MDL.carrito.removeEventListener(this.handleChange.bind(this))
+        // Eliminar listener de carrito
+        MDL.carrito.removeEventListener(this.handleChange);
+
+        // Eliminar listener de moneda
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
@@ -84,22 +101,28 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     render() {
         const items = MDL.carrito.carrito_venta.items;
         const { selectedMoneda, options } = this.state;
+        // this.rapido = selectedMoneda.observacion
+        // if (selectedMoneda) {
+        //     console.log("%c" + "timida" + JSON.stringify(selectedMoneda), `color: #2ECC40; font-weight: bold;`);
+        //     this.rapido.setValue(selectedMoneda.key);
+        // }
 
         return <SView col={"xs-12"} height>
             <SHr />
             <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
 
             {/* Moneda seleccionada */}
-            <SText center color={STheme.color.lightGray} bold> {"moneda "}{selectedMoneda?.observacion ?? "-"} </SText>
-            <SView row col={"xs-12"} style={{ height: "50" }} backgroundColor="#009ca1">
-                {/* {options.length > 0 && ( */}
+            <SText center color={STheme.color.lightGray} bold>
+                {"moneda "}{selectedMoneda ? JSON.stringify(selectedMoneda.observacion) : "-"}
+            </SText>
+
+            <SView row col={"xs-12"} style={{ height: 50 }} backgroundColor="#009ca1">
                 <InputSelector
                     ref={(ref: any) => this.rapido = ref}
                     type="custom"
                     customStyle="erp"
                     placeholder="Seleccione moneda"
-                    // defaultValue={selectedMoneda?.key}
-                    value={selectedMoneda?.key}
+                    // value={selectedMoneda?.key}
                     options={options.map(o => ({
                         label: o.descripcion,
                         value: o.key,
@@ -107,10 +130,10 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     }))}
                     onSelect={(item) => {
                         this.setState({ selectedMoneda: item.data });
+                        // cuanod seleeciono el filtro deberia cambiar en categorias
                         MDL.compra_venta.setMonedaSeleccionada(item.data)
                     }}
                 />
-                {/* )} */}
             </SView>
 
             <SView style={{ padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0 }} onPress={() => { SPopup.close("PopupCarrito") }}>
@@ -187,6 +210,11 @@ const ItemComp = (props: any) => {
 
     const { item, moneda } = props;
 
+    // console.clear();
+    console.log("%c" + "moneda -------------------------", `color: #2ECC40; font-weight: bold;`);
+    // console.log("%c" + moneda.observacion, `color: #2ECC40; font-weight: bold;`);
+    console.log(JSON.stringify(moneda))
+    console.log("%c" + "moneda -------------------------", `color: #2ECC40; font-weight: bold;`);
     // Sincronizar cantidad
     React.useEffect(() => {
         if (cantidadRef.current && cantidadRef.current.getValue() !== item.cantidad) {
