@@ -61,7 +61,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     cargarMonedaSeleccionada() {
         const moneda = MDL.compra_venta.getMonedaSeleccionada();
         console.log("Cargando moneda seleccionada:", moneda);
-        // this.rapido.setValue(moneda.key);
+            // this.rapido.setValue(moneda.key);
 
         if (this.rapido && moneda) {
             this.rapido.setValue(moneda.key);
@@ -101,11 +101,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     render() {
         const items = MDL.carrito.carrito_venta.items;
         const { selectedMoneda, options } = this.state;
-        // this.rapido = selectedMoneda.observacion
-        // if (selectedMoneda) {
-        //     console.log("%c" + "timida" + JSON.stringify(selectedMoneda), `color: #2ECC40; font-weight: bold;`);
-        //     this.rapido.setValue(selectedMoneda.key);
-        // }
 
         return <SView col={"xs-12"} height>
             <SHr />
@@ -122,7 +117,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     type="custom"
                     customStyle="erp"
                     placeholder="Seleccione moneda"
-                    // value={selectedMoneda?.key}
+                    value={selectedMoneda?.key}
                     options={options.map(o => ({
                         label: o.descripcion,
                         value: o.key,
@@ -130,8 +125,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     }))}
                     onSelect={(item) => {
                         this.setState({ selectedMoneda: item.data });
-                        // cuanod seleeciono el filtro deberia cambiar en categorias
                         MDL.compra_venta.setMonedaSeleccionada(item.data)
+                        MDL.carrito.calcularValoresCarritDeVentas(); // recalcula en carrito
                     }}
                 />
             </SView>
@@ -212,9 +207,7 @@ const ItemComp = (props: any) => {
 
     // console.clear();
     console.log("%c" + "moneda -------------------------", `color: #2ECC40; font-weight: bold;`);
-    // console.log("%c" + moneda.observacion, `color: #2ECC40; font-weight: bold;`);
-    console.log(JSON.stringify(moneda))
-    console.log("%c" + "moneda -------------------------", `color: #2ECC40; font-weight: bold;`);
+    console.log("%c" + moneda, `color: #2ECC40; font-weight: bold;`);
     // Sincronizar cantidad
     React.useEffect(() => {
         if (cantidadRef.current && cantidadRef.current.getValue() !== item.cantidad) {
