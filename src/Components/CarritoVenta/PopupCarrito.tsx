@@ -8,11 +8,11 @@ import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 import InputSelector from "../Selectores/InputSelector";
 
 type PopupCarritoProps = {}
+const DEFAULT_MONEDA_KEY = "";
 
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
 
-    state = { selectedMoneda: null };
-
+    state = { selectedMoneda: null, options: [] };
     static open(props: PopupCarritoProps) {
         SPopup.open({
             key: "PopupCarrito",
@@ -44,8 +44,34 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this));
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
             const moneda = MDL.compra_venta.getMonedaSeleccionada();
+            console.log("%c" + JSON.stringify(moneda), `color: #2ECC40; font-weight: bold;`);
+            this.rapido.setValue(moneda?.key)
             this.setState({ selectedMoneda: moneda || null });
         });
+        this.cargarMonedas();
+
+    }
+
+    async cargarMonedas() {
+        try {
+            const monedas = await MDL.empresa.getMonedas();
+            if (!Array.isArray(monedas)) return;
+
+            const monedaDefault = monedas.find(
+                m => m.key === DEFAULT_MONEDA_KEY
+            );
+
+            console.log("aquiiii")
+            console.log("%c" + JSON.stringify(monedas), `color: #2ECC40; font-weight: bold;`);
+
+            console.log("aquiiii")
+            this.setState({
+                options: monedas,
+                selectedMoneda: monedaDefault ?? null
+            });
+        } catch (e) {
+            console.error("Error cargando monedas:", e);
+        }
     }
 
     componentWillUnmount(): void {
@@ -57,34 +83,36 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
 
     render() {
         const items = MDL.carrito.carrito_venta.items;
-        const { selectedMoneda } = this.state;
+        const { selectedMoneda, options } = this.state;
 
         return <SView col={"xs-12"} height>
             <SHr />
             <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
 
             {/* Moneda seleccionada */}
-            <SText center color={STheme.color.lightGray} bold>
-                {"key "}{selectedMoneda?.key ?? "-"}
-            </SText>
-            <SText center color={STheme.color.lightGray} bold>
-                {"moneda "}{selectedMoneda?.observacion ?? "-"}
-            </SText>
-
-
-  {/* <FiltroSelector
-                    ref={ref => this.filtroMonedasRef = ref}
-                    label="Tipo"
-                    loadData={async () => {
-                        const monedas = await MDL.empresa.getMonedas();
-                        return monedas.map(a => ({
-                            key: a.key,
-                            nombre: a.observacion
-                        }));
+            <SText center color={STheme.color.lightGray} bold> {"moneda "}{selectedMoneda?.observacion ?? "-"} </SText>
+            <SView row col={"xs-12"} style={{ height: "50" }} backgroundColor="#009ca1">
+                {/* {options.length > 0 && ( */}
+                <InputSelector
+                    ref={(ref: any) => this.rapido = ref}
+                    type="custom"
+                    customStyle="erp"
+                    placeholder="Seleccione moneda"
+                    // defaultValue={selectedMoneda?.key}
+                    value={selectedMoneda?.key}
+                    options={options.map(o => ({
+                        label: o.descripcion,
+                        value: o.key,
+                        data: o
+                    }))}
+                    onSelect={(item) => {
+                        this.setState({ selectedMoneda: item.data });
+                        MDL.compra_venta.setMonedaSeleccionada(item.data)
                     }}
-                    mapOption={a => ({ key: a.key, nombre: a.nombre })}
-                /> */}
-                
+                />
+                {/* )} */}
+            </SView>
+
             <SView style={{ padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0 }} onPress={() => { SPopup.close("PopupCarrito") }}>
                 <SIconApp name="Close" fill={STheme.color.text} />
             </SView>
