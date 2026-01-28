@@ -37,7 +37,6 @@ export default class Modelo extends Component {
             compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
             venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || monedas.find(m => m.tipo === "base") || {}
         }));
-        
         this.forceUpdate();
     }
     modificarStock = (key, delta) => {
@@ -63,7 +62,6 @@ export default class Modelo extends Component {
         const selectedMoneda = this.props.selectedMoneda || null;
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter((m) => m.key_tipo_producto === tipoKey);
         productosFiltrados = productosFiltrados.filter((m) => m.precio_venta > 0);
-
         if (this.props.conStock) {
             productosFiltrados = productosFiltrados.filter((m) => m.stock > 0);
         }
@@ -102,8 +100,6 @@ export default class Modelo extends Component {
                                             overflow: "hidden",
                                         }}
                                         onPress={() => {
-                                            // console.clear();
-                                            // console.log("%c" + ingresar_texto,`color: #2ECC40; font-weight: bold;`);
                                             if (this.props.conStock && producto.stock <= 0) {
                                                 SNotification.send({
                                                     title: "Sin stock",
@@ -127,12 +123,17 @@ export default class Modelo extends Component {
                                         </SView>
                                         <SView col={"xs-12"} padding={4}>
                                             <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
-                                                <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1} >{producto?.venta_moneda?.observacion} {producto?.precio_venta} precio original</SText>
-                                                {/* <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1} >{producto?.venta_moneda?.observacion} {producto?.precio_venta}    {tipoCambioSeleccionada}  / {tipoCambioProducto} </SText> */}
-                                                {/* {producto?.tipo_producto?.tipo !== "servicio" && (<SText style={{ alignItems: "flex-end", textAlign: "flex-end" }} clean fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"} > {producto?.stock} Und </SText>)} */}
-                                                <SHr></SHr>
-                                                <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1} >{monedaSymbol} {precioFormateado}</SText>
-                                                {producto?.tipo_producto?.tipo !== "servicio" && (<SText style={{ alignItems: "flex-end", textAlign: "flex-end" }} clean fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"} > {producto?.stock} Und </SText>)}
+                                                <SView row>
+                                                    <SView style={{ paddingRight: 10 }}>
+                                                        <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1} >{monedaSymbol} {precioFormateado} </SText>
+                                                    </SView>
+                                                    <SView style={{ top: 2 }}>
+                                                        {producto?.venta_moneda?.observacion != monedaSymbol ? <SText fontSize={10} bold color={STheme.color.lightGray} numberOfLines={1}>( {producto?.venta_moneda?.observacion} {producto?.precio_venta} )</SText> : null}
+                                                    </SView>
+                                                </SView>
+                                                <SView>
+                                                    {producto?.tipo_producto?.tipo !== "servicio" && (<SText style={{ alignItems: "flex-end", textAlign: "flex-end" }} clean fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"} > {producto?.stock} Und </SText>)}
+                                                </SView>
                                             </SView>
                                             <SView col={"xs-12"}>
                                                 <SText fontSize={14} color={STheme.color.text} numberOfLines={1} >{producto?.descripcion} </SText>

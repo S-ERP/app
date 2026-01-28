@@ -5,9 +5,9 @@ import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
+import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 type PopupCarritoConfirmarResumenProps = {
 }
-
 export default class PopupCarritoConfirmarResumen extends React.Component<PopupCarritoConfirmarResumenProps> {
     static open(props: PopupCarritoConfirmarResumenProps) {
         SPopup.open({
@@ -59,14 +59,12 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             descuentos: [],
             subtotal: null,
         }
-
     async componentDidMount() {
         try {
             const clientes = await MDL.crm.cliente.getAll(); // tu método de listar
             this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
                 this.cargarSubtotal();
             });
-
             this.setState({ clientes: clientes || [] });
             await SSocket.sendPromise({
                 service: "compra_venta",
@@ -77,15 +75,11 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 const descuentos = Object.values(e.data)
                 this.setState({ descuentos: descuentos })
             })
-
             this.cargarSubtotal();
-
         } catch (e) {
             console.error("Error cargando clientes", e);
         }
     }
-
-
     cargarSubtotal() {
         const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
         const carritoItems = MDL.carrito.carrito_venta.items;
@@ -97,35 +91,22 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         }, 0);
         this.setState({ subtotal: subtotal || 0 });
     }
-
     componentWillUnmount(): void {
-        // Eliminar listener de carrito
         MDL.carrito.removeEventListener(this.handleChange);
-
-        // Eliminar listener de moneda
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
     }
     handleOnPress = async () => {
         try {
-
-            // console.log("%c" + "-------------- handleOnPress", `color: #2ECC40; font-weight: bold;`);
-            // const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
-
             const { montoMaximo, key_moneda, porcentajeDescuento, solo_para_caja, cliente, factura, almacen, descuentoSeleccionado } = this.props;
-
-
-            // Moneda actual
             const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
             const subtotal = this.state.subtotal || 0;
             const totalDescuento = subtotal * (porcentajeDescuento || 0);
             const total = subtotal - totalDescuento;
-
             SelectTipoPago.openPopup({
                 key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
                 montoMaximo: total,
-                // montoMaximo: montoMaximo,
                 key_moneda: key_moneda,
                 onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda, cliente, factura, almacen, porcentajeDescuento, descuentoSeleccionado),
                 solo_para_caja: solo_para_caja,
@@ -140,25 +121,18 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             });
         }
     }
-    // 0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣
-    // Se realizó el cambio debido a que el sistema no estaba capturando correctamente el valor del precio según el tipo de pago, lo que ocasionaba un error
     handleSubmit = async (tipos_pago: any, key_moneda: string, cliente: any, factura: boolean, almacen_: any, porcentajeDescuento: any, descuentoSeleccionado: any) => {
         console.log("%c" + "-------------- handleSubmit", `color: #rgb(204, 117, 46) font-weight: bold;`);
-
         try {
             const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
             const almacen = almacen_;
             if (!almacen) {
                 throw "Debe seleccionar un almacen"
             }
-            // aqui creo que tengo que recalcula en carrito
-
-
             const detalle = MDL.carrito.carrito_venta.items.map((ci) => {
                 return {
                     "cantidad": ci.cantidad,
                     "precio_unitario": ci.precio,
-                    // "precio_unitario_base": ci.modelo.precio_venta_moneda,
                     "precio_unitario_base": monedaActual ? ci.modelo.precio_venta_moneda / (monedaActual.tipo_cambio || 1) : ci.modelo.precio_venta_moneda,
                     "detalle": "",
                     "descripcion": ci.modelo.descripcion,
@@ -184,10 +158,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 "detalle": detalle,
                 tipos_pago: tipos_pago,
             }
-
-            // console.log("%c" + "gatoooo volador", `color: #2ECC40; font-weight: bold;`);
-            // console.log("%c" + JSON.stringify(data), `color: #2ECC40; font-weight: bold;`);
-
             SNotification.send({
                 key: "venta_rapida",
                 title: "Cargando",
@@ -227,7 +197,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         }
     }
     render() {
-        const { porcentajeDescuento, cliente, factura,  almacen, descuentoSeleccionado } = this.props;
+        const { porcentajeDescuento, cliente, factura, almacen, descuentoSeleccionado } = this.props;
         const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
         const subtotal2 = this.state.subtotal || 0;
         const totalDescuento = subtotal2 * (porcentajeDescuento || 0);
@@ -252,6 +222,15 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             <SView flex>
                 <SView padding={8}>
                     <SView row col={"xs-12"}>
+                        <SView row col={"xs-12"} style={{ paddingVertical: 8 }}>
+                            <FiltroMoneda
+                                onSelect={(moneda) => {
+                                    this.setState({ selectedMoneda: moneda });
+                                    MDL.compra_venta.setMonedaSeleccionada(moneda);
+                                    MDL.carrito.calcularValoresCarritDeVentas();
+                                }}
+                            />
+                        </SView>
                         <SText col={"xs-6"} color={STheme.color.lightGray}>{"Datos del Cliente"}</SText>
                         <SHr />
                         <SView col={"xs-12"} row >
@@ -294,10 +273,10 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                                 <SText fontSize={13} color={STheme.color.text}>Subtotal:</SText>
                                 <SText fontSize={13} bold color={STheme.color.text}>
                                     {monedaActual.observacion} {SMath.formatMoney(subtotal2, 2)}
-                                 </SText>
+                                </SText>
                             </SView>
                             <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
-                                <SText fontSize={12} color={STheme.color.text}>Descuentosssssss:</SText>
+                                <SText fontSize={12} color={STheme.color.text}>Descuentos:</SText>
                                 <SText fontSize={13} color={STheme.color.text}>
                                     - {monedaActual.observacion} {SMath.formatMoney((totalDescuento) || 0, 2)}
                                 </SText>
