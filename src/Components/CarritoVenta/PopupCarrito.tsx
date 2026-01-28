@@ -6,17 +6,14 @@ import SIconApp from "../../Assets/SIconApp";
 import { FlatList } from "react-native";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 import InputSelector from "../Selectores/InputSelector";
-
+import Categoria from "../../Pages/puntoventa/Components/Categoria";
+import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 type PopupCarritoProps = {}
 const DEFAULT_MONEDA_KEY = "";
-
-
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
-
-    state = { selectedMoneda: null, options: [] };
+    state = { selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null, options: [] };
     rapido: any;
     evento: any;
-
     static open(props: PopupCarritoProps) {
         SPopup.open({
             key: "PopupCarrito",
@@ -39,45 +36,32 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                 </SView>
         })
     }
-
     handleChange = () => {
         this.forceUpdate();
     }
-
     componentDidMount(): void {
-        // Registrar listener de carrito
         MDL.carrito.addEventListener("handleChange", this.handleChange);
-
-        // Registrar listener de moneda seleccionada
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
             this.cargarMonedaSeleccionada();
         });
-
-        // Cargar moneda inicial y lista de monedas
         this.cargarMonedaSeleccionada();
         this.cargarMonedas();
     }
-
     cargarMonedaSeleccionada() {
         const moneda = MDL.compra_venta.getMonedaSeleccionada();
         console.log("Cargando moneda seleccionada:", moneda);
-            // this.rapido.setValue(moneda.key);
-
         if (this.rapido && moneda) {
             this.rapido.setValue(moneda.key);
         }
         this.setState({ selectedMoneda: moneda || null });
     }
-
     async cargarMonedas() {
         try {
             const monedas = await MDL.empresa.getMonedas();
             if (!Array.isArray(monedas)) return;
-
             const monedaDefault = monedas.find(
                 m => m.key === DEFAULT_MONEDA_KEY
             );
-
             console.log("Monedas disponibles:", monedas);
             this.setState({
                 options: monedas,
@@ -87,37 +71,45 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             console.error("Error cargando monedas:", e);
         }
     }
-
     componentWillUnmount(): void {
-        // Eliminar listener de carrito
         MDL.carrito.removeEventListener(this.handleChange);
-
-        // Eliminar listener de moneda
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
     }
-
     render() {
         const items = MDL.carrito.carrito_venta.items;
         const { selectedMoneda, options } = this.state;
 
+        // if (!options) return;
+        // if (!selectedMoneda) return;
+        if (!selectedMoneda || !options) return null;
+
+
+        // this.rapido.setValue(selectedMoneda.key);
+        // const moneeee = selectedMoneda.key;
         return <SView col={"xs-12"} height>
             <SHr />
             <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
-
-            {/* Moneda seleccionada */}
             <SText center color={STheme.color.lightGray} bold>
                 {"moneda "}{selectedMoneda ? JSON.stringify(selectedMoneda.observacion) : "-"}
+                {/* {"moneda "}{selectedMoneda ? JSON.stringify(selectedMoneda.key) : "-"} */}
             </SText>
+            <SView row col={"xs-12"}  >
 
-            <SView row col={"xs-12"} style={{ height: 50 }} backgroundColor="#009ca1">
-                <InputSelector
+                <FiltroMoneda
+                    onSelect={(moneda) => {
+                        this.setState({ selectedMoneda: moneda });
+                        MDL.compra_venta.setMonedaSeleccionada(moneda);
+                        MDL.carrito.calcularValoresCarritDeVentas();
+                    }}
+                />
+                {/* <InputSelector
                     ref={(ref: any) => this.rapido = ref}
                     type="custom"
                     customStyle="erp"
                     placeholder="Seleccione moneda"
-                    value={selectedMoneda?.key}
+                    value={selectedMoneda.descripcion}
                     options={options.map(o => ({
                         label: o.descripcion,
                         value: o.key,
@@ -128,33 +120,24 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         MDL.compra_venta.setMonedaSeleccionada(item.data)
                         MDL.carrito.calcularValoresCarritDeVentas(); // recalcula en carrito
                     }}
-                />
+                /> */}
             </SView>
-
             <SView style={{ padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0 }} onPress={() => { SPopup.close("PopupCarrito") }}>
                 <SIconApp name="Close" fill={STheme.color.text} />
             </SView>
-
             <SHr />
-
             <SView row col={"xs-12"} style={{ paddingHorizontal: 8 }}>
                 <SText color={STheme.color.lightGray} fontSize={12}>{"Productos"} ({MDL.carrito.carrito_venta.cantidad_items})</SText>
                 <SView flex />
                 <SText color={STheme.color.lightGray} fontSize={12}>{"Sub Total"}</SText>
             </SView>
-
             <SHr h={1} color={STheme.color.card} />
-
-            {/* Lista de items */}
             <FlatList
                 data={items}
                 renderItem={({ item }) => <ItemComp item={item} moneda={selectedMoneda} />}
                 keyExtractor={(item) => item.modelo.key}
             />
-
             <SHr h={1} color={STheme.color.card} />
-
-            {/* Total */}
             <SView padding={8}>
                 <SText col={"xs-12"} style={{ textAlign: "right" }}>
                     {"Total: "}
@@ -168,10 +151,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     )}
                 </SText>
             </SView>
-
             <SHr h={1} color={STheme.color.card} />
-
-            {/* Acciones */}
             <SView padding={8}>
                 <SView col={"xs-12"} row flex center>
                     <SView padding={4} card style={{ backgroundColor: STheme.color.danger }} onPress={() => {
@@ -185,9 +165,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     }}>
                         <SText fontSize={12}>{"Limpiar carrito"}</SText>
                     </SView>
-
                     <SView flex />
-
                     <SView style={{ backgroundColor: STheme.color.success }} padding={4} card onPress={() => { PopupCarritoConfirmar.open({}) }}>
                         <SText fontSize={12}>{"Confirmar la venta"}</SText>
                     </SView>
@@ -196,64 +174,68 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         </SView>
     }
 }
-
-/* ------------------ ItemComp ------------------ */
 const ItemComp = (props: any) => {
     const cantidadRef = React.useRef<any>(null);
     const precioRef = React.useRef<any>(null);
     const monedaRef = React.useRef<any>(null);
-
     const { item, moneda } = props;
 
-    // console.clear();
-    console.log("%c" + "moneda -------------------------", `color: #2ECC40; font-weight: bold;`);
-    console.log("%c" + moneda, `color: #2ECC40; font-weight: bold;`);
-    // Sincronizar cantidad
     React.useEffect(() => {
         if (cantidadRef.current && cantidadRef.current.getValue() !== item.cantidad) {
             cantidadRef.current.setValue(item.cantidad);
         }
     }, [item.cantidad]);
-
-    // Sincronizar precio
     React.useEffect(() => {
-        if (precioRef.current) {
-            const valor = moneda
-                ? item.modelo.precio_venta_moneda / (moneda.tipo_cambio || 1)
-                : item.modelo.precio_venta_moneda;
+
+   if (precioRef.current) {
+            // Lógica para calcular el precio según el tipo de cambio
+            let valor;
+            if (moneda) {
+                if (item.modelo.venta_moneda.key === moneda.key) {
+                    valor = item.modelo.precio_venta;
+                } else {
+                    const tipoCambioVenta = item.modelo.venta_moneda.tipo_cambio || 1;
+                    const tipoCambioSeleccionada = moneda.tipo_cambio || 1;
+                    valor = item.modelo.precio_venta * (tipoCambioVenta / tipoCambioSeleccionada);
+                }
+            } else {
+                valor = item.modelo.precio_venta;
+            }
+            // Si el valor calculado no es igual al que está actualmente, actualizarlo
             if (precioRef.current.getValue() !== valor) {
                 precioRef.current.setValue(valor);
             }
         }
+
+        // if (precioRef.current) {
+        //     const valor = moneda
+        //         ? item.modelo.precio_venta / (moneda.tipo_cambio || 1)
+        //         : item.modelo.precio_venta;
+        //     if (precioRef.current.getValue() !== valor) {
+        //         precioRef.current.setValue(valor);
+        //     }
+        // }
+
         if (monedaRef.current) {
             monedaRef.current.setValue(moneda);
         }
     }, [moneda, item.modelo.precio_venta_moneda]);
-
     return (
         <SView padding={8}>
             <SView row center>
-                {/* Botón remover */}
                 <SView center style={{ width: 20, height: 20, padding: 2 }} onPress={() => MDL.carrito.removerItemAlCarritoDeVentas(item)}>
                     <SIconApp name="Close" fill={STheme.color.warning} />
                 </SView>
-
-                {/* Imagen */}
                 <SView center style={{ width: 35, height: 35, borderRadius: 4, overflow: "hidden", borderColor: STheme.color.card, borderWidth: 1 }}>
                     <SImage src={SSocket.api.inventario + "modelo/" + item.modelo.key} style={{ resizeMode: "cover" }} />
                 </SView>
-
                 <SView width={4} />
                 <SView flex>
-                    {/* Descripción */}
                     <SText fontSize={14} bold>
                         {item?.modelo?.descripcion}
                     </SText>
-
                     <SHr h={2} />
-
                     <SView row col={"xs-12"} style={{ alignItems: "center" }}>
-                        {/* Precio editable */}
                         <SView width={60}>
                             <SInput
                                 ref={precioRef}
@@ -268,10 +250,7 @@ const ItemComp = (props: any) => {
                                 }}
                             />
                         </SView>
-
                         <SView width={4} />
-
-                        {/* Cantidad editable */}
                         <SView width={60}>
                             <SInput
                                 ref={cantidadRef}
@@ -285,10 +264,7 @@ const ItemComp = (props: any) => {
                                 }}
                             />
                         </SView>
-
                         <SView flex />
-
-                        {/* Total del item */}
                         <SView width={80} style={{ justifyContent: "center" }}>
                             <SText fontSize={12} bold style={{ textAlign: "right" }}>
                                 {SMath.formatMoney(
@@ -297,10 +273,7 @@ const ItemComp = (props: any) => {
                             </SText>
                         </SView>
                     </SView>
-
                     <SView height={4} />
-
-                    {/* Selector de contactos */}
                     {item?.modelo?.contactos?.length > 0 && (
                         <SView style={{ width: 280, height: 24, backgroundColor: STheme.color.danger }}>
                             <InputSelector

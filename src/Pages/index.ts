@@ -89,6 +89,7 @@ import tabla from "./habilidad";
 import asistencia from "./asistencia";
 import Asistencias from "./cliente/Asistencias";
 import Suscriptores from "./cliente/Suscriptores";
+import Test1 from "./test1";
 
 export default SPage.combinePages("/", {
   "": lobyRoot,
@@ -108,6 +109,7 @@ export default SPage.combinePages("/", {
   ...nota,
   widgets,
   test: test,
+  test1: Test1,
   test2: test2,
   test3: test3,
   start: start,

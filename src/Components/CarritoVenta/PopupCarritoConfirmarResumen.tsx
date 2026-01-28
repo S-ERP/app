@@ -118,19 +118,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
 
             // Moneda actual
             const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
-
-            // Subtotal calculado dinámicamente con la moneda actual
-            // const carritoItems = MDL.carrito.carrito_venta.items;
-            // const subtotal = carritoItems.reduce((acc, item) => {
-            //     const precio = monedaActual
-            //         ? item.modelo.precio_venta_moneda / (monedaActual.tipo_cambio || 1)
-            //         : item.modelo.precio_venta_moneda;
-            //     return acc + precio * item.cantidad;
-            // }, 0);
-
-            // const totalDescuento = subtotal * (porcentajeDescuento || 0);
-            // const total = subtotal - totalDescuento;
-
             const subtotal = this.state.subtotal || 0;
             const totalDescuento = subtotal * (porcentajeDescuento || 0);
             const total = subtotal - totalDescuento;
@@ -173,7 +160,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     "precio_unitario": ci.precio,
                     // "precio_unitario_base": ci.modelo.precio_venta_moneda,
                     "precio_unitario_base": monedaActual ? ci.modelo.precio_venta_moneda / (monedaActual.tipo_cambio || 1) : ci.modelo.precio_venta_moneda,
-
                     "detalle": "",
                     "descripcion": ci.modelo.descripcion,
                     "key_modelo": ci.modelo.key,
@@ -241,16 +227,11 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         }
     }
     render() {
-        console.log("PROPS EN RESUMEN resumen RENDER", this.props)
-        const { montoMaximo, key_moneda, porcentajeDescuento, solo_para_caja, cliente, factura, moneda, almacen, subtotal, descuentoSeleccionado } = this.props;
+        const { porcentajeDescuento, cliente, factura,  almacen, descuentoSeleccionado } = this.props;
         const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
-
-
         const subtotal2 = this.state.subtotal || 0;
-        const totalDescuento = this.state.subtotal * (porcentajeDescuento || 0);
-        const total = this.state.subtotal - totalDescuento;
-
-
+        const totalDescuento = subtotal2 * (porcentajeDescuento || 0);
+        const total = subtotal2 - totalDescuento;
         return <SView col={"xs-12"} height>
             < SHr />
             <SText center color={STheme.color.lightGray} bold>{"Confirmar la venta resumen"}</SText>
@@ -312,14 +293,13 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                             <SView col={"xs-12"} row style={{ justifyContent: "space-between", marginBottom: 4 }}>
                                 <SText fontSize={13} color={STheme.color.text}>Subtotal:</SText>
                                 <SText fontSize={13} bold color={STheme.color.text}>
-                                    {monedaActual.observacion} {SMath.formatMoney(this.state.subtotal, 2)}
-                                    {/* {moneda.observacion} {SMath.formatMoney(subtotal, 2)} */}
-                                </SText>
+                                    {monedaActual.observacion} {SMath.formatMoney(subtotal2, 2)}
+                                 </SText>
                             </SView>
                             <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                                 <SText fontSize={12} color={STheme.color.text}>Descuentosssssss:</SText>
                                 <SText fontSize={13} color={STheme.color.text}>
-                                    - {monedaActual.observacion} {SMath.formatMoney((subtotal * porcentajeDescuento) || 0, 2)}
+                                    - {monedaActual.observacion} {SMath.formatMoney((totalDescuento) || 0, 2)}
                                 </SText>
                             </SView>
                             <SHr height={3} />
