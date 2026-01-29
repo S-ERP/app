@@ -245,43 +245,67 @@ const ItemComp = (props: any) => {
 
                         <SHr></SHr>
                         {/* <SHr></SHr> */}
+
+
                         {/* {item?.modelo?.tipoCostos?.map((tc, i) => (<> <SText key={i} fontSize={10}> {tc.descripcion} </SText> <SView width={4} /> </>))} */}
                     </SView>
 
-                    {item?.modelo?.tipoCostos?.length > 0 && <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.card }}> <SText fontSize={12} bold > lista de costos </SText> </SView>}
+                    {item?.modelo?.tipoCostos?.length > 0 &&
+                        <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: "red" }}>
+                            <SText fontSize={12} bold > lista de costos </SText>
+                        </SView>
+                    }
 
                     {item?.modelo?.tipoCostos?.length > 0 &&
-                        item.modelo.tipoCostos.map((costo, index) => (
-                            <SView
-                                key={costo.key_tipo_costo}   // 🔑 key correcto
-                                col={"md-12"}
-                                center
-                                height={52}
-                            >
-                                <SText>{costo.descripcion} </SText>
-                                <InputSelector
-                                    style={{ fontSize: 12 }}
-                                    type="custom"
-                                    customStyle="erp"
-                                    // label={costo.descripcion} // 🟢 mejor UX
-                                    placeholder="Selecciona un cliente"
-                                    options={(costo.clientes || []).map((c) => ({
-                                        label: c.key_cliente,
-                                   
-                                        value: c.key_modelo_cliente,
-                                        data: c,
-                                    }))}
-                                    value={costo.key_modelo_cliente || null}
-                                    onSelect={(selected) => {
-                                        // guardamos el cliente seleccionado para ESTE tipo de costo
-                                        costo.key_modelo_cliente = selected.value;
-                                        // this.forceUpdate();
-                                    }}
-                                />
-                            </SView>
+                        item.modelo.tipoCostos.map((costo, index) => (<>
+                            <SInput
+                                key={index}
+                                style={{ fontSize: 12, textAlignVertical: "top", marginBottom: 4 }}
+
+                                // labelStyle={{
+                                //     // paddingTop:5,
+                                //     // top: -10,
+                                //     fontSize: 14,
+                                //     inputStyle: { paddingStart: 8 },
+                                //     position: "absolute",
+                                //     // width: "100%",
+                                //     top: -6,
+                                //     left: 4,
+                                // }}
+                                // label={costo.descripcion} // muestra el nombre del tipo de costo como etiqueta
+                                placeholder={`Ingresa valor para ${costo.descripcion}`}
+                                // value={costo.valor || ""} // si quieres manejar el valor ingresado
+                                onChangeText={(text) => {
+                                    // Guardamos el valor directamente en el objeto tipoCosto
+                                    item.modelo.tipoCostos[index].valor = text;
+                                    // this.forceUpdate(); // refresca la UI para ver el cambio
+                                }}
+                            // width={30}
+                            // height={10}
+                            />
+
+                        </>
                         ))
                     }
 
+
+                    {/* {item?.modelo?.tipoCostos?.length > 0 && (
+                        <SView style={{ width: 280, height: 24, backgroundColor: STheme.color.card }}>
+                            <InputSelector
+                                style={{ fontSize: 12 }}
+                                type="custom"
+                                customStyle="erp"
+                                label="Costos:"
+                                placeholder="Selecciona un tipo de costo"
+                                options={item.modelo.tipoCostos.map((c) => ({
+                                    label: c.descripcion,
+                                    value: c.key_tipo_costo,
+                                    data: c,
+                                }))}
+                            />
+                        </SView>
+                    )} */}
+                    {/* <SView height={4} /> */}
 
                 </SView>
             </SView>
