@@ -139,7 +139,7 @@ export default class Barra extends React.Component {
                     <Page label={"Compras"}
                         icon={<ImagePage key_page="c0a4c4e6-082f-4f23-a755-01369653ee49" />}
                     >
-                        <Page label={"Proveedores"} url={"/proveedor"} permiso="page" /> 
+                        <Page label={"Proveedores"} url={"/proveedor"} permiso="page" />
                         {/* <Page label={"Compras"} url={"/compra"} permiso="ver" /> */}
                         <Page label={"Historial de Compras"} url={"/compra/tabla"} permiso="ver" permiso_url="/compra" />
                         <Page label={"Compras Rapida"} url={"/compra2"} permiso="ver" permiso_url="/compra" />
@@ -272,13 +272,24 @@ export default class Barra extends React.Component {
                         permiso="page"
                         permiso_url="/asistencia"
                         // icon={<SIconApp name="menuAll" fill={STheme.color.text} />}
-                         icon={<ImagePage key_page="d73efd88-89f5-461c-8bb2-b634d835883b" />}
+                        icon={<ImagePage key_page="d73efd88-89f5-461c-8bb2-b634d835883b" />}
                     >
                         <Page label={"Registrar asistencia"} url={"/asistencia"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                     </Page>
 
 
-
+                    <Page label={"test"} url={"/test"}
+                        icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
+                    />
+                    <Page label={"test1"} url={"/test1"}
+                        icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
+                    />
+                    <Page label={"test2"} url={"/test2"}
+                        icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
+                    />
+                    <Page label={"test3"} url={"/test3"}
+                        icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
+                    />
 
 
 

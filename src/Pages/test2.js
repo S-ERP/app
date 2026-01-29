@@ -1,56 +1,60 @@
-//import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, SectionList } from 'react-native';
-import { SBuscador, SGradient, SHr, SIcon, SInput, SPage, SText, STheme, SView } from 'servisofts-component';
-import SIconApp from '../Assets/SIconApp';
-import { svg } from '../Assets';
-import OtherIcons from "servisofts-component/img/index"
-import DateTimeBetween from '../Components/DateTimeBetween';
-import ToolTips from '../Components/ToolTips';
+import {
+    SPage,
+    SView,
+    SText,
+} from 'servisofts-component';
+import MDL from '../MDL';
+import FiltroMoneda from './puntoventa/Components/FiltroMoneda';
 
-class test2 extends Component {
+export default class Test2 extends Component {
+
     state = {
-        search: "",
+        selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null, // Objeto moneda seleccionado
+    };
+
+    componentDidMount() {
+        // Suscribirse a cambios de moneda
+        this.eventoMoneda = () => {
+            const moneda = MDL.compra_venta.getMonedaSeleccionada();
+            this.setState({ selectedMoneda: moneda });
+        };
+        MDL.compra_venta.addEventListener("moneda_seleccionada", this.eventoMoneda);
+    }
+
+    componentWillUnmount() {
+        // Limpiar la suscripción
+        MDL.compra_venta.removeEventListener("moneda_seleccionada", this.eventoMoneda);
     }
 
     render() {
-        // const sections = this.getDataGrouped();
+        const { selectedMoneda } = this.state;
+
         return (
-            <SPage disableScroll>
-                <DateTimeBetween />
-                <SHr height={20} />
-                <SView col={"xs-12"} center row>
-                    <SText>Label - 1</SText>
-                    <ToolTips
-                        type="info"
-                        // descripcion="Este es un tooltip de información Este es un tooltip de información Este es un tooltip de información Este es un tooltip de información"
-                        descripcion="Este es un tooltip de información Este es un tooltip de información Este es un tooltip de información Este es un tooltip de información"
-                        width={20}
-                        height={20}
-                        itemWidth={280}
-                        itemHeight={50}
-                        color={STheme.color.warning}
-                        icon={"toolinfo"}
-                    />
+            <SPage title="Test2222222" disableScroll center>
+
+                <SView col="xs-12" center row style={{ marginBottom: 16 }}>
+                    <SView col="xs-12" row>
+                        <SText bold>Moneda seleccionada:</SText>
+                    </SView>
+
+                    {selectedMoneda ? (
+                        <SView col="xs-12" row>
+                            <SText>Key: {selectedMoneda.key}</SText>
+                            <SText style={{ marginLeft: 12 }}>Descripción: {selectedMoneda.descripcion}</SText>
+                            <SText style={{ marginLeft: 12 }}>Observación: {selectedMoneda.observacion || "-"}</SText>
+                        </SView>
+                    ) : (
+                        <SText>No hay moneda seleccionada</SText>
+                    )}
                 </SView>
-                <SHr height={20} />
-                <SView col={"xs-12"} center row>
-                    <SText>Label - 2</SText>
-                    <ToolTips
-                        type="question"
-                        // descripcion="Este es un tooltip de información Este es un tooltip de información Este es un tooltip de información Este es un tooltip de información"
-                        descripcion="Este es un tooltip de información"
-                        width={20}
-                        height={20}
-                        
-                        color={STheme.color.warning}
-                        icon={"toolquestion"}
-                        url={"/usuario/table"}
-                    />
+
+                <SView col="xs-2" row  >
+
+                    <FiltroMoneda onSelect={(moneda) => { this.setState({ selectedMoneda: moneda }); }} />
                 </SView>
+
             </SPage>
         );
     }
 }
-
-export default test2;

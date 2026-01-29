@@ -9,7 +9,7 @@ import {
 import MDL from '../MDL';
 import FiltroMoneda from './puntoventa/Components/FiltroMoneda';
 
-export default class Test extends Component {
+export default class Test1 extends Component {
 
     state = {
         selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null, // Objeto moneda seleccionado
@@ -19,7 +19,7 @@ export default class Test extends Component {
         const { selectedMoneda } = this.state;
 
         return (
-            <SPage title="Testing" disableScroll center>
+            <SPage title="Test111111111111111" disableScroll center>
 
                 <SView col="xs-12" center row style={{ marginBottom: 16 }}>
                     <SView col="xs-12" row>
