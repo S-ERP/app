@@ -80,6 +80,19 @@ export default class inventario extends MDLAbstract<EventListener> {
     });
     return Object.values(resp.data || {});
   }
+
+  async getTipoCostosByModelo(_key_modelo: string) {
+    const resp: any = await SSocket.sendPromise({
+      service: "inventario",
+      component: "reporte",
+      type: "execute_function",
+      func: "_get_tipo_costo_bymodelo",
+      params: ["'" + _key_modelo + "'"],
+    });
+    return Object.values(resp.data || {});
+  }
+
+
   async getAllAsistencias() {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",

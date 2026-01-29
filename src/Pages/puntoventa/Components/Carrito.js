@@ -76,7 +76,6 @@ export default class Carrito extends Component {
         this._key_cajero = activa?.key_usuario;
         this.forceUpdate();
     }
-
     setCarrito(nuevoCarrito) {
         this.carrito = Array.isArray(nuevoCarrito)
             ? nuevoCarrito.map(item => ({
@@ -90,7 +89,6 @@ export default class Carrito extends Component {
             : [];
         this.forceUpdate();
     }
-
     addProductoServicio = async (producto) => {
         try {
             const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
@@ -111,39 +109,27 @@ export default class Carrito extends Component {
                 contacto: contactoSeleccionado || null,
                 comision: contactoSeleccionado?.comision || 0
             };
-
             this.getCarritoItemCount();
             this.forceUpdate(); // opcional, si tu UI depende de esto
-
-            console.log("🎪🎪🎪 addProductoServicio", productoFinal);
             MDL.carrito.agregarItemAlCarritoDeVentas({
                 modelo: productoFinal,
                 cantidad: 1,
                 precio: producto.precio_venta
             });
-
         } catch (err) {
             console.error("❌ Error al obtener contactos:", err);
         }
     };
-
-    removeProductoServicio = (producto) => {
-        MDL.carrito.removerItemAlCarritoDeVentas(producto);
-    }
-
     addProducto = async (producto) => {
         try {
-            // Obtener contactos relacionados con el modelo del producto
             const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
+            const tipoCostosKeys = await MDL.inventario.getTipoCostosByModelo(producto?.key);
             const clientes = await MDL.crm.cliente.getAll();
-
-            // Mapear contactos con información del cliente
             const contactos = contactosKeys.map((item) => {
                 const keyCliente = item.key_cliente;
                 const key_modelo_cliente = item.key_modelo_cliente; // <-- clave modelo-cliente
                 const comision = item.comision ?? 0;
                 const cliente = clientes.find(c => c.key === keyCliente);
-
                 return cliente
                     ? {
                         key: cliente.key,
@@ -160,16 +146,11 @@ export default class Carrito extends Component {
                         key_modelo_cliente
                     };
             });
-
-            // Agregar contactos al producto
             producto = {
                 ...producto,
-                contactos
+                contactos,
+                tipoCostos: tipoCostosKeys, // nueva propiedad
             };
-
-            console.log("%c" + JSON.stringify(producto, null, 2), "color: #e1f100ff; font-weight: bold;");
-
-            // Verificar si el producto ya está en el carrito
             const index = this.carrito.findIndex((p) => p.key === producto.key);
             if (index >= 0) {
                 const item = this.carrito[index];
@@ -208,21 +189,19 @@ export default class Carrito extends Component {
                     monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
                 });
             }
-
             this.getCarritoItemCount();
-
-            // Agregar producto al carrito en el modelo
             MDL.carrito.agregarItemAlCarritoDeVentas({
                 modelo: producto,
                 cantidad: 1,
                 precio: producto.precio_venta
             });
-
         } catch (err) {
             console.error("❌ Error al obtener contactos:", err);
         }
     };
-
+    removeProductoServicio = (producto) => {
+        MDL.carrito.removerItemAlCarritoDeVentas(producto);
+    }
     aumentarCantidad = (producto) => {
         const index = this.carrito.findIndex((p) => p.key === producto.key);
         if (index < 0) return;
@@ -425,7 +404,6 @@ export default class Carrito extends Component {
                                     if (descuento != this.descuentoSeleccionado) {
                                         this.descuentoSeleccionado = descuento;
                                         this.forceUpdate();
-
                                     }
                                 }} />
                                 {/* <SView col={"xs-10"} center>

@@ -448,8 +448,30 @@ const Articulos = ({ cliente, onReload }) => {
                         <SView width={5} />
                         <SView flex >
                             <SText >{articulo?.modelo?.descripcion}</SText>
-                            {articulo?.tipo_costo?.descripcion ? <SText >TIPO COSTO ( {articulo?.tipo_costo?.descripcion} )</SText> : null}
-                            {articulo?.cuenta_contable?.descripcion ? <SText >cuenta contable ( {articulo?.cuenta_contable?.descripcion} )</SText> : null}
+                            <SHr h={4} />
+                            <SView col={"xs-12"} row>
+                                {articulo?.tipo_costo?.descripcion && (<>
+                                    <SView width={220} row style={{ borderWidth: 1, borderColor: STheme.color.card, borderRadius: 2, backgroundColor: STheme.color.card, overflow: "hidden", }}>
+                                        <SView col={"xs-4"} backgroundColor={STheme.color.background + "80"} padding={2} center>
+                                            <SText bold fontSize={9} color={STheme.color.text}>Tipo Costo</SText>
+                                        </SView>
+                                        <SView flex style={{ paddingVertical: 4, paddingHorizontal: 6 }}>
+                                            <SText fontSize={9} color={STheme.color.text} numberOfLines={1} >{articulo.tipo_costo.descripcion}</SText>
+                                        </SView>
+                                    </SView>
+                                    <SHr h={4} />
+                                </>
+                                )}
+                                {articulo?.cuenta_contable?.descripcion && (<SView width={220} row style={{ borderWidth: 1, borderColor: STheme.color.card, borderRadius: 2, backgroundColor: STheme.color.card, overflow: "hidden", }}>
+                                    <SView col={"xs-4"} backgroundColor={STheme.color.background + "80"} padding={2} center>
+                                        <SText bold fontSize={9} color={STheme.color.text}>Cuenta Contable</SText>
+                                    </SView>
+                                    <SView flex style={{ paddingVertical: 4, paddingHorizontal: 6 }}>
+                                        <SText fontSize={9} color={STheme.color.text} numberOfLines={1}>{articulo.cuenta_contable.descripcion}</SText>
+                                    </SView>
+                                </SView>
+                                )}
+                            </SView>
                             <SHr h={4} />
                             <SView col={"xs-12"} row>
                                 <SView flex>

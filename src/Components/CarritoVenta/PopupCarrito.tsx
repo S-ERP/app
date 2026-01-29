@@ -36,7 +36,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
     cargarMonedaSeleccionada() {
         const moneda = MDL.compra_venta.getMonedaSeleccionada();
-        console.log("Cargando moneda seleccionada:", moneda);
         if (this.rapido && moneda) {
             this.rapido.setValue(moneda.key);
         }
@@ -49,7 +48,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             const monedaDefault = monedas.find(
                 m => m.key === DEFAULT_MONEDA_KEY
             );
-            console.log("Monedas disponibles:", monedas);
             this.setState({
                 options: monedas,
                 selectedMoneda: monedaDefault ?? this.state.selectedMoneda
@@ -71,8 +69,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         return <SView col={"xs-12"} height>
             <SHr />
             <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
-            {/* <SText center color={STheme.color.lightGray} bold> {"moneda "}{selectedMoneda ? JSON.stringify(selectedMoneda.observacion) : "-"} </SText> */}
-            <SView row col={"xs-12"} style={{padding:8}}>
+            <SView row col={"xs-12"} style={{ padding: 8 }}>
                 <FiltroMoneda
                     onSelect={(moneda) => {
                         this.setState({ selectedMoneda: moneda });
@@ -99,7 +96,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             <SHr h={1} color={STheme.color.card} />
             <SView padding={8}>
                 <SText col={"xs-12"} style={{ textAlign: "right" }}>
-                    {"Total:    "} {selectedMoneda.observacion+" "}
+                    {"Total:"} {selectedMoneda.observacion + " "}
                     {SMath.formatMoney(
                         items.reduce((acc, item) => {
                             const precio = selectedMoneda ? item.modelo.precio_venta_moneda / (selectedMoneda.tipo_cambio || 1) : item.modelo.precio_venta_moneda;
@@ -215,7 +212,32 @@ const ItemComp = (props: any) => {
                                 )}
                             </SText>
                         </SView>
+                        <SView col={"xs-12"}>
+                            <SHr></SHr>
+                            <SText fontSize={12} bold > lista de costos </SText>
+                            <SInput label={"Nombre del turno/descripcion"}  />
+
+                        </SView>
+                        <SView width={4} />
+                        {item?.modelo?.tipoCostos?.map((tc, i) => (<> <SText key={i} fontSize={10}> {tc.descripcion} </SText> <SView width={4} /> </>))}
                     </SView>
+                    <SView height={4} />
+                    {/* {item?.modelo?.tipoCostos?.length > 0 && (
+<SView style={{ width: 280, height: 24, backgroundColor: STheme.color.card }}>
+<InputSelector
+style={{ fontSize: 12 }}
+type="custom"
+customStyle="erp"
+label="Costos:"
+placeholder="Selecciona un tipo de costo"
+options={item.modelo.tipoCostos.map((c) => ({
+label: c.descripcion,
+value: c.key_tipo_costo,
+data: c,
+}))}
+/>
+</SView>
+)} */}
                     <SView height={4} />
                     {item?.modelo?.contactos?.length > 0 && (
                         <SView style={{ width: 280, height: 24, backgroundColor: STheme.color.card }}>
