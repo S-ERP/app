@@ -6,15 +6,12 @@ import proveedor from "./proveedor";
 import tag from "./tag";
 import modelo_tag from "./modelo_tag";
 import asistencia from "./asistencia";
-
 export default class inventario extends MDLAbstract<EventListener> {
   async componentDidMount() { }
-
   proveedor = new proveedor();
   tag = new tag();
-  modelo_tag = new modelo_tag(); 
-  asistencia = new asistencia(); 
-
+  modelo_tag = new modelo_tag();
+  asistencia = new asistencia();
   TIPOS_DE_PRODUCTOS = [
     {
       key: "inventario",
@@ -31,7 +28,6 @@ export default class inventario extends MDLAbstract<EventListener> {
       cuentas: ["key_cuenta_contable_ganancia", "key_cuenta_contable_costo"]
     }
   ]
-
   async getPizarraIngrediente() {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
@@ -41,7 +37,6 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_empresa: MDL.empresa.select?.key,
       key_usuario: MDL.usuario.session?.key,
     });
-    console.log("getAllModeloStock", resp.data);
     return Object.values(resp.data || {});
   }
   async execute_function(func: string, params: string[]) {
@@ -73,11 +68,8 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_usuario: MDL.usuario.session?.key,
       key_almacen: _key_almacen,
     });
-    console.log("getAllModeloStock", resp.data);
     return Object.values(resp.data || {});
   }
-
-
   async getContactosByModelo(_key_modelo: string) {
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
@@ -85,41 +77,19 @@ export default class inventario extends MDLAbstract<EventListener> {
       type: "execute_function",
       func: "_get_contactos_bymodelo",
       params: ["'" + _key_modelo + "'"],
-
     });
-    console.log("_get_contactos_bymodelo", resp.data);
     return Object.values(resp.data || {});
   }
-
-
-  //   async getAllModeloCliente(_key_almacen: string) {
-  //   const resp: any = await SSocket.sendPromise({
-  //     version: "1.0",
-  //     service: "inventario",
-  //     component: "modelo_cliente",
-  //     type: "getAllStock",
-  //     key_empresa: MDL.empresa.select?.key,
-  //     key_usuario: MDL.usuario.session?.key,
-  //     key_almacen: _key_almacen,
-  //   });
-  //   console.log("getAllModeloStock", resp.data);
-  //   return Object.values(resp.data || {});
-  // }
-
-    async getAllAsistencias() {
+  async getAllAsistencias() {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
       service: "inventario",
       component: "asistencia",
       type: "getAll",
       key_empresa: MDL.empresa.select?.key,
-      // key_usuario: MDL.usuario.session?.key,
-      // key_cliente: key_cliente,
     });
-    console.log("getModelosByCliente", resp.data);
     return Object.values(resp.data || {});
   }
-  
   async getModelosByCliente(key_cliente: string) {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
@@ -130,28 +100,13 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_usuario: MDL.usuario.session?.key,
       key_cliente: key_cliente,
     });
-    console.log("getModelosByCliente", resp.data);
     return Object.values(resp.data || {});
   }
-
   async saveModeloCliente(modelo_cliente: {
     key?: string,
-    // key_modelo: string,
     key_cliente: string,
     estado?: number
   }) {
-    // if (modelo_cliente.key) {
-    //   const resp: any = await SSocket.sendPromise({
-    //     version: "1.0",
-    //     service: "inventario",
-    //     component: "modelo_cliente",
-    //     type: "editar",
-    //     data: modelo_cliente,
-    //     key_empresa: MDL.empresa.select?.key,
-    //     key_usuario: MDL.usuario.session?.key,
-    //   });
-    //   return resp.data;
-    // } else {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
       service: "inventario",
@@ -162,12 +117,9 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_usuario: MDL.usuario.session?.key,
     });
     return resp.data;
-    // }
   }
-
   async editModeloCliente(modelo_cliente: {
     key?: string,
-    // key_modelo: string,
     key_cliente: string,
     estado?: number
   }) {
@@ -181,9 +133,7 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_usuario: MDL.usuario.session?.key,
     });
     return resp.data;
-
   }
-
   async getAllModeloStockBySucursal(key_sucursal: string) {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
@@ -194,7 +144,6 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_usuario: MDL.usuario.session?.key,
       key_sucursal: key_sucursal,
     });
-    console.log("getAllModeloStock", resp.data);
     return Object.values(resp.data || {});
   }
   async getAllModelo() {
@@ -230,7 +179,6 @@ export default class inventario extends MDLAbstract<EventListener> {
     });
     return Object.values(resp.data || {});
   }
-
   async getAllTipoCosto() {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
@@ -242,8 +190,6 @@ export default class inventario extends MDLAbstract<EventListener> {
     });
     return Object.values(resp.data || {});
   }
-
-
   async editSuscripcion(modelo_cliente: {
     key?: string,
     key_cliente: string,
@@ -261,9 +207,7 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_usuario: MDL.usuario.session?.key,
     });
     return resp.data;
-
   }
-
   async getAllAlmacen() {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
@@ -380,8 +324,6 @@ export default class inventario extends MDLAbstract<EventListener> {
   async saveAlmacen(almacen: any) {
     almacen.data.key_empresa = MDL.empresa.select?.key;
     if (almacen.data.key) {
-      // console.log("ALmacen editado " + JSON.stringify(almacen))
-      // return;
       const resp: any = await SSocket.sendPromise({
         version: "1.0",
         service: "inventario",
@@ -393,8 +335,6 @@ export default class inventario extends MDLAbstract<EventListener> {
       });
       return resp.data;
     } else {
-      // console.log("ALmacen save " + JSON.stringify(almacen))
-      // return;
       const resp: any = await SSocket.sendPromise({
         version: "1.0",
         service: "inventario",
@@ -432,7 +372,6 @@ export default class inventario extends MDLAbstract<EventListener> {
       return resp.data;
     }
   }
-
   async saveTipoProducto(tipo_producto: any) {
     if (tipo_producto.key) {
       const resp: any = await SSocket.sendPromise({
@@ -458,10 +397,7 @@ export default class inventario extends MDLAbstract<EventListener> {
       return resp.data;
     }
   }
-
   async saveTipoCosto(tipo_costo: any) {
-    // console.clear();
-    console.log("%c" + JSON.stringify(tipo_costo), `color: #2ECC40; font-weight: bold;`);
     if (tipo_costo.key) {
       const resp: any = await SSocket.sendPromise({
         version: "1.0",
@@ -486,7 +422,6 @@ export default class inventario extends MDLAbstract<EventListener> {
       return resp.data;
     }
   }
-
   async saveModeloProveedor(modelo_proveedor: {
     key?: string,
     key_modelo: string,
@@ -524,12 +459,10 @@ export default class inventario extends MDLAbstract<EventListener> {
         service: "inventario",
         component: "modelo",
         type: "getAllProductos",
-        // data: modelo,
         key_modelo: key_modelo,
         key_empresa: MDL.empresa.select?.key,
         key_usuario: MDL.usuario.session?.key,
       });
-      console.log("print " + JSON.stringify(resp.data));
       return resp.data;
     }
   }
@@ -561,7 +494,6 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_empresa: MDL.empresa.select?.key,
       key_conteo: _key_conteo,
     });
-    console.log("aplicar_cardex", resp.data);
     return Object.values(resp.data || {});
   }
   async anular_cardex(_key_conteo: string) {
@@ -572,34 +504,8 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_empresa: MDL.empresa.select?.key,
       key_conteo: _key_conteo,
     });
-    console.log("aplicar_cardex", resp.data);
     return Object.values(resp.data || {});
   }
-  //   async saveModelo(modelo: any) {
-  //     if (modelo.key) {
-  //       const resp: any = await SSocket.sendPromise({
-  //         version: "1.0",
-  //         service: "inventario",
-  //         component: "modelo",
-  //         type: "editar",
-  //         data: modelo,
-  //         key_empresa: MDL.empresa.select?.key,
-  //         key_usuario: MDL.usuario.session?.key,
-  //       });
-  //       return resp.data;
-  //     } else {
-  //       const resp: any = await SSocket.sendPromise({
-  //         version: "1.0",
-  //         service: "inventario",
-  //         component: "modelo",
-  //         type: "registro",
-  //         data: modelo,
-  //         key_empresa: MDL.empresa.select?.key,
-  //         key_usuario: MDL.usuario.session?.key,
-  //       });
-  //       return resp.data;
-  //     }
-  //   }
   async saveConteoManualInventario(obj: any) {
     if (!obj.key) {
       const resp: any = await SSocket.sendPromise({
@@ -616,27 +522,11 @@ export default class inventario extends MDLAbstract<EventListener> {
       return resp.data;
     }
   }
-  //   async updateConteoManualInventario(
-  //     data: any[],
-  //     key_cliente_proyecto: string
-  //   ) {
-  //     // data.key_empresa = Model.empresa.Action.getKey();
-  //     const resp: any = await SSocket.sendPromise({
-  //       service: "crm",
-  //       component: "cliente_proyecto",
-  //       type: "editarCarrito",
-  //       key_cliente_proyecto: key_cliente_proyecto,
-  //       data: data,
-  //       key_usuario: Model.usuario.Action.getKey(),
-  //     });
-  //     return resp.data;
-  //   }
   async updateConteoManualInventario(
     data: any[],
     key_almacen: string,
     key_contador: string
   ) {
-    // if (obj.key) {
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
       component: "conteo_manual_inventario",
@@ -650,7 +540,6 @@ export default class inventario extends MDLAbstract<EventListener> {
       type: "chavalEventos",
     });
     return resp.data;
-    // }
   }
   async getAll_reporte_conteo_inventario_detallado(fecha_inicio: string, fecha_fin: string) {
     const resp: any = await SSocket.sendPromise({
@@ -663,41 +552,13 @@ export default class inventario extends MDLAbstract<EventListener> {
     });
     return resp.data;
   }
-
-
-  // async getContactosByModelo(_key_modelo: string) {
-  //   const resp: any = await SSocket.sendPromise({
-  //     service: "inventario",
-  //     component: "reporte",
-  //     type: "execute_function",
-  //     func: "_get_contactos_bymodelo",
-  //     params: ["'" + _key_modelo + "'"],
-
-  //   });
-  //   console.log("_get_contactos_bymodelo", resp.data);
-  //   return Object.values(resp.data || {});
-  // }
-
-
   async getByKey_reporte_conteo_inventario_detallado(key_contador: any) {
     const resp: any = await SSocket.sendPromise({
       service: "inventario",
       component: "conteo_manual_inventario",
       type: "getByKeyConteo",
       key_contador: key_contador,
-      //   key_almacen: key_contador,
     });
-    //    return Object.values(resp.data || {});
     return resp.data;
   }
-  // async getAll_reporte_conteo_inventario_detallado() {
-  // const resp: any = await SSocket.sendPromise({
-  //   service: "inventario",
-  //   component: "conteo_manual_inventario",
-  //   type: "getAll_reporte_conteo_inventario_detallado",
-  //   key_empresa: MDL.empresa.select?.key,
-  //  });
-  // return resp.data;
-  // }
-  // {/* <DinamicTable.Col key="key_usuario" label="Usuario" width={250} data={(e) => e.row?.key_usuario} /> */}
 }

@@ -102,9 +102,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     {"Total:    "} {selectedMoneda.observacion+" "}
                     {SMath.formatMoney(
                         items.reduce((acc, item) => {
-                            const precio = selectedMoneda
-                                ? item.modelo.precio_venta_moneda / (selectedMoneda.tipo_cambio || 1)
-                                : item.modelo.precio_venta_moneda;
+                            const precio = selectedMoneda ? item.modelo.precio_venta_moneda / (selectedMoneda.tipo_cambio || 1) : item.modelo.precio_venta_moneda;
                             return acc + precio * item.cantidad;
                         }, 0)
                     )}

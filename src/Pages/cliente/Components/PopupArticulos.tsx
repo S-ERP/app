@@ -3,7 +3,6 @@ import { ScrollView } from 'react-native';
 import { SForm, SHr, SNotification, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
-// import InputFoto from '../../../Components/InputFoto';
 import Btn from './Btn';
 import InputFoto from '../../../Components/InputFoto';
 import SIconApp from '../../../Assets/SIconApp';
@@ -25,9 +24,9 @@ export default class PopupArticulos extends Component<Props> {
         descripcion_modelo: "",
         descripcion_marca: "",
         cuentas: [],
+        tipos_costo: [],
     }
     componentDidMount(): void {
-
         MDL.contabilidad.getCuentas().then((resp: any) => {
             this.setState({
                 cuentas: Object.values(resp).sort((a: any, b: any) => {
@@ -39,8 +38,18 @@ export default class PopupArticulos extends Component<Props> {
         }).catch((e: any) => {
             console.error("Error al cargar cuentas contables", e);
         })
+        MDL.inventario.getAllTipoCosto().then((resp: any) => {
+            this.setState({
+                tipos_costo: Object.values(resp || {}).sort((a: any, b: any) => {
+                    if (a.descripcion > b.descripcion) return 1;
+                    if (a.descripcion < b.descripcion) return -1;
+                    return 0;
+                })
+            });
+        }).catch((e: any) => {
+            console.error("Error al cargar tipos de costo", e);
+        })
         MDL.inventario.getAllModeloStock().then((resp: any) => {
-
             this.state.articulo = resp;
             if (this.form && this.props.editObject) {
                 const articulo = resp.find((item: any) => item.key == this.props.editObject.key_modelo);
@@ -52,8 +61,6 @@ export default class PopupArticulos extends Component<Props> {
         }).catch((e: any) => {
             console.error("Error al cargar marcas", e);
         })
-
-
     }
     static open(props: Props) {
         SPopup.open({
@@ -82,7 +89,6 @@ export default class PopupArticulos extends Component<Props> {
     form: SForm | undefined = undefined;
     _ref: any = {}
     render() {
-        console.log("ARTICULOS ", this.state.articulo);
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Artículo"}</SText>
             <ScrollView>
@@ -94,14 +100,11 @@ export default class PopupArticulos extends Component<Props> {
                             labelStyle: { top: -10, },
                             inputStyle: { paddingStart: 8 },
                             icon: <SView style={{ borderRadius: 4, overflow: "hidden", width: 50, height: 50, backgroundColor: STheme.color.background, borderWidth: 1, borderColor: STheme.color.text + '66' }}>
-                                {/* <SInput ref={ref => this._ref.image_modelo = ref} type='image' height={50} defaultValue={(SSocket.api as any).inventario + "modelo/" + this.props.editObject?.key}/> */}
+                                { }
                                 <InputFoto
                                     ref={ref => this._ref.image_modelo = ref}
                                     src={(SSocket.api as any).inventario + "modelo/.128_" + this.props.editObject?.key}
-                                    style={{
-                                        width: 50,
-                                        height: 50,
-                                    }} />
+                                    style={{ width: 50, height: 50, }} />
                             </SView>,
                             label: "Artículo", placeholder: "Ingresa el artículo", isRequired: true,
                             type: "select2",
@@ -113,7 +116,6 @@ export default class PopupArticulos extends Component<Props> {
                                 if (key_modelo) {
                                     this._ref.image_modelo.setValue((SSocket.api as any).inventario + "modelo/.128_" + key_modelo);
                                     this._ref.image_modelo.forceUpdate();
-                                    console.log("text", text);
                                 } else {
                                     if (this._ref.image_modelo.getValue() != "") {
                                         this._ref.image_modelo.setValue("");
@@ -121,7 +123,6 @@ export default class PopupArticulos extends Component<Props> {
                                     }
                                 }
                             },
-                            // defaultValue: this.props.editObject?.descripcion,
                             onSubmitEditing: () => {
                                 if (this.form) this.form.focus("articulo");
                             },
@@ -131,13 +132,10 @@ export default class PopupArticulos extends Component<Props> {
                                 backgroundColor: STheme.color.card
                             }} center onPress={() => {
                                 MDL.inventario.saveModeloCliente({
-                                    // key_modelo: this.state.key_modelo,
                                     key_cliente: this.props.key_cliente,
                                 }).then((resp: any) => {
                                     this.state.key_modelo = resp.key;
                                     this.state.articulo.push(resp as never);
-                                    // this._ref.image_marca.setValue((SSocket.api as any).inventario + "marca/" + resp.key);
-                                    // this._ref.image_marca.forceUpdate();
                                     this.forceUpdate();
                                     SNotification.send({
                                         title: "Tipo de producto guardado",
@@ -159,14 +157,11 @@ export default class PopupArticulos extends Component<Props> {
                             </SView> : null,
                             onBlur: () => {
                                 if (this.state.key_modelo) {
-                                    console.log("Tipo produco seleccionada:", this.state.key_modelo);
                                 } else {
                                     this.forceUpdate();
-                                    console.log("No se ha seleccionado una marca válida.");
                                 }
                             }
                         },
-
                         "comision": {
                             label: "Comisión (%)",
                             placeholder: "Ej: 10",
@@ -175,17 +170,6 @@ export default class PopupArticulos extends Component<Props> {
                             isRequired: true,
                             inputStyle: { paddingStart: 8 },
                             labelStyle: { top: -10 },
-                            // onChangeText: (value: string) => {
-                            //     const num = Number(value);
-                            //     if (num < 0 || num > 100) return;
-                            //     this.setState({ comision: num });
-                            // },
-                            // validate: (value: any) => {
-                            //     if (value === undefined || value === null) return "La comisión es requerida";
-                            //     if (isNaN(value)) return "Debe ser un número";
-                            //     if (value < 0 || value > 100) return "Debe estar entre 0 y 100";
-                            //     return true;
-                            // }
                         },
                         "key_cuenta_contable": {
                             label: "Cuenta Contable",
@@ -204,16 +188,35 @@ export default class PopupArticulos extends Component<Props> {
                                     data: cuenta
                                 }
                             })
+                        },
+                        "key_tipo_costo": {
+                            label: "Tipos de costo",
+                            type: "custom",
+                            customInputClass: InputSelector,
+                            style: {
+                                width: "100%",
+                            },
+                            options: this.state.tipos_costo.map((tipo: any) => {
+                                return {
+                                    label: tipo.descripcion,
+                                    value: tipo.key,
+                                    customComponent: (e: any) => {
+                                        return (
+                                            <SText fontSize={12} color={STheme.color.lightGray}>
+                                                {e.data.descripcion}
+                                            </SText>
+                                        );
+                                    },
+                                    data: tipo
+                                }
+                            })
                         }
-
                     }}
                     onSubmit={(data: any) => {
                         data.key_cliente = this.props.key_cliente;
                         data.key_modelo = this.state.key_modelo;
                         if (this.props.editObject?.key) {
                             data.key = this.props.editObject?.key;
-
-
                             MDL.inventario.saveModeloCliente(data).then((resp: any) => {
                                 if (this.props.onSuccess) this.props.onSuccess(resp)
                                 if (this._ref.image_modelo) {
@@ -240,14 +243,12 @@ export default class PopupArticulos extends Component<Props> {
                                 });
                             })
                         } else {
-
                             MDL.inventario.saveModeloCliente(data).then((resp: any) => {
                                 if (this.props.onSuccess) this.props.onSuccess(resp)
                                 if (this._ref.image_modelo) {
                                     const value = this._ref.image_modelo.getValue();
                                     if (Array.isArray(value)) {
                                         Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).root + "upload/usuario/" + resp.key)
-                                        // Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).crm + "upload/clientes/" + resp.key)
                                     }
                                 }
                                 SNotification.send({

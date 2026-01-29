@@ -13,9 +13,7 @@ import AdminsitrarHabilidades from './Components/AdministrarHabilidades';
 import TurnoComponent from '../../Components/TurnoComponent';
 import PopupArticulos from './Components/PopupArticulos';
 import all from '../usuario/all';
-
 const URL = "/crm/cliente";
-
 export default class Perfil extends Component {
     constructor(props) {
         super(props);
@@ -23,48 +21,11 @@ export default class Perfil extends Component {
             data: {},
             allArticulos: []
         };
-
         this.key = SNavigation.getParam("key");
     }
-
-
     componentDidMount() {
         this.loadData();
-
     }
-
-    // async loadData() {
-    //     let habilidad = await MDL.habilidad.getAllWithUsuarios();
-    //     let ventas = await MDL.compra_venta.getTransaccion('venta', '2024-09-01', '2026-09-05');
-    //     // Obtener resumen de cuotas
-    //     let registros = await MDL.compra_venta.getCuotasResumenTotal_ventas();
-
-    //     await MDL.crm.cliente.getByKey(SNavigation.getParam("key")).then(e => {
-    //         // this.setState({ data: e });
-    //         console.log("Cliente data:", e);
-    //         e.habilidades = habilidad.filter(hab => hab.key_usuarios?.includes(e.key));
-    //         e.ventas = ventas.filter(venta => venta.key_cliente == e.key);
-    //         e.resumen_cuotas = registros ? registros.find(reg => reg.key_cliente == e.key) : [];
-    //         // this.setState({ data: e });
-    //         this.state.data = e;
-    //         this.forceUpdate();
-
-    //     }).catch(error => {
-    //         console.error('Error al cargar datos del cliente:', error);
-    //         SNotification.send({
-    //             title: 'Error',
-    //             body: 'No se pudo cargar los datos del cliente.',
-    //             time: 3000,
-    //             color: STheme.color.danger,
-    //         });
-    //     });
-
-
-
-
-    //     // this.forceUpdate();
-    // }
-
     loadData = async () => {
         try {
             let habilidad = await MDL.habilidad.getAllWithUsuarios();
@@ -72,30 +33,26 @@ export default class Perfil extends Component {
             let registros = await MDL.compra_venta.getCuotasResumenTotal_ventas();
             let turnos = await MDL.empresa.getTurnosHorariosAtencion();
             let allArticulos = await MDL.inventario.getAllModeloStock();
-
             let articulos = await MDL.inventario.getModelosByCliente(this.key);
-
-
+            const tipo_costos = await MDL.inventario.getAllTipoCosto();
+            const cuentas_contable_obj = await MDL.contabilidad.getCuentas();
+            const cuentas_contable = Object.values(cuentas_contable_obj || []);
             let e = await MDL.crm.cliente.getByKey(this.key);
-
             e.habilidades = habilidad.filter(hab => hab.key_usuarios?.includes(e.key));
             e.ventas = ventas.filter(venta => venta.key_cliente == e.key);
             e.resumen_cuotas = registros ? registros.find(reg => reg.key_cliente == e.key) : [];
             e.turno = turnos ? Object.values(turnos).find(t => t.key == e.key_turno) : null;
-            // e.horario_atencion = turnos ? turnos.filter(t => t.key_usuario == e.key) : null;
             let art = articulos.map(a => {
                 return {
                     ...a,
                     modelo: allArticulos.find(m => m.key == a.key_modelo) || { descripcion: "MODELO ELIMINADO" },
+                    tipo_costo: tipo_costos.find(m => m.key == a.key_tipo_costo) || { descripcion: "" },
+                    cuenta_contable: cuentas_contable.find(m => m.key == a.key_cuenta_contable) || { descripcion: "" },
                 }
             });
-
             e.articulos = art;
-            console.log("articulos", articulos);
-
             this.setState({ data: e });
             this.setState({ allArticulos: allArticulos });
-
         } catch (error) {
             console.error('Error al cargar datos del cliente:', error);
             SNotification.send({
@@ -106,17 +63,9 @@ export default class Perfil extends Component {
             });
         }
     }
-
-
-
     render() {
-        console.log("this.data", this.state.data);
-        // console.log("this.habilidad", this.state.habilidad);
-
         if (!this.state.data) return <SView />
         this.data = this.state.data;
-        // this.habilidad = this.state.habilidad;
-
         return (
             <SPage title="Perfil del Cliente" >
                 <SView col={"xs-12"} row padding={10}>
@@ -142,16 +91,13 @@ export default class Perfil extends Component {
                         <Articulos cliente={this.data} onReload={this.loadData} />
                     </SView>
                 </SView>
-
-
             </SPage>
         );
     }
 }
-
 const Resumen = ({ cliente }) => {
     return <SView col={"xs-12"} card center padding={15}>
-        {/* <SImage src={SIconApp.direccion} style={{ width: 100, height: 100, resizeMode: "contain" }} /> */}
+        { }
         <SView col="xs-12" center row>
             <SView
                 style={{
@@ -177,7 +123,6 @@ const Resumen = ({ cliente }) => {
         <SHr height={5} />
     </SView>
 }
-
 const InfoGeneral = ({ cliente, onReload }) => {
     return <SView col={"xs-12"} card padding={15} height>
         <SView width={40} height={40} style={{
@@ -190,21 +135,13 @@ const InfoGeneral = ({ cliente, onReload }) => {
             zIndex: 10
         }}
             onPress={() => {
-                // Opción de editar cliente
-                console.log("cliente", cliente);
                 if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
-
-                    // const cliente = { ...row, key_usuario: MDL.usuario.session?.key };
-                    // const cliente = { cliente, key_usuario: MDL.usuario.session?.key };
-                    // console.log("cliente", cliente);
                     PopupCrearCliente.open({
                         editObject: cliente,
                         key_empresa: cliente.key_empresa,
                         onSuccess: () => onReload(),
                     });
-
                 }
-
             }} center>
             <SIcon name='crmeditar' width={20} height={20} fill={STheme.color.text} />
         </SView>
@@ -249,7 +186,6 @@ const InfoGeneral = ({ cliente, onReload }) => {
         </SView>
     </SView>
 }
-
 const Habilidades = ({ cliente, onReload }) => {
     return <SView col={"xs-12"} card padding={15} height>
         <SView width={40} height={40} style={{
@@ -273,9 +209,8 @@ const Habilidades = ({ cliente, onReload }) => {
         </SView>
         <SText bold fontSize={16}>Habilidades</SText>
         <SHr height={30} />
-        <SView col={"xs-12"}  >
+        <SView col={"xs-12"}>
             {cliente?.habilidades?.length === 0 && (<SText fontSize={16} color={STheme.color.lightGray}>No se han asignado habilidades.</SText>)}
-
             {cliente?.habilidades?.map((hab, index) => {
                 return <SView col={"xs-12"} key={index} flex
                     style={{
@@ -292,7 +227,6 @@ const Habilidades = ({ cliente, onReload }) => {
         </SView>
     </SView>
 }
-
 const horaToMinutos = (hora) => {
     const [h, m, s] = hora.split(":").map(Number);
     return h * 60 + m + (s || 0) / 60;
@@ -306,7 +240,6 @@ const agruparPorDia = (data) => {
 };
 const ordenarHorariosPorDia = (data) => {
     const agrupado = agruparPorDia(data);
-
     Object.keys(agrupado).forEach((dia) => {
         agrupado[dia].sort(
             (a, b) =>
@@ -314,10 +247,8 @@ const ordenarHorariosPorDia = (data) => {
                 horaToMinutos(b.hora_inicio)
         );
     });
-
     return agrupado;
 };
-
 const Horarios = ({ cliente, onReload }) => {
     let dataTurnOrdenado = [];
     if (cliente?.turno) {
@@ -335,23 +266,17 @@ const Horarios = ({ cliente, onReload }) => {
             zIndex: 10
         }}
             onPress={() => {
-                // SPopup.open({
-                //     key: "popup_habilidades",
-                //     // content: <AdministrarHabilidades cliente={cliente} />
-                // })
                 SPopup.open({
                     key: "popup_config_horario",
                     content: (
                         <SView col={"xs-11 sm-10 md-8"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 450 }} padding={16} withoutFeedback >
                             <SView col={"xs-12"} height={600} center >
                                 <TurnoComponent key_turno={cliente?.key_turno} onReload={async (res) => {
-                                    console.log("✅ Resultado recibido en Turnos.js:", res);
                                     cliente.horario_atencion = res;
                                     let data = {
                                         key: cliente.key,
                                         key_turno: res.key,
                                         key_usuario: MDL.usuario.session?.key,
-
                                     }
                                     await MDL.crm.cliente.editar(data).then(e => {
                                         console.log("✅ Horario de atención actualizado en el cliente:", e)
@@ -369,7 +294,7 @@ const Horarios = ({ cliente, onReload }) => {
             <SIcon name='crmeditar' width={20} height={20} fill={STheme.color.text} />
         </SView>
         <SText bold fontSize={16}>Horarios de atención</SText>
-        <SView col={"xs-12"}  >
+        <SView col={"xs-12"}>
             <SHr height={30} />
             {cliente?.turno ? (<SView col={"xs-12"} row>
                 <SView col={"xs-6"} row >
@@ -386,7 +311,6 @@ const Horarios = ({ cliente, onReload }) => {
                         <SView col={"xs-12"} row key={dia}
                             style={{
                                 marginBottom: 5,
-                                // padding: 5,
                                 borderWidth: 1,
                                 borderColor: STheme.color.card,
                                 borderRadius: 4,
@@ -413,14 +337,12 @@ const Horarios = ({ cliente, onReload }) => {
         <SHr height={10} />
     </SView>
 }
-
 const Calendario = ({ cliente }) => {
     return <SView col={"xs-12"} card padding={15} height>
         <SText bold fontSize={16}>Calendario</SText>
         <SHr height={10} />
     </SView>
 }
-
 const CompraVentas = ({ cliente }) => {
     return <SView col={"xs-12"} card padding={15} height row>
         <SText bold fontSize={16}>Compra / Venta</SText>
@@ -431,10 +353,8 @@ const CompraVentas = ({ cliente }) => {
         <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_en_mora ?? "--"} color={STheme.color.danger} title="Cuotas en Mora" />
         <BloqueVentas dato={`Bs ${SMath.formatMoney(cliente?.resumen_cuotas?.monto_pendiente ?? 0)}`} color={STheme.color.warning} title="Monto Pendiente" />
         <BloqueVentas dato={cliente?.resumen_cuotas?.cantidad_pendiente ?? "--"} color={STheme.color.warning} title="Cuotas Pendientes" />
-
     </SView>
 }
-
 const BloqueVentas = ({ dato, color, title }) => {
     return <SView col={"xs-6"} padding={5}>
         <SText col={"xs-12"} bold>{title}</SText>
@@ -451,7 +371,6 @@ const BloqueVentas = ({ dato, color, title }) => {
         </SView>
     </SView>
 }
-
 const Articulos = ({ cliente, onReload }) => {
     return <SView col={"xs-12"} card padding={15} height>
         <SView width={40} height={40} style={{
@@ -476,10 +395,8 @@ const Articulos = ({ cliente, onReload }) => {
         <SText bold fontSize={16}>Artículos</SText>
         <SHr height={25} />
         {cliente?.articulos?.length > 0 && (
-            <SView col={"xs-12"}  >
+            <SView col={"xs-12"}>
                 {cliente?.articulos?.map((articulo, index) => {
-                    console.log("cliente-articulo", cliente?.articulos);
-
                     return <SView col={"xs-12"} key={index} row
                         style={{
                             padding: 5,
@@ -488,23 +405,13 @@ const Articulos = ({ cliente, onReload }) => {
                             borderRadius: 4,
                             marginBottom: 15,
                             backgroundColor: STheme.color.card,
-
                         }} center onPress={() => {
-                            console.log("articulo", articulo?.modelo?.descripcion);
-                            console.log("articulo key", index);
-                            //remove index from cliente.articulos
-                            // let newdata = cliente?.articulos.filter((_, i) => i !== index);
                             let newdata = { ...articulo, estado: 0 };
-
-                            console.log("newdata", newdata);
-                            // MDL.inventario.editModeloCliente(Object.assign({}, newdata)).then((resp) => {
                             SPopup.confirm({
                                 title: "Eliminar Artículo",
                                 message: `¿Estás seguro de eliminar el artículo "${articulo?.modelo?.descripcion}" del cliente?`,
                                 onPress: () => {
-
                                     MDL.inventario.editModeloCliente(newdata).then((resp) => {
-                                        console.log("Artículo del cliente eliminado", resp);
                                         SNotification.send({
                                             title: 'Éxito',
                                             body: 'Artículo del cliente eliminado correctamente.',
@@ -523,7 +430,6 @@ const Articulos = ({ cliente, onReload }) => {
                                     });
                                 }
                             });
-
                         }}>
                         <SView width={25} height={25} center style={{
                             backgroundColor: STheme.color.danger,
@@ -542,23 +448,21 @@ const Articulos = ({ cliente, onReload }) => {
                         <SView width={5} />
                         <SView flex >
                             <SText >{articulo?.modelo?.descripcion}</SText>
-                            <SHr h={4}/>
+                            {articulo?.tipo_costo?.descripcion ? <SText >TIPO COSTO ( {articulo?.tipo_costo?.descripcion} )</SText> : null}
+                            {articulo?.cuenta_contable?.descripcion ? <SText >cuenta contable ( {articulo?.cuenta_contable?.descripcion} )</SText> : null}
+                            <SHr h={4} />
                             <SView col={"xs-12"} row>
                                 <SView flex>
                                     <SText >{SMath.formatMoney(articulo?.modelo?.precio_venta ?? 0)}</SText>
                                 </SView>
                                 <SView width={100} style={{ alignItems: "flex-end" }}>
-                                    <SText style={{ fontSize: 12, color:STheme.color.lightGray }}>Comisión {articulo?.comision ?? 0}%</SText>
+                                    <SText style={{ fontSize: 12, color: STheme.color.lightGray }}>Comisión {articulo?.comision ?? 0}%</SText>
                                 </SView>
                             </SView>
                             <SView col={"xs-12"} row>
-                                <SText fontSize={8} color={STheme.color.lightGray}>{articulo.key_cuenta_contable}</SText>                              
+                                <SText fontSize={8} color={STheme.color.lightGray}>{articulo.key_cuenta_contable}</SText>
                             </SView>
-
                         </SView>
-
-
-
                     </SView>
                 })}
             </SView>
@@ -566,4 +470,3 @@ const Articulos = ({ cliente, onReload }) => {
         {(!cliente.articulos || cliente.articulos.length === 0) && (<SText fontSize={16} color={STheme.color.lightGray}>No se han asignado artículos.</SText>)}
     </SView>
 }
-

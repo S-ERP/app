@@ -7,7 +7,6 @@ import centro_costo_tipo from "./centro_costo_tipo";
 import centro_costo from "./centro_costo";
 import diario from "./diario";
 import gestion from "./gestion";
-
 export default class contabilidad extends MDLAbstract<EventListener> {
   color_tipo = {
     "ACTIVO": "#4CAF50",
@@ -21,12 +20,9 @@ export default class contabilidad extends MDLAbstract<EventListener> {
   centro_costo = new centro_costo();
   diario = new diario();
   gestion = new gestion();
-
-
   async componentDidMount() {
     this.cuenta_contable.componentDidMount();
   }
-
   round(val: number) {
     if (isNaN(val)) return 0;
     return Math.round(val * 100) / 100;
@@ -70,7 +66,6 @@ export default class contabilidad extends MDLAbstract<EventListener> {
     });
     return resp.data;
   }
-
   ajustesCache: any = {
     data: null,
     key_empresa: "",
@@ -92,16 +87,15 @@ export default class contabilidad extends MDLAbstract<EventListener> {
       key_empresa: MDL.empresa.select?.key,
       key_usuario: MDL.usuario.session?.key,
     }).then((resp: any) => {
-      this.ajustesCache.data = resp.data;  // Guardamos en caché
-      this.ajustesCache.promise = null;     // Limpiamos la promesa en curso
+      this.ajustesCache.data = resp.data;// Guardamos en caché
+      this.ajustesCache.promise = null;// Limpiamos la promesa en curso
       return this.ajustesCache.data;
     }).catch((err: any) => {
-      this.ajustesCache.promise = null;     // Limpiar para futuros intentos
+      this.ajustesCache.promise = null;// Limpiar para futuros intentos
       throw err;
     });
     return this.ajustesCache.promise;
   }
-
   async getAjusteCache(key: string) {
     const ajustes = await this.getAjustesCache();
     return ajustes.find((ajuste: any) => ajuste.key === key);
@@ -119,7 +113,6 @@ export default class contabilidad extends MDLAbstract<EventListener> {
     }
     if (this.cuentasCache.data) return this.cuentasCache.data;
     if (this.cuentasCache.promise) return this.cuentasCache.promise;
-
     this.cuentasCache.promise = SSocket.sendPromise({
       version: "1.0",
       service: "contabilidad",
@@ -129,16 +122,15 @@ export default class contabilidad extends MDLAbstract<EventListener> {
       key_empresa: MDL.empresa?.select?.key,
       key_usuario: MDL.usuario?.session?.key,
     }).then((resp: any) => {
-      this.cuentasCache.data = resp.data;  // Guardamos en caché
-      this.cuentasCache.promise = null;     // Limpiamos la promesa en curso
+      this.cuentasCache.data = resp.data;// Guardamos en caché
+      this.cuentasCache.promise = null;// Limpiamos la promesa en curso
       return this.cuentasCache.data;
     }).catch((err: any) => {
-      this.cuentasCache.promise = null;     // Limpiar para futuros intentos
+      this.cuentasCache.promise = null;// Limpiar para futuros intentos
       throw err;
     });
     return this.cuentasCache.promise;
   }
-
   armarNiveles(cuentas: any[]) {
     const niveles: any = {};
     cuentas.map(e => {
@@ -150,24 +142,15 @@ export default class contabilidad extends MDLAbstract<EventListener> {
   }
   getCuentasGrafo(cuentas: any[]) {
     cuentas.map(c => {
-      // HIJAS: buscar solo las del nivel más cercano
       const posiblesHijas = cuentas.filter(
         h => h.codigo.startsWith(c.codigo) && h.codigo.length > c.codigo.length
       );
-
-      // tomamos la longitud mínima entre las hijas
       const minLen = Math.min(...posiblesHijas.map(h => h.codigo.length), Infinity);
-
       const hijas = posiblesHijas.filter(h => h.codigo.length === minLen);
-
-      // PADRE: buscar solo el más cercano hacia arriba
       const posiblesPadres = cuentas.filter(
         h => h.codigo.length < c.codigo.length && c.codigo.startsWith(h.codigo)
       );
-
-      // tomamos el padre con mayor longitud (el más cercano)
       const padre = posiblesPadres.sort((a, b) => b.codigo.length - a.codigo.length)[0] || null;
-
       c.parent = padre;
       c.childrens = hijas;
     });
@@ -176,14 +159,10 @@ export default class contabilidad extends MDLAbstract<EventListener> {
   agruparCuentas(cuentas: any) {
     const mapa: any = {};
     const raiz: any[] = [];
-
-    // Primero, crea un mapa con todos los códigos
     cuentas.forEach((cuenta: any) => {
       cuenta.hijos = [];
       mapa[cuenta.codigo] = cuenta;
     });
-
-    // Ahora, asigna cada cuenta a su padre si existe
     cuentas.forEach((cuenta: any) => {
       const partes = cuenta.codigo.split(".");
       if (partes.length === 1) {
@@ -198,11 +177,8 @@ export default class contabilidad extends MDLAbstract<EventListener> {
         }
       }
     });
-
     return raiz;
   }
-
-
   async getNivelesPlanCuentas() {
     return await this.executeFunction("get_niveles_del_plan_de_cuentas", [MDL?.empresa?.select?.key])
   }
@@ -212,7 +188,6 @@ export default class contabilidad extends MDLAbstract<EventListener> {
   async reporte_libro_diario() {
     return await this.executeFunction("reporte_libro_diario", [MDL?.empresa?.select?.key])
   }
-
   async executeFunction(name: string, params?: any[]) {
     const resp: any = await SSocket.sendPromise({
       service: "contabilidad",
@@ -242,14 +217,12 @@ export default class contabilidad extends MDLAbstract<EventListener> {
     })
     return agrup
   }
-
   async getCuentasByAjuste(key_ajuste: string, solo_hijas: boolean) {
     const ajuste = await this.getAjuste(key_ajuste);
     if (!ajuste) throw "Ajuste no encontrado";
     if (!ajuste.ajuste_empresa) throw "El ajuste no se ha configurado.";
     const cuentas = await this.getCuentas();
     const cuentaSelect = cuentas[ajuste.ajuste_empresa.key_cuenta_contable];
-    console.log(ajuste, cuentaSelect);
     let arr = Object.values(cuentas);
     arr = arr.filter((cuenta: any) => cuenta.codigo.startsWith(cuentaSelect.codigo))
     if (solo_hijas) {
@@ -260,7 +233,6 @@ export default class contabilidad extends MDLAbstract<EventListener> {
     return arr.sort((a: any, b: any) => {
       return a.codigo.localeCompare(b.codigo);
     });
-
   }
   async getCuentasByAjusteCache(key_ajuste: string, solo_hijas: boolean) {
     const ajuste = await this.getAjusteCache(key_ajuste);
@@ -268,7 +240,6 @@ export default class contabilidad extends MDLAbstract<EventListener> {
     if (!ajuste.ajuste_empresa) throw "El ajuste no se ha configurado.";
     const cuentas = await this.getCuentasCache();
     const cuentaSelect = cuentas[ajuste.ajuste_empresa.key_cuenta_contable];
-    console.log(ajuste, cuentaSelect);
     let arr = Object.values(cuentas);
     arr = arr.filter((cuenta: any) => cuenta.codigo.startsWith(cuentaSelect.codigo))
     if (solo_hijas) {
@@ -279,13 +250,8 @@ export default class contabilidad extends MDLAbstract<EventListener> {
     return arr.sort((a: any, b: any) => {
       return a.codigo.localeCompare(b.codigo);
     });
-
   }
-
-
-
   format_cuenta_to_string(cuenta: any) {
     return `${cuenta.codigo} - ${cuenta.descripcion}`;
   }
-
 }
