@@ -48,6 +48,8 @@ export default class FormularioModelo extends Component<Props> {
         tipo_productos: [],
         descripcion_tipo_producto: "",
         descripcion_marca: "",
+        tipoSeleccionado: this.props.editObject?.tipo_producto?.tipo || "",
+
     }
     qr_reader_listener: any;
     // qr_reader_listener_picture: any;
@@ -80,6 +82,12 @@ export default class FormularioModelo extends Component<Props> {
         }).catch((e: any) => {
             console.error("Error al cargar marcas", e);
         })
+
+        const bolivia = this.props.editObject;
+        console.clear();
+        console.log("%c" + JSON.stringify(bolivia), `color: #2ECC40; font-weight: bold;`);
+        console.log("%c" + this.props.editObject.tipo_producto.tipo, `color: #3e2ecc; font-weight: bold;`);
+
     }
     buildCustmomInputs() {
     }
@@ -186,18 +194,59 @@ export default class FormularioModelo extends Component<Props> {
                                     width: 50,
                                     height: 50,
                                 }} />
+
+                            {/* <SView style={{ position: "absolute", right: 10 }}>
+                                <SText>ddd</SText>
+                            </SView> */}
+
                         </SView>,
                         label: "Tipo", placeholder: "Ingresa el tipo", isRequired: true,
                         type: "select2",
                         options: this.state.tipo_productos.map((item: any) => item.descripcion),
                         onChangeText: (text: string) => {
+                            // const tipoObj = this.state.tipo_productos.find((item: any) => item.descripcion == text);
+                            // const key_tipo_producto = tipoObj?.key;
+                            // const tipo = tipoObj?.tipo;
+
+                            // this.setState({
+                            //     key_tipo_producto,
+                            //     descripcion_tipo_producto: text,
+                            //     tipoSeleccionado: tipo, // <-- actualizar el estado
+                            // });
+
+                            // if (key_tipo_producto) {
+                            //     this._ref.image_tipo_producto.setValue((SSocket.api as any).inventario + "tipo_producto/.128_" + key_tipo_producto);
+                            //     this._ref.image_tipo_producto.forceUpdate();
+                            // } else {
+                            //     if (this._ref.image_tipo_producto.getValue() != "") {
+                            //         this._ref.image_tipo_producto.setValue("");
+                            //         this._ref.image_tipo_producto.forceUpdate();
+                            //     }
+                            // }
+
+
                             const key_tipo_producto = (this.state.tipo_productos as any).find((item: any) => item.descripcion == text)?.key;
+                            // const tipo = (this.state.tipo_productos as any).find((item: any) => item.descripcion == text)?.tipo;
+                            const tipoObj = this.state.tipo_productos.find((item: any) => item.descripcion == text);
+                            const tipo = tipoObj?.tipo;
+
+
+                            this.setState({
+                                key_tipo_producto,
+                                descripcion_tipo_producto: text,
+                                tipoSeleccionado: tipo, // <-- actualizar el estado
+                            });
+                            // tipoSeleccionado: this.props.editObject?.tipo_producto?.tipo || "",
+
+                            // this.props.editObject?.alvaro = tipo;
                             this.state.key_tipo_producto = key_tipo_producto;
                             this.state.descripcion_tipo_producto = text;
+                            // console.log("%c" + key_tipo_producto, `color: #2ECC40; font-weight: bold;`);
+                            // console.log("%c" + tipo, `color: #2ECC40; font-weight: bold;`);
+
                             if (key_tipo_producto) {
                                 this._ref.image_tipo_producto.setValue((SSocket.api as any).inventario + "tipo_producto/.128_" + key_tipo_producto);
                                 this._ref.image_tipo_producto.forceUpdate();
-                                console.log("text", text);
                             } else {
                                 if (this._ref.image_tipo_producto.getValue() != "") {
                                     this._ref.image_tipo_producto.setValue("");
@@ -302,37 +351,46 @@ export default class FormularioModelo extends Component<Props> {
                             if (this.form) this.form.focus("precio_compra");
                         }
                     },
-                    "duracion": {
-                        col: "xs-1.5",
-                        type: "number",
-                        icon: <SView />,
-                        defaultValue: (!this.props.editObject?.duracion ? "" : this.props.editObject?.duracion),
-                        label: "Duracion", placeholder: "Duracion del producto o servicio",
-                        onSubmitEditing: () => {
-                            if (this.form) this.form.focus("precio_compra");
-                        }
-                    },
-                    "duracion_medida": {
-                        col: "xs-3.5",
-                        type: "select2",
-                        style: { right: 8, },
-                        defaultValue: (!this.props.editObject?.duracion_medida ? "" : this.props.editObject?.duracion_medida),
-                        label: "Duracion medida",
-                        options: ["horas", "dias", "semanas", "meses", "anos"],
-                        placeholder: "Duracion del producto o servicio",
-                        onSubmitEditing: () => {
-                            if (this.form) this.form.focus("cantidad_suscriptores");
-                        }
-                    },
-                    "cantidad_suscriptores": {
-                        col: "xs-5.5",
-                        defaultValue: (!this.props.editObject?.cantidad_suscriptores ? "" : this.props.editObject?.cantidad_suscriptores),
-                        label: "Cantidad de suscriptores",
-                        placeholder: "Cantidad de suscriptores",
-                        onSubmitEditing: () => {
-                            if (this.form) this.form.focus("observacion");
-                        }
-                    },
+
+                    ...(this.state.tipoSeleccionado === 'servicio' && {
+                        // ...(this.props.editObject?.alvaro === 'servicio' && {
+                        "duracion": {
+                            col: "xs-1.5",
+                            type: "number",
+                            icon: <SView />,
+                            defaultValue: (!this.props.editObject?.duracion ? "" : this.props.editObject?.duracion),
+                            label: "Duracion", placeholder: "Duracion del producto o servicio",
+                            onSubmitEditing: () => {
+                                if (this.form) this.form.focus("precio_compra");
+                            }
+                        },
+                        "duracion_medida": {
+                            col: "xs-3.5",
+                            type: "select2",
+                            style: { right: 8, },
+                            defaultValue: (!this.props.editObject?.duracion_medida ? "" : this.props.editObject?.duracion_medida),
+                            label: "Duracion medida",
+                            options: ["horas", "dias", "semanas", "meses", "anos"],
+                            placeholder: "Duracion del producto o servicio",
+                            onSubmitEditing: () => {
+                                if (this.form) this.form.focus("cantidad_suscriptores");
+                            }
+                        },
+                        "cantidad_suscriptores": {
+                            col: "xs-5.5",
+                            defaultValue: (!this.props.editObject?.cantidad_suscriptores ? "" : this.props.editObject?.cantidad_suscriptores),
+                            label: "Cantidad de suscriptores",
+                            placeholder: "Cantidad de suscriptores",
+                            onSubmitEditing: () => {
+                                if (this.form) this.form.focus("observacion");
+                            }
+                        },
+
+
+                    }),
+
+
+
                     "observacion": {
                         col: "xs-12",
                         defaultValue: this.props.editObject?.observacion,
@@ -442,9 +500,12 @@ export default class FormularioModelo extends Component<Props> {
                         barcode: data.barcode,
                         precio_compra: parseFloat(data.precio_compra ?? 0),
                         precio_venta: parseFloat(data.precio_venta ?? 0),
+
+                        // aqui estoy dejando pasar duracion medida y suscriptores vacio
                         duracion: parseInt(data.duracion ?? "0"),
-                        duracion_medida: data.duracion_medida,
-                        cantidad_suscriptores: data.cantidad_suscriptores,
+                        duracion_medida: data.duracion_medida ?? "",
+                        cantidad_suscriptores: parseInt(data.cantidad_suscriptores ?? "0"),
+
                         codigo_ref: data.codigo_ref,
                     }
                     if (this.props.editObject) {
