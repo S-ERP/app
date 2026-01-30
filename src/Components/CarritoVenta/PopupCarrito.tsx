@@ -14,9 +14,9 @@ const DEFAULT_MONEDA_KEY = "";
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     state = {
         selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null,
-        options: [],
-        contactosSeleccionados: {}, // { [itemKey]: contactoSeleccionado }
-        tipoCostosSeleccionados: [] as any[], // Array de objetos para múltiples tipos de costo
+        options: [] as any[],
+        contactosSeleccionados: [] as any[],
+        tipoCostosSeleccionados: [] as any[],
     };
 
     rapido: any;
@@ -156,9 +156,9 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     <SView flex />
                     <SView style={{ backgroundColor: STheme.color.success }} padding={4} card onPress={() => {
                         console.clear();
-                        console.log("%cContactos:", "color: #2ECC40; font-weight: bold;", JSON.stringify(this.state.contactosSeleccionados, null, 2));
-                        console.log("%cTipos Costo:", "color: #df512e; font-weight: bold;", JSON.stringify(this.state.tipoCostosSeleccionados, null, 2));
-                        PopupCarritoConfirmar.open()
+                        // console.log("%cContactos:", "color: #2ECC40; font-weight: bold;", JSON.stringify(this.state.contactosSeleccionados, null, 2));
+                        // console.log("%cTipos Costo:", "color: #df512e; font-weight: bold;", JSON.stringify(this.state.tipoCostosSeleccionados, null, 2));
+                        PopupCarritoConfirmar.open({tipoCostosSeleccionados: this.state.tipoCostosSeleccionados, })
                     }}>
                         <SText fontSize={12}>{"Confirmar la venta"}</SText>
                     </SView>
@@ -203,7 +203,7 @@ const ItemComp = (props: any) => {
     }, [moneda, item.modelo.precio_venta_moneda]);
 
     // Contacto seleccionado del estado
-    const contactoSeleccionado = contactosSeleccionados[item.modelo.key] || "";
+    const contactoSeleccionado = contactosSeleccionados.find(c => c.key_modelo === item.modelo.key)?.key_modelo_cliente || "";
 
     return (
         <SView padding={8}>
@@ -266,7 +266,7 @@ const ItemComp = (props: any) => {
                     </SView>
 
                     {/* Contactos */}
-                    {item?.modelo?.contactos?.length > 0 && (
+                    {/* {item?.modelo?.contactos?.length > 0 && (
                         <SView style={{ width: "100%", height: 24, backgroundColor: STheme.color.card }}>
                             <InputSelector
                                 style={{ fontSize: 12 }}
@@ -282,17 +282,28 @@ const ItemComp = (props: any) => {
                                 }))}
                                 defaultValue={contactoSeleccionado}
                                 onSelect={(selected) => {
-                                    setParentState((prev: any) => ({
-                                        contactosSeleccionados: {
-                                            ...prev.contactosSeleccionados,
-                                            [item.modelo.key]: selected.value
-                                        }
-                                    }));
+                                    setParentState((prev: any) => {
+                                        const arr = prev.contactosSeleccionados || [];
+                                        const filtered = arr.filter(t => t.key_modelo !== item.modelo.key);
+                                        return {
+                                            contactosSeleccionados: [
+                                                ...filtered,
+                                                {
+                                                    modelo: item.modelo.descripcion,
+                                                    key_modelo: item.modelo.key,
+                                                    key_modelo_cliente: selected.data.key_modelo_cliente,
+                                                    nombre: selected.data.nombre,
+                                                    key_contacto: selected.data.key,
+                                                    comision: selected.data.comision,
+                                                }
+                                            ]
+                                        };
+                                    });
                                     item.key_modelo_cliente = selected.value;
                                 }}
                             />
                         </SView>
-                    )}
+                    )} */}
 
                     {/* TipoCostos */}
                     {item?.modelo?.tipoCostos?.length > 0 && (
@@ -327,8 +338,6 @@ const ItemComp = (props: any) => {
                                                         const filtered = arr.filter(
                                                             t => !(t.key_modelo === item.modelo.key && t.key_tipo_costo === costo.key_tipo_costo)
                                                         );
-                                                        // console.clear();
-                                                        console.log("%c" + JSON.stringify(selected.data), `color: #091cca; font-weight: bold;`);
                                                         return {
                                                             tipoCostosSeleccionados: [
                                                                 ...filtered,

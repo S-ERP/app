@@ -7,7 +7,9 @@ import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
 import PopupCarritoConfirmarResumen from "./PopupCarritoConfirmarResumen";
-type PopupCarritoConfirmarProps = {}
+type PopupCarritoConfirmarProps = {
+    tipoCostosSeleccionados:any
+}
 export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
     static open(props: PopupCarritoConfirmarProps) {
         SPopup.open({
@@ -47,8 +49,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         key_cliente: string | null,
         cliente_texto: string,
         descuentos: any[],
-        contactosSeleccionados: {}, // { [key_tipo_costo]: clienteSeleccionado }
-
     } = {
             almacen: null,
             moneda: null,
@@ -59,7 +59,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             key_cliente: null,
             cliente_texto: "",
             descuentos: [],
-            contactosSeleccionados: {}
         }
     async componentDidMount() {
         try {
@@ -467,6 +466,8 @@ this.forceUpdate();
                 </SView>
 
                 <SHr />
+
+                <SText>{JSON.stringify(this.props.tipoCostosSeleccionados)}</SText>
 
 
 
