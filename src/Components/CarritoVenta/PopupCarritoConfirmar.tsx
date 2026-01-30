@@ -46,7 +46,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         clientes: any[],
         key_cliente: string | null,
         cliente_texto: string,
-        descuentos: any[]
+        descuentos: any[],
+        contactosSeleccionados: {}, // { [key_tipo_costo]: clienteSeleccionado }
+
     } = {
             almacen: null,
             moneda: null,
@@ -56,7 +58,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             clientes: [],
             key_cliente: null,
             cliente_texto: "",
-            descuentos: []
+            descuentos: [],
+            contactosSeleccionados: {}
         }
     async componentDidMount() {
         try {
@@ -96,6 +99,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 }
                 descuentos = [this.descuentoSeleccionado];
             }
+            const descripcionVenta = this.inputDescripcionVenta?.getValue?.() || "";
+
             PopupCarritoConfirmarResumen.open({
                 subtotal: subtotal,
                 montoMaximo: montoTotal_MN,
@@ -107,6 +112,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 factura: this.state.factura,
                 moneda: this.state.moneda,
                 almacen: almacen,
+                descripcion: descripcionVenta, // 👈 AQUI
             })
         } catch (error: any) {
             console.error("Error al realizar la compra:", error);
@@ -143,6 +149,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 "observacion": "Observacion de la venta de prueba ricky",
                 "facturar": this.state.factura ? true : false,
                 cliente: { nit: this.inputNit?.getValue() || "", razon_social: this.inputRazonSocial?.getValue() || "" },
+                "descripcion2": this.inputDescripcionVenta?.getValue() || "",
                 "key_cliente": this.proveedor?.key,
                 "key_usuario": MDL.usuario.session?.key,
                 "facturar_luego": false,
@@ -152,6 +159,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 "detalle": detalle,
                 tipos_pago: tipos_pago,
             }
+            console.clear();
+            console.log("%c" + data, `color: #2ECC40; font-weight: bold;`);
             SNotification.send({
                 key: "venta_rapida",
                 title: "Cargando",
@@ -164,7 +173,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 "estado": "cargando",
                 "data": data
             })
-            
+
             SelectTipoPago.closePopup();
             SNotification.remove("venta_rapida");
             SPopup.close("PopupCarritoConfirmar");
@@ -176,7 +185,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 message: "¿Deseas ir a la venta ahora?",
                 onPress: () => {
                     SNavigation.navigate("/venta/profile2", { pk: compraResp?.data?.key_compra_venta });
-                    
+
                 }
             });
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
@@ -445,6 +454,22 @@ this.forceUpdate();
                     />
                 </SView>
                 <SHr />
+
+                <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
+                    <SText color={STheme.color.lightGray}>{"Descripcion"}</SText>
+                    <SInput
+                        type="textArea"
+                        ref={ref => this.inputDescripcionVenta = ref}
+                        // value={"Alvaro Full stack"}
+                        placeholder={"Descripción de la venta"}
+                        style={{ minHeight: 20, height: 50, borderWidth: 1, borderColor: STheme.color.gray, marginVertical: 4 }}
+                    />
+                </SView>
+
+                <SHr />
+
+
+
             </SView>
             <SHr h={1} color={STheme.color.card} />
             <SView col={"xs-12"} row center height={40}>
@@ -467,7 +492,7 @@ this.forceUpdate();
                     }
                     this.handleOnPress();
                 }}>
-                    <SText>{"Confirmarssssssss la venta"}</SText>
+                    <SText>{"Confirmar la venta"}</SText>
                 </SView>
             </SView>
         </SView >

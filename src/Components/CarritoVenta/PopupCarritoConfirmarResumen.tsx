@@ -1,5 +1,5 @@
 import React from "react";
-import { SHr, SInput, SMath, SNavigation, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SHr, SImage, SInput, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
@@ -122,6 +122,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         }
     }
     handleSubmit = async (tipos_pago: any, key_moneda: string, cliente: any, factura: boolean, almacen_: any, porcentajeDescuento: any, descuentoSeleccionado: any) => {
+        console.log("%c" + "-------------- handleSubmit", `color: #rgb(204, 117, 46) font-weight: bold;`);
         try {
             const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
             const almacen = almacen_;
@@ -140,8 +141,10 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 }
             })
             const data = {
-                "descripcion": "Venta De Prueba Ricky",
+                "descripcion": this.props.descripcion || "",
                 "observacion": "Observacion de la venta de prueba ricky",
+                // "contactos": poner el contacto seleciconado,
+                // "tipo_costo": poner los tipoCostos seleciconado,
                 "facturar": factura ? true : false,
                 cliente: {
                     nit: cliente?.nit || "",
@@ -157,7 +160,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 "detalle": detalle,
                 tipos_pago: tipos_pago,
             }
-            
             SNotification.send({
                 key: "venta_rapida",
                 title: "Cargando",

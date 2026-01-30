@@ -7,25 +7,48 @@ import { FlatList } from "react-native";
 import PopupCarritoConfirmar from "./PopupCarritoConfirmar";
 import InputSelector from "../Selectores/InputSelector";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
+
 type PopupCarritoProps = {}
 const DEFAULT_MONEDA_KEY = "";
+
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
-    state = { selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null, options: [] };
+    state = {
+        selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null,
+        options: [],
+        contactosSeleccionados: {}, // { [itemKey]: contactoSeleccionado }
+        tipoCostosSeleccionados: [] as any[], // Array de objetos para múltiples tipos de costo
+    };
+
     rapido: any;
     evento: any;
+
     static open(props: PopupCarritoProps) {
         SPopup.open({
             key: "PopupCarrito",
             type: "3",
             content:
-                <SView style={{ position: "absolute", top: 8, right: 8, width: "100%", maxWidth: 300, height: 500, maxHeight: "100%", backgroundColor: STheme.color.background, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, }} withoutFeedback>
+                <SView style={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    width: "100%",
+                    maxWidth: 300,
+                    height: 500,
+                    maxHeight: "100%",
+                    backgroundColor: STheme.color.background,
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: STheme.color.card,
+                }} withoutFeedback>
                     <PopupCarrito {...props} />
                 </SView>
         })
     }
+
     handleChange = () => {
         this.forceUpdate();
     }
+
     componentDidMount(): void {
         MDL.carrito.addEventListener("handleChange", this.handleChange);
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
@@ -34,6 +57,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         this.cargarMonedaSeleccionada();
         this.cargarMonedas();
     }
+
     cargarMonedaSeleccionada() {
         const moneda = MDL.compra_venta.getMonedaSeleccionada();
         if (this.rapido && moneda) {
@@ -41,6 +65,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         }
         this.setState({ selectedMoneda: moneda || null });
     }
+
     async cargarMonedas() {
         try {
             const monedas = await MDL.empresa.getMonedas();
@@ -56,16 +81,19 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             console.error("Error cargando monedas:", e);
         }
     }
+
     componentWillUnmount(): void {
         MDL.carrito.removeEventListener(this.handleChange);
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
     }
+
     render() {
         const items = MDL.carrito.carrito_venta.items;
         const { selectedMoneda, options } = this.state;
         if (!selectedMoneda || !options) return null;
+
         return <SView col={"xs-12"} height>
             <SHr />
             <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
@@ -90,7 +118,13 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             <SHr h={1} color={STheme.color.card} />
             <FlatList
                 data={items}
-                renderItem={({ item }) => <ItemComp item={item} moneda={selectedMoneda} />}
+                renderItem={({ item }) => <ItemComp
+                    item={item}
+                    moneda={selectedMoneda}
+                    contactosSeleccionados={this.state.contactosSeleccionados}
+                    tipoCostosSeleccionados={this.state.tipoCostosSeleccionados}
+                    setParentState={(fn) => this.setState(fn)}
+                />}
                 keyExtractor={(item) => item.modelo.key}
             />
             <SHr h={1} color={STheme.color.card} />
@@ -120,7 +154,12 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         <SText fontSize={12}>{"Limpiar carrito"}</SText>
                     </SView>
                     <SView flex />
-                    <SView style={{ backgroundColor: STheme.color.success }} padding={4} card onPress={() => { PopupCarritoConfirmar.open() }}>
+                    <SView style={{ backgroundColor: STheme.color.success }} padding={4} card onPress={() => {
+                        console.clear();
+                        console.log("%cContactos:", "color: #2ECC40; font-weight: bold;", JSON.stringify(this.state.contactosSeleccionados, null, 2));
+                        console.log("%cTipos Costo:", "color: #df512e; font-weight: bold;", JSON.stringify(this.state.tipoCostosSeleccionados, null, 2));
+                        PopupCarritoConfirmar.open()
+                    }}>
                         <SText fontSize={12}>{"Confirmar la venta"}</SText>
                     </SView>
                 </SView>
@@ -128,16 +167,21 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         </SView>
     }
 }
+
 const ItemComp = (props: any) => {
     const cantidadRef = React.useRef<any>(null);
     const precioRef = React.useRef<any>(null);
-    const monedaRef = React.useRef<any>(null);
-    const { item, moneda } = props;
+
+    const { item, moneda, contactosSeleccionados, tipoCostosSeleccionados, setParentState } = props;
+
+    // Actualizar cantidad si cambia
     React.useEffect(() => {
         if (cantidadRef.current && cantidadRef.current.getValue() !== item.cantidad) {
             cantidadRef.current.setValue(item.cantidad);
         }
     }, [item.cantidad]);
+
+    // Actualizar precio si cambia
     React.useEffect(() => {
         if (precioRef.current) {
             let valor;
@@ -156,25 +200,28 @@ const ItemComp = (props: any) => {
                 precioRef.current.setValue(valor);
             }
         }
-        if (monedaRef.current) {
-            monedaRef.current.setValue(moneda);
-        }
     }, [moneda, item.modelo.precio_venta_moneda]);
+
+    // Contacto seleccionado del estado
+    const contactoSeleccionado = contactosSeleccionados[item.modelo.key] || "";
+
     return (
         <SView padding={8}>
             <SView row>
                 <SView center style={{ width: 20, height: 20, padding: 2 }} onPress={() => MDL.carrito.removerItemAlCarritoDeVentas(item)}>
                     <SIconApp name="Close" fill={STheme.color.warning} />
                 </SView>
+
                 <SView center style={{ width: 35, height: 35, borderRadius: 4, overflow: "hidden", borderColor: STheme.color.card, borderWidth: 1 }}>
                     <SImage src={SSocket.api.inventario + "modelo/" + item.modelo.key} style={{ resizeMode: "cover" }} />
                 </SView>
+
                 <SView width={4} />
+
                 <SView flex>
-                    <SText fontSize={14} bold>
-                        {item?.modelo?.descripcion}
-                    </SText>
+                    <SText fontSize={14} bold>{item?.modelo?.descripcion}</SText>
                     <SHr h={2} />
+
                     <SView row col={"xs-12"} style={{ alignItems: "center" }}>
                         <SView width={60}>
                             <SInput
@@ -190,11 +237,13 @@ const ItemComp = (props: any) => {
                                 }}
                             />
                         </SView>
+
                         <SView width={4} />
+
                         <SView width={60}>
                             <SInput
                                 ref={cantidadRef}
-                                style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right", }}
+                                style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
                                 type="money2"
                                 icon={<SText width={15} fontSize={10} color={STheme.color.lightGray}>x</SText>}
                                 defaultValue={item.cantidad}
@@ -204,7 +253,9 @@ const ItemComp = (props: any) => {
                                 }}
                             />
                         </SView>
+
                         <SView flex />
+
                         <SView width={80} style={{ justifyContent: "center" }}>
                             <SText fontSize={12} bold style={{ textAlign: "right" }}>
                                 {SMath.formatMoney(
@@ -212,54 +263,95 @@ const ItemComp = (props: any) => {
                                 )}
                             </SText>
                         </SView>
-                        <SHr></SHr>
-                        {item?.modelo?.contactos?.length > 0 && (
-                            <SView style={{ width: "100%", height: 24, backgroundColor: STheme.color.card }}>
-                                <InputSelector
-                                    style={{ fontSize: 12 }}
-                                    type="custom"
-                                    customStyle="erp"
-                                    label="Contactos:"
-                                    placeholder="Selecciona un contacto"
-                                    options={item.modelo.contactos.map((c) => ({
-                                        label: c.nombre,
-                                        customComponent: (e) => <SText style={{ fontSize: 11, color: STheme.color.lightGray }}>Comisión ({e.data.comision})%</SText>,
-                                        value: c.key_modelo_cliente,
-                                        data: c,
-                                    }))}
-                                    defaultValue={item.contactoSeleccionado || ""}
-                                    onSelect={(selected) => {
-                                        item.key_modelo_cliente = selected.value;
-                                    }}
-                                />
-                            </SView>
-                        )}
-                        <SHr></SHr>
                     </SView>
-                    {item?.modelo?.tipoCostos?.length > 0 && <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.card }}> <SText fontSize={12} bold > lista de costos </SText> </SView>}
-                    {item?.modelo?.tipoCostos?.length > 0 &&
-                        item.modelo.tipoCostos.map((costo, index) => (
-                            <SView key={costo.key_tipo_costo} col={"md-12"} height={42} >
-                                <SText fontSize={10}>{costo.descripcion} </SText>
-                                <SView style={{ width: "100%", height: 24, backgroundColor: STheme.color.card }}>
-                                    <InputSelector
-                                        type="custom"
-                                        customStyle="erp"
-                                        placeholder="Selecciona un cliente"
-                                        options={(costo.clientes || []).map((c) => ({
-                                            label: c.cliente.nombres,
-                                            value: c.key_modelo_cliente,
-                                            data: c,
-                                        }))}
-                                        value={costo.key_modelo_cliente || null}
-                                        onSelect={(selected) => {
-                                            costo.key_modelo_cliente = selected.value;
-                                        }}
-                                    />
-                                </SView>
+
+                    {/* Contactos */}
+                    {item?.modelo?.contactos?.length > 0 && (
+                        <SView style={{ width: "100%", height: 24, backgroundColor: STheme.color.card }}>
+                            <InputSelector
+                                style={{ fontSize: 12 }}
+                                type="custom"
+                                customStyle="erp"
+                                label="Contactos:"
+                                placeholder="Selecciona un contacto"
+                                options={item.modelo.contactos.map((c) => ({
+                                    label: c.nombre,
+                                    customComponent: (e) => <SText style={{ fontSize: 11, color: STheme.color.lightGray }}>Comisión ({e.data.comision})%</SText>,
+                                    value: c.key_modelo_cliente,
+                                    data: c,
+                                }))}
+                                defaultValue={contactoSeleccionado}
+                                onSelect={(selected) => {
+                                    setParentState((prev: any) => ({
+                                        contactosSeleccionados: {
+                                            ...prev.contactosSeleccionados,
+                                            [item.modelo.key]: selected.value
+                                        }
+                                    }));
+                                    item.key_modelo_cliente = selected.value;
+                                }}
+                            />
+                        </SView>
+                    )}
+
+                    {/* TipoCostos */}
+                    {item?.modelo?.tipoCostos?.length > 0 && (
+                        <>
+                            <SView col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.card }}>
+                                <SText fontSize={12} bold>Lista de costos</SText>
                             </SView>
-                        ))
-                    }
+
+                            {item.modelo.tipoCostos.map((costo) => {
+                                const seleccionado = tipoCostosSeleccionados.find(
+                                    t => t.key_modelo === item.modelo.key && t.key_tipo_costo === costo.key_tipo_costo
+                                );
+
+                                return (
+                                    <SView key={costo.key_tipo_costo} col={"md-12"} height={42}>
+                                        <SText fontSize={10}>{costo.descripcion}</SText>
+                                        <SView style={{ width: "100%", height: 24, backgroundColor: STheme.color.card }}>
+                                            <InputSelector
+                                                type="custom"
+                                                customStyle="erp"
+                                                placeholder="Selecciona un cliente"
+                                                options={(costo.clientes || []).map((c) => ({
+                                                    label: c.cliente.nombres,
+                                                    value: c.key_modelo_cliente,
+                                                    data: c,
+                                                }))}
+                                                value={seleccionado?.key_modelo_cliente || null}
+                                                onSelect={(selected) => {
+                                                    setParentState((prev: any) => {
+                                                        const arr = prev.tipoCostosSeleccionados || [];
+                                                        // eliminar si ya existe
+                                                        const filtered = arr.filter(
+                                                            t => !(t.key_modelo === item.modelo.key && t.key_tipo_costo === costo.key_tipo_costo)
+                                                        );
+                                                        // console.clear();
+                                                        console.log("%c" + JSON.stringify(selected.data), `color: #091cca; font-weight: bold;`);
+                                                        return {
+                                                            tipoCostosSeleccionados: [
+                                                                ...filtered,
+                                                                {
+                                                                    modelo: item.modelo.descripcion,
+                                                                    key_modelo: item.modelo.key,
+                                                                    tipo_costo: costo.descripcion,
+                                                                    key_tipo_costo: costo.key_tipo_costo,
+                                                                    cliente: selected.data.cliente.nombres,
+                                                                    key_cliente: selected.data.key_cliente,
+                                                                }
+                                                            ]
+                                                        };
+                                                    });
+                                                    costo.key_modelo_cliente = selected.value;
+                                                }}
+                                            />
+                                        </SView>
+                                    </SView>
+                                );
+                            })}
+                        </>
+                    )}
                 </SView>
             </SView>
         </SView>
