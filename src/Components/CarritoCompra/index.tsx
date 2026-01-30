@@ -9,8 +9,6 @@ export default class CarritoCompra extends React.Component {
     }
     handleChange = () => {
         const items = MDL.carrito.carrito_compra.items;
-        console.log("Repintando entro al force update", items.length)
-
         this.setState({
             open: items.length > 0
         })

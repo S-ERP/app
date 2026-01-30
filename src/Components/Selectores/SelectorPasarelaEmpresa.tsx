@@ -1,8 +1,6 @@
 import React from "react";
 import { SInput, SPage, SText } from "servisofts-component";
 import MDL from "../../MDL";
-
-
 type SelectorPasarelaEmpresaProps = {
     onChangeSelect?: (e: any) => void,
     filterData?: (e: any) => boolean,
@@ -11,7 +9,6 @@ type SelectorPasarelaEmpresaProps = {
     findInitialSelect?: (arr: any[]) => any
 } & SInput["props"]
 export default class SelectorPasarelaEmpresa extends React.Component<SelectorPasarelaEmpresaProps> {
-
     input: SInput | null = null;
     state: {
         data: any[],
@@ -23,7 +20,6 @@ export default class SelectorPasarelaEmpresa extends React.Component<SelectorPas
     componentDidMount(): void {
         this.loadData();
     }
-
     async loadData() {
         let data = await MDL.caja.pasarela_empresa.getAll();
         // data= Object.values(data).sort((a:any,b:any)=> a.codigo.localeCompare(b.codigo));
@@ -65,9 +61,7 @@ export default class SelectorPasarelaEmpresa extends React.Component<SelectorPas
                 if (this.props.onChangeText) {
                     this.props.onChangeText(e);
                 }
-
             }}
-
         />
     }
 }

@@ -3,15 +3,12 @@ import { TextInputProps, TextInput, NativeSyntheticEvent, TextInputFocusEventDat
 import { SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import Config from "../../Config";
 import SIconApp from "../../Assets/SIconApp";
-
-
 type Option = {
     label: string;
     value: string;
     customComponent?: React.ReactNode;
     data?: any;
 };
-
 export type InputSelectorProps = {
     placeholder?: string;
     style?: TextInputProps["style"];
@@ -24,7 +21,6 @@ export type InputSelectorProps = {
     onSelect?: (option: Option) => void;
     onChangeText?: (text: string) => void;
 }
-
 export default class InputSelector extends React.Component<InputSelectorProps> {
     scrollListener: (() => void) | null = null;
     inputRef: any = null;
@@ -41,7 +37,6 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
         displayValue: '',
         filteredOptions: this.props.options
     };
-
     componentDidMount() {
         // Inicializar displayValue con el label correspondiente al value o defaultValue inicial
         const initialValue = this.props.value || this.props.defaultValue;
@@ -55,7 +50,6 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             }
         }
     }
-
     getType() {
         return "custom";
     }
@@ -88,32 +82,24 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
     }
     matchesInData = (data: any, searchText: string): boolean => {
         if (!data) return false;
-
         const lowerSearch = searchText.toLowerCase();
-
         // Función recursiva para buscar en objetos y arrays
         const searchInValue = (value: any): boolean => {
             if (value === null || value === undefined) return false;
-
             if (typeof value === 'string') {
                 return value.toLowerCase().includes(lowerSearch);
             }
-
             if (typeof value === 'number' || typeof value === 'boolean') {
                 return String(value).toLowerCase().includes(lowerSearch);
             }
-
             if (Array.isArray(value)) {
                 return value.some(item => searchInValue(item));
             }
-
             if (typeof value === 'object') {
                 return Object.values(value).some(val => searchInValue(val));
             }
-
             return false;
         };
-
         return searchInValue(data);
     }
     handleChangeText = (text: string) => {
@@ -121,25 +107,20 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
         if (!this.hasEditedValue && text !== this.originalDisplayValue) {
             this.hasEditedValue = true;
         }
-
         // Solo filtrar si el usuario ha editado el valor original
         let filtered = this.props.options;
         if (this.hasEditedValue) {
             filtered = this.props.options.filter(option => {
                 const lowerText = text.toLowerCase();
-
                 // Buscar en label y value
                 const matchesLabelOrValue =
                     option.label.toLowerCase().includes(lowerText) ||
                     option.value.toLowerCase().includes(lowerText);
-
                 // Buscar en data si existe
                 const matchesData = option.data ? this.matchesInData(option.data, text) : false;
-
                 return matchesLabelOrValue || matchesData;
             });
         }
-
         // Agregar opción "Registrar..." si existe onCreate y hay texto
         const finalOptions = [...filtered];
         if (this.props.onCreate && text.trim() && this.hasEditedValue) {
@@ -149,21 +130,17 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                 data: { createValue: text }
             });
         }
-
         this.setState({
             displayValue: text,
             filteredOptions: finalOptions,
             error: false
         });
-
         // Si el texto está vacío, limpiar inputValue
         if (!text) {
             this.setState({ inputValue: '' });
         }
-
         // Verificar si el item seleccionado aún existe en la lista filtrada
         const selectedStillExists = filtered.some(opt => opt.value === this.selectedValue);
-
         // Si el item seleccionado ya no está en la lista filtrada, seleccionar el primero
         if (!selectedStillExists && filtered.length > 0) {
             this.selectedValue = filtered[0].value;
@@ -171,37 +148,30 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                 this.listContentRef.updateSelection(this.selectedValue);
             }
         }
-
         // Actualizar la lista si el popup está abierto
         if (this.listContentRef) {
             this.listContentRef.updateOptions(finalOptions);
         }
-
         if (this.props.onChangeText) {
             this.props.onChangeText(text);
         }
     }
-
     updatePopupPosition = () => {
         if (!this.inputRef) return;
-
         this.inputRef.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
             // Si la posición cambió, actualizar el popup
             if (pageX !== this.lastPosition.pageX || pageY !== this.lastPosition.pageY) {
                 this.lastPosition = { pageX, pageY };
-
                 const popupHeight = 200;
                 const spacing = 2;
                 // @ts-ignore
                 const windowHeight = window.innerHeight;
-
                 const spaceBelow = windowHeight - (pageY + height);
                 const spaceAbove = pageY;
                 const showAbove = spaceBelow < popupHeight + spacing && spaceAbove > spaceBelow;
                 const topPosition = showAbove
                     ? pageY - popupHeight - spacing
                     : pageY + height + spacing;
-
                 // Actualizar posición del popup
                 if (this.popupElement) {
                     this.popupElement.style.top = topPosition + 'px';
@@ -210,12 +180,9 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             }
         });
     }
-
     handleKeyPress = (e: any) => {
         const { filteredOptions } = this.state;
-        console.log("Key press:", e.nativeEvent.key);
         const key = e.nativeEvent.key;
-
         if (key === 'ArrowDown') {
             e.preventDefault();
             const currentIndex = filteredOptions.findIndex(opt => opt.value === this.selectedValue);
@@ -242,12 +209,9 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             }
         }
     }
-
     registerAndSelect = async (createValue: string) => {
         if (!this.props.onCreate) return;
         const resp = await this.props.onCreate(createValue);
-
-
         this.setState({
             inputValue: resp.value,
             displayValue: resp.label,
@@ -259,34 +223,26 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
         if (this.props.onChangeText) {
             this.props.onChangeText(resp.value);
         }
-
         SPopup.close("InputSelector");
         this.removeScrollListener();
-
         if (this.inputRef) {
             this.inputRef.blur();
         }
-
         setTimeout(() => {
             this.isSelecting = false;
         }, 100);
     }
-
     selectOption = (option: Option) => {
         this.isSelecting = true;
-
         // Si es la opción de crear, ejecutar onCreate
         if (option.value === '__CREATE__' && this.props.onCreate) {
             const createValue = option.data?.createValue || this.state.displayValue;
-
             this.registerAndSelect(createValue);
             return;
         }
-
         // Actualizar el valor original y resetear el flag de edición
         this.originalDisplayValue = option.label;
         this.hasEditedValue = false;
-
         this.setState({
             inputValue: option.value,
             displayValue: option.label,
@@ -297,36 +253,28 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
         }
         SPopup.close("InputSelector");
         this.removeScrollListener();
-
         // Hacer blur del input
         if (this.inputRef) {
-            console.log("Blurring input");
             this.inputRef.blur();
         }
-
         // Resetear el flag después de un momento
         setTimeout(() => {
             this.isSelecting = false;
         }, 100);
     }
-
     openPopup(pageX: number, pageY: number, width: number, height: number) {
         const popupHeight = 200;
         const spacing = 2;
         // @ts-ignore
         const windowHeight = window.innerHeight;
-
         // Calcular espacio disponible abajo y arriba
         const spaceBelow = windowHeight - (pageY + height);
         const spaceAbove = pageY;
-
         // Decidir si mostrar arriba o abajo
         const showAbove = spaceBelow < popupHeight + spacing && spaceAbove > spaceBelow;
-
         const topPosition = showAbove
             ? pageY - popupHeight - spacing
             : pageY + height + spacing;
-
         SPopup.open({
             key: "InputSelector",
             type: "3",
@@ -339,17 +287,13 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                     width: width,
                     height: popupHeight,
                     backgroundColor: STheme.color.background + "EE",
-
                     shadowColor: STheme.color.secondary,
-
                     shadowOpacity: 0.25,
-
                     shadowRadius: 4.84,
                     elevation: 5,
                     // @ts-ignore
                     backdropFilter: "blur(6px)", // Glass effect with blur
                     WebkitBackdropFilter: "blur(6px)", // For Safari support
-
                     borderRadius: 8,
                     borderWidth: 1,
                     borderColor: STheme.color.card,
@@ -369,34 +313,24 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             </View>
         })
     }
-
     handleFocus(e: NativeSyntheticEvent<TextInputFocusEventData>) {
         // Resetear el flag de edición al hacer focus
         this.hasEditedValue = false;
-
         // Mostrar todas las opciones sin filtrar al hacer focus
         const finalOptions = [...this.props.options];
-
         this.setState({ filteredOptions: finalOptions });
-
         this.selectedValue = this.state.inputValue || this.props.options[0]?.value || '';
-
         (e.target as any).measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
-            console.log("Position on screen:", { x, y, width, height, pageX, pageY });
-
             this.lastPosition = { pageX, pageY };
-
             // Agregar listener para detectar scroll y actualizar posición
             this.scrollListener = () => {
                 this.updatePopupPosition();
             };
             // @ts-ignore
             window.addEventListener('scroll', this.scrollListener, true);
-
             this.openPopup(pageX, pageY, width, height);
         });
     }
-
     removeScrollListener() {
         if (this.scrollListener) {
             // @ts-ignore
@@ -406,16 +340,13 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
         // this.inputRef = null;
         this.popupElement = null;
     }
-
     handleOnBlur(e: NativeSyntheticEvent<TextInputFocusEventData>) {
         // Si está en proceso de selección manual, no hacer autoselect
         if (this.isSelecting) {
             return;
         }
-
         // Buscar y seleccionar la primera opción que coincida solo si autoSelectOnBlur está habilitado
         const { filteredOptions } = this.state;
-
         if (this.props.autoSelectOnBlur && filteredOptions.length > 0 && !this.props.value) {
             // Si hay opciones filtradas, seleccionar la primera
             const firstOption = filteredOptions[0];
@@ -424,7 +355,6 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                 displayValue: firstOption.label,
                 error: false
             });
-
             if (this.props.onSelect) {
                 this.props.onSelect(firstOption);
             }
@@ -432,15 +362,12 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             // Si no hay coincidencias y no hay valor seleccionado, limpiar el display
             this.setState({ displayValue: '' });
         }
-
         SPopup.close("InputSelector");
         this.removeScrollListener();
     }
-
     componentWillUnmount() {
         this.removeScrollListener();
     }
-
     render() {
         const configInputs = Config.inputs()[this.props?.customStyle ?? "default"];
         const style: TextInputProps["style"] = {
@@ -452,7 +379,6 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             outlineStyle: "none",
             margin: 0,
             paddingEnd: 20,
-
             // textAlignVertical: "center",
             // textAlign: "left",
             // height: 40,
@@ -460,7 +386,6 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
         }
         return <>
             <TextInput
-
                 {...this.props}
                 value={(this.state.displayValue ?? "").replace("\n", " - ")}
                 onChangeText={this.handleChangeText}
@@ -471,7 +396,6 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
                 ref={(ref) => this.inputRef = ref}
                 selectTextOnFocus={!this.props.value}
                 editable={!this.props.value}
-
             // numberOfLines={4}
             // multiline
             // numberOfLines={2}
@@ -524,11 +448,9 @@ class ListSelectorContent extends React.Component<{
         selectedValue: this.props.initialSelectedValue,
         options: this.props.options
     };
-
     updateOptions(newOptions: Option[]) {
         this.setState({ options: newOptions });
     }
-
     updateSelection(newValue: string) {
         this.setState({ selectedValue: newValue }, () => {
             const newIndex = this.state.options.findIndex(opt => opt.value === newValue);
@@ -545,13 +467,11 @@ class ListSelectorContent extends React.Component<{
             }
         });
     }
-
     render() {
         const { onSelect, totalOptions } = this.props;
         const { selectedValue, options } = this.state;
         const visibleOptions = options.length;
         const hiddenOptions = totalOptions - visibleOptions;
-
         return <>
             {totalOptions > 0 && (
                 <SView style={{
@@ -593,8 +513,6 @@ class ListSelectorContent extends React.Component<{
                         color: STheme.color.lightGray
                         // borderColor: STheme.color.card,
                     } : {};
-
-
                     return <View
                         style={{
                             padding: 8,

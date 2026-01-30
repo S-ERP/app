@@ -226,7 +226,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         <SelectorCliente
                             icon={<SText color={STheme.color.lightGray} bold>{"Cliente:"}</SText>}
                             onChangeSelect={(cliente) => {
-                                console.log("✅ Cliente seleccionado:", cliente);
                                 if (this.inputNit && cliente) {
                                     if (this.proveedor?.nit !== cliente.nit) {
                                         this.inputNit.setValue(cliente?.nit || "");
@@ -263,7 +262,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             return false;
                         }}
                         onChangeSelect={e => {
-                            console.log("Entro al onchageselect", e)
                             this.state.almacen = e;
                         }}
                     />
@@ -278,7 +276,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         icon={<SText color={STheme.color.lightGray} bold>{"Moneda:"}</SText>}
                         placeholder={"Moneda"}
                         onChangeSelect={e => {
-                            console.log("Entro al onchageselect", e)
                             this.state.moneda = e;
                         }}
                     />
@@ -296,10 +293,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         if ((this.proveedor.razon_social != this.inputRazonSocial?.getValue()) || (this.proveedor.nit != this.inputNit?.getValue())) {
                             this.proveedor.razon_social = this.inputRazonSocial.getValue();
                             this.proveedor.nit = this.inputNit.getValue();
-                            console.log("CAMBIOS CLIENTE", this.proveedor)
                             MDL.crm.cliente.editar(this.proveedor).then((resp: any) => {
-
-
                             }).catch((e: any) => {
                                 console.error("Error al guardar el cliente:", e);
                                 SNotification.send({
@@ -309,7 +303,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                     color: STheme.color.danger,
                                 });
                             })
-                            console.log("modificar cliente")
                         }
                     }
                     this.handleOnPress();
@@ -322,10 +315,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         if ((this.proveedor.razon_social != this.inputRazonSocial?.getValue()) || (this.proveedor.nit != this.inputNit?.getValue())) {
                             this.proveedor.razon_social = this.inputRazonSocial.getValue();
                             this.proveedor.nit = this.inputNit.getValue();
-                            console.log("CAMBIOS CLIENTE", this.proveedor)
                             MDL.crm.cliente.editar(this.proveedor).then((resp: any) => {
-
-
                             }).catch((e: any) => {
                                 console.error("Error al guardar el cliente:", e);
                                 SNotification.send({
@@ -335,7 +325,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                     color: STheme.color.danger,
                                 });
                             })
-                            console.log("modificar cliente")
                         }
                     }
                     this.handleOnPress2();

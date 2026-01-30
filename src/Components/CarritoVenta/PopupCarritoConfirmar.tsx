@@ -3,21 +3,11 @@ import { SHr, SImage, SInput, SMath, SNavigation, SNotification, SPage, SPopup, 
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
-import { FlatList } from "react-native";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
-import SelectorCliente from "../Selectores/SelectorCliente";
-import SelecionarDescuento from "../../Pages/venta/Components/SelecionarDescuento";
 import PopupCarritoConfirmarResumen from "./PopupCarritoConfirmarResumen";
-import cliente from "../../Model/crm/cliente";
-import factura from "../../Pages/compra/detalle/profile/factura";
-import descuento from "../../Pages/descuento";
-
-
-type PopupCarritoConfirmarProps = {
-
-}
+type PopupCarritoConfirmarProps = {}
 export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
     static open(props: PopupCarritoConfirmarProps) {
         SPopup.open({
@@ -35,7 +25,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 borderRadius: 8,
                 borderWidth: 1,
                 borderColor: STheme.color.card,
-                // @ts-ignore
                 cursor: "default",
                 userSelect: "text"
             }} withoutFeedback>
@@ -54,8 +43,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         factura: boolean,
         razon_social: string,
         nit: string,
-
-        // ✅ nuevos
         clientes: any[],
         key_cliente: string | null,
         cliente_texto: string,
@@ -66,14 +53,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             factura: false,
             razon_social: "",
             nit: "",
-
-            // ✅ nuevos
             clientes: [],
             key_cliente: null,
             cliente_texto: "",
             descuentos: []
         }
-
     async componentDidMount() {
         try {
             const clientes = await MDL.crm.cliente.getAll(); // tu método de listar
@@ -85,20 +69,14 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 key_empresa: MDL.empresa?.select?.key
             }).then(e => {
                 const descuentos = Object.values(e.data)
-                //  this.props.onSelect && this.props.onSelect(descuentos[0]);
-                console.log(descuentos)
                 this.setState({ descuentos: descuentos })
             })
         } catch (e) {
             console.error("Error cargando clientes", e);
         }
     }
-
     handleOnPress = async () => {
         try {
-            // const monedas = await MDL.empresa.getMonedas();
-            // const moneda = monedas.find((m: any) => m.tipo == "base");
-            // const key_moneda = "2f6b73df-8004-41c1-aa5f-1a81d79d1a8f"
             const key_moneda = this.state.moneda.key
             const almacen = this.state.almacen;
             if (!almacen) {
@@ -110,44 +88,26 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             let subtotal = MDL.carrito.carrito_venta.monto_total
             let montoTotal_MN = parseFloat(subtotal.toFixed(2));
             let porcentajeDescuento = 0;
-
-           
-
             let descuentos = [];
             if (this.descuentoSeleccionado) {
                 if (this.descuentoSeleccionado?.porcentaje) {
-                    console.log(this.descuentoSeleccionado?.porcentaje)
                     porcentajeDescuento = this.descuentoSeleccionado?.porcentaje;
                     montoTotal_MN -= Math.round((montoTotal_MN * porcentajeDescuento) * 100) / 100;
-                    // montoTotal_ME -= Math.round((montoTotal_ME * porcentajeDescuento) * 100) / 100;
                 }
                 descuentos = [this.descuentoSeleccionado];
             }
-            console.log(montoTotal_MN)
             PopupCarritoConfirmarResumen.open({
                 subtotal: subtotal,
                 montoMaximo: montoTotal_MN,
                 key_moneda: key_moneda,
                 porcentajeDescuento: porcentajeDescuento,
                 descuentoSeleccionado: descuentos,
-
-                // onConfirm: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda),
                 solo_para_caja: false,
                 cliente: this.proveedor,
                 factura: this.state.factura,
                 moneda: this.state.moneda,
                 almacen: almacen,
             })
-
-            // SelectTipoPago.openPopup({
-            //     key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
-            //     // montoMaximo: MDL.carrito.carrito_venta.monto_total,
-            //     montoMaximo: montoTotal_MN,
-            //     key_moneda: key_moneda,
-            //     onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda),
-            //     solo_para_caja: false,
-
-            // });
         } catch (error: any) {
             console.error("Error al realizar la compra:", error);
             SNotification.send({
@@ -165,8 +125,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             if (!almacen) {
                 throw "Debe seleccionar un almacen"
             }
-
-
             const detalle = MDL.carrito.carrito_venta.items.map((ci) => {
                 return {
                     "cantidad": ci.cantidad,
@@ -177,7 +135,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     "descripcion": ci.modelo.descripcion,
                     "key_modelo": ci.modelo.key,
                     "moneda": key_moneda,
-                    // @
                     "key_modelo_cliente": ci?.key_modelo_cliente
                 }
             })
@@ -185,10 +142,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 "descripcion": "Venta De Prueba Ricky",
                 "observacion": "Observacion de la venta de prueba ricky",
                 "facturar": this.state.factura ? true : false,
-                cliente: {
-                    nit: this.inputNit?.getValue() || "",
-                    razon_social: this.inputRazonSocial?.getValue() || ""
-                },
+                cliente: { nit: this.inputNit?.getValue() || "", razon_social: this.inputRazonSocial?.getValue() || "" },
                 "key_cliente": this.proveedor?.key,
                 "key_usuario": MDL.usuario.session?.key,
                 "facturar_luego": false,
@@ -198,13 +152,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 "detalle": detalle,
                 tipos_pago: tipos_pago,
             }
-
             SNotification.send({
                 key: "venta_rapida",
                 title: "Cargando",
                 type: "loading",
             });
-
             const compraResp = await SSocket.sendPromise({
                 "service": "caja",
                 "component": "caja_detalle",
@@ -212,27 +164,21 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 "estado": "cargando",
                 "data": data
             })
-
-            console.clear();
-            console.log("%c" + JSON.stringify(compraResp, null, 2), "color: #2ECC40; font-weight: bold;");
-
+            
             SelectTipoPago.closePopup();
             SNotification.remove("venta_rapida");
             SPopup.close("PopupCarritoConfirmar");
             SPopup.close("PopupCarrito");
             MDL.carrito.limpiarCarritoVentas();
             MDL.carrito.limpiarCarritoCompras();//este esta limpinado el carrito lateral..... pronto se borrara
-
             SPopup.confirm({
                 title: "¡Venta realizada con éxito!",
                 message: "¿Deseas ir a la venta ahora?",
                 onPress: () => {
                     SNavigation.navigate("/venta/profile2", { pk: compraResp?.data?.key_compra_venta });
-                    console.clear();
-                    console.log("%c" + "ingresar_texto", `color: #2ECC40; font-weight: bold;`);
+                    
                 }
             });
-
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
         } catch (error: any) {
             console.error("Error al realizar la venta:", error);
@@ -246,11 +192,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         }
     }
     render() {
-        console.log(this.state.descuentos)
-        // const items = MDL.carrito.carrito_compra.items;
         return <SView col={"xs-12"} height>
             < SHr />
-
             <SText center color={STheme.color.lightGray} bold>{"Confirmar la venta"}</SText>
             <SView style={{
                 padding: 4,
@@ -271,9 +214,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     <SView row col={"xs-12"}>
                         <SText col={"xs-6"} color={STheme.color.lightGray}>{"Datos del Cliente:"}</SText>
                         <SView col={"xs-6"} row style={{ alignItems: "flex-end", justifyContent: "flex-end", alignContent: "flex-start" }}>
-
                             <SInput height={20} style={{ marginTop: 0 }} labelStyle={{ left: 12 }}
-                                // backgroundColor="red"
                                 label={"Con factura"}
                                 type="checkBox"
                                 onChangeText={(val) => {
@@ -288,7 +229,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         </SView>
                         <SHr />
                     </SView>
-
                     <SView row>
                         <SInput
                             ref={ref => this.inputCliente = ref}
@@ -299,26 +239,18 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             options={this.state.clientes.map(c => (c?.razon_social || c?.nombres || "").trim()).filter(a => !!a)}
                             onChangeText={(text) => {
                                 const t = (text || "").trim();
-
-                                // buscar match exacto (case-insensitive)
                                 const encontrado = (this.state.clientes || []).find(c =>
                                     ((c?.razon_social || c?.nombres || "").trim().toLowerCase() === t.toLowerCase())
                                 );
-
                                 if (encontrado) {
-                                    // ✅ existe: setea proveedor y limpia "nuevo"
                                     this.proveedor = encontrado;
-
                                     this.setState({
                                         key_cliente: encontrado.key,
                                         cliente_texto: t,
                                     });
-
-                                    // si estás en factura, setea nit/razon social
                                     this.inputRazonSocial?.setValue?.(encontrado?.razon_social || encontrado?.nombres || "");
                                     this.inputNit?.setValue?.(encontrado?.nit || "");
                                 } else {
-                                    // ✅ no existe: habilita +
                                     this.proveedor = null;
                                     this.setState({
                                         key_cliente: null,
@@ -339,33 +271,22 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                         onPress={() => {
                                             const nombre = (this.state.cliente_texto || "").trim();
                                             if (!nombre) return;
-
                                             MDL.crm.cliente.registrar({
-                                                // ✅ usa el campo correcto de tu backend:
-                                                // si tu backend usa razon_social:
                                                 razon_social: nombre,
-                                                // si usa nombres:
                                                 nombres: nombre,
-
                                                 nit: this.inputNit?.getValue?.() || "",
                                                 key_empresa: MDL.empresa.select?.key,
                                             }).then((resp) => {
                                                 this.proveedor = resp;
-
-                                                // meter a lista
                                                 this.setState(prev => ({
                                                     clientes: [...(prev.clientes || []), resp],
                                                     key_cliente: resp.key,
                                                     cliente_texto: (resp?.razon_social || resp?.nombres || nombre),
                                                 }), () => {
-                                                    // setear visualmente el input cliente con el nombre recién creado
                                                     this.inputCliente?.setValue?.(resp?.razon_social || resp?.nombres || nombre);
                                                 });
-
-                                                // setear factura fields
                                                 this.inputRazonSocial?.setValue?.(resp?.razon_social || resp?.nombres || nombre);
                                                 this.inputNit?.setValue?.(resp?.nit || "");
-
                                                 SNotification.send({
                                                     title: "Cliente creado",
                                                     body: "Se registró el cliente correctamente.",
@@ -386,7 +307,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                         <SIconApp name="Add" />
                                     </SView>
                                 ) : (
-                                    // opcional: mostrar lupa si quieres siempre
                                     <SView
                                         center
                                         style={{
@@ -399,7 +319,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                             SNavigation.navigate("/cliente", {
                                                 onSelect: (cliente) => {
                                                     this.proveedor = cliente;
-
                                                     this.setState(prev => ({
                                                         clientes: prev.clientes.some(c => c.key === cliente.key) ? prev.clientes : [...prev.clientes, cliente],
                                                         key_cliente: cliente.key,
@@ -407,10 +326,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                                     }), () => {
                                                         this.inputCliente?.setValue?.(cliente?.razon_social || cliente?.nombres || "");
                                                     });
-
                                                     this.inputRazonSocial?.setValue?.(cliente?.razon_social || cliente?.nombres || "");
                                                     this.inputNit?.setValue?.(cliente?.nit || "");
-
                                                     SNavigation.goBack();
                                                 }
                                             });
@@ -422,7 +339,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             }
                         />
                     </SView>
-
                     {(this.state.factura) ? <>
                         <SHr h={10} />
                         <SView row>
@@ -435,21 +351,15 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                 onChangeText={(e) => {
                                     MDL.crm.cliente.buscar_nit(e).then(proveedor => {
                                         this.proveedor = proveedor;
-
                                         if (this.inputCliente) {
                                             this.inputCliente.setSelect(proveedor);
                                             this.inputRazonSocial.setValue(proveedor?.razon_social || "");
                                         }
-
-
-
-
                                     }).catch(error => {
                                         console.error(error);
                                     })
                                 }}
                                 onSubmitEditing={() => {
-                                    // if (this.inputNombre) this.inputNombre.focus()
                                 }}
                                 iconR={<SView
                                     card style={{
@@ -457,20 +367,13 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                     }} onPress={() => {
                                         SNavigation.navigate("/cliente", {
                                             onSelect: (proveedor: any) => {
-
-
                                                 this.proveedor = proveedor;
-
-
                                                 if (this.inputCliente) {
                                                     this.inputCliente.setSelect(proveedor);
                                                     this.inputRazonSocial?.setValue(proveedor?.razon_social || "");
                                                     this.inputNit?.setValue(proveedor?.nit || "");
                                                 }
-
                                                 this.forceUpdate(); // <-- fuerza el re-render para que los cambios se reflejen
-
-
                                                 SNavigation.goBack();
                                             }
                                         })
@@ -481,19 +384,16 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         </SView>
                         <SHr h={4} />
                     </> : null}
-
                     <SHr height={20} />
-
                     <SView row col={"xs-12"}>
                         <SText col={"xs-12"} color={STheme.color.lightGray}>{"Seleccione si hay descuento:"}</SText>
                         <SView col={"xs-12"} row style={{ alignItems: "flex-end", justifyContent: "flex-end", alignContent: "flex-start" }}>
                             {/* <SelecionarDescuento onSelect={(descuento) => {
-                                if (descuento != this.descuentoSeleccionado) {
-                                    this.descuentoSeleccionado = descuento;
-                                    this.forceUpdate();
-
-                                }
-                            }} /> */}
+if (descuento != this.descuentoSeleccionado) {
+this.descuentoSeleccionado = descuento;
+this.forceUpdate();
+}
+}} /> */}
                             <SInput
                                 ref={ref => this.inputDescuento = ref}
                                 icon={<SText color={STheme.color.lightGray} bold>{"Descuento:"}</SText>}
@@ -503,34 +403,19 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                 options={this.state.descuentos.map(c => `${(c?.descripcion || "").trim()} - ${c?.porcentaje ?? 0}%`).filter(a => !!a)}
                                 onChangeText={(text) => {
                                     const t = (text || "").trim();
-
-                                    // buscar match exacto (case-insensitive)
                                     const encontradoD = (this.state.descuentos || []).find(c =>
                                         ((`${(c?.descripcion || "").trim()} - ${c?.porcentaje ?? 0}%`).trim().toLowerCase() === t.toLowerCase())
                                     );
-                                    console.log("encontrado", encontradoD)
                                     if (encontradoD) {
-                                        // ✅ existe: setea proveedor y limpia "nuevo"
                                         this.descuentoSeleccionado = encontradoD;
-                                        console.log("ENCONTROOO")
-
-                                        // si estás en factura, setea nit/razon social
-                                        // this.inputDescuento?.setValue?.(`${encontradoD.descripcion} - ${encontradoD.porcentaje}%`);
-
                                     } else {
-                                        // ✅ no existe: habilita +
                                         this.descuentoSeleccionado = null;
-
                                     }
                                 }}
-
                             />
                         </SView>
-
                     </SView>
-
                 </SView>
-
                 <SHr />
                 <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
                     <SText color={STheme.color.lightGray}>{"Seleccione el almacén"}</SText>
@@ -543,31 +428,23 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             return false;
                         }}
                         onChangeSelect={e => {
-                            console.log("Entro al onchageselect", e)
                             this.state.almacen = e;
                         }}
                     />
-
                 </SView>
                 <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
                     <SelectorMoneda
                         findInitialSelect={(arr) => {
                             return arr.find(a => a.tipo == "base")
                         }}
-                        // defaultValueTypeKey={this.state.moneda?.key}
                         icon={<SText color={STheme.color.lightGray} bold>{"Moneda:"}</SText>}
                         placeholder={"Moneda"}
                         onChangeSelect={e => {
-                            console.log("Entro al onchageselect", e)
                             this.state.moneda = e;
                         }}
                     />
-
                 </SView>
                 <SHr />
-                {/* <SView padding={8}> */}
-                {/* <SText color={STheme.color.lightGray}>{"Con Factura?"}</SText> */}
-                {/* </SView> */}
             </SView>
             <SHr h={1} color={STheme.color.card} />
             <SView col={"xs-12"} row center height={40}>
@@ -576,8 +453,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         if ((this.proveedor.razon_social != this.inputRazonSocial?.getValue()) || (this.proveedor.nit != this.inputNit?.getValue())) {
                             this.proveedor.razon_social = this.inputRazonSocial.getValue();
                             this.proveedor.nit = this.inputNit.getValue();
-
-                            console.log("CAMBIOS CLIENTE", this.proveedor)
                             MDL.crm.cliente.editar(this.proveedor).then((resp: any) => {
                             }).catch((e: any) => {
                                 console.error("Error al guardar el cliente:", e);
@@ -588,29 +463,13 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                     color: STheme.color.danger,
                                 });
                             })
-                            console.log("modificar cliente")
                         }
                     }
-
-
-                    // console.clear();
-                    // console.log("%c" + JSON.stringify(this.proveedor, null, 2), "color: #2ECC40; font-weight: bold;");
                     this.handleOnPress();
                 }}>
-                    <SText>{"Confirmar la venta"}</SText>
+                    <SText>{"Confirmarssssssss la venta"}</SText>
                 </SView>
             </SView>
         </SView >
     }
 }
-
-// tengo que crear sniper para crear un tabla con json quemado
-// con scroll
-// con boton
-// que escriba transparente
-
-
-// ¡Sí! 😄 Lo que buscas es básicamente que Visual Studio Code te avise cuando estás usando algo que no ha sido importado o que no existe en tu proyecto. Esto depende de varias cosas:
-// 1️⃣ Usar TypeScript o JS con tipos
-// Si tu proyecto es JavaScript puro, VSCode no siempre detecta errores de importación.
-// Si lo configuras con TypeScript o usas JSDoc en JS, entonces VSCode puede hacer chequeo de tipos y símbolos.

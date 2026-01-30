@@ -58,7 +58,6 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
     async loadData() {
         this.tipo_pago = await MDL.caja.tipo_pago_getAll()
         const data = await MDL.empresa.getFull()
-        console.log(data);
         const cuentas = await MDL.contabilidad.getCuentasCache();
         // const suc = data.sucursales.find(suc => suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta));
         // const pv = suc.puntos_venta.find(pv => pv.key == this.props.key_punto_venta);
@@ -115,7 +114,6 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     // item.monto = this.props.montoMaximoPorTipo[item.key_tipo_pago];
                     let total = 0;
                     selecteds.forEach(pv => {
-                        console.log(pv)
                         pv.monto = Math.round(((this.props.montoMaximo || 0) / selecteds.length) * 100) / 100;
                         total += parseFloat(pv.monto);
                         if (pv.__ref) {
@@ -272,7 +270,6 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     const elm = {};
                     const selecteds = this.pvtp.filter(a => !!a.__select);
                     selecteds.forEach(item => {
-                        console.log(item);
                         elm[item.key] = {
                             monto_nacional: MDL.contabilidad.round(parseFloat(item.monto)),
                             monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda.tipo_cambio ?? 1)))

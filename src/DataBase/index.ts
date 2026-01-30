@@ -15,7 +15,6 @@ export default {
     init: () => {
         return new Promise((resolve, reject) => {
             SDB.open(DB).then((e: any) => {
-                console.log("ENTRO ACA")
                 resolve("")
             })
         })

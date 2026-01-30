@@ -21,7 +21,6 @@ export default class empresa extends MDLAbstract<EventListener> {
 
   loadEmpresaFromStorage() {
     SStorage.getItem("empresa_select", (imt: any) => {
-      console.log("Cargando la empresa");
       if (!imt) return;
       this.setEmpresa(JSON.parse(imt));
     });

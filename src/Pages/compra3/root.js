@@ -53,7 +53,6 @@ export default class Root extends React.Component {
 
     setMoneda = (moneda) => {
         this.selectedMoneda = moneda;
-        console.log("🎂🎂🎂🎂 Main:", this.selectedMoneda);
         this.forceUpdate();
     };
 

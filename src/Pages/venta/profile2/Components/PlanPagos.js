@@ -137,17 +137,10 @@ export default class PlanPagos extends Component {
                 var total_a_pagar = this.state.totales.total_a_pagar;
                 var saldo = 0;
                 var monto = 0;
-
                 let moneda = this.state.monedas.find(m => m.key === cuota.key_moneda);
-                console.log("RESULT ", cuota, saldo, monto)
-                // return <SText>moneda:{moneda.observacion}  monto: {cuota.monto}, amortizado: {cuota.total_amortizado}, saldo: {cuota.monto - cuota.total_amortizado}</SText>
-
-
-               
                 return this.totales_item({
                     codigo: cuota.codigo,
                     descripcion: cuota.descripcion,
-                    // monto: data.monto,
                     monto: SMath.formatMoney(cuota.monto),
                     fecha: cuota.fecha,
                     interes: SMath.formatMoney(cuota.monto_interes),
@@ -417,19 +410,10 @@ export default class PlanPagos extends Component {
         let t = MDL.compra_venta.getTotales(this.data)
 
         let cuotas = this.data.cuotas
-        console.log("CUOTAS", cuotas)
-        // let moneda =  MDL.empresa.getMonedas().find(m => m.key === this.data.key_moneda);
-        // let moneda = this.getMonedas().find(m => m.key === this.data.key_moneda);
-
         let monedas = this.state.monedas
         if (!monedas) return null;
         let moneda = monedas.find(m => m.key === this.data.key_moneda);
         this.state.moneda = moneda;
-        //   console.log("MONEDA-STATE", this.state?.monedas)
-        // if (!moneda) return null;
-
-
-        // this.state.moneda = moneda;
         if (!t) return null;
         if (!cuotas) {
             this.state.cuotas = null;

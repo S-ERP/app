@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { SText, STheme, SView } from "servisofts-component";
 import InputSelector from "../../../../Components/Selectores/InputSelector";
 import MDL from "../../../../MDL";
-
 export default class FiltroTipoProducto extends Component {
     constructor(props) {
         super(props);
@@ -11,12 +10,9 @@ export default class FiltroTipoProducto extends Component {
             selectedKey: "Todos",
         };
     }
-
     componentDidMount() {
         this.loadData();
     }
-
-    // Método para resetear el filtro
     reset() {
         this.setState({ selectedKey: "Todos" }, () => {
             if (this.props.onSelect) {
@@ -24,23 +20,14 @@ export default class FiltroTipoProducto extends Component {
             }
         });
     }
-    // const tipos = await MDL.inventario.getAllTipoProducto()
-
     async loadData() {
         try {
-
             const response = await MDL.inventario.getAllTipoProducto()
-            // console.log()
-            console.clear();
-            console.log("%c" + JSON.stringify(response, null, 2), "color: #f53403ff; font-weight: bold;");
-            // const response = MDL.inventario.TIPOS_DE_PRODUCTOS;
             const tipo_cuentas = [
                 { key: "Todos", nombre: "Todos" },
                 ...response.map(a => ({ key: a.descripcion, nombre: a.descripcion }))
             ];
             this.setState({ tipo_cuentas });
-
-            // Notificar al padre que por defecto está "Todos"
             if (this.props.onSelect) {
                 this.props.onSelect({ key: "Todos", nombre: "Todos" });
             }
@@ -48,7 +35,6 @@ export default class FiltroTipoProducto extends Component {
             console.error("Error al traer TIPOS_DE_PRODUCTOS:", error);
         }
     }
-
     render() {
         const { tipo_cuentas, selectedKey } = this.state;
         return (

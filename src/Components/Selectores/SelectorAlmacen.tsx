@@ -1,8 +1,6 @@
 import React from "react";
 import { SInput, SPage, SText } from "servisofts-component";
 import MDL from "../../MDL";
-
-
 type SelectorAlmacenProps = {
     onChangeSelect?: (e: any) => void,
     filterData?: (e: any) => boolean,
@@ -10,7 +8,6 @@ type SelectorAlmacenProps = {
     selectFirst: boolean
 } & SInput["props"]
 export default class SelectorAlmacen extends React.Component<SelectorAlmacenProps> {
-
     input: SInput | null = null;
     state: {
         almacenes: any[],
@@ -22,7 +19,6 @@ export default class SelectorAlmacen extends React.Component<SelectorAlmacenProp
     componentDidMount(): void {
         this.loadData();
     }
-
     async loadData() {
         let almacenes = await MDL.inventario.getAllAlmacen();
         if (this.props.filterData) {
@@ -64,9 +60,7 @@ export default class SelectorAlmacen extends React.Component<SelectorAlmacenProp
                 if (this.props.onChangeText) {
                     this.props.onChangeText(e);
                 }
-
             }}
-
         />
     }
 }

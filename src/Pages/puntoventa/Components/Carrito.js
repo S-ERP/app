@@ -125,6 +125,18 @@ export default class Carrito extends Component {
             const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
             const tipoCostosKeys = await MDL.inventario.getTipoCostosByModelo(producto?.key);
             const clientes = await MDL.crm.cliente.getAll();
+
+            const tipoCostos = tipoCostosKeys.map(tc => ({
+                ...tc,
+                clientes: (tc.clientes || []).map(c => {
+                    const clienteData = clientes.find(cli => cli.key === c.key_cliente);
+                    return {
+                        ...c,
+                        cliente: clienteData || null
+                    };
+                })
+            }));
+
             const contactos = contactosKeys.map((item) => {
                 const keyCliente = item.key_cliente;
                 const key_modelo_cliente = item.key_modelo_cliente; // <-- clave modelo-cliente
@@ -149,7 +161,7 @@ export default class Carrito extends Component {
             producto = {
                 ...producto,
                 contactos,
-                tipoCostos: tipoCostosKeys, // nueva propiedad
+                tipoCostos: tipoCostos, // nueva propiedad
             };
             const index = this.carrito.findIndex((p) => p.key === producto.key);
             if (index >= 0) {

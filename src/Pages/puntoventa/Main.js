@@ -37,7 +37,6 @@ export default class Main extends Component {
 
     setMoneda = (moneda) => {
         this.selectedMoneda = moneda;
-        console.log("🎂🎂🎂🎂 Main:", this.selectedMoneda);
         this.forceUpdate();
     };
 

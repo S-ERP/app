@@ -1,8 +1,6 @@
 import React from "react";
 import { SInput, SPage, SText } from "servisofts-component";
 import MDL from "../../MDL";
-
-
 type SelectorMonedaProps = {
     onChangeSelect?: (e: any) => void,
     filterData?: (e: any) => boolean,
@@ -11,7 +9,6 @@ type SelectorMonedaProps = {
     findInitialSelect?: (arr: any[]) => any
 } & SInput["props"]
 export default class SelectorMoneda extends React.Component<SelectorMonedaProps> {
-
     input: SInput | null = null;
     state: {
         data: any[],
@@ -23,7 +20,6 @@ export default class SelectorMoneda extends React.Component<SelectorMonedaProps>
     componentDidMount(): void {
         this.loadData();
     }
-
     async loadData() {
         let data = await MDL.empresa.getMonedas();
         if (this.props.filterData) {
@@ -63,9 +59,7 @@ export default class SelectorMoneda extends React.Component<SelectorMonedaProps>
                 if (this.props.onChangeText) {
                     this.props.onChangeText(e);
                 }
-
             }}
-
         />
     }
 }

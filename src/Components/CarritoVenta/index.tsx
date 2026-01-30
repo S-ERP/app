@@ -10,8 +10,6 @@ export default class CarritoVenta extends React.Component {
     handleChange = () => {
         // const items = MDL.carrito.carrito_compra.items;
         const items = MDL.carrito.carrito_venta.items;
-        console.log("Repintando entro al force update venta", items.length)
-
         this.setState({
             open: items.length > 0
         })

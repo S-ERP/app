@@ -66,9 +66,7 @@ export default class Cliente extends Component {
     render() {
         this.empresa = MDL.empresa.select;
         this.data = this.props.data;
-        console.log("Dataaaaaaaaaaaaaa", this.data)
         this.data.cliente = this.state.cliente;
-        console.log("CLIENTE", this.data.cliente)
         if (!this.data?.cliente) {
 
             if (this.props.disabled) {

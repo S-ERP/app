@@ -125,7 +125,7 @@ export default class carrito extends MDLAbstract<EventListener> {
     const moneda = this.selectedMoneda || MDL.compra_venta.getMonedaSeleccionada();
     let cantidad_items = 0;
     let monto = 0;
-    console.clear();
+    
     this.carrito_venta.items.forEach(element => {
       cantidad_items += element.cantidad;
       const precio = moneda

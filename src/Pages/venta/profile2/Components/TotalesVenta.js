@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { SDate, SHr, SImage, SList, SLoad, SMath, SNavigation, SText, STheme, SView } from 'servisofts-component';
-import SSocket from 'servisofts-socket'
-import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 export default class TotalesVenta extends Component {
     constructor(props) {
@@ -13,7 +11,6 @@ export default class TotalesVenta extends Component {
 
     componentDidMount() {
         this.getMonedas()
-
     }
 
     async getMonedas() {
@@ -22,7 +19,6 @@ export default class TotalesVenta extends Component {
             this.setState({ monedas: monedas });
         } catch (error) {
             console.log(error)
-            // return []
         }
     }
 
@@ -35,22 +31,11 @@ export default class TotalesVenta extends Component {
     }
 
     totales() {
-        // var t = Model.compra_venta_detalle.Action.getTotales({
-        //     key_compra_venta: this.data.key
-        // })
-        console.log("AAA", this.data)
         let t = MDL.compra_venta.getTotales(this.data)
-        // console.log("DETALLE", this.data.detalle)
-        console.log("TOTALES", t)
-
         if (!t) return null;
         this.state.totales = t;
-        console.log("MONEDAS", this.state.monedas)
         if (!this.state.monedas) return null;
         let moneda = this.state.monedas.find(m => m.key === this.data.key_moneda);
-        console.log("MONEDA DETALLE", moneda)
-
-
         return <SView col={"xs-12"} center>
             <SHr />
             {this.totales_item({ label: `SUBTOTAL ${moneda.observacion}`, bold: true, value: this.state.totales.subtotal })}
@@ -72,7 +57,6 @@ export default class TotalesVenta extends Component {
     }
     render() {
         this.data = this.props.data;
-        console.log("AAA", this.data)
         return this.totales()
     }
 }

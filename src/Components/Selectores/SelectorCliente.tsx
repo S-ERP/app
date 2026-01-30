@@ -1,21 +1,18 @@
 import React from "react";
 import { SInput, SText } from "servisofts-component";
 import MDL from "../../MDL";
-
 type SelectorClienteProps = {
     onChangeSelect?: (e: any) => void,
     filterData?: (e: any) => boolean,
     defaultValueTypeKey?: string,
     selectFirst?: boolean
 } & SInput["props"];
-
 export default class SelectorCliente extends React.Component<SelectorClienteProps> {
     input: SInput | null = null;
     state = {
         clientes: [] as any[],
         select: null as any
     };
-
     componentDidMount() {
         this.loadData();
     }
@@ -26,24 +23,19 @@ export default class SelectorCliente extends React.Component<SelectorClienteProp
             // this.props.onChangeSelect(elm);
         }
     }
-
     async loadData() {
         try {
             let clientes = await MDL.crm.cliente.getAll();
-            console.log("🔍 CLIENTES:", clientes);
-
             // Si viene como objeto, lo convertimos en array
             if (clientes && !Array.isArray(clientes)) {
                 clientes = Object.values(clientes);
             }
             if (!clientes) clientes = [];
-
             // Filtrar nulos y aplicar filtro personalizado
             clientes = clientes.filter((c: any) => !!c);
             if (this.props.filterData) {
                 clientes = clientes.filter(this.props.filterData);
             }
-
             // Selección por defecto
             let select = null;
             if (this.props.defaultValueTypeKey) {
@@ -51,7 +43,6 @@ export default class SelectorCliente extends React.Component<SelectorClienteProp
             } else if (this.props.selectFirst && clientes.length > 0) {
                 select = clientes[0];
             }
-
             this.setState({ clientes, select }, () => {
                 if (this.input && select) {
                     this.input.setValue(this.toString(select));
@@ -64,18 +55,15 @@ export default class SelectorCliente extends React.Component<SelectorClienteProp
             console.error("Error cargando clientes:", e);
         }
     }
-
     toString(e: any) {
         // Intenta distintas propiedades comunes
         return  e?.nombres ?? e?.razon_social ?? e?.descripcion ?? "Sin nombre";
     }
-
     render() {
         const { clientes } = this.state;
         const opciones = clientes.length > 0
             ? clientes.map(c => this.toString(c))
             : ["Cargando clientes..."];
-
         return (
             <SInput
                 {...this.props}

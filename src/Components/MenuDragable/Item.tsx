@@ -75,7 +75,6 @@ const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, 
             // }
             if (data.y >= page.value.row - 1 && positionIndex.value.y != data.y) {
                 const sumpos = (translateX.value * -1) + (((page.value.col / 4) - 1) * (page.value.gridWidth * 2))
-                console.log("ENTRO ACA aRRIBA", sumpos)
                 x = x + Math.round((sumpos / page.value.gridWidth))
 
             }
@@ -91,8 +90,6 @@ const Item = React.memo(({ data, page, onChangePosition, layout, animateToPage, 
                 console.log((page.value.select), absPos.x, translateX.value)
                 const sumpos = (translateX.value * -1) + (((page.value.col / 4) - 1) * (page.value.gridWidth * 2))
                 absPos.x = absPos.x + sumpos
-                console.log("ENTRO ACA ABAJo", to.x, absPos.x)
-                // to.x =
             }
             const navigateto = {
                 x: to.x - absPos.x,
