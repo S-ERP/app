@@ -112,9 +112,16 @@ export default class Abierta extends Component {
                     ItemSeparatorComponent={() => <SHr />}
                     ListHeaderComponent={() => {
                         return <SView col={"xs-12"} center>
+                            <SHr h={20} />
+                            <SView col={"xs-11 sm-10 md-8 lg-6"} >
+                                <SText bold fontSize={16}>Cuentas y Saldos</SText>
+                            </SView>
+                            <SHr h={10} />
                             <TotalTipoPago key_punto_venta={this.props.caja.key_punto_venta} movimientos={this.state.movimientos} />
                             <SHr h={32} />
                             <SView col={"xs-11 sm-10 md-8 lg-6"} >
+                                <SText bold fontSize={16}>Acciones Rápidas</SText>
+                                <SHr h={10} />
                                 <MenuAcciones caja={this.props.caja} movimientos={this.state.movimientos} />
                             </SView>
                             <SHr h={32} />

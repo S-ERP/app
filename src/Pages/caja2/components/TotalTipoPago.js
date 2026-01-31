@@ -66,13 +66,16 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
         const totalEgresos = this.props.movimientos.filter(mov => mov.key_empresa_tipo_pago == item.key && mov.monto < 0).reduce((sum, mov) => sum + mov.monto, 0);
 
         return <SView style={{
-            padding: 2,
-            maxWidth: 140,
+            padding: 6,
+            maxWidth: 180,
 
-        }} col={"xs-6 sm-4"} colSquare>
-            <SView style={{
+        }} 
+        // col={"xs-6 sm-4"} colSquare>
+        col={"xs-6 sm-4"} >
+            <SView  style={{
                 width: "100%",
-                height: "100%",
+                height: 130,
+                // height: "100%",
                 borderWidth: 1,
                 borderColor: STheme.color.card,
                 // backgroundColor: this._select[item.key] ? STheme.color.success + "44" : "transparent",
@@ -99,12 +102,15 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
                     <SView width={4} />
                     <SView flex>
                         <SText flex key={item.key_tipo_pago} numberOfLines={1} fontSize={12} >{item.descripcion}</SText>
-                        <SText flex key={item.key_tipo_pago} numberOfLines={1} fontSize={10} color={STheme.color.lightGray} >{item.tipo_pago ? item.tipo_pago.descripcion : item.key_tipo_pago}</SText>
-                        <SText numberOfLines={1} fontSize={10} color={STheme.color.lightGray} >{item.moneda?.descripcion}</SText>
+                        <SView row>
+                            <SText  key={item.key_tipo_pago} numberOfLines={1} fontSize={10} color={STheme.color.lightGray} >{item.tipo_pago ? item.tipo_pago.descripcion : item.key_tipo_pago}</SText>
+                            <SView width={5} />
+                            <SText numberOfLines={1} fontSize={10} color={STheme.color.lightGray} >{item.moneda?.descripcion}</SText>
+                        </SView>
                     </SView>
                 </SView>
                 <SView flex col={"xs-12"} center >
-                    <SText bold color={this.getColor(total)} fontSize={20}>{item.moneda?.observacion} {SMath.formatMoney(total)}</SText>
+                    <SText bold color={this.getColor(total)} fontSize={18}>{item.moneda?.observacion} {SMath.formatMoney(total)}</SText>
                 </SView>
                 <SView flex col={"xs-12"} row style={{
                     borderTopWidth: 1,
