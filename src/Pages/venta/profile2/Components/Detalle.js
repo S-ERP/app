@@ -62,12 +62,24 @@ export default class Detalle extends Component {
                 {/* <SText>{SMath.formatMoney(precio)} bs X {parseInt(cantidad)} Unid </SText> */}
                 <SText>{SMath.formatMoney(precio)} {moneda.observacion} X {parseInt(cantidad)} Unid </SText>
                 <SText fontSize={10} bold color={STheme.color.lightGray}>{tipo}</SText>
+                <SHr/>
+                {(p?.costos??[]).map((costo:any)=>
+                    <SView col={"xs-12"} row center>
+                        <SView flex>
+                            <SText fontSize={12} color={STheme.color.danger} >{costo.descripcion}</SText>
+                        </SView>
+                        <SView >
+                            <SText fontSize={12} color={STheme.color.danger} >{SMath.formatMoney(costo.monto)} {moneda.observacion}</SText>
+                        </SView>
+                    </SView>
+                )}
             </SView>
             <SView width={8} />
             <SView col={"xs-3"} style={{ alignItems: 'end', textAlign: "end" }}>
                 <SText style={{ alignItems: 'end', textAlign: "end" }}>{SMath.formatMoney((precio * cantidad))} {moneda.observacion}</SText>
                 {descuento ? <SText color={STheme.color.danger}>- {SMath.formatMoney(descuento)}</SText> : null}
             </SView>
+            
         </SView>
     }
     getButtom() {
@@ -251,14 +263,10 @@ export default class Detalle extends Component {
                 order={[{ "key": "fecha_on", order: "asc" }]}
                 render={(obj) => {
                     return this.detalle_item({
+                        ...obj,
                         key: obj.key,
                         nombre: obj.descripcion,
-                        cantidad: obj.cantidad,
                         precio: obj.precio_unitario,
-                        key_usuario: obj.key_usuario,
-                        descuento: obj.descuento,
-                        tipo: obj.tipo,
-                        key_modelo: obj.key_modelo,
                         moneda: this.data.moneda,
                         sucursal: this.data.sucursal
                     })

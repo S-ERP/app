@@ -6,6 +6,7 @@ import SIconApp from "../../Assets/SIconApp";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
+import { cos } from "three/examples/jsm/nodes/Nodes";
 type PopupCarritoConfirmarResumenProps = {
 }
 export default class PopupCarritoConfirmarResumen extends React.Component<PopupCarritoConfirmarResumenProps> {
@@ -106,8 +107,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             const total = subtotal - totalDescuento;
             SelectTipoPago.openPopup({
                 key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
-                montoMaximo: total,
-                key_moneda: key_moneda,
+                montoMaximo: total * MDL.carrito.selectedMoneda.tipo_cambio,
+                key_moneda: MDL.carrito.selectedMoneda.key,
                 onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda, cliente, factura, almacen, porcentajeDescuento, descuentoSeleccionado),
                 solo_para_caja: solo_para_caja,
             });
@@ -124,12 +125,27 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
     handleSubmit = async (tipos_pago: any, key_moneda: string, cliente: any, factura: boolean, almacen_: any, porcentajeDescuento: any, descuentoSeleccionado: any) => {
         console.log("%c" + "-------------- handleSubmit", `color: #rgb(204, 117, 46) font-weight: bold;`);
         try {
-            const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
+            const monedaActual = MDL.carrito.selectedMoneda;
             const almacen = almacen_;
             if (!almacen) {
                 throw "Debe seleccionar un almacen"
             }
             const detalle = MDL.carrito.carrito_venta.items.map((ci) => {
+                const costos: any = []
+                // @ts-ignore
+                const tcostos = ci?.modelo?.tipoCostos;
+                console.log("tcostos", tcostos);
+                if (tcostos) {
+                    tcostos.map((tc: any) => {
+                        if(!tc.key_modelo_cliente) return;
+                        costos.push({
+                            "key_tipo_costo": tc.key_tipo_costo,
+                            key_modelo_cliente: tc.key_modelo_cliente,
+                            "monto": tc.monto || 0,
+                            "descripcion": tc.__descripcion || (tc.descripcion || "Costo"),
+                        })
+                    })
+                }
                 return {
                     "cantidad": ci.cantidad,
                     "precio_unitario": ci.precio,
@@ -137,7 +153,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     "detalle": "",
                     "descripcion": ci.modelo.descripcion,
                     "key_modelo": ci.modelo.key,
-                    "modelo": ci.modelo,
+                    "costos": costos,
+                    // "modelo": ci.modelo,
                 }
             })
             const data = {
@@ -156,7 +173,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 "facturar_luego": false,
                 "key_caja": MDL.caja.activa?.key,
                 "key_almacen": almacen.key,
-                "key_moneda": key_moneda,
+                "key_moneda": monedaActual.key,
                 "detalle": detalle,
                 tipos_pago: tipos_pago,
             }
@@ -191,7 +208,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             console.error("Error al realizar la venta:", error);
             SNotification.send({
                 key: "venta_rapida",
-                title: "Error al realizar la ventasssssssssssssssss",
+                title: "Error al realizar la venta",
                 body: error?.error || JSON.stringify(error),
                 color: STheme.color.danger,
                 time: 4000,

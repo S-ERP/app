@@ -122,7 +122,7 @@ export default class Carrito extends Component {
     };
     addProducto = async (producto) => {
         try {
-            const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
+            // const contactosKeys = await MDL.inventario.getContactosByModelo(producto?.key);
             const tipoCostosKeys = await MDL.inventario.getTipoCostosByModelo(producto?.key);
             const clientes = await MDL.crm.cliente.getAll();
 
@@ -137,30 +137,30 @@ export default class Carrito extends Component {
                 })
             }));
 
-            const contactos = contactosKeys.map((item) => {
-                const keyCliente = item.key_cliente;
-                const key_modelo_cliente = item.key_modelo_cliente; // <-- clave modelo-cliente
-                const comision = item.comision ?? 0;
-                const cliente = clientes.find(c => c.key === keyCliente);
-                return cliente
-                    ? {
-                        key: cliente.key,
-                        nombre: cliente.nombres || cliente.razon_social || keyCliente,
-                        comision,
-                        cliente,
-                        key_modelo_cliente // <-- agregamos la propiedad aquí
-                    }
-                    : {
-                        key: keyCliente,
-                        nombre: keyCliente,
-                        comision,
-                        cliente: null,
-                        key_modelo_cliente
-                    };
-            });
+            // const contactos = contactosKeys.map((item) => {
+            //     const keyCliente = item.key_cliente;
+            //     const key_modelo_cliente = item.key_modelo_cliente; // <-- clave modelo-cliente
+            //     const comision = item.comision ?? 0;
+            //     const cliente = clientes.find(c => c.key === keyCliente);
+            //     return cliente
+            //         ? {
+            //             key: cliente.key,
+            //             nombre: cliente.nombres || cliente.razon_social || keyCliente,
+            //             comision,
+            //             cliente,
+            //             key_modelo_cliente // <-- agregamos la propiedad aquí
+            //         }
+            //         : {
+            //             key: keyCliente,
+            //             nombre: keyCliente,
+            //             comision,
+            //             cliente: null,
+            //             key_modelo_cliente
+            //         };
+            // });
             producto = {
                 ...producto,
-                contactos,
+                // contactos,
                 tipoCostos: tipoCostos, // nueva propiedad
             };
             const index = this.carrito.findIndex((p) => p.key === producto.key);

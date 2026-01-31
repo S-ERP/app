@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SInput, SMath, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SInput, SLoad, SMath, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SIconApp from '../../../Assets/SIconApp';
 
@@ -138,6 +138,9 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
                     {this.pvtp.map((item, index) => this.renderItemTipoPago(item))}
                 </SView>
             }
+            {!this.state.ready && <SView height={140}>
+                <SLoad />
+            </SView>}
         </SView>
     }
 }
