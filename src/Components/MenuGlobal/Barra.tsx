@@ -131,6 +131,15 @@ export default class Barra extends React.Component {
                         icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}
                         decoradores={<CajaActiva />}
                     />
+                    <Page label={"Administrar Cajas"}
+                        permiso="page"
+                        permiso_url="/reporte_cajas"
+                        icon={<SIconApp name="menuAll" fill={STheme.color.text} />}
+                    >
+                        <Page label={"Historial de Cajas"} url={"/caja/reporte_cajas"} permiso="reportecajas" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Movimientos de Cajas"} url={"/caja/reporte_movimientos"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+
+                    </Page>
                     {/* <Page label={"Caja2"} url={"/caja2"}
                         // permiso="ver"
                         icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}
@@ -152,7 +161,7 @@ export default class Barra extends React.Component {
                     >
                         <Page label={"Clientes"} url={"/cliente"} permiso="ver" />
                         <Page label={"Suscriptores"} url={"/suscriptores"} />
-                        <Page label={"Asistencias"} url={"/asistencias"} />
+                       
                         <Page label={"Historial de Ventas"} url={"/venta/tabla"} permiso="ver" permiso_url="/venta" />
                         {/* <Page label={"Ventas"} url={"/venta"} permiso="ver" /> */}
                         <Page label={"Descuento"} url={"/descuento"} permiso="ver" permiso_url="/descuento" />
@@ -246,15 +255,7 @@ export default class Barra extends React.Component {
                     </Page>
 
 
-                    <Page label={"Reportes caja"}
-                        permiso="page"
-                        permiso_url="/reporte_cajas"
-                        icon={<SIconApp name="menuAll" fill={STheme.color.text} />}
-                    >
-                        <Page label={"Caja historico"} url={"/caja/reporte_cajas"} permiso="reportecajas" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
-                        <Page label={"Caja movimientos"} url={"/caja/reporte_movimientos"} permiso="reportemoviminetos" permiso_url="/reporte_cajas" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
 
-                    </Page>
 
                     <Page label={"Tableros"}
                         permiso="page"
@@ -274,22 +275,12 @@ export default class Barra extends React.Component {
                         // icon={<SIconApp name="menuAll" fill={STheme.color.text} />}
                         icon={<ImagePage key_page="d73efd88-89f5-461c-8bb2-b634d835883b" />}
                     >
+                         <Page label={"Asistencias"} url={"/asistencias"} />
                         <Page label={"Registrar asistencia"} url={"/asistencia"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                     </Page>
 
 
-                    <Page label={"test"} url={"/test"}
-                        icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
-                    />
-                    <Page label={"test1"} url={"/test1"}
-                        icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
-                    />
-                    <Page label={"test2"} url={"/test2"}
-                        icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
-                    />
-                    <Page label={"test3"} url={"/test3"}
-                        icon={<ImagePage key_page="913381d0-9e5a-4c5a-834a-78e86765a4e5" />}
-                    />
+          
 
 
 

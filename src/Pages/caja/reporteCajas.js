@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SView, SPage, SHr, SScrollView2, STheme, SDate, SText, SImage, SPopup, SMath } from 'servisofts-component';
+import { SView, SPage, SHr, SScrollView2, STheme, SDate, SText, SImage, SPopup, SMath, SNavigation } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
 import MDL from '../../MDL';
@@ -162,6 +162,9 @@ export default class reporteCajas extends Component {
                                         borderColor: estado === "cerrada" ? "#ef4444" : "#22c45e",
                                         borderWidth: 1,
                                         borderRadius: 20,
+                                    }}
+                                    onPress={() => {
+                                        SNavigation.navigate("/caja/detail", { key: e.row?.key })
                                     }}
                                 >
                                     <SView

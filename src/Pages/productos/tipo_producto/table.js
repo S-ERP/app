@@ -32,7 +32,7 @@ export default class table extends Component {
         return tipos;
     }
     render() {
-        return <SPage title={"Tipos de productosoooooooo"} disableScroll>
+        return <SPage title={"Tipos de productos"} disableScroll>
             <DinamicTable
                 ref={ref => this.table = ref}
                 {...Config.table.applyTheme()}

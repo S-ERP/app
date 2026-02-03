@@ -3,7 +3,6 @@ import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SDate, SMath, SNotifi
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
-import MDL from '../../../MDL';
 import Config from '../../../Config';
 import FloatButtom from '../../../Components/FloatButtom';
 import FloatMenu from '../../../Components/FloatMenu';

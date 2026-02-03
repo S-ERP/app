@@ -90,9 +90,11 @@ import asistencia from "./asistencia";
 import Asistencias from "./cliente/Asistencias";
 import Suscriptores from "./cliente/Suscriptores";
 import Test1 from "./test1";
+import costos from "./costos";
 
 export default SPage.combinePages("/", {
   "": lobyRoot,
+
   ...restaurante,
   pizarra2,
   root: Root,
@@ -177,4 +179,5 @@ export default SPage.combinePages("/", {
   ...contactos,
   ...tableros,
   ...asistencia,
+  ...costos,
 });

@@ -8,7 +8,7 @@ import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
 import PopupCarritoConfirmarResumen from "./PopupCarritoConfirmarResumen";
 type PopupCarritoConfirmarProps = {
-    tipoCostosSeleccionados:any
+    // tipoCostosSeleccionados:any
 }
 export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
     static open(props: PopupCarritoConfirmarProps) {
@@ -79,14 +79,14 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     }
     handleOnPress = async () => {
         try {
-            const key_moneda = this.state.moneda.key
+            const key_moneda = this.state?.moneda?.key
             const almacen = this.state.almacen;
             if (!almacen) {
                 throw "Debe seleccionar un almacen"
             }
-            if (!key_moneda) {
-                throw "Debe seleccionar una moneda"
-            }
+            // if (!key_moneda) {
+            //     throw "Debe seleccionar una moneda"
+            // }
             let subtotal = MDL.carrito.carrito_venta.monto_total
             let montoTotal_MN = parseFloat(subtotal.toFixed(2));
             let porcentajeDescuento = 0;
@@ -109,7 +109,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 solo_para_caja: false,
                 cliente: this.proveedor,
                 factura: this.state.factura,
-                moneda: this.state.moneda,
+                moneda: MDL.carrito.selectedMoneda,
                 almacen: almacen,
                 descripcion: descripcionVenta, // 👈 AQUI
             })
@@ -124,81 +124,81 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             });
         }
     }
-    handleSubmit = async (tipos_pago: any, key_moneda: string) => {
-        try {
-            const almacen = this.state.almacen;
-            if (!almacen) {
-                throw "Debe seleccionar un almacen"
-            }
-            const detalle = MDL.carrito.carrito_venta.items.map((ci) => {
-                return {
-                    "cantidad": ci.cantidad,
-                    "precio_unitario": ci.precio,
-                    "precio_unitario_base": ci.precio,
-                    "detalle": "",
-                    "descuento": 0,
-                    "descripcion": ci.modelo.descripcion,
-                    "key_modelo": ci.modelo.key,
-                    "moneda": key_moneda,
-                    "key_modelo_cliente": ci?.key_modelo_cliente
-                }
-            })
-            const data = {
-                "descripcion": "Venta De Prueba Ricky",
-                "observacion": "Observacion de la venta de prueba ricky",
-                "facturar": this.state.factura ? true : false,
-                cliente: { nit: this.inputNit?.getValue() || "", razon_social: this.inputRazonSocial?.getValue() || "" },
-                "descripcion2": this.inputDescripcionVenta?.getValue() || "",
-                "key_cliente": this.proveedor?.key,
-                "key_usuario": MDL.usuario.session?.key,
-                "facturar_luego": false,
-                "key_caja": MDL.caja.activa?.key,
-                "key_almacen": almacen.key,
-                "key_moneda": key_moneda,
-                "detalle": detalle,
-                tipos_pago: tipos_pago,
-            }
-            console.clear();
-            console.log("%c" + data, `color: #2ECC40; font-weight: bold;`);
-            SNotification.send({
-                key: "venta_rapida",
-                title: "Cargando",
-                type: "loading",
-            });
-            const compraResp = await SSocket.sendPromise({
-                "service": "caja",
-                "component": "caja_detalle",
-                "type": "venta",
-                "estado": "cargando",
-                "data": data
-            })
+    // handleSubmit = async (tipos_pago: any, key_moneda: string) => {
+    //     try {
+    //         const almacen = this.state.almacen;
+    //         if (!almacen) {
+    //             throw "Debe seleccionar un almacen"
+    //         }
+    //         const detalle = MDL.carrito.carrito_venta.items.map((ci) => {
+    //             return {
+    //                 "cantidad": ci.cantidad,
+    //                 "precio_unitario": ci.precio,
+    //                 "precio_unitario_base": ci.precio,
+    //                 "detalle": "",
+    //                 "descuento": 0,
+    //                 "descripcion": ci.modelo.descripcion,
+    //                 "key_modelo": ci.modelo.key,
+    //                 "moneda": key_moneda,
+    //                 "key_modelo_cliente": ci?.key_modelo_cliente
+    //             }
+    //         })
+    //         const data = {
+    //             "descripcion": "Venta De Prueba Ricky",
+    //             "observacion": "Observacion de la venta de prueba ricky",
+    //             "facturar": this.state.factura ? true : false,
+    //             cliente: { nit: this.inputNit?.getValue() || "", razon_social: this.inputRazonSocial?.getValue() || "" },
+    //             "descripcion2": this.inputDescripcionVenta?.getValue() || "",
+    //             "key_cliente": this.proveedor?.key,
+    //             "key_usuario": MDL.usuario.session?.key,
+    //             "facturar_luego": false,
+    //             "key_caja": MDL.caja.activa?.key,
+    //             "key_almacen": almacen.key,
+    //             "key_moneda": key_moneda,
+    //             "detalle": detalle,
+    //             tipos_pago: tipos_pago,
+    //         }
+    //         console.clear();
+    //         console.log("%c" + data, `color: #2ECC40; font-weight: bold;`);
+    //         SNotification.send({
+    //             key: "venta_rapida",
+    //             title: "Cargando",
+    //             type: "loading",
+    //         });
+    //         const compraResp = await SSocket.sendPromise({
+    //             "service": "caja",
+    //             "component": "caja_detalle",
+    //             "type": "venta",
+    //             "estado": "cargando",
+    //             "data": data
+    //         })
 
-            SelectTipoPago.closePopup();
-            SNotification.remove("venta_rapida");
-            SPopup.close("PopupCarritoConfirmar");
-            SPopup.close("PopupCarrito");
-            MDL.carrito.limpiarCarritoVentas();
-            MDL.carrito.limpiarCarritoCompras();//este esta limpinado el carrito lateral..... pronto se borrara
-            SPopup.confirm({
-                title: "¡Venta realizada con éxito!",
-                message: "¿Deseas ir a la venta ahora?",
-                onPress: () => {
-                    SNavigation.navigate("/venta/profile2", { pk: compraResp?.data?.key_compra_venta });
+    //         SelectTipoPago.closePopup();
+    //         SNotification.remove("venta_rapida");
+    //         SPopup.close("PopupCarritoConfirmar");
+    //         SPopup.close("PopupCarrito");
+    //         MDL.carrito.limpiarCarritoVentas();
+    //         MDL.carrito.limpiarCarritoCompras();//este esta limpinado el carrito lateral..... pronto se borrara
+    //         SPopup.confirm({
+    //             title: "¡Venta realizada con éxito!",
+    //             message: "¿Deseas ir a la venta ahora?",
+    //             onPress: () => {
+    //                 SNavigation.navigate("/venta/profile2", { pk: compraResp?.data?.key_compra_venta });
 
-                }
-            });
-            MDL.caja.dispatchEvent({ type: "onDetalleChange" });
-        } catch (error: any) {
-            console.error("Error al realizar la venta:", error);
-            SNotification.send({
-                key: "venta_rapida",
-                title: "Error al realizar la venta",
-                body: error?.error || JSON.stringify(error),
-                color: STheme.color.danger,
-                time: 4000,
-            });
-        }
-    }
+    //             }
+    //         });
+    //         MDL.caja.dispatchEvent({ type: "onDetalleChange" });
+    //     } catch (error: any) {
+    //         console.error("Error al realizar la venta:", error);
+    //         SNotification.send({
+    //             key: "venta_rapida",
+    //             title: "Error al realizar la venta",
+    //             body: error?.error || JSON.stringify(error),
+    //             color: STheme.color.danger,
+    //             time: 4000,
+    //         });
+    //     }
+    // }
     render() {
         return <SView col={"xs-12"} height>
             < SHr />
@@ -440,7 +440,7 @@ this.forceUpdate();
                         }}
                     />
                 </SView>
-                <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
+                {/* <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
                     <SelectorMoneda
                         findInitialSelect={(arr) => {
                             return arr.find(a => a.tipo == "base")
@@ -451,7 +451,7 @@ this.forceUpdate();
                             this.state.moneda = e;
                         }}
                     />
-                </SView>
+                </SView> */}
                 <SHr />
 
                 <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
@@ -467,7 +467,7 @@ this.forceUpdate();
 
                 <SHr />
 
-                <SText>{JSON.stringify(this.props.tipoCostosSeleccionados)}</SText>
+                {/* <SText>{JSON.stringify(this.props.tipoCostosSeleccionados)}</SText> */}
 
 
 

@@ -80,7 +80,7 @@ export default class FloatMenu extends React.Component<FloatMenuProps> {
                         key={index}
                         col={"xs-12"}
                         height={40}
-                        width={180}
+                        // width={180}
                         onPress={() => {
                             SPopup.close("popup_menu_alvaro");
                             option.onPress(null);

@@ -62,6 +62,29 @@ export default class Abierta extends Component {
     }
     mensaje() {
         return <SView col={"xs-11 sm-10 md-8 lg-6"} center row   >
+
+            <SHr />
+            <SView col={"xs-12"} padding={15} style={{
+                borderRadius: 8,
+                backgroundColor: STheme.color.primary + "50",
+                borderWidth: 1,
+                borderColor: STheme.color.card
+
+            }}>
+                <SText bold fontSize={16}>Estado de la Caja</SText>
+                <SHr height={20} />
+                {this.props.caja.fecha_cierre ? new SDate(this.props.caja.fecha_cierre).toString("DAY, dd de MONTH del yyyy a las hh:mm") :
+                    <SView row >
+                        <SView width={20} height={20} center style={{ borderRadius: 50, backgroundColor: STheme.color.success + "50" }}>
+                            <SView center style={{ width: 10, height: 10, backgroundColor: STheme.color.success, borderRadius: 50 }} />
+                        </SView>
+                        <SView width={10} />
+                        <SText color={STheme.color.success} fontSize={18}>Caja Abierta</SText>
+                    </SView>
+                }
+                {/* <SText color={STheme.color.warning} fontSize={12}>{this.props.caja.fecha_cierre ? new SDate(this.props.caja.fecha_cierre).toString("DAY, dd de MONTH del yyyy a las hh:mm") : "La caja se encuentra abierta."}</SText> */}
+            </SView>
+            <SHr />
             <SView col={"xs-12"} row>
                 <SView width={150} row center style={{
                     backgroundColor: STheme.color.card, borderWidth: 1, borderColor: STheme.color.card,
@@ -90,13 +113,12 @@ export default class Abierta extends Component {
                 </SView>
             </SView>
             <SHr />
-            <SHr />
             <SView col={"xs-12"} row>
                 <SView flex>
                     <SText color={STheme.color.text} fontSize={12}>{"Registrada el " + new SDate(this.props.caja.fecha_on).toString("DAY, dd de MONTH del yyyy a las hh:mm")}</SText>
                     <SText color={STheme.color.text} fontSize={12}>{"para la fecha " + new SDate(this.props.caja.fecha, "yyyy-MM-dd").toString("DAY, dd de MONTH del yyyy")}</SText>
                     <SHr />
-                    <SText color={STheme.color.warning} fontSize={12}>{this.props.caja.fecha_cierre ? new SDate(this.props.caja.fecha_cierre).toString("DAY, dd de MONTH del yyyy a las hh:mm") : "La caja se encuentra abierta."}</SText>
+
                 </SView>
                 <SView>
                     {/* <Components.caja.QRCaja pk={this.props.caja.key} width={120} height={120} /> */}
@@ -112,9 +134,16 @@ export default class Abierta extends Component {
                     ItemSeparatorComponent={() => <SHr />}
                     ListHeaderComponent={() => {
                         return <SView col={"xs-12"} center>
+                            <SHr h={20} />
+                            <SView col={"xs-11 sm-10 md-8 lg-6"} >
+                                <SText bold fontSize={16}>Cuentas y Saldos</SText>
+                            </SView>
+                            <SHr h={10} />
                             <TotalTipoPago key_punto_venta={this.props.caja.key_punto_venta} movimientos={this.state.movimientos} />
                             <SHr h={32} />
                             <SView col={"xs-11 sm-10 md-8 lg-6"} >
+                                <SText bold fontSize={16}>Acciones Rápidas</SText>
+                                <SHr h={10} />
                                 <MenuAcciones caja={this.props.caja} movimientos={this.state.movimientos} />
                             </SView>
                             <SHr h={32} />

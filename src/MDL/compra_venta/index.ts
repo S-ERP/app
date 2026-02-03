@@ -222,6 +222,19 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     // console.log("🚀🚀🚀🚀🚀🚀 ~ file: indexresp:", resp.data)
     return resp.data || [];
   }
+  async getAllCostos() {
+    const key_empresa = MDL.empresa?.select?.key || {};
+    const resp: any = await SSocket.sendPromise({
+      service: "compra_venta",
+      component: "reporte",
+      type: "execute_function",
+      func: "get_compra_venta_costos",
+      params: ["'" + key_empresa + "'"],
+      // params: ["'" + 'f894ea35-5ad1-4b61-a2d0-9294965be169' + "'", "'" + '2025-09-01' + "'", "'" + '2025-09-06' + "'", "'" + 'venta' + "'"],
+    });
+    // console.log("🚀🚀🚀🚀🚀🚀 ~ file: indexresp:", resp.data)
+    return resp.data || [];
+  }
 
 
   // esto igual revisar
