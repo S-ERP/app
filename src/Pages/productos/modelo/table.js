@@ -14,6 +14,8 @@ import PopupModeloCardex from '../Components/PopupModeloCardex';
 import PopupTag from '../../tag/Components/PopupTag';
 import PopupAgregarTags from './Components/PopupAgregarTags';
 import FiltroSelector from './Components/FiltroSelector';
+import PopupAgregarTipoCosto from './Components/PopupAgregarTipoCosto';
+import PopupDesgloseTipoCosto from './Components/PopupDesgloseTipoCosto';
 export default class table extends Component {
     constructor(props) {
         super(props);
@@ -48,10 +50,18 @@ export default class table extends Component {
             const monedas = await MDL.empresa.getMonedas() ?? [];
             const modelos = await MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "") ?? [];
             const clientes = await MDL.crm.cliente.getAll() ?? [];
-            let data_mejorada = modelos.map(e => ({ ...e,
+
+            const tipo_costos = await MDL.inventario.getAllTipoCosto() ?? []; // <-- traes todos los tipos de costo
+
+            let data_mejorada = modelos.map(e => ({
+                ...e,
                 compra_moneda: monedas.find(m => m?.key === e?.precio_compra_moneda) || {},
                 venta_moneda: monedas.find(m => m?.key === e?.precio_venta_moneda) || {},
-                contactos: (e?.contactos ?? []).map(contacto => ({ ...contacto, cliente: clientes.find(a => a?.key === contacto?.key_cliente) || {}, })),
+                contactos: (e?.contactos ?? []).map(contacto => ({
+                    ...contacto,
+                    cliente: clientes.find(a => a?.key === contacto?.key_cliente) || {},
+                    tipo_costo: tipo_costos.find(tc => tc.key === contacto.key_tipo_costo) || {}, // <-- agregamos tipo_costo
+                })),
                 tipo_producto: e?.tipo_producto || {},
                 marca: e?.marca || {},
                 proveedores: e?.proveedores ?? [],
@@ -175,6 +185,47 @@ export default class table extends Component {
                         height: 330,
                         label: e.row.descripcion,
                         options: [
+                            {
+                                label: "Configurar costos",
+                                icon: <SIconApp name='Ajustes' />,
+                                onPress: () => {
+                                    PopupAgregarTipoCosto.open({
+                                        // key_cliente: "83d10974-3f38-443a-8c74-2a60b49dfe15",
+                                        key_modelo: e.row.key,
+                                        modelo_descripcion: e.row.descripcion,
+                                        onSuccess: () => {
+                                            if (this.table) {
+                                                this.table.loadData();
+                                            }
+                                            // onReload();
+                                        }
+                                    });
+
+                                    // FormularioModelo.open({
+                                    //     editObject: e.row,
+                                    //     onSuccess: () => {
+                                    //         if (this.table) {
+                                    //             this.table.loadData();
+                                    //         }
+                                    //     }
+                                    // })
+                                }
+                            },
+
+                            {
+                                label: "Ver desglose costos",
+                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    console.clear();
+                                    console.log("%c" + JSON.stringify(e.row, null, 2), "color: #c513e9; font-weight: bold;");
+                                    PopupDesgloseTipoCosto.open({
+                                        data: e.row,
+                                        key_modelo: e.row.key,
+                                        // data: e.row
+                                    })
+                                }
+                            },
+
                             {
                                 label: "Editar",
                                 icon: <SIconApp name='Edit' />,
