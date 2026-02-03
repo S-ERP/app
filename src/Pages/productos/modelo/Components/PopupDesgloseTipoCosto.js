@@ -1,21 +1,20 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import { SDate, SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../../../Config';
 import PopupAgregarTipoCosto from './PopupAgregarTipoCosto';
 import FloatButtom from '../../../../Components/FloatButtom';
-import { Keyframe } from 'react-native-reanimated';
-
-// aqui me pasas Keyframe,odelo y traigo sus contactos
+import MDL from '../../../../MDL';
+import FloatMenu from '../../../../Components/FloatMenu';
+import SIconApp from '../../../../Assets/SIconApp';
 export default class PopupDesgloseTipoCosto extends Component {
-    static open({ data, key_modelo }) {
+    static open({ key_modelo, onSuccess }) {
         SPopup.open({
             key: "popup_config_horario",
             content: (
-                <SView col={"xs-11  "} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 700 }} padding={16} withoutFeedback >
+                <SView col={"xs-11"} backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 700 }} padding={16} withoutFeedback >
                     <SView col={"xs-12"} height={470} center >
-                        <PopupDesgloseTipoCosto data={data} key_modelo={key_modelo}   ></PopupDesgloseTipoCosto>
+                        <PopupDesgloseTipoCosto key_modelo={key_modelo} onSuccess={onSuccess} ></PopupDesgloseTipoCosto>
                     </SView>
                 </SView>
             )
@@ -23,33 +22,22 @@ export default class PopupDesgloseTipoCosto extends Component {
     }
     constructor(props) {
         super(props);
-        this.state = {
-            _data: this.props.data,
-        };
     }
-
     async loadData() {
-        const contactos = (this.state._data?.contactos || []).map((c, index) => ({
-            ...c, // todos los datos del contacto
-            modelo: this.state._data.descripcion, // agregamos descripción del producto
-            tipo_contable: this.state._data.tipo_producto.tipo, // agregamos descripción del producto
-            tipo: this.state._data.tipo_producto.descripcion, // agregamos descripción del producto
-            producto_key: this.state._data.key,   // agregamos key del producto
-            index: index
-        }));
+        const contactosKeys = await MDL.inventario.getContactosByModelo(this.props.key_modelo);
+        const clientes = await MDL.crm.cliente.getAll();
+        const contactos = contactosKeys.map((item) => {
+            const { key_cliente, comision, key_modelo_cliente } = item;
+            const cliente = clientes.find(c => c.key === key_cliente);
+            return cliente
+                ? { ...item, key: cliente.key, nombre: cliente.nombres || cliente.razon_social || key_cliente, cliente }
+                : { ...item, key: key_cliente, nombre: key_cliente, cliente: null };
+        });
         return contactos;
     }
-
-    componentDidMount() {
-        const aleluya = this.state._data;
-        console.log("%c" + JSON.stringify(aleluya, null, 2), "color: #2ECC40; font-weight: bold;");
-    }
     render() {
-
-
         return (<>
-
-            <SText>sssss {this.props.key_modelo}</SText>
+            <SText numberOfLines={1}  >Desglose de costos</SText>
             <DinamicTable
                 ref={ref => this.table = ref}
                 colors={Config.table.colors()}
@@ -57,34 +45,83 @@ export default class PopupDesgloseTipoCosto extends Component {
                 textStyle={Config.table.textStyle()}
                 selectType='single'
                 language='es'
+
+                onSelect={e => {
+                    FloatMenu.open({
+                        e: e.evt,
+                        height: 330,
+                        label: e.row.descripcion,
+                        options: [
+
+                            {
+                                label: "Editar",
+                                icon: <SIconApp name='Edit' />,
+                                onPress: () => {
+                                    // FormularioModelo.open({
+                                    //     editObject: e.row,
+                                    //     onSuccess: () => {
+                                    //         if (this.table) {
+                                    //             this.table.loadData();
+                                    //         }
+                                    //     }
+                                    // })
+                                }
+                            },
+                            {
+                                label: "Eliminar",
+                                icon: <SIconApp name='Delete' />,
+                                onPress: () => {
+                                    SPopup.confirm({
+                                        title: "Eliminar Modelo",
+                                        message: "¿Está seguro de eliminar el modelo " + e.row.descripcion + "?",
+                                        onPress: () => {
+                                            MDL.inventario.editModeloCliente({
+                                                key: e.row.key_modelo_cliente,
+                                                estado: 0,
+                                            }).then(() => {
+
+                                                if (this.table) {
+                                                    this.table.loadData();
+                                                    if (this.props.onSuccess) this.props.onSuccess();
+                                                }
+
+
+                                            });
+                                        }
+                                    });
+                                }
+                            },
+
+                        ]
+                    });
+                }}
+
                 loadData={this.loadData.bind(this)} // <-- ahora la tabla recibe todos los contactos
             >
                 <DinamicTable.Col key="index" label="#" width={24} data={e => e.row?.index + 1} />
-                <DinamicTable.Col key="modelo" label="Modelo" width={200} data={e => e.row?.modelo} />
+                {/* <DinamicTable.Col key="key_modelo_cliente" label="key_modelo_cliente" width={200} data={e => e.row?.key_modelo_cliente} /> */}
+                {/* <DinamicTable.Col key="key_modelo" label="key_modelo" width={200} data={e => e.row?.key_modelo} /> */}
+                {/* <DinamicTable.Col key="modelo" label="Modelo" width={200} data={e => e.row?.modelo} /> */}
                 <DinamicTable.Col key="cliente" label="Cliente" width={150} data={e => e.row?.cliente?.nombres} />
-                <DinamicTable.Col key="comision" label="Comisión" width={50} data={e => e.row?.comision} />
-                <DinamicTable.Col key="key_tipo_costo" label=" key Tipo Costo" width={150} data={e => e.row?.key_tipo_costo} />
-                <DinamicTable.Col key="tipo_costo" label="Tipo Costo" width={120} data={e => e.row?.tipo_costo?.descripcion} />
-                <DinamicTable.Col key="key_cuenta" label="key Cuenta Contable" width={150} data={e => e.row?.key_cuenta_contable} />
-                <DinamicTable.Col key="tipo_contable" label="Cuenta Contable" width={80} data={e => e.row?.tipo_contable} />
-                <DinamicTable.Col key="tipo" label="Tipo" width={120} data={e => e.row?.tipo} />
+                <DinamicTable.Col key="tipo_costo" label="Tipo Costo" width={120} data={e => e.row?.tipo_costo} />
+                <DinamicTable.Col key="comision" label="Comisión" width={70} data={e => e.row?.comision} />
+                {/* <DinamicTable.Col key="key_tipo_costo" label=" key Tipo Costo" width={150} data={e => e.row?.key_tipo_costo} /> */}
+                {/* <DinamicTable.Col key="key_cuenta" label="key Cuenta Contable" width={150} data={e => e.row?.key_cuenta_contable} /> */}
+                <DinamicTable.Col key="tipo_producto" label="Tipo Producto" width={130} data={e => e.row?.tipo_producto} />
+                <DinamicTable.Col key="tipo" label="Tipo" width={90} data={e => e.row?.tipo} />
             </DinamicTable>
             <FloatButtom onPress={() => {
                 PopupAgregarTipoCosto.open({
-                    // key_modelo: null,
-                    // editObject: null,
-                    // onSuccess: () => {
-                    //     if (this.table) {
-                    //         this.table.loadData();
-                    //         this.state.time = new Date().getTime();
-                    //     }
-                    // }
+                    key_modelo: this.props.key_modelo,
+                    onSuccess: () => {
+                        if (this.table) {
+                            this.table.loadData();
+                            if (this.props.onSuccess) this.props.onSuccess();
+                        }
+                    }
                 });
             }} />
         </>
-
         );
     }
-
-
 }

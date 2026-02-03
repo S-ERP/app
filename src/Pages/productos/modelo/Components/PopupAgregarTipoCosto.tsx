@@ -4,8 +4,6 @@ import { SForm, SHr, SNotification, SPopup, SText, STheme, SView, Upload } from 
 import SSocket from 'servisofts-socket';
 import MDL from '../../../../MDL';
 import Btn from '../../../cliente/Components/Btn';
-import InputFoto from '../../../../Components/InputFoto';
-import SIconApp from '../../../../Assets/SIconApp';
 import InputSelector from '../../../../Components/Selectores/InputSelector';
 type Props = {
     key_cliente: string,
@@ -32,11 +30,17 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
 
     }
     componentDidMount(): void {
+
+        console.clear();
+        const sssssssss = this.props.editObject;
+        console.log("%c" + JSON.stringify(sssssssss), `color: #2ECC40; font-weight: bold;`);
+
+
         MDL.crm.cliente.getAll().then((resp: any) => {
 
             this.state.contactos = resp;
             if (this.form && this.props.editObject) {
-                const contacto = resp.find((item: any) => item.key == this.props.editObject.key_cliente);
+                const contacto = resp.find((item: any) => item.key == this.props.editObject?.key_cliente);
                 this.form.setValues({ "nombres": contacto.nombres });
             }
 
