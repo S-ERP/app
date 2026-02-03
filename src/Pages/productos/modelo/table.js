@@ -50,9 +50,7 @@ export default class table extends Component {
             const monedas = await MDL.empresa.getMonedas() ?? [];
             const modelos = await MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "") ?? [];
             const clientes = await MDL.crm.cliente.getAll() ?? [];
-
             const tipo_costos = await MDL.inventario.getAllTipoCosto() ?? []; // <-- traes todos los tipos de costo
-
             let data_mejorada = modelos.map(e => ({
                 ...e,
                 compra_moneda: monedas.find(m => m?.key === e?.precio_compra_moneda) || {},
@@ -190,42 +188,29 @@ export default class table extends Component {
                                 icon: <SIconApp name='Ajustes' />,
                                 onPress: () => {
                                     PopupAgregarTipoCosto.open({
-                                        // key_cliente: "83d10974-3f38-443a-8c74-2a60b49dfe15",
                                         key_modelo: e.row.key,
                                         modelo_descripcion: e.row.descripcion,
                                         onSuccess: () => {
                                             if (this.table) {
                                                 this.table.loadData();
                                             }
-                                            // onReload();
                                         }
                                     });
-
-                                    // FormularioModelo.open({
-                                    //     editObject: e.row,
-                                    //     onSuccess: () => {
-                                    //         if (this.table) {
-                                    //             this.table.loadData();
-                                    //         }
-                                    //     }
-                                    // })
                                 }
-                            },
-
-                            {
+                            }, {
                                 label: "Ver desglose costos",
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
-                                    console.clear();
-                                    console.log("%c" + JSON.stringify(e.row, null, 2), "color: #c513e9; font-weight: bold;");
                                     PopupDesgloseTipoCosto.open({
-                                        data: e.row,
                                         key_modelo: e.row.key,
-                                        // data: e.row
+                                        onSuccess: () => {
+                                            if (this.table) {
+                                                this.table.loadData();
+                                            }
+                                        }
                                     })
                                 }
                             },
-
                             {
                                 label: "Editar",
                                 icon: <SIconApp name='Edit' />,
@@ -291,8 +276,7 @@ export default class table extends Component {
                                         onCancel: () => { }
                                     });
                                 },
-                            },
-                            {
+                            }, {
                                 label: "Ingrediente",
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
@@ -436,10 +420,10 @@ export default class table extends Component {
                         </SView>
                     )}
                 />
-                {/* <DinamicTable.Col
+                <DinamicTable.Col
                     key={"contactos2_"}
                     label='Contactos'
-                    width={120}
+                    width={300}
                     data={(e) => (e.row.contactos ?? []).map(p => p?.key_cliente)}
                     customComponent={e => (
                         <SView row>
@@ -453,7 +437,7 @@ export default class table extends Component {
                             })}
                         </SView>
                     )}
-                /> */}
+                />
             </DinamicTable>
             <FloatButtom onPress={() => {
                 PopupDetalleModelo.open({
