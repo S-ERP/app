@@ -264,34 +264,7 @@ export default class table extends Component {
                         height: 330,
                         label: e.row.descripcion,
                         options: [
-                            {
-                                label: "Configurar costos",
-                                icon: <SIconApp name='Ajustes' />,
-                                onPress: () => {
-                                    PopupAgregarTipoCosto.open({
-                                        key_modelo: e.row.key,
-                                        modelo_descripcion: e.row.descripcion,
-                                        onSuccess: () => {
-                                            if (this.table) {
-                                                this.table.loadData();
-                                            }
-                                        }
-                                    });
-                                }
-                            }, {
-                                label: "Ver desglose costos",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    PopupDesgloseTipoCosto.open({
-                                        key_modelo: e.row.key,
-                                        onSuccess: () => {
-                                            if (this.table) {
-                                                this.table.loadData();
-                                            }
-                                        }
-                                    })
-                                }
-                            },
+                           
                             {
                                 label: "Editar",
                                 icon: <SIconApp name='Edit' />,
@@ -328,7 +301,7 @@ export default class table extends Component {
                             },
                             {
                                 label: "Agregar Proveedor",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                icon: <SIconApp name='addFoto' fill={STheme.color.card} />,
                                 onPress: () => {
                                     SNavigation.navigate("/proveedor", {
                                         onSelect: (prov) => {
@@ -342,7 +315,7 @@ export default class table extends Component {
                             },
                             {
                                 label: "Agregar Tag",
-                                icon: <SIconApp name="Tag" fill={STheme.color.text} />,
+                                icon: <SIconApp name='addFoto' fill={STheme.color.card} />,
                                 onPress: () => {
                                     const currentTags = (e.row.tags || [])
                                         .map(t => t?.tags || t)
@@ -358,16 +331,46 @@ export default class table extends Component {
                                     });
                                 },
                             }, {
-                                label: "Ingrediente",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                label: "Agregar Ingrediente",
+                                icon: <SIconApp name='addFoto' fill={STheme.color.card} />,
                                 onPress: () => {
                                     SNavigation.navigate("/productos/modelo/ingrediente", {
                                         key_modelo: e.row.key
                                     })
                                 }
                             },
+
+                             {
+                                label: "Agregar Tipo de Costos",
+                                icon: <SIconApp name='addFoto' fill={STheme.color.card} />,
+                                onPress: () => {
+                                    PopupAgregarTipoCosto.open({
+                                        key_modelo: e.row.key,
+                                        modelo_descripcion: e.row.descripcion,
+                                        onSuccess: () => {
+                                            if (this.table) {
+                                                this.table.loadData();
+                                            }
+                                        }
+                                    });
+                                }
+                            }, {
+                                label: "Ver Desglose Tipo de costos",
+                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    PopupDesgloseTipoCosto.open({
+                                        key_modelo: e.row.key,
+                                        onSuccess: () => {
+                                            if (this.table) {
+                                                this.table.loadData();
+                                            }
+                                        }
+                                    })
+                                }
+                            },
+
                             {
-                                label: "Ver desglose",
+                                label: "Ver Desglose Inventario",
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
                                     PopupDesglose.open({
@@ -376,7 +379,7 @@ export default class table extends Component {
                                 }
                             },
                             {
-                                label: "Ver Cardex",
+                                label: "Ver Desglose Cardex",
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
                                     PopupModeloCardex.open({
