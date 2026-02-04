@@ -120,12 +120,14 @@ export default class Barra extends React.Component {
                     <Page label={"Inventario"}
                         icon={<ImagePage key_page="c50a9c4a-429c-426e-9ebf-c6874da14062" />} >
                         <Page label={"Almacenes"} url={"/inventario"} permiso="ver" permiso_url="/inventario/almacen" />
+                        <Page label={"Traspaso entre almacenes"} url={"/productos/traspaso_inventario"} permiso="ver" permiso_url="/inventario/almacen" />
                         <Page label={"Tipos de productos"} url={"/productos/tipo_producto/table"} permiso="ver" permiso_url="/productos/tipo_producto" />
                         <Page label={"Tipos de costos"} url={"/productos/tipo_costo"} />
                         <Page label={"Stock"} url={"/productos/modelo/table"} permiso="ver" permiso_url="/productos/modelo/table" />
                         <Page label={"Pizarra"} url={"/productos/pizarra"} permiso="ver" permiso_url="/productos/modelo/table" />
                         <Page label={"Conteos"} url={"/productos/reporte_conteo_inventario"} permiso="ver" permiso_url="/productos/reporte_conteo_inventario" />
                         <Page label={"Sistema antiguo"} url={"/productos"} permiso="ver" />
+                        
                     </Page>
                     <Page label={"Caja"} url={"/caja"} permiso="ver"
                         icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}

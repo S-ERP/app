@@ -5,6 +5,7 @@ import MDL from "../../MDL";
 import Config from "../../Config";
 import { ref } from "process";
 import SelectorAlmacen from "../../Components/Selectores/SelectorAlmacen";
+import SSocket from "servisofts-socket";
 
 export default class traspaso_inventario extends React.Component {
     selectItems = []
@@ -18,13 +19,14 @@ export default class traspaso_inventario extends React.Component {
         const modelos = await MDL.inventario.getAllModeloStock(this.almacen?.key ?? "") ?? [];
         return modelos.filter(a => {
             return a.stock > 0;
-        }).sort((a, b) => b.stock - a.stock);
+        })
     }
     async loadDataTraspaso() {
         return this.selectItems;
     }
 
     async handleTraspaso() {
+
         const almacen_origen = this.almacen;
         const almacen_destino = this.almacen_destino;
         if (!almacen_origen?.key) {
@@ -37,8 +39,32 @@ export default class traspaso_inventario extends React.Component {
             throw "El almacen de origen y destino no pueden ser el mismo";
         }
 
-        
-        console.log("TRASPASAR", this.selectItems);
+        let descripcion = this.detalleTraspasoInput.getValue();
+
+        try {
+            const resp = await SSocket.sendPromise({
+                service: "inventario",
+                component: "modelo",
+                type: "traspaso_inventario",
+                descripcion: descripcion,
+                key_usuario: MDL.usuario?.session?.key,
+                key_empresa: MDL.empresa?.select?.key,
+                key_almacen_origen: almacen_origen.key,
+                key_almacen_destino: almacen_destino.key,
+                data: this.selectItems.map(i => {
+                    return {
+                        key_modelo: i.key,
+                        cantidad: i.stock_traspaso
+                    }
+                })
+            })
+        } catch (e) {
+            throw e?.error;
+        }
+
+        this.selectItems = [];
+        this.mainTable.loadData();
+        this.traspasoTable.loadData();
 
     }
 
@@ -66,7 +92,9 @@ export default class traspaso_inventario extends React.Component {
                                 console.log(e);
                                 this.almacen = e;
                                 this.selectItems = [];
+                                this.mainTable.rowSelecteds = {}
                                 this.mainTable.loadData();
+                                this.traspasoTable.loadData();
                             }} />
                     </SView>
                     <DinamicTable
@@ -141,34 +169,68 @@ export default class traspaso_inventario extends React.Component {
                                     borderRadius: 4,
                                 }} onPress={() => {
 
-                                    SNotification.send({
-                                        key: "traspaso_inventario",
-                                        title: "Traspaso de inventario",
-                                        body: "Se esta procesando el traspaso de inventario",
-                                        type:"loading"
+
+                                    SPopup.open({
+                                        key: "confirm_traspaso",
+                                        content: <SView col={"xs-12"} center>
+                                            <SView style={{
+                                                width: 300,
+                                                height: 150,
+                                                padding: 16,
+                                                borderRadius: 8,
+                                                backgroundColor: STheme.color.background,
+                                            }} withoutFeedback>
+                                                <SText>¿Confirmar traspaso de inventario?</SText>
+                                                <SHr />
+                                                <SInput ref={ref => this.detalleTraspasoInput = ref} placeholder={"Detalle del traspaso"} />
+                                                <SHr />
+                                                <SView col={"xs-12"} row center>
+                                                    <SView style={{
+                                                        backgroundColor: STheme.color.success,
+                                                        padding: 8,
+                                                        paddingHorizontal: 16,
+                                                        borderRadius: 4,
+                                                        marginRight: 8,
+                                                    }} onPress={() => {
+
+                                                        SNotification.send({
+                                                            key: "traspaso_inventario",
+                                                            title: "Traspaso de inventario",
+                                                            body: "Se esta procesando el traspaso de inventario",
+                                                            type: "loading"
+
+                                                        })
+                                                        this.handleTraspaso().then(() => {
+                                                            SNotification.send({
+                                                                key: "traspaso_inventario",
+                                                                title: "Traspaso de inventario",
+                                                                body: "El traspaso de inventario se realizo con exito",
+                                                                time: 5000,
+                                                                color: STheme.color.success
+                                                            })
+                                                            SPopup.close("confirm_traspaso");
+                                                            // this.selectItems = [];
+                                                            // this.mainTable.loadData();
+                                                            // this.traspasoTable.loadData();
+                                                        }).catch(e => {
+                                                            SNotification.send({
+                                                                key: "traspaso_inventario",
+                                                                title: "Traspaso de inventario",
+                                                                body: "Error al realizar el traspaso de inventario: " + e,
+                                                                time: 5000,
+                                                                color: STheme.color.error
+                                                            })
+                                                            console.error(e);
+                                                        });
+                                                    }}>
+                                                        <SText>{"CONFIRMAR"}</SText>
+                                                    </SView>
+                                                </SView>
+                                            </SView>
+                                        </SView>
 
                                     })
-                                    this.handleTraspaso().then(() => {
-                                        SNotification.send({
-                                            key: "traspaso_inventario",
-                                            title: "Traspaso de inventario",
-                                            body: "El traspaso de inventario se realizo con exito",
-                                            time: 5000,
-                                            color: STheme.color.success
-                                        })
-                                        // this.selectItems = [];
-                                        // this.mainTable.loadData();
-                                        // this.traspasoTable.loadData();
-                                    }).catch(e => {
-                                        SNotification.send({
-                                            key: "traspaso_inventario",
-                                            title: "Traspaso de inventario",
-                                            body: "Error al realizar el traspaso de inventario: " + e,
-                                            time: 5000,
-                                            color: STheme.color.error
-                                        })
-                                        console.error(e);
-                                    });
+
 
                                 }}>
                                     <SText>{"ENVIAR"}</SText>
@@ -206,9 +268,9 @@ const InputCantidad = ({ row }) => {
         required
         icon={" "} onChangeText={(e) => {
             row.stock_traspaso = e;
-            if (e > row.stock) {
-                row.stock_traspaso = row.stock;
-            }
+            // if (e > row.stock) {
+            //     row.stock_traspaso = row.stock;
+            // }
             setValue(row.stock_traspaso);
         }} />
 }
