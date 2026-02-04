@@ -16,6 +16,7 @@ import PopupAgregarTags from './Components/PopupAgregarTags';
 import FiltroSelector from './Components/FiltroSelector';
 import PopupAgregarTipoCosto from './Components/PopupAgregarTipoCosto';
 import PopupDesgloseTipoCosto from './Components/PopupDesgloseTipoCosto';
+import FormularioTipoProducto from '../Components/FormularioTipoProducto';
 export default class table extends Component {
     constructor(props) {
         super(props);
@@ -313,7 +314,27 @@ export default class table extends Component {
                     textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
                     customComponent={e => <>
                         {(e.row.key_tipo_producto) ?
-                            <SView col={"xs-12"} center row onPress={() => { SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto }); }}>
+                            <SView col={"xs-12"} center row onPress={() => {
+
+                                console.clear();
+                                console.log("%c" + "viva", `color: #2ECC40; font-weight: bold;`);
+                                console.log("%c" + JSON.stringify(e.row.tipo_producto, null, 2), "color: #2ECC40; font-weight: bold;");
+
+
+                                FormularioTipoProducto.open({
+                                    editObject: e.row.tipo_producto,
+                                    onSuccess: () => {
+                                        if (this.table) {
+                                            this.table.loadData();
+                                            this.state.time = new Date().getTime();
+                                        }
+                                    }
+
+                                })
+
+                                // SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto }); 
+
+                            }}>
                                 <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
                                     <ImageLabel {...e} src={SSocket.api.inventario + "tipo_producto/.128_" + e.row.key_tipo_producto + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />
                                 </SView>
@@ -392,9 +413,9 @@ export default class table extends Component {
                         </SView>
                     )}
                 />
-                <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Contable' width={150}
+                <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo Producto' width={150}
                     data={(e) => e.row?.tipo_producto?.tipo}
-                    cellStyle={{ alignItems: "center", justifyContent: "flex-start", flexDirection: "row" }}
+                    cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
                     customComponent={e => {
                         return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(e.data) + "44", borderWidth: 1, borderColor: STheme.colorFromText(e.data) }}>
                             <SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>

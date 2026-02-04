@@ -26,25 +26,23 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
         descripcion_marca: "",
         cuentas: [],
         tipos_costo: [],
-        contactos: [], // <--- agregado
-
+        contactos: [],
+    }
+    initializeForm = () => {
+        if (this.props.editObject && this.form && !this.state.formInitialized) {
+            const obj = this.props.editObject;
+            this.form.setValues({
+                key_cliente: obj.key_cliente,
+                comision: obj.comision,
+                key_cuenta_contable: obj.key_cuenta_contable,
+                key_tipo_costo: obj.key_tipo_costo,
+            });
+            this.setState({ formInitialized: true });
+        }
     }
     componentDidMount(): void {
-
-        console.clear();
-        const sssssssss = this.props.editObject;
-        console.log("%c" + JSON.stringify(sssssssss), `color: #2ECC40; font-weight: bold;`);
-
-
         MDL.crm.cliente.getAll().then((resp: any) => {
-
             this.state.contactos = resp;
-            if (this.form && this.props.editObject) {
-                const contacto = resp.find((item: any) => item.key == this.props.editObject?.key_cliente);
-                this.form.setValues({ "nombres": contacto.nombres });
-            }
-
-
             this.setState({
                 contactos: Object.values(resp).sort((a: any, b: any) => {
                     if (a.nombres > b.nombres) return 1;
@@ -52,14 +50,9 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
                     return 0;
                 })
             });
-
-
-
-
         }).catch((e: any) => {
             console.error("Error al cargar clientes nombres", e);
         })
-
         MDL.contabilidad.getCuentas().then((resp: any) => {
             this.setState({
                 cuentas: Object.values(resp).sort((a: any, b: any) => {
@@ -86,7 +79,7 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
             this.state.articulo = resp;
             if (this.form && this.props.editObject) {
                 const articulo = resp.find((item: any) => item.key == this.props.editObject.key_modelo);
-                this.form.setValues({ "tipo": articulo.descripcion });
+                this.setState({ articulo }, this.initializeForm);
             }
             this.setState({
                 articulo: resp
@@ -127,10 +120,6 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
             <ScrollView>
                 <SForm ref={(ref: any) => this.form = ref} row style={{ justifyContent: "space-between" }}
                     inputs={{
-
-
-
-
                         "key_cliente": {
                             label: "Selecciona un contacto",
                             type: "custom",
@@ -139,36 +128,16 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
                             style: { width: "100%" },
                             options: this.state.contactos.map((contacto: any) => ({
                                 label: contacto.nombres, // Texto que verá el usuario
-                                value: contacto.key,     // Valor interno
+                                value: contacto.key,// Valor interno
                                 customComponent: (e: any) => (<SText fontSize={12} color={STheme.color.lightGray}> {e.data.nombres} </SText>),
                                 data: contacto
                             }))
                         },
-
-
-                        // "key_cliente": {
-                        //     label: "Contacto",
-                        //     type: "custom",
-                        //     customInputClass: InputSelector,
-                        //     placeholder: "ddddddd",
-                        //     style: {
-                        //         width: "100%",
-                        //     },
-                        //     options: this.state.contactos.map((contacto: any) => {
-                        //         return {
-                        //             label: `${contacto.nombres}`,
-                        //             value: contacto.key,
-                        //             customComponent: (e: any) => {
-                        //                 return <SText fontSize={12} color={STheme.color.lightGray}>{e.data.nombres}</SText>
-                        //             },
-                        //             data: contacto
-                        //         }
-                        //     })
-                        // },
                         "comision": {
                             label: "Comisión (%)",
                             placeholder: "Ej: 10",
                             type: "number",
+                            maxLength:3,
                             col: "xs-12",
                             isRequired: true,
                             inputStyle: { paddingStart: 8 },
@@ -216,16 +185,11 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
                         }
                     }}
                     onSubmit={(data: any) => {
-
-                        console.clear();
                         data.key_cliente = data.key_cliente;
                         data.key_modelo = this.props.key_modelo;
-                        data.articulo = this.props.modelo_descripcion;
-                        console.log("%c" + JSON.stringify(data), `color: #090a09; font-weight: bold;`);
-
-                        if (this.props.editObject?.key) {
-                            data.key = this.props.editObject?.key;
-                            MDL.inventario.saveModeloCliente(data).then((resp: any) => {
+                        if (this.props.editObject?.key_modelo_cliente) {
+                            data.key = this.props.editObject?.key_modelo_cliente;
+                            MDL.inventario.editModeloCliente(data).then((resp: any) => {
                                 if (this.props.onSuccess) this.props.onSuccess(resp)
                                 if (this._ref.image_modelo) {
                                     const value = this._ref.image_modelo.getValue();
@@ -233,9 +197,6 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
                                         Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).root + "upload/usuario/" + resp.key)
                                     }
                                 }
-
-                                // image_contacto
-                                console.log("aqiu " + JSON.stringify(resp))
                                 SNotification.send({
                                     title: "cliente guardada",
                                     body: "cliente se ha guardado correctamente.",

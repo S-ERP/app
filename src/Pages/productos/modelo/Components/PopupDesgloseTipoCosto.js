@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SImage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../../../Config';
 import PopupAgregarTipoCosto from './PopupAgregarTipoCosto';
@@ -7,6 +7,20 @@ import FloatButtom from '../../../../Components/FloatButtom';
 import MDL from '../../../../MDL';
 import FloatMenu from '../../../../Components/FloatMenu';
 import SIconApp from '../../../../Assets/SIconApp';
+import SSocket from 'servisofts-socket';
+
+// | Opción              | Icono sugerido        | Descripción visual                   |
+// | ------------------- | --------------------- | ------------------------------------ |
+// | Configurar costos   | `settings` o `cogs`   | Engranaje para configuración         |
+// | Ver desglose costos | `eye` o `list-alt`    | Ojo o lista para visualización       |
+// | Editar              | `edit` o `pencil`     | Lápiz para edición                   |
+// | Eliminar            | `trash` o `trash-alt` | Basurero para borrar                 |
+// | Agregar Proveedor   | `user-plus` o `plus`  | Persona con símbolo + para agregar   |
+// | Agregar Tag         | `tags` o `tag`        | Etiqueta para tags                   |
+// | Ingrediente         | `leaf` o `carrot`     | Hoja o vegetal para ingredientes     |
+// | Ver desglose        | `eye` o `list`        | Ojo o lista para visualizar desglose |
+// | Ver Cardex          | `book` o `clipboard`  | Libro o portapapeles para historial  |
+
 export default class PopupDesgloseTipoCosto extends Component {
     static open({ key_modelo, onSuccess }) {
         SPopup.open({
@@ -37,7 +51,9 @@ export default class PopupDesgloseTipoCosto extends Component {
     }
     render() {
         return (<>
-            <SText numberOfLines={1}  >Desglose de costos</SText>
+            <SText numberOfLines={1}>Desglose de costos</SText>
+            <SHr h={16} />
+
             <DinamicTable
                 ref={ref => this.table = ref}
                 colors={Config.table.colors()}
@@ -45,26 +61,25 @@ export default class PopupDesgloseTipoCosto extends Component {
                 textStyle={Config.table.textStyle()}
                 selectType='single'
                 language='es'
-
                 onSelect={e => {
                     FloatMenu.open({
                         e: e.evt,
                         height: 330,
-                        label: e.row.descripcion,
+                        label: e.row.cliente.nombres,
                         options: [
-
                             {
                                 label: "Editar",
                                 icon: <SIconApp name='Edit' />,
                                 onPress: () => {
-                                    // FormularioModelo.open({
-                                    //     editObject: e.row,
-                                    //     onSuccess: () => {
-                                    //         if (this.table) {
-                                    //             this.table.loadData();
-                                    //         }
-                                    //     }
-                                    // })
+                                    PopupAgregarTipoCosto.open({
+                                        editObject: e.row,
+                                        onSuccess: () => {
+                                            if (this.table) {
+                                                this.table.loadData();
+                                                if (this.props.onSuccess) this.props.onSuccess();
+                                            }
+                                        }
+                                    });
                                 }
                             },
                             {
@@ -79,36 +94,53 @@ export default class PopupDesgloseTipoCosto extends Component {
                                                 key: e.row.key_modelo_cliente,
                                                 estado: 0,
                                             }).then(() => {
-
                                                 if (this.table) {
                                                     this.table.loadData();
                                                     if (this.props.onSuccess) this.props.onSuccess();
                                                 }
-
-
                                             });
                                         }
                                     });
                                 }
                             },
-
                         ]
                     });
                 }}
-
                 loadData={this.loadData.bind(this)} // <-- ahora la tabla recibe todos los contactos
             >
+                {/* <DinamicTable.Col key="key_modelo" label="key_modelo" width={200} data={e => e.row?.modelo} /> */}
                 <DinamicTable.Col key="index" label="#" width={24} data={e => e.row?.index + 1} />
-                {/* <DinamicTable.Col key="key_modelo_cliente" label="key_modelo_cliente" width={200} data={e => e.row?.key_modelo_cliente} /> */}
-                {/* <DinamicTable.Col key="key_modelo" label="key_modelo" width={200} data={e => e.row?.key_modelo} /> */}
-                {/* <DinamicTable.Col key="modelo" label="Modelo" width={200} data={e => e.row?.modelo} /> */}
-                <DinamicTable.Col key="cliente" label="Cliente" width={150} data={e => e.row?.cliente?.nombres} />
+
+                <DinamicTable.Col key="cliente" label="Cliente" width={240} data={(e) => e.row?.cliente?.nombres ?? ""}
+                    customComponent={e => <>
+                        {(e.row?.key_cliente) ?
+                            <SView col={"xs-12"} row center >
+                                <SView style={{ width: 28 }}>
+                                    <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                                        <SImage src={`${SSocket.api.root}usuario/${e.row?.key_cliente}`} style={{ resizeMode: "cover" }} />
+                                    </SView>
+                                </SView>
+                                <SView width={5} />
+                                <SText flex  >{e.row?.cliente?.nombres}</SText>
+                            </SView> : null}
+                    </>}
+                />
+
+                {/* <DinamicTable.Col key="cliente" label="Cliente" width={150} data={e => e.row?.cliente?.nombres} /> */}
                 <DinamicTable.Col key="tipo_costo" label="Tipo Costo" width={120} data={e => e.row?.tipo_costo} />
                 <DinamicTable.Col key="comision" label="Comisión" width={70} data={e => e.row?.comision} />
-                {/* <DinamicTable.Col key="key_tipo_costo" label=" key Tipo Costo" width={150} data={e => e.row?.key_tipo_costo} /> */}
-                {/* <DinamicTable.Col key="key_cuenta" label="key Cuenta Contable" width={150} data={e => e.row?.key_cuenta_contable} /> */}
                 <DinamicTable.Col key="tipo_producto" label="Tipo Producto" width={130} data={e => e.row?.tipo_producto} />
-                <DinamicTable.Col key="tipo" label="Tipo" width={90} data={e => e.row?.tipo} />
+                <DinamicTable.Col key={"tipo_producto_tipo"} label='Tipo' width={80}  
+                    data={(e) => e.row?.tipo}
+                    cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
+                    customComponent={e => {
+                        return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(e.data) + "44", borderWidth: 1, borderColor: STheme.colorFromText(e.data) }}>
+                            <SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
+                        </SView>
+                    }}
+                />
+
+                {/* <DinamicTable.Col key="tipo" label="Tipo" width={90} data={e => e.row?.tipo} center /> */}
             </DinamicTable>
             <FloatButtom onPress={() => {
                 PopupAgregarTipoCosto.open({
