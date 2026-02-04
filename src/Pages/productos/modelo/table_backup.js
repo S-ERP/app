@@ -44,45 +44,22 @@ export default class table extends Component {
             this.filtroStockRef?.reset();
             this.filtroTipoContableRef?.reset();
             this.filtroTipoProductoRef?.reset();
-
-            this.setState({
-                selectedAlmacen: null,
-                selectedStock: null,
-                selectedTipoCuenta: null,
-                selectedTipoModelo: null,
-            }, () => {
-                this.table?.loadData();
-            });
         }
     };
-
-
     async loadData() {
         try {
-            const monedas = await MDL.empresa.getMonedas().catch(() => []);
-            const clientes = await MDL.crm.cliente.getAll().catch(() => []);
-            const tipo_costos = await MDL.inventario.getAllTipoCosto().catch(() => []);
-
-            let modelos = [];
-
-            if (this.state.selectedAlmacen?.key) {
-                modelos = await MDL.inventario
-                    .getAllModeloStock(this.state.selectedAlmacen.key)
-                    .catch(() => []);
-            } else {
-                modelos = await MDL.inventario
-                    .getAllModelo?.()
-                    ?.catch(() => []) || [];
-            }
-
-            let data_mejorada = (modelos ?? []).map(e => ({
+            const monedas = await MDL.empresa.getMonedas() ?? [];
+            const modelos = await MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "") ?? [];
+            const clientes = await MDL.crm.cliente.getAll() ?? [];
+            const tipo_costos = await MDL.inventario.getAllTipoCosto() ?? []; // <-- traes todos los tipos de costo
+            let data_mejorada = modelos.map(e => ({
                 ...e,
                 compra_moneda: monedas.find(m => m?.key === e?.precio_compra_moneda) || {},
                 venta_moneda: monedas.find(m => m?.key === e?.precio_venta_moneda) || {},
-                contactos: (e?.contactos ?? []).map(c => ({
-                    ...c,
-                    cliente: clientes.find(cl => cl?.key === c?.key_cliente) || {},
-                    tipo_costo: tipo_costos.find(tc => tc.key === c.key_tipo_costo) || {},
+                contactos: (e?.contactos ?? []).map(contacto => ({
+                    ...contacto,
+                    cliente: clientes.find(a => a?.key === contacto?.key_cliente) || {},
+                    tipo_costo: tipo_costos.find(tc => tc.key === contacto.key_tipo_costo) || {}, // <-- agregamos tipo_costo
                 })),
                 tipo_producto: e?.tipo_producto || {},
                 marca: e?.marca || {},
@@ -90,93 +67,36 @@ export default class table extends Component {
                 tags: e?.tags ?? [],
                 stock: e?.stock ?? 0,
             }));
-
-            // filtros normales
             if (this.state.selectedStock?.key === "con_stock") {
                 data_mejorada = data_mejorada.filter(m => Number(m.stock) > 0);
             }
-
             if (this.state.selectedStock?.key === "sin_stock") {
                 data_mejorada = data_mejorada.filter(m => !m.stock || Number(m.stock) === 0);
             }
-
-            if (
-                this.state.selectedTipoCuenta?.key &&
-                this.state.selectedTipoCuenta.key !== "Todos"
-            ) {
+            if (this.state.selectedTipoCuenta?.key && this.state.selectedTipoCuenta.key !== "Todos") {
                 data_mejorada = data_mejorada.filter(
                     m => m?.tipo_producto?.tipo === this.state.selectedTipoCuenta.key
                 );
             }
-
-            if (
-                this.state.selectedTipoModelo?.key &&
-                this.state.selectedTipoModelo.key !== "Todos"
-            ) {
+            if (this.state.selectedTipoModelo?.key && this.state.selectedTipoModelo.key !== "Todos") {
                 data_mejorada = data_mejorada.filter(
                     m => m?.tipo_producto?.descripcion === this.state.selectedTipoModelo.key
                 );
             }
-
             this.modelos = data_mejorada;
             return data_mejorada;
-
         } catch (error) {
-            // 🔥 solo errores reales
-            console.error("Error real en loadData:", error);
+            console.error("Error grave en loadData():", error);
             SPopup.alert(
                 "Error al cargar modelos",
-                error?.message || "Error desconocido"
+                "No se pudieron cargar los datos.\n\n" + (error?.message || "Error desconocido")
+            );
+            SPopup.alert(
+                "Error al cargar modelos: " + (error?.message || "Error desconocido")
             );
             return [];
         }
     }
-
-    // async loadData() {
-    //     try {
-    //         const monedas = await MDL.empresa.getMonedas() ?? [];
-    //         const modelos = await MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "") ?? [];
-    //         const clientes = await MDL.crm.cliente.getAll() ?? [];
-    //         const tipo_costos = await MDL.inventario.getAllTipoCosto() ?? []; // <-- traes todos los tipos de costo
-    //         let data_mejorada = modelos.map(e => ({
-    //             ...e,
-    //             compra_moneda: monedas.find(m => m?.key === e?.precio_compra_moneda) || {},
-    //             venta_moneda: monedas.find(m => m?.key === e?.precio_venta_moneda) || {},
-    //             contactos: (e?.contactos ?? []).map(contacto => ({
-    //                 ...contacto,
-    //                 cliente: clientes.find(a => a?.key === contacto?.key_cliente) || {},
-    //                 tipo_costo: tipo_costos.find(tc => tc.key === contacto.key_tipo_costo) || {}, // <-- agregamos tipo_costo
-    //             })),
-    //             tipo_producto: e?.tipo_producto || {},
-    //             marca: e?.marca || {},
-    //             proveedores: e?.proveedores ?? [],
-    //             tags: e?.tags ?? [],
-    //             stock: e?.stock ?? 0,
-    //         }));
-    //         if (this.state.selectedStock?.key === "con_stock") {
-    //             data_mejorada = data_mejorada.filter(m => Number(m.stock) > 0);
-    //         }
-    //         if (this.state.selectedStock?.key === "sin_stock") {
-    //             data_mejorada = data_mejorada.filter(m => !m.stock || Number(m.stock) === 0);
-    //         }
-    //         if (this.state.selectedTipoCuenta?.key && this.state.selectedTipoCuenta.key !== "Todos") {
-    //             data_mejorada = data_mejorada.filter(
-    //                 m => m?.tipo_producto?.tipo === this.state.selectedTipoCuenta.key
-    //             );
-    //         }
-    //         if (this.state.selectedTipoModelo?.key && this.state.selectedTipoModelo.key !== "Todos") {
-    //             data_mejorada = data_mejorada.filter(
-    //                 m => m?.tipo_producto?.descripcion === this.state.selectedTipoModelo.key
-    //             );
-    //         }
-    //         this.modelos = data_mejorada;
-    //         return data_mejorada;
-    //     } catch (error) {
-    //         console.error("Error grave en loadData():", error);
-    //         SPopup.alert( "Error al cargar modelos: " + (error?.message || "Error desconocido") );
-    //         return [];
-    //     }
-    // }
     renderColorPreview(nombre: string, color: string) {
         const displayName = nombre?.trim() || "Etiqueta de ejemplo";
         const backgroundColor = `${color}33`;
@@ -396,9 +316,9 @@ export default class table extends Component {
                         {(e.row.key_tipo_producto) ?
                             <SView col={"xs-12"} center row onPress={() => {
 
-                                // console.clear();
-                                // console.log("%c" + "viva", `color: #2ECC40; font-weight: bold;`);
-                                // console.log("%c" + JSON.stringify(e.row.tipo_producto, null, 2), "color: #2ECC40; font-weight: bold;");
+                                console.clear();
+                                console.log("%c" + "viva", `color: #2ECC40; font-weight: bold;`);
+                                console.log("%c" + JSON.stringify(e.row.tipo_producto, null, 2), "color: #2ECC40; font-weight: bold;");
 
 
                                 FormularioTipoProducto.open({
