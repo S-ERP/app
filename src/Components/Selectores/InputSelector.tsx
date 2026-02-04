@@ -45,7 +45,7 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
             if (option) {
                 this.originalDisplayValue = option.label ?? " ";
                 this.setState({ displayValue: option.label ?? " " });
-            }else{
+            } else {
                 this.setState({ displayValue: initialValue });
             }
         }
@@ -111,11 +111,17 @@ export default class InputSelector extends React.Component<InputSelectorProps> {
         let filtered = this.props.options;
         if (this.hasEditedValue) {
             filtered = this.props.options.filter(option => {
-                const lowerText = text.toLowerCase();
+                // const lowerText = text.toLowerCase();
+                const lowerText = (text ?? "").toLowerCase();
+
                 // Buscar en label y value
                 const matchesLabelOrValue =
-                    option.label.toLowerCase().includes(lowerText) ||
-                    option.value.toLowerCase().includes(lowerText);
+                    (option.label ?? "").toLowerCase().includes(lowerText) ||
+                    (option.value ?? "").toLowerCase().includes(lowerText);
+
+                // const matchesLabelOrValue =
+                //     option.label.toLowerCase().includes(lowerText) ||
+                //     option.value.toLowerCase().includes(lowerText);
                 // Buscar en data si existe
                 const matchesData = option.data ? this.matchesInData(option.data, text) : false;
                 return matchesLabelOrValue || matchesData;
