@@ -61,10 +61,19 @@ export default class Abierta extends Component {
         })
     }
     mensaje() {
+        console.log("PROPSSS", this.props);
+        let key_user = this.props.caja.key_usuario
+        let usuario = Model.usuario.Action.getByKey(key_user);
+        let key_sucursal = this.props.caja.key_sucursal
+        // let sucursal = Model.sucursal.Action.getByKey(key_sucursal);
+        // console.log("SUCURSAL", sucursal);
+        // if (!sucursal) return;
+        if (!usuario) return;
+
         return <SView col={"xs-11 sm-10 md-8 lg-6"} center row   >
 
             <SHr />
-            <SView col={"xs-12"} padding={15} style={{
+            <SView col={"xs-12"} padding={15} row style={{
                 borderRadius: 8,
                 backgroundColor: STheme.color.primary + "50",
                 borderWidth: 1,
@@ -72,20 +81,81 @@ export default class Abierta extends Component {
 
             }}>
                 <SText bold fontSize={16}>Estado de la Caja</SText>
+                <SHr height={10} />
+                <SView col={"xs-12"} style={{ borderBottomWidth: 0.5, borderColor: STheme.color.card }} height={5} />
                 <SHr height={20} />
-                {this.props.caja.fecha_cierre ? new SDate(this.props.caja.fecha_cierre).toString("DAY, dd de MONTH del yyyy a las hh:mm") :
-                    <SView row >
-                        <SView width={20} height={20} center style={{ borderRadius: 50, backgroundColor: STheme.color.success + "50" }}>
-                            <SView center style={{ width: 10, height: 10, backgroundColor: STheme.color.success, borderRadius: 50 }} />
+                <SView row col={"xs-12 xl-3"} center style={{ borderRightWidth: 1, borderColor: STheme.color.card }}>
+                    {this.props.caja.fecha_cierre ? new SDate(this.props.caja.fecha_cierre).toString("DAY, dd de MONTH del yyyy a las hh:mm") :
+                        <SView row center>
+                            <SView width={20} height={20} center style={{ borderRadius: 50, backgroundColor: STheme.color.success + "50" }}>
+                                <SView center style={{ width: 10, height: 10, backgroundColor: STheme.color.success, borderRadius: 50 }} />
+                            </SView>
+                            <SView width={10} />
+                            <SText color={STheme.color.success} fontSize={18}>Caja Abierta</SText>
                         </SView>
-                        <SView width={10} />
-                        <SText color={STheme.color.success} fontSize={18}>Caja Abierta</SText>
-                    </SView>
-                }
+                    }
+                </SView>
                 {/* <SText color={STheme.color.warning} fontSize={12}>{this.props.caja.fecha_cierre ? new SDate(this.props.caja.fecha_cierre).toString("DAY, dd de MONTH del yyyy a las hh:mm") : "La caja se encuentra abierta."}</SText> */}
+                {/* <SView row width={10} />
+                <SView height={30} row style={{ borderLeftWidth: 1, borderColor: STheme.color.card }} padding={10} /> */}
+                <SView row col={"xs-12 xl-5"} padding={10}>
+                    <SText fontSize={16} color={STheme.color.lightGray}>Fecha de gestión:</SText>
+                    <SView row width={10} />
+                    {/* <SText color={STheme.color.text} fontSize={12}>{new SDate(this.props.caja.fecha, "yyyy-MM-dd").toString("DAY, dd de MONTH del yyyy")}</SText> */}
+                    <SText bold color={STheme.color.text} fontSize={16}>{new SDate(this.props.caja.fecha, "yyyy-MM-dd").toString("yyyy-MM-dd")}</SText>
+                    <SHr />
+                    <SText fontSize={12} color={STheme.color.lightGray}>Fecha de registro:</SText>
+                    <SView row width={10} />
+                    <SText color={STheme.color.text} fontSize={12}>{new SDate(this.props.caja.fecha_on, "yyyy-MM-dd").toString("yyyy-MM-dd hh:mm")}</SText>
+                </SView>
+                <SView row col={"xs-12 xl-3"} center>
+                    <SView width={160} height={42} row center style={{
+                        backgroundColor: STheme.color.card, borderWidth: 2, borderColor: STheme.color.card,
+                        padding: 10,
+                        borderRadius: 8,
+                    }}
+                    >
+                        <SText
+                            // disabled={true} 
+                            onPress={() => {
+                                SPopup.date("Selecciona la fecha", (a) => {
+                                    console.log("devorame " + JSON.stringify(this.props.caja))
+                                    Model.caja.Action.editar({
+                                        data: {
+                                            ...this.props.caja,
+                                            fecha: a.fecha + "T00:00:00"
+                                        },
+                                        key_usuario: Model.usuario.Action.getKey(),
+                                    }).then(e => {
+                                        console.log(e);
+                                    }).catch(e => {
+                                        console.error(e);
+                                    })
+                                })
+                            }}>Cambiar fecha gestión</SText>
+                    </SView>
+                </SView>
+                <SHr height={10} />
+                <SView col={"xs-12"} style={{ borderBottomWidth: 0.5, borderColor: STheme.color.card }} height={5} />
+                <SHr height={10} />
+                <SView row >
+                    <SIcon name='Muser' width={12} height={12} fill={STheme.color.lightGray} />
+                    <SView row width={5} />
+                    <SText fontSize={12} color={STheme.color.lightGray}>Usuario:</SText>
+                    <SView row width={10} />
+                    <SText  color={STheme.color.text} fontSize={12}>{usuario?.Nombres + " " + usuario?.Apellidos}</SText>
+                </SView>
+                <SView width={30} />
+                 <SView row >
+                    <SIcon name='iconUbicacion' width={12} height={12} fill={STheme.color.lightGray} />
+                    <SView row width={5} />
+                    <SText fontSize={12} color={STheme.color.lightGray}>Sucursal:</SText>
+                    <SView row width={10} />
+                    {/* <SText  color={STheme.color.text} fontSize={12}>{sucursal?.nombre}</SText> */}
+                </SView>
             </SView>
             <SHr />
-            <SView col={"xs-12"} row>
+            {/* <SView col={"xs-12"} row>
                 <SView width={150} row center style={{
                     backgroundColor: STheme.color.card, borderWidth: 1, borderColor: STheme.color.card,
                     padding: 8,
@@ -93,7 +163,6 @@ export default class Abierta extends Component {
                 }}
                 >
                     <SText
-                        // disabled={true} 
                         onPress={() => {
                             SPopup.date("Selecciona la fecha", (a) => {
                                 console.log("devorame " + JSON.stringify(this.props.caja))
@@ -121,9 +190,9 @@ export default class Abierta extends Component {
 
                 </SView>
                 <SView>
-                    {/* <Components.caja.QRCaja pk={this.props.caja.key} width={120} height={120} /> */}
                 </SView>
-            </SView>
+            </SView> */}
+
         </SView >
     }
     render() {
