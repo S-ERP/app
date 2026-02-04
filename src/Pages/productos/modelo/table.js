@@ -417,15 +417,9 @@ export default class table extends Component {
                             {(e.row.key_tipo_producto) ?
                                 <SView col={"xs-12"} center row onPress={() => {
 
-<<<<<<< HEAD
                                 // console.clear();
                                 // console.log("%c" + "viva", `color: #2ECC40; font-weight: bold;`);
                                 // console.log("%c" + JSON.stringify(e.row.tipo_producto, null, 2), "color: #2ECC40; font-weight: bold;");
-=======
-                                    console.clear();
-                                    console.log("%c" + "viva", `color: #2ECC40; font-weight: bold;`);
-                                    console.log("%c" + JSON.stringify(e.row.tipo_producto, null, 2), "color: #2ECC40; font-weight: bold;");
->>>>>>> 1d76942 (ASdasd)
 
 
                                     FormularioTipoProducto.open({
