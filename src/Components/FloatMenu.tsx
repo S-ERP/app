@@ -1,5 +1,5 @@
 import React from "react";
-import { Dimensions, GestureResponderEvent, TouchableOpacityProps, ViewStyle } from "react-native";
+import { Dimensions, FlatList, GestureResponderEvent, TouchableOpacityProps, ViewStyle } from "react-native";
 import { SHr, SIcon, SPage, SPopup, SText, STheme, SView, SViewProps } from "servisofts-component";
 import SIconApp from "../Assets/SIconApp";
 
@@ -14,21 +14,26 @@ type FloatMenuProps = {
     height?: number,
     options: Option[],
     onClose: () => void,
-    style?: ViewStyle
+    style?: ViewStyle,
+    numColumns?: number
 }
 export default class FloatMenu extends React.Component<FloatMenuProps> {
 
     static open(props: FloatMenuProps) {
         const { e } = props;
 
+        let width = 196;
+        if (props?.style?.width) {
+            width = (props.style.width as number) + 16;
+        }
         let top = e.nativeEvent.pageY;
         const h = props.height || ((props.options.length * 40) + 50);
         if (top + h > Dimensions.get("window").height) {
             top = Dimensions.get("window").height - h;
         }
         let left = e.nativeEvent.pageX;
-        if (left + 196 > Dimensions.get("window").width) {
-            left = Dimensions.get("window").width - 196;
+        if (left + width > Dimensions.get("window").width) {
+            left = Dimensions.get("window").width - width;
         }
 
         SPopup.open({
@@ -74,13 +79,17 @@ export default class FloatMenu extends React.Component<FloatMenuProps> {
                 </SView>
             </SView>
             <SHr />
-            {this.props.options.map((option, index) => {
-                return (
+            <FlatList
+                data={this.props.options}
+                scrollEnabled={false}
+                numColumns={this.props.numColumns || 1}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item: option, index }) => (
                     <SView
                         key={index}
                         col={"xs-12"}
                         height={40}
-                        // width={180}
+                        flex={this.props.numColumns && this.props.numColumns > 1 ? 1 : undefined}
                         onPress={() => {
                             SPopup.close("popup_menu_alvaro");
                             option.onPress(null);
@@ -88,8 +97,8 @@ export default class FloatMenu extends React.Component<FloatMenuProps> {
                         style={{
                             borderTopWidth: 1,
                             borderColor: STheme.color.card,
-                            // paddingHorizontal: 8,
                             alignItems: "center",
+                            marginHorizontal: this.props.numColumns && this.props.numColumns > 1 ? 2 : 0,
                         }}
                         row
                     >
@@ -98,10 +107,9 @@ export default class FloatMenu extends React.Component<FloatMenuProps> {
                         </SView>
                         <SView width={4} />
                         <SText flex fontSize={12} numberOfLines={1} color={STheme.color.text}>{option.label}</SText>
-                        {/* <SView width={30} /> */}
                     </SView>
-                );
-            })}
+                )}
+            />
         </SView>
     }
 }

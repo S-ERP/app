@@ -262,6 +262,8 @@ export default class table extends Component {
                     FloatMenu.open({
                         e: e.evt,
                         height: 330,
+                        style: { width: 400 },
+                        numColumns: 2,
                         label: e.row.descripcion,
                         options: [
                            
@@ -300,6 +302,38 @@ export default class table extends Component {
                                 }
                             },
                             {
+                                label: "Lotes",
+                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    PopupDesglose.open({
+                                        key_modelo: e.row.key
+                                    })
+                                }
+                            },
+                            {
+                                label: "Cardex",
+                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    PopupModeloCardex.open({
+                                        key_modelo: e.row.key
+                                    })
+                                }
+                            },
+                            {
+                                label: "Costos",
+                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    PopupDesgloseTipoCosto.open({
+                                        key_modelo: e.row.key,
+                                        onSuccess: () => {
+                                            if (this.table) {
+                                                this.table.loadData();
+                                            }
+                                        }
+                                    })
+                                }
+                            },
+                            {
                                 label: "Agregar Proveedor",
                                 icon: <SIconApp name='addFoto' fill={STheme.color.card} />,
                                 onPress: () => {
@@ -331,8 +365,8 @@ export default class table extends Component {
                                     });
                                 },
                             }, {
-                                label: "Agregar Ingrediente",
-                                icon: <SIconApp name='addFoto' fill={STheme.color.card} />,
+                                label: "Ingredientes",
+                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
                                     SNavigation.navigate("/productos/modelo/ingrediente", {
                                         key_modelo: e.row.key
@@ -340,59 +374,41 @@ export default class table extends Component {
                                 }
                             },
 
-                             {
-                                label: "Agregar Tipo de Costos",
-                                icon: <SIconApp name='addFoto' fill={STheme.color.card} />,
-                                onPress: () => {
-                                    PopupAgregarTipoCosto.open({
-                                        key_modelo: e.row.key,
-                                        modelo_descripcion: e.row.descripcion,
-                                        onSuccess: () => {
-                                            if (this.table) {
-                                                this.table.loadData();
-                                            }
-                                        }
-                                    });
-                                }
-                            }, {
-                                label: "Ver Desglose Tipo de costos",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    PopupDesgloseTipoCosto.open({
-                                        key_modelo: e.row.key,
-                                        onSuccess: () => {
-                                            if (this.table) {
-                                                this.table.loadData();
-                                            }
-                                        }
-                                    })
-                                }
-                            },
-
-                            {
-                                label: "Ver Desglose Inventario",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    PopupDesglose.open({
-                                        key_modelo: e.row.key
-                                    })
-                                }
-                            },
-                            {
-                                label: "Ver Desglose Cardex",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    PopupModeloCardex.open({
-                                        key_modelo: e.row.key
-                                    })
-                                }
-                            },
+                             
                         ]
                     });
                 }}
+
+                loadInitialState={async () => {
+                    return {
+                        sorters: [{ key: "nombre", order: "asc", type: "string" }],
+                    }
+                }}
+
             >
                 <DinamicTable.Col key="index" label="#" textStyle={{ color: STheme.color.lightGray, fontSize: 10 }} width={30} data={(e) => e.index + 1} />
-                <DinamicTable.Col key={"tipo_producto"} label='Tipo' width={90}
+                <DinamicTable.Col key={"codigo_ref"} label='Cod. Ref.' width={60} data={(e) => e.row.codigo_ref} />
+                <DinamicTable.Col key={"nombre"} label='Nombre' width={300} data={(e) => e.row.descripcion} wrap textStyle={{ fontWeight: "bold", fontSize: 14 }}
+                    customComponent={e => <ImageLabel {...e}
+                        src={SSocket.api.inventario + "modelo/.128_" + e.row.key + "?date=" + this.state.time}
+                        srcPreview={SSocket.api.inventario + "modelo/" + e.row.key + "?date=" + this.state.time}
+                    />}
+                />
+                <DinamicTable.Col key={"marca"} label='Marca' width={130} data={(e) => e.row?.marca?.descripcion}
+                    textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
+                    customComponent={e => <>
+                        {(e.row.key_marca) ?
+                            <SView col={"xs-12"} center row onPress={() => { SNavigation.navigate("/productos/marca/edit", { pk: e.row.key_marca }); }}>
+                                <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
+                                    <ImageLabel {...e} src={SSocket.api.inventario + "marca/.128_" + e.row.key_marca + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />
+                                </SView>
+                                <SView width={8} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.marca?.descripcion ? e.row?.marca?.descripcion : ""}</SText>
+                            </SView> : null}
+                    </>}
+                />
+
+                <DinamicTable.Col key={"tipo_producto"} label='Tipo' width={130}
                     data={(e) => e.row?.tipo_producto?.descripcion}
                     textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
                     customComponent={e => <>
@@ -426,27 +442,13 @@ export default class table extends Component {
                             </SView> : null}
                     </>}
                 />
-                <DinamicTable.Col key={"marca"} label='Marca' width={90} data={(e) => e.row?.marca?.descripcion}
-                    textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
-                    customComponent={e => <>
-                        {(e.row.key_marca) ?
-                            <SView col={"xs-12"} center row onPress={() => { SNavigation.navigate("/productos/marca/edit", { pk: e.row.key_marca }); }}>
-                                <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
-                                    <ImageLabel {...e} src={SSocket.api.inventario + "marca/.128_" + e.row.key_marca + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />
-                                </SView>
-                                <SView width={8} />
-                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.marca?.descripcion ? e.row?.marca?.descripcion : ""}</SText>
-                            </SView> : null}
-                    </>}
-                />
-                <DinamicTable.Col key={"codigo_ref"} label='Cod. Ref.' width={60} data={(e) => e.row.codigo_ref} />
-                <DinamicTable.Col key={"nombre"} label='Nombre' width={200} data={(e) => e.row.descripcion} wrap textStyle={{ fontWeight: "bold" }}
-                    customComponent={e => <ImageLabel {...e}
-                        src={SSocket.api.inventario + "modelo/.128_" + e.row.key + "?date=" + this.state.time}
-                        srcPreview={SSocket.api.inventario + "modelo/" + e.row.key + "?date=" + this.state.time}
-                    />}
-                />
-                <DinamicTable.Col key={"observacion"} label='Observación' width={150} data={(e) => e.row.observacion} />
+
+                <DinamicTable.Col key={"observacion"} label='Observación' width={150}
+                    textStyle={{
+                        fontSize: 12,
+                        color: STheme.color.lightGray,
+                    }}
+                    data={(e) => e.row.observacion} />
                 <DinamicTable.Col key={"precio_compra_"} label='P. Compra' width={100}
                     textStyle={{ color: STheme.color.danger }}
                     data={(e) => e.row?.precio_compra} wrap
