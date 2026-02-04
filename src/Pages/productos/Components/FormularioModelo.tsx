@@ -74,7 +74,7 @@ export default class FormularioModelo extends Component<Props> {
             this.state.tipo_productos = resp;
             if (this.form && this.props.editObject) {
                 const tipo_producto = resp.find((item: any) => item.key == this.props.editObject.key_tipo_producto);
-                this.form.setValues({ "tipo": tipo_producto.descripcion });
+                this.form.setValues({ "tipo": tipo_producto?.descripcion });
             }
             this.setState({
                 tipo_productos: resp

@@ -47,6 +47,10 @@ export default class table extends Component {
                                 label: "Editar",
                                 icon: <SIconApp name='Edit' />,
                                 onPress: () => {
+
+                                    // console.clear();
+                                    // console.log("%c" + JSON.stringify(e.row, null, 2), "color: #e1bb11; font-weight: bold;");
+
                                     FormularioTipoProducto.open({
                                         editObject: e.row,
                                         onSuccess: () => {

@@ -23,12 +23,7 @@ export default class FiltroSelector extends Component {
             this.setState({ options }, () => {
                 if (this.props.onSelect) {
                     const defaultOption = options.find(o => o.key === this.state.selectedKey) || options[0];
-                    this.setState({ selectedKey: defaultOption.key }, () => {
-                        this.props.onSelect(defaultOption);
-                    });
-
-                    // const defaultOption = options.find(o => o.key === this.state.selectedKey) || options[0];
-                    // this.props.onSelect(defaultOption);
+                    this.props.onSelect(defaultOption);
                 }
             });
         } catch (error) {
@@ -53,7 +48,7 @@ export default class FiltroSelector extends Component {
         const { options, selectedKey } = this.state;
 
         return (
-            <SView col={"xs-12"} height={48} backgroundColor="transparent" style={{ paddingHorizontal: 2, top: 5 }}>
+            <SView col={"xs-12"} height={48} backgroundColor="transparent" style={{ paddingHorizontal: 2, top:5 }}>
                 <SText fontSize={9} color={STheme.color.lightGray} style={{ marginBottom: 2, marginLeft: 2 }} bold>
                     {label.toUpperCase()}
                 </SText>
@@ -61,7 +56,7 @@ export default class FiltroSelector extends Component {
                 <SView
                     width={"100%"}
                     height={38}
-
+                    
                     style={{
                         backgroundColor: STheme.color.card,
                         borderRadius: 2,
@@ -79,25 +74,14 @@ export default class FiltroSelector extends Component {
                         ref={this.selectorRef}
                         type="custom"
                         customStyle="erp"
-                        placeholder={"Selecciona " + label}
-                        placeholderTextColor={STheme.color.danger}
-                        // value={selectedKey} // controlado
-                        style={{
-                            fontSize: 13, color: STheme.color.text, paddingHorizontal: 10, backgroundColor: STheme.color.card,
-                            opacity: 0.6,
-
-                        }}
-                        options={options.map(o => ({
-                            label: o.nombre,
-                            value: o.key,
-                            data: o
-                        }))}
+                        placeholder={label}
+                        placeholderTextColor={STheme.color.lightGray}
+                        value={selectedKey}
+                        style={{ fontSize: 13, color: STheme.color.text, paddingHorizontal: 10 }}
+                        options={options.map(o => ({ label: o.nombre, value: o.key, data: o }))}
                         onSelect={(selectedItem) => {
-                            // solo actualizar si existe
-                            if (selectedItem?.data) {
-                                this.setState({ selectedKey: selectedItem.value });
-                                this.props.onSelect?.(selectedItem.data);
-                            }
+                            this.setState({ selectedKey: selectedItem.value });
+                            this.props.onSelect?.(selectedItem.data);
                         }}
                     />
                 </SView>

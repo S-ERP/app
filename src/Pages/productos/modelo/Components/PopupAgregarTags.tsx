@@ -109,7 +109,7 @@ export default class PopupAgregarTags extends Component {
     const { search, allTags } = this.state;
     const nombre = search.trim();
 
-    if (!nombre || allTags.some(t => t.nombre.toLowerCase() === nombre.toLowerCase())) return;
+    if (!nombre || allTags.some(t => (t?.nombre ?? "").toLowerCase() === (nombre ?? "").toLowerCase())) return;
 
     try {
       const newTag = { nombre, descripcion: "", color: this.generateRandomColor(), };
@@ -135,11 +135,11 @@ export default class PopupAgregarTags extends Component {
   render() {
     const { allTags, selectedTags, search } = this.state;
     const filteredTags = allTags.filter(tag =>
-      tag.nombre.toLowerCase().includes(search.toLowerCase())
+      (tag?.nombre ?? "").toLowerCase().includes((search ?? "").toLowerCase())
     );
     const showCreateButton =
       search.trim() !== "" &&
-      !allTags.some(t => t.nombre.toLowerCase() === search.toLowerCase().trim());
+      !allTags.some(t => (t?.nombre ?? "").toLowerCase() === (search ?? "").toLowerCase().trim());
     return (
       <>
         <SView col="xs-12" center style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray + "55", paddingVertical: 8, }} >
