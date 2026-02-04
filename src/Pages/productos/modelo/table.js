@@ -62,18 +62,19 @@ export default class table extends Component {
             const monedas = await MDL.empresa.getMonedas().catch(() => []);
             const clientes = await MDL.crm.cliente.getAll().catch(() => []);
             const tipo_costos = await MDL.inventario.getAllTipoCosto().catch(() => []);
+            const modelos = await MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "") ?? [];
 
-            let modelos = [];
+            // let modelos = [];
 
-            if (this.state.selectedAlmacen?.key) {
-                modelos = await MDL.inventario
-                    .getAllModeloStock(this.state.selectedAlmacen.key)
-                    .catch(() => []);
-            } else {
-                modelos = await MDL.inventario
-                    .getAllModelo?.()
-                    ?.catch(() => []) || [];
-            }
+            // if (this.state.selectedAlmacen?.key) {
+            //     modelos = await MDL.inventario
+            //         .getAllModeloStock(this.state.selectedAlmacen.key)
+            //         .catch(() => []);
+            // } else {
+            //     modelos = await MDL.inventario
+            //         .getAllModelo?.()
+            //         ?.catch(() => []) || [];
+            // }
 
             let data_mejorada = (modelos ?? []).map(e => ({
                 ...e,

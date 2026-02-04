@@ -7,7 +7,7 @@ export default class FiltroSelector extends Component {
         super(props);
         this.state = {
             options: [],
-            selectedKey: props.defaultValue ?? "Todos", // valor por defecto seguro
+            selectedKey: props.defaultValue ?? "Todos",
         };
         this.selectorRef = createRef();
     }
@@ -19,15 +19,16 @@ export default class FiltroSelector extends Component {
     async loadData() {
         try {
             const data = await this.props.loadData();
-            // opción por defecto "Todos" siempre con key string
-            const options = [{ key: "Todos", nombre: "Todos" }, ...data.map(this.props.mapOption)];
+            const options = [{ key: null, nombre: "Todos" }, ...data.map(this.props.mapOption)];
             this.setState({ options }, () => {
                 if (this.props.onSelect) {
-                    // selecciona default seguro
                     const defaultOption = options.find(o => o.key === this.state.selectedKey) || options[0];
                     this.setState({ selectedKey: defaultOption.key }, () => {
                         this.props.onSelect(defaultOption);
                     });
+
+                    // const defaultOption = options.find(o => o.key === this.state.selectedKey) || options[0];
+                    // this.props.onSelect(defaultOption);
                 }
             });
         } catch (error) {
@@ -36,7 +37,7 @@ export default class FiltroSelector extends Component {
     }
 
     reset() {
-        const defaultOption = { key: "Todos", nombre: "Todos" }; // opción por defecto
+        const defaultOption = { key: null, nombre: "Todos" }; // opción por defecto
         this.setState({ selectedKey: defaultOption.key }, () => {
             // actualiza InputSelector
             if (this.selectorRef.current) {
@@ -60,9 +61,9 @@ export default class FiltroSelector extends Component {
                 <SView
                     width={"100%"}
                     height={38}
+
                     style={{
-                        // backgroundColor: STheme.color.card +"6" ,
-                        // backgroundColor: STheme.color.lightGray + "66",
+                        backgroundColor: STheme.color.card,
                         borderRadius: 2,
                         borderWidth: 1,
                         borderColor: STheme.color.lightGray + "40",
@@ -72,7 +73,6 @@ export default class FiltroSelector extends Component {
                         shadowOffset: { width: 0, height: 1 },
                         shadowOpacity: 0.05,
                         shadowRadius: 1.5,
-                        // backgroundColor: STheme.color.card + "66",
                     }}
                 >
                     <InputSelector
