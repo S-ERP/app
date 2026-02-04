@@ -83,12 +83,23 @@ export default class reporteCajas extends Component {
                 center
                 selectType="single"
                 loadInitialState={async () => ({
-                    sorters: [{ key: "fecha", order: "desc", type: "date" }],
+                    sorters: [{ key: "fecha_on", order: "desc", type: "date" }],
                 })}
                 {...Config.table.applyTheme()}
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={e => e.index + 1} />
+                <DinamicTable.Col
+                    key="fecha"
+                    label="FECHA"
+                    width={80}
+                    dataType="date"
+                    data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date : null)}
 
+                    // data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-dd").date : null)}
+                    // data={e => (e.row?.fecha ? new SDate(e.row.fecha, "yyyy-MM-dd").date : null)}
+                    textStyle={{ fontSize: 12, color: STheme.color.text }}
+                    dateFormat="yyyy-MM-dd"
+                />
                 <DinamicTable.Col
                     key="sucursal"
                     label="SUCURSAL"
@@ -127,23 +138,47 @@ export default class reporteCajas extends Component {
                 <DinamicTable.Col
                     key="punto"
                     label="P.VENTA"
-                    width={50}
+                    width={100}
                     data={e => e.row?.puntos_venta?.descripcion ?? "Sin punto de venta"}
                 />
 
+
+
+
                 <DinamicTable.Col
-                    key="fecha"
-                    label="FECHA"
-                    width={80}
-                    dataType="date"
-                    data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date : null)}
-
-                    // data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-dd").date : null)}
-                    // data={e => (e.row?.fecha ? new SDate(e.row.fecha, "yyyy-MM-dd").date : null)}
-                    textStyle={{ fontSize: 12, color: STheme.color.text }}
-                    dateFormat="yyyy-MM-dd"
+                    key="admin"
+                    label="CAJERO"
+                    width={120}
+                    data={e => e.row?.usuario?.Nombres ?? "Sin cajero"}
+                    customComponent={e => {
+                        const key = e.row?.key_usuario;
+                        const nombre = e.row?.usuario?.Nombres ?? "Sin cajero";
+                        return key ? (
+                            <SView col="xs-12" row center>
+                                <SView
+                                    style={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: 100,
+                                        overflow: "hidden",
+                                        backgroundColor: STheme.color.card + "66",
+                                    }}
+                                >
+                                    <SImage
+                                        src={`${SSocket.api.root}usuario/${key}`}
+                                        style={{ resizeMode: "cover" }}
+                                    />
+                                </SView>
+                                <SView width={5} />
+                                <SText flex numberOfLines={1} style={e.textStyle}>
+                                    {nombre}
+                                </SText>
+                            </SView>
+                        ) : (
+                            <SText>Sin cajero</SText>
+                        );
+                    }}
                 />
-
                 <DinamicTable.Col
                     key="estado_caja"
                     label="ESTADO"
@@ -152,16 +187,16 @@ export default class reporteCajas extends Component {
                     customComponent={e => {
                         const estado = e.row?.estado_caja ?? "Desconocido";
                         return (
-                            <SView col={"xs-12"} row center padding={8}>
+                            <SView col={"xs-12"} row center >
                                 <SView
-                                    padding={4}
+                                    padding={6}
                                     center
                                     row
                                     style={{
-                                        backgroundColor: estado === "cerrada" ? "#503131ff" : "#2a533cff",
-                                        borderColor: estado === "cerrada" ? "#ef4444" : "#22c45e",
+                                        backgroundColor: estado === "cerrada" ? STheme.color.danger + "33" : STheme.color.success + "33",
+                                        borderColor: estado === "cerrada" ? STheme.color.danger : STheme.color.success,
                                         borderWidth: 1,
-                                        borderRadius: 20,
+                                        borderRadius: 4,
                                     }}
                                     onPress={() => {
                                         SNavigation.navigate("/caja/detail", { key: e.row?.key })
@@ -171,15 +206,17 @@ export default class reporteCajas extends Component {
                                         width={6}
                                         height={6}
                                         style={{
-                                            backgroundColor: estado === "cerrada" ? "#ef4545" : "#22c45e",
+                                            backgroundColor: estado === "cerrada" ? STheme.color.danger : STheme.color.success,
                                             borderRadius: 8,
                                         }}
                                     />
+                                    <SView width={4} />
                                     <SText
                                         style={{
                                             textTransform: "uppercase",
                                             fontSize: 10,
-                                            color: estado === "cerrada" ? "#ef4444" : "#22c45e",
+                                            fontWeight: "bold",
+                                            // color: estado === "cerrada" ? STheme.color.danger : STheme.color.success,
                                         }}
                                     >
                                         {estado}
@@ -193,23 +230,23 @@ export default class reporteCajas extends Component {
                 <DinamicTable.Col
                     key="fecha_on"
                     label="F.APERTURA"
-                    width={110}
+                    width={130}
                     dataType="date"
                     data={e => (e.row?.fecha_on ? new SDate(e.row.fecha_on, "yyyy-MM-ddThh:mm:ss").date : null)}
-                    textStyle={{ fontSize: 12, color: STheme.color.text }}
+                    // textStyle={{ fontSize: 12, color: STheme.color.text }}
                     dateFormat="yyyy-MM-dd hh:mm"
                 />
 
                 <DinamicTable.Col
                     key="fecha_cierre"
                     label="F.CIERRE"
-                    width={110}
+                    width={130}
                     dataType="date"
                     data={e =>
                         e.row?.fecha_cierre ? new SDate(e.row.fecha_cierre, "yyyy-MM-ddThh:mm:ss").date : null
                     }
                     dateFormat="yyyy-MM-dd hh:mm"
-                    textStyle={{ fontSize: 12, color: STheme.color.text }}
+                // textStyle={{ fontSize: 12, color: STheme.color.text }}
                 />
 
                 <DinamicTable.Col
@@ -248,7 +285,7 @@ export default class reporteCajas extends Component {
                     }}
                     textStyle={{ fontSize: 12, color: STheme.color.text }}
                 />
-
+                {/* 
                 <DinamicTable.Col
                     key="moneda"
                     wrap
@@ -265,15 +302,16 @@ export default class reporteCajas extends Component {
                     label="TIPO DE CAMBIO"
                     width={60}
                     data={e => e.row?.moneda.tipo_cambio ?? 0}
-                />
+                /> */}
 
                 <DinamicTable.Col
                     key="total_monto_apertura"
                     wrap
                     label="MONTO APERTURA"
-                    width={60}
+                    width={90}
                     data={e => e.row?.total_monto_apertura ?? 0}
-                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#007bff33" }}
+                    cellStyle={{ backgroundColor: "#007bff33" }}
+                    textStyle={{ textAlign: "right" }}
                     format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
                 />
 
@@ -281,9 +319,10 @@ export default class reporteCajas extends Component {
                     key="total_monto_venta"
                     wrap
                     label="VENTAS TOTALES"
-                    width={60}
+                    width={90}
                     data={e => e.row?.total_monto_venta ?? 0}
-                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#28a74566" }}
+                    cellStyle={{ backgroundColor: "#28a74566" }}
+                    textStyle={{ textAlign: "right" }}
                     format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
                 />
 
@@ -291,9 +330,10 @@ export default class reporteCajas extends Component {
                     key="total_monto_ingresos"
                     wrap
                     label="INGRESOS TOTALES"
-                    width={60}
+                    width={90}
                     data={e => e.row?.total_monto_ingresos ?? 0}
-                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#28a74533" }}
+                    cellStyle={{ backgroundColor: "#28a74533" }}
+                    textStyle={{ textAlign: "right" }}
                     format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
                 />
 
@@ -301,9 +341,10 @@ export default class reporteCajas extends Component {
                     key="total_cantidad_ingresos"
                     wrap
                     label="CANT. DE INGRESOS"
-                    width={60}
+                    width={90}
                     data={e => e.row?.total_cantidad_ingresos ?? 0}
-                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#28a74533" }}
+                    cellStyle={{ backgroundColor: "#28a74533" }}
+                    textStyle={{ textAlign: "right" }}
                     format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
                 />
 
@@ -311,9 +352,10 @@ export default class reporteCajas extends Component {
                     key="total_monto_compra"
                     wrap
                     label="MONTO COMPRAS"
-                    width={60}
+                    width={90}
                     data={e => e.row?.total_monto_compra ?? 0}
-                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#ffc10766" }}
+                    cellStyle={{ backgroundColor: "#ffc10766" }}
+                    textStyle={{ textAlign: "right" }}
                     format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
                 />
 
@@ -321,9 +363,10 @@ export default class reporteCajas extends Component {
                     key="total_monto_egresos"
                     wrap
                     label="EGRESOS TOTALES"
-                    width={60}
+                    width={90}
                     data={e => e.row?.total_monto_egresos ?? 0}
-                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#ffc10733" }}
+                    cellStyle={{ backgroundColor: "#ffc10733" }}
+                    textStyle={{ textAlign: "right" }}
                     format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
                 />
 
@@ -331,46 +374,13 @@ export default class reporteCajas extends Component {
                     key="total_cantidad_egresos"
                     wrap
                     label="CANT. DE EGRESOS"
-                    width={60}
+                    width={90}
                     data={e => e.row?.total_cantidad_egresos ?? 0}
-                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#ffc10733" }}
+                    cellStyle={{ backgroundColor: "#ffc10733" }}
+                    textStyle={{ textAlign: "right" }}
                     format={e => (!e.data ? "" : SMath.formatMoney(e.data))}
                 />
 
-                <DinamicTable.Col
-                    key="admin"
-                    label="CAJERO"
-                    width={120}
-                    data={e => e.row?.usuario?.Nombres ?? "Sin cajero"}
-                    customComponent={e => {
-                        const key = e.row?.key_usuario;
-                        const nombre = e.row?.usuario?.Nombres ?? "Sin cajero";
-                        return key ? (
-                            <SView col="xs-12" row center>
-                                <SView
-                                    style={{
-                                        width: 24,
-                                        height: 24,
-                                        borderRadius: 100,
-                                        overflow: "hidden",
-                                        backgroundColor: STheme.color.card + "66",
-                                    }}
-                                >
-                                    <SImage
-                                        src={`${SSocket.api.root}usuario/${key}`}
-                                        style={{ resizeMode: "cover" }}
-                                    />
-                                </SView>
-                                <SView width={5} />
-                                <SText flex numberOfLines={1} style={e.textStyle}>
-                                    {nombre}
-                                </SText>
-                            </SView>
-                        ) : (
-                            <SText>Sin cajero</SText>
-                        );
-                    }}
-                />
             </DinamicTable>
         );
     }

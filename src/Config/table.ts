@@ -1,14 +1,16 @@
+import { TextStyle, ViewStyle } from "react-native";
 import { STheme } from "servisofts-component"
 
 export default {
-    applyTheme() {
+    applyTheme(p?: { colors?: any, cellStyle?: ViewStyle, textStyle?: TextStyle, headerStyle?: ViewStyle }) {
         return {
-            colors: this.colors(),
-            cellStyle: this.cellStyle(),
-            textStyle: this.textStyle(),
+            colors: this.colors(p?.colors ?? {}),
+            cellStyle: this.cellStyle(p?.cellStyle ?? {}),
+            textStyle: this.textStyle(p?.textStyle ?? {}),
+            headerStyle: this.headerStyle(p?.headerStyle ?? {}),
         }
     },
-    colors: () => {
+    colors: (override?: any) => {
         const card = STheme.getTheme() == "dark" ? "#FFFFFF66" : "#00000066";
         return {
             text: STheme.color.text,
@@ -16,23 +18,30 @@ export default {
             header: STheme.color.primary,
             background: STheme.color.background,
             card: card,
+            ...(override || {}),
             // accent: STheme.color.accent
         }
     },
-    cellStyle: () => {
+    cellStyle: (override?: any) => {
         return {
             borderWidth: 0,
+            justifyContent: 'center',
             // borderBottomWidth: 1,
             // borderColor:
             // borderLeftWidth: 1,
             // padding: 4,
             // justifyContent: "flex-start"
+            ...(override || {}),
         }
     },
-    textStyle: () => {
+    textStyle: (override?: any) => {
         return {
             // fontFamily: "Poppins",
             fontSize: 12,
+            ...(override || {}),
         }
+    },
+    headerStyle: (override?: any) => {
+        return { alignItems: "center" }
     }
 }

@@ -411,36 +411,46 @@ export default class table extends Component {
                 <DinamicTable.Col key={"tipo_producto"} label='Tipo' width={130}
                     data={(e) => e.row?.tipo_producto?.descripcion}
                     textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
-                    customComponent={e => <>
-                        {(e.row.key_tipo_producto) ?
-                            <SView col={"xs-12"} center row onPress={() => {
+                    customComponent={e => {
+                        if (!e.data) return;
+                        return <>
+                            {(e.row.key_tipo_producto) ?
+                                <SView col={"xs-12"} center row onPress={() => {
 
+<<<<<<< HEAD
                                 // console.clear();
                                 // console.log("%c" + "viva", `color: #2ECC40; font-weight: bold;`);
                                 // console.log("%c" + JSON.stringify(e.row.tipo_producto, null, 2), "color: #2ECC40; font-weight: bold;");
+=======
+                                    console.clear();
+                                    console.log("%c" + "viva", `color: #2ECC40; font-weight: bold;`);
+                                    console.log("%c" + JSON.stringify(e.row.tipo_producto, null, 2), "color: #2ECC40; font-weight: bold;");
+>>>>>>> 1d76942 (ASdasd)
 
 
-                                FormularioTipoProducto.open({
-                                    editObject: e.row.tipo_producto,
-                                    onSuccess: () => {
-                                        if (this.table) {
-                                            this.table.loadData();
-                                            this.state.time = new Date().getTime();
+                                    FormularioTipoProducto.open({
+                                        editObject: e.row.tipo_producto,
+                                        onSuccess: () => {
+                                            if (this.table) {
+                                                this.table.loadData();
+                                                this.state.time = new Date().getTime();
+                                            }
                                         }
-                                    }
 
-                                })
+                                    })
 
-                                // SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto }); 
+                                    // SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto }); 
 
-                            }}>
-                                <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
-                                    <ImageLabel {...e} src={SSocket.api.inventario + "tipo_producto/.128_" + e.row.key_tipo_producto + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />
-                                </SView>
-                                <SView width={8} />
-                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.tipo_producto?.descripcion}</SText>
-                            </SView> : null}
-                    </>}
+                                }}>
+                                    <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
+                                        <ImageLabel {...e} src={SSocket.api.inventario + "tipo_producto/.128_" + e.row.key_tipo_producto + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />
+                                    </SView>
+                                    <SView width={8} />
+                                    <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.tipo_producto?.descripcion}</SText>
+                                </SView> : null}
+                        </>
+                    }
+                    }
                 />
 
                 <DinamicTable.Col key={"observacion"} label='Observación' width={150}
@@ -502,6 +512,7 @@ export default class table extends Component {
                     data={(e) => e.row?.tipo_producto?.tipo}
                     cellStyle={{ alignItems: "center", justifyContent: "flex-start", }}
                     customComponent={e => {
+                        if (!e.data) return;
                         return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(e.data) + "44", borderWidth: 1, borderColor: STheme.colorFromText(e.data) }}>
                             <SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
                         </SView>

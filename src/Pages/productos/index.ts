@@ -14,6 +14,7 @@ import pizarra from "./pizarra";
 import RegistroInventarios from "../inventario/almacen/RegistroInventarios";
 import tipo_costo from "./tipo_costo";
 import tabla from "./tipo_costo/tabla";
+import traspaso_inventario from "./traspaso_inventario";
 
 
 
@@ -31,7 +32,8 @@ export default SPage.combinePages("productos",
         ...modelo,
         ...inventario_dato,
         ...inventario,
-        ...tipo_producto
+        ...tipo_producto,
+        traspaso_inventario
 
 
     }
