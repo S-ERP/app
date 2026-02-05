@@ -139,6 +139,7 @@ export default class tipo_pago extends Component {
                 }
                 }
             >
+
                 <DinamicTable.Col key={"key"} label='Key'
                     width={50} data={e => e.row.key}
                     textStyle={{
