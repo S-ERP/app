@@ -91,6 +91,15 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
                                 .filter((c: any) => c.cantidad_hijas <= 0)
                                 .map(cuentaToText),
                         },
+                        key_tipo_pago: {
+                            col: "xs-12",
+                            // type: "select2",
+                            label: "key_tipo_pago",
+                            defaultValue: this.props.editObject?.key_tipo_pago,
+                            // options: this.state.cuentas
+                            // .filter((c: any) => c.cantidad_hijas <= 0)
+                            // .map(cuentaToText),
+                        },
                     }}
                     onSubmit={(data: any) => {
                         const finalData = {
@@ -98,6 +107,7 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
                                 key_empresa: MDL.empresa.select?.key,
                             }),
                             descripcion: data.descripcion,
+                            key_tipo_pago: data.key_tipo_pago,
                             key_cuenta_contable: findCuentaText(
                                 this.state.cuentas,
                                 data.key_cuenta_contable
