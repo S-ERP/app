@@ -272,7 +272,7 @@ export default class Suscriptores extends Component {
         <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
         <DinamicTable.Col key="key_cliente_" label="Cliente" width={100} data={(e) => e.row?.key_cliente ?? ""} customComponent={e => this.renderCliente(e.row?.cliente)} />
         <DinamicTable.Col key="key_sucursal" label="key_sucursal" width={100} data={(e) => e.row?.key_sucursal ?? ""} customComponent={e => this.renderSucursal(e.row?.sucursal)} />
-        <DinamicTable.Col key="key_empresa" label="key_empresa" width={100} data={(e) => e.row?.key_empresa ?? ""} customComponent={e => this.renderEmpresa(e.row?.empresa)} />
+        {/* <DinamicTable.Col key="key_empresa" label="key_empresa" width={100} data={(e) => e.row?.key_empresa ?? ""} customComponent={e => this.renderEmpresa(e.row?.empresa)} /> */}
 
 
 
@@ -340,7 +340,7 @@ export default class Suscriptores extends Component {
         <DinamicTable.Col key="fecha_inicio" label="Fecha de inicio" width={120} data={e => e.row?.fecha_inicio?.substring(0, 10)} />
         <DinamicTable.Col key="fecha_fin" label="Fecha de fin" width={120} data={e => e.row?.fecha_fin?.substring(0, 10)} />
 
-        <DinamicTable.Col key="key_empresa" label="Empresa" width={120} data={e => e.row?.key_empresa} />
+        {/* <DinamicTable.Col key="key_empresa" label="Empresa" width={120} data={e => e.row?.key_empresa} /> */}
         {/* <DinamicTable.Col key="estado" label="Estado" width={120} data={e => e.row?.estado} /> */}
         <DinamicTable.Col key={"fecha_on"} label="Fecha de registro" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
         <DinamicTable.Col key="key_usuario" label="Administrador" width={100} data={(e) => e.row?.key_usuario ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
