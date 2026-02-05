@@ -11,38 +11,17 @@ import PopupCrearProveedor from './Components/PopupCrearProveedor';
 import FiltroSelector from '../productos/modelo/Components/FiltroSelector';
 export default class Lista extends Component {
     onSelect = SNavigation.getParam('onSelect');
-
     constructor(props) {
         super(props);
         this.state = { selectedEstadoPago: null, };
         this.DinamicTable = null;
     }
-
     componentDidMount() {
-        // MDL.rolesPermisos
-        //     .getPermisoAsync({ url: URL, permiso: 'ver' })
-        //     .then(e => {
-        //         if (!e) {
-        //             return;
-        //         }
-        //         this.forceUpdate();
-        //     })
-        //     .catch(error => {
-        //         console.error('Error al verificar permisos:', error);
-        //         SNotification.send({
-        //             title: 'Error',
-        //             body: 'No se pudo verificar los permisos.',
-        //             time: 3000,
-        //             color: STheme.color.danger,
-        //         });
-        //     });
         window.addEventListener("keydown", this.handleKeyDown);
     }
-
     componentWillUnmount() {
         window.removeEventListener("keydown", this.handleKeyDown);
     }
-
     handleKeyDown = (e) => {
         if (e.key === "Escape") {
             this.filtroEstadoRef?.reset();
@@ -51,7 +30,6 @@ export default class Lista extends Component {
             });
         }
     };
-
     async loadInitialData() {
         try {
             const proveedores = await MDL.crm.cliente.getAll();
@@ -81,44 +59,28 @@ export default class Lista extends Component {
                 });
             }
             const registros = await MDL.compra_venta.getCuotasResumenTotal_compras();
-            // return Object.values(proveedores).map(proveedor => {
-            //     proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario) || null;
-            //     proveedor.resumen_cuota = registros.find(r => r.key_proveedor === proveedor.key) || null;
-            //     proveedor.compras = transacciones ? transacciones.filter(t => t.key_proveedor === proveedor.key) : [];
-            //     return proveedor;
-            // });
             let data = Object.values(proveedores).map(proveedor => {
                 proveedor.usuario = usuarios.find(u => u.key === proveedor.key_usuario) || null;
                 proveedor.resumen_cuota = registros.find(r => r.key_proveedor === proveedor.key) || null;
                 proveedor.compras = transacciones ? transacciones.filter(t => t.key_proveedor === proveedor.key) : [];
-                // proveedor.habilidades = habilidad.filter(hab => hab.key_usuarios?.includes(proveedor.key));
                 return proveedor;
             });
-
-            // ← Aquí aplicamos el filtro de estado de pago
             if (this.state.selectedEstadoPago?.key) {
                 const filtro = this.state.selectedEstadoPago.key;
-
                 data = data.filter(cliente => {
                     const resumen = cliente.resumen_cuota;
-
                     if (!resumen) {
                         return filtro === "Sin Deuda";
                     }
-
                     if (resumen.cantidad_en_mora > 0 || resumen.monto_en_mora > 0) {
                         return filtro === "En Mora";
                     }
-
                     if (resumen.monto_pendiente <= 0) {
                         return filtro === "Sin Deuda";
                     }
-
-                    // Si tiene monto pendiente > 0 y no está en mora → Deudor
                     return filtro === "Deudor";
                 });
             }
-
             return data;
         } catch (error) {
             console.error('Error al cargar los datos iniciales:', error);
@@ -155,7 +117,6 @@ export default class Lista extends Component {
             </SView>
         );
     }
-
     renderUsuario(usuario = {}) {
         const nombre = `${usuario?.Nombres || "Sin"} ${usuario?.Apellidos || "usuario"}`;
         return (
@@ -168,7 +129,6 @@ export default class Lista extends Component {
             </SView>
         );
     }
-
     renderProveedor(proveedor = {}) {
         const nombre = `${proveedor?.nombres || "Sin Nombre"} ${proveedor?.apellidos || ""}`;
         return (
@@ -181,7 +141,6 @@ export default class Lista extends Component {
             </SView>
         );
     }
-
     mostrarTabla() {
         return (
             <DinamicTable
@@ -274,6 +233,7 @@ export default class Lista extends Component {
                 loadData={() => this.loadInitialData()}
             >
                 <DinamicTable.Col key="index" label="#" width={40} data={e => e.index + 1} />
+                <DinamicTable.Col key="key" label="#key" width={350} data={e => e.row.key} />
                 <DinamicTable.Col key="nombre_completo" label="Proveedor" width={200} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderProveedor(e.row)} />
                 <DinamicTable.Col
                     key="estado_pago"
@@ -292,7 +252,6 @@ export default class Lista extends Component {
                             'Sin Deuda': { color: STheme.color.gray, label: 'Sin Deuda' },
                             'Deudor': { color: STheme.color.warning, label: 'Deudor' },
                             'En Mora': { color: STheme.color.danger, label: 'En Mora' },
-                            // 'Sin Deuda': { color: STheme.color.success, label: 'Sin Deuda' },
                         }[e.data] || { color: STheme.color.gray, label: 'Desconocido' };
                         return (
                             <SView row center>
@@ -316,43 +275,42 @@ export default class Lista extends Component {
                 <DinamicTable.Col key="cuota_5" wrap label="Monto Pendiente" width={90} data={e => e.row?.resumen_cuota?.monto_pendiente ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.warning}33`, }} format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')} />
                 <DinamicTable.Col key="cuota_6" wrap label="Cuotas Pendientes" width={60} data={e => e.row?.resumen_cuota?.cantidad_pendiente ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.warning}33`, }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
                 {/* <DinamicTable.Col
-                    key="pagos"
-                    label="Pagos"
-                    width={50}
-                    data={e => e.row?.compras?.length}
-                    customComponent={e =>
-                        e.row?.compras?.length > 0 ? (
-                            <SView
-                                style={{ width: 28 }}
-                                center
-                                onPress={() => SNavigation.navigate('/caja/cuotas', { key_proveedor: e.row?.key })}
-                            >
-                                <SView
-                                    style={{
-                                        width: 24,
-                                        height: 24,
-                                        borderRadius: 100,
-                                        overflow: 'hidden',
-                                        backgroundColor: `${STheme.color.card}66`,
-                                    }}
-                                >
-                                    <SIconApp name="Carrito" width={24} />
-                                </SView>
-                            </SView>
-                        ) : null
-                    }
-                /> */}
+key="pagos"
+label="Pagos"
+width={50}
+data={e => e.row?.compras?.length}
+customComponent={e =>
+e.row?.compras?.length > 0 ? (
+<SView
+style={{ width: 28 }}
+center
+onPress={() => SNavigation.navigate('/caja/cuotas', { key_proveedor: e.row?.key })}
+>
+<SView
+style={{
+width: 24,
+height: 24,
+borderRadius: 100,
+overflow: 'hidden',
+backgroundColor: `${STheme.color.card}66`,
+}}
+>
+<SIconApp name="Carrito" width={24} />
+</SView>
+</SView>
+) : null
+}
+/> */}
                 <DinamicTable.Col key="fecha_on" label="F. Creación" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, 'yyyy-MM-ddThh:mm:ss').date} textStyle={{ fontSize: 12, color: STheme.color.lightGray }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="key_usuario" label="Administrador" width={100} data={(e) => e.row?.usuario?.Nombres ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
-
             </DinamicTable>
         );
     }
     render() {
         return (
-            <SPage title="Gestión de Proveedores" disableScroll>
+            <SPage title="Gestión de Proveedores rich" disableScroll>
                 <SView row col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", paddingVertical: 8, paddingHorizontal: 12, }} >
-                    <SView col={"xs-12 sm-5 lg-2"} row center style={{ flexWrap: "wrap",  }}>
+                    <SView col={"xs-12 sm-5 lg-2"} row center style={{ flexWrap: "wrap", }}>
                         <FiltroSelector
                             ref={ref => this.filtroEstadoRef = ref}
                             label="Estado de Pago"
@@ -369,10 +327,8 @@ export default class Lista extends Component {
                             }}
                         />
                     </SView>
-                <SHr height={8} />
+                    <SHr height={8} />
                 </SView>
-
-
                 {this.mostrarTabla()}
                 <SHr height={20} />
                 <FloatButtom

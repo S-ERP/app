@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SHr, SImage, SMath, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../../Config';
 import MDL from '../../../MDL';
@@ -14,9 +14,9 @@ import PopupModeloCardex from '../Components/PopupModeloCardex';
 import PopupTag from '../../tag/Components/PopupTag';
 import PopupAgregarTags from './Components/PopupAgregarTags';
 import FiltroSelector from './Components/FiltroSelector';
-import PopupAgregarTipoCosto from './Components/PopupAgregarTipoCosto';
 import PopupDesgloseTipoCosto from './Components/PopupDesgloseTipoCosto';
 import FormularioTipoProducto from '../Components/FormularioTipoProducto';
+import PopupCrearProveedor from '../../proveedor/Components/PopupCrearProveedor';
 export default class table extends Component {
     constructor(props) {
         super(props);
@@ -44,7 +44,6 @@ export default class table extends Component {
             this.filtroStockRef?.reset();
             this.filtroTipoContableRef?.reset();
             this.filtroTipoProductoRef?.reset();
-
             this.setState({
                 selectedAlmacen: null,
                 selectedStock: null,
@@ -55,27 +54,12 @@ export default class table extends Component {
             });
         }
     };
-
-
     async loadData() {
         try {
             const monedas = await MDL.empresa.getMonedas().catch(() => []);
             const clientes = await MDL.crm.cliente.getAll().catch(() => []);
             const tipo_costos = await MDL.inventario.getAllTipoCosto().catch(() => []);
             const modelos = await MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "") ?? [];
-
-            // let modelos = [];
-
-            // if (this.state.selectedAlmacen?.key) {
-            //     modelos = await MDL.inventario
-            //         .getAllModeloStock(this.state.selectedAlmacen.key)
-            //         .catch(() => []);
-            // } else {
-            //     modelos = await MDL.inventario
-            //         .getAllModelo?.()
-            //         ?.catch(() => []) || [];
-            // }
-
             let data_mejorada = (modelos ?? []).map(e => ({
                 ...e,
                 compra_moneda: monedas.find(m => m?.key === e?.precio_compra_moneda) || {},
@@ -85,22 +69,21 @@ export default class table extends Component {
                     cliente: clientes.find(cl => cl?.key === c?.key_cliente) || {},
                     tipo_costo: tipo_costos.find(tc => tc.key === c.key_tipo_costo) || {},
                 })),
+                proveedores: (e?.proveedores ?? []).map(c => ({
+                    ...c,
+                    proveedor: clientes.find(cl => cl?.key === c?.key_proveedor) || {},
+                })),
                 tipo_producto: e?.tipo_producto || {},
                 marca: e?.marca || {},
-                proveedores: e?.proveedores ?? [],
                 tags: e?.tags ?? [],
                 stock: e?.stock ?? 0,
             }));
-
-            // filtros normales
             if (this.state.selectedStock?.key === "con_stock") {
                 data_mejorada = data_mejorada.filter(m => Number(m.stock) > 0);
             }
-
             if (this.state.selectedStock?.key === "sin_stock") {
                 data_mejorada = data_mejorada.filter(m => !m.stock || Number(m.stock) === 0);
             }
-
             if (
                 this.state.selectedTipoCuenta?.key &&
                 this.state.selectedTipoCuenta.key !== "Todos"
@@ -109,7 +92,6 @@ export default class table extends Component {
                     m => m?.tipo_producto?.tipo === this.state.selectedTipoCuenta.key
                 );
             }
-
             if (
                 this.state.selectedTipoModelo?.key &&
                 this.state.selectedTipoModelo.key !== "Todos"
@@ -118,12 +100,9 @@ export default class table extends Component {
                     m => m?.tipo_producto?.descripcion === this.state.selectedTipoModelo.key
                 );
             }
-
             this.modelos = data_mejorada;
             return data_mejorada;
-
         } catch (error) {
-            // 🔥 solo errores reales
             console.error("Error real en loadData:", error);
             SPopup.alert(
                 "Error al cargar modelos",
@@ -132,52 +111,6 @@ export default class table extends Component {
             return [];
         }
     }
-
-    // async loadData() {
-    //     try {
-    //         const monedas = await MDL.empresa.getMonedas() ?? [];
-    //         const modelos = await MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "") ?? [];
-    //         const clientes = await MDL.crm.cliente.getAll() ?? [];
-    //         const tipo_costos = await MDL.inventario.getAllTipoCosto() ?? []; // <-- traes todos los tipos de costo
-    //         let data_mejorada = modelos.map(e => ({
-    //             ...e,
-    //             compra_moneda: monedas.find(m => m?.key === e?.precio_compra_moneda) || {},
-    //             venta_moneda: monedas.find(m => m?.key === e?.precio_venta_moneda) || {},
-    //             contactos: (e?.contactos ?? []).map(contacto => ({
-    //                 ...contacto,
-    //                 cliente: clientes.find(a => a?.key === contacto?.key_cliente) || {},
-    //                 tipo_costo: tipo_costos.find(tc => tc.key === contacto.key_tipo_costo) || {}, // <-- agregamos tipo_costo
-    //             })),
-    //             tipo_producto: e?.tipo_producto || {},
-    //             marca: e?.marca || {},
-    //             proveedores: e?.proveedores ?? [],
-    //             tags: e?.tags ?? [],
-    //             stock: e?.stock ?? 0,
-    //         }));
-    //         if (this.state.selectedStock?.key === "con_stock") {
-    //             data_mejorada = data_mejorada.filter(m => Number(m.stock) > 0);
-    //         }
-    //         if (this.state.selectedStock?.key === "sin_stock") {
-    //             data_mejorada = data_mejorada.filter(m => !m.stock || Number(m.stock) === 0);
-    //         }
-    //         if (this.state.selectedTipoCuenta?.key && this.state.selectedTipoCuenta.key !== "Todos") {
-    //             data_mejorada = data_mejorada.filter(
-    //                 m => m?.tipo_producto?.tipo === this.state.selectedTipoCuenta.key
-    //             );
-    //         }
-    //         if (this.state.selectedTipoModelo?.key && this.state.selectedTipoModelo.key !== "Todos") {
-    //             data_mejorada = data_mejorada.filter(
-    //                 m => m?.tipo_producto?.descripcion === this.state.selectedTipoModelo.key
-    //             );
-    //         }
-    //         this.modelos = data_mejorada;
-    //         return data_mejorada;
-    //     } catch (error) {
-    //         console.error("Error grave en loadData():", error);
-    //         SPopup.alert( "Error al cargar modelos: " + (error?.message || "Error desconocido") );
-    //         return [];
-    //     }
-    // }
     renderColorPreview(nombre: string, color: string) {
         const displayName = nombre?.trim() || "Etiqueta de ejemplo";
         const backgroundColor = `${color}33`;
@@ -188,7 +121,7 @@ export default class table extends Component {
         );
     }
     render() {
-        return <SPage title={"Modelos"} disableScroll >
+        return <SPage title={"Modelossssss"} disableScroll >
             <SView row col={"xs-12"} style={{
                 backgroundColor: "transparent",
                 borderBottomWidth: 1,
@@ -267,7 +200,6 @@ export default class table extends Component {
                         numColumns: 2,
                         label: e.row.descripcion,
                         options: [
-                           
                             {
                                 label: "Editar",
                                 icon: <SIconApp name='Edit' />,
@@ -303,7 +235,7 @@ export default class table extends Component {
                                 }
                             },
                             {
-                                label: "Lotes",
+                                label: "Ver Desglose Lotes",
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
                                     PopupDesglose.open({
@@ -312,7 +244,7 @@ export default class table extends Component {
                                 }
                             },
                             {
-                                label: "Cardex",
+                                label: "Ver Desglose Cardex",
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
                                     PopupModeloCardex.open({
@@ -321,7 +253,7 @@ export default class table extends Component {
                                 }
                             },
                             {
-                                label: "Costos",
+                                label: "Ver Desglose Tipo Costos",
                                 icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
                                 onPress: () => {
                                     PopupDesgloseTipoCosto.open({
@@ -336,17 +268,26 @@ export default class table extends Component {
                             },
                             {
                                 label: "Agregar Proveedor",
-                                icon: <SIconApp name='addFoto' fill={STheme.color.card} />,
+                                icon: <SIconApp name="addFoto" fill={STheme.color.card} />,
                                 onPress: () => {
                                     SNavigation.navigate("/proveedor", {
                                         onSelect: (prov) => {
-                                            MDL.inventario.saveModeloProveedor({
-                                                key_modelo: e.row.key,
-                                                key_proveedor: prov.key,
-                                            })
-                                        }
+                                            if (!prov?.key) return;
+                                            const key_modelo = e.row.key;
+                                            const key_proveedor = prov.key;
+                                            console.log("%cModelo:", "color: #2ECC40; font-weight: bold;", key_modelo);
+                                            console.log("%cProveedor:", "color: #2ECC40; font-weight: bold;", key_proveedor);
+                                            MDL.inventario
+                                                .saveModeloProveedor({ key_modelo, key_proveedor, })
+                                                .then(() => {
+                                                    this.table?.loadData();
+                                                })
+                                                .catch((err: any) => {
+                                                    console.error("Error al guardar proveedor:", err);
+                                                });
+                                        },
                                     });
-                                }
+                                },
                             },
                             {
                                 label: "Agregar Tag",
@@ -367,25 +308,21 @@ export default class table extends Component {
                                 },
                             }, {
                                 label: "Ingredientes",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                icon: <SIconApp name='addFoto' fill={STheme.color.card} />,
                                 onPress: () => {
                                     SNavigation.navigate("/productos/modelo/ingrediente", {
                                         key_modelo: e.row.key
                                     })
                                 }
                             },
-
-                             
                         ]
                     });
                 }}
-
                 loadInitialState={async () => {
                     return {
                         sorters: [{ key: "nombre", order: "asc", type: "string" }],
                     }
                 }}
-
             >
                 <DinamicTable.Col key="index" label="#" textStyle={{ color: STheme.color.lightGray, fontSize: 10 }} width={30} data={(e) => e.index + 1} />
                 <DinamicTable.Col key={"codigo_ref"} label='Cod. Ref.' width={60} data={(e) => e.row.codigo_ref} />
@@ -408,7 +345,6 @@ export default class table extends Component {
                             </SView> : null}
                     </>}
                 />
-
                 <DinamicTable.Col key={"tipo_producto"} label='Tipo' width={130}
                     data={(e) => e.row?.tipo_producto?.descripcion}
                     textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
@@ -417,12 +353,6 @@ export default class table extends Component {
                         return <>
                             {(e.row.key_tipo_producto) ?
                                 <SView col={"xs-12"} center row onPress={() => {
-
-                                // console.clear();
-                                // console.log("%c" + "viva", `color: #2ECC40; font-weight: bold;`);
-                                // console.log("%c" + JSON.stringify(e.row.tipo_producto, null, 2), "color: #2ECC40; font-weight: bold;");
-
-
                                     FormularioTipoProducto.open({
                                         editObject: e.row.tipo_producto,
                                         onSuccess: () => {
@@ -431,11 +361,7 @@ export default class table extends Component {
                                                 this.state.time = new Date().getTime();
                                             }
                                         }
-
                                     })
-
-                                    // SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto }); 
-
                                 }}>
                                     <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
                                         <ImageLabel {...e} src={SSocket.api.inventario + "tipo_producto/.128_" + e.row.key_tipo_producto + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />
@@ -447,7 +373,6 @@ export default class table extends Component {
                     }
                     }
                 />
-
                 <DinamicTable.Col key={"observacion"} label='Observación' width={150}
                     textStyle={{
                         fontSize: 12,
@@ -471,19 +396,32 @@ export default class table extends Component {
                 <DinamicTable.Col key={"stock"} label='Stock'
                     dataType='number'
                     width={70} data={(e) => e.row.stock ? parseFloat(e.row.stock) : 0} />
-                <DinamicTable.Col key={"proveedores"} label='Proveedores'
+                <DinamicTable.Col
+                    key="proveedores"
+                    label="Proveedores"
                     width={120}
                     data={(e) => (e.row.proveedores ?? []).map(p => p?.proveedor?.razon_social)}
-                    customComponent={e => <SView row>
-                        {(e.row.proveedores ?? []).map(p => {
-                            return <SView center row>
-                                <SView style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4 }} center row >
-                                    <SText fontSize={10} numberOfLines={1} style={{ textTransform: "uppercase" }} >{p?.proveedor?.razon_social}</SText>
+                    customComponent={e => (
+                        <SView row>
+                            {(e.row.proveedores ?? []).map((p, index) => (
+                                <SView key={p?.proveedor?.key || index} center row>
+                                    <SView style={{ padding: 2, borderWidth: 1, borderColor: STheme.color.lightGray, borderRadius: 4, }} center row
+                                        onPress={() => {
+                                            const proveedor = { ...p.proveedor, quitar: true, key_modelo_proveedor: p.key, key_modelo: p.key_modelo };
+                                            PopupCrearProveedor.open({
+                                                editObject: proveedor,
+                                                key_empresa: p.key_empresa,
+                                                onSuccess: () => this.table.loadData(),
+                                            });
+                                        }}
+                                    >
+                                        <SText fontSize={10} numberOfLines={1} style={{ textTransform: "uppercase" }} > {p?.proveedor?.razon_social} </SText>
+                                    </SView>
+                                    <SView width={5} />
                                 </SView>
-                                <SView width={5} />
-                            </SView>
-                        })}
-                    </SView>}
+                            ))}
+                        </SView>
+                    )}
                 />
                 <DinamicTable.Col key="tags" label="Tags" width={120} data={e => (e.row?.tags ?? []).map(p => p?.tags?.nombre)}
                     customComponent={e => (
