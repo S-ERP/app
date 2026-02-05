@@ -1,33 +1,24 @@
 import React, { Component } from 'react';
 import { ScrollView } from 'react-native';
-import { SForm, SHr, SNotification, SPopup, SText, STheme, SView, Upload } from 'servisofts-component';
+import { SForm, SHr, SLoad, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
 import InputFoto from '../../../Components/InputFoto';
-import tipo_pago from '../../../Components/empresa/tipo_pago';
 import SelectorPasarelaEmpresa from '../../../Components/Selectores/SelectorPasarelaEmpresa';
+import InputSelector from '../../../Components/Selectores/InputSelector';
 type Props = {
     key_empresa: string,
     editObject?: any,
     onCancel?: Function,
     onSuccess?: Function,
 }
-
 const cuentaToText = (c: any) => {
     if (!c) return "";
     return `${c.codigo} - ${c.descripcion}`
 }
-const monedaToText = (c: any) => {
-    if (!c) return "";
-    return `${c.descripcion}`
-}
 const findCuentaText = (arr: any[], text: string) => {
     const cuenta = arr.find(c => cuentaToText(c) === text);
     return cuenta ? cuenta : null;
-}
-const findMonedaText = (arr: any[], text: string) => {
-    const moneda = arr.find(c => monedaToText(c) === text);
-    return moneda ? moneda : null;
 }
 export default class PopupCrearTipoPago extends Component<Props> {
     static open(props: Props) {
@@ -73,24 +64,26 @@ export default class PopupCrearTipoPago extends Component<Props> {
                     key_tipo_pago: tipo?.descripcion,
                 })
             }
-            // this.setState({
-            //     tipo_pago: Object.values(item).map((tp: any) => (tp.key))
-            // });
         }).catch(e => console.error(e));
-
         MDL.empresa.getFull().then(empresa => {
-            this.state.monedas = empresa.monedas;
-            this.forceUpdate();
-        })
+            this.setState({ monedas: empresa.monedas }, () => {
+                if (this.form && this.props.editObject?.key_moneda) {
+                    const moneda = this.state.monedas.find(c => c.key == this.props.editObject.key_moneda);
+                    if (moneda) {
+                        this.form.setValues({
+                            key_moneda: moneda.key // <- aquí pasamos el value
+                        });
+                    }
+                }
+            });
+        });
         MDL.contabilidad.getCuentas().then(cuentas => {
             const arrCuentas = Object.values(cuentas)
             arrCuentas.map((cuenta: any) => {
                 const hijas = arrCuentas.filter((c: any) => c.codigo.startsWith(cuenta.codigo) && c.codigo != cuenta.codigo);
                 cuenta.cantidad_hijas = hijas.length
-
             })
             this.state.cuentas = Object.values(cuentas).sort((a: any, b: any) => (a.codigo > b.codigo) ? 1 : -1);
-            // this.setState({ cuentas: });
             this.forceUpdate();
             if (this.form) {
                 const cuenta = this.state.cuentas.find(c => c.key == this.props.editObject?.key_cuenta_contable)
@@ -104,6 +97,9 @@ export default class PopupCrearTipoPago extends Component<Props> {
         })
     }
     render() {
+        if (!this.state.cuentas) return <SLoad />
+        if (!this.state.monedas) return <SLoad />
+        console.log(this.state.monedas)
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Tipo De Pago"}</SText>
             <ScrollView>
@@ -125,9 +121,7 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             selectStyle: {
                                 fontSize: 10,
                             },
-                            // autoFocus:true,
-
-                            options: this.state.tipo_pago.map(a => a.descripcion),   // siempre array
+                            options: this.state.tipo_pago.map(a => a.descripcion),// siempre array
                             defaultValue: this.state.tipo_pago.find(a => a.key == this.props.editObject?.key_tipo_pago)?.descripcion,
                             isRequired: true,
                             onChangeText: (e) => {
@@ -136,7 +130,6 @@ export default class PopupCrearTipoPago extends Component<Props> {
                                     this.setState({
                                         tp: tp
                                     })
-                                    console.log(tp);
                                 }
                             }
                         },
@@ -150,7 +143,6 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             },
                             label: "Nombre del tipo de pago", placeholder: "Ingresa el nombre del tipo de pago",
                             isRequired: true,
-
                             defaultValue: this.props.editObject?.descripcion,
                             onSubmitEditing: () => {
                                 if (this.form) this.form.submit();
@@ -162,7 +154,6 @@ export default class PopupCrearTipoPago extends Component<Props> {
                                     style={{ width: 50, height: 50, }} />
                             </SView>,
                         },
-
                         "key_cuenta_contable": {
                             col: "xs-12",
                             type: "select2",
@@ -179,64 +170,62 @@ export default class PopupCrearTipoPago extends Component<Props> {
                                 const cuenta = findCuentaText(this.state.cuentas, e);
                                 let mt = "";
                                 if (cuenta) {
-                                    const moneda = this.state.monedas.find(c => c.key == cuenta?.key_moneda);
-                                    mt = monedaToText(moneda);
+                                    if (cuenta.key_moneda) {
+                                        this.form?.setValues({
+                                            key_moneda: cuenta?.key_moneda
+                                        })
+                                    }
                                 }
-                                this.form?.setValues({
-                                    key_moneda: mt
-                                })
-                                // if (this.state.cuenta != cuenta) {
-                                //     this.setState({
-                                //         cuenta: cuenta
-                                //     })
-                                //     console.log(cuenta);
-                                // }
                             },
                             isRequired: true,
-
                         },
                         "key_moneda": {
-                            col: "xs-12",
-                            type: "select2",
-                            label: "Moneda",
-                            style: { paddingStart: 0, fontSize: 10 },
-                            labelStyle: { top: -10, },
+                            label: "Tipos de key_moneda",
+                            type: "custom",
+                            customInputClass: InputSelector,
+                            style: { width: "100%" },
+                            defaultValue: this.props.editObject?.key_moneda || "",
+                            options: this.state.monedas.map((item: any) => ({
+                                label: item.observacion,
+                                value: item.key,
+                                customComponent: (e: any) => <SText fontSize={12} color={STheme.color.lightGray}>{e.data.descripcion}</SText>,
+                                data: item
+                            }))
+                        },
+                        "habilita_venta": {
+                            col: "xs-5.5 sm-4",
+                            style: { paddingStart: 0, fontSize: 10, top: 8, },
+                            labelStyle: { left: 0, top: -10, },
+                            type: "checkBox",
                             inputStyle: { paddingStart: 8, fontSize: 10 },
-                            selectStyle: {
-                                fontSize: 10,
-                            },
-                            defaultValue: monedaToText(this.state.monedas.find(c => c.key == this.props.editObject?.key_moneda)),
-                            options: this.state.monedas.map(monedaToText),
-                            isRequired: true,
-
-                        }
+                            selectStyle: { fontSize: 10, },
+                            label: "Habilitar en Ventas?",
+                            defaultValue: this.props.editObject?.habilita_venta,
+                        },
+                        "habilita_compra": {
+                            col: "xs-5.5 sm-4",
+                            style: { paddingStart: 0, fontSize: 10, top: 8, },
+                            labelStyle: { left: 0, top: -10, },
+                            type: "checkBox",
+                            inputStyle: { paddingStart: 8, fontSize: 10 },
+                            selectStyle: { fontSize: 10, },
+                            label: "Habilitar en Compras?",
+                            defaultValue: this.props.editObject?.habilita_compra,
+                        },
                     }}
                     onSubmit={(data: any) => {
                         data.key = this.props.editObject?.key;
                         const cuenta = findCuentaText(this.state.cuentas, data.key_cuenta_contable);
-                        const moneda = findMonedaText(this.state.monedas, data.key_moneda);
                         data.key_cuenta_contable = cuenta?.key;
                         data.key_tipo_pago = this.state.tipo_pago.find(a => a.descripcion == data.key_tipo_pago)?.key;
-                        data.key_moneda = moneda?.key;
                         data.key_pasarela_empresa = this.state.pasarela_empresa?.key;
-                        console.log(data);
                         SNotification.send({
                             key: "tipo_pago",
                             title: "Tipo de pago",
-                            // body: "Tipo de pago se ha guardado correctamente.",
-                            // time: 3000,
                             type: "loading",
-                            // color: STheme.color.success,
                         });
                         MDL.caja.empresa_tipo_pago_save(data).then((resp: any) => {
                             if (this.props.onSuccess) this.props.onSuccess(resp)
-
-                            // if (this._ref.image_sucursal) {
-                            //     const value = this._ref.image_sucursal.getValue();
-                            //     if (Array.isArray(value)) {
-                            //         Upload.sendPromise({ file: value[0], compress: false }, (SSocket.api as any).empresa + "upload/sucursal/" + resp.key)
-                            //     }
-                            // }
                             this.forceUpdate();
                             SNotification.send({
                                 key: "tipo_pago",
@@ -245,8 +234,6 @@ export default class PopupCrearTipoPago extends Component<Props> {
                                 time: 3000,
                                 color: STheme.color.success,
                             });
-
-
                         }).catch((e: any) => {
                             if (this.props.onSuccess) this.props.onSuccess(e)
                             console.error("Error al guardar el Tipo de pago:", e);
@@ -284,14 +271,10 @@ export default class PopupCrearTipoPago extends Component<Props> {
         </SView>
     }
 }
-
-
 class Btn extends React.Component<any> {
     render() {
         const styles: any = {
-
         }
-
         if (this.props.type == "danger") {
             styles.backgroundColor = STheme.color.danger;
         }

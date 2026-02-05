@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import { SIcon, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import MDL from '../../MDL';
 import FloatButtom from '../../Components/FloatButtom';
@@ -9,7 +8,6 @@ import Config from '../../Config';
 import FloatMenu from '../../Components/FloatMenu';
 import SIconApp from '../../Assets/SIconApp';
 import PuntoDeVentaChoise from './Components/PuntoDeVentaChoise';
-
 export default class tipo_pago extends Component {
     componentDidMount() {
         MDL.rolesPermisos.getPermisoAsync({ url: "/empresa/tipo_pago", permiso: "ver" }).then((permit) => {
@@ -23,8 +21,6 @@ export default class tipo_pago extends Component {
     }
     async loadData() {
         try {
-
-
             const tipo_pago = await MDL.caja.tipo_pago_getAll();
             const empresa_tipo_pago = await MDL.caja.empresa_tipo_pago_getAll();
             const empresa_tipo_pago_punto_venta = await MDL.caja.empresa_tipo_pago_punto_venta_getAll();
@@ -46,16 +42,13 @@ export default class tipo_pago extends Component {
                         //     // if (!pv?.empresa_tipo_pago) return;
                         //     // const find = pv.empresa_tipo_pago.find(pvtp => pvtp.key == a.key)
                         //     const find = 
-
                         if (pv) a.puntos_ventas.push(pv);
                         // })
                     })
                 })
-
                 if (a.key_pasarela_empresa) {
                     a.pasarela = pasarela_empresa.find(pe => pe.key == a?.key_pasarela_empresa);
                 }
-
                 if (a.key_moneda) {
                     a.moneda = empresa.monedas.find(b => b.key == a.key_moneda);
                 }
@@ -72,10 +65,8 @@ export default class tipo_pago extends Component {
             return []
         }
     }
-
     render() {
-        return <SPage title={"Tipo Pago"} disableScroll>
-
+        return <SPage title={"Tipo Pagos"} disableScroll>
             <DinamicTable
                 ref={ref => this.DinamicTable = ref}
                 {...Config.table.applyTheme()}
@@ -87,65 +78,64 @@ export default class tipo_pago extends Component {
                     }
                 }}
                 onSelect={e => {
-                    if (MDL.rolesPermisos.getPermiso({ url: "/empresa/tipo_pago", permiso: 'edit' })) {
-                        FloatMenu.open({
-                            e: e.evt,
-                            label: e.row.descripcion,
-                            options: [
-                                {
-                                    label: "Editar", icon: <SIconApp name='Edit' />,
-                                    onPress: () => {
-                                        PopupCrearTipoPago.open({
-                                            editObject: e.row,
-                                            onSuccess: async () => {
-                                                this.DinamicTable.loadData();
-                                            }
-                                        })
-                                    }
-                                },
-                                {
-                                    label: "Eliminar", icon: <SIconApp name='Delete' />,
-                                    onPress: () => {
-                                        SPopup.confirm({
-                                            title: "Eliminar Tipo de Pago",
-                                            message: "¿Estás seguro de eliminar este tipo de pago?",
-                                            onPress: () => {
-                                                MDL.caja.empresa_tipo_pago_save({
-                                                    ...e.row,
-                                                    estado: 0,
-                                                }).then((resp: any) => {
-                                                    this.DinamicTable.loadData();
-                                                }).catch(e => {
-
-                                                })
-                                            }
-                                        })
-                                    }
-                                },
-                                {
-                                    label: "Duplicar", icon: <SIconApp name='Add' />,
-                                    onPress: () => {
-                                        MDL.caja.empresa_tipo_pago_save({
-                                            ...e.row,
-                                            key: null,
-                                            descripcion: e.row.descripcion + " (copy)"
-                                        }).then((resp: any) => {
+                    // if (MDL.rolesPermisos.getPermiso({ url: "/empresa/tipo_pago", permiso: 'edit' })) {
+                    FloatMenu.open({
+                        e: e.evt,
+                        label: e.row.descripcion,
+                        options: [
+                            {
+                                label: "Editar", icon: <SIconApp name='Edit' />,
+                                onPress: () => {
+                                    console.clear();
+                                    console.log("%c" + JSON.stringify(e.row, null, 2), "color: #2ECC40; font-weight: bold;");
+                                    PopupCrearTipoPago.open({
+                                        editObject: e.row,
+                                        onSuccess: async () => {
                                             this.DinamicTable.loadData();
-                                        }).catch(e => {
-
-                                        })
-                                        // PopupCrearTipoPago.open({
-                                        //     editObject: e.row,
-                                        //     onSuccess: async () => {
-                                        //         this.DinamicTable.loadData();
-                                        //     }
-                                        // })
-                                    }
-                                },
-
-                            ]
-                        })
-                    }
+                                        }
+                                    })
+                                }
+                            },
+                            {
+                                label: "Eliminar", icon: <SIconApp name='Delete' />,
+                                onPress: () => {
+                                    SPopup.confirm({
+                                        title: "Eliminar Tipo de Pago",
+                                        message: "¿Estás seguro de eliminar este tipo de pago?",
+                                        onPress: () => {
+                                            MDL.caja.empresa_tipo_pago_save({
+                                                ...e.row,
+                                                estado: 0,
+                                            }).then((resp: any) => {
+                                                this.DinamicTable.loadData();
+                                            }).catch(e => {
+                                            })
+                                        }
+                                    })
+                                }
+                            },
+                            {
+                                label: "Duplicar", icon: <SIconApp name='Add' />,
+                                onPress: () => {
+                                    MDL.caja.empresa_tipo_pago_save({
+                                        ...e.row,
+                                        key: null,
+                                        descripcion: e.row.descripcion + " (copy)"
+                                    }).then((resp: any) => {
+                                        this.DinamicTable.loadData();
+                                    }).catch(e => {
+                                    })
+                                    // PopupCrearTipoPago.open({
+                                    //     editObject: e.row,
+                                    //     onSuccess: async () => {
+                                    //         this.DinamicTable.loadData();
+                                    //     }
+                                    // })
+                                }
+                            },
+                        ]
+                    })
+                    // }
                 }
                 }
             >
@@ -181,11 +171,94 @@ export default class tipo_pago extends Component {
                     width={260}
                     wrap
                     textStyle={{
-                        // fontWeight: "bold"
                     }}
                     data={e => e.row.descripcion} />
-
-                <DinamicTable.Col key={"moneda"} width={80} label='Moneda' data={e => e.row.moneda?.descripcion}
+                {/* <DinamicTable.Col
+                    key={"habilita_venta"}
+                    label="Habilita Venta"
+                    width={90}
+                    wrap
+                    data={colEvent => colEvent.row.habilita_venta}
+                    customComponent={colEvent => {
+                        const tipoPago = colEvent.row ?? { nombre: "Desconocido" };
+                        return (
+                            <SView col="xs-12" row center padding={8}>
+                                <SInput
+                                    type="checkBox"
+                                    value={!!tipoPago.habilita_venta}
+                                    editable={!!tipoPago.habilita_venta}
+                                    onChangeText={(nuevoValorHabilitaVenta) => {
+                                        const tipoPagoActualizado = { ...tipoPago, habilita_venta: nuevoValorHabilitaVenta, };
+                                        MDL.caja.empresa_tipo_pago_save(tipoPagoActualizado)
+                                            .then(() => {
+                                                this.DinamicTable.loadData();
+                                                SNotification.send({
+                                                    key: "tipo_pago",
+                                                    title: "Tipo de pago actualizado",
+                                                    body: "El tipo de pago se guardó correctamente.",
+                                                    time: 3000,
+                                                    color: STheme.color.success,
+                                                });
+                                            })
+                                            .catch(() => {
+                                                SNotification.send({
+                                                    key: "tipo_pago",
+                                                    title: "Error",
+                                                    body: "No se pudo actualizar el tipo de pago.",
+                                                    time: 3000,
+                                                    color: STheme.color.danger,
+                                                });
+                                            });
+                                    }}
+                                />
+                            </SView>
+                        );
+                    }}
+                />
+                <DinamicTable.Col
+                    key={"habilita_compra"}
+                    label="Habilita Compra"
+                    width={100}
+                    wrap
+                    data={colEvent => colEvent.row.habilita_compra}
+                    customComponent={colEvent => {
+                        const tipoPago = colEvent.row ?? { nombre: "Desconocido" };
+                        return (
+                            <SView col="xs-12" row center padding={8}>
+                                <SInput
+                                    type="checkBox"
+                                    value={!!tipoPago.habilita_compra}
+                                    editable={!!tipoPago.habilita_compra}
+                                    onChangeText={(nuevoValorHabilitaVenta) => {
+                                        const tipoPagoActualizado = { ...tipoPago, habilita_compra: nuevoValorHabilitaVenta, };
+                                        MDL.caja.empresa_tipo_pago_save(tipoPagoActualizado)
+                                            .then(() => {
+                                                this.DinamicTable.loadData();
+                                                SNotification.send({
+                                                    key: "tipo_pago",
+                                                    title: "Tipo de pago actualizado",
+                                                    body: "El tipo de pago se guardó correctamente.",
+                                                    time: 3000,
+                                                    color: STheme.color.success,
+                                                });
+                                            })
+                                            .catch(() => {
+                                                SNotification.send({
+                                                    key: "tipo_pago",
+                                                    title: "Error",
+                                                    body: "No se pudo actualizar el tipo de pago.",
+                                                    time: 3000,
+                                                    color: STheme.color.danger,
+                                                });
+                                            });
+                                    }}
+                                />
+                            </SView>
+                        );
+                    }}
+                /> */}
+                <DinamicTable.Col key={"moneda"} width={60} label='Moneda' data={e => e.row.moneda?.observacion}
+                    // <DinamicTable.Col key={"moneda"} width={80} label='Moneda' data={e => e.row.moneda?.descripcion}
                     textStyle={{
                         fontSize: 12,
                         textAlign: "center"
@@ -253,7 +326,6 @@ export default class tipo_pago extends Component {
                                 key_punto_venta: selevt.key,
                             }).then(e => {
                                 MDL.empresa._getFullCache.key_empresa = "";
-
                                 SNotification.remove(k)
                                 this.DinamicTable.loadData();
                             }).catch(e => {
@@ -264,14 +336,12 @@ export default class tipo_pago extends Component {
                                     color: STheme.color.danger,
                                     time: 4000,
                                 })
-
                             })
                             console.log(evt, selevt, e.row)
                         }}
                     />}
                 />
             </DinamicTable>
-
             <FloatButtom onPress={() => {
                 PopupCrearTipoPago.open({
                     onSuccess: async () => {

@@ -202,7 +202,8 @@ export default class table extends Component {
                         options: [
                             {
                                 label: "Editar",
-                                icon: <SIconApp name='Edit' />,
+                                icon: <SIconApp name='Pencil' fill={STheme.color.text}/>,
+                                // icon: <SIconApp name='Edit' />,
                                 onPress: () => {
                                     FormularioModelo.open({
                                         editObject: e.row,
@@ -216,7 +217,8 @@ export default class table extends Component {
                             },
                             {
                                 label: "Eliminar",
-                                icon: <SIconApp name='Delete' />,
+                                icon: <SIconApp name='crmeliminar' fill={STheme.color.danger}  />,
+                                // icon: <SIconApp name='Delete' />,
                                 onPress: () => {
                                     SPopup.confirm({
                                         title: "Eliminar Modelo",
@@ -259,7 +261,7 @@ export default class table extends Component {
                             },
                             {
                                 label: "Ver Desglose Tipo Costos",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                icon: <SIconApp name='Eyes' fill={STheme.color.card} />,
                                 onPress: () => {
                                     PopupDesgloseTipoCosto.open({
                                         key_modelo: e.row.key,
@@ -291,7 +293,7 @@ export default class table extends Component {
                             },
                             {
                                 label: "Ver Desglose Lotes",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                icon: <SIconApp name='Eyes' fill={STheme.color.card} />,
                                 onPress: () => {
                                     PopupDesglose.open({
                                         key_modelo: e.row.key
@@ -310,7 +312,7 @@ export default class table extends Component {
                             },
                             {
                                 label: "Ver Desglose Cardex",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                icon: <SIconApp name='Eyes' fill={STheme.color.card} />,
                                 onPress: () => {
                                     PopupModeloCardex.open({
                                         key_modelo: e.row.key
