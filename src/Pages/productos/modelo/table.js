@@ -235,38 +235,6 @@ export default class table extends Component {
                                 }
                             },
                             {
-                                label: "Ver Desglose Lotes",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    PopupDesglose.open({
-                                        key_modelo: e.row.key
-                                    })
-                                }
-                            },
-                            {
-                                label: "Ver Desglose Cardex",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    PopupModeloCardex.open({
-                                        key_modelo: e.row.key
-                                    })
-                                }
-                            },
-                            {
-                                label: "Ver Desglose Tipo Costos",
-                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
-                                onPress: () => {
-                                    PopupDesgloseTipoCosto.open({
-                                        key_modelo: e.row.key,
-                                        onSuccess: () => {
-                                            if (this.table) {
-                                                this.table.loadData();
-                                            }
-                                        }
-                                    })
-                                }
-                            },
-                            {
                                 label: "Agregar Proveedor",
                                 icon: <SIconApp name="addFoto" fill={STheme.color.card} />,
                                 onPress: () => {
@@ -290,6 +258,20 @@ export default class table extends Component {
                                 },
                             },
                             {
+                                label: "Ver Desglose Tipo Costos",
+                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    PopupDesgloseTipoCosto.open({
+                                        key_modelo: e.row.key,
+                                        onSuccess: () => {
+                                            if (this.table) {
+                                                this.table.loadData();
+                                            }
+                                        }
+                                    })
+                                }
+                            },
+                            {
                                 label: "Agregar Tag",
                                 icon: <SIconApp name='addFoto' fill={STheme.color.card} />,
                                 onPress: () => {
@@ -306,11 +288,31 @@ export default class table extends Component {
                                         onCancel: () => { }
                                     });
                                 },
-                            }, {
+                            },
+                            {
+                                label: "Ver Desglose Lotes",
+                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    PopupDesglose.open({
+                                        key_modelo: e.row.key
+                                    })
+                                }
+                            },
+
+                            {
                                 label: "Ingredientes",
                                 icon: <SIconApp name='addFoto' fill={STheme.color.card} />,
                                 onPress: () => {
                                     SNavigation.navigate("/productos/modelo/ingrediente", {
+                                        key_modelo: e.row.key
+                                    })
+                                }
+                            },
+                            {
+                                label: "Ver Desglose Cardex",
+                                icon: <SIconApp name='Eyes' fill={STheme.color.text} />,
+                                onPress: () => {
+                                    PopupModeloCardex.open({
                                         key_modelo: e.row.key
                                     })
                                 }
@@ -423,6 +425,26 @@ export default class table extends Component {
                         </SView>
                     )}
                 />
+
+                <DinamicTable.Col
+                    key={"proveedores2_"}
+                    label='Proveedores'
+                    width={120}
+                    data={(e) => (e.row.proveedores ?? []).map(p => p?.proveedor?.key)}
+                    customComponent={e => (
+                        <SView row>
+                            {(e.row.proveedores ?? []).map((p, index) => {
+                                return <SView center row>
+                                    <SView style={{ width: 24, height: 24, borderRadius: 24, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.card }} center row >
+                                        {p?.key_proveedor ? (<SImage src={`${SSocket.api.root}usuario/${p?.key_proveedor}`} style={{ resizeMode: "cover" }} />) : null}
+                                    </SView>
+                                    <SView width={5} />
+                                </SView>
+                            })}
+                        </SView>
+                    )}
+                />
+
                 <DinamicTable.Col key="tags" label="Tags" width={120} data={e => (e.row?.tags ?? []).map(p => p?.tags?.nombre)}
                     customComponent={e => (
                         <SView row>
@@ -461,7 +483,7 @@ export default class table extends Component {
                         <SView row>
                             {(e.row.contactos ?? []).map((p, index) => {
                                 return <SView center row>
-                                    <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} center row >
+                                    <SView style={{ width: 24, height: 24, borderRadius: 24, overflow: "hidden", backgroundColor: STheme.color.card + "66", borderWidth: 1, borderColor: STheme.color.card }} center row >
                                         {p?.key_cliente ? (<SImage src={`${SSocket.api.root}usuario/${p?.key_cliente}`} style={{ resizeMode: "cover" }} />) : null}
                                     </SView>
                                     <SView width={5} />
