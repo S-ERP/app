@@ -82,12 +82,6 @@ export default class FormularioModelo extends Component<Props> {
         }).catch((e: any) => {
             console.error("Error al cargar marcas", e);
         })
-
-        const bolivia = this.props.editObject;
-        console.clear();
-        console.log("%c" + JSON.stringify(bolivia), `color: #2ECC40; font-weight: bold;`);
-        console.log("%c" + this.props.editObject.tipo_producto.tipo, `color: #3e2ecc; font-weight: bold;`);
-
     }
     buildCustmomInputs() {
     }

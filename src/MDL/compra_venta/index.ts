@@ -1,20 +1,13 @@
 import { EventListener, Descuento } from "./types";
-
 import MDLAbstract from "../MDLAbstract";
 import Model from "../../Model";
 import SSocket from "servisofts-socket";
 import MDL from "..";
 import { SStorage, STheme } from "servisofts-component";
-
-
 export default class compra_venta extends MDLAbstract<EventListener> {
   sucursalSeleccionada = null;
   monedaSeleccionada: any = null;
-
   async registrar(data: any) {
-    // const sucursal = this.sucursalSeleccionada;
-    // console.log("se esta registrando todo " + JSON.stringify(data))
-    // return;
     const formar = {
       descripcion: "Venta desde punto de venta",
       key_usuario: data.key_cajero,
@@ -27,49 +20,36 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       detalle: data.detalle,
       key_moneda: data.key_moneda,
       descuentos: data.descuentos,
+      key_almacen: '0f8fb5f0-c4c1-4e98-ad8d-dcdbfba65258'
     };
-
-    // console.log("dime quien " + JSON.stringify(formar));
-    // return;
     const resp: any = await SSocket.sendPromise({
       service: "caja",
       component: "caja_detalle",
       type: "venta",
       data: formar
-      // key_cliente: data?.key_cliente,
-      // cliente: data?.cliente,
     });
     MDL.caja.dispatchEvent({ type: "onDetalleChange" })
     this.dispatchEvent({ type: "venta_realizada" })
     return resp.data;
   }
-
   vaciarAll() {
     this.dispatchEvent({ type: "venta_realizada" })
   }
-
   conStock() {
     this.dispatchEvent({ type: "conStock" })
   }
-
-
   totalItemsCarrito = 0
   updateCarritoItems(carritoCantidad: any) {
     this.totalItemsCarrito = carritoCantidad;
     this.dispatchEvent({ type: "carrito_globo" })
   }
-
-  // SET: asigna la moneda seleccionada
   setMonedaSeleccionada(moneda: any) {
     this.monedaSeleccionada = moneda;
     return moneda;
   }
-
-  // GET: obtiene la moneda seleccionada
   getMonedaSeleccionada() {
     return this.monedaSeleccionada;
   }
-
   getStateInfo(key?: string) {
     const states: any = {
       cotizacion: { color: STheme.color.lightGray, label: "Cotización" },
@@ -81,13 +61,6 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     if (!key) return states;
     return states[key] ?? null;
   }
-
-  // color: "#8e44ad", // púrpura
-  // color: "#f39c12", // ámbar
-  // color: "#1abc9c", // turquesa
-  // color: "#171F58", // ámbar
-  // color: "#41C34A", // violeta
-
   getTipoPago(key?: string) {
     const _states: any = {
       contado: { color: "#034400ff", label: "Contado" },
@@ -104,14 +77,8 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       type: "getAll",
       key_empresa: Model.empresa.Action.getKey(),
     });
-
     return resp.data;
-    // return Object.values(resp.data || {});
-    // return resp.data ;
-    // return JSON.stringify(resp.data);
   }
-
-
   getByKey(value: any) {
     return SSocket.sendPromise({
       service: "compra_venta",
@@ -130,12 +97,9 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       key_empresa: Model.empresa.Action.getKey(),
     }).then((resp: any) => resp.data);
   }
-
   getTotales(value: any) {
-    // console.log("key_compra_venta", key_compra_venta)
     var compra_venta_detalle = value
     console.log("compra_venta_detalle", compra_venta_detalle)
-
     var descuentoData = compra_venta_detalle.descuento;
     if (!compra_venta_detalle) return null;
     var t = {
@@ -152,14 +116,11 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       const precio = ((precio_unitario * cantidad) - (descuento ?? 0));
       t.subtotal += precio;
     }))
-    // t.total = t.subtotal - t.descuento
     t.descuento = descuentoData;
     t.total = t.subtotal - descuentoData
     t.total_a_pagar = t.total - t.gifcard
-    // t.credito_fiscal = t.total_a_pagar
     return t;
   }
-
   async getByKeyComraVenta(value: any) {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
@@ -170,19 +131,6 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data[0] || [];
   }
-
-  // async getByKeyDetalle(value: any) {
-  //   const resp: any = await SSocket.sendPromise({
-  //     service: "compra_venta",
-  //     component: "reporte",
-  //     type: "execute_function",
-  //     func: "_get_compraventa_byalvaro",
-  //     params: ["'" + value + "'"],
-  //   });
-  //   return resp.data[0].detalle || [];
-  // }
-
-
   setSucursalSeleccionada(sucursal: any) {
     this.sucursalSeleccionada = sucursal;
     return new Promise((resolve, reject) => {
@@ -194,7 +142,6 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       }
     });
   }
-
   async getSucursalSeleccionada() {
     try {
       const sucursalStr = await SStorage.getItem("sucursal_seleccionada");
@@ -207,8 +154,6 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       return null;
     }
   }
-
-
   async getTransaccion(_tipo: String, fecha_inicio_: String, fecha_fin_: String) {
     const key_empresa = MDL.empresa?.select?.key || {};
     const resp: any = await SSocket.sendPromise({
@@ -217,9 +162,7 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       type: "execute_function",
       func: "_get_compras_ventas_alvarito",
       params: ["'" + key_empresa + "'", "'" + fecha_inicio_ + "'", "'" + fecha_fin_ + "'", "'" + _tipo + "'"],
-      // params: ["'" + 'f894ea35-5ad1-4b61-a2d0-9294965be169' + "'", "'" + '2025-09-01' + "'", "'" + '2025-09-06' + "'", "'" + 'venta' + "'"],
     });
-    // console.log("🚀🚀🚀🚀🚀🚀 ~ file: indexresp:", resp.data)
     return resp.data || [];
   }
   async getAllCostos() {
@@ -230,34 +173,19 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       type: "execute_function",
       func: "get_compra_venta_costos",
       params: ["'" + key_empresa + "'"],
-      // params: ["'" + 'f894ea35-5ad1-4b61-a2d0-9294965be169' + "'", "'" + '2025-09-01' + "'", "'" + '2025-09-06' + "'", "'" + 'venta' + "'"],
     });
-    // console.log("🚀🚀🚀🚀🚀🚀 ~ file: indexresp:", resp.data)
     return resp.data || [];
   }
-
-
-  // esto igual revisar
   async getTransaccionCuotasCompras(_key_proveedor: String) {
-    //  @param {string} _key_usuario - Identificador único del usuario (cliente o proveedor).
-    // Si `_tipo` es **"compra"**, el `_key_usuario` será interpretado como `key_proveedor`.
-    // Si `_tipo` es **"venta"**, el `_key_usuario` será interpretado como `key_cliente` (en este caso, representa al acreditado).
-    // const key_empresa = MDL.empresa?.select?.key || {};
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
       component: "reporte",
       type: "execute_function",
       func: "_get_compras_proveedor",
       params: ["'" + _key_proveedor + "'"],
-      // params: ["'" + 'f894ea35-5ad1-4b61-a2d0-9294965be169' + "'", "'" + '2025-09-01' + "'", "'" + '2025-09-06' + "'", "'" + 'venta' + "'"],
     });
-    // console.log("🚀🚀🚀🚀🚀🚀 ~ file: indexresp:", resp.data)
     return resp.data || [];
   }
-
-
-
-  // voy a revisar
   async getCuotasCompras(key_compra_venta: String) {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
@@ -268,9 +196,6 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
-
-
-  // esto igual verlo
   async getTransaccionCuotasVentas(_key_cliente: String) {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
@@ -279,13 +204,8 @@ export default class compra_venta extends MDLAbstract<EventListener> {
       func: "_get_ventas_cliente",
       params: ["'" + _key_cliente + "'"],
     });
-    // console.log("🚀🚀🚀🚀🚀🚀 ~ file: indexresp:", resp.data)
     return resp.data || [];
   }
-
-
-
-
   async getCuotasResumenTotal_compras() {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
@@ -296,8 +216,6 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
-
-
   async getCuotasResumenTotal_ventas() {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
@@ -327,9 +245,6 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
-
-  //DESCUENTOS
-
   async registrarDescuento(data: Descuento) {
     data.key_empresa = Model.empresa.Action.getKey();
     const resp: any = await SSocket.sendPromise({ service: "compra_venta", component: "descuento", type: "registro", data: data, key_usuario: Model.usuario.Action.getKey(), key_empresa: Model.empresa.Action.getKey() })
@@ -345,7 +260,6 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     const resp: any = await SSocket.sendPromise({ service: "compra_venta", component: "descuento", type: "editar", data: { ...data, estado: 0 }, key_usuario: Model.usuario.Action.getKey() });
     return resp.data;
   }
-
   async factura(value: any) {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",
@@ -356,34 +270,10 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data;
   }
-
-
   async _contabilizar(value: any) {
-
-    // para que funcione no debe de tener factura
-    // const resp: any = await SSocket.sendPromise({
-    //   service: "compra_venta",
-    //   component: "compra_venta",
-    //   type: "factura",
-    //   key: value,
-    //   key_empresa: Model.empresa.Action.getKey(),
-    // });
-    // return resp.data;
     return "contabilizando";
   }
   async _desContabilizar(value: any) {
-
-    // para que funcione no debe de tener factura
-    // const resp: any = await SSocket.sendPromise({
-    //   service: "compra_venta",
-    //   component: "compra_venta",
-    //   type: "factura",
-    //   key: value,
-    //   key_empresa: Model.empresa.Action.getKey(),
-    // });
-    // return resp.data;
     return "Des_contabilizando";
   }
-
-
 }

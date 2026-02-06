@@ -1,14 +1,12 @@
 import React from "react";
-import { SHr, SImage, SInput, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SHr, SInput, SMath, SNavigation, SNotification, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
-import { cos } from "three/examples/jsm/nodes/Nodes";
-type PopupCarritoConfirmarResumenProps = {
-}
+type PopupCarritoConfirmarResumenProps = {}
 export default class PopupCarritoConfirmarResumen extends React.Component<PopupCarritoConfirmarResumenProps> {
     static open(props: PopupCarritoConfirmarResumenProps) {
         SPopup.open({
@@ -123,21 +121,19 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         }
     }
     handleSubmit = async (tipos_pago: any, key_moneda: string, cliente: any, factura: boolean, almacen_: any, porcentajeDescuento: any, descuentoSeleccionado: any) => {
-        console.log("%c" + "-------------- handleSubmit", `color: #rgb(204, 117, 46) font-weight: bold;`);
         try {
             const monedaActual = MDL.carrito.selectedMoneda;
             const almacen = almacen_;
             if (!almacen) {
-                throw "Debe seleccionar un almacen"
+                SPopup.alert("Debe seleccionar un almacen");
+                // throw "Debe seleccionar un almacen"
             }
             const detalle = MDL.carrito.carrito_venta.items.map((ci) => {
                 const costos: any = []
-                // @ts-ignore
                 const tcostos = ci?.modelo?.tipoCostos;
-                console.log("tcostos", tcostos);
                 if (tcostos) {
                     tcostos.map((tc: any) => {
-                        if(!tc.key_modelo_cliente) return;
+                        if (!tc.key_modelo_cliente) return;
                         costos.push({
                             "key_tipo_costo": tc.key_tipo_costo,
                             key_modelo_cliente: tc.key_modelo_cliente,
@@ -154,14 +150,11 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     "descripcion": ci.modelo.descripcion,
                     "key_modelo": ci.modelo.key,
                     "costos": costos,
-                    // "modelo": ci.modelo,
                 }
             })
             const data = {
                 "descripcion": this.props.descripcion || "",
                 "observacion": "Observacion de la venta de prueba ricky",
-                // "contactos": poner el contacto seleciconado,
-                // "tipo_costo": poner los tipoCostos seleciconado,
                 "facturar": factura ? true : false,
                 cliente: {
                     nit: cliente?.nit || "",
@@ -189,13 +182,14 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 "estado": "cargando",
                 "data": data
             })
+            MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
             SelectTipoPago.closePopup();
             SNotification.remove("venta_rapida");
             SPopup.close("PopupCarritoConfirmar");
             SPopup.close("PopupCarritoConfirmarResumen");
             SPopup.close("PopupCarrito");
             MDL.carrito.limpiarCarritoVentas();
-            MDL.carrito.limpiarCarritoCompras();//este esta limpinado el carrito lateral..... pronto se borrara
+            MDL.carrito.limpiarCarritoCompras();
             SPopup.confirm({
                 title: "¡Venta realizada con éxito!",
                 message: "¿Deseas ir a la venta ahora?",

@@ -315,12 +315,6 @@ export default class table extends Component {
                     customComponent={e => <>
                         {(e.row.key_tipo_producto) ?
                             <SView col={"xs-12"} center row onPress={() => {
-
-                                console.clear();
-                                console.log("%c" + "viva", `color: #2ECC40; font-weight: bold;`);
-                                console.log("%c" + JSON.stringify(e.row.tipo_producto, null, 2), "color: #2ECC40; font-weight: bold;");
-
-
                                 FormularioTipoProducto.open({
                                     editObject: e.row.tipo_producto,
                                     onSuccess: () => {
@@ -331,9 +325,7 @@ export default class table extends Component {
                                     }
 
                                 })
-
                                 // SNavigation.navigate("/productos/tipo_producto/profile", { pk: e.row.key_tipo_producto }); 
-
                             }}>
                                 <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
                                     <ImageLabel {...e} src={SSocket.api.inventario + "tipo_producto/.128_" + e.row.key_tipo_producto + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />

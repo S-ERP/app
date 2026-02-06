@@ -86,8 +86,6 @@ export default class tipo_pago extends Component {
                             {
                                 label: "Editar", icon: <SIconApp name='Edit' />,
                                 onPress: () => {
-                                    console.clear();
-                                    console.log("%c" + JSON.stringify(e.row, null, 2), "color: #2ECC40; font-weight: bold;");
                                     PopupCrearTipoPago.open({
                                         editObject: e.row,
                                         onSuccess: async () => {

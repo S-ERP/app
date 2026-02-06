@@ -158,8 +158,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     //             "detalle": detalle,
     //             tipos_pago: tipos_pago,
     //         }
-    //         console.clear();
-    //         console.log("%c" + data, `color: #2ECC40; font-weight: bold;`);
     //         SNotification.send({
     //             key: "venta_rapida",
     //             title: "Cargando",
