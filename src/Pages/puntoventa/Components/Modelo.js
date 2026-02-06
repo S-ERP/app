@@ -83,6 +83,10 @@ export default class Modelo extends Component {
                     <SView col={"xs-12"} style={{ padding: 2 }}>
                         <SView col={"xs-12"} row padding={5}>
                             {productosFiltrados.map((producto, index) => {
+
+                                console.clear();
+                                console.log("%c" + JSON.stringify(producto, null, 2), "color: #2ECC40; font-weight: bold;");
+
                                 const src = producto.key
                                     ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}`
                                     : productSinFoto;
@@ -135,10 +139,16 @@ export default class Modelo extends Component {
                                                     {producto?.tipo_producto?.tipo !== "servicio" && (<SText style={{ alignItems: "flex-end", textAlign: "flex-end" }} clean fontSize={13} numberOfLines={1} bold color={producto?.stock > 0 ? "#10B981" : "#EF4444"} > {producto?.stock} Und </SText>)}
                                                 </SView>
                                             </SView>
-                                            <SView col={"xs-12"}>
-                                                <SText fontSize={14} color={STheme.color.text} numberOfLines={1} >{producto?.descripcion} </SText>
-                                                <SText fontSize={10} clean color={STheme.color.lightGray} numberOfLines={1} >{producto.marca?.descripcion}, {producto.tipo_producto?.descripcion}, {producto.observacion}
-                                                </SText>
+                                            <SView col={"xs-12"} row style={{ justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+                                                <SView style={{ flex: 1, paddingRight: 8 }}>
+                                                    <SText fontSize={14} color={STheme.color.text} numberOfLines={1} >{producto?.descripcion} </SText>
+                                                    <SText fontSize={10} clean color={STheme.color.lightGray} numberOfLines={1} >{producto.marca?.descripcion}, {producto.tipo_producto?.descripcion}, {producto.observacion} </SText>
+                                                </SView>
+
+                                                {producto?.tipo_producto && (<SView style={{ padding: 2, borderRadius: 4, backgroundColor: STheme.colorFromText(producto?.tipo_producto?.tipo) + "44", borderWidth: 1, borderColor: STheme.colorFromText(producto?.tipo_producto?.tipo) }}>
+                                                    <SText fontSize={10} style={{ textTransform: "uppercase" }} >{producto?.tipo_producto?.tipo}</SText>
+                                                </SView>)}
+
                                             </SView>
                                         </SView>
                                     </SView>
