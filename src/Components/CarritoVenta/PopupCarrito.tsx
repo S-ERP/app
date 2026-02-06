@@ -174,6 +174,15 @@ const ItemComp = (props: any) => {
     const precioRef = React.useRef<any>(null);
 
     const { item, moneda, } = props;
+    const [precio, setPrecio] = React.useState(moneda ? item.modelo.precio_venta_moneda / (moneda.tipo_cambio || 1) : item.modelo.precio_venta_moneda);
+
+
+    React.useEffect(() => {
+        const nuevoPrecio = moneda
+            ? item.modelo.precio_venta_moneda / (moneda.tipo_cambio || 1)
+            : item.modelo.precio_venta_moneda;
+        setPrecio(nuevoPrecio);
+    }, [moneda, item.modelo.precio_venta_moneda]);
 
     // Actualizar cantidad si cambia
     React.useEffect(() => {
@@ -181,6 +190,8 @@ const ItemComp = (props: any) => {
             cantidadRef.current.setValue(item.cantidad);
         }
     }, [item.cantidad]);
+
+
 
     // Actualizar precio si cambia
     React.useEffect(() => {
@@ -225,18 +236,54 @@ const ItemComp = (props: any) => {
 
                     <SView row col={"xs-12"} style={{ alignItems: "center" }}>
                         <SView width={60}>
-                            <SInput
-                                ref={precioRef}
-                                style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
-                                type="money2"
-                                icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{moneda ? moneda.observacion : "BS"}</SText>}
-                                value={moneda ? item.modelo.precio_venta_moneda / (moneda.tipo_cambio || 1) : item.modelo.precio_venta_moneda}
-                                onChangeText={(e) => {
-                                    const valor = parseFloat(e || "0");
-                                    item.modelo.precio_venta_moneda = moneda ? valor * (moneda.tipo_cambio || 1) : valor;
-                                    MDL.carrito.calcularValoresCarritDeVentas();
-                                }}
-                            />
+
+
+                            <SView width={60}>
+                                <SInput
+                                    style={{
+                                        height: 16,
+                                        fontSize: 12,
+                                        padding: 0,
+                                        paddingRight: 4,
+                                        textAlign: "right",
+                                    }}
+                                    type="money2"
+                                    icon={
+                                        <SText
+                                            width={20}
+                                            fontSize={10}
+                                            numberOfLines={1}
+                                            color={STheme.color.lightGray}
+                                        >
+                                            {moneda ? moneda.observacion : "BS"}
+                                        </SText>
+                                    }
+                                    value={precio.toString()}
+                                    onChangeText={(e) => {
+                                        const valor = parseFloat(e || "0");
+                                        setPrecio(valor); // actualiza solo el input local
+                                        item.modelo.precio_venta_moneda = moneda
+                                            ? valor * (moneda.tipo_cambio || 1)
+                                            : valor;
+                                        MDL.carrito.calcularValoresCarritDeVentas(); // recalcula subtotal
+                                    }}
+                                />
+                            </SView>
+                            {/* Input de precio */}
+                            {/* <SView width={60}>
+                                <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right", }}
+                                    type="money2"
+                                    icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray} > {moneda ? moneda.observacion : "BS"} </SText>}
+                                    value={precio.toString()}
+                                    onChangeText={(e) => {
+                                        const valor = parseFloat(e || "0");
+                                        setPrecio(valor); // actualiza solo el input local
+                                        item.modelo.precio_venta_moneda = moneda ? valor * (moneda.tipo_cambio || 1) : valor;
+                                        MDL.carrito.calcularValoresCarritDeVentas(); // recalcula subtotal
+                                    }}
+                                />
+                            </SView> */}
+
                         </SView>
 
                         <SView width={4} />
