@@ -43,14 +43,14 @@ export default class table extends React.Component {
                         </SView>
                     )}
                 />
-                                <DinamicTable.Col
-                                    key="key-"
-                                    label="Ver"
-                                    width={40}
-                                    data={e => ""}
-                                    customComponent={e => <SView row center card padding={2} onPress={() => { SNavigation.navigate("/cliente/perfil", { key: e.row.key }) }}>
-                                        <SIcon name='Eyes' height={14} fill={STheme.color.lightGray} ></SIcon>
-                                    </SView>} />
+                <DinamicTable.Col
+                    key="key-"
+                    label="Ver"
+                    width={40}
+                    data={e => ""}
+                    customComponent={e => <SView row center card padding={2} onPress={() => { SNavigation.navigate("/cliente/perfil", { key: e.row.key }) }}>
+                        <SIcon name='Eyes' height={14} fill={STheme.color.lightGray} ></SIcon>
+                    </SView>} />
                 <DinamicTable.Col key={"nombre"} label="Nombre" data={e => e.row.nombres} width={200} />
                 {/* <DinamicTable.Col key={"apellido"} label="Apellido" data={e => e.row.apellidos} /> */}
                 <DinamicTable.Col key={"telefono"} label="Teléfono" data={e => e.row.telefono} width={120} />
@@ -63,19 +63,29 @@ export default class table extends React.Component {
                         flexDirection: "row",
                         justifyContent: "flex-start",
                         flexWrap: "wrap",
-                        alignItems: "flex-start"
+                        alignItems: "flex-start",
+                        gap: 4,
                     }}
                     customComponent={e => {
                         return (e.row.tipo_cliente ?? []).map((tc) => {
                             return <SView style={{
-                                backgroundColor: STheme.colorFromText(tc.titulo) + "66",
-                                borderWidth: 1,
-                                borderColor: STheme.colorFromText(tc.titulo),
+                                // borderWidth: 1,
+                                // backgroundColor: (tc.color ?? STheme.colorFromText(tc.titulo)) + "33",
+                                // borderColor: tc.color ?? STheme.colorFromText(tc.titulo),
                                 padding: 2,
-                                borderRadius: 4,
                                 paddingHorizontal: 4,
-                            }}>
-                                <SText key={tc.key} fontSize={10}  >{tc.titulo}</SText>
+                                borderRadius: 4,
+                                justifyContent: "center",
+                                alignItems: "center",
+                                gap: 2,
+                            }} row>
+                                <SView style={{
+                                    width: 8,
+                                    height: 8, borderRadius: 100,
+                                    backgroundColor: (tc.color ?? STheme.colorFromText(tc.titulo)),
+
+                                }}></SView>
+                                <SText key={tc.key} bold fontSize={12}  >{tc.titulo}</SText>
                             </SView>
                         })
                     }}
@@ -88,7 +98,8 @@ export default class table extends React.Component {
                         flexDirection: "row",
                         justifyContent: "flex-start",
                         flexWrap: "wrap",
-                        alignItems: "flex-start"
+                        alignItems: "flex-start",
+                        gap: 4,
                     }}
                     customComponent={e => {
                         return (e.row.habilidades ?? []).map((tc) => {

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { SForm, SHr, SLoad, SPopup, SText, STheme, SView, } from 'servisofts-component';
 import MDL from '../../../../MDL';
 import Btn from '../../../empresa/config/Components/Btn';
+import InputSelector from '../../../../Components/Selectores/InputSelector';
 // import MDL from '../MDL';
 // import Btn from './empresa/config/Components/Btn';
 const cuentaToText = (c: any) =>
@@ -36,30 +37,39 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
     }
     state: any = {
         cuentas: null,
-    };
+        modelosStock: null,
+    }
     form: SForm | null = null;
     componentDidMount() {
-        MDL.contabilidad
-            .getCuentas()
-            .then((cuentas: any) => {
-                const arr = Object.values(cuentas);
-                arr.forEach((cuenta: any) => {
-                    cuenta.cantidad_hijas = arr.filter(
-                        (c: any) =>
-                            c.codigo.startsWith(cuenta.codigo) &&
-                            c.codigo !== cuenta.codigo
-                    ).length;
-                });
-                this.setState({
-                    cuentas: arr.sort((a: any, b: any) =>
-                        a.codigo > b.codigo ? 1 : -1
-                    ),
-                });
-            })
-            .catch(console.error);
+        MDL.inventario.getAllModeloStock().then((data: any) => {
+            this.setState({ modelosStock: Object.values(data) });
+        }).catch(console.error);
+        // MDL.contabilidad
+        //     .getCuentas()
+        //     .then((cuentas: any) => {
+        //         const arr = Object.values(cuentas);
+        //         arr.forEach((cuenta: any) => {
+        //             cuenta.cantidad_hijas = arr.filter(
+        //                 (c: any) =>
+        //                     c.codigo.startsWith(cuenta.codigo) &&
+        //                     c.codigo !== cuenta.codigo
+        //             ).length;
+        //         });
+        //         this.setState({
+        //             cuentas: arr.sort((a: any, b: any) =>
+        //                 a.codigo > b.codigo ? 1 : -1
+        //             ),
+        //         });
+        //     })
+        //     .catch(console.error);
+
+        MDL.caja.empresa_tipo_pago_getAll().then((data: any) => {
+            this.setState({ tiposPago: Object.values(data) });
+        }).catch(console.error);
     }
     render() {
-        if (!this.state.cuentas) return <SLoad />;
+        if (!this.state.modelosStock) return <SLoad />;
+        if (!this.state.tiposPago) return <SLoad />;
         return (
             <SView col="xs-12" padding={16}>
                 <SText fontSize={16} bold>
@@ -76,29 +86,46 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
                             isRequired: true,
                             defaultValue: this.props.editObject?.descripcion,
                         },
-                        key_cuenta_contable: {
+                        // key_cuenta_contable: {
+                        //     col: "xs-12",
+                        //     type: "select2",
+                        //     label: "Cuenta Contable",
+                        //     defaultValue: cuentaToText(
+                        //         this.state.cuentas.find(
+                        //             (c: any) =>
+                        //                 c.key ===
+                        //                 this.props.editObject?.key_cuenta_contable
+                        //         )
+                        //     ),
+                        //     options: this.state.cuentas
+                        //         .filter((c: any) => c.cantidad_hijas <= 0)
+                        //         .map(cuentaToText),
+                        // },
+                        key_modelo_compra: {
                             col: "xs-12",
-                            type: "select2",
-                            label: "Cuenta Contable",
-                            defaultValue: cuentaToText(
-                                this.state.cuentas.find(
-                                    (c: any) =>
-                                        c.key ===
-                                        this.props.editObject?.key_cuenta_contable
-                                )
-                            ),
-                            options: this.state.cuentas
-                                .filter((c: any) => c.cantidad_hijas <= 0)
-                                .map(cuentaToText),
+                            type: "custom",
+                            customInputClass: InputSelector,
+                            options: this.state.modelosStock.map((obj: any) => ({
+                                label: `${obj.descripcion}`,
+                                value: obj.key,
+                                customComponent: (e: any) => <SText fontSize={12} color={STheme.color.lightGray}>{e.data.tipo_producto?.descripcion} - {e.data.tipo_producto?.tipo}</SText>,
+                                data: obj
+                            })),
+                            label: "key_modelo_compra",
+                            defaultValue: this.props.editObject?.key_modelo_compra,
                         },
                         key_tipo_pago: {
                             col: "xs-12",
-                            // type: "select2",
+                            type: "custom",
+                            customInputClass: InputSelector,
+                            options: this.state.tiposPago.map((obj: any) => ({
+                                label: `${obj.descripcion}`,
+                                value: obj.key,
+                                customComponent: (e: any) => <SText fontSize={12} color={STheme.color.lightGray}>{e.data.key_tipo_pago}</SText>,
+                                data: obj
+                            })),
                             label: "key_tipo_pago",
                             defaultValue: this.props.editObject?.key_tipo_pago,
-                            // options: this.state.cuentas
-                            // .filter((c: any) => c.cantidad_hijas <= 0)
-                            // .map(cuentaToText),
                         },
                     }}
                     onSubmit={(data: any) => {
@@ -108,10 +135,11 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
                             }),
                             descripcion: data.descripcion,
                             key_tipo_pago: data.key_tipo_pago,
-                            key_cuenta_contable: findCuentaText(
-                                this.state.cuentas,
-                                data.key_cuenta_contable
-                            )?.key,
+                            key_modelo_compra: data.key_modelo_compra,
+                            // key_cuenta_contable: findCuentaText(
+                            //     this.state.cuentas,
+                            //     data.key_cuenta_contable
+                            // )?.key,
                         };
                         MDL.inventario
                             .saveTipoCosto(finalData)

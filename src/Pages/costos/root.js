@@ -60,6 +60,7 @@ export default class root extends React.Component {
                 <DinamicTable.Col key={"monto"} label="monto" data={e => e.row.monto} />
                 <DinamicTable.Col key={"fecha_on"} label="fecha_on" data={e => e.row.fecha_on} />
                 <DinamicTable.Col key={"key_asiento_contable"} label="key_asiento_contable" data={e => e.row.key_asiento_contable} />
+                <DinamicTable.Col key={"key_compra"} label="key_compra" data={e => e.row.key_compra} />
                 <DinamicTable.Col key={"key_compra_venta_detalle"} label="key_compra_venta" data={e => e.row.key_compra_venta_detalle} />
                 <DinamicTable.Col key={"key_costo"} label="key_costo" data={e => e.row.key_costo} />
             </DinamicTable>

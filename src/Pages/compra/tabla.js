@@ -210,7 +210,7 @@ export default class tabla extends Component {
 
                 <DinamicTable.Col key="descripcion" label="Descripción" width={150} data={(e) => e.row?.descripcion ?? ""} />
                 <DinamicTable.Col key="detalles_" label="Compras Detalles" width={220} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)}
-                    customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
+                    customComponent={(e) => (<SView col>{(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
 
 
                 <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={80}

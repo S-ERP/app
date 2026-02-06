@@ -1,6 +1,6 @@
 import React from "react";
 import { ScrollView, View } from "react-native";
-import { SGradient, SHr, SImage, SNavigation, SPage, SStorage, SText, STheme, SView } from "servisofts-component";
+import { SGradient, SHr, SImage, SInput, SNavigation, SPage, SStorage, SText, STheme, SView } from "servisofts-component";
 import Page from "./Page";
 import SIconApp from "../../Assets/SIconApp";
 import { Route } from "@react-navigation/native";
@@ -48,6 +48,9 @@ export default class Barra extends React.Component {
             open: false,
         })
     }
+    handleOnChangeText(text: string) {
+        
+    }
     render() {
         // console.log("eee", this.state.closeWidth)
         // console.log("aae", this.state.openWidth)
@@ -76,6 +79,11 @@ export default class Barra extends React.Component {
                     <MenuEmpresa.root />
                 </SView>
             </SView>
+            {/* <SView style={{
+                padding: 4,
+            }}>
+                <SInput height={30} placeholder={"Buscar..."} onChangeText={this.handleOnChangeText.bind(this)} />
+            </SView> */}
             <SView col={"xs-12"} flex>
                 <ScrollView showsVerticalScrollIndicator={false} >
                     <Page label={"Home"} url={"/"} icon={<SIconApp name="ctaHome" stroke={STheme.color.text} fill="transparent" />} />
@@ -127,7 +135,7 @@ export default class Barra extends React.Component {
                         <Page label={"Traspaso entre almacenes"} url={"/productos/traspaso_inventario"} permiso="ver" permiso_url="/inventario/almacen" />
                         <Page label={"Conteos"} url={"/productos/reporte_conteo_inventario"} permiso="ver" permiso_url="/productos/reporte_conteo_inventario" />
                         <Page label={"Sistema antiguo"} url={"/productos"} permiso="ver" />
-                        
+
                     </Page>
                     <Page label={"Caja"} url={"/caja"} permiso="ver"
                         icon={<ImagePage key_page="a65b7814-6bfe-4604-8c91-5d955df5614b" />}
@@ -163,7 +171,7 @@ export default class Barra extends React.Component {
                     >
                         <Page label={"Clientes"} url={"/cliente"} permiso="ver" />
                         <Page label={"Suscriptores"} url={"/suscriptores"} />
-                       
+
                         <Page label={"Historial de Ventas"} url={"/venta/tabla"} permiso="ver" permiso_url="/venta" />
                         {/* <Page label={"Ventas"} url={"/venta"} permiso="ver" /> */}
                         <Page label={"Descuento"} url={"/descuento"} permiso="ver" permiso_url="/descuento" />
@@ -277,12 +285,12 @@ export default class Barra extends React.Component {
                         // icon={<SIconApp name="menuAll" fill={STheme.color.text} />}
                         icon={<ImagePage key_page="d73efd88-89f5-461c-8bb2-b634d835883b" />}
                     >
-                         <Page label={"Asistencias"} url={"/asistencias"} />
+                        <Page label={"Asistencias"} url={"/asistencias"} />
                         <Page label={"Registrar asistencia"} url={"/asistencia"} icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                     </Page>
 
 
-          
+
 
 
 
