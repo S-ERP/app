@@ -38,13 +38,33 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     inputNombre: SInput | null = null;
     inputAlmacen: SelectorAlmacen | undefined;
     proveedor: any;
-    state: { almacen: any, moneda: any, factura: boolean, esCredito: boolean } = {
+    state: { almacen: any, moneda: any, factura: boolean, esCredito: boolean, subtotal: any, } = {
         almacen: null,
         moneda: null,
         factura: false,
         esCredito: false, // 👈 bandera
+        subtotal: null,
+
     }
     componentDidMount(): void {
+        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
+            this.cargarSubtotal();
+        });
+        this.cargarSubtotal();
+
+    }
+    cargarSubtotal() {
+        // console.clear();
+        console.log("%c" + "cargarSubtotal", `color: #c305f3; font-weight: bold;`);
+        const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
+        const carritoItems = MDL.carrito.carrito_compra.items;
+        const subtotal = carritoItems.reduce((acc, item) => {
+            const precio = monedaActual
+                ? item.modelo.precio_compra_moneda / (monedaActual.tipo_cambio || 1)
+                : item.modelo.precio_compra_moneda;
+            return acc + precio * item.cantidad;
+        }, 0);
+        this.setState({ subtotal: subtotal || 0 });
     }
     handleOnPress = async () => {
         try {
@@ -79,10 +99,20 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     }
     handleOnPress2 = async () => {
         try {
-            // const monedas = await MDL.empresa.getMonedas();
-            // const moneda = monedas.find((m: any) => m.tipo == "base");
-            // const key_moneda = "2f6b73df-8004-41c1-aa5f-1a81d79d1a8f"
+            // alert("panama");
+            const monedas = await MDL.empresa.getMonedas();
+            const monedaActual = MDL.carrito.selectedMoneda;
+            const mierda = this.state.subtotal;
             const key_moneda = this.state.moneda.key
+            const montotottaaaaaaaaa = monedaActual ? MDL.carrito.carrito_compra.monto_total / (monedaActual.tipo_cambio || 1) : MDL.carrito.carrito_compra.monto_total;
+
+            console.clear();
+            console.log("%c" + MDL.carrito.carrito_compra.monto_total, `color: #2ECC40; font-weight: bold;`);
+            console.log("%c" + montotottaaaaaaaaa, `color: #2ECC40; font-weight: bold;`);
+            console.log("%c" + JSON.stringify(monedaActual), `color: #2ECC40; font-weight: bold;`);
+            console.log("%c" + mierda, `color: #ffee00; font-weight: bold;`);
+            // "precio_unitario_base": monedaActual ? MDL.carrito.carrito_compra.monto_total / (monedaActual.tipo_cambio || 1) : MDL.carrito.carrito_compra.monto_total,
+
             const almacen = this.state.almacen;
             if (!almacen) {
                 throw "Debe seleccionar un almacen"
@@ -90,10 +120,20 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             if (!key_moneda) {
                 throw "Debe seleccionar una moneda"
             }
+            const subtotal = this.state.subtotal || 0;
+            const total = subtotal * MDL.carrito.selectedMoneda.tipo_cambio;
+
+            // console.clear();
+            // console.log("%c" + "ingresar_texto", `color: #2ECC40; font-weight: bold;`);
+            // console.log("%c" + this.state.subtotal, `color: #2ECC40; font-weight: bold;`);
+            // console.log("%c" + JSON.stringify(MDL.carrito.carrito_compra), `color: #2ECC40; font-weight: bold;`);
             SelectTipoPago2.openPopup({
                 key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
-                montoMaximo: MDL.carrito.carrito_compra.monto_total,
-                key_moneda: key_moneda,
+                // montoMaximo: MDL.carrito.carrito_compra.monto_total,
+                montoMaximo: total,
+                key_moneda: MDL.carrito.selectedMoneda.key,
+
+                // key_moneda: key_moneda,
                 onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda),
                 solo_para_caja: false,
             });
@@ -112,6 +152,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         try {
             const proveedor = this.proveedor;
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
+            const monedaActual = MDL.carrito.selectedMoneda;
+            const descripcionVenta = this.inputDescripcionVenta?.getValue?.() || "";
+
             // this.keyPago_bandera = keyPago;
             // 🔴 Validación: compra a crédito requiere proveedor
             if (keyPago === "credito" && !proveedor) {
@@ -134,10 +177,15 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 throw "Debe seleccionar un almacen"
             }
             const detalle = MDL.carrito.carrito_compra.items.map((ci) => {
+
+                console.clear();
+                console.log("%c" + JSON.stringify(ci), `color: #2ECC40; font-weight: bold;`);
                 return {
                     "cantidad": ci.cantidad,
                     "precio_unitario": ci.precio,
-                    "precio_unitario_base": ci.precio,
+                    // "precio_unitario_base": monedaActual ? ci.modelo.precio_compra_moneda / (monedaActual.tipo_cambio || 1) : ci.modelo.precio_compra_moneda,
+
+                    "precio_unitario_base": ci.modelo.precio_compra_moneda,
                     "detalle": "",
                     "descuento": 0,
                     "descripcion": ci.modelo.descripcion,
@@ -146,7 +194,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 }
             })
             const data = {
-                "descripcion": "Compra De Prueba Ricky",
+                "descripcion": descripcionVenta,
                 "observacion": "Observacion de la compra de prueba ricky",
                 "key_proveedor": this.proveedor?.key,
                 "key_usuario": MDL.usuario.session?.key,
@@ -287,6 +335,17 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         onChangeSelect={e => {
                             this.state.moneda = e;
                         }}
+                    />
+                </SView>
+
+                <SHr />
+                <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
+                    <SText color={STheme.color.lightGray}>{"Descripcion"}</SText>
+                    <SInput
+                        type="textArea"
+                        ref={ref => this.inputDescripcionVenta = ref}
+                        placeholder={"Descripción de la venta"}
+                        style={{ minHeight: 20, height: 50, borderWidth: 1, borderColor: STheme.color.gray, marginVertical: 4 }}
                     />
                 </SView>
                 <SHr />

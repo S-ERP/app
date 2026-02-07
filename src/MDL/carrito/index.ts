@@ -53,24 +53,30 @@ export default class carrito extends MDLAbstract<EventListener> {
     this.calcularValoresCarritDeCompras();
   }
   calcularValoresCarritDeCompras() {
-  const moneda = this.selectedMoneda || MDL.compra_venta.getMonedaSeleccionada();
-  let cantidad_items = 0;
-  let monto = 0;
+    const moneda = this.selectedMoneda || MDL.compra_venta.getMonedaSeleccionada();
+    let cantidad_items = 0;
+    let monto = 0;
 
-  this.carrito_compra.items.forEach(element => {
-    cantidad_items += element.cantidad;
+    this.carrito_compra.items.forEach(element => {
+      cantidad_items += element.cantidad;
+      const tipoCambioProducto = element.modelo.compra_moneda?.tipo_cambio || 1;
 
-    const precio = moneda
-      ? element.precio / (moneda.tipo_cambio || 1)
-      : element.precio;
+      // alvavro trabaja
+      const precio = moneda
+        ? element.modelo.precio_compra * (tipoCambioProducto / moneda.tipo_cambio)
+        : element.modelo.precio_compra;
+      // const precio = moneda
+      //   ? element.precio * (tipoCambioProducto/moneda.tipo_cambio )
+      //   : element.precio;
 
-    monto += element.cantidad * precio;
-  });
 
-  this.carrito_compra.cantidad_items = cantidad_items;
-  this.carrito_compra.monto_total = monto;
-  this.dispatchEvent({ type: "handleChange" });
-}
+      monto += element.cantidad * element.modelo.precio_compra;
+    });
+
+    this.carrito_compra.cantidad_items = cantidad_items;
+    this.carrito_compra.monto_total = 8;
+    this.dispatchEvent({ type: "handleChange" });
+  }
 
   // calcularValoresCarritDeCompras() {
   //   const moneda = this.selectedMoneda || MDL.compra_venta.getMonedaSeleccionada();
@@ -145,7 +151,7 @@ export default class carrito extends MDLAbstract<EventListener> {
     const moneda = this.selectedMoneda || MDL.compra_venta.getMonedaSeleccionada();
     let cantidad_items = 0;
     let monto = 0;
-    
+
     this.carrito_venta.items.forEach(element => {
       cantidad_items += element.cantidad;
       const precio = moneda

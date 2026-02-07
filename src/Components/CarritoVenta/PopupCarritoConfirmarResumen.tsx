@@ -148,7 +148,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     time: 7000,
                 });
                 return;
-            }else{
+            } else {
                 this.props.onTipoPagoChange(false);
 
             }
@@ -175,7 +175,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 return {
                     "cantidad": ci.cantidad,
                     "precio_unitario": ci.precio,
-                    "precio_unitario_base": monedaActual ? ci.modelo.precio_venta_moneda / (monedaActual.tipo_cambio || 1) : ci.modelo.precio_venta_moneda,
+                    "precio_unitario_base": ci.modelo.precio_venta_moneda,
+                    // "precio_unitario_base": monedaActual ? ci.modelo.precio_venta_moneda / (monedaActual.tipo_cambio || 1) : ci.modelo.precio_venta_moneda,
                     "detalle": "",
                     "descripcion": ci.modelo.descripcion,
                     "key_modelo": ci.modelo.key,

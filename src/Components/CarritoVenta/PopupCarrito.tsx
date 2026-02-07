@@ -191,6 +191,9 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         setPrecio(nuevoPrecio);
     }, [moneda, item.modelo.precio_venta]);
 
+        const precioFormateado = Number.isInteger(precio) ? precio.toString() : precio.toFixed(2);
+
+
     return (
         <SView padding={8}>
             <SView row>
@@ -223,7 +226,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                         {moneda ? moneda.observacion : "BS"}
                                     </SText>
                                 }
-                                value={precio.toString()}
+                                value={precioFormateado}
                                 onChangeText={(e) => {
                                     const valor = parseFloat(e || "0");
                                     setPrecio(valor); // actualiza el input local
