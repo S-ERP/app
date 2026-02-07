@@ -169,6 +169,13 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             SPopup.close("PopupCarritoConfirmar");
             SPopup.close("PopupCarrito");
             MDL.carrito.limpiarCarritoCompras();
+            SPopup.confirm({
+                title: "¡Compras realizada con éxito!",
+                message: "¿Deseas ir a la compra ahora?",
+                onPress: () => {
+                    SNavigation.navigate("/venta/profile2", { pk: compraResp?.data?.key_compra_venta });
+                }
+            });
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
         } catch (error: any) {
             console.error("Error al realizar la compra:", error);
@@ -251,7 +258,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
 
                 </SView>
                 <SHr />
-                <SView style={{padding:10, paddingBottom:5, paddingTop:5}}>
+                <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
                     <SText color={STheme.color.lightGray}>{"Seleccione el almacen"}</SText>
                     <SelectorAlmacen
                         selectFirst
@@ -267,7 +274,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     />
 
                 </SView>
-                <SView style={{padding:10, paddingBottom:5, paddingTop:5}}>
+                <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
                     <SelectorMoneda
                         findInitialSelect={(arr) => {
                             return arr.find(a => a.tipo == "base")
