@@ -13,9 +13,10 @@ import SIconApp from "../../Assets/SIconApp";
 import PopupCarrito from "./PopupCarrito";
 import theme, { ColorCompraVenta } from "../../Config/theme";
 
-const { width, height } = Dimensions.get("window");
+
 
 const CarritoItem = () => {
+    const { width, height } = Dimensions.get("window");
     // Posición inicial del elemento
     const isDrag = useSharedValue(false);
     const translateX = useSharedValue(width - 70);
@@ -23,6 +24,7 @@ const CarritoItem = () => {
     useEffect(() => {
         (async () => {
             Dimensions.addEventListener("change", (e) => {
+                
                 const _window = e.window;
                 if (translateX.value > _window.width - 70) {
                     translateX.value = _window.width - 70;

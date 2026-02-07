@@ -1,7 +1,21 @@
 import React from "react";
 import { SPage, SText } from "servisofts-component";
+import SSocket from "servisofts-socket";
+import MDL from "../MDL";
 
 export default class index extends React.Component {
+
+    componentDidMount() {
+        const key_empresa = MDL.empresa.select.key;
+        
+        SSocket.sendPromise({
+            service: "contabilidad",
+            component: "reporte",
+            type: "execute_function",
+            func: "reporte_balance_general",
+            params: ["'" + key_empresa + "'"]
+        })
+    }
     render() {
         return <SPage title={"index"}>
             <SText>index</SText>

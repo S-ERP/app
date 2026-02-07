@@ -187,9 +187,9 @@ no
                             tipo: data.tipo,
                             codigo_facturacion: this.state.codigoProductoSeleccionado,
                             unidad_medida_facturacion: this.state.unidadMedidaSeleccionada,
-                            key_cuenta_contable_ganancia: findCuentaText(this.state.cuentas, data.key_cuenta_contable_ganancia)?.key,
-                            key_cuenta_contable_costo: findCuentaText(this.state.cuentas, data.key_cuenta_contable_costo)?.key,
-                            key_cuenta_contable: findCuentaText(this.state.cuentas, data.key_cuenta_contable)?.key
+                            key_cuenta_contable_ganancia: findCuentaText(this.state.cuentas, data.key_cuenta_contable_ganancia)?.key ?? "",
+                            key_cuenta_contable_costo: findCuentaText(this.state.cuentas, data.key_cuenta_contable_costo)?.key ?? "",
+                            key_cuenta_contable: findCuentaText(this.state.cuentas, data.key_cuenta_contable)?.key??""
                         }
 
                         MDL.inventario.saveTipoProducto(final_data)
