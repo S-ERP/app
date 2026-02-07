@@ -169,7 +169,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     }
 }
 
- const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
+const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     const [precio, setPrecio] = React.useState(0);
 
     // Calcular el precio inicial según la moneda seleccionada
@@ -191,7 +191,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         setPrecio(nuevoPrecio);
     }, [moneda, item.modelo.precio_venta]);
 
-        const precioFormateado = Number.isInteger(precio) ? precio.toString() : precio.toFixed(2);
+    const precioFormateado = Number.isInteger(precio) ? precio.toString() : precio.toFixed(2);
 
 
     return (
@@ -249,7 +249,8 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                 icon={<SText width={15} fontSize={10} color={STheme.color.lightGray}>x</SText>}
                                 value={item.cantidad.toString()}
                                 onChangeText={(e) => {
-                                    item.cantidad = parseFloat(e || "0");
+                                    item.cantidad = e;
+                                    // item.cantidad = parseFloat(e || "0");
                                     MDL.carrito.calcularValoresCarritDeVentas();
                                 }}
                             />

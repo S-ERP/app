@@ -267,7 +267,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 icon={<SText width={15} fontSize={10} color={STheme.color.lightGray}>x</SText>}
                                 value={item.cantidad.toString()}
                                 onChangeText={(e) => {
-                                    item.cantidad = parseFloat(e || "0");
+                                    item.cantidad = e
                                     MDL.carrito.calcularValoresCarritDeVentas();
                                 }}
                             />
