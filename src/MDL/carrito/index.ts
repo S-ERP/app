@@ -52,7 +52,37 @@ export default class carrito extends MDLAbstract<EventListener> {
     this.carrito_compra.items = [];
     this.calcularValoresCarritDeCompras();
   }
-  calcularValoresCarritDeCompras() {
+
+ calcularValoresCarritDeCompras() {
+  const moneda = this.selectedMoneda || MDL.compra_venta.getMonedaSeleccionada();
+  const tipoCambioMoneda = moneda?.tipo_cambio || 1;
+
+  let cantidad_items = 0;
+  let monto_total = 0;
+
+  this.carrito_compra.items.forEach(element => {
+    const cantidad = element.cantidad || 0;
+
+    // precio base (BS)
+    const precioBase = element.modelo.precio_compra_moneda || 0;
+
+    // convertir a moneda actual (igual que ItemComp)
+    const precioConvertido = precioBase / tipoCambioMoneda;
+
+    const subtotal = cantidad * precioConvertido;
+
+    cantidad_items += cantidad;
+    monto_total += subtotal;
+  });
+
+  this.carrito_compra.cantidad_items = cantidad_items;
+  this.carrito_compra.monto_total = monto_total;
+
+  this.dispatchEvent({ type: "handleChange" });
+}
+
+
+  calcularValoresCarritDeCompras2() {
     const moneda = this.selectedMoneda || MDL.compra_venta.getMonedaSeleccionada();
     let cantidad_items = 0;
     let monto = 0;
@@ -61,20 +91,16 @@ export default class carrito extends MDLAbstract<EventListener> {
       cantidad_items += element.cantidad;
       const tipoCambioProducto = element.modelo.compra_moneda?.tipo_cambio || 1;
 
-      // alvavro trabaja
-      const precio = moneda
-        ? element.modelo.precio_compra * (tipoCambioProducto / moneda.tipo_cambio)
-        : element.modelo.precio_compra;
+      // alvavro
       // const precio = moneda
-      //   ? element.precio * (tipoCambioProducto/moneda.tipo_cambio )
-      //   : element.precio;
-
-
-      monto += element.cantidad * element.modelo.precio_compra;
+      // ? element.modelo.precio_compra_moneda * (tipoCambioProducto / moneda.tipo_cambio)
+      // : element.modelo.precio_compra_moneda;
+      monto += element.cantidad * (element.modelo.precio_compra_moneda / moneda.tipo_cambio);
+      // monto += element.cantidad * (element.modelo.precio_compra_moneda/ moneda.tipo_cambio);
     });
 
     this.carrito_compra.cantidad_items = cantidad_items;
-    this.carrito_compra.monto_total = 8;
+    this.carrito_compra.monto_total = monto;
     this.dispatchEvent({ type: "handleChange" });
   }
 
