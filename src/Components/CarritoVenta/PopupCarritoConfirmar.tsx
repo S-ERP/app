@@ -8,7 +8,6 @@ import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
 import PopupCarritoConfirmarResumen from "./PopupCarritoConfirmarResumen";
 type PopupCarritoConfirmarProps = {
-    // tipoCostosSeleccionados:any
 }
 export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
     static open(props: PopupCarritoConfirmarProps) {
@@ -49,6 +48,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         key_cliente: string | null,
         cliente_texto: string,
         descuentos: any[],
+        esCredito: boolean,
+
     } = {
             almacen: null,
             moneda: null,
@@ -59,7 +60,13 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             key_cliente: null,
             cliente_texto: "",
             descuentos: [],
+            esCredito: false,
+
         }
+
+    onTipoPagoChange = (esCredito: boolean) => {
+        this.setState({ esCredito });
+    };
     async componentDidMount() {
         try {
             const clientes = await MDL.crm.cliente.getAll(); // tu método de listar
@@ -84,9 +91,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             if (!almacen) {
                 throw "Debe seleccionar un almacen"
             }
-            // if (!key_moneda) {
-            //     throw "Debe seleccionar una moneda"
-            // }
             let subtotal = MDL.carrito.carrito_venta.monto_total
             let montoTotal_MN = parseFloat(subtotal.toFixed(2));
             let porcentajeDescuento = 0;
@@ -99,7 +103,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 descuentos = [this.descuentoSeleccionado];
             }
             const descripcionVenta = this.inputDescripcionVenta?.getValue?.() || "";
-
             PopupCarritoConfirmarResumen.open({
                 subtotal: subtotal,
                 montoMaximo: montoTotal_MN,
@@ -112,6 +115,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 moneda: MDL.carrito.selectedMoneda,
                 almacen: almacen,
                 descripcion: descripcionVenta, // 👈 AQUI
+                onTipoPagoChange: this.onTipoPagoChange
+
             })
         } catch (error: any) {
             console.error("Error al realizar la compra:", error);
@@ -124,79 +129,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             });
         }
     }
-    // handleSubmit = async (tipos_pago: any, key_moneda: string) => {
-    //     try {
-    //         const almacen = this.state.almacen;
-    //         if (!almacen) {
-    //             throw "Debe seleccionar un almacen"
-    //         }
-    //         const detalle = MDL.carrito.carrito_venta.items.map((ci) => {
-    //             return {
-    //                 "cantidad": ci.cantidad,
-    //                 "precio_unitario": ci.precio,
-    //                 "precio_unitario_base": ci.precio,
-    //                 "detalle": "",
-    //                 "descuento": 0,
-    //                 "descripcion": ci.modelo.descripcion,
-    //                 "key_modelo": ci.modelo.key,
-    //                 "moneda": key_moneda,
-    //                 "key_modelo_cliente": ci?.key_modelo_cliente
-    //             }
-    //         })
-    //         const data = {
-    //             "descripcion": "Venta De Prueba Ricky",
-    //             "observacion": "Observacion de la venta de prueba ricky",
-    //             "facturar": this.state.factura ? true : false,
-    //             cliente: { nit: this.inputNit?.getValue() || "", razon_social: this.inputRazonSocial?.getValue() || "" },
-    //             "descripcion2": this.inputDescripcionVenta?.getValue() || "",
-    //             "key_cliente": this.proveedor?.key,
-    //             "key_usuario": MDL.usuario.session?.key,
-    //             "facturar_luego": false,
-    //             "key_caja": MDL.caja.activa?.key,
-    //             "key_almacen": almacen.key,
-    //             "key_moneda": key_moneda,
-    //             "detalle": detalle,
-    //             tipos_pago: tipos_pago,
-    //         }
-    //         SNotification.send({
-    //             key: "venta_rapida",
-    //             title: "Cargando",
-    //             type: "loading",
-    //         });
-    //         const compraResp = await SSocket.sendPromise({
-    //             "service": "caja",
-    //             "component": "caja_detalle",
-    //             "type": "venta",
-    //             "estado": "cargando",
-    //             "data": data
-    //         })
-
-    //         SelectTipoPago.closePopup();
-    //         SNotification.remove("venta_rapida");
-    //         SPopup.close("PopupCarritoConfirmar");
-    //         SPopup.close("PopupCarrito");
-    //         MDL.carrito.limpiarCarritoVentas();
-    //         MDL.carrito.limpiarCarritoCompras();//este esta limpinado el carrito lateral..... pronto se borrara
-    //         SPopup.confirm({
-    //             title: "¡Venta realizada con éxito!",
-    //             message: "¿Deseas ir a la venta ahora?",
-    //             onPress: () => {
-    //                 SNavigation.navigate("/venta/profile2", { pk: compraResp?.data?.key_compra_venta });
-
-    //             }
-    //         });
-    //         MDL.caja.dispatchEvent({ type: "onDetalleChange" });
-    //     } catch (error: any) {
-    //         console.error("Error al realizar la venta:", error);
-    //         SNotification.send({
-    //             key: "venta_rapida",
-    //             title: "Error al realizar la venta",
-    //             body: error?.error || JSON.stringify(error),
-    //             color: STheme.color.danger,
-    //             time: 4000,
-    //         });
-    //     }
-    // }
     render() {
         return <SView col={"xs-12"} height>
             < SHr />
@@ -238,7 +170,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     <SView row>
                         <SInput
                             ref={ref => this.inputCliente = ref}
-                            icon={<SText color={STheme.color.lightGray} bold>{"Cliente:"}</SText>}
+                            inputStyle={this.state.esCredito && !this.state.key_cliente ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
+                            icon={<SText color={STheme.color.lightGray} bold>{"Cliente: "}</SText>}
                             placeholder={"Escriba el nombre del cliente"}
                             height={40}
                             type="select2"
@@ -451,24 +384,17 @@ this.forceUpdate();
                     />
                 </SView> */}
                 <SHr />
-
                 <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
                     <SText color={STheme.color.lightGray}>{"Descripcion"}</SText>
                     <SInput
                         type="textArea"
                         ref={ref => this.inputDescripcionVenta = ref}
-                        // value={"Alvaro Full stack"}
                         placeholder={"Descripción de la venta"}
                         style={{ minHeight: 20, height: 50, borderWidth: 1, borderColor: STheme.color.gray, marginVertical: 4 }}
                     />
                 </SView>
-
                 <SHr />
-
                 {/* <SText>{JSON.stringify(this.props.tipoCostosSeleccionados)}</SText> */}
-
-
-
             </SView>
             <SHr h={1} color={STheme.color.card} />
             <SView col={"xs-12"} row center height={40}>

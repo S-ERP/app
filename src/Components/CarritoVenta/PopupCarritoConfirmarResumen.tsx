@@ -6,7 +6,12 @@ import SIconApp from "../../Assets/SIconApp";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
-type PopupCarritoConfirmarResumenProps = {}
+// type PopupCarritoConfirmarResumenProps = {}
+
+export type PopupCarritoConfirmarResumenProps = {
+    onTipoPagoChange: (esCredito: boolean) => void;
+}
+
 export default class PopupCarritoConfirmarResumen extends React.Component<PopupCarritoConfirmarResumenProps> {
     static open(props: PopupCarritoConfirmarResumenProps) {
         SPopup.open({
@@ -128,9 +133,13 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
 
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
             if (keyPago === "credito" && !cliente) {
+
+                this.props.onTipoPagoChange(true);
+
+
                 SelectTipoPago.closePopup();
                 SPopup.close("PopupCarritoConfirmarResumen");
-                SPopup.close("PopupCarritoConfirmar");
+                // SPopup.close("PopupCarritoConfirmar");
                 SNotification.send({
                     key: "venta_rapida",
                     title: "Cliente requerido para venta a crédito ",
@@ -139,6 +148,9 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     time: 7000,
                 });
                 return;
+            }else{
+                this.props.onTipoPagoChange(false);
+
             }
 
 

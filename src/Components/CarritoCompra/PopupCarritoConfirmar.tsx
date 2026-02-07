@@ -236,7 +236,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     <SView row>
                         <SelectorCliente
                             inputStyle={this.state.esCredito ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
-                            icon={<SText color={STheme.color.lightGray} bold>{"Proveedor:  "}</SText>}
+                            icon={<SText color={STheme.color.lightGray} bold>{"Proveedor: "}</SText>}
+                            placeholder={"Escriba el nombre del proveedor"}
                             onChangeSelect={(cliente) => {
                                 if (this.inputNit && cliente) {
                                     if (this.proveedor?.nit !== cliente.nit) {
