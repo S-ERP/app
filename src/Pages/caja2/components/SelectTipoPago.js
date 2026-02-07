@@ -272,7 +272,8 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                     selecteds.forEach(item => {
                         elm[item.key] = {
                             monto_nacional: MDL.contabilidad.round(parseFloat(item.monto)),
-                            monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda.tipo_cambio ?? 1)))
+                            monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda.tipo_cambio ?? 1))),
+                            tipo_pago:item.tipo_pago
                         }
                         // montoTotal += SMath.formatMoney((item.monto+2000), 2);
                         montoTotal += parseFloat(item.monto)

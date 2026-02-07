@@ -103,10 +103,20 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             const subtotal = this.state.subtotal || 0;
             const totalDescuento = subtotal * (porcentajeDescuento || 0);
             const total = subtotal - totalDescuento;
+            // console.clear();
+            // console.log("%c" + JSON.stringify(cliente), `color: #2ECC40; font-weight: bold;`);
+            // alert("Sssss")
             SelectTipoPago.openPopup({
                 key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
                 montoMaximo: total * MDL.carrito.selectedMoneda.tipo_cambio,
                 key_moneda: MDL.carrito.selectedMoneda.key,
+
+                // onSelect: (item: any) => {
+                //     console.clear();
+                //     console.log("%c" + "ingresar_texto", `color: #2ECC40; font-weight: bold;`);
+                //     console.log(item);
+                // },
+
                 onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda, cliente, factura, almacen, porcentajeDescuento, descuentoSeleccionado),
                 solo_para_caja: solo_para_caja,
             });
@@ -124,6 +134,16 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         try {
             const monedaActual = MDL.carrito.selectedMoneda;
             const almacen = almacen_;
+
+           
+            const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
+            if (keyPago === "credito") {
+                if (!cliente) {
+                    SPopup.alert("No se puede registrar una venta a crédito sin cliente");
+                    return;
+                }
+            }
+
             if (!almacen) {
                 SPopup.alert("Debe seleccionar un almacen");
                 // throw "Debe seleccionar un almacen"
