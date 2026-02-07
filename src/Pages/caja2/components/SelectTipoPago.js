@@ -10,6 +10,8 @@ type SelectTipoPagoProps = {
     montoMaximo?: Number,
     montoMaximoPorTipo?: { [key: string]: number },
     key_moneda?: string,
+    venta?: boolean,
+    compra?: boolean,
     onSelect?: (item: any) => void
 }
 
@@ -84,6 +86,12 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
         // }
         if (this.props.solo_para_caja) {
             this.pvtp = this.pvtp.filter(a => a.tipo_pago?.pasa_por_caja);
+        }
+        if(this.props.venta){
+            this.pvtp = this.pvtp.filter(a => !!a?.habilita_venta);
+        }
+        if(this.props.compra){
+            this.pvtp = this.pvtp.filter(a => !!a?.habilita_compra);
         }
         this.pvtp.sort((a, b) => {
             return a.tipo_pago?.orden - b.tipo_pago?.orden

@@ -85,6 +85,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 key_moneda: key_moneda,
                 onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda),
                 solo_para_caja: false,
+                compra:true
             });
         } catch (error: any) {
             console.error("Error al realizar la compra:", error);

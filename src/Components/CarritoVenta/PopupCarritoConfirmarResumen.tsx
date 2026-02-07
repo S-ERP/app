@@ -113,7 +113,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 montoMaximo: total * MDL.carrito.selectedMoneda.tipo_cambio,
                 key_moneda: MDL.carrito.selectedMoneda.key,
                 onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda, cliente, factura, almacen, porcentajeDescuento, descuentoSeleccionado),
-                solo_para_caja: solo_para_caja,
+                solo_para_caja: false,
+                venta:true
             });
         } catch (error: any) {
             SNotification.send({

@@ -295,7 +295,7 @@ export default class reporteMoviminetos extends Component {
                 <DinamicTable.Col
                     key="sucursal_"
                     label="SUCURSAL"
-                    width={150}
+                    width={100}
                     data={e => e.row?.sucursal?.descripcion ?? "Sin sucursal"}
                     customComponent={e => {
                         const key = e.row?.key_sucursal;
@@ -319,7 +319,73 @@ export default class reporteMoviminetos extends Component {
                         );
                     }}
                 />
+                <DinamicTable.Col
+                    key="tipo"
+                    wrap
+                    label="TIPO DE OPERACIÓN"
+                    width={90}
+                    data={e => e.row?.tipo ?? 0}
+                    customComponent={e => {
+                        return (
+                            <SView col={"xs-12"} center height={20}   >
+                                <SView col={"xs-12"} row center height={20}   >
+                                    <SView center style={{
+                                        ...e.textStyle,
+                                        backgroundColor: this.colorTipoOperacion(e.data) || STheme.color.card,
+                                        borderWidth: 1, borderColor: this.colorTipoOperacion(e.data) || STheme.color.card,
+                                        borderRadius: 4,
+                                        paddingHorizontal: 8
+                                    }}> <SText fontSize={10} style={{ textTransform: "capitalize" }} >{e.data}</SText>
+                                    </SView>
+                                </SView>
+                            </SView>
+                        );
+                    }}
+                />
+                <DinamicTable.Col
+                    key="key_tipo_pagov2"
+                    wrap label="TIPO DE PAGO"
+                    width={110} data={e => e.row?.tag_tipo_pago ?? ""}
+                    customComponent={e => {
+                        return (
+                            <SView col={"xs-12"} row center>
+                                <SView width={4} />
+                                <SIconApp name={e.row?.icon || "Ajustes"} width={14} />
+                                <SView width={4} />
+                                <SView flex style={{ ...e.textStyle, paddingHorizontal: 2, paddingVertical: 3, borderRadius: 4 }} >
+                                    <SText fontSize={12}>{e.data}</SText>
+                                </SView>
+                            </SView>
+                        );
+                    }}
+                />
+                <DinamicTable.Col
+                    key="monto_total"
+                    wrap label="MONTO"
+                    width={90}
+                    color={STheme.color.danger}
+                    data={e => {
+                        const monto = e.row?.monto ?? 0;
+                        return SMath.formatMoney(monto, 2);
+                    }}
+                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#a8b1bb73", color: "blue" }}
+                    customComponent={e => {
+                        return (
+                            <SView col={"xs-12"} style={{ alignItems: "flex-end" }} >
+                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} >{e.row.moneda.observacion} {e.data}</SText>
+                            </SView>
+                        );
+                    }}
+                />
 
+
+                <DinamicTable.Col
+                    key="descripcion"
+                    wrap
+                    label="DESCRIPCIÓN"
+                    width={180}
+                    data={e => e.row?.descripcion ?? 0}
+                />
                 <DinamicTable.Col
                     key="punto"
                     label="P.VENTA"
@@ -328,7 +394,7 @@ export default class reporteMoviminetos extends Component {
                     data={e => e.row?.puntos_venta?.descripcion ? "PV-" + e.row?.puntos_venta?.descripcion : "Sin punto de venta"}
                 />
 
-                <DinamicTable.Col
+                {/* <DinamicTable.Col
                     key="fecha_apertura"
                     label="APERTURA CAJA"
                     width={130}
@@ -347,7 +413,7 @@ export default class reporteMoviminetos extends Component {
                     data={e => (e.row?.caja_fecha_cierre ? new SDate(e.row.caja_fecha_cierre, "yyyy-MM-ddThh:mm:ss").date : null)}
                     textStyle={{ fontSize: 12, color: STheme.color.text }}
                     dateFormat="yyyy-MM-dd hh:mm:ss"
-                />
+                /> */}
                 <DinamicTable.Col
                     key="fecha_movimiento"
                     label="FECHA TRANSACCIÓN"
@@ -370,15 +436,16 @@ export default class reporteMoviminetos extends Component {
                         return (
                             <SView col={"xs-12"} center height={20}   >
                                 <SView col={"xs-12"} row center height={20}   >
-                                    <SView width={70} center style={{
+                                    <SView  center style={{
                                         ...e.textStyle,
                                         borderWidth: 1, borderColor: STheme.color.link,
-                                        borderRadius: 4
+                                        borderRadius: 4,
+                                        padding:4,
                                     }}
                                         onPress={() => {
                                             SNavigation.navigate("/contabilidad/asiento_contable/profile", { pk: e.row?.key_comprobante })
                                         }}
-                                    > <SText color={STheme.color.link} underLine fontSize={12}> {e.row?.codigo_comprobante} </SText>
+                                    > <SText color={STheme.color.link}  fontSize={10}> {e.row?.codigo_comprobante} </SText>
                                     </SView>
                                 </SView>
                             </SView>
@@ -386,36 +453,7 @@ export default class reporteMoviminetos extends Component {
                     }}
                 />
 
-                <DinamicTable.Col
-                    key="tipo"
-                    wrap
-                    label="TIPO DE OPERACIÓN"
-                    width={90}
-                    data={e => e.row?.tipo ?? 0}
-                    customComponent={e => {
-                        return (
-                            <SView col={"xs-12"} center height={20}   >
-                                <SView col={"xs-12"} row center height={20}   >
-                                    <SView width={60} center style={{
-                                        ...e.textStyle,
-                                        backgroundColor: this.colorTipoOperacion(e.data) || STheme.color.card,
-                                        borderWidth: 1, borderColor: this.colorTipoOperacion(e.data) || STheme.color.card,
-                                        borderRadius: 4
-                                    }}> <SText fontSize={12} style={{ textTransform: "capitalize" }} >{e.data}</SText>
-                                    </SView>
-                                </SView>
-                            </SView>
-                        );
-                    }}
-                />
 
-                <DinamicTable.Col
-                    key="descripcion"
-                    wrap
-                    label="DESCRIPCIÓN"
-                    width={180}
-                    data={e => e.row?.descripcion ?? 0}
-                />
 
                 {/* <DinamicTable.Col
                     key="key_tipo_pago"
@@ -440,23 +478,7 @@ export default class reporteMoviminetos extends Component {
                     }}
                 /> */}
 
-                <DinamicTable.Col
-                    key="key_tipo_pagov2"
-                    wrap label="TIPO DE PAGO"
-                    width={110} data={e => e.row?.tag_tipo_pago ?? ""}
-                    customComponent={e => {
-                        return (
-                            <SView col={"xs-12"} row center>
-                                <SView width={4} />
-                                <SIconApp name={e.row?.icon || "Ajustes"} width={14} />
-                                <SView width={4} />
-                                <SView flex style={{ ...e.textStyle, paddingHorizontal: 2, paddingVertical: 3, borderRadius: 4 }} >
-                                    <SText fontSize={12}>{e.data}</SText>
-                                </SView>
-                            </SView>
-                        );
-                    }}
-                />
+
 
                 <DinamicTable.Col
                     key="empresa_tipo_pago"
@@ -499,26 +521,9 @@ export default class reporteMoviminetos extends Component {
                 />
 
 
-                <DinamicTable.Col
-                    key="monto_total"
-                    wrap label="MONTO"
-                    width={90}
-                    color={STheme.color.danger}
-                    data={e => {
-                        const monto = e.row?.monto ?? 0;
-                        return SMath.formatMoney(monto, 2);
-                    }}
-                    cellStyle={{ alignItems: "flex-end", backgroundColor: "#a8b1bb73", color: "blue" }}
-                    customComponent={e => {
-                        return (
-                            <SView col={"xs-12"} style={{ alignItems: "flex-end" }} >
-                                <SText fontSize={12} color={e.row?.monto > 0 ? STheme.color.text : STheme.color.danger} >{e.row.moneda.observacion} {e.data}</SText>
-                            </SView>
-                        );
-                    }}
-                />
 
-                <DinamicTable.Col
+
+                {/* <DinamicTable.Col
                     key="tipo_cambio"
                     wrap
                     center
@@ -526,7 +531,7 @@ export default class reporteMoviminetos extends Component {
                     width={50}
                     cellStyle={{ alignItems: "flex-end", backgroundColor: "#a8b1bb73" }}
                     data={e => e.row?.moneda.tipo_cambio ?? 0}
-                />
+                /> */}
 
                 <DinamicTable.Col
                     key="monto_base"
@@ -546,14 +551,14 @@ export default class reporteMoviminetos extends Component {
                         );
                     }}
                 />
-
+                {/* 
                 <DinamicTable.Col
                     key="moneda_info2"
                     wrap label="MONEDA BASE"
                     width={90}
                     color={STheme.color.danger}
                     data={e => e.row?.moneda_base?.descripcion ?? 0}
-                />
+                /> */}
 
 
 
