@@ -3,15 +3,12 @@ import { SHr, SImage, SInput, SMath, SNavigation, SNotification, SPage, SPopup, 
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
-import { FlatList } from "react-native";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import SelectTipoPago2 from "../../Pages/caja2/components/SelectTipoPago2";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
 import SelectorCliente from "../Selectores/SelectorCliente";
-
 type PopupCarritoConfirmarProps = {
-
 }
 export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
     static open(props: PopupCarritoConfirmarProps) {
@@ -23,7 +20,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 top: 8,
                 right: 8,
                 width: "100%",
-                // maxWidth: 300,
+                maxWidth: 300,
                 height: 500,
                 // maxHeight: "100%",
                 backgroundColor: STheme.color.background,
@@ -41,16 +38,14 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     inputNombre: SInput | null = null;
     inputAlmacen: SelectorAlmacen | undefined;
     proveedor: any;
-    state: { almacen: any, moneda: any, factura: boolean } = {
+    state: { almacen: any, moneda: any, factura: boolean, esCredito: boolean } = {
         almacen: null,
         moneda: null,
         factura: false,
+        esCredito: false, // 👈 bandera
     }
-
     componentDidMount(): void {
-
     }
-
     handleOnPress = async () => {
         try {
             // const monedas = await MDL.empresa.getMonedas();
@@ -70,7 +65,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 key_moneda: key_moneda,
                 onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda),
                 solo_para_caja: false,
-
             });
         } catch (error: any) {
             console.error("Error al realizar la compra:", error);
@@ -102,7 +96,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 key_moneda: key_moneda,
                 onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda),
                 solo_para_caja: false,
-
             });
         } catch (error: any) {
             console.error("Error al realizar la compra:", error);
@@ -115,15 +108,31 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             });
         }
     }
-
     handleSubmit = async (tipos_pago: any, key_moneda: string) => {
         try {
+            const proveedor = this.proveedor;
+            const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
+            // this.keyPago_bandera = keyPago;
+            // 🔴 Validación: compra a crédito requiere proveedor
+            if (keyPago === "credito" && !proveedor) {
+                this.setState({ esCredito: true });
+                SelectTipoPago2.closePopup();
+                // SPopup.close("PopupCarritoConfirmar");
+                SNotification.send({
+                    key: "compra_rapida",
+                    title: "Proveedor requerido",
+                    body: "Para registrar una compra a crédito, debe seleccionar un proveedor.",
+                    color: STheme.color.danger,
+                    time: 7000,
+                });
+                return;
+            } else {
+                this.setState({ esCredito: false });
+            }
             const almacen = this.state.almacen;
             if (!almacen) {
                 throw "Debe seleccionar un almacen"
             }
-
-
             const detalle = MDL.carrito.carrito_compra.items.map((ci) => {
                 return {
                     "cantidad": ci.cantidad,
@@ -149,13 +158,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 "detalle": detalle,
                 tipos_pago: tipos_pago,
             }
-
             SNotification.send({
                 key: "compra_rapida",
                 title: "Cargando",
                 type: "loading",
             });
-
             const compraResp = await SSocket.sendPromise({
                 "service": "caja",
                 "component": "caja_detalle",
@@ -163,7 +170,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 "estado": "cargando",
                 "data": data
             })
-
             SelectTipoPago.closePopup();
             SNotification.remove("compra_rapida");
             SPopup.close("PopupCarritoConfirmar");
@@ -192,7 +198,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         // const items = MDL.carrito.carrito_compra.items;
         return <SView col={"xs-12"} height>
             < SHr />
-
             <SText center color={STheme.color.lightGray} bold>{"Confirmar la compra"}</SText>
             <SView style={{
                 padding: 4,
@@ -227,11 +232,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             />
                         </SView>
                     </SView>
-
                     <SHr />
                     <SView row>
                         <SelectorCliente
-                            icon={<SText color={STheme.color.lightGray} bold>{"Cliente:"}</SText>}
+                            inputStyle={this.state.esCredito ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
+                            icon={<SText color={STheme.color.lightGray} bold>{"Proveedor:  "}</SText>}
                             onChangeSelect={(cliente) => {
                                 if (this.inputNit && cliente) {
                                     if (this.proveedor?.nit !== cliente.nit) {
@@ -253,9 +258,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             <SInput ref={ref => this.inputNit = ref} icon={<SText color={STheme.color.lightGray} bold>{"NIT:"}</SText>} placeholder={"NIT"} />
                         </SView>
                     </> : null}
-
-
-
                 </SView>
                 <SHr />
                 <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
@@ -272,7 +274,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             this.state.almacen = e;
                         }}
                     />
-
                 </SView>
                 <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
                     <SelectorMoneda
@@ -286,7 +287,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             this.state.moneda = e;
                         }}
                     />
-
                 </SView>
                 <SHr />
                 {/* <SView padding={8}> */}

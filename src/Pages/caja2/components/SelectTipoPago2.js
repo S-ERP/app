@@ -94,7 +94,7 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
     }
 
     renderItemTipoPago(item) {
-        console.log("ITEM: ",item)
+        console.log("ITEM: ", item)
         const select = item.__select
         return <SView style={{
             padding: 4,
@@ -324,7 +324,8 @@ export default class SelectTipoPago extends Component<SelectTipoPagoProps> {
                         console.log(item);
                         elm[item.key] = {
                             monto_nacional: MDL.contabilidad.round(parseFloat(item.monto)),
-                            monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda.tipo_cambio ?? 1)))
+                            monto_extranjera: MDL.contabilidad.round((parseFloat(item.monto) / parseFloat(item.moneda.tipo_cambio ?? 1))),
+                            tipo_pago: item.tipo_pago
                         }
                         // montoTotal += SMath.formatMoney((item.monto+2000), 2);
                         montoTotal += parseFloat(item.monto)
