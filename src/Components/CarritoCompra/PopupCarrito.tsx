@@ -210,7 +210,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
 
     const precioFormateado = Number.isInteger(precio)
         ? precio.toString()
-        : precio.toFixed(2);
+        : (precio??0).toFixed(2);
 
     return (
         <SView padding={8}>
