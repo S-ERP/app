@@ -2,20 +2,21 @@ import React, { Component } from 'react';
 import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SDate, SMath, SNotification, } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
-import Config from '../Config';
-import MDL from '../MDL';
-import FloatButtom from '../Components/FloatButtom';
-import FloatMenu from '../Components/FloatMenu';
-import SIconApp from '../Assets/SIconApp';
-import PopupAgregarTipoCosto from './productos/modelo/Components/PopupAgregarTipoCosto';
-import PopupAgregarMarca from './productos/marca/Components/PopupAgregarMarca';
-// import MDL from '../../../MDL';
-// import Config from '../../../Config';
-// import FloatButtom from '../../../Components/FloatButtom';
-// import FloatMenu from '../../../Components/FloatMenu';
-// import SIconApp from '../../../Assets/SIconApp';
-// import PopupAgregarTipoCosto from './Components/PopupAgregarTipoCosto';
-export default class Test extends Component {
+import Config from '../../../Config';
+import MDL from '../../../MDL';
+import FloatButtom from '../../../Components/FloatButtom';
+import PopupAgregarMarca from './Components/PopupAgregarMarca';
+import FloatMenu from '../../../Components/FloatMenu';
+import SIconApp from '../../../Assets/SIconApp';
+// import Config from '../Config';
+// import MDL from '../MDL';
+// import FloatButtom from '../Components/FloatButtom';
+// import FloatMenu from '../Components/FloatMenu';
+// import SIconApp from '../Assets/SIconApp';
+// import PopupAgregarTipoCosto from './productos/modelo/Components/PopupAgregarTipoCosto';
+// import PopupAgregarMarca from './productos/marca/Components/PopupAgregarMarca';
+
+export default class mostrar extends Component {
     constructor(props) {
         super(props);
         this.state = {

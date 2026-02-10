@@ -1,21 +1,15 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SDate, SMath, SNotification, } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SDate, SNotification, } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
-import Config from '../Config';
-import MDL from '../MDL';
-import FloatButtom from '../Components/FloatButtom';
-import FloatMenu from '../Components/FloatMenu';
-import SIconApp from '../Assets/SIconApp';
-import PopupAgregarTipoCosto from './productos/modelo/Components/PopupAgregarTipoCosto';
-import PopupAgregarMarca from './productos/marca/Components/PopupAgregarMarca';
-// import MDL from '../../../MDL';
-// import Config from '../../../Config';
-// import FloatButtom from '../../../Components/FloatButtom';
-// import FloatMenu from '../../../Components/FloatMenu';
-// import SIconApp from '../../../Assets/SIconApp';
-// import PopupAgregarTipoCosto from './Components/PopupAgregarTipoCosto';
-export default class Test extends Component {
+import Config from '../../../Config';
+import MDL from '../../../MDL';
+import FloatButtom from '../../../Components/FloatButtom';
+import PopupAgregarMarca from './Components/PopupAgregarMarca';
+import FloatMenu from '../../../Components/FloatMenu';
+import SIconApp from '../../../Assets/SIconApp';
+
+export default class tabla extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -27,17 +21,32 @@ export default class Test extends Component {
         return (
             <SView col="xs-12" center row>
                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} >
-                    {usuario?.key ? (
-                        <SImage src={`${SSocket.api.root}usuario/${usuario.key}`} style={{ resizeMode: "cover" }} />
-                    ) : null}
+                    {usuario?.key ? (<SImage src={`${SSocket.api.root}usuario/${usuario.key}`} style={{ resizeMode: "cover" }} />) : null}
                 </SView>
                 <SView width={5} />
-                <SText flex numberOfLines={1} style={{ fontSize: 10 }}>
-                    {nombre}
-                </SText>
+                <SText flex numberOfLines={1} style={{ fontSize: 10 }}> {nombre} </SText>
             </SView>
         );
     }
+
+    renderMarca(marca = {}) {
+        // const nombre = `${usuario?.Nombres || "Sin"} ${usuario?.Apellidos || "usuario"}`;
+        return (
+            <SView col="xs-12" center row>
+
+                           {/* <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
+                                    <ImageLabel {...e} src={SSocket.api.inventario + "marca/.128_" + e.row.key_marca + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />
+                                </SView> */}
+
+                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} >
+                    {marca.key ? (<SImage src={SSocket.api.inventario + "marca/.128_" + marca.key + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />) : null}
+                </SView>
+                <SView width={5} />
+                <SText flex numberOfLines={1} style={{ fontSize: 10 }}> {marca.descripcion} </SText>
+            </SView>
+        );
+    }
+
     renderSucursal(sucursal = {}) {
         if (!sucursal?.key) return null;
         return (
@@ -67,7 +76,6 @@ export default class Test extends Component {
     }
     async loadInitialData() {
         try {
-            //   MDL.inventario.modelo_tag.editar
             const res = await MDL.inventario.marca.getAllMarca();
             const empresa = await MDL.empresa.getFull();
             const keysUsuarios = [
@@ -122,13 +130,13 @@ export default class Test extends Component {
                     const Menu = [];
                     Menu.push({
                         icon: <SIconApp name='crmeditar' fill='#8b8b8a25' stroke='#a8a89fff' width={20} />,
-                        label: "Editar Tipo de Costo",
+                        label: "Editar Marca",
                         onPress: () => {
                             const item = {
                                 ...e.row,
                                 key_usuario: MDL.usuario.session?.key,
                             }
-                            PopupAgregarTipoCosto.open({
+                            PopupAgregarMarca.open({
                                 editObject: item,
                                 onSuccess: async () => {
                                     this.DinamicTable.loadData();
@@ -138,13 +146,13 @@ export default class Test extends Component {
                     })
                     Menu.push({
                         icon: <SIconApp name='crmeliminar' fill='#ed3a4318' stroke='#ed3a43' width={20} />,
-                        label: "Eliminar Tipo de Costo",
+                        label: "Eliminar Marca",
                         onPress: () => {
                             SPopup.confirm({
                                 title: "Eliminar Tipo de Costo",
                                 message: "¿Desea eliminar este Tipo de Costo?",
                                 onPress: () => {
-                                    MDL.inventario.saveTipoCosto({
+                                    MDL.inventario.saveMarca({
                                         key: e.row.key,
                                         estado: 0,
                                     }).then(() => {
@@ -170,8 +178,7 @@ export default class Test extends Component {
                 }}
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
-                <DinamicTable.Col key="descripcion" label="Descripción" width={120} data={(e) => e.row?.descripcion ?? ""} />
-                {/* <DinamicTable.Col key={"key_cuenta_contable"} label="cuenta contable" width={350} textStyle={{ color: STheme.color.lightGray }} data={e => e.row.cuenta_contable ? `${e.row.cuenta_contable.codigo} ${e.row.cuenta_contable.descripcion}` : ""} /> */}
+                 <DinamicTable.Col key="descripcion" label="Descripción" width={120} data={(e) => e.row?.descripcion ?? ""} />
                 <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={110} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.lightGray, }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="key_usuario" label="Administrador" width={100} data={(e) => e.row?.key_usuario ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
                 <DinamicTable.Col key="key_empresa" label="key_empresa" width={100} data={(e) => e.row?.key_empresa ?? ""} customComponent={e => this.renderEmpresa(e.row?.empresa)} />

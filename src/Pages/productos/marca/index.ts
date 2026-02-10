@@ -6,6 +6,9 @@ import _new from "./new";
 import profile from "./profile/index";
 import edit from "./edit";
 import _delete from "./delete";
+import mostrar from "./mostrar";
+import tabla from "./tabla";
+// import tabla from "./tabla";
 const model = Model.marca;
 
 export const Parent = {
@@ -20,5 +23,7 @@ export default SPage.combinePages(Parent.name, {
     "new": _new,
     "profile": profile,
     "edit": edit,
-    "delete": _delete
+    "delete": _delete,
+    "tabla": tabla,
+    // "alvaro": mostrar,
 })
