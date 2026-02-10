@@ -25,10 +25,10 @@ export default class Detalle extends Component {
         }
     }
 
-    detalle_item(p = { key, key_usuario, nombre, precio, cantidad, descuento, tipo, key_modelo, key_moneda }) {
-        const { key, key_usuario, nombre, precio, cantidad, descuento, tipo, key_modelo, key_moneda } = p;
+    detalle_item(p = { key, key_usuario, nombre, precio, cantidad, precio_unitario_base, descuento, tipo, key_modelo, key_moneda }) {
+        const { key, key_usuario, nombre, precio, cantidad, precio_unitario_base, descuento, tipo, key_modelo, key_moneda } = p;
         var onPress = null;
-        if(this.props.onPress){
+        if (this.props.onPress) {
             onPress = this.props.onPress.bind(this, p);
         }
         // console.log("MONEDA DETALLE", key_moneda)
@@ -60,10 +60,10 @@ export default class Detalle extends Component {
             <SView flex>
                 <SText bold >{nombre}</SText>
                 {/* <SText>{SMath.formatMoney(precio)} bs X {parseInt(cantidad)} Unid </SText> */}
-                <SText>{SMath.formatMoney(precio)} {moneda.observacion} X {parseInt(cantidad)} Unid </SText>
+                <SText>{SMath.formatMoney(precio_unitario_base)} {moneda.observacion} X {parseInt(cantidad)} Unid </SText>
                 <SText fontSize={10} bold color={STheme.color.lightGray}>{tipo}</SText>
-                <SHr/>
-                {(p?.costos??[]).map((costo:any)=>
+                <SHr />
+                {(p?.costos ?? []).map((costo: any) =>
                     <SView col={"xs-12"} row center>
                         <SView flex>
                             <SText fontSize={12} color={STheme.color.danger} >{costo.descripcion}</SText>
@@ -76,10 +76,10 @@ export default class Detalle extends Component {
             </SView>
             <SView width={8} />
             <SView col={"xs-3"} style={{ alignItems: 'end', textAlign: "end" }}>
-                <SText style={{ alignItems: 'end', textAlign: "end" }}>{SMath.formatMoney((precio * cantidad))} {moneda.observacion}</SText>
+                <SText style={{ alignItems: 'end', textAlign: "end" }}>{SMath.formatMoney((precio_unitario_base * cantidad))} {moneda.observacion}</SText>
                 {descuento ? <SText color={STheme.color.danger}>- {SMath.formatMoney(descuento)}</SText> : null}
             </SView>
-            
+
         </SView>
     }
     getButtom() {

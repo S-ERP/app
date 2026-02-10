@@ -112,8 +112,8 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     }
     Object.values(compra_venta_detalle.detalle).map(((obj: any) => {
       if (!obj.estado) return;
-      const { precio_unitario, precio_facturado, cantidad, descuento } = obj;
-      const precio = ((precio_unitario * cantidad) - (descuento ?? 0));
+      const { precio_unitario, precio_unitario_base, precio_facturado, cantidad, descuento } = obj;
+      const precio = (((precio_unitario_base ?? 0) * cantidad) - (descuento ?? 0));
       t.subtotal += precio;
     }))
     t.descuento = descuentoData;
