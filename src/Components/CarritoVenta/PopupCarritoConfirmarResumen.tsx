@@ -6,7 +6,6 @@ import SIconApp from "../../Assets/SIconApp";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
-// type PopupCarritoConfirmarResumenProps = {}
 
 export type PopupCarritoConfirmarResumenProps = {
     onTipoPagoChange: (esCredito: boolean) => void;
@@ -63,37 +62,11 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             descuentos: [],
             subtotal: null,
         }
-    async componentDidMount() {
-        try {
-            const clientes = await MDL.crm.cliente.getAll(); // tu método de listar
-            this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
-                this.cargarSubtotal();
-            });
-            this.setState({ clientes: clientes || [] });
-            await SSocket.sendPromise({
-                service: "compra_venta",
-                component: "descuento",
-                type: "getAll",
-                key_empresa: MDL.empresa?.select?.key
-            }).then(e => {
-                const descuentos = Object.values(e.data)
-                this.setState({ descuentos: descuentos })
-            })
-            this.cargarSubtotal();
-        } catch (e) {
-            console.error("Error cargando clientes", e);
-        }
-    }
-    cargarSubtotal() {
-        const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
-        const carritoItems = MDL.carrito.carrito_venta.items;
-        const subtotal = carritoItems.reduce((acc, item) => {
-            const precio = monedaActual
-                ? item.modelo.precio_venta_moneda / (monedaActual.tipo_cambio || 1)
-                : item.modelo.precio_venta_moneda;
-            return acc + precio * item.cantidad;
-        }, 0);
-        this.setState({ subtotal: subtotal || 0 });
+
+    componentDidMount() {
+        this.cargarClientes();
+        this.cargarDescuentos();
+        this.escucharCambioMoneda();
     }
     componentWillUnmount(): void {
         MDL.carrito.removeEventListener(this.handleChange);
@@ -101,20 +74,59 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             MDL.compra_venta.removeEventListener(this.evento);
         }
     }
+    async cargarClientes() {
+        try {
+            const clientes = await MDL.crm.cliente.getAll();
+            this.setState({ clientes: clientes || [] });
+        } catch (error) {
+            console.error("Error cargando clientes:", error);
+        }
+    }
+    async cargarDescuentos() {
+        try {
+            const response = await SSocket.sendPromise({
+                service: "compra_venta",
+                component: "descuento",
+                type: "getAll",
+                key_empresa: MDL.empresa?.select?.key
+            });
+            const descuentos = Object.values(response.data || {});
+            this.setState({ descuentos });
+        } catch (error) {
+            console.error("Error cargando descuentos:", error);
+        }
+    }
+
+    escucharCambioMoneda() {
+        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
+            this.forceUpdate(); // recalcula subtotal en render
+        });
+    }
+    calcularSubtotal() {
+        const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
+        const carritoItems = MDL.carrito.carrito_venta.items;
+        return carritoItems.reduce((acc, item) => {
+            const precio = monedaActual
+                ? item.modelo.precio_venta_moneda / (monedaActual.tipo_cambio || 1)
+                : item.modelo.precio_venta_moneda;
+            return acc + precio * item.cantidad;
+        }, 0);
+    }
+
     handleOnPress = async () => {
         try {
-            const { montoMaximo, key_moneda, porcentajeDescuento, solo_para_caja, cliente, factura, almacen, descuentoSeleccionado } = this.props;
-            const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
-            const subtotal = this.state.subtotal || 0;
+            const { porcentajeDescuento, cliente, factura, almacen, descuentoSeleccionado } = this.props;
+            const subtotal = this.calcularSubtotal();
             const totalDescuento = subtotal * (porcentajeDescuento || 0);
             const total = subtotal - totalDescuento;
             SelectTipoPago.openPopup({
                 key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
                 montoMaximo: total * MDL.carrito.selectedMoneda.tipo_cambio,
                 key_moneda: MDL.carrito.selectedMoneda.key,
-                onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda, cliente, factura, almacen, porcentajeDescuento, descuentoSeleccionado),
+                onSelect: (tipos_pago: any) =>
+                    this.handleSubmit(tipos_pago, cliente, factura, almacen, porcentajeDescuento, descuentoSeleccionado),
                 solo_para_caja: false,
-                venta:true
+                venta: true
             });
         } catch (error: any) {
             SNotification.send({
@@ -125,22 +137,16 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 time: 4000,
             });
         }
-    }
+    };
     handleSubmit = async (tipos_pago: any, key_moneda: string, cliente: any, factura: boolean, almacen_: any, porcentajeDescuento: any, descuentoSeleccionado: any) => {
         try {
             const monedaActual = MDL.carrito.selectedMoneda;
-            const almacen = almacen_;
-
-
+            const almacen = this.props.almacen;
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
             if (keyPago === "credito" && !cliente) {
-
                 this.props.onTipoPagoChange(true);
-
-
                 SelectTipoPago.closePopup();
                 SPopup.close("PopupCarritoConfirmarResumen");
-                // SPopup.close("PopupCarritoConfirmar");
                 SNotification.send({
                     key: "venta_rapida",
                     title: "Cliente requerido para venta a crédito ",
@@ -152,12 +158,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             } else {
                 this.props.onTipoPagoChange(false);
 
-            }
-
-
-            if (!almacen) {
+            }if (!almacen) {
                 SPopup.alert("Debe seleccionar un almacen");
-                // throw "Debe seleccionar un almacen"
             }
             const detalle = MDL.carrito.carrito_venta.items.map((ci) => {
                 const costos: any = []
@@ -177,7 +179,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     "cantidad": ci.cantidad,
                     "precio_unitario": ci.precio,
                     "precio_unitario_base": ci.modelo.precio_venta_moneda,
-                    // "precio_unitario_base": monedaActual ? ci.modelo.precio_venta_moneda / (monedaActual.tipo_cambio || 1) : ci.modelo.precio_venta_moneda,
                     "detalle": "",
                     "descripcion": ci.modelo.descripcion,
                     "key_modelo": ci.modelo.key,
@@ -244,7 +245,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
     render() {
         const { porcentajeDescuento, cliente, factura, almacen, descuentoSeleccionado } = this.props;
         const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
-        const subtotal2 = this.state.subtotal || 0;
+        const subtotal2 = this.calcularSubtotal();
+
         const totalDescuento = subtotal2 * (porcentajeDescuento || 0);
         const total = subtotal2 - totalDescuento;
         return <SView col={"xs-12"} height>
