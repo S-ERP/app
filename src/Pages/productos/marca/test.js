@@ -30,14 +30,8 @@ export default class tabla extends Component {
     }
 
     renderMarca(marca = {}) {
-        // const nombre = `${usuario?.Nombres || "Sin"} ${usuario?.Apellidos || "usuario"}`;
         return (
             <SView col="xs-12" center row>
-
-                           {/* <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
-                                    <ImageLabel {...e} src={SSocket.api.inventario + "marca/.128_" + e.row.key_marca + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />
-                                </SView> */}
-
                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} >
                     {marca.key ? (<SImage src={SSocket.api.inventario + "marca/.128_" + marca.key + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />) : null}
                 </SView>
@@ -47,21 +41,7 @@ export default class tabla extends Component {
         );
     }
 
-    renderSucursal(sucursal = {}) {
-        if (!sucursal?.key) return null;
-        return (
-            <SView col="xs-12" center row>
-                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} >
-                    <SImage
-                        src={`${SSocket.api.empresa}sucursal/${sucursal.key}`}
-                        style={{ resizeMode: "cover" }}
-                    />
-                </SView>
-                <SView width={5} />
-                <SText flex numberOfLines={1} style={{ fontSize: 10 }}> {sucursal?.descripcion || "Sucursal"} </SText>
-            </SView>
-        );
-    }
+
     renderEmpresa(empresa = {}) {
         if (!empresa?.key) return null;
         return (
@@ -78,28 +58,17 @@ export default class tabla extends Component {
         try {
             const res = await MDL.inventario.marca.getAllMarca();
             const empresa = await MDL.empresa.getFull();
-            const keysUsuarios = [
-                ...new Set(
-                    res.flatMap(e => [e.key_usuario, e.key_cliente]).filter(Boolean)
-                )
-            ];
+            const keysUsuarios = [...new Set(res.flatMap(e => [e.key_usuario, e.key_cliente]).filter(Boolean))];
             const usuariosArr = await MDL.usuario.getByKeys(keysUsuarios) || [];
-            const usuariosMap = Object.fromEntries(
-                usuariosArr.map(u => [u.key, u])
-            );
-            // const cuentasObj = await MDL.contabilidad.getCuentas();
-            // const cuentasArr = Object.values(cuentasObj || {});
-            // const cuentasMap = Object.fromEntries(
-            //     cuentasArr.map(c => [c.key, c])
-            // );
+            const usuariosMap = Object.fromEntries(usuariosArr.map(u => [u.key, u]));
+
             if (!Array.isArray(res)) return [];
-            const data_mejorada = res.map(e => ({
+            const marcas = res.map(e => ({
                 ...e,
                 usuario: usuariosMap[e.key_usuario] || {},
                 empresa,
-                // cuenta_contable: cuentasMap[e.key_cuenta_contable] || null,
             }));
-            return data_mejorada;
+            return marcas;
         } catch (error) {
             console.error("❌ Error en loadInitialData:", error);
             SPopup.alert("Error al cargar los datos.");
@@ -110,17 +79,13 @@ export default class tabla extends Component {
         return (
             <DinamicTable
                 ref={ref => (this.DinamicTable = ref)}
-                loadData={async () => {
-                    return this.loadInitialData();
-                }}
+                loadData={async () => { return this.loadInitialData(); }}
                 language="es"
                 center
                 {...Config.table.applyTheme()}
                 selectType="single"
                 keyExtractor={(e) => e.key}
-                loadInitialState={async () => {
-                    return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] }
-                }}
+                loadInitialState={async () => { return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] } }}
                 onSelect={(e) => {
                     if (this.onSelect) {
                         this.onSelect(e.row)
@@ -138,9 +103,12 @@ export default class tabla extends Component {
                             }
                             PopupAgregarMarca.open({
                                 editObject: item,
-                                onSuccess: async () => {
-                                    this.DinamicTable.loadData();
-                                },
+                                onSuccess: () => {
+                                    if (this.DinamicTable) {
+                                        this.DinamicTable.loadData();
+                                        this.state.time = new Date().getTime();
+                                    }
+                                }
                             })
                         }
                     })
@@ -149,16 +117,16 @@ export default class tabla extends Component {
                         label: "Eliminar Marca",
                         onPress: () => {
                             SPopup.confirm({
-                                title: "Eliminar Tipo de Costo",
-                                message: "¿Desea eliminar este Tipo de Costo?",
+                                title: "Eliminar Marca",
+                                message: "¿Desea eliminar esta marca?",
                                 onPress: () => {
                                     MDL.inventario.saveMarca({
                                         key: e.row.key,
                                         estado: 0,
                                     }).then(() => {
                                         SNotification.send({
-                                            title: "Tipo de Costo Eliminado",
-                                            body: "El Tipo de Costo se ha eliminado correctamente.",
+                                            title: "Marca Eliminada",
+                                            body: "La marca se ha eliminado correctamente.",
                                             time: 3000,
                                             color: STheme.color.success,
                                         });
@@ -178,7 +146,7 @@ export default class tabla extends Component {
                 }}
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
-                 <DinamicTable.Col key="descripcion" label="Descripción" width={120} data={(e) => e.row?.descripcion ?? ""} />
+                <DinamicTable.Col key="descripcion" label="Descripción" width={150} data={(e) => e.row?.key ?? ""} customComponent={e => this.renderMarca(e.row)} />
                 <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={110} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.lightGray, }} dateFormat="yyyy-MM-dd hh:mm" />
                 <DinamicTable.Col key="key_usuario" label="Administrador" width={100} data={(e) => e.row?.key_usuario ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
                 <DinamicTable.Col key="key_empresa" label="key_empresa" width={100} data={(e) => e.row?.key_empresa ?? ""} customComponent={e => this.renderEmpresa(e.row?.empresa)} />

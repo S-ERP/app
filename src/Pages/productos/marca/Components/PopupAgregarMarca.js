@@ -17,17 +17,17 @@ type Props = {
 export default class PopupAgregarMarca extends Component<Props> {
     static open(props: Props) {
         SPopup.open({
-            key: "PopupAgregarTipoCosto",
+            key: "PopupAgregarMarca",
             content: (
                 <SView style={{ width: "100%", maxWidth: 500, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, backgroundColor: STheme.color.background, }} withoutFeedback >
-                    <PopupAgregarTipoCosto
+                    <PopupAgregarMarca
                         {...props}
                         onCancel={() => {
-                            SPopup.close("PopupAgregarTipoCosto");
+                            SPopup.close("PopupAgregarMarca");
                             props.onCancel?.();
                         }}
                         onSuccess={(e: any) => {
-                            SPopup.close("PopupAgregarTipoCosto");
+                            SPopup.close("PopupAgregarMarca");
                             props.onSuccess?.(e);
                         }}
                     />
@@ -73,7 +73,7 @@ export default class PopupAgregarMarca extends Component<Props> {
         return (
             <SView col="xs-12" padding={16}>
                 <SText fontSize={16} bold>
-                    {this.props.editObject ? "Editar" : "Crear"} Tipo de Costo
+                    {this.props.editObject ? "Editar" : "Crear"} Marca
                 </SText>
                 <SHr h={16} />
                 <SForm
@@ -86,47 +86,7 @@ export default class PopupAgregarMarca extends Component<Props> {
                             isRequired: true,
                             defaultValue: this.props.editObject?.descripcion,
                         },
-                        // key_cuenta_contable: {
-                        //     col: "xs-12",
-                        //     type: "select2",
-                        //     label: "Cuenta Contable",
-                        //     defaultValue: cuentaToText(
-                        //         this.state.cuentas.find(
-                        //             (c: any) =>
-                        //                 c.key ===
-                        //                 this.props.editObject?.key_cuenta_contable
-                        //         )
-                        //     ),
-                        //     options: this.state.cuentas
-                        //         .filter((c: any) => c.cantidad_hijas <= 0)
-                        //         .map(cuentaToText),
-                        // },
-                        key_modelo_compra: {
-                            col: "xs-12",
-                            type: "custom",
-                            customInputClass: InputSelector,
-                            options: this.state.modelosStock.map((obj: any) => ({
-                                label: `${obj.descripcion}`,
-                                value: obj.key,
-                                customComponent: (e: any) => <SText fontSize={12} color={STheme.color.lightGray}>{e.data.tipo_producto?.descripcion} - {e.data.tipo_producto?.tipo}</SText>,
-                                data: obj
-                            })),
-                            label: "key_modelo_compra",
-                            defaultValue: this.props.editObject?.key_modelo_compra,
-                        },
-                        key_tipo_pago: {
-                            col: "xs-12",
-                            type: "custom",
-                            customInputClass: InputSelector,
-                            options: this.state.tiposPago.map((obj: any) => ({
-                                label: `${obj.descripcion}`,
-                                value: obj.key,
-                                customComponent: (e: any) => <SText fontSize={12} color={STheme.color.lightGray}>{e.data.key_tipo_pago}</SText>,
-                                data: obj
-                            })),
-                            label: "key_tipo_pago",
-                            defaultValue: this.props.editObject?.key_tipo_pago,
-                        },
+
                     }}
                     onSubmit={(data: any) => {
                         const finalData = {
@@ -134,15 +94,16 @@ export default class PopupAgregarMarca extends Component<Props> {
                                 key_empresa: MDL.empresa.select?.key,
                             }),
                             descripcion: data.descripcion,
-                            key_tipo_pago: data.key_tipo_pago,
-                            key_modelo_compra: data.key_modelo_compra,
+                            // key_tipo_pago: data.key_tipo_pago,
+                            // key_modelo_compra: data.key_modelo_compra,
                             // key_cuenta_contable: findCuentaText(
                             //     this.state.cuentas,
                             //     data.key_cuenta_contable
                             // )?.key,
                         };
+
                         MDL.inventario
-                            .saveTipoCosto(finalData)
+                            .saveMarca(finalData)
                             .then((resp: any) => {
                                 this.props.onSuccess?.(resp);
                             })
