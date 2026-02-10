@@ -64,11 +64,21 @@ export default class Abierta extends Component {
         console.log("PROPSSS", this.props);
         let key_user = this.props.caja.key_usuario
         let usuario = Model.usuario.Action.getByKey(key_user);
-        let key_sucursal = this.props.caja.key_sucursal
-        // let sucursal = Model.sucursal.Action.getByKey(key_sucursal);
-        // console.log("SUCURSAL", sucursal);
-        // if (!sucursal) return;
         if (!usuario) return;
+        // this.sucursal = Model.sucursal.Action.getByKey(this.punto_venta.key_sucursal);
+        let key_sucursal = this.props.caja.key_sucursal
+        console.log("KEY SUCURSAL", key_sucursal);
+
+        let sucursales = Model.sucursal.Action.getAll();
+        let suc = Object.values(sucursales).filter(s => s.key === key_sucursal) ?? null;
+        console.log("SUCURSAL", suc);
+        let sucursal = suc ? suc[0] : null;
+        // let sucursal = sucursales.filter(s => s.key === key_sucursal) ?? null;
+        console.log("SUCURSAL data ", sucursal);
+
+        // let sucursal = Model.sucursal.Action.getByKey(key_sucursal);
+        // if (!sucursal) return;
+
 
         return <SView col={"xs-11 sm-10 md-8 lg-6"} center row   >
 
@@ -85,7 +95,15 @@ export default class Abierta extends Component {
                 <SView col={"xs-12"} style={{ borderBottomWidth: 0.5, borderColor: STheme.color.card }} height={5} />
                 <SHr height={20} />
                 <SView row col={"xs-12 xl-3"} center style={{ borderRightWidth: 1, borderColor: STheme.color.card }}>
-                    {this.props.caja.fecha_cierre ? new SDate(this.props.caja.fecha_cierre).toString("DAY, dd de MONTH del yyyy a las hh:mm") :
+                    {this.props.caja.fecha_cierre ? <SView row center col={"xs-12"}>
+                        <SView width={20} height={20} center style={{ borderRadius: 50, backgroundColor: STheme.color.danger + "50" }}>
+                            <SView center style={{ width: 10, height: 10, backgroundColor: STheme.color.danger, borderRadius: 50 }} />
+                        </SView>
+                        <SView width={10} />
+                        <SText color={STheme.color.danger} fontSize={18}>Caja cerrada</SText>
+                        <SHr height={10} />
+                        <SText col={"xs-12"} fontSize={12} center color={STheme.color.text}>{new SDate(this.props.caja.fecha_cierre).toString("DAY, dd de MONTH del yyyy a las hh:mm")}</SText>
+                    </SView> :
                         <SView row center>
                             <SView width={20} height={20} center style={{ borderRadius: 50, backgroundColor: STheme.color.success + "50" }}>
                                 <SView center style={{ width: 10, height: 10, backgroundColor: STheme.color.success, borderRadius: 50 }} />
@@ -108,7 +126,7 @@ export default class Abierta extends Component {
                     <SView row width={10} />
                     <SText color={STheme.color.text} fontSize={12}>{new SDate(this.props.caja.fecha_on, "yyyy-MM-dd").toString("yyyy-MM-dd hh:mm")}</SText>
                 </SView>
-                <SView row col={"xs-12 xl-3"} center>
+                {!this.props.caja.fecha_cierre && <SView row col={"xs-12 xl-3"} center>
                     <SView width={160} height={42} row center style={{
                         backgroundColor: STheme.color.card, borderWidth: 2, borderColor: STheme.color.card,
                         padding: 10,
@@ -135,6 +153,7 @@ export default class Abierta extends Component {
                             }}>Cambiar fecha gestión</SText>
                     </SView>
                 </SView>
+                }
                 <SHr height={10} />
                 <SView col={"xs-12"} style={{ borderBottomWidth: 0.5, borderColor: STheme.color.card }} height={5} />
                 <SHr height={10} />
@@ -143,15 +162,15 @@ export default class Abierta extends Component {
                     <SView row width={5} />
                     <SText fontSize={12} color={STheme.color.lightGray}>Usuario:</SText>
                     <SView row width={10} />
-                    <SText  color={STheme.color.text} fontSize={12}>{usuario?.Nombres + " " + usuario?.Apellidos}</SText>
+                    <SText color={STheme.color.text} fontSize={12}>{usuario?.Nombres + " " + usuario?.Apellidos}</SText>
                 </SView>
                 <SView width={30} />
-                 <SView row >
+                <SView row >
                     <SIcon name='iconUbicacion' width={12} height={12} fill={STheme.color.lightGray} />
                     <SView row width={5} />
                     <SText fontSize={12} color={STheme.color.lightGray}>Sucursal:</SText>
                     <SView row width={10} />
-                    {/* <SText  color={STheme.color.text} fontSize={12}>{sucursal?.nombre}</SText> */}
+                    <SText color={STheme.color.text} fontSize={12}>{sucursal?.descripcion}</SText>
                 </SView>
             </SView>
             <SHr />
@@ -210,12 +229,14 @@ export default class Abierta extends Component {
                             <SHr h={10} />
                             <TotalTipoPago key_punto_venta={this.props.caja.key_punto_venta} movimientos={this.state.movimientos} />
                             <SHr h={32} />
-                            <SView col={"xs-11 sm-10 md-8 lg-6"} >
+                            {!this.props.caja.fecha_cierre && <SView col={"xs-11 sm-10 md-8 lg-6"} >
                                 <SText bold fontSize={16}>Acciones Rápidas</SText>
                                 <SHr h={10} />
                                 <MenuAcciones caja={this.props.caja} movimientos={this.state.movimientos} />
+                                <SHr h={32} />
                             </SView>
-                            <SHr h={32} />
+                            }
+
                             {this.mensaje()}
                             <SHr h={32} />
                             {(!this.state.ready) && <SText color={STheme.color.lightGray}>Cargando movimientos...</SText>}
