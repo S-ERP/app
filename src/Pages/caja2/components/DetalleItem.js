@@ -201,7 +201,7 @@ export default class DetalleItem extends Component<{
                       if (item.tipo == "compra") {
                         SNavigation.navigate("/compra/profile", { pk: item?.key_compra_venta })
                       } else if (item.tipo == "venta") {
-                        SNavigation.navigate("/venta/profile", { pk: item?.key_compra_venta })
+                        SNavigation.navigate("/venta/profile2", { pk: item?.key_compra_venta })
                       }
 
 

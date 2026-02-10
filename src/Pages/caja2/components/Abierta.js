@@ -70,6 +70,7 @@ export default class Abierta extends Component {
         console.log("KEY SUCURSAL", key_sucursal);
 
         let sucursales = Model.sucursal.Action.getAll();
+        if (!sucursales) return;
         let suc = Object.values(sucursales).filter(s => s.key === key_sucursal) ?? null;
         console.log("SUCURSAL", suc);
         let sucursal = suc ? suc[0] : null;
@@ -221,6 +222,60 @@ export default class Abierta extends Component {
                     data={this.state.movimientos}
                     ItemSeparatorComponent={() => <SHr />}
                     ListHeaderComponent={() => {
+                        let ventas = this.state.movimientos.filter(m => m.tipo == "venta").length;
+                        let compras = this.state.movimientos.filter(m => m.tipo == "compra").length;
+                        console.log("MOVIMIENTOS", this.state.movimientos);
+
+                        const tiposMap = {
+                            venta: "cantidadVentas",
+                            compra: "cantidadCompras",
+                            apertura: "cantidadAperturas",
+                            anulacion_venta: "cantidadAnulacionesVenta",
+                            anulacion_compra: "cantidadAnulacionesCompra",
+                            amortizacion_compra: "cantidadAmortizaciones",
+                            amortizacion_venta: "cantidadAmortizaciones",
+                        };
+
+                        const agrupado = this.state.movimientos.reduce((acc, item) => {
+                            const key = item.key_compra_venta;
+
+                            if (!acc[key]) {
+                                acc[key] = {
+                                    key_compra_venta: key,
+                                    items: [],
+                                };
+                            }
+
+                            const grupo = acc[key];
+                            grupo.items.push(item);
+
+                            const campo = tiposMap[item.tipo];
+                            if (campo) {
+                                grupo[campo] = 1; // solo 1 aunque se repita
+                            }
+
+                            return acc;
+                        }, {});
+
+                        console.log("AGRUPADO", agrupado);
+
+                        const totales = Object.values(agrupado).reduce((acc, item) => {
+                            acc.cantidadVentas += item.cantidadVentas || 0;
+                            acc.cantidadCompras += item.cantidadCompras || 0;
+                            acc.cantidadAnulacionesVenta += item.cantidadAnulacionesVenta || 0;
+                            acc.cantidadAnulacionesCompra += item.cantidadAnulacionesCompra || 0;
+                            acc.cantidadAmortizaciones += item.cantidadAmortizaciones || 0;
+                            acc.cantidadAperturas += item.cantidadAperturas || 0;
+                            return acc;
+                        }, {
+                            cantidadVentas: 0,
+                            cantidadCompras: 0,
+                            cantidadAnulacionesVenta: 0,
+                            cantidadAnulacionesCompra: 0,
+                            cantidadAmortizaciones: 0,
+                            cantidadAperturas: 0,
+                        });
+                        console.log("TOTALES", totales);
                         return <SView col={"xs-12"} center>
                             <SHr h={20} />
                             <SView col={"xs-11 sm-10 md-8 lg-6"} >
@@ -241,6 +296,17 @@ export default class Abierta extends Component {
                             <SHr h={32} />
                             {(!this.state.ready) && <SText color={STheme.color.lightGray}>Cargando movimientos...</SText>}
                             {(this.state.ready && this.state.movimientos.length <= 0) && <SText color={STheme.color.lightGray}>No hay movimientos</SText>}
+                            {/* {(this.state.ready && this.state.movimientos.length > 0) && <SText color={STheme.color.lightGray}>Hay {this.state.movimientos.length} movimientos</SText>}
+                            {(this.state.ready && this.state.movimientos.length > 0) && <SText color={STheme.color.lightGray}>Hay {ventas} ventas</SText>}
+                            {(this.state.ready && this.state.movimientos.length > 0) && <SText color={STheme.color.lightGray}>Hay {compras} compras</SText>} */}
+                            <SView col={"xs-12"} center row wrap>
+                                {totales.cantidadVentas > 0 && boxCant({ text: `${totales.cantidadVentas}`, color: STheme.color.success, subtitulo: "Ventas", icon: "ventaCarro" })}
+                                {totales.cantidadCompras > 0 && boxCant({ text: `${totales.cantidadCompras}`, color: STheme.color.warning, subtitulo: "Compras" , icon: "compraCarro" })}
+                                {totales.cantidadAnulacionesVenta > 0 && boxCant({ text: `${totales.cantidadAnulacionesVenta}`, color: STheme.color.danger, subtitulo: "Anulaciones de venta", icon: "cancelado" })}
+                                {totales.cantidadAnulacionesCompra > 0 && boxCant({ text: `${totales.cantidadAnulacionesCompra}`, color: STheme.color.danger, subtitulo: "Anulaciones de compra", icon: "cancelado" })}
+                                {totales.cantidadAmortizaciones > 0 && boxCant({ text: `${totales.cantidadAmortizaciones}`, color: STheme.color.info, subtitulo: "Amortizaciones", icon: "Mamortizacion" })}
+                                {totales.cantidadAperturas > 0 && boxCant({ text: `${totales.cantidadAperturas}`, color: STheme.color.success, subtitulo: "Aperturas", icon: "Mapertura" })}
+                            </SView>
                         </SView>
                     }}
                     renderItem={({ item, index }) => {
@@ -253,5 +319,34 @@ export default class Abierta extends Component {
                 <SHr h={20} />
             </SView>
         );
+    }
+}
+
+const boxCant = (props) => {
+    return <SView col={"xs-4 md-2"} card row center backgroundColor={props.color || STheme.color.lightGray} style={{
+        padding: 10,
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: STheme.color.card,
+        marginRight: 10,
+        marginBottom: 10,
+    }}>
+        <SIcon name={props.icon} width={24} height={24} fill={STheme.color.white} />
+        <SView width={10} />
+        <SText fontSize={20} bold>{props.text}</SText>
+        <SHr/>
+        <SText fontSize={14} color={STheme.color.lightGray}>{props.subtitulo}</SText>
+    </SView>
+}
+
+// Estilos auxiliares
+const styles = {
+    boxCantidad: {
+        // borderWidth: 1,
+        borderColor: STheme.color.card,
+        padding: 5,
+        borderRadius: 4,
+        marginRight: 10,
+        marginBottom: 10,
     }
 }
