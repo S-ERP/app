@@ -6,12 +6,14 @@ import proveedor from "./proveedor";
 import tag from "./tag";
 import modelo_tag from "./modelo_tag";
 import asistencia from "./asistencia";
+import marca from "./marca";
 export default class inventario extends MDLAbstract<EventListener> {
   async componentDidMount() { }
   proveedor = new proveedor();
   tag = new tag();
   modelo_tag = new modelo_tag();
   asistencia = new asistencia();
+  marca = new marca();
   TIPOS_DE_PRODUCTOS = [
     {
       key: "inventario",
