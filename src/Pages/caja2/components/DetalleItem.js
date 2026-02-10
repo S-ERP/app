@@ -199,7 +199,7 @@ export default class DetalleItem extends Component<{
                   <SText fontSize={10}
                     onPress={() => {
                       if (item.tipo == "compra") {
-                        SNavigation.navigate("/compra/profile", { pk: item?.key_compra_venta })
+                        SNavigation.navigate("/venta/profile2", { pk: item?.key_compra_venta })
                       } else if (item.tipo == "venta") {
                         SNavigation.navigate("/venta/profile2", { pk: item?.key_compra_venta })
                       }
@@ -212,6 +212,23 @@ export default class DetalleItem extends Component<{
                 <SView width={8} />
               </>
             }
+            {item.tipo == "compra" && <>
+              <View style={styles.etiqueta}>
+                <SText fontSize={10}
+                  onPress={() => {
+                    if (item.tipo == "compra") {
+                      SNavigation.navigate("/venta/profile2", { pk: item?.key })
+                    } else if (item.tipo == "venta") {
+                      SNavigation.navigate("/venta/profile2", { pk: item?.key })
+                    }
+
+
+                  }}>
+                  {item.tipo}
+                </SText>
+              </View>
+              <SView width={8} />
+            </>}
 
             <View style={styles.etiquetaRow}>
               <SView width={16} height={16}>
