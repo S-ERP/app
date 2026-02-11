@@ -197,7 +197,9 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     nit: cliente?.nit || "",
                     razon_social: cliente?.razon_social || ""
                 },
-                descuentos: descuentoSeleccionado || [],
+                descuentos: this.props.descuentoSeleccionado || [],
+
+                // descuentos: descuentoSeleccionado || [],
                 "key_cliente": cliente?.key,
                 "key_usuario": MDL.usuario.session?.key,
                 "key_caja": MDL.caja.activa?.key,
