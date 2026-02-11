@@ -91,7 +91,30 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             let montoTotal_MN = parseFloat(subtotal.toFixed(2));
             let porcentajeDescuento = 0;
 
-                                const almacen = this.state.almacen;
+            const almacen = this.state.almacen;
+
+            const proveedor = this.proveedor;
+
+
+
+            if (!almacen) {
+                SNotification.send({
+                    title: "Almacén requerido",
+                    body: "Debe seleccionar un almacén.",
+                    color: STheme.color.danger,
+                });
+                return;
+            }
+
+            if (!proveedor?.key) {
+                SNotification.send({
+                    title: "Cliente requerido",
+                    body: "Debe seleccionar o crear un cliente válido.",
+                    color: STheme.color.danger,
+                });
+                return;
+            }
+
 
             let descuentos = [];
             if (this.descuentoSeleccionado) {
@@ -109,7 +132,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 porcentajeDescuento: porcentajeDescuento,
                 descuentoSeleccionado: descuentos,
                 solo_para_caja: false,
-                cliente: this.proveedor,
+                cliente: proveedor,
                 factura: !!this.state.factura,
                 moneda: MDL.carrito.selectedMoneda,
                 almacen: almacen,
@@ -560,17 +583,17 @@ this.forceUpdate();
             <SView col={"xs-12"} row center height={40}>
                 <SView padding={8} card onPress={() => {
 
-                    const almacen = this.state.almacen;
+                    // const almacen = this.state.almacen;
 
-                    if (!almacen) {
-                        SNotification.send({
-                            title: "Almacén requerido",
-                            body: "Debe seleccionar un almacén.",
-                            color: STheme.color.danger,
-                            time: 3000,
-                        });
-                        return;
-                    }
+                    // if (!almacen) {
+                    //     SNotification.send({
+                    //         title: "Almacén requerido",
+                    //         body: "Debe seleccionar un almacén.",
+                    //         color: STheme.color.danger,
+                    //         time: 3000,
+                    //     });
+                    //     return;
+                    // }
 
                     // ✅ Validar cliente primero
 
@@ -578,54 +601,54 @@ this.forceUpdate();
 
 
                     // ✅ Si es factura validar razón social y nit
-                    if (this.state.factura) {
+                    // if (this.state.factura) {
 
-                        const razon = this.inputRazonSocial?.getValue?.();
-                        const nit = this.inputNit?.getValue?.();
+                    //     const razon = this.inputRazonSocial?.getValue?.();
+                    //     const nit = this.inputNit?.getValue?.();
 
-                        if (!this.proveedor) {
-                            SNotification.send({
-                                title: "Cliente requerido",
-                                body: "Debe seleccionar un cliente.",
-                                color: STheme.color.danger,
-                                time: 3000,
-                            });
-                            return;
-                        }
+                        // if (!this.proveedor) {
+                        //     SNotification.send({
+                        //         title: "Cliente requerido",
+                        //         body: "Debe seleccionar un cliente.",
+                        //         color: STheme.color.danger,
+                        //         time: 3000,
+                        //     });
+                        //     return;
+                        // }
 
-                        if (!razon) {
-                            SNotification.send({
-                                title: "Razón social requerida",
-                                body: "Debe ingresar la razón social.",
-                                color: STheme.color.danger,
-                                time: 3000,
-                            });
-                            return;
-                        }
+                        // if (!razon) {
+                        //     SNotification.send({
+                        //         title: "Razón social requerida",
+                        //         body: "Debe ingresar la razón social.",
+                        //         color: STheme.color.danger,
+                        //         time: 3000,
+                        //     });
+                        //     return;
+                        // }
 
-                        if (!nit) {
-                            SNotification.send({
-                                title: "NIT requerido",
-                                body: "Debe ingresar el NIT.",
-                                color: STheme.color.danger,
-                                time: 3000,
-                            });
-                            return;
-                        }
+                        // if (!nit) {
+                        //     SNotification.send({
+                        //         title: "NIT requerido",
+                        //         body: "Debe ingresar el NIT.",
+                        //         color: STheme.color.danger,
+                        //         time: 3000,
+                        //     });
+                        //     return;
+                        // }
 
                         // ✅ Ahora sí es seguro acceder a proveedor
-                        if (
-                            this.proveedor?.razon_social !== razon ||
-                            this.proveedor?.nit !== nit
-                        ) {
-                            this.proveedor.razon_social = razon;
-                            this.proveedor.nit = nit;
+                        // if (
+                        //     this.proveedor?.razon_social !== razon ||
+                        //     this.proveedor?.nit !== nit
+                        // ) {
+                        //     this.proveedor.razon_social = razon;
+                        //     this.proveedor.nit = nit;
 
-                            MDL.crm.cliente.editar(this.proveedor).catch((e: any) => {
-                                console.error("Error al guardar cliente:", e);
-                            });
-                        }
-                    }
+                        //     MDL.crm.cliente.editar(this.proveedor).catch((e: any) => {
+                        //         console.error("Error al guardar cliente:", e);
+                        //     });
+                        // }
+                    // }
 
                     this.handleOnPress();
                     // if (this.state.factura) {

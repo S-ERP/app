@@ -132,6 +132,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             SNotification.send({
                 key: "venta_rapida",
                 title: "Error al realizar la compra",
+                title: "Error al realizar la ventas",
                 body: error?.error || JSON.stringify(error),
                 color: STheme.color.danger,
                 time: 4000,
