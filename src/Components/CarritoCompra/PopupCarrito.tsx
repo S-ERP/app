@@ -257,27 +257,13 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                         </SView>
                         <SView width={4} />
                         <SView width={60}>
-                            <SInput
-                                style={{
-                                    height: 16,
-                                    fontSize: 12,
-                                    padding: 0,
-                                    paddingRight: 4,
-                                    textAlign: "right"
-                                }}
+                            <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
                                 type="money2"
-                                icon={
-                                    <SText
-                                        width={15}
-                                        fontSize={10}
-                                        color={STheme.color.lightGray}
-                                    >
-                                        x
-                                    </SText>
-                                }
+                                icon={<SText width={15} fontSize={10} color={STheme.color.lightGray} > x </SText>}
                                 value={item.cantidad.toString()}
                                 onChangeText={(e) => {
-                                    item.cantidad = parseFloat(e || "0");
+                                    item.cantidad = e;
+                                    // item.cantidad = parseFloat(e || "0");
                                     MDL.carrito.calcularValoresCarritDeCompras();
                                 }}
                             />
