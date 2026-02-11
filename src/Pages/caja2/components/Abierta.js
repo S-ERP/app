@@ -70,8 +70,7 @@ export default class Abierta extends Component {
         console.log("KEY SUCURSAL", key_sucursal);
 
         let sucursales = Model.sucursal.Action.getAll();
-        if (!sucursales) return;
-        let suc = Object.values(sucursales).filter(s => s.key === key_sucursal) ?? null;
+        let suc = Object.values(sucursales ?? {}).filter(s => s.key === key_sucursal) ?? null;
         console.log("SUCURSAL", suc);
         let sucursal = suc ? suc[0] : null;
         // let sucursal = sucursales.filter(s => s.key === key_sucursal) ?? null;

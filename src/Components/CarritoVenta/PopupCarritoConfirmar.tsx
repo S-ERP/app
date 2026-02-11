@@ -111,7 +111,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 descuentoSeleccionado: descuentos,
                 solo_para_caja: false,
                 cliente: this.proveedor,
-                factura: this.state.factura,
+                factura: !!this.state.factura,
                 moneda: MDL.carrito.selectedMoneda,
                 almacen: almacen,
                 descripcion: descripcionVenta, // 👈 AQUI

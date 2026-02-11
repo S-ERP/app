@@ -188,7 +188,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             const data = {
                 "descripcion": this.props.descripcion || "",
                 "observacion": "Observacion de la venta de prueba ricky",
-                "facturar": factura ? true : false,
+                // "facturar": factura ? true : false,
+                "facturar": false,
                 cliente: {
                     nit: cliente?.nit || "",
                     razon_social: cliente?.razon_social || ""
