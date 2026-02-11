@@ -106,14 +106,14 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 return;
             }
 
-            if (!proveedor?.key) {
-                SNotification.send({
-                    title: "Cliente requerido",
-                    body: "Debe seleccionar o crear un cliente válido.",
-                    color: STheme.color.danger,
-                });
-                return;
-            }
+            // if (this.state.esCredito) {
+            //     SNotification.send({
+            //         title: "Cliente requerido",
+            //         body: "Debe seleccionar o crear un cliente válido.",
+            //         color: STheme.color.danger,
+            //     });
+            //     return;
+            // }
 
 
             let descuentos = [];
@@ -583,17 +583,7 @@ this.forceUpdate();
             <SView col={"xs-12"} row center height={40}>
                 <SView padding={8} card onPress={() => {
 
-                    // const almacen = this.state.almacen;
-
-                    // if (!almacen) {
-                    //     SNotification.send({
-                    //         title: "Almacén requerido",
-                    //         body: "Debe seleccionar un almacén.",
-                    //         color: STheme.color.danger,
-                    //         time: 3000,
-                    //     });
-                    //     return;
-                    // }
+                   
 
                     // ✅ Validar cliente primero
 
