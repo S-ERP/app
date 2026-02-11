@@ -191,8 +191,9 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
         setPrecio(nuevoPrecio);
     }, [moneda, item.modelo.precio_venta]);
 
-    const precioFormateado = Number.isInteger(precio) ? precio.toString() : precio.toFixed(2);
+    // const precioFormateado = Number.isInteger(precio) ? precio.toString() : precio.toFixed(2);
 
+    const precioFormateado = Number.isInteger(precio) ? precio.toString() : (precio ?? 0);
 
     return (
         <SView padding={8}>
@@ -228,12 +229,10 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 }
                                 value={precioFormateado}
                                 onChangeText={(e) => {
-                                    const valor = parseFloat(e || "0");
-                                    setPrecio(valor); // actualiza el input local
+                                    // const valor = parseFloat(e || "0");
+                                    setPrecio(e); // actualiza el input local
                                     // Guardar el precio real en la moneda del producto
-                                    item.modelo.precio_venta_moneda = moneda
-                                        ? valor * (moneda.tipo_cambio || 1)
-                                        : valor;
+                                    item.modelo.precio_venta_moneda = moneda ? e * (moneda.tipo_cambio || 1) : e;
                                     MDL.carrito.calcularValoresCarritDeVentas(); // recalcula subtotal y total
                                 }}
                             />

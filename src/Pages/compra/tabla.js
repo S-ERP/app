@@ -194,6 +194,25 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
+
+                {/* <DinamicTable.Col key="nrofactura" label="Nro. Factura" width={80} data={(e) => e.row?.factura?.numero}
+                    customComponent={e => <>
+                        {(e.row?.factura?.numero) ?
+                            <SView col={"xs-12"} center row  >
+                                <SView width={5} />
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>✅ {e.row?.factura?.numero}</SText>
+                            </SView> : null}
+                    </>}
+                /> */}
+
+                <DinamicTable.Col key="facturar" wrap label="Compra con factura" width={65} data={(e) => e.row?.facturar}
+                    customComponent={e => <>
+                        {(e.row?.facturar) ?
+                            <SView col={"xs-12"} center row  >
+                                <SText flex style={e.textStyle}>si✅</SText>
+                            </SView> : null} </>}
+                />
+
                 <DinamicTable.Col key="proveedor" label="Proveedor" width={100} data={(e) => e.row?.proveedor?.razon_social ?? ""}
                     customComponent={e => <>
                         {(e.row?.proveedor?.key) ?

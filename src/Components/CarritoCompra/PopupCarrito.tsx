@@ -188,9 +188,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     React.useEffect(() => {
         setPrecio(calcularPrecio());
     }, [moneda, item.modelo.precio_compra]);
-    const precioFormateado = Number.isInteger(precio)
-        ? precio.toString()
-        : (precio ?? 0).toFixed(2);
+    const precioFormateado = Number.isInteger(precio) ? precio.toString() : (precio ?? 0);
     return (
         <SView padding={8}>
             <SView row>
@@ -246,38 +244,22 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 }
                                 value={precioFormateado}
                                 onChangeText={(e) => {
-                                    const valor = parseFloat(e || "0");
-                                    setPrecio(valor);
-                                    item.modelo.precio_compra_moneda = moneda
-                                        ? valor * (moneda.tipo_cambio || 1)
-                                        : valor;
+                                    // const valor = parseFloat(e || "0");
+                                    setPrecio(e);
+                                    item.modelo.precio_compra_moneda = moneda ? e * (moneda.tipo_cambio || 1) : e;
                                     MDL.carrito.calcularValoresCarritDeCompras();
                                 }}
                             />
                         </SView>
                         <SView width={4} />
                         <SView width={60}>
-                            <SInput
-                                style={{
-                                    height: 16,
-                                    fontSize: 12,
-                                    padding: 0,
-                                    paddingRight: 4,
-                                    textAlign: "right"
-                                }}
+                            <SInput style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
                                 type="money2"
-                                icon={
-                                    <SText
-                                        width={15}
-                                        fontSize={10}
-                                        color={STheme.color.lightGray}
-                                    >
-                                        x
-                                    </SText>
-                                }
+                                icon={<SText width={15} fontSize={10} color={STheme.color.lightGray} > x </SText>}
                                 value={item.cantidad.toString()}
                                 onChangeText={(e) => {
-                                    item.cantidad = parseFloat(e || "0");
+                                    item.cantidad = e;
+                                    // item.cantidad = parseFloat(e || "0");
                                     MDL.carrito.calcularValoresCarritDeCompras();
                                 }}
                             />
