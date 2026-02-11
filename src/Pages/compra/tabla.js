@@ -143,6 +143,32 @@ export default class tabla extends Component {
                                 onPress: () => { SNavigation.navigate("/compra/profile", { pk: e?.row?.key }) }
                             },
                             {
+                                label: "Anular compra",
+                                icon: <SIconApp name='Delete' fill="#e4e4e4ff" />,
+                                onPress: () => {
+                                    SPopup.confirm({
+                                        title: "¿Anular compra?",
+                                        message: "¿Estás seguro de que deseas anular esta compra? Esta acción no se puede deshacer.",
+                                        onPress: () => {
+                                            SSocket.sendPromise({
+                                                service: "caja",
+                                                component: "caja_detalle",
+                                                type: "anularCompra",
+                                                key_empresa: MDL.empresa.select?.key,
+                                                key_usuario: MDL.usuario.session?.key,
+                                                key_compra_venta: e.row?.key,
+                                                key_caja: MDL.caja.activa?.key,
+                                            }).then((resp) => {
+                                                console.log("Respuesta de anular compra", resp);
+                                                
+                                            }).catch(e => {
+                                                console.log("Respuesta de anular compra", e);
+                                            })
+                                        }
+                                    })
+                                }
+                            },
+                            {
                                 label: "Imprimir tamaño rollo",
                                 icon: <SIcon name='imprimir' fill={STheme.color.text} />,
                                 onPress: () => {
