@@ -22,21 +22,13 @@ export default class Proveedor extends Component {
     }
 
     seleccionarProveedor() {
-        SNavigation.navigate("/sucursal", {
+        this.data = this.props.data;
+        SNavigation.navigate("/cliente", {
             onSelect: (obj) => {
-                var proveedor = {
-                    nit: this.empresa.nit,
-                    razon_social: this.empresa.razon_social + "\nSuc. " + obj.descripcion,
-                    telefono: obj.telefono,
-                    correo: obj.correo,
-                    direccion: obj.direccion,
-                    key_usuario: "",
-                    key_sucursal: obj.key,
-                    key_empresa: this.empresa.key,
-                    // sucursal: "SUCURSAL TODO",
-                }
-                this.data.proveedor = proveedor;
-                this.data.key_sucursal = obj.key;
+
+                this.data.proveedor = obj;
+                this.data.key_proveedor = obj.key;
+                SNavigation.goBack();
                 Model.compra_venta.Action.editar({
                     data: this.data,
                     key_usuario: Model.usuario.Action.getKey()
@@ -52,13 +44,13 @@ export default class Proveedor extends Component {
         // this.data = this.props.data;
         this.data.proveedor = this.state.proveedor;
         if (!this.data?.proveedor) {
-            if (this.props.disabled) {
-                return <SView>
-                    <SHr height={16} />
-                    <SText>{"SIN PROVEEDOR"}</SText>
-                    <SHr height={16} />
-                </SView>
-            }
+            // if (this.props.disabled) {
+            //     return <SView>
+            //         <SHr height={16} />
+            //         <SText>{"SIN PROVEEDOR"}</SText>
+            //         <SHr height={16} />
+            //     </SView>
+            // }
             return <SView col={"xs-12"} center>
                 <SHr height={24} />
                 <SView style={{
@@ -66,13 +58,13 @@ export default class Proveedor extends Component {
                 }} card onPress={() => {
                     this.seleccionarProveedor();
                 }}>
-                    <SText bold color={STheme.color.danger} >SELECCIONE LA SUCURSAL</SText>
+                    <SText bold color={STheme.color.danger} >SELECCIONE EL PROVEEDOR</SText>
                 </SView>
                 <SHr height={24} />
             </SView>
         }
 
-        var { nit, razon_social, key_sucursal, telefono, correo, direccion,key_usuario, key } = this.data.proveedor
+        var { nit, razon_social, key_sucursal, telefono, correo, direccion, key_usuario, key } = this.data.proveedor
         var onPress;
         if (!this.props.disabled) {
             onPress = this.seleccionarProveedor.bind(this)

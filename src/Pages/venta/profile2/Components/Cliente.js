@@ -26,10 +26,13 @@ export default class Cliente extends Component {
             onSelect: (obj) => {
 
                 this.data.cliente = obj;
+                this.data.key_cliente = obj.key;
+                SNavigation.goBack();
                 Model.compra_venta.Action.editar({
                     data: this.data,
                     key_usuario: Model.usuario.Action.getKey()
                 }).then((resp) => {
+                    
                     console.log("Se agregó el cliente con éxito")
                 })
             }
@@ -69,13 +72,13 @@ export default class Cliente extends Component {
         this.data.cliente = this.state.cliente;
         if (!this.data?.cliente) {
 
-            if (this.props.disabled) {
-                return <SView>
-                    <SHr height={16} />
-                    <SText>{this.data.tipo == "compra" ? "SIN SUCURSAL" : "SIN CLIENTE"}</SText>
-                    <SHr height={16} />
-                </SView>
-            }
+            // if (this.props.disabled) {
+            //     return <SView>
+            //         <SHr height={16} />
+            //         <SText>{this.data.tipo == "compra" ? "SIN SUCURSAL" : "SIN CLIENTE"}</SText>
+            //         <SHr height={16} />
+            //     </SView>
+            // }
             return <SView col={"xs-12"} center>
                 <SHr height={24} />
                 <SView style={{

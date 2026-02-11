@@ -232,14 +232,19 @@ export default class Lista extends Component {
                 }}
                 loadData={() => this.loadInitialData()}
             >
-                <DinamicTable.Col key="index" label="#" width={40} data={e => e.index + 1} />
-                <DinamicTable.Col key="key" label="#key" width={350} data={e => e.row.key} />
-                <DinamicTable.Col key="nombre_completo" label="Proveedor" width={200} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderProveedor(e.row)} />
+                <DinamicTable.Col key="index" label="#" width={40} data={e => e.index + 1} textStyle={{ fontSize: 11 }} />
+                <DinamicTable.Col key="key" label="key" data={e => e.row.key} width={50}
+                    textStyle={{
+                        fontSize: 10,
+                        color: STheme.color.lightGray,
+                    }} />
+                <DinamicTable.Col key="nombre_completo" label="Proveedor" width={200} data={(e) => e.row?.nombres ?? "Sin Nombre"} customComponent={e => this.renderProveedor(e.row)} textStyle={{ fontSize: 11 }} />
                 <DinamicTable.Col
                     key="estado_pago"
                     wrap
                     label="Estado de Pago"
                     width={80}
+                    textStyle={{ fontSize: 10 }}
                     data={e => {
                         const resumen = e.row?.resumen_cuota;
                         if (!resumen) return 'Sin Deuda';
@@ -256,7 +261,7 @@ export default class Lista extends Component {
                         return (
                             <SView row center>
                                 <SView backgroundColor={statesTipo.color} width={55} style={{ borderRadius: 4, padding: 5 }} center>
-                                    <SText color={STheme.color.text} fontSize={10}>
+                                    <SText color={STheme.color.text} fontSize={10} >
                                         {statesTipo.label}
                                     </SText>
                                 </SView>
@@ -264,10 +269,10 @@ export default class Lista extends Component {
                         );
                     }}
                 />
-                <DinamicTable.Col key="tot-compras" label="T. Compras" width={90} data={e => ""} />
-                <DinamicTable.Col key="nit" label="NIT" width={60} data={e => e.row?.nit} />
-                <DinamicTable.Col key="razon_social" label="Razón Social" width={150} data={e => e.row?.razon_social} />
-                <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={e => e.row?.telefono} />
+                <DinamicTable.Col key="tot-compras" label="T. Compras" width={90} data={e => ""} textStyle={{ fontSize: 11 }}/>
+                <DinamicTable.Col key="nit" label="NIT" width={60} data={e => e.row?.nit} textStyle={{ fontSize: 11 }}/>
+                <DinamicTable.Col key="razon_social" label="Razón Social" width={150} data={e => e.row?.razon_social} textStyle={{ fontSize: 11 }} />
+                <DinamicTable.Col key="telefono" label="Teléfono" width={130} data={e => e.row?.telefono} textStyle={{ fontSize: 11 }} />
                 <DinamicTable.Col key="cuota_1" wrap sumExcel label="Monto Pagado" width={90} data={e => e.row?.resumen_cuota?.monto_pagado ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.success}33`, }} format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')} />
                 <DinamicTable.Col key="cuota_2" wrap label="Cuotas Pagadas" width={60} data={e => e.row?.resumen_cuota?.cantidad_pagada ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.success}33`, }} format={e => (e.data ? SMath.formatMoney(e.data) : '')} />
                 <DinamicTable.Col key="cuota_3" wrap label="Monto Mora" width={90} data={e => e.row?.resumen_cuota?.monto_en_mora ?? ''} cellStyle={{ alignItems: 'flex-end', backgroundColor: `${STheme.color.danger}33`, }} format={e => (e.data ? `Bs ${SMath.formatMoney(e.data)}` : '')} />
