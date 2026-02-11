@@ -188,9 +188,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     React.useEffect(() => {
         setPrecio(calcularPrecio());
     }, [moneda, item.modelo.precio_compra]);
-    const precioFormateado = Number.isInteger(precio)
-        ? precio.toString()
-        : (precio ?? 0).toFixed(2);
+    const precioFormateado = Number.isInteger(precio) ? precio.toString() : (precio ?? 0);
     return (
         <SView padding={8}>
             <SView row>
@@ -246,11 +244,9 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 }
                                 value={precioFormateado}
                                 onChangeText={(e) => {
-                                    const valor = parseFloat(e || "0");
-                                    setPrecio(valor);
-                                    item.modelo.precio_compra_moneda = moneda
-                                        ? valor * (moneda.tipo_cambio || 1)
-                                        : valor;
+                                    // const valor = parseFloat(e || "0");
+                                    setPrecio(e);
+                                    item.modelo.precio_compra_moneda = moneda ? e * (moneda.tipo_cambio || 1) : e;
                                     MDL.carrito.calcularValoresCarritDeCompras();
                                 }}
                             />
