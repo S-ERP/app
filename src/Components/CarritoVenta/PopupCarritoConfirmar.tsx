@@ -87,13 +87,12 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     handleOnPress = async () => {
         try {
             const key_moneda = this.state?.moneda?.key
-            const almacen = this.state.almacen;
-            if (!almacen) {
-                throw "Debe seleccionar un almacen"
-            }
             let subtotal = MDL.carrito.carrito_venta.monto_total
             let montoTotal_MN = parseFloat(subtotal.toFixed(2));
             let porcentajeDescuento = 0;
+
+                                const almacen = this.state.almacen;
+
             let descuentos = [];
             if (this.descuentoSeleccionado) {
                 if (this.descuentoSeleccionado?.porcentaje) {
@@ -169,28 +168,53 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     </SView>
                     <SView row>
                         <SInput
-                            ref={ref => this.inputCliente = ref}
-                            inputStyle={this.state.esCredito && !this.state.key_cliente ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
+                            ref={ref => (this.inputCliente = ref)}
+                            inputStyle={
+                                this.state.factura || this.state.esCredito
+                                    ? { borderColor: STheme.color.danger, borderWidth: 1 }
+                                    : undefined
+                            }
                             icon={<SText color={STheme.color.lightGray} bold>{"Cliente: "}</SText>}
                             placeholder={"Escriba el nombre del cliente"}
                             height={40}
                             type="select2"
-                            options={this.state.clientes.map(c => (c?.razon_social || c?.nombres || "").trim()).filter(a => !!a)}
+                            options={
+                                (this.state.clientes || [])
+                                    .map(c => (c?.razon_social || c?.nombres || "").trim())
+                                    .filter(a => !!a)
+                            }
                             onChangeText={(text) => {
+
                                 const t = (text || "").trim();
+
                                 const encontrado = (this.state.clientes || []).find(c =>
-                                    ((c?.razon_social || c?.nombres || "").trim().toLowerCase() === t.toLowerCase())
+                                ((c?.razon_social || c?.nombres || "")
+                                    .trim()
+                                    .toLowerCase() === t.toLowerCase())
                                 );
-                                if (encontrado) {
+
+                                if (encontrado && encontrado.key) {
+
+                                    // ✅ Cliente válido seleccionado
                                     this.proveedor = encontrado;
+
                                     this.setState({
                                         key_cliente: encontrado.key,
                                         cliente_texto: t,
                                     });
-                                    this.inputRazonSocial?.setValue?.(encontrado?.razon_social || encontrado?.nombres || "");
-                                    this.inputNit?.setValue?.(encontrado?.nit || "");
+
+                                    this.inputRazonSocial?.setValue?.(
+                                        encontrado?.razon_social || encontrado?.nombres || ""
+                                    );
+                                    this.inputNit?.setValue?.(
+                                        encontrado?.nit || ""
+                                    );
+
                                 } else {
+
+                                    // ❌ No existe cliente aún
                                     this.proveedor = null;
+
                                     this.setState({
                                         key_cliente: null,
                                         cliente_texto: t,
@@ -199,6 +223,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             }}
                             iconR={
                                 (!this.state.key_cliente && !!this.state.cliente_texto) ? (
+
+                                    // 🔥 BOTÓN CREAR CLIENTE
                                     <SView
                                         center
                                         style={{
@@ -207,45 +233,78 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                             borderRadius: 6,
                                             backgroundColor: STheme.color.card,
                                         }}
-                                        onPress={() => {
+                                        onPress={async () => {
+
                                             const nombre = (this.state.cliente_texto || "").trim();
                                             if (!nombre) return;
-                                            MDL.crm.cliente.registrar({
-                                                razon_social: nombre,
-                                                nombres: nombre,
-                                                nit: this.inputNit?.getValue?.() || "",
-                                                key_empresa: MDL.empresa.select?.key,
-                                            }).then((resp) => {
-                                                this.proveedor = resp;
-                                                this.setState(prev => ({
-                                                    clientes: [...(prev.clientes || []), resp],
-                                                    key_cliente: resp.key,
-                                                    cliente_texto: (resp?.razon_social || resp?.nombres || nombre),
-                                                }), () => {
-                                                    this.inputCliente?.setValue?.(resp?.razon_social || resp?.nombres || nombre);
+
+                                            try {
+
+                                                const resp = await MDL.crm.cliente.registrar({
+                                                    razon_social: nombre,
+                                                    nombres: nombre,
+                                                    nit: this.inputNit?.getValue?.() || "",
+                                                    key_empresa: MDL.empresa.select?.key,
                                                 });
-                                                this.inputRazonSocial?.setValue?.(resp?.razon_social || resp?.nombres || nombre);
-                                                this.inputNit?.setValue?.(resp?.nit || "");
+
+                                                // 🔴 Validación fuerte
+                                                if (!resp || !resp.key) {
+                                                    SNotification.send({
+                                                        title: "Error",
+                                                        body: "No se pudo crear el cliente.",
+                                                        color: STheme.color.danger,
+                                                        time: 3000,
+                                                    });
+                                                    return;
+                                                }
+
+                                                // ✅ Guardar proveedor correctamente
+                                                this.proveedor = resp;
+
+                                                this.setState(prev => ({
+                                                    clientes: [
+                                                        ...(prev.clientes || []),
+                                                        resp
+                                                    ],
+                                                    key_cliente: resp.key,
+                                                    cliente_texto: resp?.razon_social || resp?.nombres || nombre,
+                                                }));
+
+                                                // ✅ Sincronizar inputs
+                                                this.inputCliente?.setSelect?.(resp);
+                                                this.inputRazonSocial?.setValue?.(
+                                                    resp?.razon_social || resp?.nombres || ""
+                                                );
+                                                this.inputNit?.setValue?.(
+                                                    resp?.nit || ""
+                                                );
+
                                                 SNotification.send({
                                                     title: "Cliente creado",
-                                                    body: "Se registró el cliente correctamente.",
+                                                    body: "Se registró correctamente.",
                                                     time: 2500,
                                                     color: STheme.color.success,
                                                 });
-                                            }).catch((err) => {
+
+                                            } catch (err: any) {
+
                                                 console.error("Error al registrar cliente:", err);
+
                                                 SNotification.send({
-                                                    title: "Error, no se pudo crear el cliente",
-                                                    body: err.error,
-                                                    color: STheme.color.error,
-                                                    time: 5000,
+                                                    title: "Error",
+                                                    body: err?.error || "No se pudo crear el cliente.",
+                                                    color: STheme.color.danger,
+                                                    time: 4000,
                                                 });
-                                            });
+                                            }
                                         }}
                                     >
                                         <SIconApp name="Add" />
                                     </SView>
+
                                 ) : (
+
+                                    // 🔍 BOTÓN BUSCAR CLIENTE
                                     <SView
                                         center
                                         style={{
@@ -255,18 +314,34 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                             backgroundColor: STheme.color.card,
                                         }}
                                         onPress={() => {
+
                                             SNavigation.navigate("/cliente", {
-                                                onSelect: (cliente) => {
+
+                                                onSelect: (cliente: any) => {
+
+                                                    if (!cliente || !cliente.key) return;
+
                                                     this.proveedor = cliente;
+
                                                     this.setState(prev => ({
-                                                        clientes: prev.clientes.some(c => c.key === cliente.key) ? prev.clientes : [...prev.clientes, cliente],
+                                                        clientes: prev.clientes.some(c => c.key === cliente.key)
+                                                            ? prev.clientes
+                                                            : [...prev.clientes, cliente],
                                                         key_cliente: cliente.key,
-                                                        cliente_texto: cliente?.razon_social || cliente?.nombres || "",
-                                                    }), () => {
-                                                        this.inputCliente?.setValue?.(cliente?.razon_social || cliente?.nombres || "");
-                                                    });
-                                                    this.inputRazonSocial?.setValue?.(cliente?.razon_social || cliente?.nombres || "");
-                                                    this.inputNit?.setValue?.(cliente?.nit || "");
+                                                        cliente_texto:
+                                                            cliente?.razon_social ||
+                                                            cliente?.nombres ||
+                                                            "",
+                                                    }));
+
+                                                    this.inputCliente?.setSelect?.(cliente);
+                                                    this.inputRazonSocial?.setValue?.(
+                                                        cliente?.razon_social || cliente?.nombres || ""
+                                                    );
+                                                    this.inputNit?.setValue?.(
+                                                        cliente?.nit || ""
+                                                    );
+
                                                     SNavigation.goBack();
                                                 }
                                             });
@@ -277,15 +352,95 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                 )
                             }
                         />
+
                     </SView>
                     {(this.state.factura) ? <>
                         <SHr h={10} />
                         <SView row>
-                            <SInput ref={ref => this.inputRazonSocial = ref} icon={<SText color={STheme.color.lightGray} bold>{"Razón Social:"}</SText>} placeholder={"Razón Social"} />
+                            <SInput
+                                inputStyle={this.state.factura ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
+
+                                ref={ref => this.inputRazonSocial = ref} icon={<SText color={STheme.color.lightGray} bold>{"Razón Social:"}</SText>} placeholder={"Razón Social"} />
                         </SView>
                         <SHr h={10} />
-                        <SView row>
-                            <SInput icon={<SText color={STheme.color.lightGray} bold>{"# NIT:"}</SText>} placeholder={"Escriba el nit"}
+                        <SView row><SInput
+                            icon={<SText color={STheme.color.lightGray} bold>{"# NIT:"}</SText>}
+                            placeholder={"Escriba el nit"}
+                            inputStyle={
+                                this.state.factura
+                                    ? { borderColor: STheme.color.danger, borderWidth: 1 }
+                                    : undefined
+                            }
+                            ref={ref => (this.inputNit = ref)}
+                            onChangeText={(e) => {
+
+                                const nit = (e || "").trim();
+
+                                // 🔴 Evita llamadas innecesarias
+                                if (nit.length < 6) {
+                                    this.proveedor = null;
+                                    return;
+                                }
+
+                                MDL.crm.cliente.buscar_nit(nit)
+                                    .then(proveedor => {
+
+                                        // 🔴 Si no existe cliente con ese NIT
+                                        if (!proveedor) {
+                                            this.proveedor = null;
+                                            return;
+                                        }
+
+                                        // ✅ Guardar proveedor
+                                        this.proveedor = proveedor;
+
+                                        // ✅ Actualizar inputs de forma segura
+                                        this.inputCliente?.setSelect?.(proveedor);
+                                        this.inputRazonSocial?.setValue?.(
+                                            proveedor?.razon_social || proveedor?.nombres || ""
+                                        );
+
+                                    })
+                                    .catch(error => {
+                                        console.error("Error buscando NIT:", error);
+                                    });
+                            }}
+                            onSubmitEditing={() => {
+                                // Opcional: podrías mover la búsqueda aquí si quieres
+                            }}
+                            iconR={
+                                <SView
+                                    card
+                                    style={{ width: 40, height: 40 }}
+                                    onPress={() => {
+                                        SNavigation.navigate("/cliente", {
+                                            onSelect: (proveedor: any) => {
+
+                                                if (!proveedor) return;
+
+                                                this.proveedor = proveedor;
+
+                                                this.inputCliente?.setSelect?.(proveedor);
+                                                this.inputRazonSocial?.setValue?.(
+                                                    proveedor?.razon_social || proveedor?.nombres || ""
+                                                );
+                                                this.inputNit?.setValue?.(
+                                                    proveedor?.nit || ""
+                                                );
+
+                                                SNavigation.goBack();
+                                            }
+                                        });
+                                    }}
+                                >
+                                    <SIconApp name="Search" />
+                                </SView>
+                            }
+                        />
+
+                            {/* <SInput icon={<SText color={STheme.color.lightGray} bold>{"# NIT:"}</SText>} placeholder={"Escriba el nit"}
+                                inputStyle={this.state.factura ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
+
                                 ref={ref => this.inputNit = ref}
                                 onChangeText={(e) => {
                                     MDL.crm.cliente.buscar_nit(e).then(proveedor => {
@@ -319,7 +474,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                     }}>
                                     <SIconApp name="Search" />
                                 </SView>}
-                            />
+                            /> */}
                         </SView>
                         <SHr h={4} />
                     </> : null}
@@ -366,9 +521,14 @@ this.forceUpdate();
                             if (e.key_sucursal == MDL.caja.activa?.key_sucursal) return true;
                             return false;
                         }}
+                        // onChangeSelect={e => {
+                        //     this.state.almacen = e;
+                        // }}
                         onChangeSelect={e => {
-                            this.state.almacen = e;
+                            this.setState({ almacen: e }); // ✅ correcto
                         }}
+
+
                     />
                 </SView>
                 {/* <SView style={{ padding: 10, paddingBottom: 5, paddingTop: 5 }}>
@@ -399,23 +559,92 @@ this.forceUpdate();
             <SHr h={1} color={STheme.color.card} />
             <SView col={"xs-12"} row center height={40}>
                 <SView padding={8} card onPress={() => {
+
+                    const almacen = this.state.almacen;
+
+                    if (!almacen) {
+                        SNotification.send({
+                            title: "Almacén requerido",
+                            body: "Debe seleccionar un almacén.",
+                            color: STheme.color.danger,
+                            time: 3000,
+                        });
+                        return;
+                    }
+
+                    // ✅ Validar cliente primero
+
+
+
+
+                    // ✅ Si es factura validar razón social y nit
                     if (this.state.factura) {
-                        if ((this.proveedor.razon_social != this.inputRazonSocial?.getValue()) || (this.proveedor.nit != this.inputNit?.getValue())) {
-                            this.proveedor.razon_social = this.inputRazonSocial.getValue();
-                            this.proveedor.nit = this.inputNit.getValue();
-                            MDL.crm.cliente.editar(this.proveedor).then((resp: any) => {
-                            }).catch((e: any) => {
-                                console.error("Error al guardar el cliente:", e);
-                                SNotification.send({
-                                    title: "Error",
-                                    body: "No se pudo guardar el cliente.",
-                                    time: 3000,
-                                    color: STheme.color.danger,
-                                });
-                            })
+
+                        const razon = this.inputRazonSocial?.getValue?.();
+                        const nit = this.inputNit?.getValue?.();
+
+                        if (!this.proveedor) {
+                            SNotification.send({
+                                title: "Cliente requerido",
+                                body: "Debe seleccionar un cliente.",
+                                color: STheme.color.danger,
+                                time: 3000,
+                            });
+                            return;
+                        }
+
+                        if (!razon) {
+                            SNotification.send({
+                                title: "Razón social requerida",
+                                body: "Debe ingresar la razón social.",
+                                color: STheme.color.danger,
+                                time: 3000,
+                            });
+                            return;
+                        }
+
+                        if (!nit) {
+                            SNotification.send({
+                                title: "NIT requerido",
+                                body: "Debe ingresar el NIT.",
+                                color: STheme.color.danger,
+                                time: 3000,
+                            });
+                            return;
+                        }
+
+                        // ✅ Ahora sí es seguro acceder a proveedor
+                        if (
+                            this.proveedor?.razon_social !== razon ||
+                            this.proveedor?.nit !== nit
+                        ) {
+                            this.proveedor.razon_social = razon;
+                            this.proveedor.nit = nit;
+
+                            MDL.crm.cliente.editar(this.proveedor).catch((e: any) => {
+                                console.error("Error al guardar cliente:", e);
+                            });
                         }
                     }
+
                     this.handleOnPress();
+                    // if (this.state.factura) {
+                    //     if ((this.proveedor.razon_social != this.inputRazonSocial?.getValue()) || (this.proveedor.nit != this.inputNit?.getValue())) {
+                    //         this.proveedor.razon_social = this.inputRazonSocial.getValue();
+                    //         this.proveedor.nit = this.inputNit.getValue();
+                    //         MDL.crm.cliente.editar(this.proveedor).then((resp: any) => {
+                    //         }).catch((e: any) => {
+                    //             console.error("Error al guardar el cliente:", e);
+                    //             SNotification.send({
+                    //                 title: "Error",
+                    //                 body: "No se pudo guardar el cliente.",
+                    //                 time: 3000,
+                    //                 color: STheme.color.danger,
+                    //             });
+                    //         })
+                    //     }
+                    // }
+                    // this.handleOnPress();
                 }}>
                     <SText>{"Confirmar la venta"}</SText>
                 </SView>
