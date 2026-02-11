@@ -159,6 +159,7 @@ export default class tabla extends Component {
                                                 key_compra_venta: e.row?.key,
                                                 key_caja: MDL.caja.activa?.key,
                                             }).then((resp) => {
+                                                this.DinamicTable.loadData();
                                                 console.log("Respuesta de anular compra", resp);
                                                 
                                             }).catch(e => {
@@ -290,11 +291,11 @@ export default class tabla extends Component {
                 }}
                     data={(e) => e.row?.cuotas_en_mora.cantidad ?? ""}
                 />
-                <DinamicTable.Col key="moneda" label="Moneda" wrap width={60}
+                <DinamicTable.Col key="moneda" label="Moneda" wrap width={80}
                     data={(e) => e.row?.moneda?.descripcion ?? ""}
 
                 />
-                <DinamicTable.Col key="cuotas_total" label="Monto" wrap width={70}
+                <DinamicTable.Col key="cuotas_total" label="Monto" wrap width={80}
                     data={(e) => (e.row?.cuotas.total ? e.row.cuotas.total : "0")}
                     cellStyle={{
                         alignItems: "flex-end"
