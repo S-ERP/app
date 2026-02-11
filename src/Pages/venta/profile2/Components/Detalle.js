@@ -60,7 +60,8 @@ export default class Detalle extends Component {
             <SView flex>
                 <SText bold >{nombre}</SText>
                 {/* <SText>{SMath.formatMoney(precio)} bs X {parseInt(cantidad)} Unid </SText> */}
-                <SText>{SMath.formatMoney(precio_unitario_base)} {moneda.observacion} X {parseInt(cantidad)} Unid </SText>
+                <SText>{SMath.formatMoney(precio_unitario_base)} {moneda.observacion} X {cantidad} Unid </SText>
+                {/* <SText>{SMath.formatMoney(precio_unitario_base)} {moneda.observacion} X {parseInt(cantidad)} Unid </SText> */}
                 <SText fontSize={10} bold color={STheme.color.lightGray}>{tipo}</SText>
                 <SHr />
                 {(p?.costos ?? []).map((costo: any) =>
