@@ -143,7 +143,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             const monedaActual = MDL.carrito.selectedMoneda;
             const almacen = this.props.almacen;
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
-            if (keyPago === "credito" && !cliente) {
+            const clientefull = this.props.cliente;
+            if (keyPago === "credito" && !clientefull) {
                 this.props.onTipoPagoChange(true);
                 SelectTipoPago.closePopup();
                 SPopup.close("PopupCarritoConfirmarResumen");
@@ -159,7 +160,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 this.props.onTipoPagoChange(false);
 
             }
-            
+
             if (!almacen) {
                 SPopup.alert("Debe seleccionar un almacen");
             }
