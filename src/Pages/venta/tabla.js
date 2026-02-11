@@ -409,15 +409,7 @@ export default class tabla extends Component {
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
 
 
-                {/* <DinamicTable.Col key="facturado" label="Facturado" width={60} data={(e) => e.row?.factura?.cuf}
-                    customComponent={e => <>
-                        {(e.row?.factura) ?
-                            <SView col={"xs-12"} center row  >
-                                <SView width={5} />
-                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>✅</SText>
-                            </SView> : null}
-                    </>}
-                /> */}
+
 
                 <DinamicTable.Col key="nrofactura" label="Nro. Factura" width={80} data={(e) => e.row?.factura?.numero}
                     customComponent={e => <>
@@ -433,7 +425,7 @@ export default class tabla extends Component {
                     customComponent={e => <>
                         {(e.row?.facturar) ?
                             <SView col={"xs-12"} center row  >
-                                <SText flex style={e.textStyle}>si</SText>
+                                <SText flex style={e.textStyle}>si✅</SText>
                             </SView> : null} </>}
                 />
 
@@ -510,6 +502,11 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
+
+                <DinamicTable.Col key="nit" label="NIT" width={100} data={(e) => e.row?.cliente?.nit ?? ""} />
+                <DinamicTable.Col key="razon_social" label="Razón social" width={100} data={(e) => e.row?.cliente?.razon_social ?? ""} />
+
+
 
                 {/* <DinamicTable.Col key={"-keyprofiless"} label='Ver' width={40} data={(e) => e.row?.key}
                     customComponent={e => (
