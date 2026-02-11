@@ -143,7 +143,8 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             const monedaActual = MDL.carrito.selectedMoneda;
             const almacen = this.props.almacen;
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
-            if (keyPago === "credito" && !cliente) {
+            const clientefull = this.props.cliente;
+            if (keyPago === "credito" && !clientefull) {
                 this.props.onTipoPagoChange(true);
                 SelectTipoPago.closePopup();
                 SPopup.close("PopupCarritoConfirmarResumen");
@@ -158,7 +159,9 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             } else {
                 this.props.onTipoPagoChange(false);
 
-            }if (!almacen) {
+            }
+
+            if (!almacen) {
                 SPopup.alert("Debe seleccionar un almacen");
             }
             const detalle = MDL.carrito.carrito_venta.items.map((ci) => {
@@ -187,9 +190,9 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             })
             const data = {
                 "descripcion": this.props.descripcion || "",
-                "observacion": "Observacion de la venta de prueba ricky",
-                // "facturar": factura ? true : false,
-                "facturar": false,
+                "observacion": "Observación",
+                "facturar": this.props.factura,
+                "facturar_luego": this.props.factura,
                 cliente: {
                     nit: cliente?.nit || "",
                     razon_social: cliente?.razon_social || ""
@@ -197,13 +200,19 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 descuentos: descuentoSeleccionado || [],
                 "key_cliente": cliente?.key,
                 "key_usuario": MDL.usuario.session?.key,
-                "facturar_luego": false,
                 "key_caja": MDL.caja.activa?.key,
                 "key_almacen": almacen.key,
                 "key_moneda": monedaActual.key,
                 "detalle": detalle,
                 tipos_pago: tipos_pago,
             }
+
+            // console.clear();
+            // console.log("%c" + "venta", `color: #2ECC40; font-weight: bold;`);
+            // console.log(JSON.stringify(data))
+            // return;
+
+
             SNotification.send({
                 key: "venta_rapida",
                 title: "Cargando",
