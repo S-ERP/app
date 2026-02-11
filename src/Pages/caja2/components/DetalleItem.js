@@ -9,6 +9,7 @@ import { Container } from '../../../Components';
 import SIconApp from '../../../Assets/SIconApp';
 import PopupUploadVoucher from './PopupUploadVoucher';
 import SSocket from 'servisofts-socket'; // Asegúrate de importar esto
+import { ColorCompraVenta } from '../../../Config/theme';
 
 export default class DetalleItem extends Component<{
   item: any,
@@ -195,7 +196,14 @@ export default class DetalleItem extends Component<{
 
             {item?.key_compra_venta &&
               <>
-                <View style={styles.etiqueta}>
+                <SView row style={{
+                  borderWidth: 1,
+                  borderColor: ColorCompraVenta.venta,
+                  padding: 2,
+                  borderRadius: 4
+                }} backgroundColor={ColorCompraVenta.venta + "50"} >
+                  <SIconApp width={13} height={13} name={"ventaCarro"} fill={STheme.color.text} />
+                  <SView width={3} />
                   <SText fontSize={10}
                     onPress={() => {
                       if (item.tipo == "compra") {
@@ -208,12 +216,19 @@ export default class DetalleItem extends Component<{
                     }}>
                     {item.tipo}
                   </SText>
-                </View>
+                </SView>
                 <SView width={8} />
               </>
             }
             {item.tipo == "compra" && <>
-              <View style={styles.etiqueta}>
+              <SView row style={{
+                borderWidth: 1,
+                borderColor: ColorCompraVenta.compra,
+                padding: 2,
+                borderRadius: 4
+              }} backgroundColor={ColorCompraVenta.compra + "50"} >
+                <SIconApp width={13} height={13} name={"compraCarro"} fill={STheme.color.text} />
+                <SView width={3} />
                 <SText fontSize={10}
                   onPress={() => {
                     if (item.tipo == "compra") {
@@ -226,7 +241,7 @@ export default class DetalleItem extends Component<{
                   }}>
                   {item.tipo}
                 </SText>
-              </View>
+              </SView>
               <SView width={8} />
             </>}
 
