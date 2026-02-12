@@ -69,15 +69,22 @@ export default class Abierta extends Component {
         let key_sucursal = this.props.caja.key_sucursal
         console.log("KEY SUCURSAL", key_sucursal);
 
-        let sucursales = Model.sucursal.Action.getAll();
-        let suc = Object.values(sucursales ?? {}).filter(s => s.key === key_sucursal) ?? null;
-        console.log("SUCURSAL", suc);
-        let sucursal = suc ? suc[0] : null;
-        // let sucursal = sucursales.filter(s => s.key === key_sucursal) ?? null;
-        console.log("SUCURSAL data ", sucursal);
+        // let sucursales = Model.sucursal.Action.getAll();
+        // let suc = Object.values(sucursales ?? {}).filter(s => s.key === key_sucursal) ?? null;
+        // console.log("SUCURSAL", suc);
+        // let sucursal = suc ? suc[0] : null;
+        // console.log("SUCURSAL data ", sucursal);
 
-        // let sucursal = Model.sucursal.Action.getByKey(key_sucursal);
-        // if (!sucursal) return;
+        let keySucursal = this.props.caja.key_sucursal;
+        let keyPuntoVenta = this.props.caja.key_punto_venta;
+        const sucursal = this.state.empresa?.sucursales.find(s => s.key === keySucursal);
+
+        const puntoVenta = sucursal?.puntos_venta?.find(
+            pv => pv.key === keyPuntoVenta
+        );
+
+        console.log("Sucursal:", sucursal);
+        console.log("Punto de venta:", puntoVenta);
 
 
         return <SView col={"xs-11 sm-10 md-8 lg-6"} center row   >
@@ -170,7 +177,7 @@ export default class Abierta extends Component {
                     <SView row width={5} />
                     <SText fontSize={12} color={STheme.color.lightGray}>Sucursal:</SText>
                     <SView row width={10} />
-                    <SText color={STheme.color.text} fontSize={12}>{sucursal?.descripcion}</SText>
+                    <SText color={STheme.color.text} fontSize={12}>{sucursal?.descripcion} - {puntoVenta?.descripcion}</SText>
                 </SView>
             </SView>
             <SHr />
@@ -215,6 +222,9 @@ export default class Abierta extends Component {
         </SView >
     }
     render() {
+        console.log("EMRPESA DATA ", this.state.empresa)
+
+
         return (
             <SView col={"xs-12"} center flex>
                 <FlatList style={{ flex: 1, width: "100%", }}
@@ -300,7 +310,7 @@ export default class Abierta extends Component {
                             {(this.state.ready && this.state.movimientos.length > 0) && <SText color={STheme.color.lightGray}>Hay {compras} compras</SText>} */}
                             <SView col={"xs-12"} center row wrap>
                                 {totales.cantidadVentas > 0 && boxCant({ text: `${totales.cantidadVentas}`, color: STheme.color.success, subtitulo: "Ventas", icon: "ventaCarro" })}
-                                {totales.cantidadCompras > 0 && boxCant({ text: `${totales.cantidadCompras}`, color: STheme.color.warning, subtitulo: "Compras" , icon: "compraCarro" })}
+                                {totales.cantidadCompras > 0 && boxCant({ text: `${totales.cantidadCompras}`, color: STheme.color.warning, subtitulo: "Compras", icon: "compraCarro" })}
                                 {totales.cantidadAnulacionesVenta > 0 && boxCant({ text: `${totales.cantidadAnulacionesVenta}`, color: STheme.color.danger, subtitulo: "Anulaciones de venta", icon: "cancelado" })}
                                 {totales.cantidadAnulacionesCompra > 0 && boxCant({ text: `${totales.cantidadAnulacionesCompra}`, color: STheme.color.danger, subtitulo: "Anulaciones de compra", icon: "cancelado" })}
                                 {totales.cantidadAmortizaciones > 0 && boxCant({ text: `${totales.cantidadAmortizaciones}`, color: STheme.color.info, subtitulo: "Amortizaciones", icon: "Mamortizacion" })}
@@ -333,7 +343,7 @@ const boxCant = (props) => {
         <SIcon name={props.icon} width={24} height={24} fill={STheme.color.white} />
         <SView width={10} />
         <SText fontSize={20} bold>{props.text}</SText>
-        <SHr/>
+        <SHr />
         <SText fontSize={14} color={STheme.color.lightGray}>{props.subtitulo}</SText>
     </SView>
 }
