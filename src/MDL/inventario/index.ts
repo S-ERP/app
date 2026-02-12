@@ -60,7 +60,7 @@ export default class inventario extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
-  async getAllModeloStock(_key_almacen: string) {
+  async getAllModeloStock(_key_almacen: string, _key_sucursal: string) {
     const resp: any = await SSocket.sendPromise({
       version: "1.0",
       service: "inventario",
@@ -69,6 +69,9 @@ export default class inventario extends MDLAbstract<EventListener> {
       key_empresa: MDL.empresa.select?.key,
       key_usuario: MDL.usuario.session?.key,
       key_almacen: _key_almacen,
+      key_sucursal: _key_sucursal,
+      // key_sucursal: '83b86c27-e05c-4de8-bbbe-7b3ec842a20d',
+      // key_sucursal: 'a23a8cd5-840d-4099-9ddc-1a906913c8e2',
     });
     return Object.values(resp.data || {});
   }
