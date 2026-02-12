@@ -157,12 +157,10 @@ export default class Modelo extends Component {
                     </SView>
                 </SScrollView2>
 
-
-
             </SView>
             <SView style={{ position: "absolute", bottom: 20, right: 10 }}>
                 {
-                    <Recargar ref={ref => this.recargar = ref} initialTime={20} fill={STheme.color.lightGray} 
+                    <Recargar ref={ref => this.recargar = ref} initialTime={20} fill={STheme.color.lightGray}
                         onFinish={() => {
                             this.loadApis(); // ✅ correcto
                         }} />
