@@ -77,7 +77,7 @@ export default class PopupModeloCardex extends Component {
                         backgroundColor: STheme.color.card,
 
                     }}>
-                        <SText>{`Total: ${total}`}</SText>
+                        <SText>{`Total: ${total.toFixed(2)}`}</SText>
                     </SView>
                 }}
             />
