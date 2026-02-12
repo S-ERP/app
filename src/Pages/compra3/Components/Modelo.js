@@ -4,6 +4,7 @@ import { SNotification, SScrollView2, SText, STheme, SView } from 'servisofts-co
 import MDL from '../../../MDL';
 import SSocket from 'servisofts-socket';
 import FotoModelo from './Foto/FotoModelo';
+import Recargar from '../../../Components/Recargar';
 const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
 export default class Modelo extends Component {
     constructor(props) {
@@ -85,9 +86,10 @@ export default class Modelo extends Component {
                     p.observacion?.toLowerCase().includes(search)
             );
         }
+{/* si */}
 
         const colSize = this.getColSize();
-        return (
+        return (<>
             <SView col={"xs-12"} flex center>
                 <SScrollView2 disableHorizontal>
                     <SView col={"xs-12"} style={{ padding: 2 }}>
@@ -169,6 +171,17 @@ export default class Modelo extends Component {
                     </SView>
                 </SScrollView2>
             </SView>
+            <SView style={{ position: "absolute", bottom: 20, right: 10 }}>
+                {
+                    <Recargar ref={ref => this.recargar = ref} initialTime={20} fill={STheme.color.lightGray} 
+                        onFinish={() => {
+                            this.loadApis(); // ✅ correcto
+                        }} />
+                }
+            </SView>
+
+        </>
+
         );
     }
     render() {
