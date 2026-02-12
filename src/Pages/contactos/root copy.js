@@ -21,7 +21,7 @@ class Stage extends Component {
             selectedStageKey: null,
             mostrar: false,
             clientes: [],
-            // clientesExtra: [],
+            clientesExtra: [],
         };
     }
 
@@ -134,7 +134,7 @@ class Stage extends Component {
     };
 
     render() {
-        const { stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard, cardRefs, onDeleteStage, onAddCliente, onRemoveCliente, onLoadData, allClientes ,onNuevoCliente } = this.props;
+        const { stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard, cardRefs, onDeleteStage, onAddCliente, onRemoveCliente, onLoadData, allClientes } = this.props;
         console.log("sddd", this.props)
         const isSelected = this.state.selectedStageKey === stage.key;
         console.log("ALL", allClientes)
@@ -190,7 +190,11 @@ class Stage extends Component {
                             </SView>
                         </SView>}
 
-                        <AgregarContacto estado={this.state.mostrar} clientes={clientesFiltrados} stage={stage} onAddCliente={onAddCliente} onNuevoCliente={onNuevoCliente} />
+                        <AgregarContacto estado={this.state.mostrar} clientes={clientesFiltrados} stage={stage} onAddCliente={onAddCliente} onNuevoCliente={(nuevo) => {
+                            this.setState(prev => ({
+                                clientesExtra: [...prev.clientesExtra, nuevo]
+                            }))
+                        }} />
                     </SView>
 
                 </SView>
@@ -546,13 +550,6 @@ export default class root extends Component {
         // Lógica de drag
     }
 
-    handleNuevoCliente = (cliente) => {
-        this.setState(prev => ({
-            allClientes: [...prev.allClientes, cliente],
-            clientes: [...prev.clientes, cliente] // opcional si también quieres que aparezca como card
-        }));
-    };
-
     render() {
         console.log("CLIENTES: ", this.state.allClientes)
         return (
@@ -589,12 +586,11 @@ export default class root extends Component {
                                 onStageSelect={this.handleStageSelect}
                                 onLoadData={this.loadData} // ✅ PROP NUEVA PARA RECARGAR
                                 allClientes={this.state.allClientes}
-                                onNuevoCliente={this.handleNuevoCliente}
-                            // onNuevoCliente={(nuevo) => {
-                            //     this.setState(prev => ({
-                            //         clientesExtra: [...prev.clientesExtra, nuevo]
-                            //     }))
-                            // }}
+                                // onNuevoCliente={(nuevo) => {
+                                //     this.setState(prev => ({
+                                //         clientesExtra: [...prev.clientesExtra, nuevo]
+                                //     }))
+                                // }}
                             />
                         </SView>
                     ))}
