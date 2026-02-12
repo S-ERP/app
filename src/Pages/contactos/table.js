@@ -4,6 +4,8 @@ import { DinamicTable } from "servisofts-table";
 import MDL from "../../MDL";
 import Config from "../../Config";
 import SSocket from "servisofts-socket";
+import FloatButtom from "../../Components/FloatButtom";
+import PopupCrearCliente from "../cliente/Components/PopupCrearCliente";
 
 export default class table extends React.Component {
     async loadData() {
@@ -20,6 +22,7 @@ export default class table extends React.Component {
             <DinamicTable
                 {...Config.table.applyTheme()}
                 loadData={this.loadData.bind(this)}
+                ref={ref => (this.DinamicTable = ref)}
             >
                 <DinamicTable.Col key="index" label="#" width={40} data={e => e.index + 1} />
                 <DinamicTable.Col
@@ -118,6 +121,15 @@ export default class table extends React.Component {
                 />
 
             </DinamicTable>
+            {/* {MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'new' }) && ( */}
+            <FloatButtom
+                onPress={() =>
+                    PopupCrearCliente.open({
+                        onSuccess: () => this.DinamicTable.loadData(),
+                    })
+                }
+            />
+            {/* )} */}
         </SPage>
     }
 }
