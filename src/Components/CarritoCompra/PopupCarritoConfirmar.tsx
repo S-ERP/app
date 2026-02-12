@@ -38,7 +38,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     proveedor: any;
     state: { almacen: any, moneda: any, factura: boolean, esCredito: boolean, subtotal: any, } = {
         almacen: null,
-        moneda: MDL.carrito.selectedMoneda,
+        moneda: MDL.compra_venta.getMonedaSeleccionada() || null,
         factura: false,
         esCredito: false, // 👈 bandera
         subtotal: null,
@@ -50,7 +50,8 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         this.cargarSubtotal();
     }
     cargarSubtotal() {
-        const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
+        const monedaActual = MDL.compra_venta.getMonedaSeleccionada();  
+        // const monedaActual = MDL.compra_venta.getMonedaSeleccionada(); aqui deberia ir el this.state.moneda
         const carritoItems = MDL.carrito.carrito_compra.items;
         const subtotal = carritoItems.reduce((acc, item) => {
             const precio = monedaActual
