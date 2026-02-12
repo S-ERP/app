@@ -1,10 +1,17 @@
 import React, { Component } from 'react';
 import { SView, SText, SIcon, STheme } from 'servisofts-component';
 
-export default class Recargar extends Component<{ onFinish: () => void, initialTime?:number }> {
-    initialTime = this.props.initialTime ?? 300; // segundos
+interface Props {
+    onFinish: () => void;
+    initialTime?: number;
+    fill?: string; // 👈 agregar
+}
 
-    constructor(props) {
+export default class Recargar extends Component<Props> {
+
+    initialTime = this.props.initialTime ?? 300;
+
+    constructor(props: Props) {
         super(props);
         this.state = {
             time: this.initialTime,
@@ -28,8 +35,8 @@ export default class Recargar extends Component<{ onFinish: () => void, initialT
                     clearInterval(this.interval);
                     this.setState({ time: this.initialTime, rotate: true }, () => {
                         setTimeout(() => this.setState({ rotate: false }), 1000);
-                        if (this.props.onFinish) this.props.onFinish(); // ✅ ejecuta función del padre
-                        this.startTimer(); // reinicia el contador
+                        this.props.onFinish?.();
+                        this.startTimer();
                     });
                     return { time: 0 };
                 }
@@ -38,32 +45,41 @@ export default class Recargar extends Component<{ onFinish: () => void, initialT
         }, 1000);
     };
 
-    formatTime = (seconds) => {
+    formatTime = (seconds: number) => {
         const min = Math.floor(seconds / 60);
         const sec = seconds % 60;
         return `${min}:${sec < 10 ? '0' : ''}${sec}`;
     };
 
-
     onPress = () => {
         clearInterval(this.interval);
         this.setState({ time: this.initialTime, rotate: true }, () => {
             setTimeout(() => this.setState({ rotate: false }), 1000);
-            if (this.props.onFinish) this.props.onFinish(); // ✅ Ejecuta recargarPagina
+            this.props.onFinish?.();
             this.startTimer();
         });
     };
 
     render() {
         const { time, rotate } = this.state;
+        const fillColor = this.props.fill ?? STheme.color.text; // 👈 default
+
         return (
             <SView width={38} center height={38} onPress={this.onPress}>
-                <SIcon name={"Reload"} width={38} height={38} fill={STheme.color.text} style={{
-                    transition: 'transform 1s',
-                    transform: rotate ? 'rotate(360deg)' : 'rotate(0deg)'
-                }} />
+                <SIcon
+                    name={"Reload"}
+                    width={38}
+                    height={38}
+                    fill={fillColor}
+                    style={{
+                        transition: 'transform 1s',
+                        transform: rotate ? 'rotate(360deg)' : 'rotate(0deg)'
+                    }}
+                />
                 <SView col={"xs-12"} height={40} style={{ position: "absolute", paddingTop: 2 }} center>
-                    <SText fontSize={8} style={{ color: STheme.color.text }}>{this.formatTime(time)}</SText>
+                    <SText fontSize={8} style={{ color: fillColor }}>
+                        {this.formatTime(time)}
+                    </SText>
                 </SView>
             </SView>
         );
