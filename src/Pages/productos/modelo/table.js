@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SHr, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../../Config';
 import MDL from '../../../MDL';
@@ -17,6 +17,8 @@ import FiltroSelector from './Components/FiltroSelector';
 import PopupDesgloseTipoCosto from './Components/PopupDesgloseTipoCosto';
 import FormularioTipoProducto from '../Components/FormularioTipoProducto';
 import PopupCrearProveedor from '../../proveedor/Components/PopupCrearProveedor';
+import PopupAgregarMarca from '../marca/Components/PopupAgregarMarca';
+import Model from '../../../Model';
 export default class table extends Component {
     constructor(props) {
         super(props);
@@ -26,6 +28,7 @@ export default class table extends Component {
             selectedTags: props.selectedTags || [],
             search: "",
             selectedAlmacen: null,
+            selectedSucursal: null,
             selectedStock: null,
             selectedTipoCuenta: null,
             selectedTipoModelo: null,
@@ -40,62 +43,68 @@ export default class table extends Component {
     }
     handleKeyDown = (e) => {
         if (e.key === "Escape") {
+            this.filtroSucursalRef?.reset();
             this.filtroAlmacenRef?.reset();
             this.filtroStockRef?.reset();
             this.filtroTipoContableRef?.reset();
             this.filtroTipoProductoRef?.reset();
-            this.setState({
-                selectedAlmacen: null,
-                selectedStock: null,
-                selectedTipoCuenta: null,
-                selectedTipoModelo: null,
-            }, () => {
+            this.setState({ selectedSucursal: null, selectedAlmacen: null, selectedStock: null, selectedTipoCuenta: null, selectedTipoModelo: null, }, () => {
                 this.table?.loadData();
             });
         }
     };
+
     async loadData() {
         try {
-            const monedas = await MDL.empresa.getMonedas().catch(() => []);
-            const clientes = await MDL.crm.cliente.getAll().catch(() => []);
-            const tipo_costos = await MDL.inventario.getAllTipoCosto().catch(() => []);
-            const modelos = await MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "") ?? [];
+            // 🔹 Traer datos en paralelo
+            const [monedas, clientes, tipo_costos, modelos] = await Promise.all([
+                MDL.empresa.getMonedas().catch(() => []),
+                MDL.crm.cliente.getAll().catch(() => []),
+                MDL.inventario.getAllTipoCosto().catch(() => []),
+                MDL.inventario.getAllModeloStock(this.state?.selectedAlmacen?.key ?? "", this.state?.selectedSucursal?.key ?? ""
+                ).catch(() => [])
+            ]);
+            // 🔹 Indexar para acceso O(1)
+            const monedasByKey = Object.fromEntries((monedas ?? []).map(m => [m?.key, m]));
+            const clientesByKey = Object.fromEntries((clientes ?? []).map(c => [c?.key, c]));
+            const tipoCostoByKey = Object.fromEntries((tipo_costos ?? []).map(tc => [tc?.key, tc]));
+
+            // 🔹 Mejorar modelos
             let data_mejorada = (modelos ?? []).map(e => ({
                 ...e,
-                compra_moneda: monedas.find(m => m?.key === e?.precio_compra_moneda) || {},
-                venta_moneda: monedas.find(m => m?.key === e?.precio_venta_moneda) || {},
+                compra_moneda: monedasByKey[e?.precio_compra_moneda] || {},
+                venta_moneda: monedasByKey[e?.precio_venta_moneda] || {},
                 contactos: (e?.contactos ?? []).map(c => ({
                     ...c,
-                    cliente: clientes.find(cl => cl?.key === c?.key_cliente) || {},
-                    tipo_costo: tipo_costos.find(tc => tc.key === c.key_tipo_costo) || {},
+                    cliente: clientesByKey[c?.key_cliente] || {},
+                    tipo_costo: tipoCostoByKey[c?.key_tipo_costo] || {},
                 })),
-                proveedores: (e?.proveedores ?? []).map(c => ({
-                    ...c,
-                    proveedor: clientes.find(cl => cl?.key === c?.key_proveedor) || {},
+                proveedores: (e?.proveedores ?? []).map(p => ({
+                    ...p,
+                    proveedor: clientesByKey[p?.key_proveedor] || {},
                 })),
                 tipo_producto: e?.tipo_producto || {},
                 marca: e?.marca || {},
                 tags: e?.tags ?? [],
-                stock: e?.stock ?? 0,
+                stock: Number(e?.stock ?? 0),
             }));
+
+            // 🔹 Filtro por stock
             if (this.state.selectedStock?.key === "con_stock") {
-                data_mejorada = data_mejorada.filter(m => Number(m.stock) > 0);
+                data_mejorada = data_mejorada.filter(m => m.stock > 0);
             }
+
             if (this.state.selectedStock?.key === "sin_stock") {
-                data_mejorada = data_mejorada.filter(m => !m.stock || Number(m.stock) === 0);
+                data_mejorada = data_mejorada.filter(m => m.stock <= 0);
             }
-            if (
-                this.state.selectedTipoCuenta?.key &&
-                this.state.selectedTipoCuenta.key !== "Todos"
-            ) {
+            // 🔹 Filtro por tipo contable
+            if (this.state.selectedTipoCuenta?.key && this.state.selectedTipoCuenta.key !== "Todos") {
                 data_mejorada = data_mejorada.filter(
                     m => m?.tipo_producto?.tipo === this.state.selectedTipoCuenta.key
                 );
             }
-            if (
-                this.state.selectedTipoModelo?.key &&
-                this.state.selectedTipoModelo.key !== "Todos"
-            ) {
+            // 🔹 Filtro por tipo modelo
+            if (this.state.selectedTipoModelo?.key && this.state.selectedTipoModelo.key !== "Todos") {
                 data_mejorada = data_mejorada.filter(
                     m => m?.tipo_producto?.descripcion === this.state.selectedTipoModelo.key
                 );
@@ -104,10 +113,12 @@ export default class table extends Component {
             return data_mejorada;
         } catch (error) {
             console.error("Error real en loadData:", error);
+
             SPopup.alert(
                 "Error al cargar modelos",
                 error?.message || "Error desconocido"
             );
+
             return [];
         }
     }
@@ -132,13 +143,35 @@ export default class table extends Component {
             }}
             >
                 <SView col={"xs-12 sm-5 lg-1.6"} row center style={{ flexWrap: "wrap", gap: 12 }}>
+
+                    <FiltroSelector
+                        ref={ref => this.filtroSucursalRef = ref}
+                        label="Sucursal"
+                        loadData={MDL.empresa.getAllSucursales}
+                        mapOption={a => ({ key: a.key, nombre: a.descripcion })}
+                        onSelect={item => {
+                            this.filtroAlmacenRef?.reset(false);
+                            this.setState({ selectedSucursal: item, selectedAlmacen: null, }, () => {
+                                this.table?.loadData();
+                            });
+                        }}
+                    />
+                </SView>
+                <SView width={8} height={8} />
+                <SView col={"xs-12 sm-5 lg-1.6"} row center style={{ flexWrap: "wrap", gap: 12 }}>
                     <FiltroSelector
                         ref={ref => this.filtroAlmacenRef = ref}
                         label="Almacén"
                         loadData={MDL.inventario.getAllAlmacen}
                         mapOption={a => ({ key: a.key, nombre: a.descripcion })}
-                        onSelect={item => this.setState({ selectedAlmacen: item }, () => this.table.loadData())}
+                        onSelect={item => {
+                            this.filtroSucursalRef?.reset(false);
+                            this.setState({ selectedAlmacen: item, selectedSucursal: null, }, () => {
+                                this.table?.loadData();
+                            });
+                        }}
                     />
+
                 </SView>
                 <SView width={8} height={8} />
                 <SView col={"xs-12 sm-5 lg-1"} row center style={{ flexWrap: "wrap", gap: 12 }}>
@@ -202,7 +235,7 @@ export default class table extends Component {
                         options: [
                             {
                                 label: "Editar",
-                                icon: <SIconApp name='Pencil' fill={STheme.color.text}/>,
+                                icon: <SIconApp name='Pencil' fill={STheme.color.text} />,
                                 // icon: <SIconApp name='Edit' />,
                                 onPress: () => {
                                     FormularioModelo.open({
@@ -217,7 +250,7 @@ export default class table extends Component {
                             },
                             {
                                 label: "Eliminar",
-                                icon: <SIconApp name='crmeliminar' fill={STheme.color.danger}  />,
+                                icon: <SIconApp name='crmeliminar' fill={STheme.color.danger} />,
                                 // icon: <SIconApp name='Delete' />,
                                 onPress: () => {
                                     SPopup.confirm({
@@ -340,7 +373,23 @@ export default class table extends Component {
                     textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
                     customComponent={e => <>
                         {(e.row.key_marca) ?
-                            <SView col={"xs-12"} center row onPress={() => { SNavigation.navigate("/productos/marca/edit", { pk: e.row.key_marca }); }}>
+                            <SView col={"xs-12"} center row onPress={() => {
+                                PopupAgregarMarca.open({
+
+                                    editObject: { ...e.row?.marca, quitar: true },
+                                    // tiene que ir todo el e.row
+                                    // para que edirte el
+                                    // MDL.inventario.saveModelo(modelo).then(async (resp: any) => {
+
+                                    // editObject: e.row?.marca,
+                                    onSuccess: () => {
+                                        if (this.table) {
+                                            this.table.loadData();
+                                            this.state.time = new Date().getTime();
+                                        }
+                                    }
+                                })
+                            }}>
                                 <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
                                     <ImageLabel {...e} src={SSocket.api.inventario + "marca/.128_" + e.row.key_marca + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />
                                 </SView>
@@ -349,6 +398,9 @@ export default class table extends Component {
                             </SView> : null}
                     </>}
                 />
+
+
+
                 <DinamicTable.Col key={"tipo_producto"} label='Tipo' width={130}
                     data={(e) => e.row?.tipo_producto?.descripcion}
                     textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}

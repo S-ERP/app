@@ -15,7 +15,7 @@ export default class FiltroSelector extends Component {
     componentDidMount() {
         this.loadData();
     }
-
+// alvaro
     async loadData() {
         try {
             const data = await this.props.loadData();
@@ -36,17 +36,30 @@ export default class FiltroSelector extends Component {
         }
     }
 
-    reset() {
-        const defaultOption = { key: null, nombre: "Todos" }; // opción por defecto
+    // reset() {
+    //     const defaultOption = { key: null, nombre: "Todos" }; // opción por defecto
+    //     this.setState({ selectedKey: defaultOption.key }, () => {
+    //         if (this.selectorRef.current) {
+    //             this.selectorRef.current.setValue(defaultOption.key);
+    //         }
+    //         this.props.onSelect?.(defaultOption);
+    //     });
+    // }
+
+    // notifica al padre
+    reset(notify = false) {
+        const defaultOption = { key: null, nombre: "Todos" };
         this.setState({ selectedKey: defaultOption.key }, () => {
-            // actualiza InputSelector
             if (this.selectorRef.current) {
                 this.selectorRef.current.setValue(defaultOption.key);
             }
-            // notifica al padre
-            this.props.onSelect?.(defaultOption);
+            // 🔹 Solo notifica si explícitamente lo piden
+            if (notify) {
+                this.props.onSelect?.(defaultOption);
+            }
         });
     }
+
 
     render() {
         const { label } = this.props;
