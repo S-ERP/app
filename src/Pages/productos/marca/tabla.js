@@ -28,25 +28,20 @@ export default class tabla extends Component {
             </SView>
         );
     }
-
     renderMarca(marca = {}) {
-        // const nombre = `${usuario?.Nombres || "Sin"} ${usuario?.Apellidos || "usuario"}`;
         return (
             <SView col="xs-12" center row>
-
-                           {/* <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
-                                    <ImageLabel {...e} src={SSocket.api.inventario + "marca/.128_" + e.row.key_marca + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />
-                                </SView> */}
-
                 <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66", }} >
-                    {marca.key ? (<SImage src={SSocket.api.inventario + "marca/.128_" + marca.key + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />) : null}
+
+                    <SImage src={SSocket.api.inventario + "marca/.128_" + marca.key + "?date=" + this.state.time} />
+
+                    {/* {marca.key ? (<SImage src={SSocket.api.inventario + "marca/.128_" + marca.key + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />) : null} */}
                 </SView>
-                <SView width={5} />
+                <SView width={8} />
                 <SText flex numberOfLines={1} style={{ fontSize: 10 }}> {marca.descripcion} </SText>
             </SView>
         );
     }
-
     renderSucursal(sucursal = {}) {
         if (!sucursal?.key) return null;
         return (
@@ -87,17 +82,11 @@ export default class tabla extends Component {
             const usuariosMap = Object.fromEntries(
                 usuariosArr.map(u => [u.key, u])
             );
-            // const cuentasObj = await MDL.contabilidad.getCuentas();
-            // const cuentasArr = Object.values(cuentasObj || {});
-            // const cuentasMap = Object.fromEntries(
-            //     cuentasArr.map(c => [c.key, c])
-            // );
             if (!Array.isArray(res)) return [];
             const data_mejorada = res.map(e => ({
                 ...e,
                 usuario: usuariosMap[e.key_usuario] || {},
                 empresa,
-                // cuenta_contable: cuentasMap[e.key_cuenta_contable] || null,
             }));
             return data_mejorada;
         } catch (error) {
@@ -138,8 +127,13 @@ export default class tabla extends Component {
                             }
                             PopupAgregarMarca.open({
                                 editObject: item,
-                                onSuccess: async () => {
-                                    this.DinamicTable.loadData();
+                                onSuccess: async (resp) => {
+                                    if (this.DinamicTable) {
+                                        await new Promise(resolve => setTimeout(resolve, 200)); // 200ms
+
+                                        this.DinamicTable.loadData();
+                                        this.setState({ time: new Date().getTime() });
+                                    }
                                 },
                             })
                         }
@@ -178,10 +172,10 @@ export default class tabla extends Component {
                 }}
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
-                 <DinamicTable.Col key="descripcion" label="Descripción" width={120} data={(e) => e.row?.descripcion ?? ""} />
+                <DinamicTable.Col key="key_marca_" label="Marca" width={150} data={(e) => e.row?.key ?? ""} customComponent={e => this.renderMarca(e.row)} />
+                <DinamicTable.Col key="observacion" label="observacion" width={120} data={(e) => e.row?.observacion ?? ""} />
                 <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={110} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.lightGray, }} dateFormat="yyyy-MM-dd hh:mm" />
-                <DinamicTable.Col key="key_usuario" label="Administrador" width={100} data={(e) => e.row?.key_usuario ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
-                <DinamicTable.Col key="key_empresa" label="key_empresa" width={100} data={(e) => e.row?.key_empresa ?? ""} customComponent={e => this.renderEmpresa(e.row?.empresa)} />
+                <DinamicTable.Col key="key_usuario" label="Administrador" width={150} data={(e) => e.row?.key_usuario ?? ""} customComponent={e => this.renderUsuario(e.row?.usuario)} />
             </DinamicTable>
         );
     }
@@ -195,7 +189,7 @@ export default class tabla extends Component {
                         onSuccess: () => {
                             if (this.DinamicTable) {
                                 this.DinamicTable.loadData();
-                                this.state.time = new Date().getTime();
+                                this.setState({ time: new Date().getTime() });
                             }
                         }
                     })
