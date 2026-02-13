@@ -23,14 +23,10 @@ export default class pizarra extends React.Component {
         filtro: "",
         modelos: [],
         ingredientes: [],
-        initialsPositions: {},
-
+        initialsPositions: {}
     }
-    selectedMoneda: null;
     componentDidMount() {
         this.loadData();
-        this.cargarMonedaSeleccionada();
-
     }
 
     async loadData() {
@@ -42,25 +38,6 @@ export default class pizarra extends React.Component {
             modelos: modelos
         })
     }
-    cargarMonedaSeleccionada = async () => {
-        try {
-            const empresa_srl = await MDL.empresa.getFull();
-            if (!empresa_srl) {
-                console.error("No se cargó la empresa");
-                return;
-            }
-            const base = empresa_srl.monedas.find(a => a.tipo == "base");
-            const monedas = empresa_srl.monedas;
-
-            this.selectedMoneda = base;
-            this.monedas = monedas;
-            console.clear();
-            console.log("%c" + JSON.stringify(this.selectedMoneda, null, 2), "color: #2ECC40; font-weight: bold;");
-        } catch (error) {
-            console.error("Error cargando moneda seleccionada:", error);
-        }
-    }
-
     filtro_opacity(obj) {
         if (!this.state.filtro) {
             return 1;
@@ -71,19 +48,7 @@ export default class pizarra extends React.Component {
         return 0.3;
     }
     renderModelos() {
-
-
-        //     this.modelos = modelos.map(e => ({
-        //     ...e,
-        //     compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
-        //     venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || monedas.find(m => m.tipo === "base") || {}
-        // }));
-
         return this.state.modelos.map(modelo => {
-
-            modelo.compra_moneda = this.monedas.find(m => m.key === modelo.precio_compra_moneda) || this.monedas.find(m => m.tipo === "base") || {};
-            modelo.venta_moneda = this.monedas.find(m => m.key === modelo.precio_venta_moneda) || this.monedas.find(m => m.tipo === "base") || {};
-
 
             const modelo_ingredientes = [];
             this.state.ingredientes.map(ingrediente => {
@@ -150,7 +115,7 @@ export default class pizarra extends React.Component {
                     })
                     console.log(modelo)
                 }}>
-                <NodoModelo modelo={modelo} key_sucursal={this.state.key_sucursal} moneda_base={this.selectedMoneda} />
+                <NodoModelo modelo={modelo} key_sucursal={this.state.key_sucursal} />
                 <Puerto
                     id="key_ingrediente"
                     type="input"
@@ -434,7 +399,7 @@ export default class pizarra extends React.Component {
         </SView>
     }
     render() {
-        return <SPage title={"pizarrasss"} disableScroll>
+        return <SPage title={"pizarra"} disableScroll>
             <Pizarra id={"productos_pizarra"} scale={0.5} exponentDeRedondeoDeMovimiento={10}
                 onSelectChange={e => {
                     console.log(e)
@@ -505,32 +470,8 @@ export default class pizarra extends React.Component {
 
 
 const NodoModelo = (props) => {
-    const { modelo, moneda_base } = props;
+    const { modelo } = props;
     const height = 100;
-
-    // const moneda_seleecionado = {
-    //     "descripcion": "USDC",
-    //     "estado": 1,
-    //     "tipo": "",
-    //     "key_usuario": "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
-    //     "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-    //     "fecha_on": "2026-01-05T22:28:09.33",
-    //     "tipo_cambio": 10,
-    //     "key": "86726459-424e-425f-99e6-ba9c2ebaeb5d",
-    //     "observacion": "USDC"
-    // };
-
-
-    const tipoCambioProducto = modelo.venta_moneda?.tipo_cambio || 1;
-    const tipoCambioSeleccionada = moneda_base?.tipo_cambio || 1;
-    const precioConvertido_compra = modelo.precio_compra * (tipoCambioProducto / tipoCambioSeleccionada);
-    const precioFormateado_compra = Number.isInteger(precioConvertido_compra) ? precioConvertido_compra.toString() : precioConvertido_compra.toFixed(2);
-
-
-    // const precioConvertido_venta = modelo.precio_venta * (tipoCambioProducto / tipoCambioSeleccionada);
-    // const precioFormateado_venta = Number.isInteger(precioConvertido_venta) ? precioConvertido_venta.toString() : precioConvertido_venta.toFixed(2);
-    // const monedaSymbol = moneda_seleecionado ? moneda_seleecionado.observacion : "Bs";
-
     return <View style={{
         backgroundColor: STheme.color.background,
         borderRadius: 8,
@@ -578,9 +519,6 @@ const NodoModelo = (props) => {
                     }}>{"Descomponer"}</SText>
                     <SText clean>{" "}</SText>
                     <SText card padding={2} fontSize={8} onPress={() => {
-                        console.clear();
-                        console.log("%c" + "compras", `color: #2ECC40; font-weight: bold;`);
-                        console.log("%c" + JSON.stringify(moneda_base, null, 2), "color: #2ECC40; font-weight: bold;");
                         // SNavigation.navigate("/productos/modelo/ingrediente", { key_modelo: modelo.key })
                         console.log("MODELO ", modelo)
                         PopupComprar.open({
@@ -628,25 +566,11 @@ const NodoModelo = (props) => {
             paddingHorizontal: 4
         }}>
             <SView card padding={3} row center width={70} onPress={() => {
-                const productoAjustado = {
-                    ...modelo,
-                    precio_compra: modelo.precio_compra,
-                    precio_compra_moneda: precioFormateado_compra,
-                    monedaSymbol: moneda_base.observacion,
-                };
-                console.clear();
-                console.log("%c" + JSON.stringify(productoAjustado, null, 2), "color: #2ECC40; font-weight: bold;");
                 MDL.carrito.agregarItemAlCarritoDeCompras({
-                    modelo: productoAjustado,
+                    modelo: modelo,
                     cantidad: 1,
-                    precio: productoAjustado.precio_compra
+                    precio: modelo.precio_compra
                 })
-
-                // MDL.carrito.agregarItemAlCarritoDeCompras({
-                //     modelo: modelo,
-                //     cantidad: 1,
-                //     precio: modelo.precio_compra
-                // })
             }}>
                 <SView height={15} width={15}  >
                     <SIconApp name="compraCarro" fill={STheme.color.text} />
@@ -656,95 +580,6 @@ const NodoModelo = (props) => {
             </SView>
             <SView flex />
             <SView card padding={3} row width={65} center style={{ alignItems: "flex-end" }} onPress={() => {
-
-
-                const latencia = {
-                    "descripcion": "Leche Pil 1 Litro",
-                    "estado": 1,
-                    "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
-                    "fecha_edit": null,
-                    "unidad_medida": null,
-                    "fecha_on": "2025-11-22T04:47:17.042",
-                    "precio_compra": 4,
-                    "key_tipo_producto": "3974ba6b-cb10-4ab2-923b-2ceba12f58ce",
-                    "precio_venta": 6,
-                    "precio_compra_moneda": "86726459-424e-425f-99e6-ba9c2ebaeb5d",
-                    "codigo_ref": "",
-                    "key_marca": "8bd09dad-9edd-49d7-a5f9-98b70c17688f",
-                    "marca": {
-                        "descripcion": "Servisofts",
-                        "estado": 1,
-                        "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
-                        "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-                        "fecha_on": "2025-08-27T01:04:09.702",
-                        "key_servicio": "1427e867-c4f7-4602-a1aa-5deabf2d0372",
-                        "key": "8bd09dad-9edd-49d7-a5f9-98b70c17688f",
-                        "observacion": null
-                    },
-                    "duracion_medida": "",
-                    "precio_venta_moneda": "60",
-                    "tipo_producto": {
-                        "descripcion": "Leche",
-                        "estado": 1,
-                        "tipo": "inventario",
-                        "key_cuenta_contable_ganancia": "fefe197b-e828-4218-b9e2-ac87cec6e025",
-                        "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
-                        "key_cuenta_contable_depreciacion_gasto": null,
-                        "unidad_medida_facturacion": "1",
-                        "color": "",
-                        "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-                        "fecha_on": "2025-11-22T04:46:41.135",
-                        "codigo_facturacion": "62162",
-                        "key_cuenta_contable": "9b125901-3aea-4506-bd42-d168c90996fa",
-                        "key_cuenta_contable_depreciacion_activo": null,
-                        "vida_util": null,
-                        "key_servicio": "1427e867-c4f7-4602-a1aa-5deabf2d0372",
-                        "key": "3974ba6b-cb10-4ab2-923b-2ceba12f58ce",
-                        "observacion": "dgdfg",
-                        "key_cuenta_contable_costo": "77af740c-8cf7-4e43-9b99-da9d77ce42ee"
-                    },
-                    "duracion": 0,
-                    "stock_padres": null,
-                    "cantidad_suscriptores": 0,
-                    "stock": 5.5,
-                    "barcode": "4535435345",
-                    "key": "0298d0bc-6f51-40ee-9fb5-ad0c1370f932",
-                    "observacion": null,
-                    "compra_moneda": {
-                        "descripcion": "USDC",
-                        "estado": 1,
-                        "tipo": "",
-                        "key_usuario": "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
-                        "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-                        "fecha_on": "2026-01-05T22:28:09.33",
-                        "tipo_cambio": 10,
-                        "key": "86726459-424e-425f-99e6-ba9c2ebaeb5d",
-                        "observacion": "USDC"
-                    },
-                    "venta_moneda": {
-                        "descripcion": "USDC",
-                        "estado": 1,
-                        "tipo": "",
-                        "key_usuario": "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
-                        "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-                        "fecha_on": "2026-01-05T22:28:09.33",
-                        "tipo_cambio": 10,
-                        "key": "86726459-424e-425f-99e6-ba9c2ebaeb5d",
-                        "observacion": "USDC"
-                    },
-                    "monedaSymbol": "BOB"
-                };
-
-                MDL.carrito.agregarItemAlCarritoDeVentas({
-                    modelo: latencia,
-                    cantidad: 1,
-                    precio: latencia.precio_venta
-                })
-
-                console.clear();
-                console.log("%c" + "ventas", `color: #2ECC40; font-weight: bold;`);
-                console.log("%c" + JSON.stringify(latencia, null, 2), "color: #2ECC40; font-weight: bold;");
-
             }}>
                 <SView height={15} width={15}  >
                     <SIconApp name="ventaCarro" fill={STheme.color.text} />
