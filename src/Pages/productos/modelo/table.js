@@ -369,19 +369,18 @@ export default class table extends Component {
                         srcPreview={SSocket.api.inventario + "modelo/" + e.row.key + "?date=" + this.state.time}
                     />}
                 />
-                <DinamicTable.Col key={"marca"} label='Marca' width={130} data={(e) => e.row?.marca?.descripcion}
-                    textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
+
+                <DinamicTable.Col key={"marca"} label='Marca' width={130} data={(e) => e.row?.marca?.descripcion} wrap textStyle={{ fontSize: 10, color: STheme.color.lightGray, }}
                     customComponent={e => <>
                         {(e.row.key_marca) ?
                             <SView col={"xs-12"} center row onPress={() => {
+                                // const marcaa = { ...e.row?.marca, quitar: true, key_modelo: e.row?.key };
                                 PopupAgregarMarca.open({
-
-                                    editObject: { ...e.row?.marca, quitar: true },
+                                    editObject: { ...e.row?.marca, quitar: true, key_modelo: e.row?.key  },
+                                    // TODO
                                     // tiene que ir todo el e.row
                                     // para que edirte el
                                     // MDL.inventario.saveModelo(modelo).then(async (resp: any) => {
-
-                                    // editObject: e.row?.marca,
                                     onSuccess: () => {
                                         if (this.table) {
                                             this.table.loadData();
@@ -391,7 +390,10 @@ export default class table extends Component {
                                 })
                             }}>
                                 <SView style={{ width: 25, height: 25, overflow: "hidden", }}>
-                                    <ImageLabel {...e} src={SSocket.api.inventario + "marca/.128_" + e.row.key_marca + "?date=" + this.state.time} style={{ resizeMode: "cover" }} />
+                                    <ImageLabel
+                                        {...e}
+                                        src={SSocket.api.inventario + "marca/.128_" + e.row.key_marca + "?date=" + this.state.time}
+                                        style={{ resizeMode: "cover" }} />
                                 </SView>
                                 <SView width={8} />
                                 <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.marca?.descripcion ? e.row?.marca?.descripcion : ""}</SText>
