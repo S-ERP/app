@@ -90,7 +90,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             });
         }
     }
-    handleOnPress2 = async () => {
+    handleOnPress2 = async (saveRecurrente: boolean) => {
         try {
 
             // const monedas = await MDL.empresa.getMonedas();
@@ -112,7 +112,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 montoMaximo: total,
                 key_moneda: MDL.carrito.selectedMoneda.key,
 
-                onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda),
+                onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda, saveRecurrente),
                 solo_para_caja: false,
                 compra: true
 
@@ -128,7 +128,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             });
         }
     }
-    handleSubmit = async (tipos_pago: any, key_moneda: string) => {
+    handleSubmit = async (tipos_pago: any, key_moneda: string, saveRecurrente?: boolean) => {
         try {
             const proveedor = this.proveedor;
             const keyPago = Object.values(tipos_pago)[0]?.tipo_pago?.key;
@@ -164,7 +164,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     "moneda": key_moneda
                 }
             })
-            const data = {
+            const data: any = {
                 "descripcion": descripcionVenta,
                 "observacion": "Observacion compras",
                 "key_proveedor": this.proveedor?.key,
@@ -182,27 +182,58 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 title: "Cargando",
                 type: "loading",
             });
-            const compraResp = await SSocket.sendPromise({
-                "service": "caja",
-                "component": "caja_detalle",
-                "type": "compra",
-                "estado": "cargando",
-                "data": data
-            })
-            SelectTipoPago.closePopup();
-            SNotification.remove("compra_rapida");
-            SPopup.close("PopupCarritoConfirmar");
-            SPopup.close("PopupCarrito");
-            MDL.carrito.limpiarCarritoCompras();
-            MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
-            SPopup.confirm({
-                title: "¡Compras realizada con éxito!",
-                message: "¿Deseas ir a la compra ahora?",
-                onPress: () => {
-                    SNavigation.navigate("/venta/profile2", { pk: compraResp?.data?.key_compra_venta });
-                }
-            });
-            MDL.caja.dispatchEvent({ type: "onDetalleChange" });
+            if (saveRecurrente) {
+                console.log("entro a recurrente", data)
+                // data.tipo = "compra";
+                const compraResp = await SSocket.sendPromise({
+                    "service": "caja",
+                    "component": "recurrente",
+                    "type": "registro",
+                    "estado": "cargando",
+                    "data": {
+                        "key_empresa": MDL.empresa.select?.key,
+                        "key_usuario": MDL.usuario.session?.key,
+                        "data": {
+                            "service": "caja",
+                            "component": "caja_detalle",
+                            "type": "compra",
+                            "estado": "cargando",
+                            "data": data
+                        }
+                    }
+                })
+                SelectTipoPago.closePopup();
+                SNotification.remove("compra_rapida");
+
+                // cuando es recurrente
+            } else {
+                // cuando es compra
+
+                const compraResp = await SSocket.sendPromise({
+                    "service": "caja",
+                    "component": "caja_detalle",
+                    "type": "compra",
+                    "estado": "cargando",
+                    "data": data
+                })
+                MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
+                SelectTipoPago.closePopup();
+                SNotification.remove("compra_rapida");
+                SPopup.close("PopupCarritoConfirmar");
+                SPopup.close("PopupCarrito");
+                MDL.carrito.limpiarCarritoCompras();
+                SPopup.confirm({
+                    title: "¡Compras realizada con éxito!",
+                    message: "¿Deseas ir a la compra ahora?",
+                    onPress: () => {
+                        SNavigation.navigate("/venta/profile2", { pk: compraResp?.data?.key_compra_venta });
+                    }
+                });
+                MDL.caja.dispatchEvent({ type: "onDetalleChange" });
+
+            }
+
+
         } catch (error: any) {
             console.error("Error al realizar la compra:", error);
             SNotification.send({
@@ -323,25 +354,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             <SHr h={1} color={STheme.color.card} />
             <SView col={"xs-12"} row center height={40}>
                 <SView padding={8} card onPress={() => {
-                    if (this.state.factura) {
-                        if ((this.proveedor.razon_social != this.inputRazonSocial?.getValue()) || (this.proveedor.nit != this.inputNit?.getValue())) {
-                            this.proveedor.razon_social = this.inputRazonSocial.getValue();
-                            this.proveedor.nit = this.inputNit.getValue();
-                            MDL.crm.cliente.editar(this.proveedor).then((resp: any) => {
-                            }).catch((e: any) => {
-                                console.error("Error al guardar el cliente:", e);
-                                SNotification.send({
-                                    title: "Error",
-                                    body: "No se pudo guardar el cliente.",
-                                    time: 3000,
-                                    color: STheme.color.danger,
-                                });
-                            })
-                        }
-                    }
-                    this.handleOnPress();
+                    this.handleOnPress2(true);
+                    // this.handleOnPress();
                 }}>
-                    <SText>{"Confirmar la compra"}</SText>
+                    <SText>{"Guardar Recurrente"}</SText>
                 </SView>
                 <SView width={5} />
                 <SView padding={8} card onPress={() => {
@@ -361,7 +377,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             })
                         }
                     }
-                    this.handleOnPress2();
+                    this.handleOnPress2(false);
                 }}>
                     <SText>{"Confirmar 2"}</SText>
                 </SView>
