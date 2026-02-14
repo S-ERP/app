@@ -1,4 +1,4 @@
-import React, { Component, createRef, useState } from 'react';
+import React, { Component, createRef, useRef, useState } from 'react';
 import { UIManager, findNodeHandle } from 'react-native';
 import { SHr, SInput, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { FlatList, ScrollView, Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -11,6 +11,7 @@ import SIconApp from '../../Assets/SIconApp';
 import FloatMenu from '../../Components/FloatMenu';
 import FloatButtom from '../../Components/FloatButtom';
 import all from '../usuario/all';
+import InputSelector from '../../Components/Selectores/InputSelector';
 
 // ✅ STAGE CONVERTIDO A CLASE CON CALLBACK PARA PADRE
 // const [clientes_, setClientes_] = useState([]);
@@ -134,10 +135,8 @@ class Stage extends Component {
     };
 
     render() {
-        const { stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard, cardRefs, onDeleteStage, onAddCliente, onRemoveCliente, onLoadData, allClientes ,onNuevoCliente } = this.props;
-        console.log("sddd", this.props)
+        const { stage, cards, onCardDrop, onDragStart, onDragMove, draggingCard, cardRefs, onDeleteStage, onAddCliente, onRemoveCliente, onLoadData, allClientes, onNuevoCliente } = this.props;
         const isSelected = this.state.selectedStageKey === stage.key;
-        console.log("ALL", allClientes)
         const clientesFiltrados = allClientes.filter(
             c => !cards.some(cardItem => cardItem.key === c.key)
         );
@@ -230,7 +229,12 @@ const AgregarContacto = ({ estado, clientes, stage, onAddCliente, onNuevoCliente
     // let cliente_texto = null;
     const [key_cliente, setKey_cliente] = useState(null);
     const [cliente_texto, setCliente_texto] = useState("");
+
+    //  const { tipo_cuentas, selectedKey } = this.state;
+    // const inputRef = useRef(null);
     if (estado) {
+        console.log("TEXTOOOO ", cliente_texto)
+        console.log("key_cliente: ", key_cliente)
         return (
             <SView row col={"xs-12"} style={{
                 marginTop: 5,
@@ -240,120 +244,140 @@ const AgregarContacto = ({ estado, clientes, stage, onAddCliente, onNuevoCliente
                 backgroundColor: STheme.color.card,
                 marginBottom: 5,
                 borderRadius: 4,
-            }} >
-                <SInput
-                    // ref={ref => this.inputCliente = ref}
-                    icon={<SText color={STheme.color.lightGray} bold>{"Contacto:"}</SText>}
-                    placeholder={"Escriba el nombre del contacto"}
-                    height={30}
-                    type="select2"
-                    options={clientes.map(c => (c?.nombres || "").trim()).filter(a => !!a)}
+                position: "relative",
+                // zIndex: 999
+            }}
+                onPress={() => {
+                    SPopup.close("popup_menu_alvaro")
+                }}
+            >
+
+                <InputSelector
+                    type="custom"
+                    customStyle="erp"
+                    placeholder={"Escribe nombre del contacto"}
+                    placeholderTextColor={STheme.color.danger}
+                    selectedValue={key_cliente}
+                    // value={!cliente_texto ? clientes.find(c => c.key === key_cliente)?.nombres : cliente_texto}
+                    // value={key_cliente}
+                    // defaultValue={key_cliente}
+                    // value={cliente_texto} // 👈 CONTROLADO POR TEXTO PARA PERMITIR ESCRIBIR NUEVO NOMBRE
+                    // value="323c98c4-3e27-4bb3-b4f0-b38a4227e016"
+                    defaultValue='Escribe nombre del contacto'
+                    style={{
+                        fontSize: 13, color: STheme.color.text,  backgroundColor: STheme.color.card,
+                        opacity: 0.8,
+                        padding: 10
+
+                    }}
+                    options={clientes.map(o => ({
+                        label: o.nombres,
+                        value: o.key,
+                        data: o
+                    }))}
+                    onSelect={(selectedItem) => {
+                        // solo actualizar si existe
+                        if (selectedItem?.data) {
+
+                            setProveedor(selectedItem.data);
+                            setVerBoton(true);
+                            setKey_cliente(selectedItem.value);
+                            setCliente_texto(selectedItem.data.nombres);
+                            console.log("ENCONTRADO, HABILITAR BOTÓN", selectedItem.data)
+                        } else {
+
+                            setProveedor(null);
+                            setKey_cliente(null);
+                            console.log("NO ENCONTRADO, HABILITAR CREACIÓN")
+                        }
+                    }}
                     onChangeText={(text) => {
                         const t = (text || "").trim();
                         setCliente_texto(t);
-                        // buscar match exacto (case-insensitive)
+
+                        const encontrados = (clientes || []).filter(c =>
+                            (c?.nombres || "").toLowerCase().includes(t)
+                        );
+
+
+
                         const encontrado = (clientes || []).find(c =>
                             ((c?.nombres || "").trim().toLowerCase() === t.toLowerCase())
                         );
-
+                        console.log("encontrado", encontrado)
                         if (encontrado) {
-                            // ✅ existe: setea proveedor y limpia "nuevo"
                             setProveedor(encontrado);
                             setVerBoton(true);
                             setKey_cliente(encontrado.key);
 
                         } else {
-                            // ✅ no existe: habilita +
-                            // proveedor = null;
+
                             setProveedor(null);
-                            // setVerBoton(false);
                             setKey_cliente(null);
                         }
                     }}
-
-                    iconR={
-                        (!key_cliente && !!cliente_texto) ? (
-                            <SView
-                                center
-                                style={{
-                                    width: 28,
-                                    height: 28,
-                                    borderRadius: 6,
-                                    backgroundColor: STheme.color.card,
-                                }}
-                                onPress={() => {
-                                    const nombre = (cliente_texto || "").trim();
-                                    if (!nombre) return;
-                                    MDL.crm.cliente.registrar({
-                                        razon_social: nombre,
-                                        nombres: nombre,
-                                        key_empresa: MDL.empresa.select?.key,
-                                    }).then((resp) => {
-                                        setProveedor(resp);
-                                        // setVerBoton(true);
-                                        setVerBoton(true);
-                                        setKey_cliente(resp.key);
-                                        setCliente_texto(resp?.razon_social || resp?.nombres || nombre);
-                                        onNuevoCliente(resp);
-                                        // clientes.push(resp);
-
-                                        // this.setState(prev => ({
-                                        //     clientes: [...(prev.clientes || []), resp],
-                                        //     key_cliente: resp.key,
-                                        //     cliente_texto: (resp?.razon_social || resp?.nombres || nombre),
-                                        // }), () => {
-                                        //     this.inputCliente?.setValue?.(resp?.razon_social || resp?.nombres || nombre);
-                                        // });
-                                        // this.inputRazonSocial?.setValue?.(resp?.razon_social || resp?.nombres || nombre);
-                                        // this.inputNit?.setValue?.(resp?.nit || "");
-                                        SNotification.send({
-                                            title: "Cliente creado",
-                                            body: "Se registró el cliente correctamente.",
-                                            time: 2500,
-                                            color: STheme.color.success,
-                                        });
-                                    }).catch((err) => {
-                                        console.error("Error al registrar cliente:", err);
-                                        SNotification.send({
-                                            title: "Error, no se pudo crear el cliente",
-                                            body: err.error,
-                                            color: STheme.color.error,
-                                            time: 5000,
-                                        });
-                                    });
-                                }}
-                            >
-                                <SIconApp name="Add" />
-                            </SView>
-                        ) : null
-                        // (
-                        //     <SView
-                        //         center
-                        //         style={{
-                        //             width: 28,
-                        //             height: 28,
-                        //             borderRadius: 6,
-                        //             backgroundColor: STheme.color.card,
-                        //         }}
-                        //         onPress={() => {
-                        //             SNavigation.navigate("/cliente", {
-                        //                 onSelect: (cliente) => {
-                        //                     setProveedor(cliente);
-                        //                     // this.proveedor = cliente;
-                        //                     setVerBoton(true);
-                        //                     setKey_cliente(cliente.key);
-                        //                     setCliente_texto(cliente?.razon_social || cliente?.nombres || "");
-                        //                     SNavigation.goBack();
-                        //                 }
-                        //             });
-                        //         }}
-                        //     >
-                        //         <SIconApp name="Search" />
-                        //     </SView>
-                        // )
-                    }
-
                 />
+
+                {(!key_cliente && !!cliente_texto) ? (
+                    <SView
+                        center
+                        // pointerEvents="box-only"
+                        style={{
+                            width: 28,
+                            height: 28,
+                            borderRadius: 6,
+                            marginTop:4,
+                            backgroundColor: STheme.color.card,
+
+                        }}
+                        onPress={() => {
+
+
+                            const nombre = (cliente_texto || "").trim();
+                            if (!nombre) return;
+                            clientes.push({
+                                key: "nuevo_" + Date.now(),
+                                nombres: nombre
+                            });
+
+                            console.log("CLIENTES DESPUÉS DE AGREGAR: ", clientes)
+
+                            MDL.crm.cliente.registrar({
+                                razon_social: nombre,
+                                nombres: nombre,
+                                key_empresa: MDL.empresa.select?.key,
+                            }).then((resp) => {
+
+                                setProveedor(resp);
+                                // setVerBoton(true);
+                                setVerBoton(true);
+                                setKey_cliente(resp.key);
+                                setCliente_texto(resp?.razon_social || resp?.nombres || nombre);
+                                onNuevoCliente(resp);
+
+                                SNotification.send({
+                                    title: "Cliente creado",
+                                    body: "Se registró el cliente correctamente.",
+                                    time: 2500,
+                                    color: STheme.color.success,
+                                });
+
+                            }).catch((err) => {
+                                console.error("Error al registrar cliente:", err);
+                                SNotification.send({
+                                    title: "Error, no se pudo crear el cliente",
+                                    body: err.error,
+                                    color: STheme.color.error,
+                                    time: 5000,
+                                });
+                            });
+                        }}
+                    >
+                        <SIconApp name="Add" />
+                    </SView>
+                ) : null}
+
+                {/* <SHr h={8} /> */}
 
 
                 {verBoton && (<SView col={"xs-12"} style={{ alignItems: "flex-end" }}>
@@ -377,8 +401,8 @@ const AgregarContacto = ({ estado, clientes, stage, onAddCliente, onNuevoCliente
                                 });
                                 setProveedor(null);
                                 setVerBoton(false);
-                                setCliente_texto("");
-                                setKey_cliente(null);
+                                // setCliente_texto("");
+                                // setKey_cliente(null);
                             }).catch(err => {
                                 SNotification.send({
                                     title: "❌ Error",
