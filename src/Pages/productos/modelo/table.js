@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component,createRef } from 'react';
 import { SHr, SIcon, SImage, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../../Config';
@@ -32,7 +32,9 @@ export default class table extends Component {
             selectedStock: null,
             selectedTipoCuenta: null,
             selectedTipoModelo: null,
+
         };
+        this.selectorRef = createRef();
         this.modelos = null;
     }
     componentDidMount() {
