@@ -28,6 +28,7 @@ export default class pizarra extends React.Component {
         initialsPositions: {},
     }
     selectedMoneda: null;
+    monedas: [];
     componentDidMount() {
         this.loadData();
         // MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this))
@@ -260,6 +261,9 @@ export default class pizarra extends React.Component {
                     || this.monedas.find(m => m.tipo === "base") || {},
                 arrIngredientes: modelo_ingredientes.map(a => a.key_ingrediente),
             };
+            if (!this.monedas || this.monedas.length === 0) return null;
+
+
 
             return (
                 <PizarraNodo
