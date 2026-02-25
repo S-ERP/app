@@ -21,39 +21,15 @@ export default class index extends Component {
             data: props.data,
             miSucursal: null
         };
-        this.popupAbierto = false;
     }
     async componentDidMount() {
         let sucursal = await MDL.empresa.getAllSucursales()
         let miSucursal = sucursal.find(s => s.key == this.props.data.key_sucursal)
         this.setState({ miSucursal })
-        // if (this.props.data) {
-        //     console.log("DATAP1", this.props.data);
-        //     PopupSuscriptor.open({ data: this.props.data });
-        // }
-        // 👇 abrir con el mismo tipo de data que usa Detalle
-        const primerDetalle = this.props.data?.detalle?.[0];
-
-        if (primerDetalle) {
-            console.log("DATA", this.props.data);
-            console.log("DATAP1", primerDetalle);
-            //PopupSuscriptor.open({ data: primerDetalle });
-        }
     }
-    // componentDidUpdate(prevProps) {
-    //     if (prevProps.data !== this.props.data) {
-    //         this.setState({ data: this.props.data });
-    //     }
-    //     if (!this.popupAbierto && this.props.data) {
-    //         this.popupAbierto = true;
-    //         PopupSuscriptor.open({ data: this.props.data });
-    //     }
-    // }
     componentDidUpdate(prevProps) {
         if (prevProps.data !== this.props.data) {
             this.setState({ data: this.props.data });
-            console.log("DATAP1", this.props.data);
-            PopupSuscriptor.open({ data: this.props.data });
         }
     }
     openPdfFromBase64(base64) {
