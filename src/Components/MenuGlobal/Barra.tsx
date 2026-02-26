@@ -92,7 +92,7 @@ export default class Barra extends React.Component {
                         {/* </Page> */}
                         {/* <Page label={"Configuracion"} icon={<SIconApp name="Ajustes" fill={STheme.color.text} />} > */}
                         <Page label={"Plan de cuentas"} url={"/conta/cuentas"} permiso="ver" />
-                        <Page label={"Centros de costos"} url={"/conta/centro_costo"} permiso_url="/conta/cuentas" permiso="ver" />
+                        <Page label={"Centros de costos"} url={"/conta/centro_costo2"} permiso_url="/conta/cuentas" permiso="ver" />
                         <Page label={"Diarios"} url={"/conta/diario"} permiso_url="/conta/cuentas" permiso="ver" />
                         {/* <Page label={"Dimensiones"} url={"/conta/dimension"} permiso="ver" /> */}
                         <Page label={"Crear Asiento"} url={"/contabilidad/asiento"} permiso="ver" />
