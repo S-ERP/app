@@ -4,6 +4,7 @@ import MDL from "../../MDL";
 import FloatMenu from "../../Components/FloatMenu";
 import SIconApp from "../../Assets/SIconApp";
 import { Container } from "../../Components";
+import FormCentroCostoTipo from "./Components/FormCentroCostoTipo";
 import FormCentroCosto from "./Components/FormCentroCosto";
 
 export default class centro_costo extends React.Component {
@@ -31,6 +32,7 @@ export default class centro_costo extends React.Component {
             <Container >
                 <SView padding={16} card col={"xs-12"}>
                     <SInput
+                        required={"true"}
                         ref={ref => this.ref_tipo = ref}
                         style={{ maxWidth: 500 }}
                         col={"xs-12"}
@@ -39,6 +41,12 @@ export default class centro_costo extends React.Component {
                         placeholder={"Escribe el tipo"}
                         iconR={<SView flex center onPress={() => {
                             const value = this.ref_tipo.getValue();
+                            if (!value) return SNotification.send({
+                                key: "centro_costo_tipo_error",
+                                title: "El nombre del tipo de centro de costo es requerido",
+                                color: STheme.color.danger,
+                                time: 5000,
+                            });
                             console.log(value);
 
                             MDL.contabilidad.centro_costo_tipo.registrar({
@@ -65,9 +73,9 @@ export default class centro_costo extends React.Component {
                     }}>
                         <SView col={"xs-12"} flex style={{ alignItems: "flex-end" }}>
                             <SView row onPress={() => {
-                                this.ref_tipo.setValue(tipo.descripcion);
-                                this.ref_tipo.focus();
-                                FormCentroCosto.open({
+                                // this.ref_tipo.setValue(tipo.descripcion);
+                                // this.ref_tipo.focus();
+                                FormCentroCostoTipo.open({
                                     defaultData: tipo,
                                     onActualizar: (nuevoDato) => {
                                         this.loadData();
@@ -117,29 +125,57 @@ export default class centro_costo extends React.Component {
                         <SHr />
                         <SView col={"xs-12"} row padding={10} style={{
                             backgroundColor: STheme.color.gray + "60"
-                        }}>
-                            <SText fontSize={17}>{"+"}</SText>
+                        }} >
+                            {/* <SText fontSize={17}>{"-"}</SText> */}
+                            <SView width={8} height={8} center style={{ backgroundColor: STheme.color.lightGray, borderRadius: 50, top: 8 }} />
                             <SView width={8} />
-                            <SText bold fontSize={18} onPress={(e) => {
-                                FloatMenu.open({
-                                    e: e,
-                                    options: [
-                                        {
-                                            icon: <SIconApp name="Delete" />,
-                                            label: "Eliminar",
-                                            onPress: () => {
-                                                MDL.contabilidad.centro_costo_tipo.eliminar({
-                                                    key: tipo.key
-                                                }).then(e => {
-                                                    this.loadData();
-                                                }).catch(e => {
+                            <SText bold fontSize={18}
+                            // onPress={(e) => {
+                            //     FloatMenu.open({
+                            //         e: e,
+                            //         options: [
+                            //             {
+                            //                 icon: <SIconApp name="Delete" />,
+                            //                 label: "Eliminar",
+                            //                 onPress: () => {
+                            //                     SPopup.confirm({
+                            //                         title: "¿Eliminar el centro de costo?",
+                            //                         message: "Se eliminará el centro de costo seleccionado",
+                            //                         onPress: () => {
 
-                                                })
-                                            }
-                                        }
-                                    ]
-                                })
-                            }}>{tipo.descripcion}</SText>
+                            //                             MDL.contabilidad.centro_costo_tipo.eliminar({
+                            //                                 key: tipo.key
+                            //                             }).then(e => {
+                            //                                 SNotification.send({
+                            //                                     key: "centro_costo_tipo_eliminado",
+                            //                                     title: "Tipo de centro de costo eliminado",
+                            //                                     color: STheme.color.success,
+                            //                                     time: 5000,
+                            //                                 })
+                            //                                 this.loadData();
+                            //                             }).catch(e => {
+                            //                                 SNotification.send({
+                            //                                     key: "centro_costo_tipo_error",
+                            //                                     title: "Error al eliminar el centro de costo",
+                            //                                     color: STheme.color.danger,
+                            //                                     time: 5000,
+                            //                                 })
+
+                            //                             })
+                            //                         }
+                            //                     })
+                            //                     // MDL.contabilidad.centro_costo_tipo.eliminar({
+                            //                     //     key: tipo.key
+                            //                     // }).then(e => {
+                            //                     //     this.loadData();
+                            //                     // }).catch(e => {
+                            //                     // })
+                            //                 }
+                            //             }
+                            //         ]
+                            //     })
+                            // }}
+                            >{tipo.descripcion}</SText>
                         </SView>
                         <SHr />
                         <SView style={{
@@ -147,38 +183,75 @@ export default class centro_costo extends React.Component {
                             marginBottom: 10,
                         }}>
                             {tipo.centros.map(cc => {
-                                return <SView row style={{
+                                return <SView col={"xs-12"} row style={{
                                     borderBottomWidth: 0.5,
                                     borderBottomColor: STheme.color.lightGray + "50",
                                     padding: 8
                                 }}>
-                                    <SText fontSize={17}>{"-"}</SText>
+                                    <SIconApp name="vineta1" width={14} height={12} fill={STheme.color.lightGray} style={{ marginTop: 4 }} />
+                                    {/* <SText fontSize={17}>{"-"}</SText> */}
                                     <SView width={8} />
                                     <SText fontSize={16} onPress={(e) => {
                                         FloatMenu.open({
                                             e: e,
                                             options: [
                                                 {
-                                                    icon: <SIconApp name="Eyes" />,
-                                                    label: "Seleccionar",
+                                                    icon: <SIconApp name="Edit" />,
+                                                    label: "Editar",
                                                     onPress: () => {
-                                                        if (this.onSelect) {
-                                                            this.onSelect(cc);
-                                                            SNavigation.goBack();
-                                                        }
+                                                        FormCentroCosto.open({
+                                                            defaultData: cc,
+                                                            onActualizar: (nuevoDato) => {
+                                                                this.loadData();
+                                                                console.log("Centro de costo actualizado:", nuevoDato);
+                                                            }
+                                                        });
+
+                                                        // if (this.onSelect) {
+                                                        //     this.onSelect(cc);
+                                                        //     SNavigation.goBack();
+                                                        // }
                                                     }
                                                 },
                                                 {
                                                     icon: <SIconApp name="Delete" />,
                                                     label: "Eliminar",
                                                     onPress: () => {
-                                                        MDL.contabilidad.centro_costo.eliminar({
-                                                            key: cc.key
-                                                        }).then(e => {
-                                                            this.loadData();
-                                                        }).catch(e => {
-
+                                                        SPopup.confirm({
+                                                            title: "¿Eliminar el centro de costo?",
+                                                            message: "Se eliminará el centro de costo seleccionado",
+                                                            onPress: () => {
+                                                                MDL.contabilidad.centro_costo.eliminar({
+                                                                    key: cc.key
+                                                                }).then(e => {
+                                                                    SNotification.send({
+                                                                        key: "centro_costo_eliminado",
+                                                                        title: "Centro de costo eliminado",
+                                                                        color: STheme.color.success,
+                                                                        time: 5000,
+                                                                    })
+                                                                    this.loadData();
+                                                                }).catch(e => {
+                                                                    SNotification.send({
+                                                                        key: "centro_costo_error",
+                                                                        title: "Error al eliminar el centro de costo",
+                                                                        color: STheme.color.danger,
+                                                                        time: 5000,
+                                                                    })
+                                                                })
+                                                            }
                                                         })
+
+
+
+
+                                                        // MDL.contabilidad.centro_costo.eliminar({
+                                                        //     key: cc.key
+                                                        // }).then(e => {
+                                                        //     this.loadData();
+                                                        // }).catch(e => {
+
+                                                        // })
                                                     }
                                                 }
                                             ]
@@ -201,6 +274,12 @@ export default class centro_costo extends React.Component {
                                 placeholder={"Escribe el centro de costo"}
                                 iconR={<SView flex center onPress={() => {
                                     const value = this._ref[tipo.key].getValue();
+                                    if (!value) return SNotification.send({
+                                        key: "centro_costo_error",
+                                        title: "El nombre del centro de costo es requerido",
+                                        color: STheme.color.danger,
+                                        time: 5000,
+                                    });
                                     // console.log(value);
                                     MDL.contabilidad.centro_costo.registrar({
                                         descripcion: value,

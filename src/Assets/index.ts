@@ -308,6 +308,7 @@ import ventaCarro, { ReactComponent as ventaCarroW, } from "./svg/ventaCarro.svg
 import iconPdf, { ReactComponent as iconPdfW, } from "./svg/iconPdf.svg";
 import iconDescarga, { ReactComponent as iconDescargaW, } from "./svg/iconDescarga.svg";
 import iconDescarga2, { ReactComponent as iconDescarga2W, } from "./svg/iconDescarga2.svg";
+import vineta1, { ReactComponent as vineta1W, } from "./svg/vineta1.svg";
 
 
 
@@ -502,6 +503,7 @@ export const svg = {
   iconPdf: { Native: iconPdf, Web: iconPdfW },
   iconDescarga: { Native: iconDescarga, Web: iconDescargaW },
   iconDescarga2: { Native: iconDescarga2, Web: iconDescarga2W },
+  vineta1: { Native: vineta1, Web: vineta1W },
 
 
 

@@ -10,21 +10,20 @@ import PButtom from '../../../Components/PButtom';
 // import TextAreaPopup from '../../../Components/QueryTool/TextAreaPopup';
 import TextAreaPopupOpenIcon from '../../../Components/QueryTool/TextAreaPopupOpenIcon';
 import SelectorCuentaContable from '../../../Components/Selectores/SelectorCuentaContable';
-import FormCentroCostoTipo from './FormCentroCostoTipo';
 
 
-type FormCentroCostoType = {
+type FormCentroCostoTipoType = {
     onRegister: (e: any) => void,
     onActualizar: (e: any) => void,
     onCancel?: () => void,
 }
 
-export default class FormCentroCosto extends Component<FormCentroCostoType & { defaultData?: any }> {
-    static open(props: FormCentroCostoType) {
+export default class FormCentroCostoTipo extends Component<FormCentroCostoTipoType & { defaultData?: any }> {
+    static open(props: FormCentroCostoTipoType) {
         SPopup.open({
             key: "ppupregistro",
             content: <SView backgroundColor={STheme.color.background} style={{ borderRadius: 8, maxWidth: 300 }} padding={16} withoutFeedback col={"xs-11"}>
-                <FormCentroCosto {...props} onRegister={(e) => {
+                <FormCentroCostoTipo {...props} onRegister={(e) => {
                     SPopup.close("ppupregistro")
                     if (props.onRegister) props.onRegister(e)
                 }}
@@ -65,7 +64,7 @@ export default class FormCentroCosto extends Component<FormCentroCostoType & { d
                 onSubmit={(e: any) => {
 
                     const data = { ...defaultData, ...e };
-                    const prom = data?.key ? MDL.contabilidad.centro_costo.editar(data) : MDL.contabilidad.centro_costo.registrar(data);
+                    const prom = data?.key ? MDL.contabilidad.centro_costo_tipo.editar(data) : MDL.contabilidad.centro_costo_tipo.registrar(data);
 
                     SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
                     prom.then((res) => {
