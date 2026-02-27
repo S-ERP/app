@@ -37,8 +37,10 @@ export default class tipo_pago extends Component {
                     const cuenta_balance = balance.find(bc => bc.codigo == a.cuenta.codigo);
                     if (cuenta_balance) {
                         a.cuenta.saldo = cuenta_balance.debe - cuenta_balance.haber;
+                        a.cuenta.saldo_me = cuenta_balance.debe_me - cuenta_balance.haber_me;
                     } else {
                         a.cuenta.saldo = 0;
+                        a.cuenta.saldo_me = 0;
                     }
                 }
                 a.tipo_pago = tipo_pago[a.key_tipo_pago]
@@ -280,6 +282,11 @@ export default class tipo_pago extends Component {
                     }}
                 /> */}
                 <DinamicTable.Col key={"saldo"} width={60} label='saldo' data={e => e.row?.cuenta?.saldo}
+                    textStyle={{
+                        fontSize: 12,
+                        textAlign: "center"
+                    }} />
+                <DinamicTable.Col key={"saldo_me"} width={60} label='saldo ME' data={e => e.row?.cuenta?.saldo_me}
                     textStyle={{
                         fontSize: 12,
                         textAlign: "center"
