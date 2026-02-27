@@ -172,6 +172,12 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             label: "Habilitar en Compras?",
                             defaultValue: this.props.editObject?.habilita_compra,
                         },
+                        "key_pasarela_empresa": {
+                            col: "xs-5.5 sm-5",
+                            // type: "checkBox",
+                            label: "Key Pasarela empresa",
+                            defaultValue: this.props.editObject?.key_pasarela_empresa,
+                        },
                     }}
                     onSubmit={(data: any) => {
                         data.key = this.props.editObject?.key;

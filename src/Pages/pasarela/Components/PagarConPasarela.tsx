@@ -51,6 +51,8 @@ export default class PagarConPasarela extends Component<Props> {
         })
     }
 
+
+
     render() {
         let TIPOPASARELA = null
         if (this.state?.pasarela_empresa?.key_pasarela) {
@@ -59,8 +61,7 @@ export default class PagarConPasarela extends Component<Props> {
         }
         return <SView col={"xs-12"} center >
             {!this.state.pasarela_empresa && <SText>{"Cargando pasarela..."}</SText>}
-            {this.state.pasarela_empresa && <TIPOPASARELA {...this.props} />}
-
+            {this.state.pasarela_empresa && <TIPOPASARELA {...this.props} {...this.state} />}
         </SView>
     }
 }

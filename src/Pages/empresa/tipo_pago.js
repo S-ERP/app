@@ -57,8 +57,8 @@ export default class tipo_pago extends Component {
                         // })
                     })
                 })
-                if (a.key_pasarela_empresa) {
-                    // a.pasarela = pasarela_empresa.find(pe => pe.key == a?.key_pasarela_empresa);
+                if (a.key_pasarela_empresa && pasarela_empresa) {
+                    a.pasarela = pasarela_empresa.find(pe => pe.key == a?.key_pasarela_empresa);
                 }
                 if (a.key_moneda) {
                     a.moneda = empresa.monedas.find(b => b.key == a.key_moneda);
