@@ -140,7 +140,7 @@ export default class Modelo extends Component {
                                             </SView>
                                             <SView col={"xs-12"} row style={{ justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
                                                 <SView style={{ flex: 1, paddingRight: 8 }}>
-                                                    <SText fontSize={14} color={STheme.color.text} numberOfLines={1} >{producto?.descripcion} </SText>
+                                                    <SText fontSize={14} color={STheme.color.text} numberOfLines={2} >{producto?.descripcion} </SText>
                                                     <SText fontSize={10} clean color={STheme.color.lightGray} numberOfLines={1} >{producto.marca?.descripcion}, {producto.tipo_producto?.descripcion}, {producto.observacion} </SText>
                                                 </SView>
 

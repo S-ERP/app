@@ -1,8 +1,49 @@
 import React from "react";
-import { SImage, SPage, SText, STheme, SView, SGradient, SHr, SMath } from "servisofts-component";
+import { SImage, SPage, SText, STheme, SView, SGradient, SHr, SMath, SLoad } from "servisofts-component";
 import { TipoPasarelaProps } from "./index"
+import SSocket from "servisofts-socket";
+import MDL from "../../../../MDL";
 
 export default class banco_ganadero_qr extends React.Component<TipoPasarelaProps> {
+    state = {
+
+    }
+    componentDidMount(): void {
+        console.log("getQr", this.props)
+        SSocket.sendPromise({
+            component: "solicitud_qr",
+            type: "getQr",
+            estado: "cargando",
+            version: "V1",
+            key_usuario: MDL.usuario.session?.key,
+            key_empresa: MDL.empresa.select?.key,
+            monto: this.props.monto,
+            descripcion: this.props.descripcion || "Pago con QR",
+            nit: "nit",
+            razon_social: "RICARDO PAZ DEMIQUEL",
+            correos: [""],
+            tipo: "pago_caja",
+            key_bg_profile: this.props.pasarela_empresa?.params?.key_bg_profile
+        }, 2 * 60 * 1000).then(e => {
+            this.setState({ loading: false, dataqr: e.data })
+            // this.isRun = true;
+            // this.hilo()
+            // console.log(e);
+        }).catch(e => {
+            this.setState({ loading: false, error: e?.error })
+            //SPopup.alert(e?.error)
+            console.log(e?.error)
+            //SNavigation.goBack();
+            console.error(e)
+        })
+    }
+    getQr() {
+        // @ts-ignore
+        var po = this.state?.dataqr
+        if (!po) return null;
+        if (!po?.qrImage) return null;
+        return "data:image/jpeg;base64," + po?.qrImage;
+    }
     render() {
         return <SView col={"xs-12"} center padding={15}>
             <SGradient colors={["#075018", "#80BB01"]}  ></SGradient>
@@ -13,22 +54,28 @@ export default class banco_ganadero_qr extends React.Component<TipoPasarelaProps
                 }}>
                 <SView col={"xs-12"} backgroundColor={"#024C01"} height={70} width={"100%"}
                     style={{ overflow: "hidden" }}>
-                    <SImage src={require("../../../../Assets/img/bancoGanadero2.jpg")} style={{ resizeMode: "cover" }} />
+                    {/* <SImage src={require("../../../../Assets/img/bancoGanadero2.jpg")} style={{ resizeMode: "cover" }} /> */}
                 </SView>
                 <SHr />
                 <SView style={{
                     width: 250,
                     height: 250,
-                }}>
-                    <SImage src={require("../../../../Assets/img/bancoGanaderoQr.jpeg")} />
+                }} center>
+                    {!this.getQr() && <SLoad color={"#000"}/>}
+                    {this.getQr() && <SImage src={this.getQr()} height={"100%"}
+                        enablePreview
+                        style={{
+
+                        }} />
+                    }
                 </SView>
-                 <SHr />
+                <SHr />
                 <SView row>
-                    <SText color={"#80BB01"} fontSize={22} bold>Bs </SText>
-                    <SView width={5} />
-                    <SText color={STheme.color.black} fontSize={22} bold>{SMath.formatMoney(this.props.monto)}</SText>
+                    {/* <SText color={"#80BB01"} fontSize={22} bold>Bs </SText> */}
+                    {/* <SView width={5} /> */}
+                    {/* <SText color={STheme.color.black} fontSize={22} bold>{SMath.formatMoney(this.props.monto)}</SText> */}
                 </SView>
-                <SHr height={15}/>
+                <SHr height={15} />
             </SView>
         </SView>
     }

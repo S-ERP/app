@@ -129,14 +129,14 @@ export default class Cerrada extends Component {
                 <SText bold fontSize={14} flex>{this.state?.lastCaja?.usuario?.Nombres} {this.state?.lastCaja?.usuario?.Apellidos}</SText>
               </SView>
             </SView>
-            {!(!this.state?.lastCaja?.fecha_cierre && !!this.state?.lastCaja?.key) &&
+            {/* {!(!this.state?.lastCaja?.fecha_cierre && !!this.state?.lastCaja?.key) &&
               <SView style={{ ...CardStyle, }}>
                 <SText color={STheme.color.gray}>{"Monto"}</SText>
                 <SView center col={"xs-12"} flex>
                   <SText bold fontSize={18}>{SMath.formatMoney((this.state?.lastCaja?.monto_cierre ?? 0))}</SText>
                 </SView>
               </SView>
-            }
+            } */}
           </SView>
 
 

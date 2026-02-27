@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { SInput, SText, SView } from 'servisofts-component';
+import { SInput, SText, SView, SStorage } from 'servisofts-component';
 import MDL from '../../../MDL';
 import sucursal from '../../../Model/empresa/sucursal';
 
@@ -16,6 +16,8 @@ export default class InputPuntoVenta extends Component {
     getValue() {
         return this.state.select;
     }
+
+
     componentDidMount() {
         MDL.empresa.getByKeyFull().then((data) => {
             this.state.data = data;
@@ -28,9 +30,28 @@ export default class InputPuntoVenta extends Component {
                 }));
                 return a;
             });
-            this.state.select = this.state.puntos_venta[0] ?? null;
-            this.input.setValue(this.state.select?.fullName ?? "");
-            this.forceUpdate();
+            
+            // Intentar cargar la selección previa
+            SStorage.getItem("puntoVenta_selected").then((savedSelect) => {
+                if (savedSelect) {
+                    try {
+                        const savedObj = JSON.parse(savedSelect);
+                        const foundPV = this.state.puntos_venta.find(pv => pv.key === savedObj.key);
+                        this.state.select = foundPV ?? this.state.puntos_venta[0] ?? null;
+                    } catch (e) {
+                        this.state.select = this.state.puntos_venta[0] ?? null;
+                    }
+                } else {
+                    this.state.select = this.state.puntos_venta[0] ?? null;
+                }
+                
+                this.input.setValue(this.state.select?.fullName ?? "");
+                this.forceUpdate();
+            }).catch(e => {
+                this.state.select = this.state.puntos_venta[0] ?? null;
+                this.input.setValue(this.state.select?.fullName ?? "");
+                this.forceUpdate();
+            });
         }).catch(e => {
 
         })
@@ -50,6 +71,8 @@ export default class InputPuntoVenta extends Component {
                     if (obj) {
                         this.state.select = obj;
                         console.log("select to obj")
+                        // Guardar la selección en SStorage
+                        SStorage.setItem("puntoVenta_selected", JSON.stringify(obj));
                         if (this.props.onChange) this.props.onChange(this.state.select)
                         this.input.setState({ error: false })
                         this.forceUpdate();
