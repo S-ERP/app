@@ -240,7 +240,7 @@ export default class tabla extends Component {
                             </SView> : null} </>}
                 />
 
-                <DinamicTable.Col key="proveedor" label="Proveedor" width={100} data={(e) => e.row?.proveedor?.razon_social ?? ""}
+                <DinamicTable.Col key="proveedor" label="Proveedor" width={100} data={(e) => e.row?.proveedor?.razon_social ?? e.row?.proveedor?.nombres}
                     customComponent={e => <>
                         {(e.row?.proveedor?.key) ?
                             <SView col={"xs-12"} center row  >
@@ -248,7 +248,7 @@ export default class tabla extends Component {
                                     <SImage src={`${SSocket.api.root}usuario/${e.row?.proveedor?.key}`} style={{ resizeMode: "cover" }} />
                                 </SView>
                                 <SView width={5} />
-                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.proveedor?.razon_social}</SText>
+                                <SText flex numberOfLines={e.colData.wrap ? 0 : 1} style={e.textStyle}>{e.row?.proveedor?.razon_social ?? e.row?.proveedor?.nombres}</SText>
                             </SView> : null}
                     </>}
                 />

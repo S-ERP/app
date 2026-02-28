@@ -11,6 +11,7 @@ export default class root extends Component {
   }
 
   componentDidMount() {
+    MDL.caja.componentDidMount();
     MDL.caja.addEventListener("onChangeActiva", this.onChangeActiva);
   }
 

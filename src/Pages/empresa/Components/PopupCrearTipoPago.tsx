@@ -136,7 +136,16 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0).map((item: any) => ({
                                 label: cuentaToText(item),
                                 value: item.key,
-                                customComponent: (e: any) => <SText fontSize={12} color={STheme.color.lightGray}>{e.data.codigo}</SText>,
+                                customComponent: (e: any) => {
+                                    let moneda = this.state.monedas.find((m: any) => m.key == e.data.key_moneda);
+                                    if (!moneda) {
+                                        moneda = this.state.monedas.find((m: any) => m.tipo == "base");
+                                    }
+                                    return <SView>
+                                        <SText fontSize={12} color={STheme.color.lightGray}>{e.data.codigo}</SText>
+                                        <SText fontSize={12} color={STheme.color.lightGray}>{moneda?.descripcion}</SText>
+                                    </SView>
+                                },
                                 data: item
                             })),
                             isRequired: true,
@@ -171,6 +180,12 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             type: "checkBox",
                             label: "Habilitar en Compras?",
                             defaultValue: this.props.editObject?.habilita_compra,
+                        },
+                        "key_pasarela_empresa": {
+                            col: "xs-5.5 sm-5",
+                            // type: "checkBox",
+                            label: "Key Pasarela empresa",
+                            defaultValue: this.props.editObject?.key_pasarela_empresa,
                         },
                     }}
                     onSubmit={(data: any) => {
