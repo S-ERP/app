@@ -54,6 +54,8 @@ export default class PopupCrearAlmacen extends Component<Props> {
     render() {
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"}{" Almacén"}</SText>
+            <SText fontSize={16} style={{ userSelect: "text" }} >{this.props.editObject?.key}</SText>
+
             <ScrollView>
                 <SForm ref={(ref: any) => this.form = ref}
                     row
