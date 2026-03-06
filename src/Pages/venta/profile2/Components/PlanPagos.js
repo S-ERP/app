@@ -6,6 +6,7 @@ import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 import { err } from 'react-native-svg';
 import SIconApp from '../../../../Assets/SIconApp';
+import PopupCuota from '../../Components/PopupCuota';
 const PERIODICIDAD_DATA = {
     "day": {
         label: "Día", label_plural: "días", add: (date, i) => {
@@ -30,6 +31,8 @@ export default class PlanPagos extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            cuotas: props.data?.cuotas ?? [],
+            totales: props.data?.totales ?? {},
             fecha_inicio: new SDate().toString("yyyy-MM-dd"),
             cuota_inicial: 0,
             total_amortizado: 0,
@@ -39,6 +42,16 @@ export default class PlanPagos extends Component {
     componentDidMount() {
         this.getMonedas()
 
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps.data !== this.props.data) {
+
+            this.setState({
+                cuotas: this.props.data?.cuotas ?? [],
+                totales: this.props.data?.totales ?? {}
+            })
+
+        }
     }
 
     async getMonedas() {
@@ -54,6 +67,7 @@ export default class PlanPagos extends Component {
         return this.state.cuotas
     }
     data = {}
+
     totales_item({
         codigo,
         descripcion,
@@ -66,7 +80,8 @@ export default class PlanPagos extends Component {
         total_a_pagar,
         saldo,
         moneda,
-        amortizado
+        amortizado,
+        cuota
 
     }) {
         // return <SView col={"xs-12"} row>
@@ -86,6 +101,7 @@ export default class PlanPagos extends Component {
         //     <SHr />
         //     <SHr height={1} color={STheme.color.card} />
         // </SView>
+        console.log("CUOTAS: ", cuota)
         return <SView col={"xs-12"} padding={5} row style={{
             backgroundColor: STheme.color.card,
             borderRadius: 8,
@@ -121,7 +137,26 @@ export default class PlanPagos extends Component {
                 </SView>
             </SView>
             <SView center row col={"xs-1"} style={{ right: -8 }} onPress={() => {
+                PopupCuota.open({
+                    // key_cuota: this.state.cuotas[i].key,
+                    data: this.props.data,
+                    editObject: cuota,
+                    key_cuota: cuota.key,
+                    onSuccess: (resp) => {
+                        // key_compra_venta: this.data.key,
+                        // onSuccess: () => this.DinamicTable.loadData(),
 
+                        if (this.props.onReload) {
+                            this.props.onReload();
+                        }
+                        // ACTUALIZAR LA CUOTA EDITADA EN EL STATE
+                        // this.setState({
+                        //     cuotas: this.state.cuotas.map(c =>
+                        //         c.key === resp.key ? resp : c
+                        //     )
+                        // })
+                    }
+                })
             }} >
                 <SIconApp name='Pencil' width={20} height={20} fill={STheme.color.text} />
             </SView>
@@ -165,7 +200,8 @@ export default class PlanPagos extends Component {
                     total_a_pagar: SMath.formatMoney(total_a_pagar),
                     saldo: SMath.formatMoney(cuota.monto - cuota.total_amortizado),
                     amortizado: (!cuota.total_amortizado) ? 0 : cuota.total_amortizado,
-                    moneda: moneda.observacion
+                    moneda: moneda.observacion,
+                    cuota: cuota
                 })
             }}
         />
@@ -473,12 +509,14 @@ export default class PlanPagos extends Component {
             // borderBottomWidth: 3
         }}>
             <SView col={"xs-12"} row center>
-                <SView width={125} row height={40} padding={5} center style={{ backgroundColor: STheme.color.primary, borderRadius: 6 }} onPress={() => {
-                    SNavigation.navigate("venta_plan_pago_registro", { key_compra_venta: this.data.key })
-                }}>
-                    <SIconApp name='add1' width={16} height={16} fill={STheme.color.text} />
-                    <SText flex center> Agregar cuota </SText>
-                </SView>
+                {!pagadoFooter &&
+                    <SView width={125} row height={40} padding={5} center style={{ backgroundColor: STheme.color.primary, borderRadius: 6 }} onPress={() => {
+                        // SNavigation.navigate("venta_plan_pago_registro", { key_compra_venta: this.data.key })
+                    }}>
+                        <SIconApp name='add1' width={16} height={16} fill={STheme.color.text} />
+                        <SText flex center> Agregar cuota </SText>
+                    </SView>
+                }
                 <SView flex />
                 <SView row style={{ alignItems: "flex-end" }} >
                     <SView row center>
