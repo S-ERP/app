@@ -53,7 +53,7 @@ export default class index extends Component {
         if (prevProps.data !== this.props.data) {
             this.setState({ data: this.props.data });
             console.log("DATAP1", this.props.data);
-            PopupSuscriptor.open({ data: this.props.data });
+            // PopupSuscriptor.open({ data: this.props.data });
         }
     }
     openPdfFromBase64(base64) {
@@ -172,7 +172,7 @@ export default class index extends Component {
                 <TotalesVenta data={this.data} />
                 <Separador1 />
                 <SHr height={10} />
-                <PlanPagos ref={ref => this.pp = ref} data={this.data} disabled />
+                <PlanPagos ref={ref => this.pp = ref} data={this.data} onReload={this.props.onReload} disabled />
                 <Separador1 />
                 <SView col={"xs-12"} style={{ alignItems: "flex-end", paddingBottom: 10, paddingTop: 10 }}>
                     <Components.compra_venta.QRVenta data={this.data} />

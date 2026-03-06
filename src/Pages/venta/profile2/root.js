@@ -38,48 +38,77 @@ export default class Root extends Component {
     }
 
     async loadData() {
+
         let empresa = MDL.empresa.select
         let data = await MDL.compra_venta.getJson(this.pk);
         let t = MDL.compra_venta.getTotales(data)
-
         let monedas = await MDL.empresa.getMonedas();
-
 
         if (!empresa) return;
         if (!t) return;
         if (!monedas) return;
-
         if (!data) return;
 
         if (!t.total_a_pagar) {
             t.total_a_pagar = 0;
         }
-        if (this.state.totales.total_a_pagar != t.total_a_pagar) {
-            this.state.totales = t;
-            // this.setState({ ...this.state })
-            this.forceUpdate()
-        }
-
-        if (!this.state.curState) {
-            this.state.curState = data.state;
-        } else {
-            if (this.state.curState != data.state) {
-                this.state.curState = data.state;
-            }
-        }
 
         let moneda = monedas.find(m => m.key === data.key_moneda);
 
-
-
-        this.state.datas = {
-            ...data,
-            empresa: empresa,
-            moneda
-        }
-        this.forceUpdate()
-
+        this.setState({
+            datas: {
+                ...data,
+                empresa,
+                moneda
+            },
+            totales: t,
+            curState: data.state
+        });
     }
+
+    // async loadData() {
+    //     let empresa = MDL.empresa.select
+    //     let data = await MDL.compra_venta.getJson(this.pk);
+    //     let t = MDL.compra_venta.getTotales(data)
+
+    //     let monedas = await MDL.empresa.getMonedas();
+
+
+    //     if (!empresa) return;
+    //     if (!t) return;
+    //     if (!monedas) return;
+
+    //     if (!data) return;
+
+    //     if (!t.total_a_pagar) {
+    //         t.total_a_pagar = 0;
+    //     }
+    //     if (this.state.totales.total_a_pagar != t.total_a_pagar) {
+    //         this.state.totales = t;
+    //         // this.setState({ ...this.state })
+    //         this.forceUpdate()
+    //     }
+
+    //     if (!this.state.curState) {
+    //         this.state.curState = data.state;
+    //     } else {
+    //         if (this.state.curState != data.state) {
+    //             this.state.curState = data.state;
+    //         }
+    //     }
+
+    //     let moneda = monedas.find(m => m.key === data.key_moneda);
+
+
+
+    //     this.state.datas = {
+    //         ...data,
+    //         empresa: empresa,
+    //         moneda
+    //     }
+    //     this.forceUpdate()
+
+    // }
 
 
 
@@ -97,9 +126,15 @@ export default class Root extends Component {
             <SPage title={"Detalle"}  >
                 <SView col={"xs-12"} padding={15} >
                     <SView col="xs-12" center  >
-                        <ITEM data={dataOk} onReload={() => {
-                            this.loadData()
-                        }} />
+                        <ITEM
+                            // key={dataOk?.key + "_" + dataOk?.state}
+                            data={this.state.datas}
+                            onReload={() => {
+                                console.log("RELOAD")
+                                this.loadData()
+                                // this.componentDidMount();
+                                // this.forceUpdate()
+                            }} />
                     </SView>
                 </SView>
             </SPage>
