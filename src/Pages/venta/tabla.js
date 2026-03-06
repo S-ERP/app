@@ -121,7 +121,7 @@ export default class tabla extends Component {
             try {
                 totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0]?.key }) || {};
             } catch (e) {
-                console.warn("No se pudieron obtener los totales de la primera venta:", e);
+                console.error("No se pudieron obtener los totales de la primera venta:", e);
             }
 
             // 7. Enriquecer ventas
@@ -152,60 +152,6 @@ export default class tabla extends Component {
         }
     }
 
-
-    // async loadInitialData() {
-    //     try {
-    //         console.log('Loading initial data... 🎈🎈🎈🎈');
-    //         // 1. Obtener registros principales
-    //         const registros = await MDL.compra_venta.getTransaccion("venta", "2025-01-01", "2030-09-05");
-    //         if (!registros) return [];
-    //         const empresa = await MDL.empresa.getFull();
-    //         const sucursales = empresa.sucursales
-    //         // 2. Filtrar ventas
-    //         const ventas = Object.values(registros).filter(cv => cv.tipo === "venta");
-    //         // 3. Obtener usuarios únicos
-    //         const keysUsuarios = [];
-    //         ventas.forEach(cv => {
-    //             if (cv.key_usuario && !keysUsuarios.includes(cv.key_usuario)) {
-    //                 keysUsuarios.push(cv.key_usuario);
-    //             }
-    //         });
-    //         // 4. Cargar datos relacionados
-    //         const proveedores = await MDL.inventario.proveedor.getAllProveedor();
-    //         const clientes = await MDL.crm.cliente.getAll();
-    //         const usuarios = await MDL.usuario.getByKeys(keysUsuarios) || {};
-    //         // Normalizar usuarios en objeto { key: usuario }
-    //         const usuariosMap = Array.isArray(usuarios)
-    //             ? Object.fromEntries(usuarios.map(u => [u.key, u]))
-    //             : usuarios;
-    //         // 5. Totales de la primera venta
-    //         const totales = Model.compra_venta_detalle.Action.getTotales({ key_compra_venta: ventas[0].key }) || {};
-    //         // 6. Enriquecer ventas con data relacionada
-    //         const ventasEnriquecidas = await Promise.all(
-    //             ventas.map(async (cv) => {
-    //                 return {
-    //                     ...cv,
-    //                     moneda: empresa.monedas.find(m => m.key === cv.key_moneda) || {},
-    //                     sucursal: sucursales.find(a => a?.key === cv?.key_sucursal) || {},
-    //                     usuario: usuariosMap[cv?.key_usuario] || {},
-    //                     empresa,
-    //                     proveedor: proveedores.find(a => a.key == proveedorEjemplo?.key) || {},
-    //                     cliente: clientes.find(a => a?.key === cv.key_cliente) || {},
-    //                     subtotal: totales?.subtotal || "0",
-    //                     descuento: totales?.descuento || "0",
-    //                 };
-    //             })
-    //         );
-    //         console.log('Initial data loaded successfully! 🎉🎉🎉🎉');
-    //         console.log(ventasEnriquecidas);
-    //         return ventasEnriquecidas;
-    //     } catch (error) {
-    //         // console.error('Error in loadData:', error);
-    //         console.error('Error in loadData:', JSON.stringify(error, null, 2));
-    //         SPopup.alert('Error loading data. Please try again.');
-    //         return [];
-    //     }
-    // }
     renderState(state) {
         const statesInfo = MDL.compra_venta.getStateInfo()[state];
         return <SView row center>
@@ -286,6 +232,7 @@ export default class tabla extends Component {
                 time: 5000,
             })
         }).catch(e => {
+            console.error("No se pudo imprimir la factura:", e.error);
             SNotification.send({
                 key: "imprimir",
                 title: "No se pudo imprimir la factura.",
@@ -319,7 +266,7 @@ export default class tabla extends Component {
                                 label: "Ver venta",
                                 icon: <SIconApp name='addTarea' fill="#e4e4e4ff" />,
                                 onPress: () => {
-                                    SNavigation.navigate("/venta/profile", { pk: e?.row?.key })
+                                    SNavigation.navigate("/venta/profile2", { pk: e?.row?.key })
                                 }
                             },
 
@@ -382,7 +329,7 @@ export default class tabla extends Component {
                                             this.DinamicTable.loadData();
                                         }
                                     }).catch(e => {
-
+                                        console.error("Error al Anular la venta:", e);
                                     })
                                 }
                             },
@@ -396,21 +343,11 @@ export default class tabla extends Component {
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => e.index + 1} />
                 <DinamicTable.Col key={"-keyprofile"} label='Ver' width={40} data={(e) => e.row?.key}
                     customComponent={e => <>
-                        {/* <SView row center card padding={2} onPress={() => { SNavigation.navigate("/venta/profile", { pk: e.row.key }) }}>
-                            <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
-                        </SView>
-                        <SHr/> */}
                         <SView row center card padding={2} onPress={() => { SNavigation.navigate("/venta/profile2", { pk: e.row.key }) }} backgroundColor={STheme.color.background}>
                             <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} ></SIconApp>
                         </SView>
                     </>} />
-
-
                 <DinamicTable.Col key={"fecha_on"} label="Fecha" width={120} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.text }} dateFormat="yyyy-MM-dd hh:mm" />
-
-
-
-
                 <DinamicTable.Col key="nrofactura" label="Nro. Factura" width={80} data={(e) => e.row?.factura?.numero}
                     customComponent={e => <>
                         {(e.row?.factura?.numero) ?
@@ -420,16 +357,6 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-
-                {/* <DinamicTable.Col key="facturar" wrap label="Venta con factura" width={60} data={(e) => e.row?.facturar}
-                    customComponent={e => <>
-                        {(e.row?.facturar) ?
-                            <SView col={"xs-12"} center row  >
-                                <SText flex style={e.textStyle}>si✅</SText>
-                            </SView> : null} </>}
-                /> */}
-
-
                 <DinamicTable.Col key="facturar" wrap label="Venta contabilizar" width={75} center data={(e) => e.row?.facturar}
                     customComponent={e => <>
                         {(e.row?.facturar) ?
@@ -473,9 +400,7 @@ export default class tabla extends Component {
 
 
                 <DinamicTable.Col key="state" label="Estado" width={80} data={(e) => e.row?.state ?? ""} customComponent={(e) => this.renderState(e?.data)} />
-
-                {/* <DinamicTable.Col key={"codigo"} label='Código' width={90} center data={(e) => e?.row?.codigo ?? "AL790"} customComponent={(e) => this.renderCodigo(e.data)} /> */}
-                <DinamicTable.Col key="sucursal" label="Sucursal" width={100} data={(e) => e.row?.sucursal?.descripcion}
+                <DinamicTable.Col key="sucursal" label="Sucursal" width={180} data={(e) => e.row?.sucursal?.descripcion}
                     customComponent={e => <>
                         {(e.row?.key_sucursal) ?
                             <SView col={"xs-12"} center row  >
@@ -487,7 +412,6 @@ export default class tabla extends Component {
                             </SView> : null}
                     </>}
                 />
-
 
 
                 <DinamicTable.Col key="cliente" label="Cliente" width={100} data={(e) => e.row?.cliente?.nombres ?? ""}
@@ -505,26 +429,8 @@ export default class tabla extends Component {
 
                 <DinamicTable.Col key="nit" label="NIT" width={100} data={(e) => e.row?.cliente?.nit ?? ""} />
                 <DinamicTable.Col key="razon_social" label="Razón social" width={100} data={(e) => e.row?.cliente?.razon_social ?? ""} />
-
-
-
-                {/* <DinamicTable.Col key={"-keyprofiless"} label='Ver' width={40} data={(e) => e.row?.key}
-                    customComponent={e => (
-                        <SView row center card padding={2} onPress={() => {
-                            PopupDetalleVenta.open({
-                                detalles: e.row.detalles,
-                                venta: e.row
-                            })
-                        }} backgroundColor={STheme.color.background}>
-                            <SIconApp name='Eyes' height={14} fill={STheme.color.lightGray} />
-                        </SView>
-                    )}
-                /> */}
-
-
-                <DinamicTable.Col key="descripcion" label="Descripción" width={150} data={(e) => e.row?.descripcion ?? ""} />
-                <DinamicTable.Col key="detalles_" label="Venta Detalles" width={220} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)}
-                    customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
+                <DinamicTable.Col key="descripcion" label="Descripción" width={210} data={(e) => e.row?.descripcion ?? ""} />
+                <DinamicTable.Col key="detalles_" label="Venta Detalles" width={220} data={(e) => (e.row?.detalles ?? []).map(d => d.descripcion)} customComponent={(e) => (<SView col> {(e.row?.detalles ?? []).map((d, index) => (<SText key={index} fontSize={11}>• {d.descripcion} {d.precio_unitario_base} {e.row.moneda.observacion} x{d.cantidad}</SText>))} </SView>)} />
 
                 <DinamicTable.Col key="estado_pago" wrap label="Estado de Pago" width={80}
                     data={(e) => {
