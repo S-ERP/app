@@ -5,7 +5,6 @@ import Components from '../../../../Components';
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 import { err } from 'react-native-svg';
-import SIconApp from '../../../../Assets/SIconApp';
 const PERIODICIDAD_DATA = {
     "day": {
         label: "Día", label_plural: "días", add: (date, i) => {
@@ -32,8 +31,6 @@ export default class PlanPagos extends Component {
         this.state = {
             fecha_inicio: new SDate().toString("yyyy-MM-dd"),
             cuota_inicial: 0,
-            total_amortizado: 0,
-            total_pagar: 0,
         };
     }
     componentDidMount() {
@@ -65,7 +62,7 @@ export default class PlanPagos extends Component {
         pagos_acumulados,
         total_a_pagar,
         saldo,
-        moneda,
+        moneda, 
         amortizado
 
     }) {
@@ -86,44 +83,32 @@ export default class PlanPagos extends Component {
         //     <SHr />
         //     <SHr height={1} color={STheme.color.card} />
         // </SView>
-        return <SView col={"xs-12"} padding={5} row style={{
+        return <SView col={"xs-12"} padding={5} style={{
             backgroundColor: STheme.color.card,
             borderRadius: 8,
             marginBottom: 2,
             borderWidth: 1,
             borderColor: STheme.color.white + "10"
         }}>
-            <SView flex col={"xs-11"}>
-                <SView row justifyContent="space-between" >
-                    <SView center width={20} height={20} style={{ borderRadius: 50 }} backgroundColor={monto === SMath.formatMoney(amortizado) ? STheme.color.success : STheme.color.error}>
-                        <SIconApp name={monto === SMath.formatMoney(amortizado) ? "vineta1" : "alert2"} width={12} height={12} fill={STheme.color.white} />
-                        {/* <SText>{monto} -- {SMath.formatMoney(amortizado)}</SText> */}
-                    </SView>
-                    <SView width={5} />
-                    <SText bold># {codigo} - {descripcion}</SText>
-                    <SText col={"xs-12"} flex style={{ alignItems: "flex-end" }}>Monto: {moneda} {(monto)}</SText>
+            <SView row justifyContent="space-between" >
+                <SText bold># {codigo} - {descripcion}</SText>
+                <SText col={"xs-12"} flex style={{ alignItems: "flex-end" }}>Monto: {moneda} {(monto)}</SText>
 
-                </SView>
+            </SView>
 
-                <SText color={STheme.color.lightGray} fontSize={12} style={{ paddingTop: 3 }}>
-                    {new SDate(fecha, "yyyy-MM-dd").toString("dd de MONTH, yyyy")}
-                </SText>
+            <SText color={STheme.color.lightGray} fontSize={10}>
+                {new SDate(fecha, "yyyy-MM-dd").toString("dd de MONTH, yyyy")}
+            </SText>
 
-                <SView row justifyContent="space-between" style={{ paddingTop: 3 }}>
-                    {/* <SText fontSize={10} color={STheme.color.lightGray}>Capital: {isNaN(capital) ? 0 : capital}</SText>
+            <SView row justifyContent="space-between" style={{ paddingTop: 3 }}>
+                {/* <SText fontSize={10} color={STheme.color.lightGray}>Capital: {isNaN(capital) ? 0 : capital}</SText>
                 <SView width={10} style={{ borderRightWidth: 1, borderRightColor: STheme.color.lightGray }} />
                 <SView width={10} />
                 <SText fontSize={10} color={STheme.color.lightGray}>Interés: {isNaN(interes) ? 0 : interes}</SText>
                 <SView width={10} style={{ borderRightWidth: 1, borderRightColor: STheme.color.lightGray }} />
                 <SView width={10} /> */}
-                    <SText color={STheme.color.text}>Amortizado: {moneda} {isNaN(amortizado) ? 0 : SMath.formatMoney(amortizado)}</SText>
-                    <SText col={"xs-12"} flex bold style={{ alignItems: "flex-end" }}>Saldo: {moneda} {(saldo)}</SText>
-                </SView>
-            </SView>
-            <SView center row col={"xs-1"} style={{ right: -8 }} onPress={() => {
-
-            }} >
-                <SIconApp name='Pencil' width={20} height={20} fill={STheme.color.text} />
+                <SText  color={STheme.color.text}>Amortizado: {moneda} {isNaN(amortizado) ? 0 : SMath.formatMoney(amortizado)}</SText>
+                <SText col={"xs-12"} flex bold style={{ alignItems: "flex-end" }}>Saldo: {moneda} {(saldo)}</SText>
             </SView>
         </SView>
     }
@@ -416,82 +401,6 @@ export default class PlanPagos extends Component {
             <SText fontSize={16} bold >Bs. {SMath.formatMoney(PMT)}</SText>
         </SView>
     }
-    detalleCuotas() {
-        if (!this.state.cuotas) return null;
-        let pagado = false;
-        let mensaje = "";
-        console.log("Cuotas: ", this.state.cuotas)
-        let cuotasAll = this.state.cuotas;
-        let monto_total = 0;
-        cuotasAll.map((obj) => {
-            monto_total += parseFloat(obj.total_amortizado ?? 0);
-        })
-        this.state.total_amortizado = monto_total;
-        if (monto_total == this.state.totales.total_a_pagar) {
-            pagado = true;
-            mensaje = "Cliente al día: Todas las cuotas están pagadas.";
-        } else if (monto_total > 0) {
-            pagado = false;
-            mensaje = "Cliente moroso: Tiene cuotas pendientes de pago.";
-        } else {
-            pagado = false;
-            mensaje = "Cliente moroso: No ha pagado ninguna cuota.";
-        }
-        console.log("Monto total amortizado: ", monto_total, " -- Total a pagar: ", this.state.totales.total_a_pagar)
-        return <SView col={"xs-12"} padding={10} center style={{
-            backgroundColor: STheme.color.card,
-            borderTopRightRadius: 8,
-            borderTopLeftRadius: 8,
-        }}>
-            <SView col={"xs-12"} row center>
-                <SView center col={"xs-10"} style={{ backgroundColor: pagado ? STheme.color.success + "30" : STheme.color.error + "30", borderRadius: 6, borderWidth: 1, borderColor: pagado ? STheme.color.success : STheme.color.error, padding: 8 }}>
-                    <SText center fontSize={15} >{mensaje}</SText>
-                </SView>
-                {/* 
-                <SText bold col={"xs-3"}>Cuota inicial: Bs. {SMath.formatMoney(this.state.cuota_inicial)}</SText>
-                <SView flex />
-                <SText bold col={"xs-3"}>Total a pagar: Bs. {SMath.formatMoney(this.state.totales.total_a_pagar)}</SText> */}
-            </SView>
-        </SView>
-    }
-
-    detalleCuotasFooter() {
-        if (!this.state.cuotas) return null;
-        let pagadoFooter = false;
-        if (this.state.total_amortizado == this.state.totales.total_a_pagar) {
-            pagadoFooter = true;
-        } else {
-            pagadoFooter = false;
-        }
-        console.log("moneda; ", this.state.moneda)
-
-        return <SView col={"xs-12"} padding={10} center style={{
-            backgroundColor: STheme.color.card,
-            borderBottomRightRadius: 8,
-            borderBottomLeftRadius: 8,
-            // borderBottomColor: STheme.color.card,
-            // borderBottomWidth: 3
-        }}>
-            <SView col={"xs-12"} row center>
-                <SView width={125} row height={40} padding={5} center style={{ backgroundColor: STheme.color.primary, borderRadius: 6 }} onPress={() => {
-                    SNavigation.navigate("venta_plan_pago_registro", { key_compra_venta: this.data.key })
-                }}>
-                    <SIconApp name='add1' width={16} height={16} fill={STheme.color.text} />
-                    <SText flex center> Agregar cuota </SText>
-                </SView>
-                <SView flex />
-                <SView row style={{ alignItems: "flex-end" }} >
-                    <SView row center>
-                        <SText bold>Total amortizado:</SText>
-                        <SView width={8} />
-                        <SText bold padding={10} backgroundColor={pagadoFooter ? STheme.color.success + "70" : STheme.color.error + "60"}>
-                            {this.state.moneda.observacion} {SMath.formatMoney(this.state.total_amortizado)}
-                        </SText>
-                    </SView>
-                </SView>
-            </SView>
-        </SView>
-    }
 
 
 
@@ -564,17 +473,11 @@ export default class PlanPagos extends Component {
         }
 
 
-
         return <SView col={"xs-12"} center>
             <SText bold >PLAN DE PAGOS</SText>
             <SHr height={10} />
             {this.editor()}
-            {this.detalleCuotas()}
-            <SHr height={10} />
             {this.getCuotas()}
-            <SHr height={5} />
-            {this.detalleCuotasFooter()}
-            <SHr height={10} />
         </SView>
     }
 }
