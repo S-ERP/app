@@ -62,7 +62,8 @@ export default class index extends Component {
                     }
                 </SView>
                 <SView col={"xs-8"} row center>
-                    <SText col={"xs-12"} fontSize={12} bold>{this.data?.descripcion}</SText>
+                    <SText bold col={"xs-3"} fontSize={12}>Descripción: </SText>
+                    <SText col={"xs-9"} fontSize={12} bold>{this.data?.descripcion}</SText>
                     <SText bold col={"xs-3"} fontSize={12}>Empresa: </SText>
                     <SText fontSize={12} col={"xs-9"}>{this.data?.empresa?.razon_social}</SText>
                     <SText bold fontSize={12} col={"xs-3"}>NIT: </SText>
@@ -100,17 +101,17 @@ export default class index extends Component {
                         <SHr />
                     </SView>
                     <SView col={"xs-12"} center row>
-                        <SView card style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.barColor}} row center>
-                             <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25}/>
-                                                        <SView width={8} />
+                        <SView card style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.barColor }} row center>
+                            <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25} />
+                            <SView width={8} />
                             <SView onPress={() => ComprobanteRollo.imprimir(this.data.key)}>
                                 <SText>DESCARGAR PDF ROLLO</SText>
                             </SView>
                         </SView>
                         <SView width={8} />
                         <SView card style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.barColor }} row center>
-                             <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25}/>
-                                                        <SView width={8} />
+                            <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25} />
+                            <SView width={8} />
                             <SView onPress={() => ComprobanteCarta.imprimir(this.data.key)}>
                                 <SText>DESCARGAR PDF CARTA</SText>
                             </SView>
@@ -128,7 +129,7 @@ export default class index extends Component {
                         </SView> */}
                     </SView>
                 </SView>
-             
+
                 <SHr height={15} />
             </SView>
         </SView>
