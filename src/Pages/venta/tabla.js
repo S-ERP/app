@@ -317,22 +317,59 @@ export default class tabla extends Component {
                                     ReciboCarta.imprimir(e?.row?.key)
                                 }
                             },
+
                             {
                                 label: "Anular la venta",
                                 icon: <SIconApp name='Delete' fill={STheme.color.text} />,
                                 onPress: () => {
                                     MDL.caja.anular_venta({
                                         key_compra_venta: e.row.key
-
-                                    }).then(e => {
+                                    }).then(resp => {
+                                        // 🔁 Recarga la tabla si existe
                                         if (this.DinamicTable) {
                                             this.DinamicTable.loadData();
                                         }
-                                    }).catch(e => {
-                                        console.error("Error al Anular la venta:", e);
-                                    })
+
+                                        // ✅ Notificación de éxito
+                                        SNotification.send({
+                                            key: "anular_" + e.row.key, // key único por fila
+                                            title: "Venta anulada",
+                                            body: "La venta se anuló correctamente.",
+                                            color: STheme.color.success,
+                                            time: 5000,
+                                        });
+
+                                    }).catch(error => {
+                                        console.error("Error al Anular la venta:", error);
+
+                                        // ⚠️ Notificación de error
+                                        SNotification.send({
+                                            key: "anular_error_" + e.row.key,
+                                            title: "Error al anular",
+                                            body: "No se pudo anular la venta, intente nuevamente.",
+                                            color: STheme.color.danger,
+                                            time: 5000,
+                                        });
+                                    });
                                 }
-                            },
+                            }
+
+                            // {
+                            //     label: "Anular la venta",
+                            //     icon: <SIconApp name='Delete' fill={STheme.color.text} />,
+                            //     onPress: () => {
+                            //         MDL.caja.anular_venta({
+                            //             key_compra_venta: e.row.key
+
+                            //         }).then(e => {
+                            //             if (this.DinamicTable) {
+                            //                 this.DinamicTable.loadData();
+                            //             }
+                            //         }).catch(e => {
+                            //             console.error("Error al Anular la venta:", e);
+                            //         })
+                            //     }
+                            // },
                         ]
                     });
                 }}
