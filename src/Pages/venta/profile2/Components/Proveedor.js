@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { SDate, SHr, SImage, SList, SLoad, SMath, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SImage, SList, SLoad, SMath, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket'
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
+import PopupCliente from '../../Components/PopupCliente';
+import SIconApp from '../../../../Assets/SIconApp';
 // props = {disabled}
 export default class Proveedor extends Component {
     constructor(props) {
@@ -82,6 +84,24 @@ export default class Proveedor extends Component {
                 <SHr />
                 <SText bold>DATOS DEL {this.data.tipo == "venta" ? "CLIENTE" : "PROVEEDOR"}</SText>
                 <SHr />
+                <SView width={40} height={40}
+                    style={{
+                        position: "absolute",
+                        right: -5
+                    }}
+                    row center onPress={() => {
+                        PopupCliente.open({
+                            data: this.data,
+                            onReload: () => {
+                                console.log("RELOAD 1")
+                                this.componentDidMount();
+                                this.props.onReload();
+                                SPopup.close("PopupCliente");
+                            }
+                        })
+                    }}>
+                    <SIconApp name={"Pencil"} width={14} height={14} fill={STheme.color.text} />
+                </SView>
             </SView>
             <SView col={"xs-12"} row onPress={onPress} center>
                 <SView col={"xs-12 sm-7 md-7 lg-7 xl-7"} row style={{ paddingBottom: 6 }}>
@@ -94,7 +114,7 @@ export default class Proveedor extends Component {
                     <SText center>Email: {correo}</SText>
                 </SView>
                 <SView col={"xs-12 sm-5 md-5 lg-5 xl-5"} style={{ paddingBottom: 6 }}>
-                    <SText >{`NIT/CI/CEX: ${nit}`}</SText>
+                    <SText >{`NIT/CI/CEX: ${nit ? nit : ""}`}</SText>
                     <SHr />
                     <SText  >{telefono ? `Teléfono: ${telefono}` : ""}</SText>
                 </SView>

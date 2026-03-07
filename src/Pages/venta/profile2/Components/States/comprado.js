@@ -92,8 +92,18 @@ export default class index extends Component {
                 <Separador1 />
                 <SView col={"xs-12"} row center>
                     {(this.data.tipo == "venta") ?
-                        <Cliente data={this.data} disabled /> :
-                        <Proveedor data={this.data} disabled />
+                        <Cliente data={this.data} disabled
+                            onReload={() => {
+                                console.log("RELOAD 2")
+                                this.props.onReload();
+                            }}
+                        /> :
+                        <Proveedor data={this.data} disabled
+                            onReload={() => {
+                                console.log("RELOAD 2")
+                                this.props.onReload();
+                            }}
+                        />
                     }
                 </SView>
 

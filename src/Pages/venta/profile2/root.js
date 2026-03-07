@@ -130,7 +130,7 @@ export default class Root extends Component {
                             // key={dataOk?.key + "_" + dataOk?.state}
                             data={this.state.datas}
                             onReload={() => {
-                                console.log("RELOAD")
+                                console.log("RELOAD 3")
                                 this.loadData()
                                 // this.componentDidMount();
                                 // this.forceUpdate()
