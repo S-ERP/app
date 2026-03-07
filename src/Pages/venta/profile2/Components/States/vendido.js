@@ -14,6 +14,8 @@ import Separador1 from './Components/Separador1';
 import TotalesVenta from '../TotalesVenta';
 import MDL from '../../../../../MDL';
 import PopupSuscriptor from '../PopupSuscriptor';
+import SIconApp from '../../../../../Assets/SIconApp';
+import PopupDescripcion from '../../../Components/PopupDescripcion';
 export default class index extends Component {
     constructor(props) {
         super(props);
@@ -116,7 +118,7 @@ export default class index extends Component {
         this.sucursal = this.state?.miSucursal;
         this.data = { ...prueba, sucursal: this.state?.miSucursal };
         return (<SView col={"xs-12 sm-11 md-8 lg-8 xl-6"} card >
-            <SView col={"xs-12"}  row style={{ justifyContent: "space-between" }}>
+            <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                 {this.data?.factura?.cuf ? <>
                     <SView width={170} center
                         style={{ backgroundColor: STheme.color.card, borderBottomLeftRadius: 10, borderBottomRightRadius: 10, marginRight: 8, borderBottomColor: STheme.color.card, borderBottomWidth: 3 }}
@@ -147,7 +149,23 @@ export default class index extends Component {
                     }
                 </SView>
                 <SView col={"xs-8"} row center>
-                    <SText col={"xs-12"} fontSize={12} bold>{this.data?.descripcion}</SText>
+                    <SView row col={"xs-12"}>
+                        <SText bold col={"xs-3"} fontSize={12}>Descripción: </SText>
+                        <SText col={"xs-7"} fontSize={12} bold>{this.data?.descripcion}</SText>
+                        <SView col={"xs-2"} row center onPress={() => {
+                            PopupDescripcion.open({
+                                data: this.data,
+                                onReload: () => {
+                                    console.log("RELOAD")
+                                    this.loadData()
+                                }
+                            })
+                        }}>
+                            <SIconApp name={"Pencil"} width={14} height={14} fill={STheme.color.text} />
+
+                        </SView>
+                    </SView>
+
                     <SText bold col={"xs-3"} fontSize={12}>Empresa: </SText>
                     <SText fontSize={12} col={"xs-9"}>{this.data?.empresa?.razon_social}</SText>
                     <SText bold fontSize={12} col={"xs-3"}>NIT: </SText>
