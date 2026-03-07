@@ -313,7 +313,7 @@ backgroundColor: `${STheme.color.card}66`,
     }
     render() {
         return (
-            <SPage title="Gestión de Proveedores rich" disableScroll>
+            <SPage title="Gestión de Proveedores" disableScroll>
                 <SView row col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", paddingVertical: 8, paddingHorizontal: 12, }} >
                     <SView col={"xs-12 sm-5 lg-2"} row center style={{ flexWrap: "wrap", }}>
                         <FiltroSelector

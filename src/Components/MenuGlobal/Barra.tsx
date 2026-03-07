@@ -131,7 +131,7 @@ export default class Barra extends React.Component {
                         <Page label={"Proveedores"} url={"/proveedor"} permiso="page" />
                         {/* <Page label={"Compras"} url={"/compra"} permiso="ver" /> */}
                         <Page label={"Historial de Compras"} url={"/compra/tabla"} permiso="ver" permiso_url="/compra" />
-                        <Page label={"Compras Rapida"} url={"/compra2"} permiso="ver" permiso_url="/compra" />
+                        {/* <Page label={"Compras Rapida"} url={"/compra2"} permiso="ver" permiso_url="/compra" /> */}
                         <Page label={"Compras Rapida New"} url={"/compra3"} permiso="ver" permiso_url="/compra" /></Page>
                     <Page label={"Ventas"} icon={<ImagePage key_page="8becb109-9987-4520-840d-7f0efdb6e3c6" />} >
                         <Page label={"Clientes"} url={"/cliente"} permiso="ver" />
@@ -225,8 +225,8 @@ export default class Barra extends React.Component {
                 </ScrollView>
 
                 <SView col={"xs-12"} pointerEvents="none" > <SView style={{ top: -100, width: "100%", height: 100, position: "absolute", }} pointerEvents="none" >
-                        <SGradient colors={[STheme.color.background + "ff", STheme.color.background + "00"]} />
-                    </SView>
+                    <SGradient colors={[STheme.color.background + "ff", STheme.color.background + "00"]} />
+                </SView>
                 </SView>
                 <SView col={"xs-12"}  >
                     <SHr h={1} color={STheme.color.card} />

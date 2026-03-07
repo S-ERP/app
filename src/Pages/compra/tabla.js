@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SMath, SIcon } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SMath, SIcon, SNotification } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
 import SIconApp from '../../Assets/SIconApp';
@@ -161,9 +161,29 @@ export default class tabla extends Component {
                                             }).then((resp) => {
                                                 this.DinamicTable.loadData();
                                                 console.log("Respuesta de anular compra", resp);
-                                                
+
+                                                // ✅ Notificación de éxito
+                                                SNotification.send({
+                                                    key: "anular_", // key único por fila
+                                                    title: "Compra anulada",
+                                                    body: "La compra se anuló correctamente.",
+                                                    color: STheme.color.success,
+                                                    time: 5000,
+                                                });
+
+
                                             }).catch(e => {
                                                 console.log("Respuesta de anular compra", e);
+                                                // ⚠️ Notificación de error
+                                                SNotification.send({
+                                                    key: "anular_error_",
+                                                    title: "Error al anular",
+                                                    body: e.error,
+                                                    // body: "No se pudo anular la compra, intente nuevamente.",
+                                                    color: STheme.color.danger,
+                                                    time: 10000,
+                                                });
+
                                             })
                                         }
                                     })
