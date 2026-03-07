@@ -5,6 +5,7 @@ import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
 // import InputFoto from '../../../Components/InputFoto';
 import Btn from './Btn';
+import { stat } from 'fs';
 // import SIconApp from '../../../Assets/SIconApp';
 type Props = {
     key_empresa: string,
@@ -12,6 +13,7 @@ type Props = {
     data?: any,
     onCancel?: Function,
     onSuccess?: Function,
+    onReload?: Function,
 }
 export default class PopupDescripcion extends Component<Props> {
     static open(props: Props) {
@@ -61,7 +63,8 @@ export default class PopupDescripcion extends Component<Props> {
                         const data = {
                             ...val,
                             // key_cuenta_contable: "1.0.1",
-                          
+                            state: this.props.data?.state,
+
                         };
                         if (this.props.data?.key) {
                             data.key = this.props.data?.key;
@@ -73,7 +76,10 @@ export default class PopupDescripcion extends Component<Props> {
                                 key: this.props.data?.key,
                                 data: data
                             }).then((resp: any) => {
-                                if (this.props.onSuccess) this.props.onSuccess(resp)
+                                // if (this.props.onSuccess) this.props.onSuccess(resp)
+                                if (this.props.onReload) {
+                                    this.props.onReload();
+                                }
                                 SNotification.send({
                                     title: "Descripción editada",
                                     body: "La descripción se ha editado correctamente.",
@@ -81,7 +87,10 @@ export default class PopupDescripcion extends Component<Props> {
                                     color: STheme.color.success,
                                 });
                             }).catch((e: any) => {
-                                if (this.props.onSuccess) this.props.onSuccess(e)
+                                // if (this.props.onSuccess) this.props.onSuccess(e)
+                                 if (this.props.onReload) {
+                                    this.props.onReload();
+                                }
                                 console.error("Error al editar la descripción:", e);
                                 SNotification.send({
                                     title: "Error",
