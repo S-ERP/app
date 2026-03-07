@@ -270,7 +270,7 @@ export default class PopupPagoCuota extends Component {
 
                         <SView col={"xs-8"} style={{ alignItems: 'flex-end' }} border={"transparent"}>
                             {cuota.key_moneda === monedaBase.key ? (
-                                <SText fontSize={16} bold color={STheme.color.text}>{monedaBase.observacion} {SMath.formatMoney(cuota.saldo)}</SText>
+                                <SText fontSize={16} bold color={STheme.color.text}>{monedaBase.observacion} {SMath.formatMoney(cuota.saldo3)}</SText>
                                 // <SText fontSize={16} bold color={STheme.color.text}> aaa {monedaBase.observacion} {cuota.estadoReal =="Pagado" ? cuota.monto_total_base : SMath.formatMoney(cuota.monto_base)}</SText>
                                 // <SText fontSize={16} bold color={STheme.color.text}> aaa {monedaBase.observacion} {SMath.formatMoney(cuota.monto_base)}</SText>
                                 // <SText fontSize={16} bold color={STheme.color.text}>  {monedaBase.observacion} {SMath.formatMoney(cuota.monto_base)}</SText>
@@ -355,7 +355,7 @@ export default class PopupPagoCuota extends Component {
                             <SView col={'xs-9'}>
                                 <SText fontSize={12} color={COLOR_TEXT}>Total:</SText>
 
-                                <SText fontSize={14} color={COLOR_TEXT}>{moneda.observacion} {SMath.formatMoney(compra.detalle_items?.monto ?? 0)} </SText>
+                                <SText fontSize={14} color={COLOR_TEXT}>{moneda.observacion} {SMath.formatMoney(compra.detalle_items?.monto_base ?? 0)} </SText>
                                 {/* <SText fontSize={14} color={COLOR_TEXT}> T/C {SMath.formatMoney(compra.detalle_items2?.tipo_cambio ?? 0)} </SText> */}
 
                                 <SText fontSize={12} color={COLOR_TEXT}>Equivalente en {moneda.observacion}:</SText>

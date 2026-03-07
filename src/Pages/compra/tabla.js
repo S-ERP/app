@@ -140,7 +140,7 @@ export default class tabla extends Component {
                             {
                                 label: "Ver compra",
                                 icon: <SIconApp name='addTarea' fill="#e4e4e4ff" />,
-                                onPress: () => { SNavigation.navigate("/compra/profile", { pk: e?.row?.key }) }
+                                onPress: () => { SNavigation.navigate("/venta/profile2", { pk: e?.row?.key }) }
                             },
                             {
                                 label: "Anular compra",
