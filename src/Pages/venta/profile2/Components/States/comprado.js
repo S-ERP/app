@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SHr, SIcon, SImage, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SIcon, SImage, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
 import Components from '../../../../../Components';
 import Model from '../../../../../Model';
 import Cliente from '../Cliente';
@@ -16,6 +16,8 @@ import TotalesVenta from '../TotalesVenta';
 import MDL from '../../../../../MDL';
 import ComprobanteRollo from '../../../../../Components/PDF/compra/ComprobanteRollo';
 import ComprobanteCarta from '../../../../../Components/PDF/compra/ComprobanteCarta';
+import PopupDescripcion from '../../../Components/PopupDescripcion';
+import SIconApp from '../../../../../Assets/SIconApp';
 
 
 export default class index extends Component {
@@ -62,8 +64,23 @@ export default class index extends Component {
                     }
                 </SView>
                 <SView col={"xs-8"} row center>
-                    <SText bold col={"xs-3"} fontSize={12}>Descripción: </SText>
-                    <SText col={"xs-9"} fontSize={12} bold>{this.data?.descripcion}</SText>
+                    <SView row col={"xs-12"}>
+                        <SText bold col={"xs-3"} fontSize={12}>Descripción: </SText>
+                        <SText col={"xs-7"} fontSize={12} bold>{this.data?.descripcion}</SText>
+                        <SView col={"xs-2"} row center onPress={() => {
+                            PopupDescripcion.open({
+                                data: this.data,
+                                onReload: () => {
+                                    console.log("RELOAD")
+                                    this.props.onReload();
+                                    SPopup.close("PopupDescripcion");
+                                }
+                            })
+                        }}>
+                            <SIconApp name={"Pencil"} width={14} height={14} fill={STheme.color.text} />
+
+                        </SView>
+                    </SView>
                     <SText bold col={"xs-3"} fontSize={12}>Empresa: </SText>
                     <SText fontSize={12} col={"xs-9"}>{this.data?.empresa?.razon_social}</SText>
                     <SText bold fontSize={12} col={"xs-3"}>NIT: </SText>

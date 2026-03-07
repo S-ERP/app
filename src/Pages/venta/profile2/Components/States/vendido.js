@@ -157,7 +157,8 @@ export default class index extends Component {
                                 data: this.data,
                                 onReload: () => {
                                     console.log("RELOAD")
-                                    this.loadData()
+                                    this.props.onReload();
+                                    SPopup.close("PopupDescripcion");
                                 }
                             })
                         }}>
