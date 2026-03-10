@@ -170,8 +170,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             const detalle = MDL.carrito.carrito_compra.items.map((ci) => {
                 return {
                     "cantidad": ci.cantidad,
-                    "precio_unitario": ci.precio ?? ci.modelo.precio_compra_moneda,
-                    "precio_unitario_base": ci.modelo.precio_compra_moneda,
+                    "precio_unitario": ci?.precio ?? 0,
+                    "precio_unitario_base": ci.modelo?.precio_compra_moneda ?? 0,
+                    // "precio_unitario": ci.precio ?? ci.modelo.precio_compra_moneda,
+                    // "precio_unitario_base": ci.modelo.precio_compra_moneda,
                     "detalle": "",
                     "descuento": 0,
                     "descripcion": ci.modelo.descripcion,
