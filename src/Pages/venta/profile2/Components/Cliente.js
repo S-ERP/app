@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { SDate, SHr, SImage, SList, SLoad, SMath, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SImage, SList, SLoad, SMath, SNavigation, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket'
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
 import SIconApp from '../../../../Assets/SIconApp';
 import PopupCliente from '../../Components/PopupCliente';
+const URL = "/venta/profile2";
 // props = {disabled}
 export default class Cliente extends Component {
     constructor(props) {
@@ -126,15 +127,25 @@ export default class Cliente extends Component {
                         right: -5
                     }}
                     row center onPress={() => {
-                        PopupCliente.open({
-                            data: this.data,
-                            onReload: () => {
-                                console.log("RELOAD 1")
-                                this.componentDidMount();
-                                this.props.onReload();
-                                SPopup.close("PopupCliente");
-                            }
-                        })
+                        if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
+                            PopupCliente.open({
+                                data: this.data,
+                                onReload: () => {
+                                    console.log("RELOAD 1")
+                                    this.componentDidMount();
+                                    this.props.onReload();
+                                    SPopup.close("PopupCliente");
+                                }
+                            })
+                        } else {
+                            SNotification.send({
+                                key: "editar_proveedor",
+                                title: "Sin permisos de edición",
+                                body: "Tu rol dentro del sistema no permite realizar modificaciones en este módulo. Si crees que esto es un error, comunícate con el administrador del sistema.",
+                                color: STheme.color.danger,
+                                time: 9000,
+                            });
+                        }
                     }}>
                     <SIconApp name={"Pencil"} width={14} height={14} fill={STheme.color.text} />
                 </SView>

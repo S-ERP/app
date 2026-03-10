@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SDate, SHr, SImage, SInput, SList, SLoad, SMath, SNavigation, SOrdenador, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SImage, SInput, SList, SLoad, SMath, SNavigation, SNotification, SOrdenador, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket'
 import Components from '../../../../Components';
 import Model from '../../../../Model';
@@ -7,6 +7,7 @@ import MDL from '../../../../MDL';
 import { err } from 'react-native-svg';
 import SIconApp from '../../../../Assets/SIconApp';
 import PopupCuota from '../../Components/PopupCuota';
+const URL = "/venta/profile2";
 const PERIODICIDAD_DATA = {
     "day": {
         label: "Día", label_plural: "días", add: (date, i) => {
@@ -137,26 +138,27 @@ export default class PlanPagos extends Component {
                 </SView>
             </SView>
             <SView center row col={"xs-1"} style={{ right: -8 }} onPress={() => {
-                PopupCuota.open({
-                    // key_cuota: this.state.cuotas[i].key,
-                    data: this.props.data,
-                    editObject: cuota,
-                    key_cuota: cuota.key,
-                    onSuccess: (resp) => {
-                        // key_compra_venta: this.data.key,
-                        // onSuccess: () => this.DinamicTable.loadData(),
-
-                        if (this.props.onReload) {
-                            this.props.onReload();
+                if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
+                    PopupCuota.open({
+                        // key_cuota: this.state.cuotas[i].key,
+                        data: this.props.data,
+                        editObject: cuota,
+                        key_cuota: cuota.key,
+                        onSuccess: (resp) => {
+                            if (this.props.onReload) {
+                                this.props.onReload();
+                            }
                         }
-                        // ACTUALIZAR LA CUOTA EDITADA EN EL STATE
-                        // this.setState({
-                        //     cuotas: this.state.cuotas.map(c =>
-                        //         c.key === resp.key ? resp : c
-                        //     )
-                        // })
-                    }
-                })
+                    })
+                } else {
+                    SNotification.send({
+                        key: "editar_descripcion",
+                        title: "Sin permisos de edición",
+                        body: "Tu rol dentro del sistema no permite realizar modificaciones en este módulo. Si crees que esto es un error, comunícate con el administrador del sistema.",
+                        color: STheme.color.danger,
+                        time: 9000,
+                    });
+                }
             }} >
                 <SIconApp name='Pencil' width={20} height={20} fill={STheme.color.text} />
             </SView>
