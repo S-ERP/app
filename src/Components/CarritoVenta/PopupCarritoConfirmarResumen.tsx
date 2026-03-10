@@ -224,14 +224,21 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 }
                 return {
                     "cantidad": ci.cantidad,
-                    "precio_unitario": ci.precio,
-                    "precio_unitario_base": ci.modelo.precio_venta_moneda,
+                    "precio_unitario": ci?.precio ?? 0,
+                    "precio_unitario_base": ci.modelo?.precio_venta_moneda ?? 0,
                     "detalle": "",
                     "descripcion": ci.modelo.descripcion,
                     "key_modelo": ci.modelo.key,
                     "costos": costos,
                 }
             })
+
+
+            console.clear();
+            console.log("%c" + JSON.stringify(detalle, null, 2), "color: #2ECC40; font-weight: bold;");
+
+            // console.clear();
+            // console.log("%c" + ingresar_texto, `color: #2ECC40; font-weight: bold;`);
             const data = {
                 "descripcion": this.props.descripcion || "",
                 "observacion": "Observación",
