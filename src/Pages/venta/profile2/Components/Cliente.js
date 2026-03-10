@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { SDate, SHr, SImage, SList, SLoad, SMath, SNavigation, SText, STheme, SView } from 'servisofts-component';
+import { SDate, SHr, SImage, SList, SLoad, SMath, SNavigation, SPopup, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket'
 import Model from '../../../../Model';
 import MDL from '../../../../MDL';
+import SIconApp from '../../../../Assets/SIconApp';
+import PopupCliente from '../../Components/PopupCliente';
 // props = {disabled}
 export default class Cliente extends Component {
     constructor(props) {
@@ -32,7 +34,7 @@ export default class Cliente extends Component {
                     data: this.data,
                     key_usuario: Model.usuario.Action.getKey()
                 }).then((resp) => {
-                    
+
                     console.log("Se agregó el cliente con éxito")
                 })
             }
@@ -107,17 +109,35 @@ export default class Cliente extends Component {
         }
         var urlFoto = "";
         if (key_sucursal) {
-            urlFoto = SSocket.api.empresa + "sucursal/" + key_sucursal;
+            urlFoto = SSocket.api.empresa + "sucursal/" + key_sucursal + "?time=" + new SDate().toString("yyyy-MM-ddThh:mm");
         } else if (key) {
-            urlFoto = SSocket.api.root + "usuario/" + key_usuario;
+            urlFoto = SSocket.api.root + "usuario/" + key + "?time=" + new SDate().toString("yyyy-MM-ddThh:mm");
         } else if (key_usuario) {
-            urlFoto = SSocket.api.root + "usuario/" + key_usuario;
+            urlFoto = SSocket.api.root + "usuario/" + key_usuario + "?time=" + new SDate().toString("yyyy-MM-ddThh:mm");
         }
         return <SView col={"xs-12"} flex >
             <SView col={"xs-12"} center>
                 <SHr />
                 <SText bold>DATOS DEL {this.data.tipo == "venta" ? "CLIENTE" : "PROVEEDOR"}</SText>
                 <SHr />
+                <SView width={40} height={40}
+                    style={{
+                        position: "absolute",
+                        right: -5
+                    }}
+                    row center onPress={() => {
+                        PopupCliente.open({
+                            data: this.data,
+                            onReload: () => {
+                                console.log("RELOAD 1")
+                                this.componentDidMount();
+                                this.props.onReload();
+                                SPopup.close("PopupCliente");
+                            }
+                        })
+                    }}>
+                    <SIconApp name={"Pencil"} width={14} height={14} fill={STheme.color.text} />
+                </SView>
             </SView>
             <SView col={"xs-12"} row onPress={onPress} center>
                 <SView col={"xs-12  "} row border={"transparent"} >
