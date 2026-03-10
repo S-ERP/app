@@ -113,31 +113,75 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         }, 0);
     }
 
+
+
     handleOnPress = async () => {
         try {
-            const { porcentajeDescuento, cliente, factura, almacen, descuentoSeleccionado } = this.props;
+            // Desestructuramos props
+            const { porcentajeDescuento = 0, cliente, factura, almacen, descuentoSeleccionado } = this.props;
+            // Validamos datos críticos
+            if (!cliente) {
+                console.warn("Cliente no definido");
+                // return;
+            }
+            if (!factura) {
+                console.warn("Factura no definida");
+                // return;
+            }
+            if (!almacen) {
+                console.warn("Almacén no definido");
+                // return;
+            }
+            // Validamos caja activa
+            const keyPuntoVenta = MDL.caja.activa?.key_punto_venta;
+            if (!keyPuntoVenta) {
+                console.warn("No hay caja activa");
+                // return;
+            }
+            // Calculamos subtotal y descuentos
             const subtotal = this.calcularSubtotal();
             const totalDescuento = subtotal * (porcentajeDescuento || 0);
             const total = subtotal - totalDescuento;
+
+            // Validamos moneda y tipo de cambio
+            const selectedMoneda = MDL.carrito.selectedMoneda;
+            if (!selectedMoneda || !selectedMoneda.tipo_cambio) {
+                console.warn("Moneda o tipo de cambio no definido");
+                // return;
+            }
+
+            const montoMaximo = total * (selectedMoneda.tipo_cambio || 1);
+
+            // Abrimos popup de selección de tipo de pago
             SelectTipoPago.openPopup({
-                key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
-                montoMaximo: total * MDL.carrito.selectedMoneda.tipo_cambio,
-                key_moneda: MDL.carrito.selectedMoneda.key,
-                onSelect: (tipos_pago: any) =>
-                    this.handleSubmit(tipos_pago, cliente, factura, almacen, porcentajeDescuento, descuentoSeleccionado),
+                key_punto_venta: keyPuntoVenta,
+                montoMaximo,
+                key_moneda: selectedMoneda.key,
+                onSelect: (tipos_pago: any[]) =>
+                    this.handleSubmit(
+                        tipos_pago,
+                        cliente,
+                        factura,
+                        almacen,
+                        porcentajeDescuento,
+                        descuentoSeleccionado
+                    ),
                 solo_para_caja: false,
-                venta: true
+                venta: true,
             });
-        } catch (error: any) {
+        } catch (error) {
+            // Manejo seguro de errores
+            const mensaje = error instanceof Error ? error.message : JSON.stringify(error);
             SNotification.send({
                 key: "venta_rapida",
-                title: "Error al realizar la ventas",
-                body: error?.error || JSON.stringify(error),
+                title: "Error al realizar la venta",
+                body: mensaje,
                 color: STheme.color.danger,
                 time: 4000,
             });
         }
     };
+
     handleSubmit = async (tipos_pago: any, key_moneda: string, cliente: any, factura: boolean, almacen_: any, porcentajeDescuento: any, descuentoSeleccionado: any) => {
         try {
             const monedaActual = MDL.carrito.selectedMoneda;
@@ -244,10 +288,10 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             });
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
         } catch (error: any) {
-            console.error("Error al realizar la venta:", error);
+            console.error("Error al realizdddsdar la venta:", error);
             SNotification.send({
                 key: "venta_rapida",
-                title: "Error al realizar la venta",
+                title: "Error al rsdsdealizar la venta",
                 body: error?.error || JSON.stringify(error),
                 color: STheme.color.danger,
                 time: 4000,
