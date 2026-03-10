@@ -16,6 +16,7 @@ import MDL from '../../../../../MDL';
 import PopupSuscriptor from '../PopupSuscriptor';
 import SIconApp from '../../../../../Assets/SIconApp';
 import PopupDescripcion from '../../../Components/PopupDescripcion';
+const URL = "/venta/profile2";
 export default class index extends Component {
     constructor(props) {
         super(props);
@@ -153,17 +154,26 @@ export default class index extends Component {
                         <SText bold col={"xs-3"} fontSize={12}>Descripción: </SText>
                         <SText col={"xs-7"} fontSize={12} bold>{this.data?.descripcion}</SText>
                         <SView col={"xs-2"} row center onPress={() => {
-                            PopupDescripcion.open({
-                                data: this.data,
-                                onReload: () => {
-                                    console.log("RELOAD")
-                                    this.props.onReload();
-                                    SPopup.close("PopupDescripcion");
-                                }
-                            })
+                            if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
+                                PopupDescripcion.open({
+                                    data: this.data,
+                                    onReload: () => {
+                                        console.log("RELOAD")
+                                        this.props.onReload();
+                                        SPopup.close("PopupDescripcion");
+                                    }
+                                })
+                            } else {
+                                SNotification.send({
+                                    key: "editar_descripcion",
+                                    title: "Sin permisos de edición",
+                                    body: "Tu rol dentro del sistema no permite realizar modificaciones en este módulo. Si crees que esto es un error, comunícate con el administrador del sistema.",
+                                    color: STheme.color.danger,
+                                    time: 9000,
+                                });
+                            }
                         }}>
                             <SIconApp name={"Pencil"} width={14} height={14} fill={STheme.color.text} />
-
                         </SView>
                     </SView>
 
