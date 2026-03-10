@@ -1,5 +1,5 @@
 import React from "react";
-import { SHr, SImage, SInput, SMath, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SHr, SImage, SInput, SMath, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
@@ -11,9 +11,6 @@ type PopupCarritoProps = {}
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     state = {
         selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null,
-
-
-
     };
     rapido: any;
     evento: any;
@@ -93,13 +90,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     }}
                 />
             </SView>
-            <SView style={{
-                padding: 4,
-                width: 33, height: 33,
-                position: "absolute",
-                right: 0,
-                top: 0,
-            }} onPress={() => {
+            <SView style={{ padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0, }} onPress={() => {
                 SPopup.close("PopupCarrito")
             }}>
                 <SIconApp name="Close" fill={STheme.color.text} />
@@ -130,18 +121,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     {SMath.formatMoney(MDL.carrito.carrito_compra.monto_total)}
                 </SText>
             </SView>
-            {/* <SView padding={8}>
-                <SText col={"xs-12"} style={{ textAlign: "right" }}>
-                    {"Total:"} {selectedMoneda.observacion + " "}
-                    {SMath.formatMoney(
-                        items.reduce((acc, item) => {
-                            const precio = selectedMoneda ? item.modelo.precio_compra_moneda / (selectedMoneda.tipo_cambio || 1) : item.modelo.precio_compra_moneda;
-                            const precio = selectedMoneda ? item.modelo.precio_compra_moneda / (selectedMoneda.tipo_cambio || 1) : item.modelo.precio_compra_moneda;
-                            return acc + precio * item.cantidad;
-                        }, 0)
-                    )}
-                </SText>
-            </SView> */}
             <SHr h={1} color={STheme.color.card} />
             <SView padding={8}>
                 <SView col={"xs-12"} row flex center>
@@ -174,6 +153,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         </SView>
     }
 }
+
 const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     const [precio, setPrecio] = React.useState(0);
     const calcularPrecio = () => {
@@ -199,17 +179,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                 >
                     <SIconApp name="Close" fill={STheme.color.warning} />
                 </SView>
-                <SView
-                    center
-                    style={{
-                        width: 35,
-                        height: 35,
-                        borderRadius: 4,
-                        overflow: "hidden",
-                        borderColor: STheme.color.card,
-                        borderWidth: 1
-                    }}
-                >
+                <SView center style={{ width: 35, height: 35, borderRadius: 4, overflow: "hidden", borderColor: STheme.color.card, borderWidth: 1 }} >
                     <SImage
                         src={SSocket.api.inventario + "modelo/" + item.modelo.key}
                         style={{ resizeMode: "cover" }}
@@ -276,91 +246,3 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
         </SView>
     );
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
