@@ -1,5 +1,5 @@
 import React from "react";
-import { SHr, SImage, SInput, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SHr, SImage, SInput, SNavigation, SNotification, SPage, SPopup, SText, STheme, SUuid, SView } from "servisofts-component";
 import Pizarra from "../../../Components/Pizarra2/Pizarra";
 import PizarraNodo from "../../../Components/Pizarra2/Nodo"
 import Puerto from "../../../Components/Pizarra2/Puerto";
@@ -16,6 +16,8 @@ import Elaborar from "../Components/Elaborar";
 import PopupComprar from "../Components/PopupComprar";
 import theme, { ColorCompraVenta } from "../../../Config/theme";
 import FiltroSelector2 from "../modelo/Components/FiltroSelector2";
+import Carrito from "../../compra3/Components/Carrito";
+import FiltroMoneda from "../../puntoventa/Components/FiltroMoneda";
 export default class pizarra extends React.Component {
     state = {
         key_sucursal: MDL.caja?.activa?.key_sucursal,
@@ -31,42 +33,101 @@ export default class pizarra extends React.Component {
     monedas: [];
     componentDidMount() {
         this.loadData();
-        this.cargarMoneda();
+        this.checkCaja();
+
+        this.renderCarrito();
+
+        // MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this))
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
             this.cargarMonedaSeleccionada();
         });
         this.cargarMonedaSeleccionada();
         window.addEventListener("keydown", this.handleKeyDown);
     }
-    componentWillUnmount() {
-        window.removeEventListener("keydown", this.handleKeyDown);
+
+    // componentDidMount(): void {
+    //     MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this))
+    //     this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
+    //         this.cargarMonedaSeleccionada();
+    //     });
+    //     this.cargarMonedaSeleccionada();
+    //     this.cargarMonedas();
+    // }
+
+    // handleChange = () => {
+    //     this.forceUpdate();
+    // }
+
+    async checkCaja() {
+        try {
+            const activa = await MDL.caja.getActiva();
+            this.cajaActiva = !!activa;
+            if (!this.cajaActiva) {
+                SNotification.send({
+                    title: "Caja no aperturada",
+                    message: "Debes abrir la caja antes de continuar con las operaciones.",
+                    type: "danger",
+                    body: "⚠️Debe abrir caja⚠️",
+                    color: STheme.color.danger,
+                    time: 5000,
+                });
+                SNavigation.replace("/caja2");
+                return;
+            }
+
+            const data = await MDL.empresa.getFull();
+
+            this.setState({ monedas: data.monedas || [] }, () => {
+                // Esto se ejecuta **después** de que monedas se cargaron
+                if (!this.selectedMoneda && this.state.monedas.length > 1) {
+                    this.selectedMoneda = this.state.monedas.find(a => a.tipo == "base"); // segunda moneda
+                    this.props.onSelectMoneda?.(this.selectedMoneda);
+                    this.forceUpdate();
+                }
+            });
+
+            // this.setState({ monedas: data.monedas || [] }); // Actualizar estado con monedas
+            // if (!this.selectedMoneda && this.state.monedas.length > 0) {
+            //     this.selectedMoneda = this.state.monedas[1];
+            //     this.props.onSelectMoneda?.(this.selectedMoneda);
+            // }
+
+            // this.forceUpdate();
+        } catch (e) {
+            console.error("Error al obtener estado de caja", e);
+        }
     }
 
-    async cargarMoneda() {
-        try {
-            const monedas = await MDL.empresa.getMonedas();
-            if (!Array.isArray(monedas)) return;
-            MDL.empresa.monedas = monedas;
-            let monedaSeleccionada = MDL.compra_venta.getMonedaSeleccionada();
-            if (!monedaSeleccionada) {
-                monedaSeleccionada = monedas.find(m => m.tipo === "base") || monedas[0];
-                MDL.compra_venta.setMonedaSeleccionada(monedaSeleccionada);
-                MDL.compra_venta.dispatchEvent({ type: "moneda_seleccionada" });
-            }
-            if (!this.mounted) return;
-            this.setState({ options: monedas, selectedMoneda: monedaSeleccionada });
-            this.props.onSelect?.(monedaSeleccionada);
-        } catch (error) {
-            console.error("Error cargando monedas:", error);
-        }
+    renderCarrito() {
+        console.clear();
+        console.log("%c" + "ingresar_texto", `color: #2ECC40; font-weight: bold;`);
+        console.log("entranndi")
+        return (
+            <Carrito
+                ref={(ref) => (this.carritoRef = ref)}
+                onModificarStock={(key, delta) => this.modeloRef?.modificarStock(key, delta)}
+                selectedMoneda={this.selectedMoneda}
+                conStock={this.state.conStock} // Usar estado conStock
+                onChangeConStock={this.setConStock} // Pasar función para actualizar conStock
+            />
+        );
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("keydown", this.handleKeyDown);
+        // MDL.carrito.removeEventListener(this.handleChange.bind(this))
+
     }
 
     handleKeyDown = (e) => {
         if (e.key === "Escape") {
             try {
+                // Reset de filtros
                 this.filtroSucursalRef?.reset?.(false);
                 this.filtroAlmacenRef?.reset?.(false);
                 this.filtroStockRef?.reset?.(false);
+
+                // Reset del estado incluyendo filtro
                 this.setState({
                     filtro: "",
                     selectedSucursal: null,
@@ -87,6 +148,7 @@ export default class pizarra extends React.Component {
 
         try {
             const { selectedAlmacen, selectedSucursal, selectedStock, selectedTipoCuenta, selectedTipoModelo } = this.state;
+
             const [monedas, clientes, tipo_costos, modelos, ingredientes] = await Promise.all([
                 MDL.empresa.getMonedas().catch(() => []),
                 MDL.crm.cliente.getAll().catch(() => []),
@@ -94,9 +156,11 @@ export default class pizarra extends React.Component {
                 MDL.inventario.getAllModeloStock(selectedAlmacen?.key ?? "", selectedSucursal?.key ?? "").catch(() => []),
                 MDL.inventario.getPizarraIngrediente().catch(() => [])
             ]);
+
             const monedasByKey = Object.fromEntries((monedas ?? []).map(m => [m?.key, m]));
             const clientesByKey = Object.fromEntries((clientes ?? []).map(c => [c?.key, c]));
             const tipoCostoByKey = Object.fromEntries((tipo_costos ?? []).map(tc => [tc?.key, tc]));
+
             let data_mejorada = (modelos ?? []).map(e => ({
                 ...e,
                 compra_moneda: monedasByKey[e?.precio_compra_moneda] || {},
@@ -115,19 +179,26 @@ export default class pizarra extends React.Component {
                 tags: e?.tags ?? [],
                 stock: Number(e?.stock ?? 0),
             }));
+
+            // Filtros
             if (selectedStock?.key === "con_stock") {
                 data_mejorada = data_mejorada.filter(m => m.stock > 0);
             } else if (selectedStock?.key === "sin_stock") {
                 data_mejorada = data_mejorada.filter(m => m.stock <= 0);
             }
+
+
             if (selectedTipoCuenta?.key && selectedTipoCuenta.key !== "Todos") {
                 data_mejorada = data_mejorada.filter(m => m?.tipo_producto?.tipo === selectedTipoCuenta.key);
             }
             if (selectedTipoModelo?.key && selectedTipoModelo.key !== "Todos") {
                 data_mejorada = data_mejorada.filter(m => m?.tipo_producto?.descripcion === selectedTipoModelo.key);
             }
+
             if (this._lastRequestId !== currentRequestId) return [];
+
             this.modelos = data_mejorada;
+
             this.setState({
                 modelos: data_mejorada,
                 ingredientes
@@ -165,6 +236,8 @@ export default class pizarra extends React.Component {
         const texto = JSON.stringify(obj).toLowerCase();
         const textoFiltro = filtro.toLowerCase();
         const coincidencia = texto.includes(textoFiltro);
+
+        // Para modelos: si algún ingrediente conectado coincide con el filtro
         if (obj.arrIngredientes) {
             const ingredientesRelacionados = ingredientes.filter(i => obj.arrIngredientes.includes(i.key));
             const algunaCoincidencia = ingredientesRelacionados.some(i =>
@@ -172,6 +245,8 @@ export default class pizarra extends React.Component {
             );
             if (algunaCoincidencia) return 1;
         }
+
+        // Para ingredientes: si coincide su descripción o su receta conectada a modelos visibles
         if (obj.kr) {
             const modelosVisiblesKeys = new Set(modelos.map(m => m.key));
             const modelosRelacionados = modelos.filter(m => obj.kr.includes(m.key));
@@ -179,19 +254,26 @@ export default class pizarra extends React.Component {
             const algunaCoincidencia = modelosRelacionados.some(m =>
                 JSON.stringify(m).toLowerCase().includes(textoFiltro)
             );
+
+            // ✅ Solo mostrar completo si todos los modelos conectados están visibles
             const todosConectadosVisibles = obj.kr.every(key_modelo => modelosVisiblesKeys.has(key_modelo));
 
             if (algunaCoincidencia || todosConectadosVisibles) return 1;
         }
+
         return coincidencia ? 1 : 0.3;
     }
     filtro_opacity = (obj) => {
         const { filtro, ingredientes, modelos } = this.state;
+
+        // 🔹 Si no hay filtro de texto, todo visible
         if (!filtro) return 1;
 
         const texto = JSON.stringify(obj).toLowerCase();
         const textoFiltro = filtro.toLowerCase();
         const coincidencia = texto.includes(textoFiltro);
+
+        // 🔹 Para modelos: si algún ingrediente conectado coincide con el filtro
         if (obj.arrIngredientes) {
             const ingredientesRelacionados = ingredientes.filter(i => obj.arrIngredientes.includes(i.key));
             const algunaCoincidencia = ingredientesRelacionados.some(i =>
@@ -199,31 +281,52 @@ export default class pizarra extends React.Component {
             );
             if (algunaCoincidencia) return 1;
         }
+
+        // 🔹 Para ingredientes: si coincide su descripción o su receta conectada a modelos visibles
         if (obj.kr) {
             const modelosVisiblesKeys = new Set(modelos.map(m => m.key)); // modelos visibles según filtro
             const modelosRelacionados = modelos.filter(m => obj.kr.includes(m.key));
+
+            // Coincide algún modelo con el texto
             const algunaCoincidencia = modelosRelacionados.some(m =>
                 JSON.stringify(m).toLowerCase().includes(textoFiltro)
             );
+
+            // Mostrar completo solo si todos los modelos conectados están visibles
             const todosConectadosVisibles = obj.kr.every(key_modelo => modelosVisiblesKeys.has(key_modelo));
 
             if (algunaCoincidencia || todosConectadosVisibles) return 1;
         }
+
+        // 🔹 Coincidencia directa en el objeto
         return coincidencia ? 1 : 0.3;
     }
 
 
     renderModelos() {
         const { modelos, ingredientes, initialsPositions, key_sucursal } = this.state;
+
         return modelos.map(modelo => {
+            // 🔹 Posición inicial del nodo
             const ipos = initialsPositions[modelo.key] ?? { x: 0, y: 0 };
-            const modelo_ingredientes = ingredientes.flatMap(ingrediente => (ingrediente.modelo_ingrediente ?? []).filter(mi => mi.key_modelo === modelo.key));
+
+            // 🔹 Filtrar ingredientes asociados a este modelo
+            const modelo_ingredientes = ingredientes
+                .flatMap(ingrediente => (ingrediente.modelo_ingrediente ?? []).filter(mi => mi.key_modelo === modelo.key));
+
+            // 🔹 Preparar objeto de modelo limpio sin mutar
             const modeloData = {
                 ...modelo,
-                compra_moneda: this.monedas.find(m => m.key === modelo.precio_compra_moneda) || this.monedas.find(m => m.tipo === "base") || {},
-                venta_moneda: this.monedas.find(m => m.key === modelo.precio_venta_moneda) || this.monedas.find(m => m.tipo === "base") || {},
+                compra_moneda: this.monedas.find(m => m.key === modelo.precio_compra_moneda)
+                    || this.monedas.find(m => m.tipo === "base") || {},
+                venta_moneda: this.monedas.find(m => m.key === modelo.precio_venta_moneda)
+                    || this.monedas.find(m => m.tipo === "base") || {},
                 arrIngredientes: modelo_ingredientes.map(a => a.key_ingrediente),
             };
+            if (!this.monedas || this.monedas.length === 0) return null;
+
+
+
             return (
                 <PizarraNodo
                     key={modelo.key}
@@ -300,6 +403,7 @@ export default class pizarra extends React.Component {
                                                 key_usuario: MDL.usuario?.session?.key,
                                                 data: { key: mi.key, estado: 0 }
                                             });
+                                            // Actualizar ingredientes en estado
                                             this.setState(prev => ({
                                                 ingredientes: prev.ingredientes.map(ing => ({
                                                     ...ing,
@@ -377,6 +481,8 @@ export default class pizarra extends React.Component {
 
     renderIngredientes() {
         const { ingredientes, initialsPositions, modelos } = this.state;
+
+        // 🔹 Claves de modelos visibles
         const modelosVisiblesKeys = new Set(modelos.map(m => m.key));
 
         return ingredientes
@@ -388,6 +494,8 @@ export default class pizarra extends React.Component {
                     ...ingrediente,
                     kr: [...kr]
                 };
+
+                // 🔹 Solo mostrar ingrediente si tiene al menos un modelo visible o no tiene kr
                 const tieneModeloVisible = !kr.length || kr.some(key_modelo => modelosVisiblesKeys.has(key_modelo));
                 if (!tieneModeloVisible) return null;
 
@@ -424,6 +532,7 @@ export default class pizarra extends React.Component {
                         }}
                     >
                         <NodoIngrediente ingrediente={ingredienteData} />
+
                         {/* Puerto de entrada: conexión con modelos */}
                         <Puerto
                             id="key_modelo"
@@ -484,6 +593,7 @@ export default class pizarra extends React.Component {
                                 }
                             }}
                         />
+
                         {/* Puerto de salida: ingrediente */}
                         <Puerto
                             id="key_ingrediente"
@@ -521,7 +631,7 @@ export default class pizarra extends React.Component {
                         backgroundColor: STheme.color.card,
                         opacity: 1
                     }}
-                    value={this.state.filtro}// ✅ Agregar esto
+                    value={this.state.filtro}  // ✅ Agregar esto
 
                     onChangeText={e => {
                         this.setState({ filtro: e }, () => this.loadData())
@@ -567,10 +677,21 @@ export default class pizarra extends React.Component {
                     onSelect={item => this.setState({ selectedStock: item }, () => this.loadData())}
                 />
             </SView>
+            <SView width={150}>
+
+                <FiltroMoneda
+                    onSelect={(moneda) => {
+                        this.setState({ selectedMoneda: moneda ? { ...moneda } : null });
+                        this.props.onSelectMoneda?.(moneda);
+                    }}
+                />
+
+            </SView>
+
         </SView>
     }
     render() {
-        return <SPage title={"pizarrasss"} disableScroll>
+        return <SPage title={"pizarras 333 ss"} disableScroll>
             <Pizarra id={"productos_pizarra"} scale={0.5} exponentDeRedondeoDeMovimiento={10}
                 onSelectChange={e => {
                     if (this.selectMenu) {
@@ -638,78 +759,74 @@ const NodoModelo = (props) => {
     const tipoCambioSeleccionada = moneda_base?.tipo_cambio || 1;
     const precioConvertido_compra = modelo.precio_compra * (tipoCambioProducto / tipoCambioSeleccionada);
     const precioFormateado_compra = Number.isInteger(precioConvertido_compra) ? precioConvertido_compra.toString() : precioConvertido_compra.toFixed(2);// const precioConvertido_venta = modelo.precio_venta * (tipoCambioProducto / tipoCambioSeleccionada);
-
-    const precioConvertido_venta = modelo.precio_venta * (tipoCambioProducto / tipoCambioSeleccionada);
-    const precioFormateado_venta = Number.isInteger(precioConvertido_venta) ? precioConvertido_venta.toString() : precioConvertido_venta.toFixed(2);// const precioConvertido_venta = modelo.precio_venta * (tipoCambioProducto / tipoCambioSeleccionada);
-
-    // const latencia = {
-    //     "descripcion": "Simba 2Ltrs",
-    //     "estado": 1,
-    //     "key_usuario": "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
-    //     "fecha_edit": null,
-    //     "unidad_medida": null,
-    //     "fecha_on": "2025-08-30T03:53:34.298",
-    //     "precio_compra": 10,
-    //     "key_tipo_producto": "d1803e0d-3fdc-4edb-9a23-f5ae0920c05d",
-    //     "precio_venta": 12,
-    //     "precio_compra_moneda": null,
-    //     "codigo_ref": null,
-    //     "key_marca": "8bd09dad-9edd-49d7-a5f9-98b70c17688f",
-    //     "marca": {
-    //         "descripcion": "Servisofts",
-    //         "estado": 1,
-    //         "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
-    //         "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-    //         "fecha_on": "2025-08-27T01:04:09.702",
-    //         "key_servicio": "1427e867-c4f7-4602-a1aa-5deabf2d0372",
-    //         "key": "8bd09dad-9edd-49d7-a5f9-98b70c17688f",
-    //         "observacion": null
-    //     },
-    //     "duracion_medida": null,
-    //     "precio_venta_moneda": "12",
-    //     "tipo_producto": {
-    //         "descripcion": "Bebidas",
-    //         "estado": 1,
-    //         "tipo": "inventario",
-    //         "key_cuenta_contable_ganancia": "fefe197b-e828-4218-b9e2-ac87cec6e025",
-    //         "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
-    //         "key_cuenta_contable_depreciacion_gasto": null,
-    //         "unidad_medida_facturacion": "1",
-    //         "color": "",
-    //         "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-    //         "fecha_on": "2025-08-13T00:32:14.894",
-    //         "codigo_facturacion": "62162",
-    //         "key_cuenta_contable": "9b125901-3aea-4506-bd42-d168c90996fa",
-    //         "key_cuenta_contable_depreciacion_activo": null,
-    //         "vida_util": null,
-    //         "key_servicio": "1427e867-c4f7-4602-a1aa-5deabf2d0372",
-    //         "key": "d1803e0d-3fdc-4edb-9a23-f5ae0920c05d",
-    //         "observacion": "",
-    //         "key_cuenta_contable_costo": "246780ef-16d1-4b45-96ea-724a8a7e6615"
-    //     },
-    //     "duracion": null,
-    //     "stock_padres": 0,
-    //     "cantidad_suscriptores": null,
-    //     "stock": 2,
-    //     "barcode": "6456546456456",
-    //     "key": "a6c5ae70-8d57-47a5-abf5-69222d7f9f60",
-    //     "observacion": null,
-    //     "compra_moneda": {},
-    //     "venta_moneda": {
-    //         "descripcion": "Boliviano",
-    //         "estado": 1,
-    //         "tipo": "base",
-    //         "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
-    //         "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
-    //         "fecha_on": "2025-09-05T23:19:05.000589",
-    //         "tipo_cambio": 1,
-    //         "key": "2f6b73df-8004-41c1-aa5f-1a81d79d1a8f",
-    //         "observacion": "BOB"
-    //     },
-    //     "monedaSymbol": "BOB",
-    //     "tipoCostos": [],
-    //     "tipo_cambio": 1
-    // };
+    const latencia = {
+        "descripcion": "Simba 2Ltrs",
+        "estado": 1,
+        "key_usuario": "1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b",
+        "fecha_edit": null,
+        "unidad_medida": null,
+        "fecha_on": "2025-08-30T03:53:34.298",
+        "precio_compra": 10,
+        "key_tipo_producto": "d1803e0d-3fdc-4edb-9a23-f5ae0920c05d",
+        "precio_venta": 12,
+        "precio_compra_moneda": null,
+        "codigo_ref": null,
+        "key_marca": "8bd09dad-9edd-49d7-a5f9-98b70c17688f",
+        "marca": {
+            "descripcion": "Servisofts",
+            "estado": 1,
+            "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+            "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+            "fecha_on": "2025-08-27T01:04:09.702",
+            "key_servicio": "1427e867-c4f7-4602-a1aa-5deabf2d0372",
+            "key": "8bd09dad-9edd-49d7-a5f9-98b70c17688f",
+            "observacion": null
+        },
+        "duracion_medida": null,
+        "precio_venta_moneda": "12",
+        "tipo_producto": {
+            "descripcion": "Bebidas",
+            "estado": 1,
+            "tipo": "inventario",
+            "key_cuenta_contable_ganancia": "fefe197b-e828-4218-b9e2-ac87cec6e025",
+            "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+            "key_cuenta_contable_depreciacion_gasto": null,
+            "unidad_medida_facturacion": "1",
+            "color": "",
+            "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+            "fecha_on": "2025-08-13T00:32:14.894",
+            "codigo_facturacion": "62162",
+            "key_cuenta_contable": "9b125901-3aea-4506-bd42-d168c90996fa",
+            "key_cuenta_contable_depreciacion_activo": null,
+            "vida_util": null,
+            "key_servicio": "1427e867-c4f7-4602-a1aa-5deabf2d0372",
+            "key": "d1803e0d-3fdc-4edb-9a23-f5ae0920c05d",
+            "observacion": "",
+            "key_cuenta_contable_costo": "246780ef-16d1-4b45-96ea-724a8a7e6615"
+        },
+        "duracion": null,
+        "stock_padres": 0,
+        "cantidad_suscriptores": null,
+        "stock": 2,
+        "barcode": "6456546456456",
+        "key": "a6c5ae70-8d57-47a5-abf5-69222d7f9f60",
+        "observacion": null,
+        "compra_moneda": {},
+        "venta_moneda": {
+            "descripcion": "Boliviano",
+            "estado": 1,
+            "tipo": "base",
+            "key_usuario": "b2aa9d81-5f63-40ce-ae35-31fbb1417745",
+            "key_empresa": "f894ea35-5ad1-4b61-a2d0-9294965be169",
+            "fecha_on": "2025-09-05T23:19:05.000589",
+            "tipo_cambio": 1,
+            "key": "2f6b73df-8004-41c1-aa5f-1a81d79d1a8f",
+            "observacion": "BOB"
+        },
+        "monedaSymbol": "BOB",
+        "tipoCostos": [],
+        "tipo_cambio": 1
+    };
     return <View style={{
         backgroundColor: STheme.color.background,
         borderRadius: 8,
@@ -792,6 +909,11 @@ const NodoModelo = (props) => {
                     cantidad: 1,
                     precio: productoAjustado.precio_compra
                 })
+
+                console.clear();
+                console.log("%c" + JSON.stringify(productoAjustado, null, 2), "color: #2ECC40; font-weight: bold;");
+                // this.forceUpdate();
+
             }}>
                 <SView height={15} width={15}>
                     <SIconApp name="compraCarro" fill={STheme.color.text} />
@@ -801,25 +923,11 @@ const NodoModelo = (props) => {
             </SView>
             <SView flex />
             <SView card padding={3} row width={65} center style={{ alignItems: "flex-end" }} onPress={() => {
-
-                const productoAjustado = {
-                    ...modelo,
-                    precio_venta: modelo.precio_venta,
-                    precio_venta_moneda: precioFormateado_venta,
-                    monedaSymbol: moneda_base.observacion,
-                };
-
                 MDL.carrito.agregarItemAlCarritoDeVentas({
-                    modelo: productoAjustado,
+                    modelo: latencia,
                     cantidad: 1,
-                    precio: productoAjustado.precio_venta
+                    precio: latencia.precio_venta
                 })
-
-                // MDL.carrito.agregarItemAlCarritoDeVentas({
-                //     modelo: latencia,
-                //     cantidad: 1,
-                //     precio: latencia.precio_venta
-                // })
             }}>
                 <SView height={15} width={15}>
                     <SIconApp name="ventaCarro" fill={STheme.color.text} />
@@ -871,4 +979,9 @@ const Tag = (props: { style: TextStyle }) => {
         {props.children}
     </SText>
 }
+
+// Los ingredientes ahora respetan la visibilidad de los modelos conectados.
+// Tanto modelos como ingredientes se atenúan suavemente si no coinciden con el filtro.
+// Los ingredientes conectados a modelos visibles se siguen mostrando aunque no coincidan exactamente con el texto.
+// Se mantiene la lógica de búsqueda por texto y filtrado por sucursal, almacén o stock.
 
