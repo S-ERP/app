@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RUDDY - Sistema de Ventas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #4a9b7f 0%, #3a8a6f 100%);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 200px;
+            background: #1b5e4f;
+            color: white;
+            padding: 20px 0;
+            overflow-y: auto;
+            box-shadow: 2px 0 16px rgba(0, 0, 0, 0.15);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #a4d65e 0%, #8bc034 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(164, 214, 94, 0.3);
+        }
+
+        .sidebar-title {
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 3px solid transparent;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(164, 214, 94, 0.15);
+            border-left-color: #a4d65e;
+            color: white;
+        }
+
+        .sidebar-item.active {
+            background: rgba(164, 214, 94, 0.25);
+            border-left-color: #a4d65e;
+            color: white;
+            font-weight: 500;
+        }
+
+        .sidebar-icon {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-badge {
+            margin-left: auto;
+            background: #a4d65e;
+            color: #1b5e4f;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #4a9b7f 0%, #3a8a6f 100%);
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: #1b5e4f;
+            color: white;
+            padding: 16px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(164, 214, 94, 0.2);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn:hover {
+            background: rgba(164, 214, 94, 0.3);
+            transform: translateX(-2px);
+        }
+
+        .header-title {
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== CONTENT ===== */
+        .content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        /* ===== MODAL OVERLAY ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(2px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* ===== MODAL ===== */
+        .modal {
+            background: linear-gradient(135deg, #3a8f6f 0%, #2a7a5f 100%);
+            border-radius: 18px;
+            padding: 50px 45px;
+            max-width: 620px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35), 0 0 1px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== SUCCESS ICON ===== */
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #a4d65e 0%, #8bc034 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 56px;
+            color: white;
+            animation: scaleIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 12px 35px rgba(164, 214, 94, 0.4);
+            font-weight: 700;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ===== MODAL TEXT ===== */
+        .modal-title {
+            font-size: 34px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .modal-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 38px;
+            line-height: 1.65;
+            font-weight: 400;
+        }
+
+        /* ===== BUTTONS ===== */
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 13px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 140px;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-exit {
+            background: white;
+            color: #1b5e4f;
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-exit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-exit:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, #a4d65e 0%, #8bc034 100%);
+            color: #1b5e4f;
+            box-shadow: 0 6px 20px rgba(164, 214, 94, 0.5);
+            font-weight: 700;
+        }
+
+        .btn-view:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 35px rgba(164, 214, 94, 0.7);
+        }
+
+        .btn-view:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-print {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-print:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-print:active {
+            transform: translateY(-1px);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 200px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 12px 0;
+                display: flex;
+                gap: 20px;
+                align-items: center;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .sidebar-header {
+                padding: 0 20px;
+                margin: 0;
+                border: none;
+            }
+
+            .sidebar-menu {
+                display: flex;
+                gap: 0;
+            }
+
+            .sidebar-item {
+                padding: 8px 16px;
+                white-space: nowrap;
+            }
+
+            .modal {
+                padding: 40px 30px;
+            }
+
+            .modal-title {
+                font-size: 28px;
+            }
+
+            .success-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 44px;
+                margin-bottom: 20px;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .sidebar {
+                display: none;
+            }
+
+            .header {
+                padding: 12px 15px;
+            }
+
+            .header-title {
+                font-size: 16px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .modal {
+                padding: 35px 25px;
+            }
+
+            .modal-title {
+                font-size: 24px;
+            }
+
+            .modal-subtitle {
+                font-size: 14px;
+                margin-bottom: 28px;
+            }
+
+            .success-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 38px;
+                margin-bottom: 18px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 14px;
+                min-width: 110px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">R</div>
+            <div class="sidebar-title">RUDDY</div>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item active">
+                <div class="sidebar-icon"></div>
+                <span>Home</span>
+            </li>
+            <li class="sidebar-item">
+                <div class="sidebar-icon"></div>
+                <span>Empresa</span>
+            </li>
+            <li class="sidebar-item">
+                <div class="sidebar-icon"></div>
+                <span>Contabilidad</span>
+            </li>
+            <li class="sidebar-item">
+                <div class="sidebar-icon"></div>
+                <span>Inventario</span>
+            </li>
+            <li class="sidebar-item">
+                <div class="sidebar-icon"></div>
+                <span>Caja</span>
+                <div class="sidebar-badge">3d 22h</div>
+            </li>
+            <li class="sidebar-item">
+                <div class="sidebar-icon"></div>
+                <span>Compras</span>
+            </li>
+            <li class="sidebar-item">
+                <div class="sidebar-icon"></div>
+                <span>Ventas</span>
+            </li>
+            <li class="sidebar-item">
+                <div class="sidebar-icon"></div>
+                <span>CRM</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                <button class="back-btn" onclick="history.back()">←</button>
+                <div class="header-title">Punto de Venta</div>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <!-- MODAL OVERLAY -->
+            <div class="modal-overlay" id="modalOverlay">
+                <!-- MODAL -->
+                <div class="modal">
+                    <!-- SUCCESS ICON -->
+                    <div class="success-icon">✓</div>
+
+                    <!-- TITLE -->
+                    <h1 class="modal-title">¡Venta realizada con éxito!</h1>
+
+                    <!-- SUBTITLE -->
+                    <p class="modal-subtitle">Tu transacción se ha completado correctamente. Gracias por tu compra.</p>
+
+                    <!-- BUTTONS -->
+                    <div class="modal-buttons">
+                        <button class="btn btn-exit" onclick="handleExit()">Salir</button>
+                        <button class="btn btn-view" onclick="handleViewSale()">Ver venta</button>
+                        <button class="btn btn-print" onclick="handlePrint()">Imprimir rollo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleExit() {
+            console.log('Salir - Modal cerrado');
+            document.getElementById('modalOverlay').style.display = 'none';
+        }
+
+        function handleViewSale() {
+            console.log('Ver venta - Redirigiendo a detalles');
+            // Implementar lógica
+        }
+
+        function handlePrint() {
+            console.log('Imprimir rollo - Iniciando impresión');
+            // Implementar lógica
+        }
+    </script>
+</body>
+</html>
