@@ -68,11 +68,10 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
         return <SView style={{
             padding: 6,
             maxWidth: 180,
-
-        }} 
-        // col={"xs-6 sm-4"} colSquare>
-        col={"xs-6 sm-4"} >
-            <SView  style={{
+        }}
+            // col={"xs-6 sm-4"} colSquare>
+            col={"xs-6 sm-4"} >
+            <SView style={{
                 width: "100%",
                 height: 130,
                 // height: "100%",
@@ -103,7 +102,7 @@ export default class TotalTipoPago extends Component<TotalTipoPagoProps> {
                     <SView flex>
                         <SText flex key={item.key_tipo_pago} numberOfLines={1} fontSize={12} >{item.descripcion}</SText>
                         <SView row>
-                            <SText  key={item.key_tipo_pago} numberOfLines={1} fontSize={10} color={STheme.color.lightGray} >{item.tipo_pago ? item.tipo_pago.descripcion : item.key_tipo_pago}</SText>
+                            <SText key={item.key_tipo_pago} numberOfLines={1} fontSize={10} color={STheme.color.lightGray} >{item.tipo_pago ? item.tipo_pago.descripcion : item.key_tipo_pago}</SText>
                             <SView width={5} />
                             <SText numberOfLines={1} fontSize={10} color={STheme.color.lightGray} >{item.moneda?.descripcion}</SText>
                         </SView>

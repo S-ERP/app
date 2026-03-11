@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SHr, SNavigation, SNotification, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SHr, SNavigation, SNotification, SPopup, SSCrollView, SScrollView2, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
 import SelectTipoPago from './SelectTipoPago';
 import CargarEfectivoDelBanco from '../Acciones/CargarEfectivoDelBanco';
@@ -7,6 +7,7 @@ import Transferencia from '../Acciones/Transferencia';
 import { Btn } from '../../../Components';
 import SIconApp from '../../../Assets/SIconApp';
 import { ColorCompraVenta } from '../../../Config/theme';
+import TotalTipoPagoTabla from './TotalTipoPagoTabla';
 
 
 export default class MenuAcciones extends Component<{ caja: any, movimientos: any[] }> {
@@ -14,31 +15,89 @@ export default class MenuAcciones extends Component<{ caja: any, movimientos: an
 
     cerrar_caja() {
         const { caja } = this.props
-        SPopup.confirm({
-            title: "Cerrar Caja",
-            message: "¿Deseas cerrar la caja?",
-            onPress: () => {
-                SNotification.send({
-                    key: "caja_cerrar",
-                    title: "Cargando",
-                    type: "loading",
-                })
-                MDL.caja.cerrar({
-                    key: caja.key,
-                    key_punto_venta: caja.key_punto_venta,
-                }).then(e => {
-                    SNotification.remove("caja_cerrar");
-                }).catch(e => {
-                    SNotification.send({
-                        key: "caja_cerrar",
-                        title: "Error al cerrar caja",
-                        body: e.error,
-                        color: STheme.color.danger,
-                        time: 5000
-                    })
-                });
-            }
-        });
+        SPopup.open({
+            key: "barcode_scanner",
+            content: <SView style={{
+                width: "100%",
+                maxWidth: 800,
+                backgroundColor: STheme.color.background,
+                borderRadius: 8,
+                overflow: "hidden",
+                padding: 15,
+                maxHeight: "100%",
+            }} height={415} withoutFeedback>
+                <SView style={{ height: "100%" }}>
+                    <SScrollView2>
+                        <SText bold fontSize={16}>Resumen de cuentas</SText>
+                        <SHr height={4} />
+                        <TotalTipoPagoTabla key_punto_venta={caja.key_punto_venta} movimientos={this.props.movimientos} />
+                        <SHr height={20} />
+                        <SView col={"xs-12"} center>
+                            <SView width={120} height={40} center style={{
+                                borderRadius: 4,
+                                borderColor: 1,
+                                backgroundColor: STheme.color.danger
+                            }} onPress={() => {
+                                SPopup.confirm({
+                                    title: "Cerrar Caja",
+                                    message: "¿Deseas cerrar la caja?",
+                                    onPress: () => {
+                                        SNotification.send({
+                                            key: "caja_cerrar",
+                                            title: "Cargando",
+                                            type: "loading",
+                                        })
+                                        MDL.caja.cerrar({
+                                            key: caja.key,
+                                            key_punto_venta: caja.key_punto_venta,
+                                        }).then(e => {
+                                            SNotification.remove("caja_cerrar");
+                                        }).catch(e => {
+                                            SNotification.send({
+                                                key: "caja_cerrar",
+                                                title: "Error al cerrar caja",
+                                                body: e.error,
+                                                color: STheme.color.danger,
+                                                time: 5000
+                                            })
+                                        });
+                                    }
+                                });
+                            }}>
+                                <SText fontSize={15}>Cerrar Caja</SText>
+                            </SView>
+                        </SView>
+
+                    </SScrollView2>
+                </SView>
+            </SView>
+        })
+
+        // SPopup.confirm({
+        //     title: "Cerrar Caja",
+        //     message: "¿Deseas cerrar la caja?",
+        //     onPress: () => {
+        //         SNotification.send({
+        //             key: "caja_cerrar",
+        //             title: "Cargando",
+        //             type: "loading",
+        //         })
+        //         MDL.caja.cerrar({
+        //             key: caja.key,
+        //             key_punto_venta: caja.key_punto_venta,
+        //         }).then(e => {
+        //             SNotification.remove("caja_cerrar");
+        //         }).catch(e => {
+        //             SNotification.send({
+        //                 key: "caja_cerrar",
+        //                 title: "Error al cerrar caja",
+        //                 body: e.error,
+        //                 color: STheme.color.danger,
+        //                 time: 5000
+        //             })
+        //         });
+        //     }
+        // });
 
     }
     enviarAlBanco = () => {
