@@ -6,6 +6,7 @@ import SIconApp from "../../Assets/SIconApp";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
+import ComprobanteRollo from "../PDF/compra/ComprobanteRollo";
 
 export type PopupCarritoConfirmarResumenProps = {
     onTipoPagoChange: (esCredito: boolean) => void;
@@ -182,6 +183,37 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         }
     };
 
+
+    showVentaPopup(key_venta: String) {
+        SPopup.open({
+            key: "popup-venta-completada",
+            content: (
+                <SView col="xs-11 md-4" backgroundColor={STheme.color.background} padding={24} style={{ borderRadius: 16, maxWidth: "100%", alignItems: "center" }} >
+                    {/* Icono de éxito */}
+                    <SView width={80} height={80} borderRadius={40} backgroundColor={STheme.color.success} center style={{ marginBottom: 16 }} > <SText fontSize={36} color="white">✔</SText> </SView>
+
+                    {/* Título */}
+                    <SText bold fontSize={20} center style={{ marginBottom: 8 }}> ¡Venta realizada con éxito! </SText>
+
+                    {/* Subtítulo */}
+                    <SText fontSize={14} center style={{ color: STheme.color.text, marginBottom: 24 }}> Tu transacción se ha completado correctamente. Gracias por tu compra. </SText>
+
+                    {/* Botones */}
+                    <SView row col="xs-12 md-11" style={{ justifyContent: "space-between", gap: 16, width: "100%", flexWrap: "nowrap" }} >
+                        {/* Salir */}
+                        <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.text} onPress={() => SPopup.close("popup-venta-completada")} > <SText color={STheme.color.background} center>Salir</SText> </SView>
+
+                        {/* Ver venta */}
+                        <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.success} onPress={() => { SPopup.close("popup-venta-completada"); SNavigation.navigate("/venta/profile2", { pk: key_venta }); }} > <SText color={STheme.color.text} center>Ver venta</SText> </SView>
+
+                        {/* Imprimir rollo */}
+                        <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.card} border={STheme.color.success} onPress={() => { SPopup.close("popup-venta-completada"); ComprobanteRollo.imprimir(key_venta) }} > <SText color={STheme.color.text} center>Imprimir rollo</SText> </SView>
+                    </SView>
+                </SView>
+            )
+        });
+    }
+
     handleSubmit = async (tipos_pago: any, key_moneda: string, cliente: any, factura: boolean, almacen_: any, porcentajeDescuento: any, descuentoSeleccionado: any) => {
         try {
             const monedaActual = MDL.carrito.selectedMoneda;
@@ -286,13 +318,16 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             SPopup.close("PopupCarrito");
             MDL.carrito.limpiarCarritoVentas();
             MDL.carrito.limpiarCarritoCompras();
-            SPopup.confirm({
-                title: "¡Venta realizada con éxito!",
-                message: "¿Deseas ir a la venta ahora?",
-                onPress: () => {
-                    SNavigation.navigate("/venta/profile2", { pk: compraResp?.data?.key_compra_venta });
-                }
-            });
+
+            this.showVentaPopup(compraResp?.data?.key_compra_venta);
+
+            // SPopup.confirm({
+            //     title: "¡Venta realizada con éxito!",
+            //     message: "¿Deseas ir a la venta ahora?",
+            //     onPress: () => {
+            //         SNavigation.navigate("/venta/profile2", { pk: compraResp?.data?.key_compra_venta });
+            //     }
+            // });
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
         } catch (error: any) {
             console.error("Error al realizdddsdar la venta:", error);

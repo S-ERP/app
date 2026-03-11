@@ -322,6 +322,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     </SView>
 
                     {/* Aquí puedes agregar contactos o costos como antes */}
+                    <ListaCostos item={item} moneda={moneda} />
                 </SView>
             </SView>
         </SView>
