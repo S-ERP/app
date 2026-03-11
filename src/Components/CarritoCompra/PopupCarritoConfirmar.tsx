@@ -92,7 +92,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             console.error("Error al realizar la compra:", error);
             SNotification.send({
                 key: "compra_rapida",
-                title: "Error al realizar la compra",
+                title: "Error al realizar la compra1",
                 body: error?.error || JSON.stringify(error),
                 color: STheme.color.danger,
                 time: 4000,
@@ -136,7 +136,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             console.error("Error al realizar la compra:", error);
             SNotification.send({
                 key: "compra_rapida",
-                title: "Error al realizar la compra",
+                title: "Error al realizar la compra2",
                 body: error?.error || JSON.stringify(error),
                 color: STheme.color.danger,
                 time: 4000,
@@ -249,7 +249,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             console.error("Error al realizar la compra:", error);
             SNotification.send({
                 key: "compra_rapida",
-                title: "Error al realizar la compra",
+                title: "Error al realizar la compra3",
                 body: error?.error || JSON.stringify(error),
                 color: STheme.color.danger,
                 time: 4000,
