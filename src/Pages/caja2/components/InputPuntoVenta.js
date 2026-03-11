@@ -1,93 +1,147 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import { SInput, SText, SView, SStorage } from 'servisofts-component';
+import { SInput, SView, SStorage } from 'servisofts-component';
 import MDL from '../../../MDL';
-import sucursal from '../../../Model/empresa/sucursal';
 
 export default class InputPuntoVenta extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
             data: null,
             sucursales: [],
-            puntos_venta: []
+            puntos_venta: [],
+            select: null
         };
     }
+
     getValue() {
         return this.state.select;
     }
 
+    async componentDidMount() {
+        try {
 
-    componentDidMount() {
-        MDL.empresa.getByKeyFull().then((data) => {
-            this.state.data = data;
-            this.state.puntos_venta = [];
-            this.state.sucursales = data.sucursales.map(a => {
-                this.state.puntos_venta.push(...(a.puntos_venta ?? []).map(pv => {
-                    pv.descripcion_sucursal = a.descripcion;
-                    pv.fullName = a.descripcion + " - " + pv.descripcion;
-                    return pv;
-                }));
-                return a;
+            const data = await MDL.empresa.getByKeyFull();
+
+            let puntos_venta = [];
+            let sucursales = data.sucursales ?? [];
+
+            sucursales.forEach(sucursal => {
+
+                (sucursal.puntos_venta ?? []).forEach(pv => {
+
+                    const obj = {
+                        ...pv,
+                        descripcion_sucursal: sucursal.descripcion,
+                        fullName: `${sucursal.descripcion} - ${pv.descripcion}`
+                    };
+
+                    puntos_venta.push(obj);
+                });
+
             });
-            
-            // Intentar cargar la selección previa
-            SStorage.getItem("puntoVenta_selected").then((savedSelect) => {
+
+            let select = puntos_venta[0] ?? null;
+
+            // intentar recuperar selección guardada
+            try {
+
+                const savedSelect = await SStorage.getItem("puntoVenta_selected");
+
                 if (savedSelect) {
-                    try {
-                        const savedObj = JSON.parse(savedSelect);
-                        const foundPV = this.state.puntos_venta.find(pv => pv.key === savedObj.key);
-                        this.state.select = foundPV ?? this.state.puntos_venta[0] ?? null;
-                    } catch (e) {
-                        this.state.select = this.state.puntos_venta[0] ?? null;
-                    }
-                } else {
-                    this.state.select = this.state.puntos_venta[0] ?? null;
-                }
-                
-                this.input.setValue(this.state.select?.fullName ?? "");
-                this.forceUpdate();
-            }).catch(e => {
-                this.state.select = this.state.puntos_venta[0] ?? null;
-                this.input.setValue(this.state.select?.fullName ?? "");
-                this.forceUpdate();
-            });
-        }).catch(e => {
 
-        })
+                    const savedObj = JSON.parse(savedSelect);
+
+                    const found = puntos_venta.find(pv => pv.key === savedObj.key);
+
+                    if (found) select = found;
+
+                }
+
+            } catch (e) {
+                console.log("Error leyendo storage", e);
+            }
+
+            this.setState({
+                data,
+                sucursales,
+                puntos_venta,
+                select
+            }, () => {
+
+                if (this.input && select) {
+                    this.input.setValue(select.fullName);
+                }
+
+                if (this.props.onChange) {
+                    this.props.onChange(select);
+                }
+
+            });
+
+        } catch (e) {
+            console.log("Error cargando empresa", e);
+        }
+    }
+
+    onChangeText = (value) => {
+
+        const obj = this.state.puntos_venta.find(a => a.fullName === value);
+
+        if (obj) {
+
+            this.setState({
+                select: obj
+            }, () => {
+
+                SStorage.setItem("puntoVenta_selected", JSON.stringify(obj));
+
+                if (this.props.onChange) {
+                    this.props.onChange(obj);
+                }
+
+                if (this.input) {
+                    this.input.setState({ error: false });
+                }
+
+            });
+
+        } else {
+
+            this.setState({
+                select: null
+            }, () => {
+
+                if (this.props.onChange) {
+                    this.props.onChange(null);
+                }
+
+                if (this.input) {
+                    this.input.setState({ error: true });
+                }
+
+            });
+
+        }
+
     }
 
     render() {
-        return <SView>
-            <SInput
-                ref={ref => this.input = ref}
-                label={"Sucursal - Punto de Venta"}
-                type='select2'
-                placeholder={"Seleccione una sucursal"}
-                error={!this.state.select}
-                options={this.state.puntos_venta.map(a => a.fullName)}
-                onChangeText={(e) => {
-                    const obj = this.state.puntos_venta.find(a => a.fullName == e)
-                    if (obj) {
-                        this.state.select = obj;
-                        console.log("select to obj")
-                        // Guardar la selección en SStorage
-                        SStorage.setItem("puntoVenta_selected", JSON.stringify(obj));
-                        if (this.props.onChange) this.props.onChange(this.state.select)
-                        this.input.setState({ error: false })
-                        this.forceUpdate();
-                        return;
-                    }
-                    if (this.state.select) {
-                        console.log("select to null")
-                        this.state.select = null;
-                        this.forceUpdate();
-                        if (this.props.onChange) this.props.onChange(this.state.select)
-                        this.input.setState({ error: true })
-                    }
 
-                }}
-            />
-        </SView>
+        const options = this.state.puntos_venta.map(a => a.fullName);
+
+        return (
+            <SView>
+                <SInput
+                    ref={(ref) => { this.input = ref }}
+                    label={"Sucursal - Punto de Venta"}
+                    type="select2"
+                    placeholder={"Seleccione una sucursal"}
+                    error={!this.state.select}
+                    options={options}
+                    onChangeText={this.onChangeText}
+                />
+            </SView>
+        );
     }
 }

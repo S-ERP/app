@@ -122,7 +122,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     body: "Debe seleccionar una moneda antes de continuar.",
                     color: STheme.color.danger,
                 });
-                return;
+                // return;
             }
 
             if (!almacen) {
@@ -131,7 +131,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     body: "Debe seleccionar un almacén.",
                     color: STheme.color.danger,
                 });
-                return;
+                // return;
             }
 
             let subtotal = MDL.carrito.carrito_venta?.monto_total || 0;
