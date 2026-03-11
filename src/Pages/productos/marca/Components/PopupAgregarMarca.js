@@ -91,7 +91,7 @@ export default class PopupAgregarMarca extends Component<Props> {
                                 if (Array.isArray(value) && value[0]) {
                                     await Upload.sendPromise(
                                         { file: value[0], compress: false },
-                                        (SSocket.api as any).inventario + "upload/marca/" + resp.key
+                                        SSocket.api.inventario + "upload/marca/" + resp.key
                                     );
                                 }
                             }
