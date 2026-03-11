@@ -359,7 +359,7 @@ export default class table extends Component {
                 }}
                 loadInitialState={async () => {
                     return {
-                        sorters: [{ key: "nombre", order: "asc", type: "string" }],
+                        sorters: [{ key: "tipo_producto_tipo", order: "asc", type: "string" }, { key: "nombre", order: "asc", type: "string" }],
                     }
                 }}
             >

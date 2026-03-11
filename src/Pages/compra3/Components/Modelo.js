@@ -6,6 +6,12 @@ import SSocket from 'servisofts-socket';
 import FotoModelo from './Foto/FotoModelo';
 import Recargar from '../../../Components/Recargar';
 const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
+
+const sorters = [
+    { key: "tipo_producto_tipo", order: "asc", type: "string" },
+    { key: "descripcion", order: "asc", type: "string" } // asumí que "nombre" es "descripcion"
+];
+
 export default class Modelo extends Component {
     constructor(props) {
         super(props);
@@ -45,13 +51,24 @@ export default class Modelo extends Component {
         const modelos = await MDL.inventario.getAllModeloStock();
         let monedas = await MDL.empresa.getMonedas();
 
-        // this.modelos = modelos;
 
-        this.modelos = modelos.map(e => ({
-            ...e,
-            compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
-            venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || monedas.find(m => m.tipo === "base") || {}
-        }));
+        this.modelos = modelos
+            .map(e => ({
+                ...e,
+                compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
+                venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || monedas.find(m => m.tipo === "base") || {}
+            }))
+            .sort((a, b) => {
+                const tipoA = a.tipo_producto?.tipo || "";
+                const tipoB = b.tipo_producto?.tipo || "";
+                if (tipoA < tipoB) return -1;
+                if (tipoA > tipoB) return 1;
+                const nombreA = a.descripcion || "";
+                const nombreB = b.descripcion || "";
+                if (nombreA < nombreB) return -1;
+                if (nombreA > nombreB) return 1;
+                return 0;
+            });
         this.forceUpdate();
     }
     modificarStock = (key, delta) => {
@@ -86,7 +103,7 @@ export default class Modelo extends Component {
                     p.observacion?.toLowerCase().includes(search)
             );
         }
-{/* si */}
+        {/* si */ }
 
         const colSize = this.getColSize();
         return (<>
@@ -173,7 +190,7 @@ export default class Modelo extends Component {
             </SView>
             <SView style={{ position: "absolute", bottom: 20, right: 10 }}>
                 {
-                    <Recargar ref={ref => this.recargar = ref} initialTime={20} fill={STheme.color.lightGray} 
+                    <Recargar ref={ref => this.recargar = ref} initialTime={20} fill={STheme.color.lightGray}
                         onFinish={() => {
                             this.loadApis(); // ✅ correcto
                         }} />
