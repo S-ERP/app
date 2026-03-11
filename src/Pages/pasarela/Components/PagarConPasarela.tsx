@@ -7,9 +7,11 @@ import TipoPasarela from './TipoPasarela';
 
 type Props = {
     key_pasarela_empresa: string,
+    tipo?:string,
     monto: number,
     onCancel?: Function,
     onSuccess?: Function,
+    data?: any
 }
 
 

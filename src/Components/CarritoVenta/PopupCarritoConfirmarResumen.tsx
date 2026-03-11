@@ -4,8 +4,9 @@ import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
-import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
+import SelectTipoPago2 from "../../Pages/caja2/components/SelectTipoPago2";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
+import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago2";
 
 export type PopupCarritoConfirmarResumenProps = {
     onTipoPagoChange: (esCredito: boolean) => void;
@@ -190,7 +191,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             const clientefull = this.props.cliente;
             if (keyPago === "credito" && !clientefull) {
                 this.props.onTipoPagoChange(true);
-                SelectTipoPago.closePopup();
+                SelectTipoPago2.closePopup();
                 SPopup.close("PopupCarritoConfirmarResumen");
                 SNotification.send({
                     key: "venta_rapida",
@@ -279,7 +280,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 "data": data
             })
             MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
-            SelectTipoPago.closePopup();
+            SelectTipoPago2.closePopup();
             SNotification.remove("venta_rapida");
             SPopup.close("PopupCarritoConfirmar");
             SPopup.close("PopupCarritoConfirmarResumen");

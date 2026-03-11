@@ -22,7 +22,8 @@ export default class banco_ganadero_qr extends React.Component<TipoPasarelaProps
             nit: "nit",
             razon_social: "RICARDO PAZ DEMIQUEL",
             correos: [""],
-            tipo: "pago_caja",
+            tipo: this.props.tipo ?? "pago_caja",
+            data: this.props?.data,
             key_bg_profile: this.props.pasarela_empresa?.params?.key_bg_profile
         }, 2 * 60 * 1000).then(e => {
             this.setState({ loading: false, dataqr: e.data })
@@ -61,7 +62,7 @@ export default class banco_ganadero_qr extends React.Component<TipoPasarelaProps
                     width: 250,
                     height: 250,
                 }} center>
-                    {!this.getQr() && <SLoad color={"#000"}/>}
+                    {!this.getQr() && <SLoad color={"#000"} />}
                     {this.getQr() && <SImage src={this.getQr()} height={"100%"}
                         enablePreview
                         style={{

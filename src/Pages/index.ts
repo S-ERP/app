@@ -58,6 +58,7 @@ import drive2 from "./drive2";
 import qr_reader from "./qr_reader";
 import pasarela from "./pasarela";
 import tableros from "./tableros";
+import cotizacion from "./cotizacion";
 // Three js
 // import three from './three';
 // import mesh from './mesh';
@@ -136,6 +137,7 @@ export default SPage.combinePages("/", {
   ...compra2,
   ...compra3,
   ...venta,
+  ...cotizacion,
   ...caja,
   ...caja2,
   ...cobranza,

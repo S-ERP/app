@@ -6,6 +6,8 @@ export type TipoPasarelaProps = {
     descripcion?: string,
     monto: number,
     pasarela_empresa?: any,
+    data?: any,
+    tipo?: string
 }
 
 export default {
