@@ -211,7 +211,7 @@ const AlmacenNodo = ({ sucursal, almacen, empresa, save_locations }) => {
         id={almacen.key}
         y={save_locations[almacen.key]?.pizarraY ?? 0}
         x={save_locations[almacen.key]?.pizarraX ?? 0}
-
+        data={almacen}
         style={{
             alignItems: "center",
             justifyContent: "center"
@@ -351,6 +351,7 @@ const PuntoVentaNodo = ({ sucursal, empresa, punto_venta, reload, save_locations
             alignItems: "center",
             justifyContent: "center"
         }}
+        data={punto_venta}
         onDoublePress={e => {
             PopupCrearPuntoVenta.open({
                 key_sucursal: sucursal.key,
