@@ -212,18 +212,33 @@ export default class pizarra extends React.Component {
         return coincidencia ? 1 : 0.3;
     }
 
-
     renderModelos() {
         const { modelos, ingredientes, initialsPositions, key_sucursal } = this.state;
+
+        const monedas = this.monedas ?? [];
+        const monedaBase = monedas.find(m => m.tipo === "base") || {};
+
         return modelos.map(modelo => {
+
             const ipos = initialsPositions[modelo.key] ?? { x: 0, y: 0 };
-            const modelo_ingredientes = ingredientes.flatMap(ingrediente => (ingrediente.modelo_ingrediente ?? []).filter(mi => mi.key_modelo === modelo.key));
+
+            const modelo_ingredientes = ingredientes.flatMap(ingrediente =>
+                (ingrediente.modelo_ingrediente ?? []).filter(mi => mi.key_modelo === modelo.key)
+            );
+
             const modeloData = {
                 ...modelo,
-                compra_moneda: this.monedas.find(m => m.key === modelo.precio_compra_moneda) || this.monedas.find(m => m.tipo === "base") || {},
-                venta_moneda: this.monedas.find(m => m.key === modelo.precio_venta_moneda) || this.monedas.find(m => m.tipo === "base") || {},
+                compra_moneda:
+                    monedas.find(m => m.key === modelo.precio_compra_moneda) ||
+                    monedaBase ||
+                    {},
+                venta_moneda:
+                    monedas.find(m => m.key === modelo.precio_venta_moneda) ||
+                    monedaBase ||
+                    {},
                 arrIngredientes: modelo_ingredientes.map(a => a.key_ingrediente),
             };
+
             return (
                 <PizarraNodo
                     key={modelo.key}
@@ -232,6 +247,7 @@ export default class pizarra extends React.Component {
                     y={ipos.y}
                     style={{ opacity: this.filtro_opacity(modelo) }}
                     data={modeloData}
+
                     onDelete={async () => {
                         try {
                             await MDL.inventario.saveModelo({ key: modelo.key, estado: 0 });
@@ -242,9 +258,14 @@ export default class pizarra extends React.Component {
                             console.error(e);
                         }
                     }}
+
                     onDuplicate={async (nodo_) => {
                         try {
-                            const nuevoModelo = await MDL.inventario.saveModelo({ ...modelo, key: null });
+                            const nuevoModelo = await MDL.inventario.saveModelo({
+                                ...modelo,
+                                key: null
+                            });
+
                             this.setState(prev => ({
                                 modelos: [...prev.modelos, nuevoModelo],
                                 initialsPositions: {
@@ -259,30 +280,40 @@ export default class pizarra extends React.Component {
                             console.error(e);
                         }
                     }}
-                    onDoublePress={e => {
+
+                    onDoublePress={() => {
                         FormularioModelo.open({
                             editObject: modelo,
                             onSuccess: (dataActualizada) => {
                                 this.setState(prev => ({
                                     modelos: prev.modelos.map(m =>
-                                        m.key === modelo.key ? { ...m, ...dataActualizada } : m
+                                        m.key === modelo.key
+                                            ? { ...m, ...dataActualizada }
+                                            : m
                                     )
                                 }));
                             }
                         });
                     }}
                 >
-                    <NodoModelo modelo={modeloData} key_sucursal={key_sucursal} moneda_base={this.selectedMoneda} />
 
-                    {/* Puerto para ingredientes */}
+                    <NodoModelo
+                        modelo={modeloData}
+                        key_sucursal={key_sucursal}
+                        moneda_base={this.selectedMoneda}
+                    />
+
+                    {/* PUERTO INGREDIENTES */}
                     <Puerto
                         id="key_ingrediente"
                         type="input"
                         lineType="line"
                         selectLineProps={{ strokeDasharray: "0" }}
                         value={modeloData.arrIngredientes}
+
                         onPressLine={e => {
                             e.select.value = true;
+
                             FloatMenu.open({
                                 e: { nativeEvent: { pageX: e.absoluteX, pageY: e.absoluteY } },
                                 label: "Modelo Ingrediente",
@@ -292,7 +323,9 @@ export default class pizarra extends React.Component {
                                     label: "Eliminar Modelo ingrediente",
                                     onPress: async () => {
                                         try {
+
                                             const mi = modelo_ingredientes.find(a => a.key_ingrediente === e.value);
+
                                             await SSocket.sendPromise({
                                                 service: "inventario",
                                                 component: "modelo_ingrediente",
@@ -300,12 +333,15 @@ export default class pizarra extends React.Component {
                                                 key_usuario: MDL.usuario?.session?.key,
                                                 data: { key: mi.key, estado: 0 }
                                             });
+
                                             this.setState(prev => ({
                                                 ingredientes: prev.ingredientes.map(ing => ({
                                                     ...ing,
-                                                    modelo_ingrediente: (ing.modelo_ingrediente ?? []).filter(m => m.key !== mi.key)
+                                                    modelo_ingrediente: (ing.modelo_ingrediente ?? [])
+                                                        .filter(m => m.key !== mi.key)
                                                 }))
                                             }));
+
                                         } catch (err) {
                                             console.error(err);
                                         }
@@ -313,8 +349,11 @@ export default class pizarra extends React.Component {
                                 }]
                             });
                         }}
+
                         onConnect={async (e) => {
+
                             const existe = modelo_ingredientes.find(a => a.key_ingrediente === e.value);
+
                             if (existe) {
                                 SNotification.send({
                                     title: "Error",
@@ -324,25 +363,39 @@ export default class pizarra extends React.Component {
                                 });
                                 return;
                             }
+
                             try {
+
                                 const resp = await SSocket.sendPromise({
                                     service: "inventario",
                                     component: "modelo_ingrediente",
                                     type: "registro",
                                     key_usuario: MDL.usuario?.session?.key,
-                                    data: { key_modelo: modelo.key, key_ingrediente: e.value }
+                                    data: {
+                                        key_modelo: modelo.key,
+                                        key_ingrediente: e.value
+                                    }
                                 });
+
                                 this.setState(prev => ({
                                     ingredientes: prev.ingredientes.map(ing =>
                                         ing.key === e.value
-                                            ? { ...ing, modelo_ingrediente: [...(ing.modelo_ingrediente ?? []), resp.data] }
+                                            ? {
+                                                ...ing,
+                                                modelo_ingrediente: [
+                                                    ...(ing.modelo_ingrediente ?? []),
+                                                    resp.data
+                                                ]
+                                            }
                                             : ing
                                     )
                                 }));
+
                             } catch (err) {
                                 console.error(err);
                             }
                         }}
+
                         style={{
                             position: "absolute",
                             height: 40,
@@ -354,7 +407,7 @@ export default class pizarra extends React.Component {
                         }}
                     />
 
-                    {/* Puerto de salida */}
+                    {/* PUERTO SALIDA */}
                     <Puerto
                         id="key_modelo"
                         type="output"
@@ -370,6 +423,7 @@ export default class pizarra extends React.Component {
                             backgroundColor: STheme.color.text
                         }}
                     />
+
                 </PizarraNodo>
             );
         });

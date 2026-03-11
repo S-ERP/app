@@ -1,5 +1,5 @@
 import React from "react";
-import { SHr, SImage, SInput, SMath, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SHr, SImage, SInput, SMath, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
@@ -155,14 +155,70 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         <SText fontSize={12}>{"Limpiar carrito"}</SText>
                     </SView>
                     <SView flex />
-                    <SView style={{ backgroundColor: STheme.color.success }} padding={4} card onPress={() => {
-                        // console.log("%cContactos:", "color: #2ECC40; font-weight: bold;", JSON.stringify(this.state.contactosSeleccionados, null, 2));
-                        // console.log("%cTipos Costo:", "color: #df512e; font-weight: bold;", JSON.stringify(this.state.tipoCostosSeleccionados, null, 2));
-                        // console.log(items)
+
+                    <SView style={{ backgroundColor: STheme.color.success }} padding={4} card
+
+                        onPress={() => {
+                            const items = MDL.carrito.carrito_venta.items;
+
+                            // Validar precios
+                            const itemConPrecioInvalido = items.find(it => {
+                                const precio = it?.modelo?.precio_venta_moneda ?? 0;
+                                return precio <= 0;
+                            });
+                            if (itemConPrecioInvalido) {
+                                SNotification.send({
+                                    title: "precio_invalido",
+                                    body: "Debe registrar precio antes de continuar.",
+                                    color: STheme.color.danger,
+                                });
+                                return; // detener confirmación
+                            }
+
+                            // Validar cantidades
+                            const itemConCantidadInvalida = items.find(it => {
+                                const cantidad = it?.cantidad ?? 0;
+                                return cantidad <= 0;
+                            });
+                            if (itemConCantidadInvalida) {
+                                SNotification.send({
+                                    title: "cantidad_invalida",
+                                    body: "Debe registrar cantidad antes de continuar.",
+                                    color: STheme.color.danger,
+                                });
+                                return; // detener confirmación
+                            }
+
+                            // Todo válido → abrir popup de confirmación
+                            PopupCarritoConfirmar.open({});
+                        }}
+                    // onPress={() => {
+                    //     const itemSinPrecio = items.find(it => (it?.precio ?? it?.modelo?.precio_venta_moneda ?? 0) <= 1);
+
+                    //     console.clear();
+                    //     console.log("%cprecio:", "color:#2ECC40;font-weight:bold;", itemSinPrecio?.precio);
+                    //     console.log("%cprecio_modelo:", "color:#2ECC40;font-weight:bold;", itemSinPrecio?.modelo?.precio_venta_moneda);
+                    //     console.log("%citem encontrado:", "color:#3498DB;font-weight:bold;", itemSinPrecio);
+
+                    //     PopupCarritoConfirmar.open({})
+                    // }}
+
+                    >
+                        <SText fontSize={12}>{"Confirmar la venta"}</SText>
+                    </SView>
+
+                    {/* <SView style={{ backgroundColor: STheme.color.success }} padding={4} card onPress={() => {
+                         const itemSinPrecio = items.find(it => (it?.precio ?? it?.modelo?.precio_venta_moneda ?? 0) <= 1);
+
+                        console.clear();
+                        console.log("%c" + it?.precio, `color: #2ECC40; font-weight: bold;`);
+                        console.log("%c" + it?.modelo?.precio_venta_moneda, `color: #2ECC40; font-weight: bold;`);
+
+ 
                         PopupCarritoConfirmar.open({})
                     }}>
                         <SText fontSize={12}>{"Confirmar la venta"}</SText>
-                    </SView>
+                    </SView> */}
                 </SView>
             </SView>
         </SView>

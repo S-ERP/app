@@ -106,19 +106,19 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
             const almacen = this.state.almacen;
             if (!almacen) {
                 console.log("%c" + "Debe seleccionar un almacen", `color: #ff0000; font-weight: bold;`);
-                return;
+                // return;
             }
 
             if (!key_moneda) {
                 console.log("%c" + "Debe seleccionar una moneda", `color: #ff0000; font-weight: bold;`);
-                return;
+                // return;
             }
 
             const subtotal = this.state.subtotal || 0;
             const selectedMoneda = MDL.carrito.selectedMoneda;
             if (!selectedMoneda) {
-                console.log("%c" + "No hay moneda seleccionada en el carrito", `color: #ff0000; font-weight: bold;`);
-                return;
+                console.log("%c" + "No hay moneda seleccionada en el carrito compra", `color: #ff0000; font-weight: bold;`);
+                // return;
             }
 
             const total = subtotal * (selectedMoneda.tipo_cambio || 1);
