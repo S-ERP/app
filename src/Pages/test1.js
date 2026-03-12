@@ -28,8 +28,6 @@ const line = {
     width: "100%",
     height: 1.5,
     backgroundColor: "#DDDDDD",
-    // marginTop: 8,
-    // marginBottom: 8,
 };
 
 
@@ -66,9 +64,6 @@ export default class index extends React.Component {
             </SPDF.View>
         );
     }
-
-
-
 
     detalle() {
 
@@ -145,8 +140,6 @@ export default class index extends React.Component {
         );
     }
 
-
-
     Firmas() {
         return (
             <SPDF.View style={{ width: "100%", marginTop: 50, flexDirection: "row" }}>
@@ -176,7 +169,6 @@ export default class index extends React.Component {
     }
 
     Resumen() {
-
         const data = [
             { label: "Apertura", value: 200 },
             { label: "Ventas Transferencia", value: 398 },
@@ -266,58 +258,23 @@ export default class index extends React.Component {
             </SPDF.View>
         );
     }
-    CajeroMMMMMM() {
-        return (
-            <SPDF.View style={{ width: "100%", backgroundColor: "#8e98f1", }}>
-                <SPDF.Text style={label}>Sucursal / Cajero</SPDF.Text>
-                {this.espaciopequeño()}
-                <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
-                    <SPDF.View style={{ width: 50, height: 50, borderWidth: 1, }}>
-                        <SPDF.Image src="https://cdn-icons-png.flaticon.com/512/149/149071.png" style={{ width: 40, height: 40 }} />
-                    </SPDF.View>
-                    <SPDF.View style={{ flex: 1, height: 100, borderWidth: 1, }}>
-                        <SPDF.Text style={label}>Busch</SPDF.Text>
-                        <SPDF.Text style={text}>Felicidad Aguilar Jalil</SPDF.Text>
-                    </SPDF.View>
-                </SPDF.View>
-            </SPDF.View>
-        );
-    }
-
+ 
     imprimirPDF() {
 
         SPDF.create(
 
             <SPDF.Page style={{ width: 612, height: 791, padding: 20 }}>
-
                 {this.HeaderCierre()}
                 {this.espacio()}
-
-
-
-
-                {/* {this.Resumen()} */}
-
                 {this.Cajero()}
                 {this.espacio()}
                 {this.detalle()}
                 {this.espacio()}
                 {this.Resumen()}
                 {this.espacio()}
-                {this.pagina()}
-
-
-
-                {/* {this.ResumenCaja()} */}
-                {/* {this.espacio()}
-                {this.TotalesPago()}
-                {this.espacio()}
-                {this.detalle()}
-                {this.Resumen()}
-                {this.espacio()}
                 {this.Firmas()}
-                {this.pagina()} */}
-
+                {this.espacio()}
+                {this.pagina()}
             </SPDF.Page>
 
         );
