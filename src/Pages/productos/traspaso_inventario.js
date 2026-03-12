@@ -6,6 +6,7 @@ import Config from "../../Config";
 import { ref } from "process";
 import SelectorAlmacen from "../../Components/Selectores/SelectorAlmacen";
 import SSocket from "servisofts-socket";
+import SIconApp from "../../Assets/SIconApp";
 
 export default class traspaso_inventario extends React.Component {
     selectItems = []
@@ -13,15 +14,31 @@ export default class traspaso_inventario extends React.Component {
     almacen_destino = {}
 
     async loadData() {
+        // if (!this.almacen?.key) {
+        //     return [];
+        // }
         if (!this.almacen?.key) {
-            return [];
+            throw "sin_almacen_origen";
         }
+
         const modelos = await MDL.inventario.getAllModeloStock(this.almacen?.key ?? "") ?? [];
         return modelos.filter(a => {
             return a.stock > 0;
         })
     }
     async loadDataTraspaso() {
+        if (!this.almacen?.key) {
+            throw "sin_almacen_origen";
+        }
+        if (!this.almacen_destino?.key) {
+            throw "sin_almacen_destino";
+        }
+        if (!this.selectItems.length) {
+            throw "sin_items_select";
+
+        }
+
+
         return this.selectItems;
     }
 
@@ -78,7 +95,7 @@ export default class traspaso_inventario extends React.Component {
 
     render() {
         return <SPage title={"Traspasar inventario"} disableScroll>
-            <SView col={"xs-12"} row flex >
+            <SView col={"xs-12"} row flex padding={6}>
                 <SView col={"xs-6"} height style={{
                     borderWidth: 1,
                 }}>
@@ -97,6 +114,7 @@ export default class traspaso_inventario extends React.Component {
                                 this.traspasoTable.loadData();
                             }} />
                     </SView>
+                    <SHr />
                     <DinamicTable
                         ref={ref => this.mainTable = ref}
                         {...Config.table.applyTheme({
@@ -105,6 +123,39 @@ export default class traspaso_inventario extends React.Component {
                             }
                         })}
                         loadData={this.loadData.bind(this)}
+
+                        renderError={(err) => {
+                            console.log("ERRORR:", err);
+                            if (err.error == "sin_almacen_origen") {
+                                // return (
+                                //     <SView col={"xs-12"} padding={10} >
+                                //         <SText fontSize={12} color={STheme.color.text}>
+                                //             {"Seleccione un almacén origen"}
+                                //         </SText>
+                                //     </SView>
+                                // );
+                                return <BoxMensaje
+                                    titulo={"Seleccione un almacén origen"}
+                                    descripcion={"Debe seleccionar un almacén origen para continuar con el traspaso de inventario"}
+                                    icon="AlertOutline" />
+                            }
+                            return (
+                                <SView col={"xs-12"} padding={10} >
+                                    <SText fontSize={12} color={STheme.color.text}>
+                                        {err?.error || "Error desconocido"}
+                                    </SText>
+                                </SView>
+                            )
+
+                        }}
+                        renderNoResults={(result) => {
+                            return <BoxMensaje
+                                titulo={"Sin productos"}
+                                descripcion={"El almacén seleccionado no contiene productos para traspasar"}
+                                icon="AlertOutline" />
+
+                        }}
+
                         adjustColumnWidth
                         selectType="multiple"
                         onSelect={e => {
@@ -143,11 +194,13 @@ export default class traspaso_inventario extends React.Component {
                             onChangeSelect={(e) => {
                                 // console.log(e);
                                 this.almacen_destino = e;
+                                this.traspasoTable.loadData();
                                 // this.almacen = e;
                                 // this.selectItems = [];
                                 // this.mainTable.loadData();
                             }} />
                     </SView>
+                    <SHr />
                     <DinamicTable
                         ref={ref => this.traspasoTable = ref}
                         {...Config.table.applyTheme({
@@ -157,6 +210,46 @@ export default class traspaso_inventario extends React.Component {
                         })}
                         adjustColumnWidth
                         loadData={this.loadDataTraspaso.bind(this)}
+                        renderError={(err) => {
+                            console.log(this.almacen_destino);
+                            console.log("ERRORR:", err);
+                            if (err.error == "sin_almacen_destino") {
+
+
+                                return (
+                                    <BoxMensaje
+                                        titulo={"Seleccione un almacén destino"}
+                                        descripcion={"Primero debe elegir el almacén donde se registrará el ingreso de los productos transferidos."}
+                                        icon="AlertOutline"
+                                    />
+                                );
+
+                            }
+                            if (err.error == "sin_almacen_origen") {
+                                return (
+                                    <BoxMensaje
+                                        titulo={"Seleccione un almacén origen"}
+                                        descripcion={"Debe seleccionar un almacén origen para continuar con el traspaso de inventario"}
+                                        icon="AlertOutline" />
+                                );
+                            }
+                            if (err.error == "sin_items_select") {
+                                return (
+                                    <BoxMensaje
+                                        titulo={"Seleccione los productos a traspasar"}
+                                        descripcion={"Seleccione los productos del inventario de origen que desea transferir al almacén destino."}
+                                        icon="producto" />
+                                );
+                            }
+
+                            return (
+                                <SView col={"xs-12"} padding={10} center>
+                                    <SText fontSize={12} color={STheme.color.text}>
+                                        {err?.error || "Error desconocido"}
+                                    </SText>
+                                </SView>
+                            )
+                        }}
                         listFooterComponent={e => {
                             return <SView col={"xs-12"} style={{
                                 alignItems: "flex-end"
@@ -257,6 +350,25 @@ export default class traspaso_inventario extends React.Component {
             </SView>
         </SPage>
     }
+}
+
+const BoxMensaje = ({ titulo, descripcion, icon }) => {
+    return <SView col={"xs-9"} padding={10} card style={{
+        marginTop: 5, marginLeft: 5,
+        minHeight: 75
+    }}>
+        <SView row>
+            <SIconApp name={icon} height={20} width={20} fill={STheme.color.text} />
+            <SView width={8} />
+            <SText center bold fontSize={13} color={STheme.color.text}>
+                {titulo}
+            </SText>
+        </SView>
+        <SHr />
+        <SText col={"xs-12"} fontSize={12} color={STheme.color.text}>
+            {descripcion}
+        </SText>
+    </SView>
 }
 
 const InputCantidad = ({ row }) => {
