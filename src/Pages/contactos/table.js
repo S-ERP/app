@@ -1,11 +1,13 @@
 import React from "react";
-import { SIcon, SImage, SNavigation, SPage, SText, STheme, SView } from "servisofts-component";
+import { SIcon, SImage, SNavigation, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import { DinamicTable } from "servisofts-table";
 import MDL from "../../MDL";
 import Config from "../../Config";
 import SSocket from "servisofts-socket";
 import FloatButtom from "../../Components/FloatButtom";
 import PopupCrearCliente from "../cliente/Components/PopupCrearCliente";
+import FloatMenu from "../../Components/FloatMenu";
+import AdminsitrarHabilidades from "../cliente/Components/AdministrarHabilidades";
 
 export default class table extends React.Component {
     async loadData() {
@@ -21,8 +23,10 @@ export default class table extends React.Component {
         return <SPage title={"contactos"} disableScroll>
             <DinamicTable
                 {...Config.table.applyTheme()}
+
                 loadData={this.loadData.bind(this)}
                 ref={ref => (this.DinamicTable = ref)}
+
             >
                 <DinamicTable.Col key="index" label="#" width={40} data={e => e.index + 1} />
                 <DinamicTable.Col
@@ -54,13 +58,109 @@ export default class table extends React.Component {
                     customComponent={e => <SView row center card padding={2} onPress={() => { SNavigation.navigate("/cliente/perfil", { key: e.row.key }) }}>
                         <SIcon name='Eyes' height={14} fill={STheme.color.lightGray} ></SIcon>
                     </SView>} />
-                <DinamicTable.Col key={"nombre"} label="Nombre" data={e => e.row.nombres} width={200} />
+                <DinamicTable.Col key={"nombre"} label="Nombre" data={e => e.row.nombres} width={200}
+                    customComponent={e => {
+                        let contacto = e.row;
+                        // if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
+                        return <>
+                            <SView row center padding={2} onPress={() => {
+                                PopupCrearCliente.open({
+                                    editObject: contacto,
+                                    onSuccess: () => this.DinamicTable.loadData(),
+                                });
+                            }}>
+                                <SText>{contacto.nombres}</SText>
+                            </SView>
+                        </>
+                        // }
+                    }}
+                />
                 {/* <DinamicTable.Col key={"apellido"} label="Apellido" data={e => e.row.apellidos} /> */}
-                <DinamicTable.Col key={"telefono"} label="Teléfono" data={e => e.row.telefono} width={120} />
-                <DinamicTable.Col key={"correo"} label="Email" data={e => e.row.correo} />
-                <DinamicTable.Col key={"nit"} label="NIT" data={e => e.row.nit} />
-                <DinamicTable.Col key={"razon_social"} label="Razón Social" data={e => e.row.razon_social} />
-                <DinamicTable.Col key={"fecha_nacimiento"} label="Fecha de Nacimiento" data={e => e.row.fecha_nacimiento} />
+                <DinamicTable.Col key={"telefono"} label="Teléfono" data={e => e.row.telefono} width={120}
+                    customComponent={e => {
+                        let contacto = e.row;
+                        // if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
+                        return <>
+                            <SView row center padding={2} onPress={() => {
+                                PopupCrearCliente.open({
+                                    editObject: contacto,
+                                    onSuccess: () => this.DinamicTable.loadData(),
+                                });
+                            }}>
+                                <SText>{contacto.telefono}</SText>
+                            </SView>
+                        </>
+                        // }
+                    }}
+                />
+                <DinamicTable.Col key={"correo"} label="Email" width={200} data={e => e.row.correo}
+                    customComponent={e => {
+                        let contacto = e.row;
+                        // if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
+                        return <>
+                            <SView row center padding={2} onPress={() => {
+                                PopupCrearCliente.open({
+                                    editObject: contacto,
+                                    onSuccess: () => this.DinamicTable.loadData(),
+                                });
+                            }}>
+                                <SText>{contacto.correo}</SText>
+                            </SView>
+                        </>
+                        // }
+                    }}
+                />
+                <DinamicTable.Col key={"nit"} label="NIT" data={e => e.row.nit}
+                    customComponent={e => {
+                        let contacto = e.row;
+                        // if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
+                        return <>
+                            <SView row center padding={2} onPress={() => {
+                                PopupCrearCliente.open({
+                                    editObject: contacto,
+                                    onSuccess: () => this.DinamicTable.loadData(),
+                                });
+                            }}>
+                                <SText>{contacto.nit}</SText>
+                            </SView>
+                        </>
+                        // }
+                    }}
+                />
+                <DinamicTable.Col key={"razon_social"} label="Razón Social" data={e => e.row.razon_social} width={200}
+                    customComponent={e => {
+                        let contacto = e.row;
+                        // if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
+                        return <>
+                            <SView row center padding={2} onPress={() => {
+                                PopupCrearCliente.open({
+                                    editObject: contacto,
+                                    onSuccess: () => this.DinamicTable.loadData(),
+                                });
+                            }}>
+                                <SText>{contacto.razon_social}</SText>
+                            </SView>
+                        </>
+                        // }
+                    }}
+                />
+                <DinamicTable.Col key={"fecha_nacimiento"} label="Fecha de Nacimiento" data={e => e.row.fecha_nacimiento}
+                    customComponent={e => {
+                        let contacto = e.row;
+                        // if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
+                        return <>
+                            <SView row center padding={2} onPress={() => {
+                                PopupCrearCliente.open({
+                                    editObject: contacto,
+                                    onSuccess: () => this.DinamicTable.loadData(),
+                                });
+                            }}>
+                                <SText>{contacto.fecha_nacimiento}</SText>
+                            </SView>
+                        </>
+                        // }
+                    }}
+                />
                 <DinamicTable.Col key={"tipo_cliente"} label="Tipo" data={e => ((e.row.tipo_cliente ?? []).map(a => a.titulo))} width={160}
                     cellStyle={{
                         flexDirection: "row",
@@ -104,25 +204,69 @@ export default class table extends React.Component {
                         alignItems: "flex-start",
                         gap: 4,
                     }}
+
                     customComponent={e => {
-                        return (e.row.habilidades ?? []).map((tc) => {
-                            return <SView style={{
-                                backgroundColor: STheme.colorFromText(tc.descripcion) + "66",
-                                borderWidth: 1,
-                                borderColor: STheme.colorFromText(tc.descripcion),
-                                padding: 2,
-                                borderRadius: 4,
-                                paddingHorizontal: 4,
-                            }}>
-                                <SText key={tc.key} fontSize={10}  >{tc.descripcion}</SText>
-                            </SView>
-                        })
+                        let contacto = e.row;
+
+                        return (
+                            <>
+                                <SView
+                                    col={"xs-12"}
+                                    row
+                                    center
+                                    padding={2}
+                                    onPress={() => {
+                                        AdminsitrarHabilidades.open({
+                                            key_usuario: contacto.key,
+                                            onSuccess: () => {
+                                                // onReload();
+                                                this.DinamicTable.loadData();
+                                            }
+                                        });
+                                    }}
+                                >
+                                    {(contacto.habilidades ?? []).map((tc) => (
+                                        <SView
+                                            key={tc.key}
+                                            style={{
+                                                backgroundColor: STheme.colorFromText(tc.descripcion) + "66",
+                                                borderWidth: 1,
+                                                borderColor: STheme.colorFromText(tc.descripcion),
+                                                padding: 2,
+                                                borderRadius: 4,
+                                                paddingHorizontal: 4,
+                                                margin: 2
+                                            }}
+                                        >
+                                            <SText fontSize={10}>{tc.descripcion}</SText>
+                                        </SView>
+                                    ))}
+                                </SView>
+                            </>
+                        );
                     }}
+
+                // customComponent={e => {
+                //     let contacto = e.row;
+
+                //     return (e.row.habilidades ?? []).map((tc) => {
+                //         return <SView style={{
+                //             backgroundColor: STheme.colorFromText(tc.descripcion) + "66",
+                //             borderWidth: 1,
+                //             borderColor: STheme.colorFromText(tc.descripcion),
+                //             padding: 2,
+                //             borderRadius: 4,
+                //             paddingHorizontal: 4,
+                //         }}>
+                //             <SText key={tc.key} fontSize={10}  >{tc.descripcion}</SText>
+                //         </SView>
+                //     })
+                // }}
                 />
 
-            </DinamicTable>
+            </DinamicTable >
             {/* {MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'new' }) && ( */}
-            <FloatButtom
+            < FloatButtom
                 onPress={() =>
                     PopupCrearCliente.open({
                         onSuccess: () => this.DinamicTable.loadData(),
@@ -130,6 +274,6 @@ export default class table extends React.Component {
                 }
             />
             {/* )} */}
-        </SPage>
+        </SPage >
     }
 }
