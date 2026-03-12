@@ -190,19 +190,48 @@ export default class index extends React.Component {
                 <SPDF.View style={{ flex: 1, }}></SPDF.View>
                 <SPDF.View style={{ flex: 2, height: 110, }}>
 
-                    <SPDF.View style={{ width: "100%", }} >
+                    <SPDF.View style={{ width: "50%", }} >
+                        <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
+                            <SPDF.View style={{ flex: 1, height: 20, }}>
+                                <SPDF.Text  >Apertura de Caja</SPDF.Text>
+                            </SPDF.View>
+                            <SPDF.View style={{ flex: 1, height: 20, alignItems: "end", }}>
+                                <SPDF.Text>100.00</SPDF.Text>
+                            </SPDF.View>
+                        </SPDF.View>
+                        <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
+                            <SPDF.View style={{ flex: 1, height: 20, }}>
+                                <SPDF.Text  >Total Ventas</SPDF.Text>
+                            </SPDF.View>
+                            <SPDF.View style={{ flex: 1, height: 20, alignItems: "end", }}>
+                                <SPDF.Text>100.00</SPDF.Text>
+                            </SPDF.View>
+                        </SPDF.View>
+                        <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
+                            <SPDF.View style={{ flex: 1, height: 20, }}>
+                                <SPDF.Text  >Total Egresos</SPDF.Text>
+                            </SPDF.View>
+                            <SPDF.View style={{ flex: 1, height: 20, alignItems: "end", }}>
+                                <SPDF.Text>100.00</SPDF.Text>
+                            </SPDF.View>
+                        </SPDF.View>
 
-                        {data.map((row, i) => {
-                            return (
-                                <SPDF.View key={i} style={{ width: "100%", flexDirection: "row", }} >
-                                    <SPDF.Text style={{ color: "#070be2", fontSize: fontSize, font: "Roboto", }}> {row.label} </SPDF.Text>
-                                    <SPDF.Text style={{ color: "#070be2", fontSize: fontSize, font: "Roboto", textAlign: "end", }}> {row.value} </SPDF.Text>
-                                </SPDF.View>
-                            );
-                        })}
 
-                        <SPDF.Text style={{ width: "100%", fontSize: fontSize * 1.2, }}>{"..............................................................................."}</SPDF.Text>
+
+                        <SPDF.View style={{ width: "100%", flexDirection: "row", borderTopWidth: 1 }} >
+                            <SPDF.View style={{ flex: 1, height: 20, }}>
+                                <SPDF.Text  >TOTAL EN CAJA</SPDF.Text>
+                            </SPDF.View>
+                            <SPDF.View style={{ flex: 1, height: 20, alignItems: "end", }}>
+                                <SPDF.Text>100.00</SPDF.Text>
+                            </SPDF.View>
+                        </SPDF.View>
                         {this.espaciopequeño()}
+
+
+
+                        {/* <SPDF.Text style={{ width: "100%", fontSize: fontSize * 1.2, }}>{"..............................................................................."}</SPDF.Text>
+                        {this.espaciopequeño()} */}
 
                         <SPDF.Text style={{ color: "#e20707", fontSize: fontSize, font: "Roboto", }}> Monto enviado a bancos 0.00 </SPDF.Text>
                         <SPDF.Text style={{ color: "#e20707", fontSize: fontSize, font: "Roboto", }}> Transferencia por apertura -200.00 </SPDF.Text>
@@ -274,8 +303,8 @@ export default class index extends React.Component {
                 {this.espacio()}
                 {this.pagina()}
 
-               
-               
+
+
                 {/* {this.ResumenCaja()} */}
                 {/* {this.espacio()}
                 {this.TotalesPago()}
