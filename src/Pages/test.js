@@ -186,14 +186,17 @@ export default class index extends React.Component {
 
         return (
 
-            <SPDF.View style={{ width: "100%", flexDirection: "row", backgroundColor: "#868686" }} >
+            <SPDF.View style={{ width: "100%", flexDirection: "row", backgroundColor: "#f2f2f2", paddingVertical: 10 }}>
                 <SPDF.View style={{ flex: 1, }}></SPDF.View>
-                <SPDF.View style={{ flex: 2, height: 110, }}>
 
-                    <SPDF.View style={{ width: "50%", }} >
+
+                {/* <SPDF.View style={{ flex: 2, height: 110, }}> */}
+                <SPDF.View style={{ flex: 2, padding: 10, backgroundColor: "#ffffff", borderRadius: 8, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 5 }}>
+
+                    <SPDF.View style={{ width: "80%", }} >
                         <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
                             <SPDF.View style={{ flex: 1, height: 20, }}>
-                                <SPDF.Text  >Apertura de Caja</SPDF.Text>
+                                <SPDF.Text style={text}>Apertura de Caja</SPDF.Text>
                             </SPDF.View>
                             <SPDF.View style={{ flex: 1, height: 20, alignItems: "end", }}>
                                 <SPDF.Text>100.00</SPDF.Text>
