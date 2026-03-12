@@ -1,339 +1,190 @@
 import React from 'react';
-import { SPage, SText, STheme } from "servisofts-component";
-import * as SPDF from 'servisofts-rn-spdf'
+import { SPage, SText, STheme, SDate } from "servisofts-component";
+import MDL from '../MDL';
 
-const fontSize = 12;
+export default class Index extends React.Component {
 
-const textStyle = {
-    fontSize: fontSize,
-    font: "Roboto",
-}
+    state = {
+        caja: null,
+        movimientos: [],
+        resumen: [],
+        ready: false,
+    };
 
+    key_caja = "42351594-5d23-4700-b845-32b089360665";
 
-// const fontSize = 10;
-const labelSize = 11;
-
-const text = {
-    fontSize: fontSize,
-    font: "Roboto",
-};
-
-const label = {
-    fontSize: labelSize,
-    fontWeight: "bold",
-    font: "Roboto",
-};
-
-const line = {
-    width: "100%",
-    height: 1.5,
-    backgroundColor: "#DDDDDD",
-    // marginTop: 8,
-    // marginBottom: 8,
-};
-
-
-export default class index extends React.Component {
-
-    espacio() {
-        return <SPDF.View style={{ width: "100%", height: 15 }} />;
+    componentDidMount() {
+        this.loadData();
     }
 
-    espaciopequeño() {
-        return <SPDF.View style={{ width: "100%", height: 8 }} />;
-    }
+    async loadData() {
+        try {
 
-    HeaderCierre() {
-        return (
-            <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
+            const [cajaRaw, usuarios, empresa] = await Promise.all([
+                MDL.caja.getByKey(this.key_caja),
+                MDL.usuario.getAll(),
+                MDL.empresa.getFull()
+            ]);
 
-                <SPDF.View style={{ flex: 3, backgroundColor: "#e1ffbf" }}>
+            const sucursal = empresa?.sucursales.find(
+                s => s.key === cajaRaw.key_sucursal
+            );
 
-                    <SPDF.Image src={`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfiwNZOWWU_5snwjBWULhLyjSjuVLyJw1SQg&s`} style={{ width: 100, height: 50 }} />
-                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold", fontSize: 16 }}> MI EMPRESA </SPDF.Text>
-                    <SPDF.Text style={textStyle}>Sucursal: Central</SPDF.Text>
-                    <SPDF.Text style={textStyle}>Dirección: Av. Sur Nro. 0</SPDF.Text>
-                    <SPDF.Text style={textStyle}>Tel: 00000000</SPDF.Text>
-                </SPDF.View>
+            const caja = {
+                key_usuario: cajaRaw.key_usuario,
+                fecha_on: cajaRaw.fecha_on,
+                monto_cierre: cajaRaw.monto_cierre,
+                key_sucursal: cajaRaw.key_sucursal,
+                key_empresa: cajaRaw.key_empresa,
+                fecha_cierre: cajaRaw.fecha_cierre,
+                caja_cerrado: !!cajaRaw.fecha_cierre,
 
-                <SPDF.View style={{ flex: 2, alignItems: "end", backgroundColor: "#fff9bf" }}>
-                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold", fontSize: 16 }}> CIERRE DE CAJA </SPDF.Text>
-                    <SPDF.Text style={textStyle}>Fecha: 2026 Marzo 11   06:36</SPDF.Text>
-                    <SPDF.Text style={textStyle}>Cajero: Juan Perez</SPDF.Text>
-                    <SPDF.Text style={textStyle}>Caja: 1</SPDF.Text>
-                </SPDF.View>
+                sucursal: sucursal
+                    ? {
+                        key: sucursal.key,
+                        descripcion: sucursal.descripcion,
+                        municipio: sucursal.municipio,
+                        direccion: sucursal.direccion,
+                        correo: sucursal.correo,
+                        telefono: sucursal.telefono,
+                    }
+                    : null,
 
-            </SPDF.View>
-        );
-    }
+                cajero: usuarios[cajaRaw.key_usuario] ?? null,
+            };
 
+            const [movimientos, empresa_tipo_pago] = await Promise.all([
+                MDL.caja.getDetalle(this.key_caja),
+                MDL.caja.empresa_tipo_pago_getAll()
+            ]);
 
+            movimientos.sort(
+                (a, b) =>
+                    new SDate(b.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime() -
+                    new SDate(a.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime()
+            );
 
+            const movimientosFiltrados = movimientos.map((m) => {
+                const etp = empresa_tipo_pago[m.key_empresa_tipo_pago];
 
-    detalle() {
+                return {
+                    descripcion: m.descripcion,
+                    key_tipo_pago: m.key_tipo_pago,
+                    tipo: m.tipo,
+                    key_usuario: m.key_usuario,
+                    fecha_on: m.fecha_on,
+                    fecha: m.fecha,
+                    monto: m.monto,
+                    empresa_tipo_pago: etp
+                        ? {
+                            descripcion: etp.descripcion,
+                            key_tipo_pago: etp.key_tipo_pago,
+                        }
+                        : null
+                };
+            });
 
-        const movimientos = [
+            // ==========================
+            // CALCULO DEL RESUMEN
+            // ==========================
 
-            {
-                hora: "09:16",
-                descripcion: "Traspaso a bancos",
-                persona: "Fabiola Asbun Mostajo",
-                tipo: "Transferencia",
-                monto: -199,
-            },
-            {
-                hora: "09:16",
-                descripcion: "Venta de servicio",
-                persona: "Fabiola Asbun Mostajo",
-                tipo: "Transferencia",
-                monto: 199,
-            },
-            {
-                hora: "08:11",
-                descripcion: "Traspaso a bancos",
-                persona: "Ilse Fernanda Rek Rivera",
-                tipo: "Transferencia",
-                monto: -199,
-            },
-            {
-                hora: "08:11",
-                descripcion: "Venta de servicio",
-                persona: "Ilse Fernanda Rek Rivera",
-                tipo: "Transferencia",
-                monto: 199,
-            },
-            {
-                hora: "06:36",
-                descripcion: "apertura",
-                persona: "",
-                tipo: "Efectivo",
-                monto: 200,
-            },
+            const apertura = cajaRaw.monto_apertura ?? 0;
 
-        ];
+            let ventas = {};
+            let egresos = 0;
 
-        return (
-            <SPDF.View style={{ width: "100%", marginTop: 25 }}>
+            movimientosFiltrados.forEach((m) => {
 
-                <SPDF.Text style={{ ...label, textAlign: "center" }}>
-                    Detalle
-                </SPDF.Text>
+                const tipoPago = m.empresa_tipo_pago?.descripcion || "Otros";
 
-                {this.espaciopequeño()}
-                <SPDF.View style={line} />
-                {this.espaciopequeño()}
+                if (m.monto > 0) {
 
-                {movimientos.map((mov, i) => {
+                    if (!ventas[tipoPago]) ventas[tipoPago] = 0;
+                    ventas[tipoPago] += m.monto;
 
-                    // const color = mov.monto < 0 ? "red" : "#333";
+                } else {
 
-                    return (
-                        <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
-                            <SPDF.View style={{ flex: 1, height: 50, }}>
-                                <SPDF.Text style={text}>{mov.hora}</SPDF.Text>
-                                <SPDF.Text style={text}>Felicidad Aguilar Jalil</SPDF.Text>
-                                <SPDF.Text style={label}>{mov.descripcion}</SPDF.Text>
-                            </SPDF.View>
-                            <SPDF.View style={{ flex: 1, height: 50, alignItems: "end", }}>
-                                <SPDF.Text style={label}>{mov.tipo}</SPDF.Text>
-                                <SPDF.Text style={text}>{mov.monto}</SPDF.Text>
-                            </SPDF.View>
-                        </SPDF.View>
-                    );
-                })}
-            </SPDF.View>
-        );
-    }
+                    egresos += m.monto;
 
+                }
 
+            });
 
-    Firmas() {
-        return (
-            <SPDF.View style={{ width: "100%", marginTop: 50, flexDirection: "row" }}>
+            const resumen = [];
 
-                <SPDF.View style={{ flex: 1, alignItems: "center" }}>
-                    <SPDF.View style={{ width: 150, borderTopWidth: 1 }} />
-                    <SPDF.Text style={textStyle}>Cajero</SPDF.Text>
-                </SPDF.View>
+            // Apertura
+            resumen.push({
+                label: "Apertura",
+                value: apertura
+            });
 
-                <SPDF.View style={{ flex: 1, alignItems: "center" }}>
-                    <SPDF.View style={{ width: 150, borderTopWidth: 1 }} />
-                    <SPDF.Text style={textStyle}>Administrador</SPDF.Text>
-                </SPDF.View>
+            // Ventas por tipo de pago
+            Object.keys(ventas).forEach((k) => {
+                resumen.push({
+                    label: `Ventas ${k}`,
+                    value: ventas[k]
+                });
+            });
 
-            </SPDF.View>
-        );
-    }
+            // Egresos
+            if (egresos !== 0) {
+                resumen.push({
+                    label: "Traspaso a banca",
+                    value: egresos
+                });
+            }
 
-    pagina() {
-        return (
-            <SPDF.View style={{ width: "100%", alignItems: "center", marginTop: 20 }}>
-                <SPDF.Text style={{ ...textStyle }}>
-                    Página 1 / 1
-                </SPDF.Text>
-            </SPDF.View>
-        );
-    }
+            // Total final
+            const total = resumen.reduce((sum, i) => sum + i.value, 0);
 
-    Resumen() {
+            resumen.push({
+                label: "Total",
+                value: total
+            });
 
-        const data = [
-            { label: "Apertura", value: 200 },
-            { label: "Ventas Transferencia", value: 398 },
-            { label: "Traspaso a banca", value: -398 },
-            { label: "Total", value: 200 },
-        ];
+            this.setState({
+                caja,
+                movimientos: movimientosFiltrados,
+                resumen,
+                ready: true
+            });
 
-        return (
-
-            <SPDF.View style={{ width: "100%", flexDirection: "row", backgroundColor: "#f2f2f2", paddingVertical: 10 }}>
-                <SPDF.View style={{ flex: 1, }}></SPDF.View>
-
-
-                {/* <SPDF.View style={{ flex: 2, height: 110, }}> */}
-                <SPDF.View style={{ flex: 2, padding: 10, backgroundColor: "#ffffff", borderRadius: 8, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 5 }}>
-
-                    <SPDF.View style={{ width: "80%", }} >
-                        <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
-                            <SPDF.View style={{ flex: 1, height: 20, }}>
-                                <SPDF.Text style={text}>Apertura de Caja</SPDF.Text>
-                            </SPDF.View>
-                            <SPDF.View style={{ flex: 1, height: 20, alignItems: "end", }}>
-                                <SPDF.Text>100.00</SPDF.Text>
-                            </SPDF.View>
-                        </SPDF.View>
-                        <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
-                            <SPDF.View style={{ flex: 1, height: 20, }}>
-                                <SPDF.Text  >Total Ventas</SPDF.Text>
-                            </SPDF.View>
-                            <SPDF.View style={{ flex: 1, height: 20, alignItems: "end", }}>
-                                <SPDF.Text>100.00</SPDF.Text>
-                            </SPDF.View>
-                        </SPDF.View>
-                        <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
-                            <SPDF.View style={{ flex: 1, height: 20, }}>
-                                <SPDF.Text  >Total Egresos</SPDF.Text>
-                            </SPDF.View>
-                            <SPDF.View style={{ flex: 1, height: 20, alignItems: "end", }}>
-                                <SPDF.Text>100.00</SPDF.Text>
-                            </SPDF.View>
-                        </SPDF.View>
-
-
-
-                        <SPDF.View style={{ width: "100%", flexDirection: "row", borderTopWidth: 1 }} >
-                            <SPDF.View style={{ flex: 1, height: 20, }}>
-                                <SPDF.Text  >TOTAL EN CAJA</SPDF.Text>
-                            </SPDF.View>
-                            <SPDF.View style={{ flex: 1, height: 20, alignItems: "end", }}>
-                                <SPDF.Text>100.00</SPDF.Text>
-                            </SPDF.View>
-                        </SPDF.View>
-                        {this.espaciopequeño()}
-
-
-
-                        {/* <SPDF.Text style={{ width: "100%", fontSize: fontSize * 1.2, }}>{"..............................................................................."}</SPDF.Text>
-                        {this.espaciopequeño()} */}
-
-                        <SPDF.Text style={{ color: "#e20707", fontSize: fontSize, font: "Roboto", }}> Monto enviado a bancos 0.00 </SPDF.Text>
-                        <SPDF.Text style={{ color: "#e20707", fontSize: fontSize, font: "Roboto", }}> Transferencia por apertura -200.00 </SPDF.Text>
-                    </SPDF.View>
-                </SPDF.View>
-                <SPDF.View style={{ flex: 1, }}></SPDF.View>
-
-            </SPDF.View>
-
-        );
-    }
-
-    Cajero() {
-        return (
-            <SPDF.View style={{ width: "100%", backgroundColor: "#8e98f1", }}>
-                <SPDF.Text style={label}>Sucursal / Cajero</SPDF.Text>
-                {this.espaciopequeño()}
-                <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
-                    <SPDF.View style={{ width: 50, height: 40, }}>
-                        <SPDF.Image src="https://cdn-icons-png.flaticon.com/512/149/149071.png" style={{ width: 40, height: 40 }} />
-                    </SPDF.View>
-
-
-                    <SPDF.View style={{ flex: 1, }}>
-                        <SPDF.Text style={label}>Busch</SPDF.Text>
-                        <SPDF.Text style={text}>Felicidad Aguilar Jalil</SPDF.Text>
-                    </SPDF.View>
-                </SPDF.View>
-            </SPDF.View>
-        );
-    }
-    CajeroMMMMMM() {
-        return (
-            <SPDF.View style={{ width: "100%", backgroundColor: "#8e98f1", }}>
-                <SPDF.Text style={label}>Sucursal / Cajero</SPDF.Text>
-                {this.espaciopequeño()}
-                <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
-                    <SPDF.View style={{ width: 50, height: 50, borderWidth: 1, }}>
-                        <SPDF.Image src="https://cdn-icons-png.flaticon.com/512/149/149071.png" style={{ width: 40, height: 40 }} />
-                    </SPDF.View>
-                    <SPDF.View style={{ flex: 1, height: 100, borderWidth: 1, }}>
-                        <SPDF.Text style={label}>Busch</SPDF.Text>
-                        <SPDF.Text style={text}>Felicidad Aguilar Jalil</SPDF.Text>
-                    </SPDF.View>
-                </SPDF.View>
-            </SPDF.View>
-        );
-    }
-
-    imprimirPDF() {
-
-        SPDF.create(
-
-            <SPDF.Page style={{ width: 612, height: 791, padding: 20 }}>
-
-                {this.HeaderCierre()}
-                {this.espacio()}
-
-
-
-
-                {/* {this.Resumen()} */}
-
-                {this.Cajero()}
-                {this.espacio()}
-                {this.detalle()}
-                {this.espacio()}
-                {this.Resumen()}
-                {this.espacio()}
-                {this.pagina()}
-
-
-
-                {/* {this.ResumenCaja()} */}
-                {/* {this.espacio()}
-                {this.TotalesPago()}
-                {this.espacio()}
-                {this.detalle()}
-                {this.Resumen()}
-                {this.espacio()}
-                {this.Firmas()}
-                {this.pagina()} */}
-
-            </SPDF.Page>
-
-        );
-
+        } catch (error) {
+            console.error("Error cargando datos:", error);
+        }
     }
 
     render() {
+
+        const { caja, movimientos, resumen, ready } = this.state;
+
         return (
             <SPage title="Cierre de Caja PDF" center>
 
-                <SText
-                    style={{ color: STheme.color.text }}
-                    onPress={() => this.imprimirPDF()}
-                >
-                    Generar PDF Cierre de Caja
-                </SText>
+                {ready ? (
+                    <>
+
+                        <SText style={{ color: STheme.color.text, fontFamily: 'monospace' }}>
+                            <strong>Caja:</strong>{"\n"}
+                            {JSON.stringify(caja, null, 2)}
+                        </SText>
+
+                        <SText style={{ color: STheme.color.text, fontFamily: 'monospace' }}>
+                            <strong>Detalle:</strong>{"\n"}
+                            {JSON.stringify(movimientos, null, 2)}
+                        </SText>
+
+                        <SText style={{ color: STheme.color.text, fontFamily: 'monospace' }}>
+                            <strong>Resumen:</strong>{"\n"}
+                            {JSON.stringify(resumen, null, 2)}
+                        </SText>
+
+                    </>
+                ) : (
+                    <SText style={{ color: STheme.color.text }}>
+                        Cargando...
+                    </SText>
+                )}
 
             </SPage>
         );
