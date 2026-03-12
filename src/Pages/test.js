@@ -67,73 +67,9 @@ export default class index extends React.Component {
         );
     }
 
-    ResumenCaja() {
-        return (
-            <SPDF.View style={{ width: "100%", height: 90, }}>
 
-                <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>
-                    RESUMEN
-                </SPDF.Text>
 
-                <SPDF.View style={{ height: 6 }} />
 
-                <SPDF.View style={{ flexDirection: "row" }}>
-                    <SPDF.Text style={{ width: "70%" }}>Apertura de Caja</SPDF.Text>
-                    <SPDF.Text>100.00</SPDF.Text>
-                </SPDF.View>
-
-                <SPDF.View style={{ flexDirection: "row" }}>
-                    <SPDF.Text style={{ width: "70%" }}>Total Ventas</SPDF.Text>
-                    <SPDF.Text>350.00</SPDF.Text>
-                </SPDF.View>
-
-                <SPDF.View style={{ flexDirection: "row" }}>
-                    <SPDF.Text style={{ width: "70%" }}>Total Egresos</SPDF.Text>
-                    <SPDF.Text>50.00</SPDF.Text>
-                </SPDF.View>
-
-                <SPDF.View style={{ flexDirection: "row" }}>
-                    <SPDF.Text style={{ width: "70%", fontWeight: "bold" }}>
-                        TOTAL EN CAJA
-                    </SPDF.Text>
-
-                    <SPDF.Text style={{ fontWeight: "bold" }}>
-                        400.00
-                    </SPDF.Text>
-                </SPDF.View>
-
-            </SPDF.View>
-        );
-    }
-
-    TotalesPago() {
-        return (
-            <SPDF.View style={{ width: "100%" }}>
-
-                <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>
-                    TOTALES POR TIPO DE PAGO
-                </SPDF.Text>
-
-                <SPDF.View style={{ height: 6 }} />
-
-                <SPDF.View style={{ flexDirection: "row" }}>
-                    <SPDF.Text style={{ width: "70%" }}>Efectivo</SPDF.Text>
-                    <SPDF.Text>250.00</SPDF.Text>
-                </SPDF.View>
-
-                <SPDF.View style={{ flexDirection: "row" }}>
-                    <SPDF.Text style={{ width: "70%" }}>Transferencia</SPDF.Text>
-                    <SPDF.Text>100.00</SPDF.Text>
-                </SPDF.View>
-
-                <SPDF.View style={{ flexDirection: "row" }}>
-                    <SPDF.Text style={{ width: "70%" }}>Tarjeta</SPDF.Text>
-                    <SPDF.Text>50.00</SPDF.Text>
-                </SPDF.View>
-
-            </SPDF.View>
-        );
-    }
     detalle() {
 
         const movimientos = [
@@ -193,12 +129,12 @@ export default class index extends React.Component {
 
                     return (
                         <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
-                            <SPDF.View style={{ flex: 1, height: 50, borderWidth: 1, }}>
+                            <SPDF.View style={{ flex: 1, height: 50, }}>
                                 <SPDF.Text style={text}>{mov.hora}</SPDF.Text>
                                 <SPDF.Text style={text}>Felicidad Aguilar Jalil</SPDF.Text>
                                 <SPDF.Text style={label}>{mov.descripcion}</SPDF.Text>
                             </SPDF.View>
-                            <SPDF.View style={{ flex: 1, height: 50, borderWidth: 1, alignItems: "end", }}>
+                            <SPDF.View style={{ flex: 1, height: 50, alignItems: "end", }}>
                                 <SPDF.Text style={label}>{mov.tipo}</SPDF.Text>
                                 <SPDF.Text style={text}>{mov.monto}</SPDF.Text>
                             </SPDF.View>
@@ -249,29 +185,33 @@ export default class index extends React.Component {
         ];
 
         return (
-            <SPDF.View style={{ width: "100%", height: 200, backgroundColor: "#868686" }}>
 
-                {data.map((row, i) => {
-                    return (
-                        <SPDF.View key={i} style={{ flexDirection: "row", marginBottom: 5, }} >
-                            <SPDF.Text style={{ flex: 1 }}> {row.label} </SPDF.Text>
-                            <SPDF.Text style={{ fontWeight: "bold", color: row.value < 0 ? "#da0202" : "#333" }}> {row.value} </SPDF.Text>
+            <SPDF.View style={{ width: "100%", flexDirection: "row", backgroundColor: "#868686" }} >
+                <SPDF.View style={{ flex: 1, }}></SPDF.View>
+                <SPDF.View style={{ flex: 2, height: 110, }}>
 
-                        </SPDF.View>
-                    );
-                })}
+                    <SPDF.View style={{ width: "100%", }} >
 
-                <SPDF.View style={line} />
+                        {data.map((row, i) => {
+                            return (
+                                <SPDF.View key={i} style={{ width: "100%", flexDirection: "row", }} >
+                                    <SPDF.Text style={{ color: "#070be2", fontSize: fontSize, font: "Roboto", }}> {row.label} </SPDF.Text>
+                                    <SPDF.Text style={{ color: "#070be2", fontSize: fontSize, font: "Roboto", textAlign: "end", }}> {row.value} </SPDF.Text>
+                                </SPDF.View>
+                            );
+                        })}
 
-                <SPDF.Text style={{ color: "#e20707" }}>
-                    Monto enviado a bancos 0.00
-                </SPDF.Text>
+                        <SPDF.Text style={{ width: "100%", fontSize: fontSize * 1.2, }}>{"..............................................................................."}</SPDF.Text>
+                        {this.espaciopequeño()}
 
-                <SPDF.Text style={{ color: "#e20707" }}>
-                    Transferencia por apertura -200.00
-                </SPDF.Text>
+                        <SPDF.Text style={{ color: "#e20707", fontSize: fontSize, font: "Roboto", }}> Monto enviado a bancos 0.00 </SPDF.Text>
+                        <SPDF.Text style={{ color: "#e20707", fontSize: fontSize, font: "Roboto", }}> Transferencia por apertura -200.00 </SPDF.Text>
+                    </SPDF.View>
+                </SPDF.View>
+                <SPDF.View style={{ flex: 1, }}></SPDF.View>
 
             </SPDF.View>
+
         );
     }
 
@@ -320,13 +260,22 @@ export default class index extends React.Component {
 
                 {this.HeaderCierre()}
                 {this.espacio()}
+
+
+
+
+                {/* {this.Resumen()} */}
+
                 {this.Cajero()}
                 {this.espacio()}
                 {this.detalle()}
+                {this.espacio()}
+                {this.Resumen()}
+                {this.espacio()}
+                {this.pagina()}
 
-                <SPDF.View style={{ width: 160, height: 160, borderWidth: 1, }}>
-
-                </SPDF.View>
+               
+               
                 {/* {this.ResumenCaja()} */}
                 {/* {this.espacio()}
                 {this.TotalesPago()}
