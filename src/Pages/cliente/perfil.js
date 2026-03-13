@@ -197,7 +197,7 @@ const Habilidades = ({ cliente, onReload }) => {
             cursor: "pointer",
             zIndex: 10
         }}
-            onPress={() => {
+            onPress={() => { 
                 AdminsitrarHabilidades.open({
                     key_usuario: cliente.key,
                     onSuccess: () => {
