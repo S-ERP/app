@@ -190,9 +190,9 @@ export default class table extends React.Component {
                     customComponent={e => {
                         return (e.row.tipo_cliente ?? []).map((tc) => {
                             return <SView style={{
-                                // borderWidth: 1,
-                                // backgroundColor: (tc.color ?? STheme.colorFromText(tc.titulo)) + "33",
-                                // borderColor: tc.color ?? STheme.colorFromText(tc.titulo),
+                                borderWidth: 1,
+                                backgroundColor: (tc.color + "15" ?? STheme.colorFromText(tc.titulo) + "15"),
+                                borderColor: tc.color + "50" ?? STheme.colorFromText(tc.titulo)+"50",
                                 padding: 2,
                                 paddingHorizontal: 4,
                                 borderRadius: 4,
@@ -206,7 +206,7 @@ export default class table extends React.Component {
                                     backgroundColor: (tc.color ?? STheme.colorFromText(tc.titulo)),
 
                                 }}></SView>
-                                <SText key={tc.key} bold fontSize={12}  >{tc.titulo}</SText>
+                                <SText key={tc.key} fontSize={10}  >{tc.titulo}</SText>
                             </SView>
                         })
                     }}

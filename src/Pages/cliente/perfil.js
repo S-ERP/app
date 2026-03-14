@@ -96,9 +96,9 @@ export default class Perfil extends Component {
     }
 }
 const Resumen = ({ cliente }) => {
-    return <SView col={"xs-12"} card center padding={15}>
+    return <SView col={"xs-12"} card center padding={15} height>
         { }
-        <SView col="xs-12" center row>
+        <SView col="xs-12" center row >
             <SView
                 style={{
                     width: 110,
