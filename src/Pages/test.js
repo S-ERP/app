@@ -31,8 +31,9 @@ export default class index extends React.Component {
         resumen: [],
         ready: false
     }
+    key_caja = "f6f1b1f8-1e6e-4628-a562-fce575345e2c";
     // key_caja = "42351594-5d23-4700-b845-32b089360665";
-    key_caja = "cbd5de7c-8976-4721-83d8-0147271fb30a";
+    // key_caja = "cbd5de7c-8976-4721-83d8-0147271fb30a";
 
     componentDidMount() {
         this.loadData();
@@ -195,49 +196,28 @@ export default class index extends React.Component {
     detalle() {
 
         const { movimientos } = this.state;
-        console.log("%c" + JSON.stringify(movimientos, null, 2), "color: #ff000d; font-weight: bold;");
+        return movimientos.map((mov, i) => {
+            return (
 
+                <SPDF.View key={i} style={{ width: "100%", flexDirection: "row", marginBottom: 8 }}>
+                    <SPDF.View style={{ flex: 1 }}>
+                        <SPDF.Text style={text}>{mov.hora}</SPDF.Text>
+                        <SPDF.Text style={text}>{mov.persona}</SPDF.Text>
+                        <SPDF.Text style={label}>{mov.tipo_}</SPDF.Text>
+                        <SPDF.Text style={label}>{mov.tipo}</SPDF.Text>
+                    </SPDF.View>
 
+                    <SPDF.View style={{ flex: 1, alignItems: "end" }}>
+                        <SPDF.Text style={label}>{mov.tipo}</SPDF.Text>
+                        <SPDF.Text style={label}>tipo: {mov.key_tipo_pago}</SPDF.Text>
+                        <SPDF.Text style={label}>transación: {mov.tipo_}</SPDF.Text>
+                        <SPDF.Text style={{ ...text, color: mov.monto < 0 ? "#ff0000" : STheme.color.background }}>Monto: {mov.monto} {mov.moneda.observacion}</SPDF.Text>
+                    </SPDF.View>
 
-        return (
+                </SPDF.View>
 
-            <SPDF.View style={{ width: "100%", marginTop: 4 }}>
-
-
-                <SPDF.View style={{ width: "100%", alignItems: "center", }}> <SPDF.Text style={text}> DETALLE </SPDF.Text> </SPDF.View>
-                {this.espaciopequeño()}
-                <SPDF.View style={line} />
-                {this.espaciopequeño()}
-
-                {movimientos.map((mov, i) => {
-
-                    return (
-
-                        <SPDF.View key={i} style={{ width: "100%", flexDirection: "row", marginBottom: 8 }}>
-                            <SPDF.View style={{ flex: 1 }}>
-                                <SPDF.Text style={text}>{mov.hora}</SPDF.Text>
-                                <SPDF.Text style={text}>{mov.persona}</SPDF.Text>
-                                <SPDF.Text style={label}>{mov.tipo_}</SPDF.Text>
-                                <SPDF.Text style={label}>{mov.tipo}</SPDF.Text>
-                            </SPDF.View>
-
-                            <SPDF.View style={{ flex: 1, alignItems: "end" }}>
-                                <SPDF.Text style={label}>{mov.tipo}</SPDF.Text>
-                                <SPDF.Text style={label}>tipo: {mov.key_tipo_pago}</SPDF.Text>
-                                <SPDF.Text style={label}>transación: {mov.tipo_}</SPDF.Text>
-                                <SPDF.Text style={{ ...text, color: mov.monto < 0 ? "#ff0000" : STheme.color.background }}>Monto: {mov.monto} {mov.moneda.observacion}</SPDF.Text>
-                            </SPDF.View>
-
-                        </SPDF.View>
-
-                    );
-                })}
-
-                {this.espaciopequeño()}
-
-                <SPDF.View style={line} />
-
-            </SPDF.View>
+            );
+        }
         );
     }
 
@@ -300,11 +280,28 @@ export default class index extends React.Component {
     pagina() {
         return (
             <SPDF.View style={{ width: "100%", alignItems: "center", marginTop: 20 }}>
-                <SPDF.Text style={text}>
-                    Página 1 / 1
-                </SPDF.Text>
+                <SPDF.Text style={style = { text }}>Página {"${current_page}/${cant_page}"}</SPDF.Text>
             </SPDF.View>
         );
+    }
+
+
+
+
+    h() {
+        return <SPDF.View style={{ width: "100%" }}>
+            {this.HeaderCierre()}
+            {this.Cajero()}
+        </SPDF.View>
+    }
+    body() {
+        return <SPDF.View style={{ width: "100%" }}>
+
+            {this.espacio()}
+            {this.Resumen()}
+            {this.espacio()}
+            {this.Firmas()}
+        </SPDF.View>
     }
 
     imprimirPDF() {
@@ -313,17 +310,21 @@ export default class index extends React.Component {
 
         SPDF.create(
 
-            <SPDF.Page style={{ width: 612, height: 791, padding: 20 }}>
+            <SPDF.Page style={{ width: 612, height: 791, padding: 20 }} header={this.h()} footer={this.pagina()} >
+                {/* {this.espacio()} */}
 
-                {this.HeaderCierre()}
-                {this.Cajero()}
+                {/* <SPDF.Text style={text}> DETALLE </SPDF.Text> */}
+
+                <SPDF.View style={{ width: "100%", alignItems: "center", }}> <SPDF.Text style={text}> DETALLE </SPDF.Text> </SPDF.View>
+
+            
                 {this.detalle()}
-                {this.espacio()}
-                {this.Resumen()}
-                {this.espacio()}
-                {this.Firmas()}
-                {this.espacio()}
-                { }
+
+                {this.espaciopequeño()}
+                <SPDF.View style={line} />
+                {this.espaciopequeño()}
+
+                {this.body()}
 
             </SPDF.Page>
 
