@@ -31,8 +31,8 @@ export default class index extends React.Component {
         resumen: [],
         ready: false
     }
-
-    key_caja = "42351594-5d23-4700-b845-32b089360665";
+    // key_caja = "42351594-5d23-4700-b845-32b089360665";
+    key_caja = "cbd5de7c-8976-4721-83d8-0147271fb30a";
 
     componentDidMount() {
         this.loadData();
@@ -46,12 +46,20 @@ export default class index extends React.Component {
             MDL.empresa.getFull()
         ]);
 
+        console.clear();
+        console.log("%c" + JSON.stringify(empresa, null, 2), "color: #ff9102; font-weight: bold;");
+
         const sucursal = empresa?.sucursales.find(s => s.key === cajaRaw.key_sucursal);
+        const monedas = empresa?.monedas || [];
+        const monedasMap = {};
+        monedas.forEach(m => {
+            monedasMap[m.key] = m;
+        });
 
         const caja = {
             ...cajaRaw,
             sucursal,
-            cajero: usuarios[cajaRaw.key_usuario]
+            cajero: usuarios[cajaRaw.key_usuario],
         };
 
         const [movimientos, empresa_tipo_pago] = await Promise.all([
@@ -65,9 +73,13 @@ export default class index extends React.Component {
                 new SDate(a.fecha_on, "yyyy-MM-ddThh:mm:ss").getTime()
         );
 
+        console.log("%c" + JSON.stringify(movimientos, null, 2), "color: #e100ff; font-weight: bold;");
+
         const movimientosFiltrados = movimientos.map((m) => {
 
             const etp = empresa_tipo_pago[m.key_empresa_tipo_pago];
+
+            console.log("%c" + JSON.stringify(etp, null, 2), "color: #2ECC40; font-weight: bold;");
 
             return {
                 hora: new SDate(m.fecha_on).toString("hh:mm"),
@@ -75,17 +87,13 @@ export default class index extends React.Component {
                 persona: usuarios[m.key_usuario]?.Nombres || "",
                 tipo: etp?.descripcion || "",
                 key_tipo_pago: etp?.key_tipo_pago || "",
-                
                 tipo_: m.tipo || "",
-                
-                monto: m.monto
-            }
-
+                monto: m.monto,
+                moneda: monedasMap[m.key_moneda] || null,
+            };
         });
 
-        // RESUMEN
-
-        const apertura = cajaRaw.monto_apertura ?? 0;
+        const apertura = Number(cajaRaw.monto_apertura) || 0;
 
         let ventas = {};
         let egresos = 0;
@@ -105,13 +113,13 @@ export default class index extends React.Component {
 
         const resumen = [];
 
-        resumen.push({ label: "Apertura", value: apertura ?? "0" });
+        resumen.push({ label: "Apertura", value: apertura });
 
         Object.keys(ventas).forEach(k => {
             resumen.push({
                 label: `Ventas ${k}`,
                 value: ventas[k]
-            })
+            });
         });
 
         if (egresos !== 0) {
@@ -121,7 +129,7 @@ export default class index extends React.Component {
             });
         }
 
-        const total = resumen.reduce((sum, i) => sum + i.value, 0);
+        const total = resumen.reduce((sum, i) => sum + (Number(i.value) || 0), 0);
 
         resumen.push({
             label: "Total",
@@ -135,7 +143,6 @@ export default class index extends React.Component {
             ready: true
         });
     }
-
     espacio() {
         return <SPDF.View style={{ width: "100%", height: 15 }} />;
     }
@@ -150,39 +157,37 @@ export default class index extends React.Component {
 
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
-
                 <SPDF.View style={{ flex: 3 }}>
-
-                    <SPDF.Text style={{ ...label, fontSize: 16 }}>
-                        {caja?.sucursal?.descripcion}
-                    </SPDF.Text>
-
-                    <SPDF.Text style={text}>
-                        {caja?.sucursal?.direccion}
-                    </SPDF.Text>
-
-                    <SPDF.Text style={text}>
-                        Tel: {caja?.sucursal?.telefono}
-                    </SPDF.Text>
-
+                    <SPDF.Image src={`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfiwNZOWWU_5snwjBWULhLyjSjuVLyJw1SQg&s`} style={{ width: 100, height: 50 }} />
+                    <SPDF.Text style={{ ...label, fontSize: 16 }}> {caja?.sucursal?.descripcion} </SPDF.Text>
+                    <SPDF.Text style={text}> {caja?.sucursal?.direccion} </SPDF.Text>
+                    <SPDF.Text style={text}> Tel: {caja?.sucursal?.telefono} </SPDF.Text>
                 </SPDF.View>
 
                 <SPDF.View style={{ flex: 2, alignItems: "end" }}>
-
-                    <SPDF.Text style={{ ...label, fontSize: 16 }}>
-                        CIERRE DE CAJA
-                    </SPDF.Text>
-
-                    <SPDF.Text style={text}>
-                        Fecha: {new SDate(caja?.fecha_on).toString("yyyy MMM dd  hh:mm")}
-                    </SPDF.Text>
-
-                    <SPDF.Text style={text}>
-                        Cajero: {caja?.cajero?.Nombres}
-                    </SPDF.Text>
-
+                    <SPDF.Text style={{ ...label, fontSize: 16 }}> CIERRE DE CAJA </SPDF.Text>
+                    <SPDF.Text style={text}> Fecha: {new SDate(caja?.fecha_on).toString("yyyy MMM ddhh:mm")} </SPDF.Text>
+                    <SPDF.Text style={text}> Cajero: {caja?.cajero?.Nombres} </SPDF.Text>
+                    <SPDF.Text style={text}> Caja: NRO.45 </SPDF.Text>
                 </SPDF.View>
+            </SPDF.View>
+        );
+    }
 
+    Cajero() {
+        return (
+            <SPDF.View style={{ width: "100%", marginTop: 16 }}>
+                <SPDF.Text style={label}>Sucursal / Cajero</SPDF.Text>
+                {this.espaciopequeño()}
+                <SPDF.View style={{ width: "100%", flexDirection: "row" }} >
+                    <SPDF.View style={{ width: 50, height: 40, }}>
+                        <SPDF.Image src="https://cdn-icons-png.flaticon.com/512/149/149071.png" style={{ width: 40, height: 40 }} />
+                    </SPDF.View>
+                    <SPDF.View style={{ flex: 1, }}>
+                        <SPDF.Text style={label}>Busch</SPDF.Text>
+                        <SPDF.Text style={text}>Felicidad Aguilar Jalil</SPDF.Text>
+                    </SPDF.View>
+                </SPDF.View>
             </SPDF.View>
         );
     }
@@ -190,19 +195,16 @@ export default class index extends React.Component {
     detalle() {
 
         const { movimientos } = this.state;
-        console.clear();
-        console.log("%c" + JSON.stringify(movimientos, null, 2), "color: #2ECC40; font-weight: bold;");
+        console.log("%c" + JSON.stringify(movimientos, null, 2), "color: #ff000d; font-weight: bold;");
 
 
 
         return (
 
-            <SPDF.View style={{ width: "100%", marginTop: 25 }}>
+            <SPDF.View style={{ width: "100%", marginTop: 4 }}>
 
-                <SPDF.Text style={{ ...label, textAlign: "center" }}>
-                    Detalle
-                </SPDF.Text>
 
+                <SPDF.View style={{ width: "100%", alignItems: "center", }}> <SPDF.Text style={text}> DETALLE </SPDF.Text> </SPDF.View>
                 {this.espaciopequeño()}
                 <SPDF.View style={line} />
                 {this.espaciopequeño()}
@@ -211,23 +213,19 @@ export default class index extends React.Component {
 
                     return (
 
-                        <SPDF.View key={i} style={{ width: "100%", flexDirection: "row" }}>
-
+                        <SPDF.View key={i} style={{ width: "100%", flexDirection: "row", marginBottom: 8 }}>
                             <SPDF.View style={{ flex: 1 }}>
-
                                 <SPDF.Text style={text}>{mov.hora}</SPDF.Text>
                                 <SPDF.Text style={text}>{mov.persona}</SPDF.Text>
-                                <SPDF.Text style={label}>{mov.key_tipo_pago}</SPDF.Text>
                                 <SPDF.Text style={label}>{mov.tipo_}</SPDF.Text>
                                 <SPDF.Text style={label}>{mov.tipo}</SPDF.Text>
-
                             </SPDF.View>
 
                             <SPDF.View style={{ flex: 1, alignItems: "end" }}>
-
                                 <SPDF.Text style={label}>{mov.tipo}</SPDF.Text>
-                                <SPDF.Text style={text}>{mov.monto}</SPDF.Text>
-
+                                <SPDF.Text style={label}>tipo: {mov.key_tipo_pago}</SPDF.Text>
+                                <SPDF.Text style={label}>transación: {mov.tipo_}</SPDF.Text>
+                                <SPDF.Text style={{ ...text, color: mov.monto < 0 ? "#ff0000" : STheme.color.background }}>Monto: {mov.monto} {mov.moneda.observacion}</SPDF.Text>
                             </SPDF.View>
 
                         </SPDF.View>
@@ -235,9 +233,14 @@ export default class index extends React.Component {
                     );
                 })}
 
+                {this.espaciopequeño()}
+
+                <SPDF.View style={line} />
+
             </SPDF.View>
         );
     }
+
 
     Resumen() {
 
@@ -251,21 +254,22 @@ export default class index extends React.Component {
 
                 <SPDF.View style={{ flex: 2, padding: 10 }}>
 
-                    {resumen.map((r, i) => (
+                    {resumen.map((r, i) => {
 
-                        <SPDF.View key={i} style={{ width: "100%", flexDirection: "row" }}>
+                        const isTotal = r.label === "Total";
 
-                            <SPDF.View style={{ flex: 1 }}>
-                                <SPDF.Text style={text}>{r.label}</SPDF.Text>
+                        return (
+                            <SPDF.View key={i} style={{ width: "100%" }}>
+
+                                {isTotal && (<SPDF.View style={{ width: "100%", borderTopWidth: 1, marginBottom: 5, marginTop: 5 }} />)}
+
+                                <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
+                                    <SPDF.View style={{ flex: 1 }}> <SPDF.Text style={text}>{r.label}</SPDF.Text> </SPDF.View>
+                                    <SPDF.View style={{ flex: 1, alignItems: "end", }}> <SPDF.Text style={{ color: r.value < 0 ? "#ff0000" : STheme.color.background }}>{r.value}</SPDF.Text> </SPDF.View>
+                                </SPDF.View>
                             </SPDF.View>
-
-                            <SPDF.View style={{ flex: 1, alignItems: "end" }}>
-                                <SPDF.Text>{r.value}</SPDF.Text>
-                            </SPDF.View>
-
-                        </SPDF.View>
-
-                    ))}
+                        );
+                    })}
 
                 </SPDF.View>
 
@@ -275,7 +279,6 @@ export default class index extends React.Component {
 
         );
     }
-
     Firmas() {
         return (
             <SPDF.View style={{ width: "100%", marginTop: 50, flexDirection: "row" }}>
@@ -313,14 +316,14 @@ export default class index extends React.Component {
             <SPDF.Page style={{ width: 612, height: 791, padding: 20 }}>
 
                 {this.HeaderCierre()}
-                {this.espacio()}
+                {this.Cajero()}
                 {this.detalle()}
                 {this.espacio()}
                 {this.Resumen()}
                 {this.espacio()}
                 {this.Firmas()}
                 {this.espacio()}
-                {this.pagina()}
+                { }
 
             </SPDF.Page>
 
