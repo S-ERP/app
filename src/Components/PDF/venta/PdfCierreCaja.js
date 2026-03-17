@@ -2,6 +2,7 @@ import React from 'react';
 import { SDate, SMath, STheme } from "servisofts-component";
 import * as SPDF from 'servisofts-rn-spdf';
 import MDL from '../../../MDL';
+import SSocket from 'servisofts-socket';
 
 const fontSize = 9;
 const labelSize = 11;
@@ -18,10 +19,11 @@ export default class PdfCierreCaja {
         return <SPDF.View style={line} />;
     }
     static Header(caja) {
+
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
                 <SPDF.View style={{ flex: 3 }}>
-                    <SPDF.Image src={caja?.sucursal?.logo || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfiwNZOWWU_5snwjBWULhLyjSjuVLyJw1SQg&s"} style={{ width: 100, height: 50 }} />
+                    <SPDF.Image src={`${SSocket.api.empresa}empresa/${caja?.key_empresa}`} style={{ width: 75, height: 50, resizeMode: "cover" }} />
                     <SPDF.Text style={{ ...label, fontSize: 16 }}>{caja?.sucursal?.descripcion}</SPDF.Text>
                     <SPDF.Text style={text}>{caja?.sucursal?.direccion}</SPDF.Text>
                     <SPDF.Text style={text}>Tel: {caja?.sucursal?.telefono}</SPDF.Text>
@@ -36,14 +38,20 @@ export default class PdfCierreCaja {
         );
     }
     static Cajero(caja) {
+        const urlFoto = SSocket.api.empresa + "sucursal/" + caja.key_sucursal + "?time=" + new SDate().toString("yyyy-MM-ddThh:mm");
+
         return (
             <SPDF.View style={{ width: "100%" }}>
                 <SPDF.Text style={label}>Sucursal / Cajero</SPDF.Text>
                 {PdfCierreCaja.espacio(8)}
                 <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
                     <SPDF.View style={{ width: 50, height: 40, }}>
-                        <SPDF.Image src={caja?.cajero?.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} style={{ width: 40, height: 40 }} />
+                        <SPDF.Image src={`${SSocket.api.root}usuario/${caja?.cajero.key}`} style={{ width: 40, height: 40, resizeMode: "cover" }} />
                     </SPDF.View>
+                    {/* <SPDF.View style={{ width: 60, height: 40, }}>
+                        <SPDF.Image src={urlFoto} style={{ width: 50, height: 40, resizeMode: "cover" }} />
+                        <SPDF.Image src={`${SSocket.api.empresa}empresa/${caja?.key_empresa}`} style={{ width: 65, height: 40, resizeMode: "cover" }} />
+                    </SPDF.View> */}
                     <SPDF.View style={{ flex: 1, }}>
                         <SPDF.Text style={label}>{caja?.sucursal?.descripcion}</SPDF.Text>
                         <SPDF.Text style={text}>{caja?.cajero?.Nombres}</SPDF.Text>
@@ -148,8 +156,9 @@ export default class PdfCierreCaja {
     }
     static Footer() {
         return (
-            <SPDF.View style={{ width: "100%", alignItems: "center", marginTop: 20 }}>
-                <SPDF.Text style={text}>Página {"${current_page}/${cant_page}"}</SPDF.Text>
+            <SPDF.View style={{ width: "100%", height: 20, flexDirection: "row" }}>
+                <SPDF.View style={{ flex: 1, height: 10 }} />
+                <SPDF.Text style={{ ...text, fontWeight: "bold", width: 40 }}>{"${current_page}/${cant_page}"}</SPDF.Text>
             </SPDF.View>
         );
     }
@@ -207,7 +216,7 @@ export default class PdfCierreCaja {
         });
 
         empresa_tipo_pago_pv.sort((a, b) => a.tipo_pago?.orden - b.tipo_pago?.orden);
-        const apertura = Number(cajaRaw.monto_apertura) || 0;
+        const apertura = Number(cajaRaw.monto_apertura) || "0";
         let ventas = {};
         let egresos = 0;
         movimientos.forEach(m => {
