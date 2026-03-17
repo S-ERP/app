@@ -8,7 +8,8 @@ import { Btn } from '../../../Components';
 import SIconApp from '../../../Assets/SIconApp';
 import { ColorCompraVenta } from '../../../Config/theme';
 import TotalTipoPagoTabla from './TotalTipoPagoTabla';
-
+import PdfCierreCaja from '../../../Components/PDF/venta/PdfCierreCaja';
+  
 
 export default class MenuAcciones extends Component<{ caja: any, movimientos: any[] }> {
 
@@ -64,7 +65,7 @@ export default class MenuAcciones extends Component<{ caja: any, movimientos: an
                                     }
                                 });
                             }}>
-                                <SText fontSize={15}>Cerrar Caja</SText>
+                                <SText fontSize={15}>Cerrar Cajddda</SText>
                             </SView>
                         </SView>
 
@@ -153,7 +154,9 @@ export default class MenuAcciones extends Component<{ caja: any, movimientos: an
                 <BtnAccion text={"Pagar a Proveedores"} margin={4} padding={10} background={STheme.color.card} borderColor={STheme.color.card} onPress={() => { SNavigation.navigate("/proveedor") }} icon="pagoefectivo" />
                 <BtnAccion text={"Cobrar a Clientes"} margin={4} padding={10} background={STheme.color.card} borderColor={STheme.color.card} onPress={() => { SNavigation.navigate("/cliente") }} icon="tareaUser" />
                 <BtnAccion text={"Cerrar la Caja"} margin={4} padding={10} background={STheme.color.danger + "70"} borderColor={STheme.color.danger} onPress={this.cerrar_caja.bind(this)} icon="remove" />
-
+                <BtnAccion text={"Imprimir Cierre Caja"} margin={4} padding={10} background={STheme.color.warning + "70"} borderColor={STheme.color.warning} onPress={() => PdfCierreCaja.imprimirPDF(this.props.caja.key)} icon="remove" />
+                {/* <BtnAccion text={"IMpr Caja"} margin={4} padding={10} background={STheme.color.danger + "70"} borderColor={STheme.color.danger} onPress={() => PdfCierreCaja.imprimir(this.props.caja.key)} icon="remove" /> */}
+  
 
 
 
