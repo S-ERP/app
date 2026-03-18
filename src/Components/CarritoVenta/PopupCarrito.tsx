@@ -285,9 +285,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 }
                                 value={precioFormateado}
                                 onChangeText={(e) => {
-                                    // const valor = parseFloat(e || "0");
                                     setPrecio(e); // actualiza el input local
-                                    // Guardar el precio real en la moneda del producto
                                     item.modelo.precio_venta_moneda = moneda ? e * (moneda.tipo_cambio || 1) : e;
                                     MDL.carrito.calcularValoresCarritDeVentas(); // recalcula subtotal y total
                                 }}
@@ -305,7 +303,6 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 value={item.cantidad.toString()}
                                 onChangeText={(e) => {
                                     item.cantidad = e;
-                                    // item.cantidad = parseFloat(e || "0");
                                     MDL.carrito.calcularValoresCarritDeVentas();
                                 }}
                             />
