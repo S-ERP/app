@@ -322,103 +322,84 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     </SView>
 
                     {/* Aquí puedes agregar contactos o costos como antes */}
-                    <ListaCostos item={item} moneda={moneda} />
+                    {/* <ListaCostos item={item} moneda={moneda} /> */}
+                    <ListaCostos item={item} moneda={moneda} totalItem={precio * item.cantidad}  // <-- aquí pasas el total calculado
+                    />
                 </SView>
             </SView>
         </SView>
     );
 };
 
-
-
-
-// Componente para la lista de costos colapsible
-const ListaCostos = ({ item, moneda }: { item: any, moneda: any }) => {
+const ListaCostos = ({ item, moneda, totalItem }: { item: any; moneda: any; totalItem: number; }) => {
     const [isOpen, setIsOpen] = React.useState(true);
-
     if (!item?.modelo?.tipoCostos?.length) return null;
-
     return (
         <>
-            <SView
-                col={"xs-12"}
-                row
-                style={{
-                    borderBottomWidth: 1,
-                    borderColor: STheme.color.card,
-                    paddingVertical: 4,
-                    alignItems: "center"
-                }}
-                onPress={() => setIsOpen(!isOpen)}
-            >
+            <SView col={"xs-12"} row style={{ borderBottomWidth: 1, borderColor: STheme.color.card, paddingVertical: 4, alignItems: "center" }} onPress={() => setIsOpen(!isOpen)} >
                 <SHr />
                 <SText fontSize={12} bold>Costos</SText>
                 <SView flex />
-                <SText fontSize={10} color={STheme.color.lightGray}>
-                    ({item.modelo.tipoCostos.length})
-                </SText>
+                <SText fontSize={10} color={STheme.color.lightGray}> ({item.modelo.tipoCostos.length}) </SText>
                 <SView width={4} />
-                <SView style={{
-                    width: 16,
-                    height: 16,
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}>
-                    <SIconApp
-                        name="Back"
-                        fill={STheme.color.card}
-                        width={8}
-                        // transform={isOpen ? "rotate(90deg)" : "rotate(90deg)"}
-                        // @ts-ignore
-                        style={{
-                            transform: [{ rotate: isOpen ? "-90deg" : "180deg" }],
-                            userSelect: "none",
-                            pointerEvents: "none"
+                <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center" }} >
+                    <SIconApp name="Back" fill={STheme.color.card} width={8} style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }} />
+                </SView>
+            </SView>
+            {isOpen &&
+                item.modelo.tipoCostos.map((costo: any) => (
+                    <ItemCosto key={costo.key_tipo_costo} costo={costo} moneda={moneda} totalItem={totalItem} />
+                ))}
+        </>
+    );
+};
+
+const ItemCosto = ({ costo, moneda, totalItem }: any) => {
+    const [monto, setMonto] = React.useState(costo.monto || 0);
+    return (
+        <SView key={costo.key_tipo_costo} col={"md-12"} height={35}>
+            <SText fontSize={10}>{costo.descripcion}</SText>
+            <SView style={{ width: "100%" }} row>
+                <SView style={{ flex: 1, height: 18, backgroundColor: STheme.color.card }}>
+                    <InputSelector
+                        customStyle="erp"
+                        placeholder="Selecciona un cliente"
+                        options={(costo.clientes || []).map((c: any) => ({
+                            label: c.cliente.nombres,
+                            value: c.key,
+                            data: c,
+                            customComponent: () => (
+                                <SText fontSize={10} color={STheme.color.lightGray}>
+                                    {c.comision} %
+                                </SText>
+                            )
+                        }))}
+                        defaultValue={costo.key_modelo_cliente || null}
+                        onSelect={(selected: any) => {
+                            costo.key_modelo_cliente = selected.value;
+                            costo.__descripcion = `Costo por ${costo.descripcion} para ${selected.data.cliente.nombres}`;
+                            const comision = parseFloat(selected.data.comision || "0");
+                            const nuevoMonto = totalItem * (comision / 100);
+                            setMonto(nuevoMonto);
+                            costo.monto = nuevoMonto;
+                        }}
+                    />
+                </SView>
+                <SView width={4} />
+                <SView style={{ width: 70 }}>
+                    <SInput
+                        style={{ height: 18, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
+                        type="money2"
+                        icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray} > {moneda ? moneda.observacion : "BS"} </SText>}
+                        value={monto}
+                        onChangeText={(e: string) => {
+                            const valor = parseFloat(e || "0");
+                            setMonto(valor);
+                            costo.monto = valor;
                         }}
                     />
                 </SView>
             </SView>
-
-            {isOpen && item.modelo.tipoCostos.map((costo: any) => (
-                <SView key={costo.key_tipo_costo} col={"md-12"} height={35} >
-                    <SText fontSize={10}>{costo.descripcion}</SText>
-                    <SView style={{ width: "100%" }} row>
-                        <SView style={{ flex: 1, height: 18, backgroundColor: STheme.color.card }}>
-                            <InputSelector
-                                customStyle="erp"
-                                placeholder="Selecciona un cliente"
-                                options={(costo.clientes || []).map((c: any) => ({
-                                    label: c.cliente.nombres,
-                                    value: c.key,
-                                    data: c,
-                                    customComponent: () => {
-                                        return <SText fontSize={10} color={STheme.color.lightGray}>{c.comision} %</SText>
-                                    }
-                                }))}
-                                defaultValue={costo.key_modelo_cliente || null}
-                                onSelect={(selected: any) => {
-                                    console.log("Seleccionado tipo costo:", selected);
-                                    costo.key_modelo_cliente = selected.value;
-                                    costo.monto = 0;
-                                    costo.__descripcion = "Costo por " + costo.descripcion + " para " + selected.data.cliente.nombres;
-                                }}
-                            />
-                        </SView>
-                        <SView width={4} />
-                        <SView style={{ width: 70 }}>
-                            <SInput
-                                style={{ height: 18, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
-                                type="money2"
-                                icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>{moneda ? moneda.observacion : "BS"}</SText>}
-                                defaultValue={costo.monto}
-                                onChangeText={(e: string) => {
-                                    costo.monto = parseFloat(e || "0");
-                                }}
-                            />
-                        </SView>
-                    </SView>
-                </SView>
-            ))}
-        </>
+        </SView>
     );
 };
