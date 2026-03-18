@@ -37,29 +37,61 @@ export default class PdfCierreCaja {
             </SPDF.View>
         );
     }
+
+
+    static limitarTexto(texto, max = 40) {
+        if (!texto) return "";
+        return texto.length > max ? texto.substring(0, max) + "..." : texto;
+    }
+
     static Cajero(caja) {
         const urlFoto = SSocket.api.empresa + "sucursal/" + caja.key_sucursal + "?time=" + new SDate().toString("yyyy-MM-ddThh:mm");
 
+        console.clear();
+        console.log("%c" + JSON.stringify(caja, null, 2), "color: #2ECC40; font-weight: bold;");
+
+
         return (
-            <SPDF.View style={{ width: "100%" }}>
-                <SPDF.Text style={label}>Sucursal / Cajero</SPDF.Text>
-                {PdfCierreCaja.espacio(8)}
-                <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
-                    <SPDF.View style={{ width: 50, height: 40, }}>
-                        <SPDF.Image src={`${SSocket.api.root}usuario/${caja?.cajero.key}`} style={{ width: 40, height: 40, resizeMode: "cover" }} />
+            <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
+
+
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={label}>Sucursal</SPDF.Text>
+                    {PdfCierreCaja.espacio(8)}
+
+                    <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
+                        <SPDF.View style={{ width: 50, height: 40, }}>
+                            <SPDF.Image src={`${SSocket.api.empresa}empresa/${caja?.key_empresa}`} style={{ width: 40, height: 40, resizeMode: "cover" }} />
+                        </SPDF.View>
+                        <SPDF.View style={{ flex: 1, marginTop: -4, }}>
+                            <SPDF.Text style={text}>{caja?.sucursal.descripcion}</SPDF.Text>
+                            <SPDF.Text style={text}>Municipio: {caja?.sucursal?.municipio}</SPDF.Text>
+                            {caja?.sucursal?.direccion && (<SPDF.Text style={text}> {PdfCierreCaja.limitarTexto(caja.sucursal.direccion, 40)} </SPDF.Text>)}
+                            {caja?.sucursal?.Telefono && (<SPDF.Text style={text}> Teléfono: {caja.sucursal.Telefono} </SPDF.Text>)}
+                        </SPDF.View>
                     </SPDF.View>
-                    {/* <SPDF.View style={{ width: 60, height: 40, }}>
-                        <SPDF.Image src={urlFoto} style={{ width: 50, height: 40, resizeMode: "cover" }} />
-                        <SPDF.Image src={`${SSocket.api.empresa}empresa/${caja?.key_empresa}`} style={{ width: 65, height: 40, resizeMode: "cover" }} />
-                    </SPDF.View> */}
-                    <SPDF.View style={{ flex: 1, }}>
-                        <SPDF.Text style={label}>{caja?.sucursal?.descripcion}</SPDF.Text>
-                        <SPDF.Text style={text}>{caja?.cajero?.Nombres}</SPDF.Text>
-                    </SPDF.View></SPDF.View>
+                </SPDF.View>
+
+
+                <SPDF.View style={{ width: "50%" }}>
+                    <SPDF.Text style={label}>Cajero</SPDF.Text>
+                    {PdfCierreCaja.espacio(8)}
+                    <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
+                        <SPDF.View style={{ width: 50, height: 40, }}>
+                            <SPDF.Image src={`${SSocket.api.root}usuario/${caja?.cajero.key}`} style={{ width: 40, height: 40, resizeMode: "cover" }} />
+                        </SPDF.View>
+                        <SPDF.View style={{ flex: 1, marginTop: -4, height: 60, }}>
+                            {(caja?.cajero?.Nombres) && (<SPDF.Text style={text}> {caja?.cajero?.Nombres} {caja?.cajero?.Apellidos} </SPDF.Text>)}
+                            {/* {caja?.cajero?.CI && (<SPDF.Text style={label}> CI: {caja.cajero.CI} </SPDF.Text>)} */}
+                            {caja?.cajero?.Correo && (<SPDF.Text style={text}> {caja.cajero.Correo} </SPDF.Text>)}
+                            {caja?.cajero?.Telefono && (<SPDF.Text style={text}> Teléfono: {caja.cajero.Telefono} </SPDF.Text>)}
+                        </SPDF.View>
+                    </SPDF.View>
+                </SPDF.View>
             </SPDF.View>
         );
     }
-    static detalleMovimientos(movimientos, usuarios, empresa_tipo_pago, monedasMap) {
+    static detalleMovimientos(movimientos) {
         return movimientos.map((mov, i) => (
             <SPDF.View key={i} style={{ width: "100%", flexDirection: "row", marginBottom: 6 }}>
                 <SPDF.View style={{ flex: 1 }}>
@@ -80,8 +112,15 @@ export default class PdfCierreCaja {
     static Resumen(resumen) {
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
+
                 <SPDF.View style={{ flex: 1 }} />
                 <SPDF.View style={{ flex: 2, padding: 10 }}>
+                    <SPDF.View style={{ width: "100%", alignItems: "center", }}> <SPDF.Text style={text}> Resumen del Cierre </SPDF.Text> </SPDF.View>
+                    {/* {PdfCierreCaja.espacio(8)} */}
+
+                    <SPDF.View style={{ width: "100%", borderTopWidth: 1, marginBottom: 5, marginTop: 5, borderColor: "#cec9c9" }} />
+ 
+
 
                     {resumen.map((r, i) => {
                         const isTotal = r.label === "Total";
@@ -101,8 +140,10 @@ export default class PdfCierreCaja {
     }
     static TablaPagos(tabla) {
         return (
-            <SPDF.View style={{ width: "100%", marginLeft: 80, marginRight: 80 }}>
-                <SPDF.View style={{ width: "100%", height: 44, flexDirection: "row", backgroundColor: "#D0D0D0" }}>
+            <SPDF.View style={{ width: "100%", marginLeft: 20, marginRight: 20 }}>
+                <SPDF.View style={{ width: "100%", }}> <SPDF.Text style={label}> Estado de Cuentas </SPDF.Text> </SPDF.View>
+                {PdfCierreCaja.espacio(8)}
+                <SPDF.View style={{ width: "100%", height: 32, flexDirection: "row", backgroundColor: "#D0D0D0" }}>
                     <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}>
                         <SPDF.Text style={{ ...text, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}>Cuenta</SPDF.Text>
                     </SPDF.View>
@@ -124,16 +165,30 @@ export default class PdfCierreCaja {
                             <SPDF.Text style={{ ...text, fontSize: 8 }}> {item.descripcion} {item.tipo_pago.descripcion} {item.moneda.descripcion} </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ width: 60, borderWidth: 1, height: "100%", justifyContent: "center", paddingLeft: 4 }}>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}> {item.moneda.observacion} </SPDF.Text>
+                            <SPDF.Text style={{ ...text, fontSize: 8, }}> {item.moneda.observacion} </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ width: 60, borderWidth: 1, height: "100%", justifyContent: "center", paddingLeft: 4 }}>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}> {SMath.formatMoney(item.saldos)} </SPDF.Text>
+
+                            <SPDF.Text style={{
+                                ...text, fontSize: 8,
+                                color: item.saldos < 0 ? "#ff0000" : item.saldos > 0 ? "#00bb00" : STheme.color.background
+
+                                // color: item.saldos < 0 ? "#ff0000" : STheme.color.background 
+                            }}> {SMath.formatMoney(item.saldos)} </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ width: 60, borderWidth: 1, height: "100%", justifyContent: "center", paddingLeft: 4 }}>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}> {item.moneda.observacion}{SMath.formatMoney(item.entradas)} </SPDF.Text>
+                            <SPDF.Text style={{
+                                ...text, fontSize: 8,
+                                color: item.entradas < 0 ? "#ff0000" : item.entradas > 0 ? "#00bb00" : STheme.color.background
+                            }}> {item.moneda.observacion}{SMath.formatMoney(item.entradas)} </SPDF.Text>
                         </SPDF.View>
                         <SPDF.View style={{ width: 60, borderWidth: 1, height: "100%", justifyContent: "center", paddingLeft: 4 }}>
-                            <SPDF.Text style={{ ...text, fontSize: 8 }}> {item.moneda.observacion}{SMath.formatMoney(item.salidas)} </SPDF.Text>
+                            <SPDF.Text style={{
+                                ...text, fontSize: 8,
+                                //  color: item.salidas < 0 ? "#ff0000" : STheme.color.background
+                                color: item.salidas < 0 ? "#ff0000" : item.salidas > 0 ? "#00bb00" : STheme.color.background
+
+                            }}>{item.moneda.observacion} {SMath.formatMoney(item.salidas)} </SPDF.Text>
                         </SPDF.View>
                     </SPDF.View>
                 ))}
@@ -144,11 +199,11 @@ export default class PdfCierreCaja {
         return (
             <SPDF.View style={{ width: "100%", marginTop: 40, flexDirection: "row" }}>
                 <SPDF.View style={{ flex: 1, alignItems: "center" }}>
-                    <SPDF.View style={{ width: 150, borderTopWidth: 1 }} />
+                    <SPDF.View style={{ width: "90%", borderTopWidth: 1 }} />
                     <SPDF.Text style={text}>Cajero</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ flex: 1, alignItems: "center" }}>
-                    <SPDF.View style={{ width: 150, borderTopWidth: 1 }} />
+                    <SPDF.View style={{ width: "90%", borderTopWidth: 1 }} />
                     <SPDF.Text style={text}>Administrador</SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
@@ -236,21 +291,30 @@ export default class PdfCierreCaja {
                         {PdfCierreCaja.Header(caja)}
                         {PdfCierreCaja.espacio(8)}
                         {PdfCierreCaja.Cajero(caja)}
-                        <SPDF.View style={{ width: "100%", alignItems: "center", }}> <SPDF.Text style={text}> DETALLE </SPDF.Text> </SPDF.View>
-                        {PdfCierreCaja.espacio(8)}
-                        {PdfCierreCaja.linea()}
+
                     </SPDF.View>
                 }
                 footer={PdfCierreCaja.Footer()}
             >
+
+                <SPDF.View style={{ width: "100%", alignItems: "center", }}> <SPDF.Text style={text}>Detalle de Transacciones</SPDF.Text> </SPDF.View>
+                {PdfCierreCaja.espacio(8)}
+                {PdfCierreCaja.linea()}
 
                 {PdfCierreCaja.espacio(8)}
                 {PdfCierreCaja.detalleMovimientos(movimientos)}
                 {PdfCierreCaja.espacio(8)}
                 {PdfCierreCaja.linea()}
                 {PdfCierreCaja.espacio()}
+
+
                 {PdfCierreCaja.Resumen(resumen)}
                 {PdfCierreCaja.espacio()}
+
+                {/* <SPDF.View style={{ width: "100%", }}> <SPDF.Text style={label}> Estado de Cuentas </SPDF.Text> </SPDF.View>
+                {PdfCierreCaja.espacio(8)} */}
+                {/* {PdfCierreCaja.linea()} */}
+
                 {PdfCierreCaja.TablaPagos(empresa_tipo_pago_pv)}
                 {PdfCierreCaja.espacio()}
                 {PdfCierreCaja.Firmas()}
