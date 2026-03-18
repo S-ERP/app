@@ -39,6 +39,16 @@ export default class config2 extends React.Component {
         this.empresa.sucursales.map(e => {
             e.almacenes = this.almancenes.filter(almacen => almacen.key_sucursal == e.key);
         })
+        const moneda = await MDL.empresa.getMonedas();
+        const empresa_tipo_pago = await MDL.caja.empresa_tipo_pago_getAll();
+        console.log("moneda", moneda);
+        let empresa_tipo_pago_punto_venta = await MDL.caja.empresa_tipo_pago_punto_venta_getAll();
+        empresa_tipo_pago_punto_venta = Object.values(empresa_tipo_pago_punto_venta);
+        this.empresa_tipo_pago = Object.values(empresa_tipo_pago);
+        this.empresa_tipo_pago.map(tipo_pago => {
+            tipo_pago.moneda = moneda.find(m => m.key == tipo_pago.key_moneda);
+            tipo_pago.puntos_venta = empresa_tipo_pago_punto_venta.filter(e => e.key_empresa_tipo_pago == tipo_pago.key)
+        })
         this.forceUpdate();
     }
     reload() {
@@ -51,6 +61,7 @@ export default class config2 extends React.Component {
         return <SPage title={"config2"} disableScroll>
 
             <Pizarra id={"config_empresa"} scale={0.4}
+                exponentDeRedondeoDeMovimiento={10}
                 onDoublePress={e => {
                     console.log(e);
                     FloatMenu.open({
@@ -131,6 +142,10 @@ export default class config2 extends React.Component {
                         }
                     </>
                 })}
+                {(this.empresa_tipo_pago ?? []).map((tipo_pago, i) => {
+                    return <TipoPagoNodo tipo_pago={tipo_pago} />
+                }
+                )}
             </Pizarra>
             <SView style={{
                 position: "absolute",
@@ -143,6 +158,99 @@ export default class config2 extends React.Component {
             </SView>
         </SPage >
     }
+}
+
+const getSelectLineProps = () => {
+    return {
+        strokeWidth: 3,
+        strokeDasharray: "4 2",
+        stroke: STheme.color.warning,
+    }
+}
+
+const getUnSelectLineProps= () => {
+    return {
+        strokeWidth: 1,
+        strokeDasharray: "4 2",
+        stroke: STheme.color.card,
+    }
+}
+const TipoPagoNodo = ({ tipo_pago }) => {
+    const color = STheme.colorFromText(tipo_pago.key_tipo_pago)
+    return <Nodo
+        id={tipo_pago.key}
+        key={tipo_pago.key}
+        data={tipo_pago}
+        y={0} x={0}
+        style={{
+            alignItems: "center",
+            justifyContent: "center"
+        }}
+    >
+        <SView style={{
+            width: 90,
+            height: 50,
+            borderWidth: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            borderColor: STheme.color.text,
+            backgroundColor: STheme.color.background,
+            borderRadius: 100,
+        }}>
+
+            <SText bold>{tipo_pago.moneda?.observacion}</SText>
+            <SHr h={3} />
+            <SView style={{
+                padding: 2, backgroundColor: color + "44",
+                paddingHorizontal: 4,
+                borderWidth: 1,
+                borderColor: color,
+                borderRadius: 4,
+            }}>
+                <SText style={{
+                    fontSize: 7,
+                    fontWeight: "bold",
+                    color: STheme.color.text,
+                }}>{tipo_pago.key_tipo_pago}</SText>
+            </SView>
+        </SView>
+
+        <SText style={{
+            width: 110
+        }} fontSize={10} center>{tipo_pago.descripcion}</SText>
+
+        <Puerto id="key_punto_venta"
+            value={tipo_pago.puntos_venta.map(e => e.key_punto_venta)}
+            type="input"
+            onConnect={e => {
+                console.log("onConnect", e)
+                // if (e.value == almacen.key_sucursal) return;
+                // MDL.inventario.saveAlmacen({
+                //     data: {
+                //         key: almacen.key,
+                //         key_sucursal: e.value
+                //     }
+                // }).then(e => {
+                //     if (reload) reload()
+                //     // this.loadData();
+                // }).catch(e => {
+                //     console.log(e)
+                // })
+                // console.log("onConnect", e)
+            }}
+            
+            selectLineProps={getSelectLineProps()}
+            lineProps={getUnSelectLineProps()}
+            style={{
+                width: 10,
+                height: 20,
+                top: 16,
+                left: 10,
+                position: "absolute",
+                borderRadius: 100,
+                backgroundColor: STheme.color.text,
+            }} />
+    </Nodo>
 }
 
 
@@ -185,6 +293,8 @@ const EmpresaNodo = ({ empresa }) => {
             id="key_empresa"
             type="output"
             value={empresa?.key}
+            selectLineProps={getSelectLineProps()}
+            lineProps={getUnSelectLineProps()}
             style={{
                 position: "absolute",
                 borderRadius: 100,
@@ -264,6 +374,8 @@ const AlmacenNodo = ({ sucursal, almacen, empresa, save_locations }) => {
                 })
                 console.log("onConnect", e)
             }}
+            selectLineProps={getSelectLineProps()}
+            lineProps={getUnSelectLineProps()}
             style={{
                 width: 8,
                 top: 36,
@@ -329,6 +441,8 @@ const SucursalNodo = ({ sucursal, empresa, save_locations }) => {
         <Puerto id="key_sucursal"
             value={sucursal.key}
             type="output"
+            selectLineProps={getSelectLineProps()}
+            lineProps={getUnSelectLineProps()}
             style={{
                 position: "absolute",
                 right: -8,
@@ -401,6 +515,22 @@ const PuntoVentaNodo = ({ sucursal, empresa, punto_venta, reload, save_locations
                 height: 20,
                 top: 35,
                 left: 0
+            }} />
+        <Puerto
+            id="key_punto_venta"
+            type="output"
+            value={punto_venta?.key}
+           selectLineProps={getSelectLineProps()}
+           lineProps={getUnSelectLineProps()}
+
+            style={{
+                position: "absolute",
+                borderRadius: 100,
+                right: 0,
+                width: 20,
+                height: 20,
+                backgroundColor: "#fff"
+                // bottom: 0
             }} />
     </Nodo>
 }
