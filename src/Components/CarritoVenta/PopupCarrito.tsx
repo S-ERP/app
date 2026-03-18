@@ -107,7 +107,13 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     }}
                 />
             </SView>
-            <SView style={{ padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0 }} onPress={() => { SPopup.close("PopupCarrito") }}>
+            <SView style={{ padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0 }} onPress={() => {
+
+                console.clear();
+                console.log("%c" + "boooooooo", `color: #04f520; font-weight: bold;`);
+
+                SPopup.close("PopupCarrito")
+            }}>
                 <SIconApp name="Close" fill={STheme.color.text} />
             </SView>
             <SHr />
@@ -268,7 +274,11 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                 {/* eliminar */}
 
 
-                <SView center style={{ width: 20, height: 20, padding: 2 }} onPress={() => MDL.carrito.removerItemAlCarritoDeVentas(item)}>
+                <SView center style={{ width: 20, height: 20, padding: 2 }} onPress={() => {
+                    console.clear();
+                    console.log("%c" + "boooooooo", `color: #2ECC40; font-weight: bold;`);
+                    MDL.carrito.removerItemAlCarritoDeVentas(item)
+                }} >
                     <SIconApp name="Close" fill={STheme.color.warning} />
                 </SView>
 
@@ -381,7 +391,7 @@ const ListaCostos = ({ item, moneda, totalItem }: any) => {
                     <CostoItem key={costo.key_tipo_costo} costo={costo} moneda={moneda} totalItem={totalItem} />
                 ))}
         </>
-      
+
     );
 };
 
@@ -426,6 +436,7 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
                                 </SText>
                             )
                         }))}
+                        defaultValue={costo.key_modelo_cliente || null}  // 🔥 esto mantiene la selección
                         // defaultValue={costo.key_modelo_cliente || null}
                         onSelect={(selected: any) => {
                             costo.key_modelo_cliente = selected.value;
