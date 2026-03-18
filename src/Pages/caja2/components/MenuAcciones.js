@@ -52,6 +52,7 @@ export default class MenuAcciones extends Component<{ caja: any, movimientos: an
                                             key: caja.key,
                                             key_punto_venta: caja.key_punto_venta,
                                         }).then(e => {
+                                            SPopup.close("barcode_scanner");
                                             SNotification.remove("caja_cerrar");
                                         }).catch(e => {
                                             SNotification.send({
