@@ -381,21 +381,7 @@ const ListaCostos = ({ item, moneda, totalItem }: any) => {
                     <CostoItem key={costo.key_tipo_costo} costo={costo} moneda={moneda} totalItem={totalItem} />
                 ))}
         </>
-        // <>
-        //     <SView col={"xs-12"} row style={{ borderBottomWidth: 1, borderColor: STheme.color.card, paddingVertical: 4, alignItems: "center" }} onPress={() => setIsOpen(!isOpen)} >
-        //         <SText bold>
-        //             Costos ({item.modelo.tipoCostos.length})
-        //         </SText>
-        //     </SView>
-
-        //     {isOpen && item.modelo.tipoCostos.map((costo: any) => (
-        //         <CostoItem
-        //             key={costo.key_tipo_costo}
-        //             costo={costo}
-        //             totalItem={totalItem}
-        //         />
-        //     ))}
-        // </>
+      
     );
 };
 
@@ -468,33 +454,5 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
             </SView>
         </SView>
     );
-    // return (
-    //     <SView>
-    //         <SText>{costo.descripcion}</SText>
-    //         <SView row>
-    //             <InputSelector
-    //                 placeholder="Selecciona cliente"
-    //                 options={(costo.clientes || []).map((c: any) => ({
-    //                     label: c.cliente.nombres,
-    //                     value: c.key,
-    //                     data: c
-    //                 }))}
-    //                 onSelect={(selected: any) => {
-    //                     costo.key_modelo_cliente = selected.value;
-    //                     const comision = parseFloat(selected.data.comision || "0");
-    //                     const nuevoMonto = totalItem * (comision / 100) + 10;
-    //                     setMonto(nuevoMonto);
-    //                     costo.monto = nuevoMonto;
-    //                 }}
-    //             />
-    //             <SInput
-    //                 type="money2" value={monto} onChangeText={(e: string) => {
-    //                     const val = parseFloat(e || "0");
-    //                     setMonto(val);
-    //                     costo.monto = val;
-    //                 }}
-    //             />
-    //         </SView>
-    //     </SView>
-    // );
+
 };
