@@ -208,10 +208,10 @@ export default class root extends React.Component {
                 loadInitialState={async () => ({
                     sorters: [{ key: "fecha_on", order: "desc", type: "date" }],
                     cols: {
-                        "key_compra_venta_detalle": { hidden: true },
+                        // "key_compra_venta_detalle": { hidden: true },
                         "key_asiento_contable": { hidden: true },
                         "key_compra": { hidden: true },
-                        "key": { hidden: true },
+                        // "key": { hidden: true },
                         "key_costo": { hidden: true }
                     }
                 })}
