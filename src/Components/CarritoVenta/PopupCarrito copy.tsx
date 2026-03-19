@@ -107,13 +107,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                     }}
                 />
             </SView>
-            <SView style={{ padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0 }} onPress={() => {
-
-                console.clear();
-                console.log("%c" + "boooooooo", `color: #04f520; font-weight: bold;`);
-
-                SPopup.close("PopupCarrito")
-            }}>
+            <SView style={{ padding: 4, width: 33, height: 33, position: "absolute", right: 0, top: 0 }} onPress={() => { SPopup.close("PopupCarrito") }}>
                 <SIconApp name="Close" fill={STheme.color.text} />
             </SView>
             <SHr />
@@ -272,85 +266,41 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
             <SView row>
 
                 {/* eliminar */}
-
-
-                <SView center style={{ width: 20, height: 20, padding: 2 }} onPress={() => {
-                    console.clear();
-                    console.log("%c" + "boooooooo", `color: #2ECC40; font-weight: bold;`);
-                    MDL.carrito.removerItemAlCarritoDeVentas(item)
-                }} >
+                <SView onPress={() => MDL.carrito.removerItemAlCarritoDeVentas(item)}>
                     <SIconApp name="Close" fill={STheme.color.warning} />
                 </SView>
 
-                <SView center style={{ width: 35, height: 35, borderRadius: 4, overflow: "hidden", borderColor: STheme.color.card, borderWidth: 1 }}>
-                    <SImage src={SSocket.api.inventario + "modelo/" + item.modelo.key} style={{ resizeMode: "cover" }} />
-                </SView>
-
-                <SView width={4} />
-
-
-
                 <SView flex>
 
-                    <SText fontSize={14} bold>{item.modelo.descripcion}</SText>
-                    <SHr h={2} />
+                    <SText bold>{item.modelo.descripcion}</SText>
 
-                    {/* <SText bold>{item.modelo.descripcion}</SText> */}
-
-                    <SView row col={"xs-12"} style={{ alignItems: "center" }}>
+                    <SView row>
 
                         {/* PRECIO */}
+                        <SInput
+                            type="money2"
+                            value={precio}
+                            onChangeText={(e) => {
+                                const val = parseFloat(e || "0");
+                                setPrecio(val);
+                                MDL.carrito.calcularValoresCarritDeVentas();
+                            }}
+                        />
 
-                        <SView width={60}>
-
-                            <SInput
-                                style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
-                                // icon={
-                                //     <SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>
-                                //         {moneda ? moneda.observacion : "BS"}
-                                //     </SText>
-                                // }
-                                type="money2"
-                                value={precio}
-                                onChangeText={(e) => {
-                                    const val = parseFloat(e || "0");
-                                    setPrecio(val);
-                                    MDL.carrito.calcularValoresCarritDeVentas();
-                                }}
-                            />
-                        </SView>
-
-                        <SView width={4} />
-                        <SView width={60}>
-
-                            {/* CANTIDAD */}
-                            <SInput
-                                style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
-                                type="money2"
-                                icon={<SText width={15} fontSize={10} color={STheme.color.lightGray}>x</SText>}
-
-                                value={cantidad.toString()}
-                                onChangeText={(e) => {
-                                    const val = parseFloat(e || "0");
-                                    setCantidad(val);
-                                    MDL.carrito.calcularValoresCarritDeVentas();
-                                }}
-                            />
-                        </SView>
-
-                        <SView flex />
+                        {/* CANTIDAD */}
+                        <SInput
+                            value={cantidad.toString()}
+                            onChangeText={(e) => {
+                                const val = parseFloat(e || "0");
+                                setCantidad(val);
+                                MDL.carrito.calcularValoresCarritDeVentas();
+                            }}
+                        />
 
                         {/* SUBTOTAL */}
-                        {/* <SText>
+                        <SText>
                             {SMath.formatMoney(totalItem)}
-                        </SText> */}
-
-                        <SView width={80} style={{ justifyContent: "center" }}>
-                            <SText fontSize={12} bold style={{ textAlign: "right" }}>
-                                {SMath.formatMoney(totalItem)}
-                            </SText>
-                        </SView>
-
+                        </SText>
 
                     </SView>
 
@@ -376,27 +326,24 @@ const ListaCostos = ({ item, moneda, totalItem }: any) => {
 
     return (
         <>
-            <SView col={"xs-12"} row style={{ borderBottomWidth: 1, borderColor: STheme.color.card, paddingVertical: 4, alignItems: "center" }} onPress={() => setIsOpen(!isOpen)} >
-                <SHr />
-                <SText fontSize={12} bold>Costos</SText>
-                <SView flex />
-                <SText fontSize={10} color={STheme.color.lightGray}> ({item.modelo.tipoCostos.length}) </SText>
-                <SView width={4} />
-                <SView style={{ width: 16, height: 16, justifyContent: "center", alignItems: "center" }} >
-                    <SIconApp name="Back" fill={STheme.color.card} width={8} style={{ transform: [{ rotate: isOpen ? "-90deg" : "180deg" }], userSelect: "none", pointerEvents: "none" }} />
-                </SView>
+            <SView onPress={() => setIsOpen(!isOpen)}>
+                <SText bold>
+                    Costos ({item.modelo.tipoCostos.length})
+                </SText>
             </SView>
-            {isOpen &&
-                item.modelo.tipoCostos.map((costo: any) => (
-                    <CostoItem key={costo.key_tipo_costo} costo={costo} moneda={moneda} totalItem={totalItem} />
-                ))}
-        </>
 
+            {isOpen && item.modelo.tipoCostos.map((costo: any) => (
+                <CostoItem
+                    key={costo.key_tipo_costo}
+                    costo={costo}
+                    totalItem={totalItem}
+                />
+            ))}
+        </>
     );
 };
 
-// const CostoItem = ({ costo, totalItem }: any) => {
-const CostoItem = ({ costo, moneda, totalItem }: any) => {
+const CostoItem = ({ costo, totalItem }: any) => {
 
     const [monto, setMonto] = React.useState(costo.monto || 0);
 
@@ -411,7 +358,7 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
 
         const comision = parseFloat(cliente.comision || "0");
 
-        const nuevoMonto = totalItem * (comision / 100);
+        const nuevoMonto = totalItem * (comision / 100) + 10;
 
         setMonto(nuevoMonto);
         costo.monto = nuevoMonto;
@@ -419,51 +366,43 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
     }, [totalItem]);
 
     return (
-        <SView key={costo.key_tipo_costo} col={"md-12"} height={35}>
-            <SText fontSize={10}>{costo.descripcion}</SText>
-            <SView style={{ width: "100%" }} row>
-                <SView style={{ flex: 1, height: 18, backgroundColor: STheme.color.card }}>
-                    <InputSelector
-                        customStyle="erp"
-                        placeholder="Selecciona un cliente"
-                        options={(costo.clientes || []).map((c: any) => ({
-                            label: c.cliente.nombres,
-                            value: c.key,
-                            data: c,
-                            customComponent: () => (
-                                <SText fontSize={10} color={STheme.color.lightGray}>
-                                    {c.comision} %
-                                </SText>
-                            )
-                        }))}
-                        defaultValue={costo.key_modelo_cliente || null}  // 🔥 esto mantiene la selección
-                        // defaultValue={costo.key_modelo_cliente || null}
-                        onSelect={(selected: any) => {
-                            costo.key_modelo_cliente = selected.value;
-                            costo.__descripcion = `Costo por ${costo.descripcion} para ${selected.data.cliente.nombres}`;
-                            const comision = parseFloat(selected.data.comision || "0");
-                            const nuevoMonto = totalItem * (comision / 100);
-                            setMonto(nuevoMonto);
-                            costo.monto = nuevoMonto;
-                        }}
-                    />
-                </SView>
-                <SView width={4} />
-                <SView style={{ width: 70 }}>
-                    <SInput
-                        style={{ height: 18, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
-                        type="money2"
-                        icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray} > {moneda ? moneda.observacion : "BS"} </SText>}
-                        value={monto}
-                        onChangeText={(e: string) => {
-                            const valor = parseFloat(e || "0");
-                            setMonto(valor);
-                            costo.monto = valor;
-                        }}
-                    />
-                </SView>
+        <SView>
+
+            <SText>{costo.descripcion}</SText>
+
+            <SView row>
+
+                <InputSelector
+                    placeholder="Selecciona cliente"
+                    options={(costo.clientes || []).map((c: any) => ({
+                        label: c.cliente.nombres,
+                        value: c.key,
+                        data: c
+                    }))}
+                    onSelect={(selected: any) => {
+
+                        costo.key_modelo_cliente = selected.value;
+
+                        const comision = parseFloat(selected.data.comision || "0");
+
+                        const nuevoMonto = totalItem * (comision / 100) + 10;
+
+                        setMonto(nuevoMonto);
+                        costo.monto = nuevoMonto;
+                    }}
+                />
+
+                <SInput
+                    type="money2"
+                    value={monto}
+                    onChangeText={(e: string) => {
+                        const val = parseFloat(e || "0");
+                        setMonto(val);
+                        costo.monto = val;
+                    }}
+                />
+
             </SView>
         </SView>
     );
-
 };

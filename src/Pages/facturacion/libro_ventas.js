@@ -289,7 +289,7 @@ export default class libro_ventas extends Component {
                     dataType='date'
                     dateFormat='yyyy-MM-dd hh:mm'
                 />
-
+                <DinamicTable.Col key="data" label='DATA' data={e => JSON.stringify(e.row?.data?.detalle)} width={120} />
 
                 {/* <DinamicTable.Col key="fecha" label="Fecha Creación" width={120} data={(e) => e.row?.data?.fechaEmision}
                     customComponent={e => <SView center row><SIconApp name='Evento' width={12} height={12} fill={STheme.color.lightGray} />

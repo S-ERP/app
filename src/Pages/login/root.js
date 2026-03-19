@@ -5,6 +5,7 @@ import Model from '../../Model';
 import CryptoJS from 'crypto-js';
 import { Container } from '../../Components';
 import DomainLogo from '../../Components/Domain/DomainLogo';
+import MDL from '../../MDL';
 
 export default class Login extends Component {
     static HIDDEN = true;
@@ -76,8 +77,11 @@ export default class Login extends Component {
                             console.log(data);
 
                             Model.usuario.Action.login(data).then((resp) => {
-                                console.log("exito");
+                                console.log("exito",resp);
+                                MDL.usuario._setSession(resp.data)
+                                MDL.rolesPermisos.loadPermissions();
                                 SNavigation.reset("/")
+
                             }).catch(e => {
                                 // SPopup.alert("usuario no encontrado")
                                 if (e?.error == "error_password") {
