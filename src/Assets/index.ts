@@ -313,6 +313,10 @@ import vineta0, { ReactComponent as vineta0W, } from "./svg/vineta0.svg";
 import vineta2, { ReactComponent as vineta2W, } from "./svg/vineta2.svg";
 import alert2, { ReactComponent as alert2W, } from "./svg/alert2.svg";
 
+import expand, { ReactComponent as expandW, } from "./svg/expand.svg";
+import collapse, { ReactComponent as collapseW, } from "./svg/collapse.svg";
+
+
 
 
 
@@ -363,7 +367,7 @@ export const svg = {
   iconUbicacion: { Native: iconUbicacion, Web: iconUbicacionW },
   iconMail: { Native: iconMail, Web: iconMailW },
 
-  
+
   Comment2: { Native: Comment2, Web: Comment2W },
   addPublicacion: { Native: addPublicacion, Web: addPublicacionW },
   tareaUser: { Native: tareaUser, Web: tareaUserW },
@@ -512,6 +516,10 @@ export const svg = {
   vineta0: { Native: vineta0, Web: vineta0W },
   vineta2: { Native: vineta2, Web: vineta2W },
   alert2: { Native: alert2, Web: alert2W },
+
+  expand: { Native: expand, Web: expandW },
+  collapse: { Native: collapse, Web: collapseW },
+
 
 
 

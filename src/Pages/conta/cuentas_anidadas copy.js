@@ -51,9 +51,7 @@ export default class cuentas_anidadas extends React.Component {
         this.state = {
             openItems: {}, // { codigo: true/false }
             cuentas: [],
-            search: "",
-            hoveredItem: null,
-            selectedItem: null
+            search: ""
         };
     }
 
@@ -135,96 +133,33 @@ export default class cuentas_anidadas extends React.Component {
     };
 
     renderItem = (item, level = 0) => {
+        const isOpen = this.state.openItems[item.codigo] || item.autoOpen;
         const hasChildren = item.children && item.children.length > 0;
 
-        // const isSearching = !!this.state.search;
-
-        // const isOpen = isSearching
-        //     ? item.autoOpen // 🔍 modo búsqueda
-        //     : this.state.openItems[item.codigo]; // 👆 modo normal
-
-        // const isOpen = isSearching
-        //     ? (this.state.openItems[item.codigo] ?? item.autoOpen)
-        //     : this.state.openItems[item.codigo];
-
-        const isOpen = !!this.state.openItems[item.codigo];
-
-        const isSelected = this.state.selectedItem === item.codigo;
-        const isHover = this.state.hoveredItem === item.codigo;
-
-
-        // 🔥 PRIORIDAD DE COLORES
-        let backgroundColor = "transparent";
-        if (isSelected) {
-            backgroundColor = STheme.color.card; //  seleccionado
-        } else if (isHover) {
-            backgroundColor = STheme.color.card; // hover
-        }
         return (
             <SView key={item.key} col={"xs-12"}
                 style={{
-                    // borderBottomWidth: 1,
-                    //borderBottomColor: STheme.color.card
+                    borderBottomWidth: 1,
+                    borderBottomColor: STheme.color.card
                 }}>
                 <SView
-                    onPress={() => {
-                        this.setState({ selectedItem: item.codigo });
-                        // if (!isSearching && hasChildren) {
-                        //     this.toggleItem(item.codigo);
-                        // }
-                        if (hasChildren) {
-                            this.toggleItem(item.codigo);
-                        }
-                    }}
+                    onPress={() => hasChildren && this.toggleItem(item.codigo)}
                     style={{
+                        padding: 10,
+                        paddingLeft: 10 + level * 15,
                         flexDirection: "row",
-                        alignItems: "center",
-                        paddingVertical: 10,
-                        borderBottomWidth: 0.5,
-                        borderColor: STheme.color.card,
-                        backgroundColor,
-
+                        alignItems: "center"
                     }}
-                    onPressIn={() => this.setState({ hoveredItem: item.codigo })}
-                    onPressOut={() => this.setState({ hoveredItem: null })}
-                    onMouseEnter={() =>
-                        this.setState({ hoveredItem: item.codigo })
-                    }
-                    onMouseLeave={() =>
-                        this.setState({ hoveredItem: null })
-                    }
-
                 >
-                    <SView
-                        style={{
-                            flex: 1,
-                            flexDirection: "row",
-                            alignItems: "center",
-                            paddingLeft: level * 15
-                        }}
-                    >
-                        {/* Flecha */}
-                        <SText style={{ width: 20 }}>
-                            {hasChildren ? (isOpen ? "▼" : "▶") : ""}
-                        </SText>
+                    {/* Flecha */}
+                    <SText style={{ width: 20 }}>
+                        {hasChildren ? (isOpen ? "▼" : "▶") : ""}
+                    </SText>
 
-                        {/* Texto */}
-                        <SText numberOfLines={1}>
-                            {item.codigo} - {item.descripcion || item.tipo}
-                        </SText>
-                    </SView>
-
-                    <SView style={{ width: 80, alignItems: "center" }}>
-                        <SText>0</SText>
-                    </SView>
-
-                    <SView style={{ width: 80, alignItems: "center" }}>
-                        <SText>0</SText>
-                    </SView>
-
-                    <SView style={{ width: 80, alignItems: "center" }}>
-                        <SText>0</SText>
-                    </SView>
+                    {/* Texto */}
+                    <SText>
+                        {item.codigo} - {item.descripcion || item.tipo}
+                    </SText>
                 </SView>
 
                 {/* Hijos */}
@@ -237,35 +172,8 @@ export default class cuentas_anidadas extends React.Component {
     };
 
     /*PARA BUSCAR*/
-    // handleSearch = (text) => {
-    //     this.setState({ search: text });
-    // };
     handleSearch = (text) => {
-        const dataArray = this.state.cuentas;
-        const tree = this.buildTree(dataArray);
-
-        if (!text) {
-            this.setState({
-                search: "",
-                openItems: {}
-            });
-            return;
-        }
-
-        const filteredTree = this.filterTree(tree, text);
-
-        // 🔥 obtener todos los nodos que deben abrirse
-        const allCodes = this.getAllCodesWithChildren(filteredTree);
-
-        const openItems = {};
-        allCodes.forEach(code => {
-            openItems[code] = true;
-        });
-
-        this.setState({
-            search: text,
-            openItems
-        });
+        this.setState({ search: text });
     };
 
     filterTree = (nodes, search) => {
@@ -285,7 +193,8 @@ export default class cuentas_anidadas extends React.Component {
                     return {
                         ...node,
                         children: childrenFiltered,
-                        //autoOpen: true // 🔥 SOLO en búsqueda
+                        // 🔥 abrir automáticamente si hay match
+                        autoOpen: true
                     };
                 }
 
@@ -330,9 +239,6 @@ export default class cuentas_anidadas extends React.Component {
 
     /*PARA EXPANDIR / OCULTAR*/
 
-    selectItem = (codigo) => {
-        this.setState({ selectedItem: codigo });
-    };
 
     render() {
         // const dataArray = Object.values(this.props.data || {});
@@ -342,8 +248,6 @@ export default class cuentas_anidadas extends React.Component {
 
         //aplicar búsqueda
         const filteredTree = this.filterTree(tree, this.state.search);
-
-        const currentTree = this.state.search ? filteredTree : tree;
 
         return (
             <SPage title={"Plan de cuentas anidadas"} >
@@ -356,16 +260,12 @@ export default class cuentas_anidadas extends React.Component {
                     <SHr height={10} />
                     <SView col={"xs-12"} style={{ alignItems: "flex-end" }}>
                         <SView style={{ justifyContent: "space-between" }} row>
-                            <SView onPress={() => this.expandAll(currentTree)} row card padding={8}>
-                                <SIconApp name="expand" width={15} height={15} fill={STheme.color.text} />
-                                <SView width={5} />
-                                <SText>Expandir</SText>
+                            <SView onPress={() => this.expandAll(tree)}>
+                                <SText>Expandir todo</SText>
                             </SView>
                             <SView width={10} />
-                            <SView onPress={this.collapseAll} row card padding={8}>
-                                <SIconApp name="collapse" width={15} height={15} fill={STheme.color.text} />
-                                <SView width={5} />
-                                <SText>Colapsar</SText>
+                            <SView onPress={this.collapseAll}>
+                                <SText>Colapsar todo</SText>
                             </SView>
                         </SView>
                     </SView>
