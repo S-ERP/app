@@ -1,22 +1,26 @@
+
 import React from "react";
-import { SHr, SIcon, SInput, SLoad, SNotification, SPage, SPopup, SText, STheme, SUtil, SView, SViewProps } from "servisofts-component";
+import { SHr, SIcon, SInput, SNotification, SText, STheme, SView, SViewProps } from "servisofts-component";
 import Label from "./Label";
 import { Factura, FacturaDetalle } from "../../../MDL/factura/type";
 import { FlatList } from "react-native";
-import { Parametricas } from "../../../MDL/factura/typeParametricas";
 import MDL from "../../../MDL";
 import FiltroSelector from "../../productos/modelo/Components/FiltroSelector";
 
-
 type DetalleProps = {
     factura: Factura,
-    parametricas: Parametricas
 }
 
 const customStyle: any = "factura";
 
-// Componente de celda
-const Cell = ({ label = "", flex = 1, children, style = {} }: { label?: string, flex?: number, children?: any, style?: SViewProps["style"] }) => {
+
+// CELDA
+const Cell = ({ label = "", flex = 1, children, style = {} }: {
+    label?: string,
+    flex?: number,
+    children?: any,
+    style?: SViewProps["style"]
+}) => {
     return <SView flex={flex} style={[{
         borderWidth: 0.5,
         padding: 8,
@@ -27,14 +31,13 @@ const Cell = ({ label = "", flex = 1, children, style = {} }: { label?: string, 
     </SView>
 }
 
-// Componente Item
+// ITEM
 const Item = ({ item, reload, onDelete, state }: {
     item: FacturaDetalle,
     reload: () => void,
     onDelete: any,
     state: any
 }) => {
-    const useRef = React.useRef<SInput | null>(null);
 
     const calcularSubTotal = () => {
         const cantidad = parseFloat(item.cantidad ?? "0");
@@ -49,69 +52,74 @@ const Item = ({ item, reload, onDelete, state }: {
     }
 
     return <SView col={"xs-12"} row>
-        {/* Producto / Servicio */}
+
+        {/* PRODUCTO */}
         <Cell>
             <FiltroSelector
                 ref={(ref) => (state.filtroProductoRef = ref)}
                 label="Producto / Servicio"
                 loadData={async () => {
-                    try {
-                        const data = await MDL.factura.getParametrica({
-                            ambiente: MDL.factura.ambiente,
-                            parametrica: "productosServicios"
-                        });
-                        return Array.isArray(data) ? data : [];
-                    } catch (e) {
-                        console.error("Error cargando productos/servicios:", e);
-                        return [];
-                    }
+                    const data = await MDL.factura.getParametrica({
+                        ambiente: MDL.factura.ambiente,
+                        parametrica: "productosServicios"
+                    });
+                    return Array.isArray(data) ? data : [];
                 }}
                 mapOption={(a) => ({
                     key: String(a?.codigoProducto ?? ""),
-                    nombre: `${a?.codigoProducto ?? ""} - ${a?.descripcionProducto ?? ""}`.trim(),
+                    nombre: `${a?.codigoProducto ?? ""} - ${a?.descripcionProducto ?? ""}`,
+                    data: a
                 })}
                 onSelect={(prd) => {
+                    const data = prd.data;
 
                     item.codigoProducto = prd.key;
-                    // item.descripcion = prd?.descripcionProducto ?? "";
-                    // item.codigoProductoSin = prd?.codigoProducto ?? "";
-                    // item.actividadEconomica = prd?.codigoActividad?.toString() ?? "";
-                    console.clear();
-                    console.log("%c" + JSON.stringify(item), `color: #2ECC40; font-weight: bold;`);
+                    item.codigoProductoSin = data?.codigoProducto ?? "";
+                    item.descripcion = data?.descripcionProducto ?? "";
+                    item.actividadEconomica = data?.codigoActividad?.toString() ?? "";
+
+                    // opcional si tienes estos campos
+                    // item.precioUnitario = data?.precio ?? "0";
+                    // item.unidadMedida = data?.unidadMedida ?? "1";
+
+                    calcularSubTotal();
                     reload();
                 }}
             />
         </Cell>
 
-        {/* Cantidad */}
+        {/* CANTIDAD */}
         <Cell>
-            <SInput customStyle={customStyle} defaultValue={item.cantidad} onChangeText={e => {
-                item.cantidad = e;
-                calcularSubTotal();
-                reload();
-            }} />
+            <SInput
+                customStyle={customStyle}
+                value={item.cantidad ?? ""}
+                onChangeText={e => {
+                    item.cantidad = e;
+                    calcularSubTotal();
+                    reload();
+                }}
+            />
         </Cell>
 
-        {/* Unidad de Medida */}
+        {/* UNIDAD */}
         <Cell>
             <FiltroSelector
                 ref={(ref) => (state.filtroUnidadMedidaRef = ref)}
                 label="Unidad de Medida"
                 loadData={async () => {
-                    try {
-                        const data = await MDL.factura.getParametrica({
-                            ambiente: MDL.factura.ambiente,
-                            parametrica: "unidadMedida"
-                        });
-                        return Array.isArray(data) ? data : [];
-                    } catch (e) {
-                        console.error("Error cargando unidades de medida:", e);
-                        return [];
-                    }
+                    const data = await MDL.factura.getParametrica({
+                        ambiente: MDL.factura.ambiente,
+                        parametrica: "unidadMedida"
+                    });
+                    return Array.isArray(data) ? data : [];
                 }}
                 mapOption={(a) => ({
                     key: String(a?.codigoClasificador ?? ""),
-                    nombre: a?.descripcion ?? "",
+
+                    nombre: `${a?.codigoClasificador ?? ""} - ${a?.descripcion ?? ""}`,
+
+                    // nombre: a?.descripcion ?? "",
+                    data: a
                 })}
                 onSelect={(um) => {
                     item.unidadMedida = um?.key ?? "";
@@ -120,80 +128,87 @@ const Item = ({ item, reload, onDelete, state }: {
             />
         </Cell>
 
-
+        {/* DESCRIPCIÓN */}
         <Cell flex={3} style={{ padding: 2 }}>
             <SInput
-                ref={useRef}
                 customStyle={customStyle}
                 type="textArea"
                 height={"100%"}
                 style={{ fontSize: 10 }}
-                value={item.descripcion ?? ""} // 🔹 controlado desde item.descripcion
+                value={item.descripcion ?? ""}
+                // onChangeText={text => {
+                //     item.descripcion = text.replace(/"/g, "'");
+                //     reload();
+                // }}
                 onChangeText={text => {
-                    const nuevo = text.replace(/"/g, "'"); // reemplaza automáticamente
-                    item.descripcion = nuevo;
-                    reload(); // 🔹 fuerza re-render para que se vea el cambio
+                    let value = text.replace(/"/g, "'");
+
+                    // Mantener solo la primera comilla simple
+                    const firstIndex = value.indexOf("'");
+                    if (firstIndex !== -1) {
+                        value =
+                            value.substring(0, firstIndex + 1) +
+                            value.substring(firstIndex + 1).replace(/'/g, "");
+                    }
+
+                    item.descripcion = value;
+                    reload();
+                }}
+
+            />
+        </Cell>
+
+        {/* PRECIO */}
+        <Cell>
+            <SInput
+                customStyle={customStyle}
+                value={item.precioUnitario ?? ""}
+                onChangeText={e => {
+                    item.precioUnitario = e;
+                    calcularSubTotal();
+                    reload();
                 }}
             />
         </Cell>
-        {/* Precio Unitario */}
+
+        {/* DESCUENTO */}
         <Cell>
-            <SInput customStyle={customStyle} defaultValue={item.precioUnitario} onChangeText={e => {
-                item.precioUnitario = e;
-                calcularSubTotal();
-                reload();
-            }} />
+            <SInput
+                customStyle={customStyle}
+                value={item.montoDescuento ?? ""}
+                onChangeText={e => {
+                    item.montoDescuento = e;
+                    calcularSubTotal();
+                    reload();
+                }}
+            />
         </Cell>
 
-        {/* Monto Descuento */}
-        <Cell>
-            <SInput customStyle={customStyle} defaultValue={item.montoDescuento} onChangeText={e => {
-                item.montoDescuento = e;
-                calcularSubTotal();
-                reload();
-            }} />
-        </Cell>
-
-        {/* Subtotal y eliminar */}
+        {/* SUBTOTAL */}
         <Cell>
             <Label>{item.subTotal}</Label>
-            <SView style={{ position: "absolute", right: 2, top: 2 }} onPress={onDelete}>
+
+            <SView
+                style={{
+                    position: "absolute",
+                    right: 2,
+                    top: 2,
+                }}
+                onPress={onDelete}
+            >
                 <SIcon name="eliminarI" width={20} height={20} />
             </SView>
         </Cell>
+
     </SView>
 }
 
-// Componente Detalle
+// MAIN COMPONENT
 export default class Detalle extends React.Component<DetalleProps> {
 
     state = {
-        ambiente: MDL.factura.ambiente,
-        selectedProductoServicio: null,
-        selectedUnidadMedida: null,
         filtroProductoRef: null,
         filtroUnidadMedidaRef: null,
-    }
-
-    // Validación antes de emitir factura
-    validarAntesDeEmitir() {
-        if (!this.props.factura.data.leyenda || this.props.factura.data.leyenda.trim() === "") {
-            SNotification.error("Debe ingresar una leyenda antes de emitir la factura");
-            return false;
-        }
-        return true;
-    }
-
-    renderHeader() {
-        return <SView col={"xs-12"} row>
-            <Cell label="CÓDIGO PRODUCTO / SERVICIO" />
-            <Cell label="CANTIDAD" />
-            <Cell label="UNIDAD DE MEDIDA" />
-            <Cell label="DESCRIPCIÓN" flex={3} />
-            <Cell label="PRECIO UNITARIO" />
-            <Cell label="DESCUENTO" />
-            <Cell label="SUBTOTAL" />
-        </SView>
     }
 
     handleAddItem() {
@@ -234,10 +249,23 @@ export default class Detalle extends React.Component<DetalleProps> {
         return subTotal;
     }
 
+    renderHeader() {
+        return <SView col={"xs-12"} row>
+            <Cell label="CÓDIGO PRODUCTO / SERVICIO" />
+            <Cell label="CANTIDAD" />
+            <Cell label="UNIDAD DE MEDIDA" />
+            <Cell label="DESCRIPCIÓN" flex={3} />
+            <Cell label="PRECIO UNITARIO" />
+            <Cell label="DESCUENTO" />
+            <Cell label="SUBTOTAL" />
+        </SView>
+    }
+
     renderFooter() {
         let subTotal = this.calcularSubTotal();
         let descuento = parseFloat(this.props.factura.data.descuentoAdicional ?? "0");
         descuento = isNaN(descuento) ? 0 : descuento;
+
         if (descuento > subTotal) descuento = subTotal;
 
         let total = subTotal - descuento;
@@ -249,51 +277,50 @@ export default class Detalle extends React.Component<DetalleProps> {
         return <SView col={"xs-12"}>
             <SView col={"xs-12"} row>
                 <SView flex={6} />
-                <Cell flex={2} label="SUBTOTAL" style={{ padding: 2 }} />
-                <Cell label={subTotal.toString()} style={{ padding: 2 }} />
+                <Cell flex={2} label="SUBTOTAL" />
+                <Cell label={subTotal.toString()} />
             </SView>
+
             <SView col={"xs-12"} row>
                 <SView flex={6} />
-                <Cell flex={2} label="DESCUENTO" style={{ padding: 2 }} />
-                <Cell style={{ padding: 1 }}>
-                    <SInput customStyle={customStyle} height={16} defaultValue={this.props.factura.data.descuentoAdicional} style={{ textAlign: "center", fontSize: 10 }} onChangeText={e => {
-                        this.props.factura.data.descuentoAdicional = e ?? "0";
-                        this.setState({ ...this.state });
-                    }} />
+                <Cell flex={2} label="DESCUENTO" />
+                <Cell>
+                    <SInput
+                        customStyle={customStyle}
+                        value={this.props.factura.data.descuentoAdicional ?? ""}
+                        onChangeText={e => {
+                            this.props.factura.data.descuentoAdicional = e ?? "0";
+                            this.setState({ ...this.state });
+                        }}
+                    />
                 </Cell>
             </SView>
+
             <SView col={"xs-12"} row>
                 <SView flex={6} />
-                <Cell flex={2} label="TOTAL" style={{ padding: 2 }} />
-                <Cell label={total.toString()} style={{ padding: 2 }} />
-            </SView>
-            <SView col={"xs-12"} row>
-                <SView flex={6} />
-                <Cell flex={2} label="MONTO GIFT CARD" style={{ padding: 2 }} />
-                <Cell label={this.props.factura.data.montoGiftCard + ""} style={{ padding: 2 }} />
-            </SView>
-            <SView col={"xs-12"} row>
-                <SView flex={6} />
-                <Cell flex={2} label="MONTO A PAGAR" style={{ padding: 2 }} />
-                <Cell label={this.props.factura.data.montoTotal + ""} style={{ padding: 2 }} />
-            </SView>
-            <SView col={"xs-12"} row>
-                <SView flex={6} />
-                <Cell flex={2} label="IMPORTE BASE CRÉDITO FISCAL" style={{ padding: 2 }} />
-                <Cell label={this.props.factura.data.montoTotalSujetoIva} style={{ padding: 2 }} />
+                <Cell flex={2} label="TOTAL" />
+                <Cell label={total.toString()} />
             </SView>
         </SView>
     }
 
     render() {
         return <SView style={{ width: "100%" }}>
+
             <SView col={"xs-12"} style={{ alignItems: "flex-end" }}>
-                <SView width={120} height={30} row center backgroundColor={STheme.color.barColor} padding={8} onPress={this.handleAddItem.bind(this)}
+                <SView
+                    width={120}
+                    height={30}
+                    row
+                    center
+                    backgroundColor={STheme.color.barColor}
+                    padding={8}
+                    onPress={this.handleAddItem.bind(this)}
                     style={{ borderRadius: 4 }}
                 >
                     <SIcon name="adicionar" fill={STheme.color.white} width={15} height={15} />
                     <SView width={8} />
-                    <SText color={STheme.color.white} >{"ADD ITEM"}</SText>
+                    <SText color={STheme.color.white}>ADD ITEM</SText>
                 </SView>
             </SView>
 
@@ -301,15 +328,16 @@ export default class Detalle extends React.Component<DetalleProps> {
             {this.renderHeader()}
 
             <FlatList
-                style={{ width: "100%" }}
                 scrollEnabled={false}
                 data={this.props.factura.data.detalle}
-                renderItem={({ item, index }) => <Item
-                    item={item}
-                    reload={() => this.setState({ ...this.state })}
-                    onDelete={() => this.handleDeleteItem(index)}
-                    state={this.state}
-                />}
+                renderItem={({ item, index }) => (
+                    <Item
+                        item={item}
+                        reload={() => this.setState({ ...this.state })}
+                        onDelete={() => this.handleDeleteItem(index)}
+                        state={this.state}
+                    />
+                )}
             />
 
             {this.renderFooter()}
