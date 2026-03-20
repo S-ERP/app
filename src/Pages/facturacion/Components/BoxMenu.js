@@ -57,21 +57,95 @@ class BoxMenu extends Component<BoxMenuPropsType> {
     }
 
 
-    DetallePopup = ({ detalle, onConfirm }) => {
+    // DetallePopup = ({ detalle, onConfirm }) => {
+    //     return (
+    //         <SView col={"xs-11 sm-10 md-8 lg-6 xl-4"} height={400} withoutFeedback backgroundColor={STheme.color.background} borderRadius={8} style={{ overflow: "hidden", padding: 16 }}>
+    //             <SText bold fontSize={18} center>Detalle de la Factura</SText>
+    //             <SView height={16} />
+
+    //             <SInput
+    //                 type="textArea"
+    //                 height={250}
+    //                 value={JSON.stringify(detalle, null, 2)} // mostramos el detalle como texto
+    //                 style={{ fontSize: 12, padding: 8, backgroundColor: STheme.color.lightGray + "30" }}
+    //                 editable={false} // si solo quieres ver, no editar
+    //             />
+
+    //             <SView height={16} />
+
+    //             <SView row >
+    //                 <SButtom style={{ height: 35 }} type={"danger"} onPress={() => {
+    //                     SPopup.close("popup_detalle_factura");
+    //                     alert("Cancelar")
+    //                 }}>Cancelar</SButtom>
+    //                 <SView width={5} />
+    //                 <SButtom style={{ height: 35 }} type={"outline"} onPress={() => {
+
+    //                     SPopup.close("popup_detalle_factura");
+    //                     alert("confirmado")
+    //                 }}>Aceptar</SButtom>
+    //             </SView>
+
+    //             {/* <SButton onPress={onConfirm} propsText={{ bold: true }}>
+    //                 Confirmar
+    //             </SButton> */}
+    //         </SView>
+    //     );
+    // };
+
+
+    EditarDetallePopup = ({ factura_key, factura_data, detalleActual, onClose, onConfirm }) => {
+        const [detalleText, setDetalleText] = React.useState(JSON.stringify(detalleActual, null, 2));
+
+        const handleConfirm = async () => {
+            let nuevoDetalle;
+            try {
+                nuevoDetalle = JSON.parse(detalleText); // parseamos el JSON editado
+            } catch (e) {
+                SNotification.send({
+                    key: "editarDetalle_" + factura_key,
+                    title: "Error en el formato",
+                    body: "El detalle debe ser un JSON válido.",
+                    color: STheme.color.error,
+                    time: 5000,
+                });
+                return;
+            }
+
+            MDL.factura.editarDetalle(factura_key, factura_data, nuevoDetalle).then(e => {
+                if (this.props.onReload) this.props.onReload();
+            }).catch(e => { console.error(e); });
+
+            // try {
+
+            //     await editarDetalle(factura_key, factura_data, nuevoDetalle);
+            //     if (onConfirm) onConfirm(nuevoDetalle);
+            //     SPopup.close("popup_editar_detalle");
+            // } catch (error) {
+            //     console.error(error);
+            // }
+        };
+
         return (
+                // return <SView col={"xs-11 sm-10 md-8 lg-6 xl-4"} height={300} withoutFeedback backgroundColor={STheme.color.background} borderRadius={8} style={{ overflow: "hidden" }}>
+            
             <SView col={"xs-11 sm-10 md-8 lg-6 xl-4"} height={400} withoutFeedback backgroundColor={STheme.color.background} borderRadius={8} style={{ overflow: "hidden", padding: 16 }}>
-                <SText bold fontSize={18} center>Detalle de la Factura</SText>
+                <SText bold fontSize={18} center>Editar Detalle de la Factura</SText>
+
                 <SView height={16} />
 
                 <SInput
                     type="textArea"
+                    value={detalleText}
+                    onChangeText={setDetalleText}
                     height={250}
-                    value={JSON.stringify(detalle, null, 2)} // mostramos el detalle como texto
-                    style={{ fontSize: 12, padding: 8, backgroundColor: STheme.color.lightGray + "30" }}
-                    editable={false} // si solo quieres ver, no editar
+                    style={{
+                        fontSize: 12,
+                        padding: 8,
+                        backgroundColor: STheme.color.lightGray + "30",
+                    }}
                 />
 
-                <SView height={16} />
 
                 <SView row >
                     <SButtom style={{ height: 35 }} type={"danger"} onPress={() => {
@@ -80,15 +154,19 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                     }}>Cancelar</SButtom>
                     <SView width={5} />
                     <SButtom style={{ height: 35 }} type={"outline"} onPress={() => {
-
                         SPopup.close("popup_detalle_factura");
-                        alert("confirmado")
+                        // alert("confirmado")
+                        handleConfirm();
                     }}>Aceptar</SButtom>
                 </SView>
 
-                {/* <SButton onPress={onConfirm} propsText={{ bold: true }}>
-                    Confirmar
-                </SButton> */}
+
+
+                {/* <SView height={16} row center>
+                    <SButton type="danger" style={{ height: 35 }} onPress={onClose}  >Cancelar</SButton>
+                    <SView width={20} />
+                    <SButton onPress={handleConfirm} propsText={{ bold: true }}>Confirmar</SButton>
+                </SView> */}
             </SView>
         );
     };
@@ -171,18 +249,37 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                         label: "Ver data para editar",
                         icon: "Reload",
                         onPress: () => {
-                            // Abrimos el popup
+
                             SPopup.open({
-                                key: "popup_detalle_factura",
-                                content: <this.DetallePopup
-                                    detalle={factura.data.detalle}
-                                    onConfirm={() => {
-                                        SPopup.close("popup_detalle_factura");
-                                        // Mostramos notificación
-                                        SNotification.success("Se confirmó el detalle");
+                                key: "popup_editar_detalle",
+                                content: <this.EditarDetallePopup
+                                    factura_key={factura.key}
+                                    factura_data={factura.data}
+                                    detalleActual={factura.data.detalle}
+                                    onClose={() => SPopup.close("popup_editar_detalle")}
+                                    onConfirm={(nuevoDetalle) => {
+                                        SNotification.send({
+                                            key: "editarDetalle_" + factura.key,
+                                            title: "Detalle actualizado",
+                                            body: "El detalle se actualizó correctamente.",
+                                            color: STheme.color.success,
+                                            time: 5000,
+                                        });
+                                        console.log("Nuevo detalle:", nuevoDetalle);
                                     }}
                                 />
                             });
+                            // SPopup.open({
+                            //     key: "popup_detalle_factura",
+                            //     content: <this.DetallePopup
+                            //         detalle={factura.data.detalle}
+                            //         onConfirm={() => {
+                            //             SPopup.close("popup_detalle_factura");
+                            //             // Mostramos notificación
+                            //             SNotification.success("Se confirmó el detalle");
+                            //         }}
+                            //     />
+                            // });
                         }
                         // label: "Ver data para editar", icon: "Reload", onPress: () => {
 
