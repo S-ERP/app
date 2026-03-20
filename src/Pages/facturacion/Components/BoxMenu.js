@@ -1,14 +1,7 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import {
-    SDate, SHr, SIcon, SImage, SPage, SText, STheme,
-    SView, SNavigation, SPopup, SLanguage, SList2,
-    SButtom, SInput, SNotification
-} from 'servisofts-component';
-import SSocket from 'servisofts-socket';
+import { SHr, SIcon, SText, STheme, SView, SPopup, SButtom, SInput, SNotification } from 'servisofts-component';
 import MDL from '../../../MDL';
 import { Linking } from 'react-native';
-import PButtom from '../../../Components/PButtom';
 import SIconApp from '../../../Assets/SIconApp';
 
 export type BoxMenuPropsType = {
@@ -26,8 +19,6 @@ class BoxMenu extends Component<BoxMenuPropsType> {
         if (!this.props.onPress) return null;
         this.props.onPress(this.props.datas)
     }
-
-    // ✅ Corregido: soporte para íconos tipo string o JSX
     RenderOption = ({ label, icon, onPress }) => {
         return (
             <>
@@ -55,48 +46,8 @@ class BoxMenu extends Component<BoxMenuPropsType> {
             </>
         );
     }
-
-
-    // DetallePopup = ({ detalle, onConfirm }) => {
-    //     return (
-    //         <SView col={"xs-11 sm-10 md-8 lg-6 xl-4"} height={400} withoutFeedback backgroundColor={STheme.color.background} borderRadius={8} style={{ overflow: "hidden", padding: 16 }}>
-    //             <SText bold fontSize={18} center>Detalle de la Factura</SText>
-    //             <SView height={16} />
-
-    //             <SInput
-    //                 type="textArea"
-    //                 height={250}
-    //                 value={JSON.stringify(detalle, null, 2)} // mostramos el detalle como texto
-    //                 style={{ fontSize: 12, padding: 8, backgroundColor: STheme.color.lightGray + "30" }}
-    //                 editable={false} // si solo quieres ver, no editar
-    //             />
-
-    //             <SView height={16} />
-
-    //             <SView row >
-    //                 <SButtom style={{ height: 35 }} type={"danger"} onPress={() => {
-    //                     SPopup.close("popup_detalle_factura");
-    //                     alert("Cancelar")
-    //                 }}>Cancelar</SButtom>
-    //                 <SView width={5} />
-    //                 <SButtom style={{ height: 35 }} type={"outline"} onPress={() => {
-
-    //                     SPopup.close("popup_detalle_factura");
-    //                     alert("confirmado")
-    //                 }}>Aceptar</SButtom>
-    //             </SView>
-
-    //             {/* <SButton onPress={onConfirm} propsText={{ bold: true }}>
-    //                 Confirmar
-    //             </SButton> */}
-    //         </SView>
-    //     );
-    // };
-
-
     EditarDetallePopup = ({ factura_key, factura_data, detalleActual, onClose, onConfirm }) => {
         const [detalleText, setDetalleText] = React.useState(JSON.stringify(detalleActual, null, 2));
-
         const handleConfirm = async () => {
             let nuevoDetalle;
             try {
@@ -111,29 +62,16 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                 });
                 return;
             }
-
             MDL.factura.editarDetalle(factura_key, factura_data, nuevoDetalle).then(e => {
                 if (this.props.onReload) this.props.onReload();
+                SPopup.close("popup_editar_detalle")
+
             }).catch(e => { console.error(e); });
-
-            // try {
-
-            //     await editarDetalle(factura_key, factura_data, nuevoDetalle);
-            //     if (onConfirm) onConfirm(nuevoDetalle);
-            //     SPopup.close("popup_editar_detalle");
-            // } catch (error) {
-            //     console.error(error);
-            // }
         };
-
         return (
-                // return <SView col={"xs-11 sm-10 md-8 lg-6 xl-4"} height={300} withoutFeedback backgroundColor={STheme.color.background} borderRadius={8} style={{ overflow: "hidden" }}>
-            
             <SView col={"xs-11 sm-10 md-8 lg-6 xl-4"} height={400} withoutFeedback backgroundColor={STheme.color.background} borderRadius={8} style={{ overflow: "hidden", padding: 16 }}>
                 <SText bold fontSize={18} center>Editar Detalle de la Factura</SText>
-
                 <SView height={16} />
-
                 <SInput
                     type="textArea"
                     value={detalleText}
@@ -144,46 +82,23 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                         padding: 8,
                         backgroundColor: STheme.color.lightGray + "30",
                     }}
-                />
-
-
-                <SView row >
+                /><SView row >
                     <SButtom style={{ height: 35 }} type={"danger"} onPress={() => {
-                        SPopup.close("popup_detalle_factura");
-                        alert("Cancelar")
+                        SPopup.close("popup_editar_detalle")
                     }}>Cancelar</SButtom>
                     <SView width={5} />
-                    <SButtom style={{ height: 35 }} type={"outline"} onPress={() => {
+                    <SButtom style={{ height: 35 }} type={"success"} onPress={() => {
                         SPopup.close("popup_detalle_factura");
-                        // alert("confirmado")
                         handleConfirm();
                     }}>Aceptar</SButtom>
-                </SView>
-
-
-
-                {/* <SView height={16} row center>
-                    <SButton type="danger" style={{ height: 35 }} onPress={onClose}  >Cancelar</SButton>
-                    <SView width={20} />
-                    <SButton onPress={handleConfirm} propsText={{ bold: true }}>Confirmar</SButton>
-                </SView> */}
+                </SView>{ }
             </SView>
         );
     };
-
     renderBox() {
         const verificadorAdmin = MDL.usuario.session?.key === '1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b';
         const factura = this.props.data;
-
-        // ✅ Estructura agrupada por secciones
         const groups = [
-            // {
-            //     title: "CONSULTA",
-            //     items: [
-            //         { label: "Ver detalles", icon: "ver", onPress: () => console.log("Detalles") },
-            //         { label: "Descargar PDF", icon: "pdf", onPress: () => console.log("Descargar PDF") },
-            //     ]
-            // },
             {
                 title: "IMPRESIÓN",
                 items: [
@@ -209,11 +124,9 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                     },
                     {
                         label: "Verificar estado", icon: "tareaclose", onPress: () => {
-                            // MDL.factura.verificarEstado({ cuf: factura.data.cuf });
                             MDL.factura.verificarEstado({ cuf: factura.data.cuf })
                                 .then(e => { })
                                 .catch(e => { console.error(e); });
-
                         }
                     },
                     factura.state === "emitida" && {
@@ -246,10 +159,21 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                         }
                     },
                     factura.state === "emitida" && {
-                        label: "Ver data para editar",
-                        icon: "Reload",
+                        label: "Reconstruir", icon: "Engranaje", onPress: () => {
+                            MDL.factura.reconstruir({ cuf: factura.data.cuf }).then(() => {
+                                if (this.props.onReload) this.props.onReload();
+                            }).catch(e => { console.error(e); });
+                        }
+                    },
+                ].filter(Boolean) // <-- esto limpia los falsos
+            },
+            {
+                title: "GESTIÓN",
+                items: [
+                    {
+                        label: "Editar Data",
+                        icon: <SIconApp name='crmeditar' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
                         onPress: () => {
-
                             SPopup.open({
                                 key: "popup_editar_detalle",
                                 content: <this.EditarDetallePopup
@@ -265,46 +189,15 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                                             color: STheme.color.success,
                                             time: 5000,
                                         });
-                                        console.log("Nuevo detalle:", nuevoDetalle);
+                                        SPopup.close("popup_editar_detalle")
                                     }}
                                 />
                             });
-                            // SPopup.open({
-                            //     key: "popup_detalle_factura",
-                            //     content: <this.DetallePopup
-                            //         detalle={factura.data.detalle}
-                            //         onConfirm={() => {
-                            //             SPopup.close("popup_detalle_factura");
-                            //             // Mostramos notificación
-                            //             SNotification.success("Se confirmó el detalle");
-                            //         }}
-                            //     />
-                            // });
-                        }
-                        // label: "Ver data para editar", icon: "Reload", onPress: () => {
-
-                        //     console.clear();
-                        //     console.log("%c" + JSON.stringify(factura.data.detalle, null, 2), "color: #2ECC40; font-weight: bold;");
-                        //     alert("dssd")
-                        // }
-                    },
-                    factura.state === "emitida" && {
-                        label: "Reconstruir", icon: "Engranaje", onPress: () => {
-                            MDL.factura.reconstruir({ cuf: factura.data.cuf }).then(() => {
-                                if (this.props.onReload) this.props.onReload();
-                            }).catch(e => { console.error(e); });
                         }
                     },
-                ].filter(Boolean) // <-- esto limpia los falsos
-            },
-            {
-                title: "GESTIÓN",
-                items: [
-
                     factura.state === "anulada" && {
                         label: "Revertir factura",
                         icon: <SIconApp name='Reload' fill='#ff9900ff' stroke='#ff9900ff' width={16} />,
-
                         onPress: () => {
                             MDL.factura.revertir({ cuf: factura.data.cuf });
                         }
@@ -331,12 +224,10 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                                     });
                                     return;
                                 }
-
                                 const response = await MDL.factura.getParametrica({
                                     ambiente: MDL.factura.ambiente,
                                     parametrica: "leyendasFactura"
                                 });
-
                                 if (!Array.isArray(response) || response.length === 0) {
                                     SNotification.send({
                                         title: "Error",
@@ -346,21 +237,17 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                                     });
                                     return;
                                 }
-
                                 const randomIndex = Math.floor(Math.random() * response.length);
                                 const leyenda = response[randomIndex].descripcionLeyenda;
-                                // console.log("Leyenda aleatoria:", leyenda);
                                 MDL.factura.editarLeyenda(factura.key, factura.data, leyenda).then(e => {
                                     if (this.props.onReload) this.props.onReload();
                                 }).catch(e => { console.error(e); });
-
                                 SNotification.send({
                                     title: "Éxito",
                                     message: "Leyenda actualizada correctamente.",
                                     color: STheme.color.success,
                                     time: 5000
                                 });
-
                                 SPopup.close("popup_menu_alvaro");
                             } catch (error) {
                                 console.error("Error al editar leyenda:", error);
@@ -385,8 +272,6 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                 ].filter(Boolean) // <-- esto limpia los falsos
             }
         ];
-
-        // ✅ Render de grupos
         return (
             <SView
                 col={"xs-12"}
@@ -414,8 +299,6 @@ class BoxMenu extends Component<BoxMenuPropsType> {
             </SView>
         );
     }
-
-
     render() {
         return (
             <SView col={"xs-12"} flex center>
@@ -424,5 +307,4 @@ class BoxMenu extends Component<BoxMenuPropsType> {
         );
     }
 }
-
 export default BoxMenu;
