@@ -131,9 +131,96 @@ export default class index extends React.Component {
         })
     }
 
+    validarAntesDeEmitir() {
+
+        const detalle = this.factura.data.detalle;
+
+        for (let i = 0; i < detalle.length; i++) {
+            const item = detalle[i];
+
+
+            // 🔴 codigoProducto
+            if (!item.codigoProducto || item.codigoProducto.trim() === "") {
+                SNotification.send({
+                    title: "codigoProducto requerida",
+                    body: `El item ${i + 1} no tiene codigoProducto.`,
+                    color: STheme.color.danger,
+                    time: 1000,
+
+                });
+                return false; // 🔥 IMPORTANTE
+            }
+
+
+            // 🔴 UNIDAD DE MEDIDA
+            if (!item.unidadMedida || item.unidadMedida.trim() === "") {
+                SNotification.send({
+                    title: "Unidad de medida requerida",
+                    body: `El item ${i + 1} no tiene unidad de medida.`,
+                    color: STheme.color.danger,
+                    time: 1000,
+
+                });
+                return false; // 🔥 IMPORTANTE
+            }
+
+            // 🔴 PRECIO UNITARIO
+            if (!item.precioUnitario || item.precioUnitario.trim() === "") {
+                SNotification.send({
+                    title: "Precio requerido",
+                    body: `El item ${i + 1} no tiene precio unitario.`,
+                    color: STheme.color.danger,
+                    time: 1000,
+
+                });
+                return false;
+            }
+
+            // 🔴 PRECIO INVÁLIDO
+            const precio = parseFloat(item.precioUnitario);
+            if (isNaN(precio) || precio <= 0) {
+                SNotification.send({
+                    title: "Precio inválido",
+                    body: `El item ${i + 1} tiene un precio inválido.`,
+                    color: STheme.color.danger,
+                    time: 1000,
+                });
+                return false;
+            }
+
+
+            const cantidad = parseFloat(item.cantidad ?? "0");
+            // const precio = parseFloat(item.precioUnitario ?? "0");
+            const descuento = parseFloat(item.montoDescuento ?? "0");
+
+            const cantidadValida = isNaN(cantidad) ? 0 : cantidad;
+            const precioValido = isNaN(precio) ? 0 : precio;
+            const descuentoValido = isNaN(descuento) ? 0 : descuento;
+
+            const totalItem = cantidadValida * precioValido;
+
+            if (descuentoValido >= totalItem && totalItem > 0) {
+                SNotification.send({
+                    title: "Descuento inválido",
+                    body: `El descuento del item ${i + 1} no puede ser igual o mayor al total (${totalItem}).`,
+                    color: STheme.color.danger,
+                    time: 3000,
+
+                });
+                return false;
+            }
+
+        }
+
+        return true;
+    }
+
     handleEnviar() {
         console.log("Enviando");
-
+        // console.clear();
+        console.log("%c" + JSON.stringify(this.factura), `color: #2ECC40; font-weight: bold;`);
+        this.validarAntesDeEmitir();
+        // return;
         // if (this.factura.data.nit)
         SNotification.send({
             key: "facturacionEmitir",
@@ -155,7 +242,7 @@ export default class index extends React.Component {
             SNotification.send({
                 key: "facturacionEmitir",
                 title: "Ocurrio un error al emitir la factura",
-                body: e.error,
+                body: e.error + "aaaa",
                 color: STheme.color.danger,
                 time: 5000,
             })
