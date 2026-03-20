@@ -56,6 +56,43 @@ class BoxMenu extends Component<BoxMenuPropsType> {
         );
     }
 
+
+    DetallePopup = ({ detalle, onConfirm }) => {
+        return (
+            <SView col={"xs-11 sm-10 md-8 lg-6 xl-4"} height={400} withoutFeedback backgroundColor={STheme.color.background} borderRadius={8} style={{ overflow: "hidden", padding: 16 }}>
+                <SText bold fontSize={18} center>Detalle de la Factura</SText>
+                <SView height={16} />
+
+                <SInput
+                    type="textArea"
+                    height={250}
+                    value={JSON.stringify(detalle, null, 2)} // mostramos el detalle como texto
+                    style={{ fontSize: 12, padding: 8, backgroundColor: STheme.color.lightGray + "30" }}
+                    editable={false} // si solo quieres ver, no editar
+                />
+
+                <SView height={16} />
+
+                <SView row >
+                    <SButtom style={{ height: 35 }} type={"danger"} onPress={() => {
+                        SPopup.close("popup_detalle_factura");
+                        alert("Cancelar")
+                    }}>Cancelar</SButtom>
+                    <SView width={5} />
+                    <SButtom style={{ height: 35 }} type={"outline"} onPress={() => {
+
+                        SPopup.close("popup_detalle_factura");
+                        alert("confirmado")
+                    }}>Aceptar</SButtom>
+                </SView>
+
+                {/* <SButton onPress={onConfirm} propsText={{ bold: true }}>
+                    Confirmar
+                </SButton> */}
+            </SView>
+        );
+    };
+
     renderBox() {
         const verificadorAdmin = MDL.usuario.session?.key === '1e4b2e09-94f1-4f9e-9d58-80d4d2f9ab3b';
         const factura = this.props.data;
@@ -129,6 +166,30 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                                     });
                                 });
                         }
+                    },
+                    factura.state === "emitida" && {
+                        label: "Ver data para editar",
+                        icon: "Reload",
+                        onPress: () => {
+                            // Abrimos el popup
+                            SPopup.open({
+                                key: "popup_detalle_factura",
+                                content: <this.DetallePopup
+                                    detalle={factura.data.detalle}
+                                    onConfirm={() => {
+                                        SPopup.close("popup_detalle_factura");
+                                        // Mostramos notificación
+                                        SNotification.success("Se confirmó el detalle");
+                                    }}
+                                />
+                            });
+                        }
+                        // label: "Ver data para editar", icon: "Reload", onPress: () => {
+
+                        //     console.clear();
+                        //     console.log("%c" + JSON.stringify(factura.data.detalle, null, 2), "color: #2ECC40; font-weight: bold;");
+                        //     alert("dssd")
+                        // }
                     },
                     factura.state === "emitida" && {
                         label: "Reconstruir", icon: "Engranaje", onPress: () => {
