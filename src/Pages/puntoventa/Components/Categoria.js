@@ -78,6 +78,21 @@ export default class Categoria extends Component {
                                 />
                             </SView>
                         </SView>
+                        
+
+                        <SView col={"xs-12 md-5 lg-2.5"} row center>
+                            <SView col={"xs-12"} row center height={32}>
+                                <SInput
+                                    label={"Con Precio"}
+                                    style={{ top: -12, fontSize: 12 }}
+                                    type="checkBox"
+                                    labelStyle={{ left: 14, top: -4 }}
+                                    value={this.props.conPrecio}                  // <-- valor controlado
+                                    onChangeText={(text) => this.props.onChangeConPrecio?.(text)}  // <-- actualizar Main
+                                />
+                            </SView>
+                        </SView>
+
                         {/* <SView width={16} />
                         <SView col={"xs-12 md-5 lg-2.5"} row center>
                             <SView col={"xs-12"} row center height={32}>

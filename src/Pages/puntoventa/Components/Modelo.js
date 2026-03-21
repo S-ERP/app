@@ -37,7 +37,17 @@ export default class Modelo extends Component {
             ...e,
             compra_moneda: monedas.find(m => m.key === e.precio_compra_moneda) || {},
             venta_moneda: monedas.find(m => m.key === e.precio_venta_moneda) || monedas.find(m => m.tipo === "base") || {}
-        }));
+        })).sort((a, b) => {
+            const tipoA = a.tipo_producto?.tipo || "";
+            const tipoB = b.tipo_producto?.tipo || "";
+            if (tipoA < tipoB) return -1;
+            if (tipoA > tipoB) return 1;
+            const nombreA = a.descripcion || "";
+            const nombreB = b.descripcion || "";
+            if (nombreA < nombreB) return -1;
+            if (nombreA > nombreB) return 1;
+            return 0;
+        });
         this.forceUpdate();
     }
     modificarStock = (key, delta) => {
@@ -62,10 +72,18 @@ export default class Modelo extends Component {
         const tipoKey = this.props.tipoKey;
         const selectedMoneda = this.props.selectedMoneda || null;
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter((m) => m.key_tipo_producto === tipoKey);
-        productosFiltrados = productosFiltrados.filter((m) => m.precio_venta > 0);
+
+        // aqui valida que muestre todo o sin precio
+        if (this.props.conPrecio) {
+            productosFiltrados = productosFiltrados.filter((m) => m.precio_venta > 0);
+        }
+
+
+        // aqui valido que funcion con stock
         if (this.props.conStock) {
             productosFiltrados = productosFiltrados.filter((m) => m.stock > 0);
         }
+
         if (this.props.searchText) {
             const search = this.props.searchText.toLowerCase();
             productosFiltrados = productosFiltrados.filter(

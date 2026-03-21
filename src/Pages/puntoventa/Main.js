@@ -23,6 +23,7 @@ export default class Main extends Component {
             showCarritoModal: false,
             carritoModalData: [],
             conStock: false, // Mover conStock al estado, inicializado en false
+            conPrecio: true, // Mover conStock al estado, inicializado en false
         };
     }
 
@@ -45,6 +46,10 @@ export default class Main extends Component {
         this.setState({ conStock: value }, () => {
             this.carritoRef?.ajustarCarrito(); // Ajustar carrito después de actualizar el estado
         });
+    };
+
+    setConPrecio = (value) => {
+        this.setState({ conPrecio: value });
     };
 
     async checkCaja() {
@@ -204,6 +209,11 @@ export default class Main extends Component {
                             onSelectMoneda={this.setMoneda}
                             conStock={this.state.conStock} // Usar estado conStock
                             onChangeConStock={this.setConStock} // Pasar función para actualizar conStock
+
+                            conPrecio={this.state.conPrecio}           // <-- Pasar prop
+                            onChangeConPrecio={this.setConPrecio}      // <-- Pasar función
+
+
                         />
                         {this.cajaActiva && (
                             <Modelo
@@ -212,6 +222,7 @@ export default class Main extends Component {
                                 searchText={this.searchText}
                                 selectedMoneda={this.selectedMoneda}
                                 conStock={this.state.conStock} // Usar estado conStock
+                                conPrecio={this.state.conPrecio}           // <-- Pasar prop
                                 onPressProducto={(producto) => {
                                     // MDL.carrito.agregarItemAlCarritoDeVentas(producto)
                                     this.carritoRef?.addProducto(producto);
