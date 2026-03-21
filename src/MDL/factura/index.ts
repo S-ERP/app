@@ -74,20 +74,20 @@ export default class factura extends MDLAbstract<EventListener> {
         return this.siat;
     }
 
-   async getFacturasFiltro(fecha_inicio: string, fecha_fin: string) {
-    const resp: any = await SSocket.sendPromise({
-        service: "facturacion",
-        component: "reporte",
-        type: "execute_function",
-        func: "get_factura_filtro",
-        params: [
-            "'" + MDL.empresa.select?.key + "'",
-            "'" + fecha_inicio + "'",
-            "'" + fecha_fin + "'"
-        ],
-    });
-    return resp.data || [];
-}
+    async getFacturasFiltro(fecha_inicio: string, fecha_fin: string) {
+        const resp: any = await SSocket.sendPromise({
+            service: "facturacion",
+            component: "reporte",
+            type: "execute_function",
+            func: "get_factura_filtro",
+            params: [
+                "'" + MDL.empresa.select?.key + "'",
+                "'" + fecha_inicio + "'",
+                "'" + fecha_fin + "'"
+            ],
+        });
+        return resp.data || [];
+    }
     async getParametricas({ ambiente = 1 }: { ambiente?: number }) {
         await this.getSiat();
         if (ambiente == 2) return this.siat.parametricasPruebas as Parametricas;
@@ -416,6 +416,49 @@ export default class factura extends MDLAbstract<EventListener> {
         });
     }
 
+
+    async editarDetalle(factura_key: string, factura_data: any, nuevoDetalle: any[]) {
+        const payload = {
+            key: factura_key,
+            data: {
+                ...factura_data,
+                detalle: nuevoDetalle
+            }
+        };
+
+        console.clear();
+        console.log("%c" + JSON.stringify(payload), `color: #2ECC40; font-weight: bold;`);
+        // return;
+        try {
+            const result = await SSocket.sendPromise({
+                service: "facturacion",
+                component: "factura",
+                type: "editar",
+                key_empresa: Model.empresa.Action.getKey(),
+                key_usuario: Model.usuario.Action.getKey(),
+                data: payload
+            });
+
+            SNotification.send({
+                key: "editarDetalle_" + factura_key,
+                title: "Detalle actualizado",
+                body: "El detalle de la factura fue actualizado correctamente.",
+                color: STheme.color.success,
+                time: 5000,
+            });
+
+            return result;
+        } catch (error: any) {
+            SNotification.send({
+                key: "editarDetalle_" + factura_key,
+                title: "Error al actualizar detalle",
+                body: error?.error || "Error desconocido.",
+                color: STheme.color.error,
+                time: 5000,
+            });
+            throw error;
+        }
+    }
 
 
     editarLeyenda(factura_key: any, factura_data: any, leyenda___: any) {

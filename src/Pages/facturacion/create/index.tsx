@@ -1,5 +1,5 @@
 import React from "react";
-import { SDate, SHr, SNavigation, SNotification, SPage, SText, STheme, SUuid, SView } from "servisofts-component";
+import { SDate, SHr, SNavigation, SNotification, SPage, STheme, SUuid, SView } from "servisofts-component";
 import SelectSucursalPuntoVenta from "./SelectSucursalPuntoVenta";
 import { Factura } from "../../../MDL/factura/type";
 import Model from "../../../Model";
@@ -10,7 +10,6 @@ import Detalle from "./Detalle";
 import Footer from "./Footer";
 import MDL from "../../../MDL";
 import { Parametricas } from "../../../MDL/factura/typeParametricas";
-// import Entorno from "../Components/Entorno";
 
 export default class index extends React.Component {
     _____ambiente = MDL.factura.getAmbiente();
@@ -22,10 +21,7 @@ export default class index extends React.Component {
         ambiente: MDL.factura.ambiente,
     }
     constructor(props: any) {
-        super(props);
-
-
-        this.factura = {
+        super(props); this.factura = {
             key: SUuid(),
             key_usuario: Model.usuario.Action.getKey(),
             key_empresa: Model.empresa.Action.getKey(),
@@ -38,7 +34,6 @@ export default class index extends React.Component {
                 numeroFactura: "01",
                 cuf: "",
                 cufd: "",
-
                 codigoSucursal: "0",
                 codigoPuntoVenta: "0",
                 municipio: "",
@@ -84,7 +79,6 @@ export default class index extends React.Component {
     }
 
     componentDidMount(): void {
-
         SNotification.send({
             key: "ambienteFacturacion",
             title: this._____ambiente === 1 ? "Modo PRODUCCIÓN" : "Modo PRUEBA",
@@ -132,13 +126,8 @@ export default class index extends React.Component {
     }
 
     validarAntesDeEmitir() {
-
-        const detalle = this.factura.data.detalle;
-
-        for (let i = 0; i < detalle.length; i++) {
+        const detalle = this.factura.data.detalle; for (let i = 0; i < detalle.length; i++) {
             const item = detalle[i];
-
-
             // 🔴 codigoProducto
             if (!item.codigoProducto || item.codigoProducto.trim() === "") {
                 SNotification.send({
@@ -149,10 +138,7 @@ export default class index extends React.Component {
 
                 });
                 return false; // 🔥 IMPORTANTE
-            }
-
-
-            // 🔴 UNIDAD DE MEDIDA
+            }// 🔴 UNIDAD DE MEDIDA
             if (!item.unidadMedida || item.unidadMedida.trim() === "") {
                 SNotification.send({
                     title: "Unidad de medida requerida",
@@ -163,7 +149,6 @@ export default class index extends React.Component {
                 });
                 return false; // 🔥 IMPORTANTE
             }
-
             // 🔴 PRECIO UNITARIO
             if (!item.precioUnitario || item.precioUnitario.trim() === "") {
                 SNotification.send({
@@ -171,11 +156,9 @@ export default class index extends React.Component {
                     body: `El item ${i + 1} no tiene precio unitario.`,
                     color: STheme.color.danger,
                     time: 1000,
-
                 });
                 return false;
             }
-
             // 🔴 PRECIO INVÁLIDO
             const precio = parseFloat(item.precioUnitario);
             if (isNaN(precio) || precio <= 0) {
@@ -186,42 +169,46 @@ export default class index extends React.Component {
                     time: 1000,
                 });
                 return false;
-            }
-
-
-            const cantidad = parseFloat(item.cantidad ?? "0");
-            // const precio = parseFloat(item.precioUnitario ?? "0");
+            } const cantidad = parseFloat(item.cantidad ?? "0");
             const descuento = parseFloat(item.montoDescuento ?? "0");
-
             const cantidadValida = isNaN(cantidad) ? 0 : cantidad;
             const precioValido = isNaN(precio) ? 0 : precio;
             const descuentoValido = isNaN(descuento) ? 0 : descuento;
-
             const totalItem = cantidadValida * precioValido;
-
             if (descuentoValido >= totalItem && totalItem > 0) {
                 SNotification.send({
                     title: "Descuento inválido",
                     body: `El descuento del item ${i + 1} no puede ser igual o mayor al total (${totalItem}).`,
                     color: STheme.color.danger,
                     time: 3000,
-
                 });
                 return false;
             }
-
         }
-
+        // aqui pongo que no tiene leyenda y genera
+        // this.factura.data.leyenda = "";
+        // 🔴 VALIDAR LEYENDA
+        if (!this.factura.data.leyenda || this.factura.data.leyenda.trim() === "") {
+            const leyendas = this.parametricas.leyendasFactura;
+            if (leyendas && leyendas.length > 0) {
+                const random = Math.floor(Math.random() * leyendas.length);
+                this.factura.data.leyenda = leyendas[random].descripcionLeyenda;
+            } else {
+                SNotification.send({
+                    title: "Leyenda requerida",
+                    body: "No hay leyendas disponibles para la factura. Verifica las paramétricas.",
+                    color: STheme.color.warning,
+                    time: 2000,
+                });
+                return false;
+            }
+        }
         return true;
     }
 
     handleEnviar() {
-        console.log("Enviando");
-        // console.clear();
-        console.log("%c" + JSON.stringify(this.factura), `color: #2ECC40; font-weight: bold;`);
         this.validarAntesDeEmitir();
         // return;
-        // if (this.factura.data.nit)
         SNotification.send({
             key: "facturacionEmitir",
             title: "Emitiendo factura",
@@ -233,9 +220,7 @@ export default class index extends React.Component {
                 title: "Factura emitida con éxito",
                 color: STheme.color.success,
                 time: 5000,
-            })
-
-
+            });
             MDL.factura.imprimir({ cuf: e.data.cuf })
 
         }).catch((e) => {
@@ -246,19 +231,10 @@ export default class index extends React.Component {
                 color: STheme.color.danger,
                 time: 5000,
             })
-            console.log(e);
-
         })
     }
     render() {
         return <SPage title={`Emitir Factura (Ambiente: ${this._____ambiente === 1 ? "Producción ✅" : "Prueba 🛠️"})`}>
-            {/* return <SPage title={"Emitir Factura"}> */}
-            {/* <Entorno onPress={() => {
-                this.setState({ ambiente: this.state.ambiente == 1 ? 2 : 1 })
-            }} ambiente={this.state.ambiente} /> */}
-
-            {/* <SView style={{ backgroundColor: "green", width: 20, height: 20, borderRadius: 20 }} /> */}
-
             <SView padding={8}>
                 <SView col={"xs-12"} row style={{ alignItems: "flex-start" }}>
                     <SView flex={3} center>
@@ -281,7 +257,6 @@ export default class index extends React.Component {
                 <SHr h={16} />
                 <Footer factura={this.factura} parametricas={this.parametricas} onSend={this.handleEnviar.bind(this)} />
             </SView>
-
         </SPage>;
     }
 }

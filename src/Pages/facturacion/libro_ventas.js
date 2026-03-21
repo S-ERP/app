@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
-import { View, Text, Linking, Dimensions } from 'react-native';
-import { SButtom, SDate, SHr, SIcon, SImage, SMath, SNavigation, SNotification, SPage, STable, STable2, SText, STheme, SView } from 'servisofts-component';
-import { MenuButtom, MenuPages } from 'servisofts-rn-roles_permisos';
+import { View, Text, Dimensions } from 'react-native';
+import { SButtom, SDate, SHr, SImage, SMath, SNavigation, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import Model from '../../Model';
-import PDF from './pdf';
-import { ConstNode } from 'three/examples/jsm/nodes/Nodes';
 import { SPopup } from 'servisofts-component';
 import SelectTipoAnulacion from './Components/SelectTipoAnulacion';
 import MDL from '../../MDL';
 import { DinamicTable } from 'servisofts-table';
 import BoxMenu from './Components/BoxMenu';
-import SIconApp from '../../Assets/SIconApp';
 import FechaFullFilter from '../../Components/FechaFullFilter';
 
 export default class libro_ventas extends Component {
@@ -21,6 +17,7 @@ export default class libro_ventas extends Component {
             parametricas: {}
         };
     }
+
     componentDidMount() {
         MDL.rolesPermisos.getPermisoAsync({ url: "/facturacion/libro_ventas", permiso: "ver" }).then((permit) => {
             if (!permit) {
@@ -36,11 +33,9 @@ export default class libro_ventas extends Component {
         }).catch(e => {
             console.error(e);
         })
-
         this.fecha_actual = new SDate();
         this.fecha_fin_mes = new SDate(); // Establece al primer día del mes
         this.fecha_fin_mes.addMonth(1).setDay(1).addDay(-1); // Avanza al primer día del próximo mes y retrocede un día
-
         this.dias_restantes = this.fecha_fin_mes.diff(this.fecha_actual);
         if (this.dias_restantes <= 10) {
             SNotification.send({
@@ -88,6 +83,7 @@ export default class libro_ventas extends Component {
             return [];
         }
     }
+
     anular({ cuf }) {
         SPopup.open({
             key: "anularpop",
@@ -131,39 +127,19 @@ export default class libro_ventas extends Component {
 
     render() {
         return <SPage bold title={"Facturación - Libro ventas"} disableScroll>
-
-
-            <SView row col={"xs-12"} style={{ paddingBottom: 8, paddingLeft: 8, borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", }}>
-
-
-                <SView col={"xs-12 sm-8.2 lg-3.3"} row center   >
-                    <FechaFullFilter
-                        fecha_inicio={this.state.fecha_inicio}
-                        fecha_fin={this.state.fecha_fin}
-                        onChange={e => this.setState({
-                            fecha_inicio: e.fecha_inicio,
-                            fecha_fin: e.fecha_fin
-                        }, () => {
-                            // if (this.table) this.table.loadData();
-                        })}
-                    />
-                </SView>
-
+            <SView row col={"xs-12"} style={{ paddingBottom: 8, paddingLeft: 8, borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", }}><SView col={"xs-12 sm-8.2 lg-3.3"} row center>
+                <FechaFullFilter
+                    fecha_inicio={this.state.fecha_inicio}
+                    fecha_fin={this.state.fecha_fin}
+                    onChange={e => this.setState({
+                        fecha_inicio: e.fecha_inicio,
+                        fecha_fin: e.fecha_fin
+                    }, () => {
+                        // if (this.table) this.table.loadData();
+                    })}
+                />
+            </SView>
                 <SView width={8} height={"100%"} />
-                {/* <SView col={"xs-12 sm-5 lg-1"} row center  >
-                                    <FiltroSelector
-                                        ref={ref => this.filtroStockRef = ref}
-                                        label="Stock"
-                                        loadData={async () => [
-                                            { key: "con_stock", nombre: "Con stock" },
-                                            { key: "sin_stock", nombre: "Sin stock" },
-                                        ]}
-                                        mapOption={a => ({ key: a.key, nombre: a.nombre })}
-                                        onSelect={item => this.setState({ selectedStock: item }, () => {
-                                            if (this.table) this.table.loadData();
-                                        })}
-                                    />
-                                </SView> */}
             </SView>
 
             <DinamicTable
@@ -174,15 +150,14 @@ export default class libro_ventas extends Component {
                 loadInitialState={async () => {
                     return {
                         cols: {
-                            "leyenda": { hidden: true }
+                            "leyenda": { hidden: true },
+                            "validacion_detalle": { hidden: true },
                         },
                         filters: [
                             { col: "ambiente", operator: "=", value: [1], type: "number" },
                             { col: "gestion", operator: "contains", value: [new SDate().toString("yyyy-MM")], type: "string" },
                         ],
-                        sorters: [
-                            { key: "numero", type: "number", order: "asc" }
-                        ]
+                        sorters: [{ key: "numero", type: "number", order: "desc" }]
                     }
                 }}
                 colors={{
@@ -228,13 +203,13 @@ export default class libro_ventas extends Component {
                 }}
             >
                 {/* <DinamicTable.Col
-                    key='index'
-                    label='#'
-                    textStyle={{ fontSize: 11, color: STheme.color.lightGray }}
-                    data={e => e.index + 1}
-                    format={e => e.index + 1}
-                    width={30}
-                /> */}
+key='index'
+label='#'
+textStyle={{ fontSize: 11, color: STheme.color.lightGray }}
+data={e => e.index + 1}
+format={e => e.index + 1}
+width={30}
+/> */}
                 <DinamicTable.Col key="numero" label='Numero' dataType='number' center data={e => parseFloat(e.row?.data?.numeroFactura)} width={70} cellStyle={{ alignItems: "center" }} />
                 <DinamicTable.Col key="ambiente" label='Ambiente' dataType='number' data={e => parseFloat(e.row?.ambiente)} width={80} cellStyle={{ alignItems: "center" }}
                     customComponent={(e) => {
@@ -289,15 +264,6 @@ export default class libro_ventas extends Component {
                     dataType='date'
                     dateFormat='yyyy-MM-dd hh:mm'
                 />
-                <DinamicTable.Col key="data" label='DATA' data={e => JSON.stringify(e.row?.data?.detalle)} width={120} />
-
-                {/* <DinamicTable.Col key="fecha" label="Fecha Creación" width={120} data={(e) => e.row?.data?.fechaEmision}
-                    customComponent={e => <SView center row><SIconApp name='Evento' width={12} height={12} fill={STheme.color.lightGray} />
-                        <SText color={STheme.color.lightGray} > { e.row?.data?.fechaEmision}</SText></SView>}
-                    dataType='date'
-                    dateFormat='yyyy-MM-dd hh:mm'
-                /> */}
-
                 <DinamicTable.Col
                     key="adminas"
                     label="Operador"
@@ -318,6 +284,59 @@ export default class libro_ventas extends Component {
                             </SView>
                         ) : (
                             <SText>Sin Usuario</SText>
+                        );
+                    }}
+                />
+                <DinamicTable.Col
+                    key="validacion_detalle"
+                    label='Validación'
+                    width={140}
+                    data={e => {
+                        const { detalle, leyenda, numeroDocumento, nombreRazonSocial, telefono, municipio, direccion, nitEmisor
+                        } = e.row?.data ?? {};
+                        // 🔴 Validaciones generales (cabecera)
+                        if (!nitEmisor) return "Error: NIT emisor vacío";
+                        if (!numeroDocumento) return "Error: N° documento vacío";
+                        if (!nombreRazonSocial) return "Error: Razón social vacía";
+                        if (!direccion) return "Error: Dirección vacía";
+                        if (!municipio) return "Error: Municipio vacío";
+                        // Opcional (según tu negocio)
+                        if (!telefono) return "Advertencia: sin teléfono";
+                        if (!leyenda || leyenda.trim() === "") {
+                            return "Error: sin leyenda";
+                        }
+                        // 🔴 Validación detalle
+                        if (!detalle || !Array.isArray(detalle)) {
+                            return "Error: detalle inválido";
+                        }
+                        for (let i = 0; i < detalle.length; i++) {
+                            const desc = detalle[i]?.descripcion ?? "";
+                            if (!desc.trim()) {
+                                return `Error: ítem ${i + 1} sin descripción`;
+                            }
+                            if (desc.includes('"')) {
+                                return `Error: comillas en ítem ${i + 1}`;
+                            }
+                        }
+                        // ✅ Todo correcto
+                        return "Válido";
+                    }}
+                    customComponent={(e) => {
+                        const isError = e.data.startsWith("Error");
+                        const isWarning = e.data.startsWith("Advertencia");
+                        let bgColor = STheme.color.success;
+                        if (isError) bgColor = STheme.color.danger;
+                        else if (isWarning) bgColor = "#f39c12"; // naranja
+                        return (
+                            <SView
+                                padding={4}
+                                borderRadius={4}
+                                backgroundColor={bgColor}
+                            >
+                                <SText fontSize={11} color={"#fff"} bold>
+                                    {e.data}
+                                </SText>
+                            </SView>
                         );
                     }}
                 />
