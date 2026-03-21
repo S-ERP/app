@@ -210,54 +210,12 @@ class BoxMenu extends Component<BoxMenuPropsType> {
                                 this.props.anular({ cuf: factura.data.cuf })
                         }
                     },
-                    factura.state === "emitida" && {
-                        label: "Editar Leyenda",
+                    factura.data.leyenda === "" && {
+                        label: "Generar Leyenda",
                         icon: <SIconApp name='crmeditar' fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
                         onPress: async () => {
-                            try {
-                                if (!factura.key) {
-                                    SNotification.send({
-                                        title: "Error",
-                                        message: "No se encontró la clave de la factura.",
-                                        color: STheme.color.danger,
-                                        time: 5000
-                                    });
-                                    return;
-                                }
-                                const response = await MDL.factura.getParametrica({
-                                    ambiente: MDL.factura.ambiente,
-                                    parametrica: "leyendasFactura"
-                                });
-                                if (!Array.isArray(response) || response.length === 0) {
-                                    SNotification.send({
-                                        title: "Error",
-                                        message: "No hay leyendas disponibles.",
-                                        color: STheme.color.danger,
-                                        time: 5000
-                                    });
-                                    return;
-                                }
-                                const randomIndex = Math.floor(Math.random() * response.length);
-                                const leyenda = response[randomIndex].descripcionLeyenda;
-                                MDL.factura.editarLeyenda(factura.key, factura.data, leyenda).then(e => {
-                                    if (this.props.onReload) this.props.onReload();
-                                }).catch(e => { console.error(e); });
-                                SNotification.send({
-                                    title: "Éxito",
-                                    message: "Leyenda actualizada correctamente.",
-                                    color: STheme.color.success,
-                                    time: 5000
-                                });
-                                SPopup.close("popup_menu_alvaro");
-                            } catch (error) {
-                                console.error("Error al editar leyenda:", error);
-                                SNotification.send({
-                                    title: "Error",
-                                    message: "No se pudo actualizar la leyenda. Intente de nuevo.",
-                                    color: STheme.color.danger,
-                                    time: 5000
-                                });
-                            }
+                      console.clear();
+                      console.log("%c" + JSON.stringify(factura, null, 2), "color: #2ECC40; font-weight: bold;");
                         }
                     },
                     factura.state === "emitida" && {
