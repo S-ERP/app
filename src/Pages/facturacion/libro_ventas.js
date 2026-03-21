@@ -181,7 +181,7 @@ export default class libro_ventas extends Component {
                             { col: "gestion", operator: "contains", value: [new SDate().toString("yyyy-MM")], type: "string" },
                         ],
                         sorters: [
-                            { key: "numero", type: "number", order: "asc" }
+                            { key: "numero", type: "number", order: "desc" }
                         ]
                     }
                 }}
@@ -289,14 +289,131 @@ export default class libro_ventas extends Component {
                     dataType='date'
                     dateFormat='yyyy-MM-dd hh:mm'
                 />
-                <DinamicTable.Col key="data" label='DATA' data={e => JSON.stringify(e.row?.data?.detalle)} width={120} />
 
-                {/* <DinamicTable.Col key="fecha" label="Fecha Creación" width={120} data={(e) => e.row?.data?.fechaEmision}
-                    customComponent={e => <SView center row><SIconApp name='Evento' width={12} height={12} fill={STheme.color.lightGray} />
-                        <SText color={STheme.color.lightGray} > { e.row?.data?.fechaEmision}</SText></SView>}
-                    dataType='date'
-                    dateFormat='yyyy-MM-dd hh:mm'
+
+                {/* <DinamicTable.Col
+                    key="validacion_detalle"
+                    label='Validación Detalle'
+                    width={180}
+                    data={e => {
+                        const detalle = e.row?.data?.detalle;
+                        const leyenda = e.row?.data?.leyenda;
+                        const numeroDocumento = e.row?.data?.numeroDocumento;
+                        const nombreRazonSocial = e.row?.data?.nombreRazonSocial;
+                        const telefono = e.row?.data?.telefono;
+                        const municipio = e.row?.data?.municipio;
+                        const direccion = e.row?.data?.direccion;
+                        const nitEmisor = e.row?.data?.nitEmisor;
+
+                        // Validar leyenda primero
+                        if (!leyenda || leyenda.trim() === "") {
+                            return "Sin leyenda";
+                        }
+
+                        // Validar detalle
+                        if (!detalle || !Array.isArray(detalle)) {
+                            return "Detalle válido";
+                        }
+
+                        for (let i = 0; i < detalle.length; i++) {
+                            const desc = detalle[i]?.descripcion ?? "";
+
+                            if (desc.includes('"')) {
+                                return `Item ${i + 1}: contiene comillas`;
+                            }
+                        }
+
+                        return "Detalle válido";
+                    }}
+                    customComponent={(e) => {
+                        const isError = e.data !== "Detalle válido";
+
+                        return (
+                            <SView
+                                padding={4}
+                                borderRadius={4}
+                                backgroundColor={isError ? STheme.color.danger : STheme.color.success}
+                            >
+                                <SText fontSize={11} color={"#fff"} bold>
+                                    {e.data}
+                                </SText>
+                            </SView>
+                        );
+                    }}
                 /> */}
+
+                <DinamicTable.Col
+                    key="validacion_detalle"
+                    label='Validación'
+                    width={140}
+                    data={e => {
+                        const {
+                            detalle,
+                            leyenda,
+                            numeroDocumento,
+                            nombreRazonSocial,
+                            telefono,
+                            municipio,
+                            direccion,
+                            nitEmisor
+                        } = e.row?.data ?? {};
+
+                        // 🔴 Validaciones generales (cabecera)
+                        if (!nitEmisor) return "Error: NIT emisor vacío";
+                        if (!numeroDocumento) return "Error: N° documento vacío";
+                        if (!nombreRazonSocial) return "Error: Razón social vacía";
+                        if (!direccion) return "Error: Dirección vacía";
+                        if (!municipio) return "Error: Municipio vacío";
+
+                        // Opcional (según tu negocio)
+                        if (!telefono) return "Advertencia: sin teléfono";
+
+                        if (!leyenda || leyenda.trim() === "") {
+                            return "Error: sin leyenda";
+                        }
+
+                        // 🔴 Validación detalle
+                        if (!detalle || !Array.isArray(detalle)) {
+                            return "Error: detalle inválido";
+                        }
+
+                        for (let i = 0; i < detalle.length; i++) {
+                            const desc = detalle[i]?.descripcion ?? "";
+
+                            if (!desc.trim()) {
+                                return `Error: ítem ${i + 1} sin descripción`;
+                            }
+
+                            if (desc.includes('"')) {
+                                return `Error: comillas en ítem ${i + 1}`;
+                            }
+                        }
+
+                        // ✅ Todo correcto
+                        return "Válido";
+                    }}
+                    customComponent={(e) => {
+                        const isError = e.data.startsWith("Error");
+                        const isWarning = e.data.startsWith("Advertencia");
+
+                        let bgColor = STheme.color.success;
+
+                        if (isError) bgColor = STheme.color.danger;
+                        else if (isWarning) bgColor = "#f39c12"; // naranja
+
+                        return (
+                            <SView
+                                padding={4}
+                                borderRadius={4}
+                                backgroundColor={bgColor}
+                            >
+                                <SText fontSize={11} color={"#fff"} bold>
+                                    {e.data}
+                                </SText>
+                            </SView>
+                        );
+                    }}
+                />
 
                 <DinamicTable.Col
                     key="adminas"
