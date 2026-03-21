@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Dimensions } from 'react-native';
 import { SNotification, SScrollView2, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
-import SSocket from 'servisofts-socket';
 import FotoModelo from './Foto/FotoModelo';
 import Recargar from '../../../Components/Recargar';
 const productSinFoto = 'https://cauder.com/wp-content/uploads/2020/12/producto-sin-imagen-600x600.jpg';
@@ -23,18 +22,11 @@ export default class Modelo extends Component {
         this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
             this.loadApis();
         });
-        // this.evento2 = MDL.compra_venta.addEventListener("conStock", () => {
-        //     this.conStock = this.props.conStock;
-        //     this.forceUpdate();
-        // });
     }
     componentWillUnmount() {
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
-        // if (this.evento2) {
-        //     MDL.compra_venta.removeEventListener(this.evento2);
-        // }
     }
     async loadApis() {
         if (!MDL.caja.activa) {
@@ -50,8 +42,6 @@ export default class Modelo extends Component {
         }
         const modelos = await MDL.inventario.getAllModeloStock();
         let monedas = await MDL.empresa.getMonedas();
-
-
         this.modelos = modelos
             .map(e => ({
                 ...e,
@@ -104,7 +94,6 @@ export default class Modelo extends Component {
             productosFiltrados = productosFiltrados.filter((m) => m.stock > 0);
         }
 
-
         if (this.props.searchText) {
             const search = this.props.searchText.toLowerCase();
             productosFiltrados = productosFiltrados.filter(
@@ -115,7 +104,6 @@ export default class Modelo extends Component {
                     p.observacion?.toLowerCase().includes(search)
             );
         }
-        {/* si */ }
 
         const colSize = this.getColSize();
         return (<>
@@ -124,21 +112,12 @@ export default class Modelo extends Component {
                     <SView col={"xs-12"} style={{ padding: 2 }}>
                         <SView col={"xs-12"} row padding={5}>
                             {productosFiltrados.map((producto, index) => {
-                                // const src = producto.key ? `${SSocket.api.inventario}modelo/.128_${producto.key}?date=${this.time}` : productSinFoto;
                                 const precio_venta_moneda = 0;
-                                // const precioFormateado = Number.isInteger(precio_venta_moneda)
-                                //     ? precio_venta_moneda.toString() // mostrar sin decimales
-                                //     : precio_venta_moneda.toFixed(2); // mostrar 2 decimales
-
-
                                 const tipoCambioProducto = producto.venta_moneda?.tipo_cambio || 1;
                                 const tipoCambioSeleccionada = selectedMoneda?.tipo_cambio || 1;
                                 const precioConvertido = producto.precio_compra * (tipoCambioProducto / tipoCambioSeleccionada);
                                 const precioFormateado = Number.isInteger(precioConvertido) ? precioConvertido.toString() : precioConvertido.toFixed(2);
-
-
                                 const monedaSymbol = selectedMoneda ? selectedMoneda.observacion : "Bs";
-                                // let proveedores = !producto.proveedores ? "" : producto.proveedores.map(item => item?.proveedor?.razon_social).join(', ');
                                 return (
                                     <SView
                                         key={index}
@@ -171,11 +150,8 @@ export default class Modelo extends Component {
                                             <SView col={"xs-12"} row style={{ justifyContent: "space-between" }}>
                                                 <SView row>
                                                     <SView style={{ paddingRight: 10 }}>
-
                                                         {producto?.precio_compra ? <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1} >{monedaSymbol} {precioFormateado} </SText> :
-                                                            // <SView style={{ paddingHorizontal: 4, paddingVertical: 2, backgroundColor: "#ff2222" }}>
                                                             <SText fontSize={14} bold color={STheme.color.text} numberOfLines={1} >GRATIS</SText>
-                                                            // </SView>
                                                         }
                                                     </SView>
                                                 </SView>
@@ -208,9 +184,7 @@ export default class Modelo extends Component {
                         }} />
                 }
             </SView>
-
         </>
-
         );
     }
     render() {

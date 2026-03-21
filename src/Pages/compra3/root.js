@@ -2,27 +2,14 @@ import React from "react";
 import { SHr, SIcon, SInput, SNavigation, SNotification, SPage, SText, STheme, SThread, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import SIconApp from "../../Assets/SIconApp";
-import detalle from "../compra/detalle";
 import { Dimensions, FlatList } from "react-native";
 import SSocket from "servisofts-socket";
-import PButtom from "../../Components/PButtom";
 import SelectTipoPago from "../caja2/components/SelectTipoPago";
 import Categoria from "./Components/Categoria";
 import Modelo from "./Components/Modelo";
 import Carrito from "./Components/Carrito";
 
-
-//  import React from "react";
-// import { SHr, SIcon, SInput, SNavigation, SNotification, SPage, SText, STheme, SThread, SView } from "servisofts-component";
-// import MDL from "../../MDL";
-// import SIconApp from "../../Assets/SIconApp";
-// import { FlatList } from "react-native";
-// import SSocket from "servisofts-socket";
-// import PButtom from "../../Components/PButtom";
-// import SelectTipoPago from "../caja2/components/SelectTipoPago";
-
 export default class Root extends React.Component {
-
     cajaActiva = false; // Bandera sin usar state
     selectedMoneda = this.props.selectedMoneda || null; // Moneda seleccionada
     selectedTipoKey = "all";
@@ -40,7 +27,6 @@ export default class Root extends React.Component {
         carritoModalData: [],
         conStock: false, // Mover conStock al estado, inicializado en false
         conPrecio: false, // Mover conStock al estado, inicializado en false
-
     };
 
     setTipoKey = (key) => {
@@ -68,7 +54,6 @@ export default class Root extends React.Component {
         this.setState({ conPrecio: value });
     };
 
-
     async checkCaja() {
         try {
             const activa = await MDL.caja.getActiva();
@@ -89,21 +74,12 @@ export default class Root extends React.Component {
             const data = await MDL.empresa.getFull();
 
             this.setState({ monedas: data.monedas || [] }, () => {
-                // Esto se ejecuta **después** de que monedas se cargaron
                 if (!this.selectedMoneda && this.state.monedas.length > 1) {
                     this.selectedMoneda = this.state.monedas.find(a => a.tipo == "base"); // segunda moneda
                     this.props.onSelectMoneda?.(this.selectedMoneda);
                     this.forceUpdate();
                 }
             });
-
-            // this.setState({ monedas: data.monedas || [] }); // Actualizar estado con monedas
-            // if (!this.selectedMoneda && this.state.monedas.length > 0) {
-            //     this.selectedMoneda = this.state.monedas[1];
-            //     this.props.onSelectMoneda?.(this.selectedMoneda);
-            // }
-
-            // this.forceUpdate();
         } catch (e) {
             console.error("Error al obtener estado de caja", e);
         }
@@ -114,8 +90,6 @@ export default class Root extends React.Component {
         if (!nuevaMoneda && this.state.monedas.length > 0) return; // Evitar errores si no hay moneda válida
         this.selectedMoneda = nuevaMoneda;
         this.props.onSelectMoneda?.(nuevaMoneda);
-
-        // Actualizar precios según la nueva moneda y tipo_cambio
         const nuevosDetalles = this.state.detalle.map(item => {
             if (item.precio && item.moneda && nuevaMoneda) {
                 const tipoCambioAnterior = item.moneda.tipo_cambio || 1;
@@ -135,14 +109,6 @@ export default class Root extends React.Component {
 
     inputs = {};
     componentDidMount() {
-        // MDL.rolesPermisos.getPermisoAsync({ url: "/compra2", permiso: "ver" }).then((permit) => {
-        //     if (!permit) {
-        //         SNavigation.goBack();
-        //         return;
-        //     }
-        // }).catch(e => {
-        //     console.error(e);
-        // })
 
         this.checkCaja();
         this.renderCarrito();
@@ -150,20 +116,12 @@ export default class Root extends React.Component {
         this.evento = MDL.compra_venta.addEventListener("carrito_globo", () => {
             this.forceUpdate()
         });
-
-        // MDL.empresa.getAllSucursales().then(sucursales => {
-        //     if (this.inputs["sucursal"]) this.inputs["sucursal"].setValue(sucursales[0]?.descripcion);
-        //     this.setState({ sucursales });
-        // });
         MDL.inventario.getAllModeloStock().then(modelos => {
             this.setState({ modelos });
         });
         MDL.crm.cliente.getAll().then(proveedores => {
             this.setState({ proveedores });
         });
-        // MDL.inventario.proveedor.getAllProveedor().then(proveedores => {
-        //     this.setState({ proveedores });
-        // });
         MDL.inventario.getAllAlmacen().then(almacenes => {
             const arr = almacenes.filter(a => a.key_sucursal == MDL.caja?.activa?.key_sucursal);
 
@@ -176,7 +134,6 @@ export default class Root extends React.Component {
         this.forceUpdate();
     };
 
-
     handleSubmit = async (tipos_pago) => {
         console.log("DETALLE ", this.state.detalle);
         try {
@@ -188,21 +145,8 @@ export default class Root extends React.Component {
 
             const almacenVal = this.inputs["almacen"].getValue();
             const almacen = this.state.almacenes.find(a => a.descripcion === almacenVal);
-            // if (!almacen) {
-            //     SNotification.send({
-            //         key: "compra_rapida",
-            //         title: "Error",
-            //         body: "Almacén no encontrado.",
-            //         color: STheme.color.danger,
-            //         time: 4000,
-            //     });
-            //     return;
-            // }
-            // data.
-
             const provValue = this.inputs["proveedor"].getValue();
             const proveedor = this.state.proveedores.find(a => a.nombres === provValue);
-
             console.log(this.selectedMoneda)
             const data = {
                 descripcion: "Compra rapida",
@@ -226,22 +170,13 @@ export default class Root extends React.Component {
                 key_modelo: item.modelo?.key,
                 moneda: item.moneda?.key || this.selectedMoneda?.key, // Añadir moneda al detalle
             }));
-
             console.log(data);
-
-            // return;
             const compraResp = await SSocket.sendPromise({
                 service: "caja",
                 component: "caja_detalle",
                 type: "compra",
                 data: data,
             });
-            // const compraResp = await SSocket.sendPromise({
-            //     service: "compra_venta",
-            //     component: "compra_venta",
-            //     type: "compraRapida",
-            //     data: data,
-            // });
 
             SelectTipoPago.closePopup();
             SNavigation.goBack();
@@ -281,16 +216,16 @@ export default class Root extends React.Component {
 
     render() {
         return (
-            <SPage title={"Compras Rápidas"} disableScroll > {/* Corregido el título */}
-                <SView col={"xs-12"} flex  >
+            <SPage title={"Compras Rápidas"} disableScroll >
+                <SView col={"xs-12"} flex>
                     <SView col="xs-12" row flex>
                         <SView col={"xs-12"}
                             style={{
                                 display: this.state.showCarritoModal ? "none" : "flex",
                                 borderRightWidth: 1,
                                 borderRightColor: STheme.color.card,
-                                //backgroundColor: STheme.color.background + "90"
                             }}>
+
                             <Categoria
                                 onSelect={this.setTipoKey}
                                 selected={this.selectedTipoKey}
@@ -300,9 +235,8 @@ export default class Root extends React.Component {
                                 onSelectMoneda={this.setMoneda}
                                 conStock={this.state.conStock} // Usar estado conStock
                                 onChangeConStock={this.setConStock} // Pasar función para actualizar conStock
-
-                                conPrecio={this.state.conPrecio}           // <-- Pasar prop
-                                onChangeConPrecio={this.setConPrecio}      // <-- Pasar función
+                                conPrecio={this.state.conPrecio}// <-- Pasar prop
+                                onChangeConPrecio={this.setConPrecio}// <-- Pasar función
 
                             />
                             {this.cajaActiva && (
@@ -312,15 +246,12 @@ export default class Root extends React.Component {
                                     searchText={this.searchText}
                                     selectedMoneda={this.selectedMoneda}
                                     conStock={this.state.conStock} // Usar estado conStock
-                                                                    conPrecio={this.state.conPrecio}           // <-- Pasar prop
-
+                                    conPrecio={this.state.conPrecio}// <-- Pasar prop
                                     onPressProducto={(producto) => {
                                         console.log("PRODUCTO SELECT ", producto)
                                         this.carritoRef?.addProducto2(producto);
                                         this.carritoRefModal?.addProducto2?.(producto);
                                     }}
-                                // data={this.state.modelos}
-
                                 />
                             )}
                         </SView>
@@ -336,8 +267,6 @@ class Detalle extends React.Component {
         super(props);
         this.state = {
             precioConvertido: 0,
-
-            // precioConvertido: this.convertPrice(this.props.data.precio, this.props.data.moneda, this.props.selectedMoneda),
         };
     }
 
@@ -346,7 +275,6 @@ class Detalle extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        // Si cambió moneda, producto o cantidad
         if (
             prevProps.selectedMoneda !== this.props.selectedMoneda ||
             prevProps.data.precio !== this.props.data.precio ||
@@ -367,18 +295,13 @@ class Detalle extends React.Component {
     updatePrecio = (actualizarInput = true) => {
         const { data, selectedMoneda } = this.props;
         const precioBase = data.modelo?.precio_compra || data.precio || 0;
-        // const precioConvertido = this.convertPrice(precioBase, data.moneda || selectedMoneda, selectedMoneda) * (data.cantidad || 1);
         const tc = selectedMoneda?.tipo_cambio ?? 1
         data.precioConvertido = precioBase / tc;
-        // this.setState({ precioConvertido });
         if (actualizarInput && this.inputs["precio"]) {
             const vl = Math.round((data.precioConvertido * (data.cantidad || 1)) * 100) / 100
             this.inputs["precio"].setValue(vl.toString());
         }
     };
-
-
-
 
     inputs = {};
     render() {
@@ -393,15 +316,10 @@ class Detalle extends React.Component {
         });
 
         const moneda = this.props.selectedMoneda || { key: "", descripcion: "Sin moneda" };
-
-
-        // const moneda = this.props.selectedMoneda || { key: "", descripcion: "Sin moneda" };
-        // const precioConvertido = this.state.precioConvertido || this.props.data.precio || 0;
         this.precio_compra_moneda = !this.props.data.precio ? "" : parseFloat(this.props.data.precio / this.props.selectedMoneda?.tipo_cambio).toFixed(2) || 0;
         this.props.data.precioConvertido = this.precio_compra_moneda
         console.log("tipo cambio ", this.props.selectedMoneda?.observacion);
         console.log("precio actualizado ", moneda.tipo_cambio);
-        // console.log("precio actualizadssso ", precioConvertido);
         return (
             <SView col={"xs-12"} row style={{ borderBottomWidth: 0.5, borderBottomColor: STheme.color.card, paddingBottom: 8, paddingTop: 8 }}>
                 <SView col={"xs-12 sm-7"} padding={4}>
@@ -433,10 +351,6 @@ class Detalle extends React.Component {
                                     this.props.data.precio = producto.precio_compra || 0;
                                     this.props.data.moneda = this.props.selectedMoneda; // Actualizar moneda al seleccionar producto
                                     this.props.data.precioConvertido = producto.precio_compra / tc;
-                                    // console.log(this.props.data, this.props.selectedMoneda);
-                                    // this.setState({
-                                    //     precioConvertido: this.props.data.precioConvertido
-                                    // });
                                     this.inputs["precio"].setValue((parseFloat(this.props.data.precioConvertido || 0) * parseFloat(this.props.data.cantidad)).toString());
                                 }
                             });
@@ -479,24 +393,12 @@ class Detalle extends React.Component {
                             placeholder={`Precio (${moneda.descripcion})`}
                             customStyle={"erp"}
                             label={"Precio"}
-                            // value={`${this.precio_compra_moneda}`}
-
-                            // value={{this.props.selectedMoneda?.observacion}+" " precioConvertido}
                             onChangeText={e => {
                                 const nuevoPrecio = parseFloat(e) || 0;
                                 this.props.data.precioConvertido = nuevoPrecio;
                                 const tc = this.props.selectedMoneda?.tipo_cambio ?? 1
                                 this.props.data.precio = nuevoPrecio * tc;
-                                // this.updatePrecio(false); // No actualizar el input, solo recalcular precio interno
-
-                                // this.updatePrecio(); // recalcula al cambiar manualmente
                             }}
-                            // defaultValue={precioConvertido.toString()}
-                            // onChangeText={e => {
-                            //     const nuevoPrecio = parseFloat(e) || 0;
-                            //     this.props.data.precio = nuevoPrecio;
-                            //     this.setState({ precioConvertido: this.convertPrice(nuevoPrecio, moneda, moneda) });
-                            // }}
                             type="money2"
                         />
                     </SView>

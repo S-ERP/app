@@ -4,13 +4,11 @@ import { SHr, SImage, SText, STheme, SView, SInput, SScrollView2, SNotification,
 import SIconApp from '../../../Assets/SIconApp';
 import CarritoItem from './Carrito/CarritoItem';
 import ResumenTotales from './Carrito/ResumenTotales';
-import TecladoNumerico from './Carrito/TecladoNumerico';
 import MDL from '../../../MDL';
 import FotoCliente from './Foto/FotoCliente';
 import PButtom from '../../../Components/PButtom';
 import Root from '../root';
 import SelectTipoPago from '../../caja2/components/SelectTipoPago';
-
 
 export default class Carrito extends Component {
     carrito = [];
@@ -23,7 +21,6 @@ export default class Carrito extends Component {
 
         this.carrito = this.carrito.filter((item) => {
             if (!item.stock || item.stock <= 0) {
-            // if (!item.stock || item.stock <= 0) {
                 SNotification.send({
                     title: "CARRITO Producto sin stock",
                     body: `${item.descripcion} fue eliminado del carrito porque no tiene stock.`,
@@ -58,13 +55,6 @@ export default class Carrito extends Component {
 
     componentDidUpdate(prevProps) {
         if (prevProps.selectedMoneda !== this.props.selectedMoneda) {
-            // this.carrito = this.carrito.map((item) => ({
-            //     ...item,
-            //     precio_compra_moneda: this.props.selectedMoneda
-            //         ? item.precio_compra / (this.props.selectedMoneda.tipo_cambio || 1)
-            //         : item.precio_compra,
-            //     monedaSymbol: this.props.selectedMoneda ? this.props.selectedMoneda.observacion : "Bs",
-            // }));
             this.carrito = this.carrito.map((item) => ({
                 ...item,
                 precio_compra_moneda: this.props.selectedMoneda
@@ -95,11 +85,6 @@ export default class Carrito extends Component {
         this._key_cajero = activa?.key_usuario;
         this.forceUpdate();
     }
-
-    // setCarrito(nuevoCarrito) {
-    //     this.carrito = Array.isArray(nuevoCarrito) ? [...nuevoCarrito] : [];
-    //     this.forceUpdate();
-    // }
 
     setCarrito(nuevoCarrito) {
         console.log("🎨🎨🎨🎨🎨🎨setCarrito", nuevoCarrito);
@@ -174,7 +159,6 @@ export default class Carrito extends Component {
     aumentarCantidad = (producto) => {
         const index = this.carrito.findIndex((p) => p.key === producto.key);
         if (index < 0) return;
-
         const item = this.carrito[index];
         if (this.props.conStock) {
             if (item.cantidad < item.stock) {
@@ -197,10 +181,8 @@ export default class Carrito extends Component {
     disminuirCantidad = (producto) => {
         const index = this.carrito.findIndex((p) => p.key === producto.key);
         if (index < 0) return;
-
         const item = this.carrito[index];
         item.cantidad -= 1;
-
         if (item.cantidad <= 0) {
             this.carrito.splice(index, 1);
             SNotification.send({
@@ -259,11 +241,10 @@ export default class Carrito extends Component {
             onEliminar={() => this.eliminarItem(item)}
             selectedMoneda={this.props.selectedMoneda}
         />
-        // <SText>{item.descripcion}</SText>
     );
 
     getCarritoItems() {
-        return this.carrito; // Devuelve los ítems del carrito
+        return this.carrito;
     }
 
     getCarritoItemCount() {
@@ -372,10 +353,8 @@ export default class Carrito extends Component {
                                         data={this.carrito}
                                         keyExtractor={(item) => item.key.toString()}
                                         renderItem={this.renderItemCarrito}
-                                    // renderItem={({ item }) => <SText>{item.descripcion}</SText>}
                                     />
                                 </SView>
-
                             </SScrollView2>
                         </SView>
                         <SHr height={5} />
@@ -388,59 +367,6 @@ export default class Carrito extends Component {
                             totalFinal={totalFinal}
                             monedaSymbol={monedaSymbol}
                         />
-                        {/* <SView col={"xs-12"} row center>
-                            <SView col={"md-12 xl-6"} height={70}>
-                                <SView col={"xs-10"} center>
-                                    <SInput
-                                        label={"Descuento VIP (Bs):"}
-                                        disabled={true}
-                                        height={40}
-                                        placeholder={"0"}
-                                        defaultValue={this.descuentoManual ?? null}
-                                        type="number"
-                                        border={this.descuentoManual > 0 ? "yellow" : STheme.color.card}
-                                        style={{ borderRadius: 8 }}
-                                        value={this.descuentoManual?.toString()}
-                                        onChangeText={(text) => {
-                                            let valor = Number(text);
-                                            if (valor > subtotalMoneda) {
-                                                valor = subtotalMoneda;
-                                            } else if (valor < 0) {
-                                                valor = 0;
-                                            }
-                                            this.descuentoManual = valor;
-                                            this.forceUpdate();
-                                        }}
-                                    />
-                                </SView>
-                            </SView>
-                            <SView col={"md-12 xl-6"} height={60} center row>
-                                <SView col={"md-6"} center>
-                                    <SInput
-                                        label={"Con factura"}
-                                        type="checkBox"
-                                        labelStyle={{ left: 12 }}
-                                        value={this.conFactura} // Componente controlado
-                                        onChangeText={(text) => {
-                                            this.conFactura = text;
-                                            this.forceUpdate();
-                                        }}
-                                    />
-                                </SView>
-                                <SView col={"md-6"} center>
-                                    <SInput
-                                        label={"Con Stock"}
-                                        type="checkBox"
-                                        labelStyle={{ left: 12 }}
-                                        value={this.props.conStock} // Usar value para componente controlado
-                                        onChangeText={(text) => {
-                                            this.props.onChangeConStock?.(text); // Actualizar en Main
-                                            this.ajustarCarrito();
-                                        }}
-                                    />
-                                </SView>
-                            </SView>
-                        </SView> */}
                         <SHr height={4} />
                         <SView
                             col={"xs-12 md-0"}
@@ -464,33 +390,7 @@ export default class Carrito extends Component {
                                 type="primary"
                                 small
                                 onPress={() => {
-                                    // this.inputs?.producto?.validate();
                                     Root.prototype.inputs = this.inputs; // Asegura que cada Detalle tenga acceso a los inputs
-                                    // let invalid = false;
-                                    // this.state.detalle.forEach((item, index) => {
-                                    //     if (!item.producto) {
-                                    //         SNotification.send({
-                                    //             title: `Error en producto ${index + 1}`,
-                                    //             body: "Debe seleccionar un producto.",
-                                    //             color: STheme.color.danger,
-                                    //             time: 4000,
-                                    //         });
-                                    //         invalid = true;
-                                    //     }
-                                    // });
-                                    // if (invalid) return;
-
-                                    // var max = 0;
-                                    // var max2 = 0;
-                                    // var max3 = 0;
-                                    // this.state.detalle.forEach(item => {
-                                    //     max += item.precio;
-                                    //     max2 += item.cantidad * item.precioBase;
-                                    //     max3 += item.precioConvertido;
-                                    // });
-
-
-
 
                                     SelectTipoPago.openPopup({
                                         key_punto_venta: MDL.caja.activa.key_punto_venta,
@@ -504,33 +404,10 @@ export default class Carrito extends Component {
                             </PButtom>
                         </SView>
                     </SView>
-
                 )}
-                {/* <TecladoNumerico
-                    cliente={this.cliente}
-                    key_sucursal={this._key_sucursal}
-                    key_cajero={this._key_cajero}
-                    carrito={this.carrito}
-                    numeroIva={this._numeroIva}
-                    totalImpuesto={totalImpuesto}
-                    descuento={this.descuentoManual}
-                    totalFinal={totalFinal}
-                    conFactura={this.conFactura}
-                    subtotal={subtotal}
-                    subtotalMoneda={subtotalMoneda}
-                    monedaSymbol={monedaSymbol}
-                    moneda={this.props.selectedMoneda}
-                    onReload={() => {
-                        this.vaciarCarrito();
-                    }}
-                    onReloadCliente={() => {
-                        this.cliente = null;
-                    }}
-                /> */}
             </>
         );
     };
-
     render() {
         return <>{this.renderCarrito()}</>;
     }

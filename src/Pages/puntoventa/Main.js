@@ -4,12 +4,8 @@ import Header from "./Components/Header";
 import Carrito from "./Components/Carrito";
 import Modelo from "./Components/Modelo";
 import Categoria from "./Components/Categoria";
-import SIconApp from "../../Assets/SIconApp";
 import { Dimensions } from "react-native";
-import PopupCarritoFlotante from "./Components/Carrito/PopupCarritoFlotante";
 import MDL from "../../MDL";
-import CarritoVenta from "../../Components/CarritoVenta";
-
 
 export default class Main extends Component {
     constructor(props) {
@@ -106,61 +102,58 @@ export default class Main extends Component {
         );
     }
 
-
-
     // btnFlotante() {
-    //     let cantidadItems = MDL.compra_venta.totalItemsCarrito;
-    //     return (
-    //         <SView col="xs-12 md-0">
-    //             <SView
-    //                 backgroundColor="#3B82F6"
-    //                 border={STheme.color.text}
-    //                 style={{
-    //                     position: "absolute",
-    //                     bottom: 20,
-    //                     right: 20,
-    //                     width: 56,
-    //                     height: 56,
-    //                     borderRadius: 28,
-    //                     justifyContent: "center",
-    //                     alignItems: "center",
-    //                     zIndex: 1000,
-    //                 }}
-    //                 onPress={() => {
-    //                     const productos = this.carritoRef?.carrito;
-    //                     PopupCarritoFlotante.open({
-    //                         productos: productos,
-    //                     });
+    //let cantidadItems = MDL.compra_venta.totalItemsCarrito;
+    //return (
+    //<SView col="xs-12 md-0">
+    //<SView
+    //backgroundColor="#3B82F6"
+    //border={STheme.color.text}
+    //style={{
+    //position: "absolute",
+    //bottom: 20,
+    //right: 20,
+    //width: 56,
+    //height: 56,
+    //borderRadius: 28,
+    //justifyContent: "center",
+    //alignItems: "center",
+    //zIndex: 1000,
+    //}}
+    //onPress={() => {
+    //const productos = this.carritoRef?.carrito;
+    //PopupCarritoFlotante.open({
+    //productos: productos,
+    //});
 
-    //                 }}
-    //             >
-    //                 <SIconApp name="carritoproducto" width={28} height={28} fill={STheme.color.text} />
-    //                 {cantidadItems > 0 && (
-    //                     <SView
-    //                         style={{
-    //                             position: "absolute",
-    //                             top: -8,
-    //                             right: -8,
-    //                             backgroundColor: STheme.color.danger,
-    //                             borderRadius: 12,
-    //                             width: 24,
-    //                             height: 24,
-    //                             justifyContent: "center",
-    //                             alignItems: "center",
-    //                             borderWidth: 2,
-    //                             borderColor: STheme.color.background,
-    //                         }}
-    //                     >
-    //                         <SText fontSize={12} bold color={STheme.color.white}>
-    //                             {cantidadItems}
-    //                         </SText>
-    //                     </SView>
-    //                 )}
-    //             </SView>
-    //         </SView>
-    //     );
+    //}}
+    //>
+    //<SIconApp name="carritoproducto" width={28} height={28} fill={STheme.color.text} />
+    //{cantidadItems > 0 && (
+    //<SView
+    //style={{
+    //position: "absolute",
+    //top: -8,
+    //right: -8,
+    //backgroundColor: STheme.color.danger,
+    //borderRadius: 12,
+    //width: 24,
+    //height: 24,
+    //justifyContent: "center",
+    //alignItems: "center",
+    //borderWidth: 2,
+    //borderColor: STheme.color.background,
+    //}}
+    //>
+    //<SText fontSize={12} bold color={STheme.color.white}>
+    //{cantidadItems}
+    //</SText>
+    //</SView>
+    //)}
+    //</SView>
+    //</SView>
+    //);
     // }
-
 
     getColSize() {
         const width = Dimensions.get("window").width;
@@ -181,17 +174,17 @@ export default class Main extends Component {
                     </SView>
 
                     {/* <SView
-                        flex
-                        col="xs-12 sm-12 md-4.5 lg-3.5"
-                        style={{
-                            display: this.getColSize() === 4 ? "none" : "flex",
-                            padding: 8,
-                            borderRightWidth: 1,
-                            borderRightColor: STheme.color.card,
-                        }}
-                    >
-                        {this.renderCarrito()}
-                    </SView> */}
+flex
+col="xs-12 sm-12 md-4.5 lg-3.5"
+style={{
+display: this.getColSize() === 4 ? "none" : "flex",
+padding: 8,
+borderRightWidth: 1,
+borderRightColor: STheme.color.card,
+}}
+>
+{this.renderCarrito()}
+</SView> */}
                     <SView
                         col="xs-12 sm-12 "
                         style={{
@@ -209,11 +202,8 @@ export default class Main extends Component {
                             onSelectMoneda={this.setMoneda}
                             conStock={this.state.conStock} // Usar estado conStock
                             onChangeConStock={this.setConStock} // Pasar función para actualizar conStock
-
-                            conPrecio={this.state.conPrecio}           // <-- Pasar prop
-                            onChangeConPrecio={this.setConPrecio}      // <-- Pasar función
-
-
+                            conPrecio={this.state.conPrecio}// <-- Pasar prop
+                            onChangeConPrecio={this.setConPrecio}// <-- Pasar función
                         />
                         {this.cajaActiva && (
                             <Modelo
@@ -222,7 +212,7 @@ export default class Main extends Component {
                                 searchText={this.searchText}
                                 selectedMoneda={this.selectedMoneda}
                                 conStock={this.state.conStock} // Usar estado conStock
-                                conPrecio={this.state.conPrecio}           // <-- Pasar prop
+                                conPrecio={this.state.conPrecio}// <-- Pasar prop
                                 onPressProducto={(producto) => {
                                     // MDL.carrito.agregarItemAlCarritoDeVentas(producto)
                                     this.carritoRef?.addProducto(producto);

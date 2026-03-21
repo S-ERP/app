@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import { SHr, SImage, SInput, SInput2, SText, STheme, SView } from 'servisofts-component';
 import MDL from '../../../MDL';
-import SIconApp from '../../../Assets/SIconApp';
 import { ScrollView } from 'react-native-gesture-handler';
-import Model from '../../../Model';
-import SSocket from 'servisofts-socket';
 import FiltroMoneda from '../../puntoventa/Components/FiltroMoneda';
 
 
@@ -84,8 +81,6 @@ export default class Categoria extends Component {
                             </SView>
                         </SView>
 
- 
-
                         <SView col={"xs-12 md-5 lg-2.5"} row center>
                             <SView col={"xs-12"} row center height={32}>
                                 <SInput
@@ -93,12 +88,11 @@ export default class Categoria extends Component {
                                     style={{ top: -12, fontSize: 12 }}
                                     type="checkBox"
                                     labelStyle={{ left: 14, top: -4 }}
-                                    value={this.props.conPrecio}                  // <-- valor controlado
-                                    onChangeText={(text) => this.props.onChangeConPrecio?.(text)}  // <-- actualizar Main
+                                    value={this.props.conPrecio}// <-- valor controlado
+                                    onChangeText={(text) => this.props.onChangeConPrecio?.(text)}// <-- actualizar Main
                                 />
                             </SView>
                         </SView>
-                        
 
                     </SView>
                     <SView col={"xs-12 md-12 lg-2.5"} row center backgroundColor="transparent">

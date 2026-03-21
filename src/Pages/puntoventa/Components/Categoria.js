@@ -78,8 +78,6 @@ export default class Categoria extends Component {
                                 />
                             </SView>
                         </SView>
-                        
-
                         <SView col={"xs-12 md-5 lg-2.5"} row center>
                             <SView col={"xs-12"} row center height={32}>
                                 <SInput
@@ -87,18 +85,11 @@ export default class Categoria extends Component {
                                     style={{ top: -12, fontSize: 12 }}
                                     type="checkBox"
                                     labelStyle={{ left: 14, top: -4 }}
-                                    value={this.props.conPrecio}                  // <-- valor controlado
-                                    onChangeText={(text) => this.props.onChangeConPrecio?.(text)}  // <-- actualizar Main
+                                    value={this.props.conPrecio}// <-- valor controlado
+                                    onChangeText={(text) => this.props.onChangeConPrecio?.(text)}// <-- actualizar Main
                                 />
                             </SView>
                         </SView>
-
-                        {/* <SView width={16} />
-                        <SView col={"xs-12 md-5 lg-2.5"} row center>
-                            <SView col={"xs-12"} row center height={32}>
-                                {selectedMoneda ? ( <SView col="xs-12" row> <SText style={{ marginLeft: 12 }}>Observación: {selectedMoneda.observacion || "-"}</SText> </SView> ) : ( <SText>No hay moneda seleccionada</SText> )}
-                            </SView>
-                        </SView> */}
                     </SView>
                     <SView col={"xs-12 md-12 lg-2.5"} row center backgroundColor="transparent">
                         <SView col={"xs-12"} row center height={32} style={{ borderRadius: 8, borderWidth: 1, borderColor: STheme.color.card, backgroundColor: STheme.color.background }}>
