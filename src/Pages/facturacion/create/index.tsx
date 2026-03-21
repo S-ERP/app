@@ -135,6 +135,7 @@ export default class index extends React.Component {
 
         const detalle = this.factura.data.detalle;
 
+
         for (let i = 0; i < detalle.length; i++) {
             const item = detalle[i];
 
@@ -211,16 +212,42 @@ export default class index extends React.Component {
             }
 
         }
+        // aqui pongo que no tiene leyenda y genera
+        // this.factura.data.leyenda = "";
+        // 🔴 VALIDAR LEYENDA
+        if (!this.factura.data.leyenda || this.factura.data.leyenda.trim() === "") {
 
+            const leyendas = this.parametricas.leyendasFactura;
+
+            // intentar asignar una automáticamente
+            if (leyendas && leyendas.length > 0) {
+                const random = Math.floor(Math.random() * leyendas.length);
+                this.factura.data.leyenda = leyendas[random].descripcionLeyenda;
+                console.clear();
+                console.log("%c" + random, `color: #0e30ec; font-weight: bold;`);
+                console.log("%c" + this.factura.data.leyenda, `color: #2e3ecc; font-weight: bold;`);
+            } else {
+                // ❌ no hay leyendas disponibles
+                SNotification.send({
+                    title: "Leyenda requerida",
+                    body: "No hay leyendas disponibles para la factura. Verifica las paramétricas.",
+                    color: STheme.color.warning,
+                    time: 2000,
+                });
+                return false;
+            }
+
+
+        }
         return true;
     }
 
     handleEnviar() {
         console.log("Enviando");
         // console.clear();
-        console.log("%c" + JSON.stringify(this.factura), `color: #2ECC40; font-weight: bold;`);
         this.validarAntesDeEmitir();
-        // return;
+        // console.log("%c" + JSON.stringify(this.factura), `color: #2ECC40; font-weight: bold;`);
+        return;
         // if (this.factura.data.nit)
         SNotification.send({
             key: "facturacionEmitir",
