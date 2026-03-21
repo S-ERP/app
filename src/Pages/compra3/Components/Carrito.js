@@ -23,6 +23,7 @@ export default class Carrito extends Component {
 
         this.carrito = this.carrito.filter((item) => {
             if (!item.stock || item.stock <= 0) {
+            // if (!item.stock || item.stock <= 0) {
                 SNotification.send({
                     title: "CARRITO Producto sin stock",
                     body: `${item.descripcion} fue eliminado del carrito porque no tiene stock.`,

@@ -39,6 +39,8 @@ export default class Root extends React.Component {
         showCarritoModal: false,
         carritoModalData: [],
         conStock: false, // Mover conStock al estado, inicializado en false
+        conPrecio: false, // Mover conStock al estado, inicializado en false
+
     };
 
     setTipoKey = (key) => {
@@ -61,6 +63,11 @@ export default class Root extends React.Component {
             this.carritoRef?.ajustarCarrito(); // Ajustar carrito después de actualizar el estado
         });
     };
+
+    setConPrecio = (value) => {
+        this.setState({ conPrecio: value });
+    };
+
 
     async checkCaja() {
         try {
@@ -293,6 +300,10 @@ export default class Root extends React.Component {
                                 onSelectMoneda={this.setMoneda}
                                 conStock={this.state.conStock} // Usar estado conStock
                                 onChangeConStock={this.setConStock} // Pasar función para actualizar conStock
+
+                                conPrecio={this.state.conPrecio}           // <-- Pasar prop
+                                onChangeConPrecio={this.setConPrecio}      // <-- Pasar función
+
                             />
                             {this.cajaActiva && (
                                 <Modelo
@@ -301,6 +312,8 @@ export default class Root extends React.Component {
                                     searchText={this.searchText}
                                     selectedMoneda={this.selectedMoneda}
                                     conStock={this.state.conStock} // Usar estado conStock
+                                                                    conPrecio={this.state.conPrecio}           // <-- Pasar prop
+
                                     onPressProducto={(producto) => {
                                         console.log("PRODUCTO SELECT ", producto)
                                         this.carritoRef?.addProducto2(producto);

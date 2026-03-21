@@ -23,18 +23,18 @@ export default class Modelo extends Component {
         this.evento = MDL.compra_venta.addEventListener("venta_realizada", () => {
             this.loadApis();
         });
-        this.evento2 = MDL.compra_venta.addEventListener("conStock", () => {
-            this.conStock = this.props.conStock;
-            this.forceUpdate();
-        });
+        // this.evento2 = MDL.compra_venta.addEventListener("conStock", () => {
+        //     this.conStock = this.props.conStock;
+        //     this.forceUpdate();
+        // });
     }
     componentWillUnmount() {
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
-        if (this.evento2) {
-            MDL.compra_venta.removeEventListener(this.evento2);
-        }
+        // if (this.evento2) {
+        //     MDL.compra_venta.removeEventListener(this.evento2);
+        // }
     }
     async loadApis() {
         if (!MDL.caja.activa) {
@@ -93,6 +93,18 @@ export default class Modelo extends Component {
         const tipoKey = this.props.tipoKey;
         const selectedMoneda = this.props.selectedMoneda || null;
         let productosFiltrados = tipoKey === "all" ? modelos : modelos.filter((m) => m.key_tipo_producto === tipoKey);
+
+        // aqui valida que muestre todo o sin precio
+        if (this.props.conPrecio) {
+            productosFiltrados = productosFiltrados.filter((m) => m.precio_venta > 0);
+        }
+
+        // aqui valido que funcion con stock
+        if (this.props.conStock) {
+            productosFiltrados = productosFiltrados.filter((m) => m.stock > 0);
+        }
+
+
         if (this.props.searchText) {
             const search = this.props.searchText.toLowerCase();
             productosFiltrados = productosFiltrados.filter(
