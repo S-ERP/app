@@ -53,7 +53,7 @@ export default class PdfCierreCaja {
                     {PdfCierreCaja.espacio(8)}
                     <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
                         <SPDF.View style={{ width: 50, height: 40, }}>
-                            <SPDF.Image src={`${SSocket.api.empresa}empresa/${caja?.key_empresa}`} style={{ width: 40, height: 40, resizeMode: "cover" }} />
+                            <SPDF.Image src={urlFoto} style={{ width: 40, height: 40, resizeMode: "cover" }} />
                         </SPDF.View>
                         <SPDF.View style={{ flex: 1, marginTop: -4, }}>
                             <SPDF.Text style={text}>{caja?.sucursal.descripcion}</SPDF.Text>
