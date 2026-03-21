@@ -6,17 +6,7 @@ import MDL from "../../MDL";
 import Config from "../../Config";
 import FloatMenu from "../../Components/FloatMenu";
 import SIconApp from "../../Assets/SIconApp";
-import SPageConta from "./Components/SPageConta";
-import InformacionDeAjustes from "./Components/InformacionDeAjustes";
-import AjusteTag from "./Components/AjusteTag";
-import AjusteTagInfoPopup from "./Components/AjusteInfoPopup";
-import AjusteTagDropBox from "./Components/AjusteTagDropBox";
-import ajustes from "../ajustes";
 import CuentaContableForm from "./Components/CuentaContableForm";
-import tipo from "../whatsapp/tipo";
-import { Text } from "react-native";
-import FiltroNiveles from "./Components/FiltroNiveles";
-import { Container } from "../../Components";
 
 
 
@@ -35,11 +25,6 @@ export default class cuentas_anidadas extends React.Component {
         this.loadData();
     }
 
-
-    // state = {
-    //     ajustes: [],
-    //     cuentas: []
-    // }
     async loadData() {
         const resp = await MDL.contabilidad.getCuentas();
         const arr = Object.values(resp);
@@ -136,27 +121,55 @@ export default class cuentas_anidadas extends React.Component {
 
     renderItem = (item, level = 0) => {
         const hasChildren = item.children && item.children.length > 0;
-
-        // const isSearching = !!this.state.search;
-
-        // const isOpen = isSearching
-        //     ? item.autoOpen // 🔍 modo búsqueda
-        //     : this.state.openItems[item.codigo]; // 👆 modo normal
-
-        // const isOpen = isSearching
-        //     ? (this.state.openItems[item.codigo] ?? item.autoOpen)
-        //     : this.state.openItems[item.codigo];
-
         const isOpen = !!this.state.openItems[item.codigo];
-
         const isSelected = this.state.selectedItem === item.codigo;
         const isHover = this.state.hoveredItem === item.codigo;
+        const nombreCuenta = `CUENTA: ${item.descripcion ?? 'Sin nombre'}`;
+        const options = [];
+
+        options.push({
+            label: 'Editar',
+            icon: <SIconApp name="Edit" fill={STheme.color.warning} />,
+            onPress: () => {
+                // const cliente = { ...item, key_usuario: MDL.usuario.session?.key };
+                CuentaContableForm.open({
+                    cuenta_contable: item,
+                    onChange: (e) => {
+                        this.loadData();
+                    }
+                })
+            },
+        });
+
+        options.push({
+            label: 'Eliminar',
+            icon: <SIconApp name="Delete" fill={STheme.color.text} />,
+            onPress: () => {
+                SPopup.confirm({
+                    title: "Eliminar Cuenta Contable",
+                    message: "¿Estás seguro de eliminar la cuenta contable?",
+                    onPress: () => {
+                        MDL.contabilidad.cuenta_contable.save({
+                            key: item.key,
+                            estado: 0,
+                        }).then(e => {
+                            this.loadData();
+                        }).catch(error => {
+                            console.error("Error al eliminar cuenta contable:", error);
+
+                        })
+                    }
+
+                })
+            },
+        });
 
 
         // 🔥 PRIORIDAD DE COLORES
         let backgroundColor = "transparent";
         if (isSelected) {
             backgroundColor = STheme.color.card; //  seleccionado
+            console.log("SELECT: ", isSelected)
         } else if (isHover) {
             backgroundColor = STheme.color.card; // hover
         }
@@ -225,6 +238,24 @@ export default class cuentas_anidadas extends React.Component {
                     <SView style={{ width: 80, alignItems: "center" }}>
                         <SText>0</SText>
                     </SView>
+
+                    <SView style={{ width: 50, alignItems: "center" }} onPress={(evt) => {
+                        FloatMenu.open({
+                            e: evt,
+                            label: nombreCuenta,
+                            options,
+                        });
+                    }}>
+                        {/* <SView
+                            onPress={(e) => this.openMenu(item, e)}
+                            style={{
+                                padding: 5,
+                                borderRadius: 5
+                            }}
+                        > */}
+                        <SIconApp name="drive-menu" width={15} height={15} fill={STheme.color.text} />
+                        {/* </SView> */}
+                    </SView>
                 </SView>
 
                 {/* Hijos */}
@@ -237,9 +268,6 @@ export default class cuentas_anidadas extends React.Component {
     };
 
     /*PARA BUSCAR*/
-    // handleSearch = (text) => {
-    //     this.setState({ search: text });
-    // };
     handleSearch = (text) => {
         const dataArray = this.state.cuentas;
         const tree = this.buildTree(dataArray);
@@ -348,10 +376,20 @@ export default class cuentas_anidadas extends React.Component {
         return (
             <SPage title={"Plan de cuentas anidadas"} >
                 <SView col={"xs-12"} row padding={15}>
+                    <SView width={25} height={25} style={{
+                        position: "absolute",
+                        top: 22,
+                        left: 20
+                    }}>
+                        <SIconApp name="Search" width={25} height={25} fill={STheme.color.text} />
+                    </SView>
                     <SInput
                         placeholder={"Buscar cuenta..."}
                         value={this.state.search}
                         onChangeText={(tx) => this.handleSearch(tx)}
+                        style={{
+                            paddingLeft: 32
+                        }}
                     />
                     <SHr height={10} />
                     <SView col={"xs-12"} style={{ alignItems: "flex-end" }}>
