@@ -4,6 +4,8 @@ import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
 import SCharts from "servisofts-charts";
+import FechaFullFilter from "../../Components/FechaFullFilter";
+import FiltroSelector from "../productos/modelo/Components/FiltroSelector";
 
 export default class tabla_productos extends React.Component {
     state = {
@@ -11,6 +13,8 @@ export default class tabla_productos extends React.Component {
         dataProductosMayorBeneficio: [],
         loadingProductosMasVendidos: true,
         loadingProductosMayorBeneficio: true,
+        selectedSucursal: null,
+
     };
 
     componentDidMount() {
@@ -126,7 +130,10 @@ export default class tabla_productos extends React.Component {
             dataProductosMasVendidos,
             dataProductosMayorBeneficio,
             loadingProductosMasVendidos,
-            loadingProductosMayorBeneficio
+            loadingProductosMayorBeneficio,
+            selectedSucursal,
+            fecha_inicio,
+            fecha_fin
         } = this.state;
 
         const size = 80;
@@ -140,6 +147,51 @@ export default class tabla_productos extends React.Component {
                     <SView col={"xs-12"} padding={16}>
                         <SText fontSize={18} bold>Estadísticas de Productos</SText>
                         <SHr />
+
+
+
+                        <SView col={"xs-12 sm-5 lg-1.6"} row center style={{ flexWrap: "wrap", gap: 12 }}>
+
+                            <FiltroSelector
+                                ref={ref => this.filtroSucursalRef = ref}
+                                label="Sucursal"
+                                loadData={MDL.empresa.getAllSucursales}
+                                mapOption={a => ({ key: a.key, nombre: a.descripcion })}
+                                onSelect={item => {
+                                    this.filtroAlmacenRef?.reset(false);
+                                    this.setState({ selectedSucursal: item, selectedAlmacen: null, }, () => {
+                                        this.table?.loadData();
+                                    });
+                                }}
+                            />
+                        </SView>
+                        <SView width={8} height={8} />
+
+
+
+                        {/* ddddddddddddddddddddddddddddddddddddddddddd */}
+                        {/* ddddddddddddddddddddddddddddddddddddddddddd */}
+                        {/* ddddddddddddddddddddddddddddddddddddddddddd */}
+                        {/* ddddddddddddddddddddddddddddddddddddddddddd */}
+                        {/* ddddddddddddddddddddddddddddddddddddddddddd */}
+                        {/* ddddddddddddddddddddddddddddddddddddddddddd */}
+
+                        <SView col={"xs-12 sm-8.2 lg-3.3"} row center   >
+                            <FechaFullFilter
+                                //  fecha_inicio={this.state.fecha_inicio}
+                                //  fecha_fin={this.state.fecha_fin}
+                                onChange={e => this.setState({
+                                    fecha_inicio: e.fecha_inicio,
+                                    fecha_fin: e.fecha_fin
+                                }, () => {
+                                    // if (this.table) this.table.loadData();
+                                })}
+                            />
+                        </SView>
+
+
+
+
 
                         {/* Tabla de Productos Más Vendidos */}
                         <SView col={"xs-12"} padding={8}>
