@@ -44,13 +44,22 @@ export default class tabla_productos extends React.Component {
 
     loadProductosMasVendidos = async (keyEmpresa) => {
         try {
-            const res = await MDL.compra_venta.execute_function("productos_mas_vendidos", [keyEmpresa]);
+
+            const sucursal = await MDL.empresa.getAllSucursales();
+            const res = await MDL.compra_venta.execute_function("productos_mas_vendidos2", [keyEmpresa, 'venta', '2026-03-01', '2026-03-23']);
             const raw = Array.isArray(res) ? res : (res?.data ?? res?.result ?? []);
             const data = raw.map(item => ({
+                key_modelo: item.key_modelo ?? "",
                 producto: item.producto ?? "Sin nombre",
                 cantidad_total_vendida: item.cantidad_total_vendida ?? 0,
-                total_bs_ganado: item.total_bs_ganado ?? 0
+                total_bs_ganado: item.total_bs_ganado ?? 0,
+                sucursales: (item.sucursales || []).map(id => {
+                    const suc = sucursal.find(s => s.key === id);
+                    return { key: id, descripcion: suc?.descripcion ?? "Sin descripción" };
+                })
             }));
+            console.clear();
+            console.log("%c" + JSON.stringify(data, null, 2), "color: #0314ff; font-weight: bold;");
             if (this._mounted) this.setState({ dataProductosMasVendidos: data, loadingProductosMasVendidos: false });
         } catch (e) {
             console.error("Error en productos_mas_vendidos:", e);
@@ -60,7 +69,8 @@ export default class tabla_productos extends React.Component {
 
     loadProductosMayorBeneficio = async (keyEmpresa) => {
         try {
-            const res = await MDL.compra_venta.execute_function("productos_mayor_beneficio", [keyEmpresa]);
+            // const res = await MDL.compra_venta.execute_function("productos_mayor_beneficio", [keyEmpresa]);
+            const res = await MDL.compra_venta.execute_function("productos_mayor_beneficio2", [keyEmpresa, '2026-03-09', '2026-03-23']);
             const raw = Array.isArray(res) ? res : (res?.data ?? res?.result ?? []);
             const data = raw.map(item => ({
                 producto: item.producto ?? "Sin nombre",
@@ -124,11 +134,6 @@ export default class tabla_productos extends React.Component {
 
         // CORRECCIÓN: Usar la función correcta para transformar los datos
         const chartData = this.transformDataForProductosChart(dataProductosMayorBeneficio);
-
-        // Agregar console.log para debug
-        console.log("Datos de productos mayor beneficio:", dataProductosMayorBeneficio);
-        console.log("Datos transformados para gráfico:", chartData);
-
         return (
             <SPage title="Estadísticas de Productos">
                 <ScrollView>
@@ -201,7 +206,31 @@ export default class tabla_productos extends React.Component {
                                             </SView>
                                         }}
                                     />
+
+
+                                    <DinamicTable.Col
+                                        key="sucursales"
+                                        label="Sucursales"
+                                        width={150}
+                                        data={e => (e.row?.sucursales ?? []).map(p => p.key).join(", ")}
+                                        customComponent={e => (
+                                            <SView row wrap>
+                                                {(e.row?.sucursales ?? []).map(item => (
+                                                    <SView height={18} key={item.key} center row style={{
+                                                        backgroundColor: "#eea6a6", borderRadius: 4, borderWidth: 1, borderColor: "#7ae202",
+                                                        marginRight: 4, marginBottom: 2, paddingHorizontal: 2,
+                                                    }}>
+                                                        <SText style={{ fontSize: 10 }}>{item.descripcion}</SText>
+                                                    </SView>
+
+
+                                                ))}
+                                            </SView>
+                                        )}
+                                    />
+
                                 </DinamicTable>
+
                             )}
                         </SView>
 
