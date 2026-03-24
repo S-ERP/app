@@ -46,8 +46,13 @@ export default class tabla_productos extends React.Component {
 
     handleKeyDown = (event) => {
         // Si presionan Escape, resetear sucursal a "Todos"
+
+        defaultOption="todos"
+
         if (event.key === 'Escape') {
             console.log("⌨️ Escape presionado - Reseteando filtro de sucursal");
+                    defaultOption="todos"
+
             this.resetSucursal();
         }
     }
