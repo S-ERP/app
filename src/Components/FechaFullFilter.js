@@ -7,9 +7,37 @@ export default class FechaFullFilter extends Component {
     constructor(props) {
         super(props);
 
+        const hoy = new Date();
+        const key_opciones = props.key_opciones ?? "hoy";
+
+        // Determinar fechas iniciales según key_opciones
+        let inicio, fin;
+        switch (key_opciones) {
+            case "hoy":
+                inicio = fin = hoy;
+                break;
+            case "esta_semana":
+                inicio = this.startOfWeek(hoy);
+                fin = this.endOfWeek(hoy);
+                break;
+            case "este_mes":
+            default:
+                inicio = this.startOfMonth(hoy);
+                fin = this.endOfMonth(hoy);
+                break;
+            case "este_año":
+                inicio = this.startOfYear(hoy);
+                fin = this.endOfYear(hoy);
+                break;
+            case "entre":
+                inicio = props.fecha_inicio ? this.parseLocalDate(props.fecha_inicio) : hoy;
+                fin = props.fecha_fin ? this.parseLocalDate(props.fecha_fin, 23) : hoy;
+                break;
+        }
+
         this.state = {
-            fecha_inicio: this.props?.fecha_inicio ?? new SDate().toString("yyyy-MM-dd"),
-            fecha_fin: this.props?.fecha_fin ?? new SDate().toString("yyyy-MM-dd"),
+            fecha_inicio: this.formatDateTime(inicio),
+            fecha_fin: this.formatDateTime(fin),
             opciones: [
                 { key: "hoy", description: "Hoy" },
                 { key: "esta_semana", description: "Esta Semana" },
@@ -17,8 +45,8 @@ export default class FechaFullFilter extends Component {
                 { key: "este_año", description: "Este Año" },
                 { key: "entre", description: "Entre Fechas" }
             ],
-            entre_fecha: false,
-            key_opciones: null,
+            entre_fecha: key_opciones === "entre",
+            key_opciones: key_opciones,
         }
     }
 
@@ -69,17 +97,14 @@ export default class FechaFullFilter extends Component {
                         key={this.state.entre_fecha ? "entre" : "normal"}
                         ref={ref => this.form = ref}
                         row
-                         
                         style={{ justifyContent: 'space-between', }}
                         inputs={{
                             key_opciones: {
                                 placeholder: "Filtro tiempo",
                                 placeholderTextColor:"red",
-                                // style: { borderWidth: 1, borderColor: STheme.color.lightGray + "40",   },
                                 type: "custom",
                                 col: this.state.entre_fecha ? "xs-4" : "xs-12",
                                 customInputClass: InputSelector,
-                                // customStyle:{borderWidth: 1, borderColor: STheme.color.lightGray + "40",},
                                 defaultValue: this.state.key_opciones,
                                 options: this.state.opciones.map(f => ({
                                     label: f.description,
@@ -136,17 +161,16 @@ export default class FechaFullFilter extends Component {
                                     inicio = fin = hoy;
                             }
 
-                            this.state.fecha_inicio = this.formatDateTime(inicio);
-                            this.state.fecha_fin = this.formatDateTime(fin);
-
-                            this.props.onChange(this.state);
-                            this.setState({});
+                            this.setState({
+                                fecha_inicio: this.formatDateTime(inicio),
+                                fecha_fin: this.formatDateTime(fin)
+                            }, () => this.props.onChange(this.state));
                         }}
                     />
                 </SView>
-                {/* <SHr width={100} color='red' ></SHr> */}
+
                 <SView width={4} height={"100%"} backgroundColor="transparent" ></SView>
-                {/* <SView width={80} > */}
+
                 <SView
                     style={{
                         top: 15, borderRadius: 2,
@@ -160,7 +184,6 @@ export default class FechaFullFilter extends Component {
                     onPress={() => this.form?.submit()}>
                     <SText center>FILTRAR</SText>
                 </SView>
-                {/* </SView> */}
             </SView>
         )
     }
