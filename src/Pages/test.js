@@ -1,91 +1,79 @@
 import React, { Component } from "react";
-import { SPage, SText, SView, SInput } from "servisofts-component";
+import { SPage, SText, SView } from "servisofts-component";
 import MDL from "../MDL";
-import FiltroSelector2 from "./productos/modelo/Components/FiltroSelector2";
+import FiltroSelector from "./productos/modelo/Components/FiltroSelector";
+import FechaFullFilter from "../Components/FechaFullFilter";
 
 export default class FacturaFormSimple extends Component {
   state = {
     selectedProductoServicio: null,
     selectedUnidadMedida: null,
+    selectedSucursal: null,
     descripcionItem: "",
+    fecha_inicio: null,
+    fecha_fin: null,
   };
 
   loadData() {
-    console.log("Cargando datos para", this.state.selectedProductoServicio, this.state.selectedUnidadMedida);
+    console.log("📦 loadData()");
+    console.log("Sucursal:", this.state.selectedSucursal);
+    console.log("Fechas:", this.state.fecha_inicio, this.state.fecha_fin);
   }
 
   render() {
     return (
       <SPage title="Crear Factura" disableScroll>
 
-        {/* Producto / Servicio */}
-        <FiltroSelector2
-          ref={(ref) => (this.filtroProductoRef = ref)}
-          label="Producto / Servicio"
-          loadData={async () =>
-            await MDL.factura.getParametrica({ 
-              ambiente: MDL.factura.ambiente, 
-              parametrica: "productosServicios" 
-            })
-          }
-          mapOption={(a) => ({
-            key: String(a.codigoProducto), // 🔹 convertir a string
-            nombre: `${a.codigoProducto || ""} - ${a.descripcionProducto || ""}`, // asegurar string
-          })}
-          onSelect={(item) => {
-            // this.filtroProductoRef?.reset(false);
-            console.clear();
-            console.log("%c" + JSON.stringify(item, null, 2), "color: #2ECC40; font-weight: bold;");
-            this.setState({ selectedProductoServicio: item?.key }, () => {
+        {/* FILTRO FECHAS */}
+        <FechaFullFilter
+          key_opciones="este_mes" 
+          fecha_inicio={this.state.fecha_inicio}
+          fecha_fin={this.state.fecha_fin}
+          onChange={e => {
+            console.log("📅 Cambio fechas:", e);
+
+            this.setState({
+              fecha_inicio: e.fecha_inicio,
+              fecha_fin: e.fecha_fin
+            }, () => {
+              console.log("📅 State actualizado:", this.state);
               this.loadData();
             });
           }}
         />
 
-        {/* Unidad de Medida */}
-        <FiltroSelector2
-          ref={(ref) => (this.filtroUnidadMedidaRef = ref)}
-          label="Unidad de Medida"
-          loadData={async () =>
-            await MDL.factura.getParametrica({ 
-              ambiente: MDL.factura.ambiente, 
-              parametrica: "unidadMedida" 
-            })
-          }
-          mapOption={(a) => ({
-            key: String(a.codigoClasificador), // 🔹 convertir a string
-            nombre: a.descripcion || "", // asegurar string
-          })}
-          onSelect={(item) => this.setState({ selectedUnidadMedida: item })}
-        />
+        {/* FILTRO SUCURSAL */}
+        <SView
+          col={"xs-12 sm-5 lg-1.6"}
+          row
+          center
+          style={{ flexWrap: "wrap", gap: 12 }}
+        >
+          <FiltroSelector
+            ref={ref => (this.filtroSucursalRef = ref)}
+            label="Sucursal"
+            loadData={MDL.empresa.getAllSucursales}
+            mapOption={a => ({ key: a.key, nombre: a.descripcion })}
+            onSelect={item => {
+              console.log("🏪 Sucursal seleccionada:", item);
 
-        {/* Textarea que reemplaza comillas dobles por simples */}
-        <SInput
-          type="textArea"
-          style={{ fontSize: 12, margin: 8 }}
-          value={this.state.descripcionItem}
-          placeholder="Escribe aquí la descripción..."
-          onChangeText={(text) =>
-            this.setState({ descripcionItem: text.replace(/"/g, "'") })
-          }
-        />
+              this.setState({ selectedSucursal: item }, () => {
+                console.log("🏪 State actualizado:", this.state);
+                this.loadData();
+              });
+            }}
+          />
+        </SView>
 
-        {/* Mostrar selecciones */}
+        {/* ESTADO ACTUAL */}
         <SView padding={8}>
           <SText>
-            {this.state.selectedProductoServicio
-              ? `Producto: ${this.state.selectedProductoServicio}`
-              : "Producto no seleccionado"}
-          </SText>
-          <SText>
-            {this.state.selectedUnidadMedida
-              ? `Unidad: ${this.state.selectedUnidadMedida.nombre}`
-              : "Unidad no seleccionada"}
-          </SText>
-          <SText>
-            Descripción: {this.state.descripcionItem || "No hay descripción"}
+            📅 Inicio: {this.state.fecha_inicio ?? "N/A"} {"\n"}
+            📅 Fin: {this.state.fecha_fin ?? "N/A"} {"\n"}
+            🏪 Sucursal: {this.state.selectedSucursal?.nombre ?? "Todas"}
           </SText>
         </SView>
+
       </SPage>
     );
   }
