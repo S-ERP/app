@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Reporte de Ventas</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f9;
+        margin: 0;
+        padding: 20px;
+    }
+    h1 {
+        text-align: center;
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    .card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .kpi {
+        font-size: 28px;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>📊 Reporte de Ventas - 12 Sucursales</h1>
+
+<div class="grid">
+    <div class="card">
+        <h3>Total Ventas</h3>
+        <div class="kpi">$125,430</div>
+    </div>
+
+    <div class="card">
+        <h3>Promedio Diario</h3>
+        <div class="kpi">$4,180</div>
+    </div>
+
+    <div class="card">
+        <h3>Mejor Sucursal</h3>
+        <div class="kpi">Sucursal 5</div>
+    </div>
+</div>
+
+<br>
+
+<div class="grid">
+    <div class="card">
+        <h3>Ventas por Día</h3>
+        <canvas id="ventasDia"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Ventas por Mes</h3>
+        <canvas id="ventasMes"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Métodos de Pago</h3>
+        <canvas id="metodosPago"></canvas>
+    </div>
+</div>
+
+<script>
+// Ventas por día
+new Chart(document.getElementById('ventasDia'), {
+    type: 'line',
+    data: {
+        labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+        datasets: [{
+            label: 'Ventas',
+            data: [1200, 1900, 3000, 2500, 3200, 4000, 2800],
+            borderColor: '#3498db',
+            fill: false
+        }]
+    }
+});
+
+// Ventas por mes
+new Chart(document.getElementById('ventasMes'), {
+    type: 'bar',
+    data: {
+        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+        datasets: [{
+            label: 'Ventas',
+            data: [15000, 18000, 22000, 20000, 25000, 27000],
+            backgroundColor: '#2ecc71'
+        }]
+    }
+});
+
+// Métodos de pago
+new Chart(document.getElementById('metodosPago'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Efectivo', 'Tarjeta', 'Transferencia', 'QR'],
+        datasets: [{
+            data: [40, 30, 15, 15],
+            backgroundColor: ['#e74c3c','#3498db','#f1c40f','#9b59b6']
+        }]
+    }
+});
+</script>
+
+</body>
+</html>

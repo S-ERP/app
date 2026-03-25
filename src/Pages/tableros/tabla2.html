@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Reporte de Ventas por Sucursal</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 20px;
+}
+h1 {
+    text-align: center;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.kpi {
+    font-size: 26px;
+    font-weight: bold;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+th {
+    background: #2c3e50;
+    color: white;
+}
+.rank-1 { color: gold; font-weight: bold; }
+.rank-2 { color: silver; }
+.rank-3 { color: #cd7f32; }
+</style>
+</head>
+
+<body>
+
+<h1>📊 Reporte de Ventas - 12 Sucursales</h1>
+
+<div class="grid">
+    <div class="card">
+        <h3>Total Ventas</h3>
+        <div class="kpi">$125,430</div>
+    </div>
+
+    <div class="card">
+        <h3>Mejor Sucursal</h3>
+        <div class="kpi">Sucursal 5</div>
+    </div>
+
+    <div class="card">
+        <h3>Promedio por Sucursal</h3>
+        <div class="kpi">$10,452</div>
+    </div>
+</div>
+
+<br>
+
+<div class="grid">
+    <div class="card">
+        <h3>Ventas por Sucursal</h3>
+        <canvas id="ventasSucursal"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Ranking de Sucursales</h3>
+        <table>
+            <tr><th>#</th><th>Sucursal</th><th>Ventas</th></tr>
+            <tr class="rank-1"><td>1</td><td>Sucursal 5</td><td>$15,000</td></tr>
+            <tr class="rank-2"><td>2</td><td>Sucursal 2</td><td>$13,500</td></tr>
+            <tr class="rank-3"><td>3</td><td>Sucursal 8</td><td>$12,800</td></tr>
+            <tr><td>4</td><td>Sucursal 1</td><td>$11,200</td></tr>
+            <tr><td>5</td><td>Sucursal 3</td><td>$10,900</td></tr>
+        </table>
+    </div>
+</div>
+
+<br>
+
+<div class="grid">
+    <div class="card">
+        <h3>Ventas por Día</h3>
+        <canvas id="ventasDia"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Ventas por Mes</h3>
+        <canvas id="ventasMes"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Métodos de Pago</h3>
+        <canvas id="metodosPago"></canvas>
+    </div>
+</div>
+
+<script>
+// Datos de sucursales
+const sucursales = [
+    'Suc 1','Suc 2','Suc 3','Suc 4','Suc 5','Suc 6',
+    'Suc 7','Suc 8','Suc 9','Suc 10','Suc 11','Suc 12'
+];
+
+const ventasSuc = [11200,13500,10900,9800,15000,8700,9200,12800,10100,9500,8900,8700];
+
+// Gráfico sucursales
+new Chart(document.getElementById('ventasSucursal'), {
+    type: 'bar',
+    data: {
+        labels: sucursales,
+        datasets: [{
+            label: 'Ventas',
+            data: ventasSuc,
+            backgroundColor: '#3498db'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false }
+        }
+    }
+});
+
+// Ventas por día
+new Chart(document.getElementById('ventasDia'), {
+    type: 'line',
+    data: {
+        labels: ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'],
+        datasets: [{
+            label: 'Ventas',
+            data: [1200,1900,3000,2500,3200,4000,2800],
+            borderColor: '#2ecc71',
+            fill: false
+        }]
+    }
+});
+
+// Ventas por mes
+new Chart(document.getElementById('ventasMes'), {
+    type: 'bar',
+    data: {
+        labels: ['Ene','Feb','Mar','Abr','May','Jun'],
+        datasets: [{
+            label: 'Ventas',
+            data: [15000,18000,22000,20000,25000,27000],
+            backgroundColor: '#9b59b6'
+        }]
+    }
+});
+
+// Métodos de pago
+new Chart(document.getElementById('metodosPago'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Efectivo','Tarjeta','Transferencia','QR'],
+        datasets: [{
+            data: [40,30,15,15],
+            backgroundColor: ['#e74c3c','#3498db','#f1c40f','#8e44ad']
+        }]
+    }
+});
+</script>
+
+</body>
+</html>
