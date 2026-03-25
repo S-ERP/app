@@ -52,7 +52,8 @@ export default class cuentas_anidadas extends React.Component {
             cuentas: [],
             search: "",
             hoveredItem: null,
-            selectedItem: null
+            selectedItem: null,
+            
         };
     }
 
@@ -140,7 +141,18 @@ export default class cuentas_anidadas extends React.Component {
         const isHover = this.state.hoveredItem === item.codigo;
         const nombreCuenta = `CUENTA: ${item.descripcion ?? 'Sin nombre'}`;
         const options = [];
+        if (this.props.select) {
+            options.push({
+                label: 'Seleccionar',
+                icon: <SIconApp name="vineta1" fill={STheme.color.success} />,
+                onPress: () => {
 
+                    if (this.props.select) {
+                        this.props.select(item);
+                    }
+                },
+            })
+        }
 
         if (MDL.rolesPermisos.getPermiso({ url: "/conta/cuentas", permiso: 'new' })) {
             options.push({
@@ -240,7 +252,7 @@ export default class cuentas_anidadas extends React.Component {
                                 this.loadData();
                             }).catch(error => {
                                 console.error("Error al eliminar cuenta contable:", error);
-                                 SNotification.send({
+                                SNotification.send({
                                     title: "Error",
                                     body: "Error al eliminar cuenta contable.",
                                     color: STheme.color.danger,
@@ -254,32 +266,6 @@ export default class cuentas_anidadas extends React.Component {
                 },
             })
         }
-
-
-
-        // options.push({
-        //     label: 'Eliminar',
-        //     icon: <SIconApp name="Delete" fill={STheme.color.text} />,
-        //     onPress: () => {
-        //         SPopup.confirm({
-        //             title: "Eliminar Cuenta Contable",
-        //             message: "¿Estás seguro de eliminar la cuenta contable?",
-        //             onPress: () => {
-        //                 MDL.contabilidad.cuenta_contable.save({
-        //                     key: item.key,
-        //                     estado: 0,
-        //                 }).then(e => {
-        //                     this.loadData();
-        //                 }).catch(error => {
-        //                     console.error("Error al eliminar cuenta contable:", error);
-
-        //                 })
-        //             }
-
-        //         })
-        //     },
-        // });
-
 
         // 🔥 PRIORIDAD DE COLORES
         let backgroundColor = "transparent";
@@ -506,7 +492,7 @@ export default class cuentas_anidadas extends React.Component {
         const currentTree = this.state.search ? filteredTree : tree;
 
         return (
-            <SPage title={"Plan de cuentas anidadas"} >
+            <SPage title={"Plan de cuentas anidadas"} hidden={this.props.select ? true : false} >
                 <SView col={"xs-12"} row padding={15}>
                     <SView col={"xs-12"} style={{ alignItems: "flex-end" }}>
                         <SView style={{ justifyContent: "space-between" }} row>

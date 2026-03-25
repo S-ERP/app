@@ -1,8 +1,11 @@
 import React, { Component } from "react";
-import { SPage, SText, SView } from "servisofts-component";
+import { SHr, SInput, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../MDL";
 import FiltroSelector from "./productos/modelo/Components/FiltroSelector";
 import FechaFullFilter from "../Components/FechaFullFilter";
+import CuentasAnidadas from "../Pages/conta/cuentas_anidadas";
+import { ScrollView } from "react-native";
+
 
 export default class FacturaFormSimple extends Component {
   state = {
@@ -12,6 +15,7 @@ export default class FacturaFormSimple extends Component {
     descripcionItem: "",
     fecha_inicio: null,
     fecha_fin: null,
+    cuentaSeleccionada: null
   };
 
   loadData() {
@@ -26,7 +30,7 @@ export default class FacturaFormSimple extends Component {
 
         {/* FILTRO FECHAS */}
         <FechaFullFilter
-          key_opciones="este_mes" 
+          key_opciones="este_mes"
           fecha_inicio={this.state.fecha_inicio}
           fecha_fin={this.state.fecha_fin}
           onChange={e => {
@@ -74,6 +78,64 @@ export default class FacturaFormSimple extends Component {
           </SText>
         </SView>
 
+        <SHr height={30} />
+
+        {/* POPUP CUENTAS ANIDADOS */}
+        <SView
+          col={"xs-12 sm-8 lg-6"}
+          row
+          center
+          // style={{ flexWrap: "wrap", gap: 12 }}
+        >
+          <SInput
+            label={"Plan de cuentas"}
+            ref={ref => this.inputRef = ref}
+            customStyle={"erp"}
+            value={
+              this.state.cuentaSeleccionada
+                ? `${this.state.cuentaSeleccionada.codigo} - ${this.state.cuentaSeleccionada.descripcion}`
+                : ""
+            }
+            onChange={(e) => {
+              console.log("Cuentas ", e);
+            }}
+
+            onPress={(e) => {
+              SPopup.open({
+                key: "popup-cuentas",
+                content: <SView 
+                style={{
+                  width: "100%",
+                  height: 500,
+                  maxWidth: 1000,
+                  borderRadius: 8,
+                  borderWidth: 1,
+                  borderColor: STheme.color.card,
+                  backgroundColor: STheme.color.background,
+                  overflow:"hidden"
+                  
+                }}>
+                  <ScrollView 
+                    ref={ref => this.scrollViewVertical = ref}
+                    contentContainerStyle={{
+                      minHeight: "100%",
+                    }}
+                  >
+                    <CuentasAnidadas
+                      select={(cuentaSelect) => {
+                        console.log("SELECCIONADO:", cuentaSelect)
+                        this.setState({
+                          cuentaSeleccionada: cuentaSelect
+                        });
+                        SPopup.close("popup-cuentas");
+                      }}
+                    />
+                  </ScrollView>
+                </SView>
+              });
+            }}
+          />
+        </SView>
       </SPage>
     );
   }
