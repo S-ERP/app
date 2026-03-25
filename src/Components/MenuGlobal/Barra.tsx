@@ -214,7 +214,13 @@ export default class Barra extends React.Component {
                         <Page label={"Productos"} url={"/tableros/tabla_productos"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Inventario"} url={"/tableros/tabla_inventario"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Valor de Stock"} url={"/tableros/tabla_valor_stock"} permiso="ver" icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
-                    </Page>
+                        
+                        
+                        <Page label={"Tabla Ventas_x_Mes"} url={"/tableros/tabla_ventas_mes"}   icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Tabla Ventas_x_dia"} url={"/tableros/tabla_ventas_dia"}   icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Tabla Compras_x_dia"} url={"/tableros/tabla_compras_dia"}   icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                        <Page label={"Tabla Compras_x_Mes"} url={"/tableros/tabla_compras_mes"}   icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                     </Page>
 
                     <Page label={"Asistencias"}
                         permiso="page"
