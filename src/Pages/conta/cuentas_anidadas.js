@@ -7,6 +7,8 @@ import Config from "../../Config";
 import FloatMenu from "../../Components/FloatMenu";
 import SIconApp from "../../Assets/SIconApp";
 import CuentaContableForm from "./Components/CuentaContableForm";
+import AjusteTag from "./Components/AjusteTag";
+import AjusteTagInfoPopup from "./Components/AjusteInfoPopup";
 
 
 
@@ -28,6 +30,18 @@ export default class cuentas_anidadas extends React.Component {
     async loadData() {
         const resp = await MDL.contabilidad.getCuentas();
         const arr = Object.values(resp);
+
+        const ajustes = await MDL.contabilidad.getAjustes();
+        const empresa = await MDL.empresa.getFull();
+
+        this.setState({ ajustes: ajustes });
+        arr.map((cuenta) => {
+            if (cuenta.key_moneda) {
+                cuenta.moneda = empresa.monedas.find((m) => m.key == cuenta.key_moneda);
+            }
+            cuenta.ajustes = ajustes.filter((ajuste) => ajuste?.ajuste_empresa?.key_cuenta_contable == cuenta.key);
+        })
+
         this.setState({ cuentas: arr })
     }
 
@@ -127,42 +141,144 @@ export default class cuentas_anidadas extends React.Component {
         const nombreCuenta = `CUENTA: ${item.descripcion ?? 'Sin nombre'}`;
         const options = [];
 
-        options.push({
-            label: 'Editar',
-            icon: <SIconApp name="Edit" fill={STheme.color.warning} />,
-            onPress: () => {
-                // const cliente = { ...item, key_usuario: MDL.usuario.session?.key };
-                CuentaContableForm.open({
-                    cuenta_contable: item,
-                    onChange: (e) => {
-                        this.loadData();
-                    }
-                })
-            },
-        });
 
-        options.push({
-            label: 'Eliminar',
-            icon: <SIconApp name="Delete" fill={STheme.color.text} />,
-            onPress: () => {
-                SPopup.confirm({
-                    title: "Eliminar Cuenta Contable",
-                    message: "¿Estás seguro de eliminar la cuenta contable?",
-                    onPress: () => {
-                        MDL.contabilidad.cuenta_contable.save({
-                            key: item.key,
-                            estado: 0,
-                        }).then(e => {
+        if (MDL.rolesPermisos.getPermiso({ url: "/conta/cuentas", permiso: 'new' })) {
+            options.push({
+                label: 'Agregar sub cuenta',
+                icon: <SIconApp name="Add" />,
+                onPress: () => {
+                    const grafo = MDL.contabilidad.getCuentasGrafo(this.state.cuentas);
+                    const cuenta = grafo.find(n => n.codigo === item.codigo);
+                    const hijos = cuenta.childrens || [];
+
+                    let index = "01";
+                    let childSize = 0;
+                    if (hijos.length > 0) {
+                        index = hijos.length + 1
+                        if (index.length < 2) {
+                            index = "0" + index
+                        }
+                        childSize = hijos[0].codigo.length
+                    } else {
+                        // BHuscar
+                        const niveles = MDL.contabilidad.armarNiveles(this.state.cuentas);
+                        const lvlPadre = item.codigo.length;
+                        const indexLvl = niveles.findIndex(n => n == lvlPadre) + 1;
+                        if (indexLvl > 0 && niveles[indexLvl]) {
+                            childSize = niveles[indexLvl];
+                        }
+                        console.log("niveles", childSize)
+                    }
+                    let codigo = item.codigo + "." + index
+
+                    if (codigo.length < childSize) {
+                        codigo = item.codigo + "." + "0".repeat(childSize - codigo.length) + index;
+                    }
+
+                    let key_moneda = cuenta.key_moneda;
+                    if (!key_moneda) {
+                        let cc = cuenta;
+                        while (cc.parent) {
+                            cc = cc.parent;
+                            key_moneda = cc.key_moneda;
+                            if (key_moneda) break;
+                        }
+                    }
+
+                    // const hermanas = e.dinamicTable.data.filter(r => r.codigo.startsWith(e.row.codigo + "."));
+                    CuentaContableForm.open({
+                        cuenta_contable: {
+                            tipo: item.tipo,
+                            codigo: codigo,
+                            descripcion: "",
+                            key_moneda: key_moneda,
+                        },
+                        onChange: (e) => {
                             this.loadData();
-                        }).catch(error => {
-                            console.error("Error al eliminar cuenta contable:", error);
+                            // this.loadData();
+                        }
+                    })
+                },
+            })
+        }
 
-                        })
-                    }
+        if (MDL.rolesPermisos.getPermiso({ url: "/conta/cuentas", permiso: 'edit' })) {
+            options.push({
+                label: 'Editar',
+                icon: <SIconApp name="Edit" fill={STheme.color.warning} />,
+                onPress: () => {
+                    // const cliente = { ...item, key_usuario: MDL.usuario.session?.key };
+                    CuentaContableForm.open({
+                        cuenta_contable: item,
+                        onChange: (e) => {
+                            this.loadData();
+                        }
+                    })
+                },
+            })
+        }
 
-                })
-            },
-        });
+        if (MDL.rolesPermisos.getPermiso({ url: "/conta/cuentas", permiso: 'delete' })) {
+            options.push({
+                label: 'Eliminar',
+                icon: <SIconApp name="Delete" fill={STheme.color.text} />,
+                onPress: () => {
+                    SPopup.confirm({
+                        title: "Eliminar Cuenta Contable",
+                        message: "¿Estás seguro de eliminar la cuenta contable?",
+                        onPress: () => {
+                            MDL.contabilidad.cuenta_contable.save({
+                                key: item.key,
+                                estado: 0,
+                            }).then(e => {
+                                SNotification.send({
+                                    title: "Cuenta eliminada",
+                                    body: "La cuenta contable ha sido eliminada correctamente.",
+                                    color: STheme.color.success,
+                                    time: 3000,
+                                })
+                                this.loadData();
+                            }).catch(error => {
+                                console.error("Error al eliminar cuenta contable:", error);
+                                 SNotification.send({
+                                    title: "Error",
+                                    body: "Error al eliminar cuenta contable.",
+                                    color: STheme.color.danger,
+                                    time: 3000,
+                                })
+
+                            })
+                        }
+
+                    })
+                },
+            })
+        }
+
+
+
+        // options.push({
+        //     label: 'Eliminar',
+        //     icon: <SIconApp name="Delete" fill={STheme.color.text} />,
+        //     onPress: () => {
+        //         SPopup.confirm({
+        //             title: "Eliminar Cuenta Contable",
+        //             message: "¿Estás seguro de eliminar la cuenta contable?",
+        //             onPress: () => {
+        //                 MDL.contabilidad.cuenta_contable.save({
+        //                     key: item.key,
+        //                     estado: 0,
+        //                 }).then(e => {
+        //                     this.loadData();
+        //                 }).catch(error => {
+        //                     console.error("Error al eliminar cuenta contable:", error);
+
+        //                 })
+        //             }
+
+        //         })
+        //     },
+        // });
 
 
         // 🔥 PRIORIDAD DE COLORES
@@ -225,7 +341,23 @@ export default class cuentas_anidadas extends React.Component {
                         <SText numberOfLines={1}>
                             {item.codigo} - {item.descripcion || item.tipo}
                         </SText>
+                        <SView width={15} />
+                        <SView style={{ alignItems: "center" }}>
+                            {item?.ajustes.map((ajuste, index) => {
+                                return <AjusteTag allowDrag ajuste={ajuste} onPress={() => {
+                                    AjusteTagInfoPopup.open({
+                                        ajuste: ajuste,
+                                        onPress: () => {
+                                            this.loadData();
+                                        }
+
+                                    })
+                                }} />
+                            })}
+                        </SView>
                     </SView>
+
+
 
                     <SView style={{ width: 80, alignItems: "center" }}>
                         <SText>0</SText>
@@ -376,22 +508,6 @@ export default class cuentas_anidadas extends React.Component {
         return (
             <SPage title={"Plan de cuentas anidadas"} >
                 <SView col={"xs-12"} row padding={15}>
-                    <SView width={25} height={25} style={{
-                        position: "absolute",
-                        top: 22,
-                        left: 20
-                    }}>
-                        <SIconApp name="Search" width={25} height={25} fill={STheme.color.text} />
-                    </SView>
-                    <SInput
-                        placeholder={"Buscar cuenta..."}
-                        value={this.state.search}
-                        onChangeText={(tx) => this.handleSearch(tx)}
-                        style={{
-                            paddingLeft: 32
-                        }}
-                    />
-                    <SHr height={10} />
                     <SView col={"xs-12"} style={{ alignItems: "flex-end" }}>
                         <SView style={{ justifyContent: "space-between" }} row>
                             <SView onPress={() => this.expandAll(currentTree)} row card padding={8}>
@@ -408,6 +524,23 @@ export default class cuentas_anidadas extends React.Component {
                         </SView>
                     </SView>
                     <SHr height={10} />
+                    <SView width={25} height={25} style={{
+                        position: "absolute",
+                        top: 67,
+                        left: 20
+                    }}>
+                        <SIconApp name="Search" width={25} height={25} fill={STheme.color.text} />
+                    </SView>
+                    <SInput
+                        placeholder={"Buscar cuenta..."}
+                        value={this.state.search}
+                        onChangeText={(tx) => this.handleSearch(tx)}
+                        style={{
+                            paddingLeft: 32
+                        }}
+                    />
+                    <SHr height={10} />
+
                     {/* {tree.map(item => this.renderItem(item))} */}
                     {filteredTree.map(item => this.renderItem(item))}
                 </SView>
