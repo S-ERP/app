@@ -6,7 +6,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import FechaFullFilter2 from "../../Components/FechaFullFilter2";
 import SCharts from "servisofts-charts";
 
-export default class TablaAlvaro extends React.Component {
+export default class tabla_alvaro2 extends React.Component {
     state = {
         loadingVentasPorDia: true,
         dataVentasPorDia: [],
