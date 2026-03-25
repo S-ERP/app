@@ -150,7 +150,7 @@ export default class FechaFullFilter2 extends Component {
                     }}
                 >
                     <SView row center style={{ gap: 8, flexWrap: 'nowrap', alignItems: 'center' }}>
-                        <SView width={"100%"} height={30} style={{ position: 'relative' }}>
+                        <SView flex={1} height={30} style={{ position: 'relative' }}>
                             <SText fontSize={9} color={STheme.color.lightGray} bold style={{ position: 'absolute', top: -6, left: 0 }}>
                                 {filtroLabel}
                             </SText>
@@ -178,7 +178,8 @@ export default class FechaFullFilter2 extends Component {
                                     style={{
                                         fontSize: 13, color: STheme.color.text, paddingHorizontal: 10, backgroundColor: STheme.color.card,
                                         opacity: 0.6,
-                                        height: 40
+                                        height: 40,
+                                        width: '100%'
                                     }}
                                     options={this.state.opciones.map(f => ({ label: f.description, value: f.key, data: f }))}
                                     onSelect={val => {
