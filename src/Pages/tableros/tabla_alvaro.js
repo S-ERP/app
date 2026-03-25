@@ -1,5 +1,5 @@
 import React from "react";
-import { SPage, SView, SText, SHr, STheme, SMath } from "servisofts-component";
+import { SPage, SView, SText, SHr, SMath } from "servisofts-component";
 import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
@@ -56,26 +56,11 @@ export default class TablaAlvaro extends React.Component {
 
             const raw = Array.isArray(res) ? res : (res?.data ?? res?.result ?? []);
 
-            // Transformar array de dias a objeto para acceso fácil
-            // const dataVentasPorDia = raw.map(v => {
-            //     const diasObj = {};
-            //     (v.dias || []).forEach(d => {
-            //         diasObj[d.dia] = {
-            //             cantidad_ventas: d.cantidad_ventas,
-            //             monto_total: d.monto_total
-            //         };
-            //     });
-            //     return {
-            //         key_sucursal: v.key_sucursal,
-            //         descripcion: sucursalesFiltradas.find(s => s.key === v.key_sucursal)?.descripcion ?? "N/A",
-            //         dias: diasObj
-            //     };
-            // });
-
+            // Mantener array de dias tal cual
             const dataVentasPorDia = raw.map(v => ({
                 key_sucursal: v.key_sucursal,
                 descripcion: sucursalesFiltradas.find(s => s.key === v.key_sucursal)?.descripcion ?? "N/A",
-                dias: v.dias || [], // mantener array tal cual
+                dias: v.dias || [],
             }));
 
             this.setState({
@@ -166,8 +151,7 @@ export default class TablaAlvaro extends React.Component {
                                             )}
                                         />
 
-
-
+                                        {/* Columnas por cada día */}
                                         {...dias.map(d => (
                                             <DinamicTable.Col
                                                 key={`dia-${d.dia}`}
@@ -192,33 +176,68 @@ export default class TablaAlvaro extends React.Component {
                                                         </SView>
                                                     );
                                                 }}
+                                                // footerComponent={() => {
+                                                //     const total = dataVentasPorDia.reduce((acc, row) => {
+                                                //         const diaObj = row.dias.find(x => x.dia === d.dia);
+                                                //         return acc + (diaObj?.monto_total || 0);
+                                                //     }, 0);
+                                                //     return (
+                                                //         <SView style={{ alignItems: "center" }}>
+                                                //             {total > 0 ? <SText fontSize={10}>{`Bs. ${SMath.formatMoney(total)}`}</SText> : null}
+                                                //         </SView>
+                                                //     );
+                                                // }}
                                                 footerComponent={() => {
-                                                    const total = dataVentasPorDia.reduce((acc, row) => {
+                                                    const totalCantidad = dataVentasPorDia.reduce((acc, row) => {
+                                                        const diaObj = row.dias.find(x => x.dia === d.dia);
+                                                        return acc + (diaObj?.cantidad_ventas || 0);
+                                                    }, 0);
+                                                    const totalMonto = dataVentasPorDia.reduce((acc, row) => {
                                                         const diaObj = row.dias.find(x => x.dia === d.dia);
                                                         return acc + (diaObj?.monto_total || 0);
                                                     }, 0);
                                                     return (
                                                         <SView style={{ alignItems: "center" }}>
-                                                            {total > 0 ? <SText fontSize={10}>{`Bs. ${SMath.formatMoney(total)}`}</SText> : null}
+                                                            {totalCantidad > 0 || totalMonto > 0 ? (
+                                                                <>
+                                                                    <SText fontSize={10}>{`${totalCantidad} ventas`}</SText>
+                                                                    <SText fontSize={10}>{`Bs. ${SMath.formatMoney(totalMonto)}`}</SText>
+                                                                </>
+                                                            ) : null}
                                                         </SView>
                                                     );
                                                 }}
                                             />
                                         ))}
-                                        {/* Columna de total por sucursal */}
+
+                                        {/* Columna total por sucursal */}
                                         <DinamicTable.Col
                                             key="total_sucursal"
                                             label="Total"
                                             width={80}
-                                            data={e => Object.values(e.row.dias).reduce((acc, d) => acc + (d.monto_total || 0), 0)}
+                                            data={e => e.row.dias.reduce((acc, d) => acc + (d.monto_total || 0), 0)}
                                             customComponent={(e) => {
-                                                const total = Object.values(e.row.dias).reduce((acc, d) => acc + (d.monto_total || 0), 0);
+                                                const totalCantidad = e.row.dias.reduce((acc, d) => acc + (d.cantidad_ventas || 0), 0);
+                                                const totalMonto = e.row.dias.reduce((acc, d) => acc + (d.monto_total || 0), 0);
                                                 return (
                                                     <SView style={{ alignItems: "center" }}>
-                                                        {total > 0 ? <SText fontSize={10}>{`Bs. ${SMath.formatMoney(total)}`}</SText> : null}
+                                                        {totalCantidad > 0 || totalMonto > 0 ? (
+                                                            <>
+                                                                <SText fontSize={10}>{`${totalCantidad} ventas`}</SText>
+                                                                <SText fontSize={10}>{`Bs. ${SMath.formatMoney(totalMonto)}`}</SText>
+                                                            </>
+                                                        ) : null}
                                                     </SView>
                                                 );
                                             }}
+                                        // customComponent={(e) => {
+                                        //     const total = e.row.dias.reduce((acc, d) => acc + (d.monto_total || 0), 0);
+                                        //     return (
+                                        //         <SView style={{ alignItems: "center" }}>
+                                        //             {total > 0 ? <SText fontSize={10}>{`Bs. ${SMath.formatMoney(total)}`}</SText> : null}
+                                        //         </SView>
+                                        //     );
+                                        // }}
                                         />
 
                                     </DinamicTable>
