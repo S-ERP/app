@@ -1,6 +1,6 @@
 import React from "react";
 import { TextStyle, View, ViewStyle } from "react-native";
-import { SHr, SInput, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
+import { SHr, SInput, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../../MDL";
 import tipo from "../../whatsapp/tipo";
 
@@ -58,11 +58,24 @@ export default class CuentaContableForm extends React.Component<Props> {
         console.log("CuentaContableForm.submit", cuenta_contable);
         MDL.contabilidad.cuenta_contable.save(cuenta_contable).then(e => {
             SPopup.close("CuentaContableForm");
+            SNotification.send({
+                title: "Registro exitoso",
+                body: "Sub cuenta agregada correctamente",
+                color: STheme.color.success,
+                time: 3000,
+            })
             if (this.props.onChange) {
                 this.props.onChange(e);
             }
+
         }).catch(e => {
             console.error("Error saving cuenta_contable:", e);
+             SNotification.send({
+                title: "Error",
+                body: "Sub cuenta no agregada correctamente",
+                color: STheme.color.danger,
+                time: 3000,
+            })
             // SPopup.alert({
             //     title: "Error",
             //     message: "No se pudo guardar la cuenta contable. Intente nuevamente.",
@@ -89,7 +102,7 @@ export default class CuentaContableForm extends React.Component<Props> {
                 backgroundColor: STheme.color.background,
             }}>
             <SView flex col={"xs-12"} withoutFeedback padding={16} center>
-                <SText fontSize={14} bold>{"Editar la cuenta"}</SText>
+                <SText fontSize={14} bold>{"Datos de la cuenta"}</SText>
                 <SHr height={8} />
                 <SView col={"xs-12"} row>
                     <SView width={80}>
