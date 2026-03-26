@@ -1,5 +1,5 @@
 import React from "react";
-import { SDate, SImage, SMath, SNavigation, SPage, SText, STheme, SView } from "servisofts-component";
+import { SDate, SImage, SMath, SNavigation, SNotification, SPage, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import { DinamicTable } from "servisofts-table";
 import Config from "../../Config";
@@ -96,7 +96,8 @@ export default class root extends React.Component {
                         SNavigation.navigate("/venta/profile2", { pk: e.row.key_venta });
                     }
                 },
-                {
+
+                !e.row?.key_compra && {
                     label: "Generar Compra",
                     icon: <SIconApp name="Menu" />,
                     onPress: () => {
@@ -106,8 +107,33 @@ export default class root extends React.Component {
                             type: "generarCompra",
                             key_costo: e.row.key,
                         })
+                            .then(respuesta => {
+                                console.log("Respuesta del servidor:", respuesta); // Para debug
+                                SNotification.send({
+                                    title: "Compra generada",
+                                    body: "La compra se generó correctamente.",
+                                    color: STheme.color.success,
+                                    time: 5000,
+                                });
+
+                                this.table.loadData();
+                                this.forceUpdate();
+
+                            })
+                            .catch(mensaje => {
+                                console.error("Error al actualizar:", JSON.stringify(mensaje.error)); // Para debug
+                                SNotification.send({
+                                    title: "Error al generar compra",
+                                    body: JSON.stringify(mensaje.error),
+                                    color: STheme.color.danger,
+                                    time: 5000,
+                                });
+                            });
                     }
                 }
+
+
+
             ]
         })
     }
@@ -204,29 +230,30 @@ export default class root extends React.Component {
                 {...Config.table.applyTheme()}
                 loadData={this.loadData}
                 onSelect={this.onSelect.bind(this)}
+                ref={ref => this.table = ref}
 
                 loadInitialState={async () => ({
                     sorters: [{ key: "fecha_on", order: "desc", type: "date" }],
                     cols: {
-                        // "key_compra_venta_detalle": { hidden: true },
+                        "key_compra_venta_detalle": { hidden: true },
                         "key_asiento_contable": { hidden: true },
                         "key_compra": { hidden: true },
-                        // "key": { hidden: true },
+                        "key": { hidden: true },
                         "key_costo": { hidden: true }
                     }
                 })}
             >
                 <DinamicTable.Col key="index" label="#" width={40} data={(e) => e.index + 1} />
+                <DinamicTable.Col key={"descripcion"} label="Descripción" data={e => e.row.descripcion} width={300} />
                 <DinamicTable.Col key={"key"} label="key" data={e => e.row.key} />
                 <DinamicTable.Col key={"key_asiento_contable"} width={140} label="key_asiento_contable" data={e => e.row.key_asiento_contable} />
                 <DinamicTable.Col key={"key_compra"} label="key_compra" data={e => e.row.key_compra} />
                 <DinamicTable.Col key={"key_compra_venta_detalle"} label="key_compra_venta" data={e => e.row.key_compra_venta_detalle} />
                 <DinamicTable.Col key={"key_costo"} label="key_costo" data={e => e.row.key_costo} />
-
+                <DinamicTable.Col key={"es_compra_generada"} label="es_compra_generada" data={e => e.row.es_compra_generada} />
                 <DinamicTable.Col key="key_sucursal" label="Sucursal" width={130} data={(e) => e.row?.key_sucursal ?? ""} customComponent={e => this.renderSucursal(e.row?.sucursal)} />
                 <DinamicTable.Col key="key_almacen" label="Almacen" width={130} data={(e) => e.row?.key_almacen ?? ""} customComponent={e => this.renderAlmacen(e.row?.almacen)} />
                 <DinamicTable.Col key="key_cliente" label="Cliente" width={140} data={(e) => e.row?.key_cliente ?? ""} customComponent={e => this.renderCliente(e.row?.cliente)} />
-                <DinamicTable.Col key={"descripcion"} label="Descripción" data={e => e.row.descripcion} width={300} />
                 <DinamicTable.Col key={"monto"} label='Monto' width={100}
                     data={(e) => e.row?.monto} wrap
                     customComponent={e =>
@@ -237,6 +264,32 @@ export default class root extends React.Component {
 
                 <DinamicTable.Col key={"tipo"} label="Tipo" data={e => e.row.tipo} width={60} />
                 <DinamicTable.Col key={"tipo_pago"} label="Tipo pago" data={e => e.row.tipo_pago} width={80} />
+
+
+                <DinamicTable.Col
+                    key="_estado"
+                    label="Estado"
+                    width={100}
+                    cellStyle={{ alignItems: "center" }}
+                    data={e => e.row.key_compra}
+                    customComponent={e => {
+                        const keyCompra = e.row?.key_compra;
+                        let color = STheme.color.gray;
+
+                        if (keyCompra != null && keyCompra !== "") {
+                            color = STheme.color.success;
+                        }
+
+                        return (
+                            <SView backgroundColor={color} width={60} height={18} borderRadius={4} center>
+                                <SText fontSize={11} color="#fff" bold>
+                                    {(keyCompra ? "COMPRA GENERADA" : "").toUpperCase()}
+                                </SText>
+                            </SView>
+                        );
+                    }}
+                />
+
                 <DinamicTable.Col key={"tipo_costo_descripcion"} label="Tipo Costo" data={e => e.row.tipoCosto?.descripcion} />
                 <DinamicTable.Col key="key_modelo " label="Modelo" width={180} data={(e) => e.row?.key_modelo ?? ""} customComponent={e => this.renderModelo(e.row?.modelo)} />
                 <DinamicTable.Col key={"fecha_on"} label="F.Creación" width={110} dataType="date" data={e => new SDate(e.row?.fecha_on, "yyyy-MM-ddThh:mm:ss").date} textStyle={{ fontSize: 12, color: STheme.color.lightGray, }} dateFormat="yyyy-MM-dd hh:mm" />
