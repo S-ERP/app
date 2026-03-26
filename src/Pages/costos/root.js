@@ -66,6 +66,13 @@ export default class root extends React.Component {
                     icon: <SIconApp name="Menu" />,
                     onPress: () => SNavigation.navigate("/venta/profile2", { pk: e.row.key_venta })
                 },
+
+                // poner iconos correspondiente y color
+                e.row?.key_compra && {
+                    label: "Ver Compra generada",
+                    icon: <SIconApp name="Menu" />,
+                    onPress: () => SNavigation.navigate("/venta/profile2", { pk: e.row.key_compra })
+                },
                 !e.row?.key_compra && {
                     label: "Generar Compra",
                     icon: <SIconApp name="Menu" />,
@@ -206,7 +213,6 @@ export default class root extends React.Component {
                     <DinamicTable.Col key="key_compra" label="key_compra" data={e => e.row.key_compra} />
                     <DinamicTable.Col key="key_compra_venta_detalle" label="key_compra_venta" data={e => e.row.key_compra_venta_detalle} />
                     <DinamicTable.Col key="key_costo" label="key_costo" data={e => e.row.key_costo} />
-                    {/* <DinamicTable.Col key="es_compra_generada" label="es_compra_generada" data={e => e.row.es_compra_generada} /> */}
                     <DinamicTable.Col key="key_sucursal" label="Sucursal" width={130} data={e => e.row?.key_sucursal ?? ""} customComponent={e => this.renderSucursal(e.row?.sucursal)} />
                     <DinamicTable.Col key="key_almacen" label="Almacen" width={130} data={e => e.row?.key_almacen ?? ""} customComponent={e => this.renderAlmacen(e.row?.almacen)} />
                     <DinamicTable.Col key="key_cliente" label="Cliente" width={140} data={e => e.row?.key_cliente ?? ""} customComponent={e => this.renderCliente(e.row?.cliente)} />
@@ -219,12 +225,12 @@ export default class root extends React.Component {
                     />
                     <DinamicTable.Col key="tipo" label="Tipo" data={e => e.row.tipo} width={60} />
                     <DinamicTable.Col key="tipo_pago" label="Tipo pago" data={e => e.row.tipo_pago} width={80} />
-                    <DinamicTable.Col key="_estado" label="Estado" width={150} cellStyle={{ alignItems: "center" }} data={e => e.row.key_compra}
+                    <DinamicTable.Col key="_estado" label="Estado" width={130} cellStyle={{ alignItems: "center" }} data={e => e.row.key_compra}
                         customComponent={e => {
                             const keyCompra = e.row?.key_compra;
-                            const color = keyCompra ? STheme.color.success : STheme.color.gray;
+                            const color = keyCompra ? STheme.color.success : "transparent";
                             return (
-                                <SView backgroundColor={color} width={60} height={18} borderRadius={4} center>
+                                <SView backgroundColor={color} width={120} height={18} borderRadius={4} center>
                                     <SText fontSize={11} color="#fff" bold>{(keyCompra ? "COMPRA GENERADA" : "").toUpperCase()}</SText>
                                 </SView>
                             );
