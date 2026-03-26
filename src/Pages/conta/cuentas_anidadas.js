@@ -9,6 +9,8 @@ import SIconApp from "../../Assets/SIconApp";
 import CuentaContableForm from "./Components/CuentaContableForm";
 import AjusteTag from "./Components/AjusteTag";
 import AjusteTagInfoPopup from "./Components/AjusteInfoPopup";
+import { ScrollView } from "react-native";
+import FloatButtom from "../../Components/FloatButtom";
 
 
 
@@ -53,7 +55,7 @@ export default class cuentas_anidadas extends React.Component {
             search: "",
             hoveredItem: null,
             selectedItem: null,
-            
+
         };
     }
 
@@ -163,38 +165,58 @@ export default class cuentas_anidadas extends React.Component {
                     const cuenta = grafo.find(n => n.codigo === item.codigo);
                     const hijos = cuenta.childrens || [];
 
-                    let index = "01";
-                    let childSize = 0;
+                    // let index = "01";
+                    // let childSize = 0;
+                    // if (hijos.length > 0) {
+                    //     index = hijos.length + 1
+                    //     if (index.length < 2) {
+                    //         index = "0" + index
+                    //     }
+                    //     childSize = hijos[0].codigo.length
+                    // } else {
+                    //     // BHuscar
+                    //     const niveles = MDL.contabilidad.armarNiveles(this.state.cuentas);
+                    //     const lvlPadre = item.codigo.length;
+                    //     const indexLvl = niveles.findIndex(n => n == lvlPadre) + 1;
+                    //     if (indexLvl > 0 && niveles[indexLvl]) {
+                    //         childSize = niveles[indexLvl];
+                    //     }
+                    //     console.log("niveles", childSize)
+                    // }
+                    // let codigo = item.codigo + "." + index
+
+                    // if (codigo.length < childSize) {
+                    //     codigo = item.codigo + "." + "0".repeat(childSize - codigo.length) + index;
+                    // }
+
+                    // 🔥 Generar código de subcuenta correctamente
+                    let codigo = "";
+
                     if (hijos.length > 0) {
-                        index = hijos.length + 1
-                        if (index.length < 2) {
-                            index = "0" + index
-                        }
-                        childSize = hijos[0].codigo.length
+                        // ordenar hijos para asegurar el último correcto
+                        hijos.sort((a, b) => this.compareCodigos(a, b));
+
+                        const lastChild = hijos[hijos.length - 1];
+
+                        // dividir el código en partes
+                        const parts = lastChild.codigo.split(".");
+
+                        // obtener el último segmento
+                        const lastIndex = parts[parts.length - 1];
+
+                        // incrementar respetando formato (con o sin ceros)
+                        const nextNumber = (parseInt(lastIndex) + 1)
+                            .toString()
+                            .padStart(lastIndex.length, "0");
+
+                        // reemplazar último segmento
+                        parts[parts.length - 1] = nextNumber;
+
+                        // unir nuevamente
+                        codigo = parts.join(".");
                     } else {
-                        // BHuscar
-                        const niveles = MDL.contabilidad.armarNiveles(this.state.cuentas);
-                        const lvlPadre = item.codigo.length;
-                        const indexLvl = niveles.findIndex(n => n == lvlPadre) + 1;
-                        if (indexLvl > 0 && niveles[indexLvl]) {
-                            childSize = niveles[indexLvl];
-                        }
-                        console.log("niveles", childSize)
-                    }
-                    let codigo = item.codigo + "." + index
-
-                    if (codigo.length < childSize) {
-                        codigo = item.codigo + "." + "0".repeat(childSize - codigo.length) + index;
-                    }
-
-                    let key_moneda = cuenta.key_moneda;
-                    if (!key_moneda) {
-                        let cc = cuenta;
-                        while (cc.parent) {
-                            cc = cc.parent;
-                            key_moneda = cc.key_moneda;
-                            if (key_moneda) break;
-                        }
+                        // 🔥 si no tiene hijos → primer hijo
+                        codigo = item.codigo + ".1";
                     }
 
                     // const hermanas = e.dinamicTable.data.filter(r => r.codigo.startsWith(e.row.codigo + "."));
@@ -203,9 +225,24 @@ export default class cuentas_anidadas extends React.Component {
                             tipo: item.tipo,
                             codigo: codigo,
                             descripcion: "",
-                            key_moneda: key_moneda,
+                            key_moneda: item.key_moneda,
                         },
                         onChange: (e) => {
+                            const newCuenta = e?.cuenta_contable || e;
+
+                            const parts = newCuenta.codigo.split(".");
+                            parts.pop(); // quitar el último nivel
+
+                            const parentCode = parts.join(".");
+
+                            this.setState(prev => ({
+                                selectedItem: newCuenta.codigo,
+                                openItems: {
+                                    ...prev.openItems,
+                                    [parentCode]: true // 👈 abre el padre
+                                }
+                            }));
+
                             this.loadData();
                             // this.loadData();
                         }
@@ -328,6 +365,17 @@ export default class cuentas_anidadas extends React.Component {
                             {item.codigo} - {item.descripcion || item.tipo}
                         </SText>
                         <SView width={15} />
+                        <SView style={{ alignItems: "center" }}>
+                            <SText clean style={{
+                                borderWidth: 1,
+                                borderColor: MDL.contabilidad.color_tipo[item.tipo],
+                                backgroundColor: MDL.contabilidad.color_tipo[item.tipo] + "55",
+                                padding: 3,
+                                borderRadius: 4,
+                                fontSize: 7
+                            }}>{item.tipo}</SText>
+                        </SView>
+                        <SView width={10} />
                         <SView style={{ alignItems: "center" }}>
                             {item?.ajustes.map((ajuste, index) => {
                                 return <AjusteTag allowDrag ajuste={ajuste} onPress={() => {
@@ -492,45 +540,189 @@ export default class cuentas_anidadas extends React.Component {
         const currentTree = this.state.search ? filteredTree : tree;
 
         return (
-            <SPage title={"Plan de cuentas anidadas"} hidden={this.props.select ? true : false} >
-                <SView col={"xs-12"} row padding={15} withoutFeedback>
-                    <SView col={"xs-12"} style={{ alignItems: "flex-end" }}>
+            // <SPage title={"Plan de cuentas anidadas"} hidden={this.props.select ? true : false} >
+            //     <SView col={"xs-12"} row padding={15} >
+            //         {/* Este bloque quiero que sea fijo cuando se haga scroll */}
+            //         <SView col={"xs-12"} >
+            //             <SView style={{ justifyContent: "space-between" }} row>
+            //                 <SView col={"xs-12 sm-8 md-8 lg-8 xl-8"}>
+            //                     <SView width={25} height={25} style={{
+            //                         position: "absolute",
+            //                         top: 5,
+            //                         left: 20
+            //                     }}>
+            //                         <SIconApp name="Search" width={25} height={25} fill={STheme.color.text} />
+            //                     </SView>
+            //                     <SInput
+            //                         placeholder={"Buscar cuenta..."}
+            //                         value={this.state.search}
+            //                         onChangeText={(tx) => this.handleSearch(tx)}
+            //                         style={{
+            //                             paddingLeft: 32
+            //                         }}
+            //                     />
+            //                 </SView>
+            //                 <SView width={10} />
+            //                 <SView row style={{ alignItems: "flex-end", marginTop: 5 }} >
+            //                     <SView onPress={() => this.expandAll(currentTree)} row card padding={8} >
+            //                         <SIconApp name="expand" width={15} height={15} fill={STheme.color.text} />
+            //                         <SView width={5} />
+            //                         <SText>Expandir</SText>
+            //                     </SView>
+            //                     <SView width={10} />
+            //                     <SView onPress={this.collapseAll} row card padding={8}>
+            //                         <SIconApp name="collapse" width={15} height={15} fill={STheme.color.text} />
+            //                         <SView width={5} />
+            //                         <SText>Colapsar</SText>
+            //                     </SView>
+            //                 </SView>
+
+            //             </SView>
+            //         </SView>
+
+            //         <SHr height={10} />
+
+
+            //         {/* En este bloque debería aparecer el scroll cuando la lista sea muy extensa verticalmente */}
+            //         <ScrollView
+            //             ref={ref => this.scrollViewVertical = ref}
+            //             contentContainerStyle={{
+            //                 minHeight: "100%",
+            //             }}
+            //         >
+            //             {filteredTree.map(item => this.renderItem(item))}
+            //         </ScrollView>
+            //     </SView>
+            // </SPage >
+            <SPage title={"Plan de cuentas anidadas"} hidden={this.props.select ? true : false}>
+
+                <SView col={"xs-12"} style={{ flex: 1 }}>
+
+                    {/* 🔹 HEADER FIJO */}
+                    <SView col={"xs-12"} padding={15}>
                         <SView style={{ justifyContent: "space-between" }} row>
-                            <SView onPress={() => this.expandAll(currentTree)} row card padding={8}>
-                                <SIconApp name="expand" width={15} height={15} fill={STheme.color.text} />
-                                <SView width={5} />
-                                <SText>Expandir</SText>
+
+                            <SView col={"xs-12 sm-8 md-8 lg-8 xl-8"}>
+                                <SView width={25} height={25} style={{
+                                    position: "absolute",
+                                    top: 5,
+                                    left: 20
+                                }}>
+                                    <SIconApp name="Search" width={25} height={25} fill={STheme.color.text} />
+                                </SView>
+
+                                <SInput
+                                    placeholder={"Buscar cuenta..."}
+                                    value={this.state.search}
+                                    onChangeText={(tx) => this.handleSearch(tx)}
+                                    style={{ paddingLeft: 32 }}
+                                />
                             </SView>
+
                             <SView width={10} />
-                            <SView onPress={this.collapseAll} row card padding={8}>
-                                <SIconApp name="collapse" width={15} height={15} fill={STheme.color.text} />
-                                <SView width={5} />
-                                <SText>Colapsar</SText>
+
+                            <SView row style={{ alignItems: "flex-end", marginTop: 5 }}>
+                                <SView onPress={() => this.expandAll(currentTree)} row card padding={8}>
+                                    <SIconApp name="expand" width={15} height={15} fill={STheme.color.text} />
+                                    <SView width={5} />
+                                    <SText>Expandir</SText>
+                                </SView>
+
+                                <SView width={10} />
+
+                                <SView onPress={this.collapseAll} row card padding={8}>
+                                    <SIconApp name="collapse" width={15} height={15} fill={STheme.color.text} />
+                                    <SView width={5} />
+                                    <SText>Colapsar</SText>
+                                </SView>
                             </SView>
+
                         </SView>
                     </SView>
-                    <SHr height={10} />
-                    <SView width={25} height={25} style={{
-                        position: "absolute",
-                        top: 67,
-                        left: 20
-                    }}>
-                        <SIconApp name="Search" width={25} height={25} fill={STheme.color.text} />
-                    </SView>
-                    <SInput
-                        placeholder={"Buscar cuenta..."}
-                        value={this.state.search}
-                        onChangeText={(tx) => this.handleSearch(tx)}
-                        style={{
-                            paddingLeft: 32
-                        }}
-                    />
-                    <SHr height={10} />
 
-                    {/* {tree.map(item => this.renderItem(item))} */}
-                    {filteredTree.map(item => this.renderItem(item))}
+                    {/* 🔹 LISTA CON SCROLL */}
+                    <SView col={"xs-12"} style={{ flex: 1 }} padding={15}>
+                        <ScrollView
+                            ref={ref => this.scrollViewVertical = ref}
+                            style={{ flex: 1 }}
+                            showsVerticalScrollIndicator={true}
+                        >
+                            {filteredTree.map(item => this.renderItem(item))}
+                        </ScrollView>
+                    </SView>
+
                 </SView>
-            </SPage >
+                <FloatButtom onPress={() => {
+                    const grafo = MDL.contabilidad.getCuentasGrafo(this.state.cuentas);
+                    const cuentas = grafo.filter(n => n.parent === null);
+                    const hijos = cuentas || [];
+                    console.log("AQUIIIIIiiiiI")
+                    console.log(grafo)
+                    console.log("AQUIIi")
+
+                    console.log(cuentas)
+                    console.log("AQUI")
+                    // 🔥 Generar código de subcuenta correctamente
+                    let codigo = "";
+
+                    if (hijos.length > 0) {
+                        // ordenar hijos para asegurar el último correcto
+                        hijos.sort((a, b) => this.compareCodigos(a, b));
+
+                        const lastChild = hijos[hijos.length - 1];
+
+                        // dividir el código en partes
+                        const parts = lastChild.codigo.split(".");
+
+                        // obtener el último segmento
+                        const lastIndex = parts[parts.length - 1];
+
+                        // incrementar respetando formato (con o sin ceros)
+                        const nextNumber = (parseInt(lastIndex) + 1)
+                            .toString()
+                            .padStart(lastIndex.length, "0");
+
+                        // reemplazar último segmento
+                        parts[parts.length - 1] = nextNumber;
+
+                        // unir nuevamente
+                        codigo = parts.join(".");
+                    } else {
+                        // 🔥 si no tiene hijos → primer hijo
+                        // codigo = item.codigo + ".1";
+                        codigo = ".1"
+
+                    }
+
+                    CuentaContableForm.open({
+                        cuenta_contable: {
+                            // tipo: item.tipo,
+                            codigo: codigo,
+                            descripcion: "",
+                            // key_moneda: item.key_moneda,
+                        },
+                        onChange: (e) => {
+                            const newCuenta = e?.cuenta_contable || e;
+
+                            const parts = newCuenta.codigo.split(".");
+                            parts.pop(); // quitar el último nivel
+
+                            const parentCode = parts.join(".");
+
+                            this.setState(prev => ({
+                                selectedItem: newCuenta.codigo,
+                                openItems: {
+                                    ...prev.openItems,
+                                    [parentCode]: true // 👈 abre el padre
+                                }
+                            }));
+
+                            this.loadData();
+                        }
+
+                    })
+                }} />
+            </SPage>
         );
     }
 

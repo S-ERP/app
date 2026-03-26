@@ -114,13 +114,13 @@ export default class FacturaFormSimple extends Component {
                   backgroundColor: STheme.color.background,
                   overflow:"hidden"
                   
-                }} >
-                  <ScrollView 
+                }} withoutFeedback>
+                  {/* <ScrollView 
                     ref={ref => this.scrollViewVertical = ref}
                     contentContainerStyle={{
                       minHeight: "100%",
                     }}
-                  >
+                  > */}
                     <CuentasAnidadas
                       select={(cuentaSelect) => {
                         console.log("SELECCIONADO:", cuentaSelect)
@@ -130,7 +130,7 @@ export default class FacturaFormSimple extends Component {
                         SPopup.close("popup-cuentas");
                       }}
                     />
-                  </ScrollView>
+                  {/* </ScrollView> */}
                 </SView>
               });
             }}
