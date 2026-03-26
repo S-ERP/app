@@ -6,6 +6,8 @@ import { ScrollView } from "react-native-gesture-handler";
 import FechaFullFilter2 from "../../Components/FechaFullFilter2";
 import SCharts from "servisofts-charts";
 
+const color_bajito = "#8888887a";
+
 export default class tabla_compras_dia extends React.Component {
     state = {
         loadingVentasPorDia: true,
@@ -28,7 +30,7 @@ export default class tabla_compras_dia extends React.Component {
         while (fechaActual <= fechaFin) {
             dias.push({
                 dia: fechaActual.getDate(),
-                fecha: fechaActual.toISOString().split('T')[0] // YYYY-MM-DD
+                fecha: fechaActual.toISOString().split('T')[0]
             });
             fechaActual.setDate(fechaActual.getDate() + 1);
         }
@@ -39,7 +41,6 @@ export default class tabla_compras_dia extends React.Component {
         try {
             const keyEmpresa = await MDL.empresa.select.key;
             const empresa = await MDL.empresa.getFull();
-
             const sucursalesFiltradas = (empresa.sucursales || [])
                 .filter(s => s.estado > 0)
                 .map(s => ({
@@ -47,28 +48,29 @@ export default class tabla_compras_dia extends React.Component {
                     municipio: s.municipio,
                     descripcion: s.descripcion
                 }));
-
             const { fecha_inicio, fecha_fin, tipo_modulo } = this.state;
-
             const res = await MDL.compra_venta.execute_function(
                 "ventas_por_dia2",
                 [keyEmpresa, tipo_modulo, fecha_inicio, fecha_fin]
             );
-
             const raw = Array.isArray(res) ? res : (res?.data ?? res?.result ?? []);
-
-            // Mantener array de dias tal cual
-            const dataVentasPorDia = raw.map(v => ({
-                key_sucursal: v.key_sucursal,
-                descripcion: sucursalesFiltradas.find(s => s.key === v.key_sucursal)?.descripcion ?? "N/A",
-                dias: v.dias || [],
-            }));
-
+            const ventasMap = raw.reduce((acc, v) => { acc[v.key_sucursal] = v; return acc; }, {});
+            const dataVentasPorDia = sucursalesFiltradas.map(s => {
+                const venta = ventasMap[s.key] || {};
+                return {
+                    key_sucursal: s.key,
+                    descripcion: s.descripcion,
+                    dias: venta.dias || []
+                };
+            }).sort((a, b) => {
+                const cantidadA = (a.dias || []).reduce((acc, d) => acc + (d.cantidad_ventas || 0), 0);
+                const cantidadB = (b.dias || []).reduce((acc, d) => acc + (d.cantidad_ventas || 0), 0);
+                return cantidadB - cantidadA;
+            });
             this.setState({
                 dataVentasPorDia,
                 loadingVentasPorDia: false
             });
-
         } catch (e) {
             console.error("Error en loadVentasPorFecha:", e);
             this.setState({ loadingVentasPorDia: false });
@@ -77,23 +79,19 @@ export default class tabla_compras_dia extends React.Component {
 
     render() {
         const { dataVentasPorDia, loadingVentasPorDia, fecha_inicio, fecha_fin, tipo_modulo, dias } = this.state;
-
-        // Generar chartData: cada sucursal tendrá su total por día
         const chartData = {};
-        dataVentasPorDia.forEach(item => {
-            chartData[item.descripcion] = item.dias.reduce((acc, d) => acc + (d.cantidad_ventas || 0), 0);
+        (dataVentasPorDia || []).forEach(item => {
+            const totalCantidad = (item.dias || []).reduce((acc, d) => acc + (d.cantidad_ventas || 0), 0);
+            chartData[item.descripcion] = totalCantidad;
         });
-
         return (
-            <SPage title={tipo_modulo === "compra" ? "Estadísticas de Compras por Día" : "Estadísticas de Ventas por Día"}>
+            <SPage title={tipo_modulo === "compra" ? "Reporte de compras diarias" : "Reporte de ventas diarias"}>
                 <ScrollView>
                     <SView col={"xs-12"} padding={16}>
                         <SText fontSize={18} bold>
-                            Estadísticas de {tipo_modulo === "compra" ? "Compras" : "Ventas"}
+                            Resumen del período seleccionado {tipo_modulo === "compra" ? "Compras" : "Ventas"}
                         </SText>
                         <SHr />
-
-                        {/* Selector de fechas */}
                         <SView col={"xs-12"} row center style={{ flexWrap: "wrap", gap: 12 }}>
                             <SView col={"xs-12 sm-7.5"} row center>
                                 <FechaFullFilter2
@@ -114,29 +112,23 @@ export default class tabla_compras_dia extends React.Component {
                                 />
                             </SView>
                         </SView>
-
                         <SHr />
-
-                        <SView padding={8}>
-                            <SText>
-                                📅 Inicio: {fecha_inicio ?? "N/A"} {"\n"}
-                                📅 Fin: {fecha_fin ?? "N/A"} {"\n"}
-                            </SText>
+                        <SView padding={8} style={{ textAlign: "center" }}>
+                            <SText>📅 Desde: {fecha_inicio ?? "N/A"}{"\n"}📅 Hasta: {fecha_fin ?? "N/A"}{"\n"}</SText>
                         </SView>
-
                         <SView col={"xs-12"} row>
-
-                            <SView col={"xs-6"} padding={8}>
-                                <SText fontSize={16} bold>Gráfico {tipo_modulo == "compra" ? "Compras" : "Ventas"} por Sucursales</SText>
-
+                            <SView col={"xs-12 lg-6"} padding={8}>
+                                <SText fontSize={16} bold>{tipo_modulo === "compra" ? "Compras" : "Ventas"} por Sucursales</SText>
                                 <SHr />
                                 {loadingVentasPorDia ? (
-                                    <SText>Cargando...</SText>
+                                    <SView style={{ alignItems: "center", padding: 20 }}>
+                                        <SText>⏳ Cargando datos...</SText>
+                                    </SView>
                                 ) : Object.keys(chartData).length === 0 ? (
-                                    <SText>No hay datos disponibles</SText>
+                                    <SText>📊 No hay datos disponibles en este período</SText>
                                 ) : (
                                     <SCharts
-                                        type='Line'
+                                        type='Bar'
                                         showControl={false}
                                         strokeWidth={1}
                                         space={0.2}
@@ -150,17 +142,17 @@ export default class tabla_compras_dia extends React.Component {
                                     />
                                 )}
                             </SView>
-
-                            {/* Tabla de Ventas por Día */}
-                            <SView col={"xs-6"} padding={8}>
+                            <SView col={"xs-12 lg-6"} padding={8}>
                                 <SText fontSize={16} bold>
-                                    {tipo_modulo === "compra" ? "Compras" : "Ventas"} por dia
+                                    Desglose diario de {tipo_modulo === "compra" ? "Compras" : "Ventas"}
                                 </SText>
                                 <SHr />
                                 {loadingVentasPorDia ? (
-                                    <SText>Cargando...</SText>
+                                    <SView style={{ alignItems: "center", padding: 20 }}>
+                                        <SText>⏳ Cargando datos...</SText>
+                                    </SView>
                                 ) : dataVentasPorDia.length === 0 ? (
-                                    <SText>No hay datos disponibles</SText>
+                                    <SText>📊 No hay datos disponibles en este período</SText>
                                 ) : (
                                     <DinamicTable
                                         language={"es"}
@@ -171,79 +163,77 @@ export default class tabla_compras_dia extends React.Component {
                                         textStyle={{ fontSize: 10 }}
                                         loadData={async () => dataVentasPorDia}
                                     >
-                                        {/* Columna de sucursal */}
                                         <DinamicTable.Col
                                             key="descripcion"
-                                            label='Sucursal'
+                                            label='🏢 Sucursal'
                                             width={150}
                                             data={e => e.row.descripcion}
                                             footerComponent={() => (
                                                 <SView style={{ alignItems: "center" }}>
-                                                    <SText>Total</SText>
+                                                    <SText bold>Total</SText>
                                                 </SView>
                                             )}
                                         />
-
-                                        {/* Columnas por cada día */}
-                                        {...dias.map(d => (
+                                        {...dias.flatMap(d => [
                                             <DinamicTable.Col
-                                                key={`dia-${d.dia}`}
-                                                label={`Día ${d.dia}`}
-                                                width={80}
+                                                key={`dia-${d.dia}-cantidad`}
+                                                label={`${d.dia} - Cant`}
+                                                width={70}
+                                                data={e => {
+                                                    const diaObj = e.row.dias.find(x => x.dia === d.dia);
+                                                    return diaObj ? diaObj.cantidad_ventas : 0;
+                                                }}
+                                                customComponent={(e) => {
+                                                    const diaObj = e.row.dias.find(x => x.dia === d.dia);
+                                                    const cantidad = diaObj?.cantidad_ventas || 0;
+                                                    return (
+                                                        <SView style={{ alignItems: "center" }}>
+                                                            <SText fontSize={10} color={cantidad < 1 ? color_bajito : STheme.color.text}>{cantidad}</SText>
+                                                        </SView>
+                                                    );
+                                                }}
+                                                footerComponent={() => {
+                                                    const totalCantidad = dataVentasPorDia.reduce((acc, row) => {
+                                                        const diaObj = row.dias.find(x => x.dia === d.dia);
+                                                        return acc + (diaObj?.cantidad_ventas || 0);
+                                                    }, 0);
+                                                    return (
+                                                        <SView style={{ alignItems: "center" }}>
+                                                            <SText fontSize={10} bold color={totalCantidad < 1 ? color_bajito : STheme.color.text}>{totalCantidad}</SText>
+                                                        </SView>
+                                                    );
+                                                }}
+                                            />,
+                                            <DinamicTable.Col
+                                                key={`dia-${d.dia}-monto`}
+                                                label={`${d.dia} - Bs`}
+                                                width={90}
                                                 data={e => {
                                                     const diaObj = e.row.dias.find(x => x.dia === d.dia);
                                                     return diaObj ? diaObj.monto_total : 0;
                                                 }}
                                                 customComponent={(e) => {
                                                     const diaObj = e.row.dias.find(x => x.dia === d.dia);
-                                                    const value = diaObj?.monto_total || 0;
-                                                    const cantidad = diaObj?.cantidad_ventas || 0;
+                                                    const monto = diaObj?.monto_total || 0;
                                                     return (
                                                         <SView style={{ alignItems: "center" }}>
-                                                            {value > 0 ? (
-                                                                <>
-                                                                    <SText fontSize={10}>{`${cantidad} compras`}</SText>
-                                                                    <SText fontSize={10}>{`Bs. ${SMath.formatMoney(value)}`}</SText>
-                                                                </>
-                                                            ) : null}
+                                                            <SText fontSize={9} color={monto < 1 ? color_bajito : STheme.color.text}>{`Bs. ${SMath.formatMoney(monto)}`}</SText>
                                                         </SView>
                                                     );
                                                 }}
-                                                // footerComponent={() => {
-                                                //     const total = dataVentasPorDia.reduce((acc, row) => {
-                                                //         const diaObj = row.dias.find(x => x.dia === d.dia);
-                                                //         return acc + (diaObj?.monto_total || 0);
-                                                //     }, 0);
-                                                //     return (
-                                                //         <SView style={{ alignItems: "center" }}>
-                                                //             {total > 0 ? <SText fontSize={10}>{`Bs. ${SMath.formatMoney(total)}`}</SText> : null}
-                                                //         </SView>
-                                                //     );
-                                                // }}
                                                 footerComponent={() => {
-                                                    const totalCantidad = dataVentasPorDia.reduce((acc, row) => {
-                                                        const diaObj = row.dias.find(x => x.dia === d.dia);
-                                                        return acc + (diaObj?.cantidad_ventas || 0);
-                                                    }, 0);
                                                     const totalMonto = dataVentasPorDia.reduce((acc, row) => {
                                                         const diaObj = row.dias.find(x => x.dia === d.dia);
                                                         return acc + (diaObj?.monto_total || 0);
                                                     }, 0);
                                                     return (
                                                         <SView style={{ alignItems: "center" }}>
-                                                            {totalCantidad > 0 || totalMonto > 0 ? (
-                                                                <>
-                                                                    <SText fontSize={10}>{`${totalCantidad} compras`}</SText>
-                                                                    <SText fontSize={10}>{`Bs. ${SMath.formatMoney(totalMonto)}`}</SText>
-                                                                </>
-                                                            ) : null}
+                                                            <SText fontSize={9} bold color={totalMonto < 1 ? color_bajito : STheme.color.text}>{`Bs. ${SMath.formatMoney(totalMonto)}`}</SText>
                                                         </SView>
                                                     );
                                                 }}
                                             />
-                                        ))}
-
-                                        {/* Columna total por sucursal */}
+                                        ])}
                                         <DinamicTable.Col
                                             key="total_sucursal"
                                             label="Total"
@@ -256,28 +246,18 @@ export default class tabla_compras_dia extends React.Component {
                                                     <SView style={{ alignItems: "center" }}>
                                                         {totalCantidad > 0 || totalMonto > 0 ? (
                                                             <>
-                                                                <SText fontSize={10}>{`${totalCantidad} compras`}</SText>
+                                                                <SText fontSize={10}>{`${totalCantidad} ventas`}</SText>
                                                                 <SText fontSize={10}>{`Bs. ${SMath.formatMoney(totalMonto)}`}</SText>
                                                             </>
                                                         ) : null}
                                                     </SView>
                                                 );
                                             }}
-                                        // customComponent={(e) => {
-                                        //     const total = e.row.dias.reduce((acc, d) => acc + (d.monto_total || 0), 0);
-                                        //     return (
-                                        //         <SView style={{ alignItems: "center" }}>
-                                        //             {total > 0 ? <SText fontSize={10}>{`Bs. ${SMath.formatMoney(total)}`}</SText> : null}
-                                        //         </SView>
-                                        //     );
-                                        // }}
                                         />
-
                                     </DinamicTable>
                                 )}
                             </SView>
                         </SView>
-
                     </SView>
                 </ScrollView>
             </SPage>
