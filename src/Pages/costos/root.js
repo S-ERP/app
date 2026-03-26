@@ -6,8 +6,8 @@ import Config from "../../Config";
 import FloatMenu from "../../Components/FloatMenu";
 import SIconApp from "../../Assets/SIconApp";
 import SSocket from "servisofts-socket";
-export default class root extends React.Component {
 
+export default class root extends React.Component {
     async loadData() {
         try {
             const [costos, empresa, clientes, almacen, modelo, modelo_cliente, tipo_costo] = await Promise.all([
@@ -56,76 +56,53 @@ export default class root extends React.Component {
         }
     }
 
-    EditarMontoPopup = ({ _data, onClose, onConfirm }) => {
-        // const [detalleText, setDetalleText] = React.useState(JSON.stringify(detalleActual, null, 2));
-
-
-        console.clear();
-        console.log("%c" + JSON.stringify(_data, null, 2), "color: #2ECC40; font-weight: bold;");
-
+    EditarMontoPopup = ({ _data, onConfirm }) => {
         return (
-            <SView col={"xs-11 sm-10 md-8 lg-6 xl-4"} height={400} withoutFeedback backgroundColor={STheme.color.background} borderRadius={8} style={{ overflow: "hidden", padding: 16 }}>
+            <SView col="xs-11 sm-10 md-8 lg-6 xl-4" height={400} withoutFeedback backgroundColor={STheme.color.background} borderRadius={8} style={{ overflow: "hidden", padding: 16 }}>
                 <SText bold fontSize={18} center>Editar monto</SText>
                 <SView height={16} />
                 <SInput
                     type="number"
                     defaultValue={_data?.monto}
                     ref={ref => this.inputMonto = ref}
-                    // height={250}
                     style={{
                         fontSize: 12,
                         padding: 8,
                         backgroundColor: STheme.color.lightGray + "30",
                     }}
-                /><SView row >
-                    <SButtom style={{ height: 35 }} type={"danger"} onPress={() => {
-                        SPopup.close("popup_editar_detalle")
-                    }}>Cancelar</SButtom>
+                />
+                <SView row>
+                    <SButtom style={{ height: 35 }} type="danger" onPress={() => SPopup.close("popup_editar_detalle")}>Cancelar</SButtom>
                     <SView width={5} />
-                    <SButtom style={{ height: 35 }} type={"success"} onPress={() => {
-                        // SPopup.close("popup_detalle_factura");
-
-
-                        // SPopup.close("popup_detalle_factura");
-
+                    <SButtom style={{ height: 35 }} type="success" onPress={() => {
                         const monto_cap = this.inputMonto?.getValue();
-                        const actua = {
-                            ..._data,
-                            monto: monto_cap
-                        };
+                        const actua = { ..._data, monto: monto_cap };
 
-                        console.clear();
-                        console.log("%cpresionado", "color: #3000a1; font-weight: bold;");
-                        console.log("%c" + JSON.stringify(actua, null, 2), "color: #e705d4; font-weight: bold;");
+                        MDL.compra_venta.editar_compra_venta_detalle_costo(actua)
+                            .then(e => {
+                                SPopup.close("popup_editar_detalle");
+                                SNotification.send({
+                                    title: "Monto actualizado",
+                                    body: "Se actualizó correctamente.",
+                                    color: STheme.color.success,
+                                    time: 5000,
+                                });
+                                this.table.loadData();
+                                this.forceUpdate();
+                            })
+                            .catch(mensaje => {
+                                console.error("Error al editar monto:", mensaje.error);
+                                SNotification.send({
+                                    title: "Error al generar compra",
+                                    body: JSON.stringify(mensaje.error),
+                                    color: STheme.color.danger,
+                                    time: 5000,
+                                });
+                            });
 
-                        // SPopup.close("popup_editar_detalle")
-
-
-                        // editar_compra_venta_detalle_costo
-
-
-                        MDL.compra_venta.editar_compra_venta_detalle_costo(actua).then(e => {
-                            // if (this.props.onReload) this.props.onReload();
-                            // SPopup.close("popup_editar_detalle")
-                            console.clear();
-                            console.log("%c" + JSON.stringify(e, null, 2), "color: #2ECC40; font-weight: bold;");
-                        }).catch(e => { console.error(e); });
-
-
-                        // if (onConfirm) onConfirm(actua);
-
-                        // const monto_cap = this.inputNit?.getValue();
-                        // const actua = _data{
-                        //     ..._data,
-                        //     monto: monto_cap
-                        // }
-                        // console.clear();
-                        // console.log("%c" + "presionado", `color: #3000a1; font-weight: bold;`);
-                        // console.log("%c" + JSON.stringify(actua null, 2), "color: #e705d4; font-weight: bold;");
-
-                        // handleConfirm();
+                        if (onConfirm) onConfirm(actua);
                     }}>Aceptar</SButtom>
-                </SView>{ }
+                </SView>
             </SView>
         );
     };
@@ -137,47 +114,27 @@ export default class root extends React.Component {
             options: [
                 {
                     label: "Ver venta",
-                    icon: <SIconApp name="Menu" />,
+                    icon: <SIconApp name="IconCheckedOk" fill={STheme.color.text} stroke={STheme.color.text} width={16} />,
                     onPress: () => SNavigation.navigate("/venta/profile2", { pk: e.row.key_venta })
                 },
-
-                // poner iconos correspondiente y color
                 !e.row?.key_compra && {
                     label: "Editar Monto",
-                    icon: <SIconApp name="Menu" />,
+                    icon: <SIconApp name="crmeditar" fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
                     onPress: () => {
                         SPopup.open({
                             key: "popup_editar_detalle",
-                            content: <this.EditarMontoPopup
-                                // factura_key={factura.key}
-                                _data={e.row}
-                                // detalleActual={factura.data.detalle}
-                                onClose={() => SPopup.close("popup_editar_detalle")}
-                            // onConfirm={(nuevoDetalle) => {
-                            //     SNotification.send({
-                            //         key: "editarDetalle_" + factura.key,
-                            //         title: "Detalle actualizado",
-                            //         body: "El detalle se actualizó correctamente.",
-                            //         color: STheme.color.success,
-                            //         time: 5000,
-                            //     });
-                            //     SPopup.close("popup_editar_detalle")
-                            // }}
-                            />
+                            content: <this.EditarMontoPopup _data={e.row} />
                         });
                     }
-
-                    // onPress: () => SNavigation.navigate("/venta/profile2", { pk: e.row.key_compra })
                 },
-
                 e.row?.key_compra && {
                     label: "Ver Compra generada",
-                    icon: <SIconApp name="Menu" />,
+                    icon: <SIconApp name="World" fill={STheme.color.text} stroke={STheme.color.text} width={16} />,
                     onPress: () => SNavigation.navigate("/venta/profile2", { pk: e.row.key_compra })
                 },
                 !e.row?.key_compra && {
                     label: "Generar Compra",
-                    icon: <SIconApp name="Menu" />,
+                    icon: <SIconApp name="Reload" fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
                     onPress: () => {
                         SSocket.sendPromise({
                             service: "compra_venta",
@@ -188,7 +145,7 @@ export default class root extends React.Component {
                             .then(() => {
                                 SNotification.send({
                                     title: "Compra generada",
-                                    body: "La compra se generó correctamente.",
+                                    body: "Se generó correctamente.",
                                     color: STheme.color.success,
                                     time: 5000,
                                 });
@@ -196,7 +153,7 @@ export default class root extends React.Component {
                                 this.forceUpdate();
                             })
                             .catch(mensaje => {
-                                console.error("Error al generar compra:", JSON.stringify(mensaje.error)); // Para debug
+                                console.error("Error al generar compra:", mensaje.error);
                                 SNotification.send({
                                     title: "Error al generar compra",
                                     body: JSON.stringify(mensaje.error),
@@ -214,7 +171,7 @@ export default class root extends React.Component {
         const nombre = `${usuario?.Nombres || "Sin"} ${usuario?.Apellidos || "usuario"}`;
         return (
             <SView col="xs-12" center row>
-                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }} >
+                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                     {usuario?.key && <SImage src={`${SSocket.api.root}usuario/${usuario.key}`} style={{ resizeMode: "cover" }} />}
                 </SView>
                 <SView width={5} />
@@ -227,7 +184,7 @@ export default class root extends React.Component {
         const nombre = `${cliente?.nombres || "Sin"} ${cliente?.apellidos || "usuario"}`;
         return (
             <SView col="xs-12" center row>
-                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }} >
+                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                     {cliente?.key && <SImage src={`${SSocket.api.root}usuario/${cliente.key}`} style={{ resizeMode: "cover" }} />}
                 </SView>
                 <SView width={5} />
@@ -240,7 +197,7 @@ export default class root extends React.Component {
         if (!sucursal?.key) return null;
         return (
             <SView col="xs-12" center row>
-                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }} >
+                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                     <SImage src={`${SSocket.api.empresa}sucursal/${sucursal.key}`} style={{ resizeMode: "cover" }} />
                 </SView>
                 <SView width={5} />
@@ -253,7 +210,7 @@ export default class root extends React.Component {
         if (!almacen?.key) return null;
         return (
             <SView col="xs-12" center row>
-                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }} >
+                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                     <SImage src={`${SSocket.api.empresa}sucursal/${almacen.key}`} style={{ resizeMode: "cover" }} />
                 </SView>
                 <SView width={5} />
@@ -279,7 +236,7 @@ export default class root extends React.Component {
         if (!empresa?.key) return null;
         return (
             <SView col="xs-12" center row>
-                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }} >
+                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
                     <SImage src={`${SSocket.api.empresa}empresa/${empresa?.key}`} style={{ resizeMode: "cover" }} />
                 </SView>
                 <SView width={5} />
@@ -291,11 +248,11 @@ export default class root extends React.Component {
     render() {
         return (
             <SPage title="Costos" disableScroll>
-                <SText>{JSON.stringify(this.state?.costos)}</SText>
                 <DinamicTable
                     {...Config.table.applyTheme()}
                     loadData={this.loadData}
                     onSelect={this.onSelect.bind(this)}
+                    selectType="single"
                     ref={ref => this.table = ref}
                     loadInitialState={async () => ({
                         sorters: [{ key: "fecha_on", order: "desc", type: "date" }],
