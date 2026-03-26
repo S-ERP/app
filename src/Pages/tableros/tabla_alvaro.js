@@ -139,7 +139,10 @@ export default class TablaAlvaro extends React.Component {
                                         loadData={async () => dataVentasPorDia}
                                     >
                                         {/* Columna de sucursal */}
-                                        <DinamicTable.Col
+
+
+                                        {/* Columnas por cada día */}
+                                        {[<DinamicTable.Col
                                             key="descripcion"
                                             label='Sucursal'
                                             width={150}
@@ -149,10 +152,7 @@ export default class TablaAlvaro extends React.Component {
                                                     <SText>Total</SText>
                                                 </SView>
                                             )}
-                                        />
-
-                                        {/* Columnas por cada día */}
-                                        {...dias.map(d => (
+                                        />, ...dias.map(d => (
                                             <DinamicTable.Col
                                                 key={`dia-${d.dia}`}
                                                 label={`Día ${d.dia}`}
@@ -208,10 +208,7 @@ export default class TablaAlvaro extends React.Component {
                                                     );
                                                 }}
                                             />
-                                        ))}
-
-                                        {/* Columna total por sucursal */}
-                                        <DinamicTable.Col
+                                        )), <DinamicTable.Col
                                             key="total_sucursal"
                                             label="Total"
                                             width={80}
@@ -238,7 +235,10 @@ export default class TablaAlvaro extends React.Component {
                                         //         </SView>
                                         //     );
                                         // }}
-                                        />
+                                        />]}
+
+                                        {/* Columna total por sucursal */}
+
 
                                     </DinamicTable>
                                 )}

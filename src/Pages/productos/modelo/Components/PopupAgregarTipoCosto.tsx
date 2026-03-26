@@ -160,18 +160,18 @@ export default class PopupAgregarTipoCosto extends Component<Props> {
                                 inputStyle: { paddingStart: 8 },
                                 labelStyle: { top: -10 },
                             },
-                            "key_cuenta_contable": {
-                                label: "Cuenta Contable",
-                                type: "custom",
-                                customInputClass: InputSelector,
-                                style: { width: "100%" },
-                                options: this.state.cuentas.map((cuenta: any) => ({
-                                    label: `${cuenta.codigo} - ${cuenta.descripcion}`,
-                                    value: cuenta.key,
-                                    customComponent: (e: any) => <SText fontSize={12} color={STheme.color.lightGray}>{e.data.tipo}</SText>,
-                                    data: cuenta
-                                }))
-                            },
+                            // "key_cuenta_contable": {
+                            //     label: "Cuenta Contable",
+                            //     type: "custom",
+                            //     customInputClass: InputSelector,
+                            //     style: { width: "100%" },
+                            //     options: this.state.cuentas.map((cuenta: any) => ({
+                            //         label: `${cuenta.codigo} - ${cuenta.descripcion}`,
+                            //         value: cuenta.key,
+                            //         customComponent: (e: any) => <SText fontSize={12} color={STheme.color.lightGray}>{e.data.tipo}</SText>,
+                            //         data: cuenta
+                            //     }))
+                            // },
                             "key_tipo_costo": {
                                 label: "Tipos de costo",
                                 type: "custom",

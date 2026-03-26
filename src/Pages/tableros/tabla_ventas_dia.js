@@ -163,7 +163,7 @@ export default class tabla_ventas_dia extends React.Component {
                                         textStyle={{ fontSize: 10 }}
                                         loadData={async () => dataVentasPorDia}
                                     >
-                                        <DinamicTable.Col
+                                        {[<DinamicTable.Col
                                             key="descripcion"
                                             label='🏢 Sucursal'
                                             width={150}
@@ -173,8 +173,8 @@ export default class tabla_ventas_dia extends React.Component {
                                                     <SText bold>Total</SText>
                                                 </SView>
                                             )}
-                                        />
-                                        {...dias.flatMap(d => [
+                                        />,
+                                        ...dias.flatMap(d => [
                                             <DinamicTable.Col
                                                 key={`dia-${d.dia}-cantidad`}
                                                 label={`${d.dia} - Cant`}
@@ -233,8 +233,8 @@ export default class tabla_ventas_dia extends React.Component {
                                                     );
                                                 }}
                                             />
-                                        ])}
-                                        <DinamicTable.Col
+                                        ])
+                                        ,<DinamicTable.Col
                                             key="total_sucursal"
                                             label="Total"
                                             width={80}
@@ -253,7 +253,7 @@ export default class tabla_ventas_dia extends React.Component {
                                                     </SView>
                                                 );
                                             }}
-                                        />
+                                        />]}
                                     </DinamicTable>
                                 )}
                             </SView>
