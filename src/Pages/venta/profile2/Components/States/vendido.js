@@ -8,6 +8,7 @@ import PlanPagos from '../PlanPagos';
 import Proveedor from '../Proveedor';
 import ReciboCarta from '../../../../../Components/PDF/venta/ReciboCarta';
 import ReciboRollo from '../../../../../Components/PDF/venta/ReciboRollo';
+import ReciboSmall from '../../../../../Components/PDF/venta/ReciboSmall';
 import Estado from './Components/Estado';
 import SSocket from 'servisofts-socket';
 import Separador1 from './Components/Separador1';
@@ -281,6 +282,13 @@ export default class index extends Component {
                             <SView width={8} />
                             <SView onPress={() => ReciboCarta.imprimir(this.data.key)}>
                                 <SText>DESCARGAR PDF CARTA</SText>
+                            </SView>
+                        </SView>
+                        <SView col={"xs-5.5"} style={{ padding: 10, marginBottom: 10, backgroundColor: STheme.color.card, borderColor: STheme.color.card, borderWidth: 1 }} row center>
+                            <SIcon name={"iconDescarga2"} fill={STheme.color.text} width={25} height={25} />
+                            <SView width={8} />
+                            <SView onPress={() => ReciboSmall.imprimir(this.data.key)}>
+                                <SText>DESCARGAR PDF SMALL</SText>
                             </SView>
                         </SView>
                         {/* <SView width={8} />
