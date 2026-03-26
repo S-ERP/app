@@ -6,7 +6,8 @@ import SIconApp from "../../Assets/SIconApp";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
-import ComprobanteRollo from "../PDF/compra/ComprobanteRollo";
+// import ComprobanteRollo from "../PDF/compra/ComprobanteRollo";
+import ComprobanteRollo from "../PDF/venta/ReciboSmall";
 
 export type PopupCarritoConfirmarResumenProps = {
     onTipoPagoChange: (esCredito: boolean) => void;
@@ -207,7 +208,10 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                         <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.success} onPress={() => { SPopup.close("popup-venta-completada"); SNavigation.navigate("/venta/profile2", { pk: key_venta }); }} > <SText color={STheme.color.text} center>Ver venta</SText> </SView>
 
                         {/* Imprimir rollo */}
-                        <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.card} border={STheme.color.success} onPress={() => { SPopup.close("popup-venta-completada"); ComprobanteRollo.imprimir(key_venta) }} > <SText color={STheme.color.text} center>Imprimir rollo</SText> </SView>
+                        <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.card} border={STheme.color.success} onPress={() => {
+                            // SPopup.close("popup-venta-completada");
+                            ComprobanteRollo.imprimir(key_venta)
+                        }} > <SText color={STheme.color.text} center>Imprimir rollo</SText> </SView>
                     </SView>
                 </SView>
             )

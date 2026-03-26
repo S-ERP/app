@@ -4,17 +4,16 @@ import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
 import FechaFullFilter2 from "../../Components/FechaFullFilter2";
-import SCharts from "servisofts-charts";
 
 const color_bajito = "#8888887a";
 
-export default class tabla_ventas_dia extends React.Component {
+export default class TablaAlvaro extends React.Component {
     state = {
         loadingVentasPorDia: true,
         dataVentasPorDia: [],
         fecha_inicio: '2026-03-24',
         fecha_fin: '2026-03-24',
-        tipo_modulo: 'venta',
+        tipo_modulo: 'venta', // o "compra"
         dias: []
     };
 
@@ -40,33 +39,32 @@ export default class tabla_ventas_dia extends React.Component {
     loadVentasPorFecha = async () => {
         try {
             const keyEmpresa = await MDL.empresa.select.key;
-            const empresa = await MDL.empresa.getFull();
-            const sucursalesFiltradas = (empresa.sucursales || [])
-                .filter(s => s.estado > 0)
-                .map(s => ({
-                    key: s.key,
-                    municipio: s.municipio,
-                    descripcion: s.descripcion
-                }));
-            const { fecha_inicio, fecha_fin, tipo_modulo } = this.state;
             const res = await MDL.compra_venta.execute_function(
-                "ventas_por_dia2",
-                [keyEmpresa, tipo_modulo, fecha_inicio, fecha_fin]
+                "productos_por_fecha",
+                [keyEmpresa, this.state.fecha_inicio, this.state.fecha_fin]
             );
             const raw = Array.isArray(res) ? res : (res?.data ?? res?.result ?? []);
-            const ventasMap = raw.reduce((acc, v) => { acc[v.key_sucursal] = v; return acc; }, {});
-            const dataVentasPorDia = sucursalesFiltradas.map(s => {
-                const venta = ventasMap[s.key] || {};
-                return {
-                    key_sucursal: s.key,
-                    descripcion: s.descripcion,
-                    dias: venta.dias || []
-                };
-            }).sort((a, b) => {
-                const cantidadA = (a.dias || []).reduce((acc, d) => acc + (d.cantidad_ventas || 0), 0);
-                const cantidadB = (b.dias || []).reduce((acc, d) => acc + (d.cantidad_ventas || 0), 0);
-                return cantidadB - cantidadA;
-            });
+
+            // Ajustamos los datos al formato que espera la tabla
+            const dataVentasPorDia = raw.map(producto => ({
+                key_modelo: producto.key_modelo,
+                producto: producto.producto,
+                ventas_total_cantidad: producto.ventas_total_cantidad,
+                ventas_total_ganancia: producto.ventas_total_ganancia,
+                compras_total_cantidad: producto.compras_total_cantidad,
+                compras_total_ganancia: producto.compras_total_ganancia,
+                dias: (producto.dias || []).map(d => ({
+                    dia: d.dia,
+                    ventas_cantidad: d.ventas_cantidad,
+                    ventas_ganancia: d.ventas_ganancia,
+                    compras_cantidad: d.compras_cantidad,
+                    compras_ganancia: d.compras_ganancia,
+                    // monto_total opcional para simplificar la columna Bs
+                    monto_total: d.ventas_ganancia + d.compras_ganancia,
+                    cantidad_ventas: d.ventas_cantidad
+                }))
+            }));
+
             this.setState({
                 dataVentasPorDia,
                 loadingVentasPorDia: false
@@ -78,12 +76,13 @@ export default class tabla_ventas_dia extends React.Component {
     };
 
     render() {
-        const { dataVentasPorDia, loadingVentasPorDia, fecha_inicio, fecha_fin, tipo_modulo, dias } = this.state;
+        const { dataVentasPorDia, loadingVentasPorDia, fecha_inicio, fecha_fin, dias, tipo_modulo } = this.state;
         const chartData = {};
         (dataVentasPorDia || []).forEach(item => {
             const totalCantidad = (item.dias || []).reduce((acc, d) => acc + (d.cantidad_ventas || 0), 0);
-            chartData[item.descripcion] = totalCantidad;
+            chartData[item.producto] = totalCantidad;
         });
+
         return (
             <SPage title={tipo_modulo === "compra" ? "Reporte de compras diarias" : "Reporte de ventas diarias"}>
                 <ScrollView>
@@ -116,35 +115,11 @@ export default class tabla_ventas_dia extends React.Component {
                         <SView padding={8} style={{ textAlign: "center" }}>
                             <SText>📅 Desde: {fecha_inicio ?? "N/A"}{"\n"}📅 Hasta: {fecha_fin ?? "N/A"}{"\n"}</SText>
                         </SView>
+
                         <SView col={"xs-12"} row>
-                            <SView col={"xs-12 lg-6"} padding={8}>
-                                <SText fontSize={16} bold>{tipo_modulo === "compra" ? "Compras" : "Ventas"} por Sucursales</SText>
-                                <SHr />
-                                {loadingVentasPorDia ? (
-                                    <SView style={{ alignItems: "center", padding: 20 }}>
-                                        <SText>⏳ Cargando datos...</SText>
-                                    </SView>
-                                ) : Object.keys(chartData).length === 0 ? (
-                                    <SText>📊 No hay datos disponibles en este período</SText>
-                                ) : (
-                                    <SCharts
-                                        type='Bar'
-                                        showControl={false}
-                                        strokeWidth={1}
-                                        space={0.2}
-                                        padding={0.6}
-                                        showLabel={true}
-                                        showGuide={true}
-                                        showValue={true}
-                                        textColor={STheme.color.text}
-                                        colors={["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7"]}
-                                        data={chartData}
-                                    />
-                                )}
-                            </SView>
-                            <SView col={"xs-12 lg-6"} padding={8}>
+                            <SView col={"xs-12"} padding={8}>
                                 <SText fontSize={16} bold>
-                                  Desglose diario de {tipo_modulo === "compra" ? "Compras" : "Ventas"}
+                                    Desglose diario de {tipo_modulo === "compra" ? "Compras" : "Ventas"}
                                 </SText>
                                 <SHr />
                                 {loadingVentasPorDia ? (
@@ -163,29 +138,32 @@ export default class tabla_ventas_dia extends React.Component {
                                         textStyle={{ fontSize: 10 }}
                                         loadData={async () => dataVentasPorDia}
                                     >
-                                        {[<DinamicTable.Col
-                                            key="descripcion"
-                                            label='🏢 Sucursal'
-                                            width={150}
-                                            data={e => e.row.descripcion}
+                                        {/* Columna de producto */}
+                                        <DinamicTable.Col
+                                            key="producto"
+                                            label='Producto'
+                                            width={180}
+                                            data={e => e.row.producto}
                                             footerComponent={() => (
                                                 <SView style={{ alignItems: "center" }}>
                                                     <SText bold>Total</SText>
                                                 </SView>
                                             )}
-                                        />,
-                                        ...dias.flatMap(d => [
+                                        />
+
+                                        {/* Columnas por día */}
+                                        {dias.flatMap(d => [
                                             <DinamicTable.Col
                                                 key={`dia-${d.dia}-cantidad`}
                                                 label={`${d.dia} - Cant`}
                                                 width={70}
                                                 data={e => {
                                                     const diaObj = e.row.dias.find(x => x.dia === d.dia);
-                                                    return diaObj ? diaObj.cantidad_ventas : 0;
+                                                    return diaObj ? diaObj.ventas_cantidad : 0;
                                                 }}
                                                 customComponent={(e) => {
                                                     const diaObj = e.row.dias.find(x => x.dia === d.dia);
-                                                    const cantidad = diaObj?.cantidad_ventas || 0;
+                                                    const cantidad = diaObj?.ventas_cantidad || 0;
                                                     return (
                                                         <SView style={{ alignItems: "center" }}>
                                                             <SText fontSize={10} color={cantidad < 1 ? color_bajito : STheme.color.text}>{cantidad}</SText>
@@ -195,7 +173,7 @@ export default class tabla_ventas_dia extends React.Component {
                                                 footerComponent={() => {
                                                     const totalCantidad = dataVentasPorDia.reduce((acc, row) => {
                                                         const diaObj = row.dias.find(x => x.dia === d.dia);
-                                                        return acc + (diaObj?.cantidad_ventas || 0);
+                                                        return acc + (diaObj?.ventas_cantidad || 0);
                                                     }, 0);
                                                     return (
                                                         <SView style={{ alignItems: "center" }}>
@@ -210,11 +188,11 @@ export default class tabla_ventas_dia extends React.Component {
                                                 width={90}
                                                 data={e => {
                                                     const diaObj = e.row.dias.find(x => x.dia === d.dia);
-                                                    return diaObj ? diaObj.monto_total : 0;
+                                                    return diaObj ? diaObj.ventas_ganancia : 0;
                                                 }}
                                                 customComponent={(e) => {
                                                     const diaObj = e.row.dias.find(x => x.dia === d.dia);
-                                                    const monto = diaObj?.monto_total || 0;
+                                                    const monto = diaObj?.ventas_ganancia || 0;
                                                     return (
                                                         <SView style={{ alignItems: "center" }}>
                                                             <SText fontSize={9} color={monto < 1 ? color_bajito : STheme.color.text}>{`Bs. ${SMath.formatMoney(monto)}`}</SText>
@@ -224,7 +202,7 @@ export default class tabla_ventas_dia extends React.Component {
                                                 footerComponent={() => {
                                                     const totalMonto = dataVentasPorDia.reduce((acc, row) => {
                                                         const diaObj = row.dias.find(x => x.dia === d.dia);
-                                                        return acc + (diaObj?.monto_total || 0);
+                                                        return acc + (diaObj?.ventas_ganancia || 0);
                                                     }, 0);
                                                     return (
                                                         <SView style={{ alignItems: "center" }}>
@@ -233,15 +211,17 @@ export default class tabla_ventas_dia extends React.Component {
                                                     );
                                                 }}
                                             />
-                                        ])
-                                        ,<DinamicTable.Col
-                                            key="total_sucursal"
+                                        ])}
+
+                                        {/* Total general por producto */}
+                                        <DinamicTable.Col
+                                            key="total_producto"
                                             label="Total"
-                                            width={80}
-                                            data={e => e.row.dias.reduce((acc, d) => acc + (d.monto_total || 0), 0)}
+                                            width={100}
+                                            data={e => e.row.dias.reduce((acc, d) => acc + (d.ventas_ganancia || 0), 0)}
                                             customComponent={(e) => {
-                                                const totalCantidad = e.row.dias.reduce((acc, d) => acc + (d.cantidad_ventas || 0), 0);
-                                                const totalMonto = e.row.dias.reduce((acc, d) => acc + (d.monto_total || 0), 0);
+                                                const totalCantidad = e.row.dias.reduce((acc, d) => acc + (d.ventas_cantidad || 0), 0);
+                                                const totalMonto = e.row.dias.reduce((acc, d) => acc + (d.ventas_ganancia || 0), 0);
                                                 return (
                                                     <SView style={{ alignItems: "center" }}>
                                                         {totalCantidad > 0 || totalMonto > 0 ? (
@@ -253,7 +233,7 @@ export default class tabla_ventas_dia extends React.Component {
                                                     </SView>
                                                 );
                                             }}
-                                        />]}
+                                        />
                                     </DinamicTable>
                                 )}
                             </SView>

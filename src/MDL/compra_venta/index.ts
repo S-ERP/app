@@ -3,7 +3,7 @@ import MDLAbstract from "../MDLAbstract";
 import Model from "../../Model";
 import SSocket from "servisofts-socket";
 import MDL from "..";
-import { SStorage, STheme } from "servisofts-component";
+import { SNotification, SStorage, STheme } from "servisofts-component";
 export default class compra_venta extends MDLAbstract<EventListener> {
   sucursalSeleccionada = null;
   monedaSeleccionada: any = null;
@@ -176,6 +176,17 @@ export default class compra_venta extends MDLAbstract<EventListener> {
     });
     return resp.data || [];
   }
+
+
+  async editar_compra_venta_detalle_costo(___data: any) {
+    ___data.key_empresa = Model.empresa.Action.getKey();
+    const resp: any = await SSocket.sendPromise({ service: "compra_venta", component: "compra_venta_detalle_costo", type: "editar", data: ___data, key_usuario: Model.usuario.Action.getKey() });
+    return resp.data;
+  }
+
+
+
+
   async getTransaccionCuotasCompras(_key_proveedor: String) {
     const resp: any = await SSocket.sendPromise({
       service: "compra_venta",

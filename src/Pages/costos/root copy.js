@@ -114,12 +114,12 @@ export default class root extends React.Component {
             options: [
                 {
                     label: "Ver venta",
-                    icon: <SIconApp name="IconCheckedOk" fill={STheme.color.text} stroke={STheme.color.text} width={16} />,
+                    icon: <SIconApp name="Menu" />,
                     onPress: () => SNavigation.navigate("/venta/profile2", { pk: e.row.key_venta })
                 },
                 !e.row?.key_compra && {
                     label: "Editar Monto",
-                    icon: <SIconApp name="crmeditar" fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
+                    icon: <SIconApp name="Menu" />,
                     onPress: () => {
                         SPopup.open({
                             key: "popup_editar_detalle",
@@ -129,12 +129,12 @@ export default class root extends React.Component {
                 },
                 e.row?.key_compra && {
                     label: "Ver Compra generada",
-                    icon: <SIconApp name="World" fill={STheme.color.text} stroke={STheme.color.text} width={16} />,
+                    icon: <SIconApp name="Menu" />,
                     onPress: () => SNavigation.navigate("/venta/profile2", { pk: e.row.key_compra })
                 },
                 !e.row?.key_compra && {
                     label: "Generar Compra",
-                    icon: <SIconApp name="Reload" fill='#2b6b17ff' stroke='#2b6b17ff' width={16} />,
+                    icon: <SIconApp name="Menu" />,
                     onPress: () => {
                         SSocket.sendPromise({
                             service: "compra_venta",
@@ -252,7 +252,6 @@ export default class root extends React.Component {
                     {...Config.table.applyTheme()}
                     loadData={this.loadData}
                     onSelect={this.onSelect.bind(this)}
-                    selectType="single"
                     ref={ref => this.table = ref}
                     loadInitialState={async () => ({
                         sorters: [{ key: "fecha_on", order: "desc", type: "date" }],
