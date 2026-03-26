@@ -1,5 +1,5 @@
 import React from "react";
-import { SDate, SImage, SMath, SNavigation, SNotification, SPage, SText, STheme, SView } from "servisofts-component";
+import { SButtom, SDate, SImage, SInput, SMath, SNavigation, SNotification, SPage, SPopup, SText, STheme, SView } from "servisofts-component";
 import MDL from "../../MDL";
 import { DinamicTable } from "servisofts-table";
 import Config from "../../Config";
@@ -56,6 +56,80 @@ export default class root extends React.Component {
         }
     }
 
+    EditarMontoPopup = ({ _data, onClose, onConfirm }) => {
+        // const [detalleText, setDetalleText] = React.useState(JSON.stringify(detalleActual, null, 2));
+
+
+        console.clear();
+        console.log("%c" + JSON.stringify(_data, null, 2), "color: #2ECC40; font-weight: bold;");
+
+        return (
+            <SView col={"xs-11 sm-10 md-8 lg-6 xl-4"} height={400} withoutFeedback backgroundColor={STheme.color.background} borderRadius={8} style={{ overflow: "hidden", padding: 16 }}>
+                <SText bold fontSize={18} center>Editar monto</SText>
+                <SView height={16} />
+                <SInput
+                    type="number"
+                    defaultValue={_data?.monto}
+                    ref={ref => this.inputMonto = ref}
+                    // height={250}
+                    style={{
+                        fontSize: 12,
+                        padding: 8,
+                        backgroundColor: STheme.color.lightGray + "30",
+                    }}
+                /><SView row >
+                    <SButtom style={{ height: 35 }} type={"danger"} onPress={() => {
+                        SPopup.close("popup_editar_detalle")
+                    }}>Cancelar</SButtom>
+                    <SView width={5} />
+                    <SButtom style={{ height: 35 }} type={"success"} onPress={() => {
+                        // SPopup.close("popup_detalle_factura");
+
+
+                        // SPopup.close("popup_detalle_factura");
+
+                        const monto_cap = this.inputMonto?.getValue();
+                        const actua = {
+                            ..._data,
+                            monto: monto_cap
+                        };
+
+                        console.clear();
+                        console.log("%cpresionado", "color: #3000a1; font-weight: bold;");
+                        console.log("%c" + JSON.stringify(actua, null, 2), "color: #e705d4; font-weight: bold;");
+
+                        // SPopup.close("popup_editar_detalle")
+
+
+                        // editar_compra_venta_detalle_costo
+
+
+                        MDL.compra_venta.editar_compra_venta_detalle_costo(actua).then(e => {
+                            // if (this.props.onReload) this.props.onReload();
+                            // SPopup.close("popup_editar_detalle")
+                            console.clear();
+                            console.log("%c" + JSON.stringify(e, null, 2), "color: #2ECC40; font-weight: bold;");
+                        }).catch(e => { console.error(e); });
+
+
+                        // if (onConfirm) onConfirm(actua);
+
+                        // const monto_cap = this.inputNit?.getValue();
+                        // const actua = _data{
+                        //     ..._data,
+                        //     monto: monto_cap
+                        // }
+                        // console.clear();
+                        // console.log("%c" + "presionado", `color: #3000a1; font-weight: bold;`);
+                        // console.log("%c" + JSON.stringify(actua null, 2), "color: #e705d4; font-weight: bold;");
+
+                        // handleConfirm();
+                    }}>Aceptar</SButtom>
+                </SView>{ }
+            </SView>
+        );
+    };
+
     onSelect(e) {
         FloatMenu.open({
             e: e.evt,
@@ -68,6 +142,34 @@ export default class root extends React.Component {
                 },
 
                 // poner iconos correspondiente y color
+                !e.row?.key_compra && {
+                    label: "Editar Monto",
+                    icon: <SIconApp name="Menu" />,
+                    onPress: () => {
+                        SPopup.open({
+                            key: "popup_editar_detalle",
+                            content: <this.EditarMontoPopup
+                                // factura_key={factura.key}
+                                _data={e.row}
+                                // detalleActual={factura.data.detalle}
+                                onClose={() => SPopup.close("popup_editar_detalle")}
+                            // onConfirm={(nuevoDetalle) => {
+                            //     SNotification.send({
+                            //         key: "editarDetalle_" + factura.key,
+                            //         title: "Detalle actualizado",
+                            //         body: "El detalle se actualizó correctamente.",
+                            //         color: STheme.color.success,
+                            //         time: 5000,
+                            //     });
+                            //     SPopup.close("popup_editar_detalle")
+                            // }}
+                            />
+                        });
+                    }
+
+                    // onPress: () => SNavigation.navigate("/venta/profile2", { pk: e.row.key_compra })
+                },
+
                 e.row?.key_compra && {
                     label: "Ver Compra generada",
                     icon: <SIconApp name="Menu" />,
