@@ -493,7 +493,7 @@ export default class cuentas_anidadas extends React.Component {
 
         return (
             <SPage title={"Plan de cuentas anidadas"} hidden={this.props.select ? true : false} >
-                <SView col={"xs-12"} row padding={15}>
+                <SView col={"xs-12"} row padding={15} withoutFeedback>
                     <SView col={"xs-12"} style={{ alignItems: "flex-end" }}>
                         <SView style={{ justifyContent: "space-between" }} row>
                             <SView onPress={() => this.expandAll(currentTree)} row card padding={8}>

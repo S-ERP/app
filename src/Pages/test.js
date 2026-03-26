@@ -114,7 +114,7 @@ export default class FacturaFormSimple extends Component {
                   backgroundColor: STheme.color.background,
                   overflow:"hidden"
                   
-                }}>
+                }} >
                   <ScrollView 
                     ref={ref => this.scrollViewVertical = ref}
                     contentContainerStyle={{
