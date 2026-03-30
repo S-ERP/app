@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Reporte de Ventas</title>
+<title>Reporte de Ventas Mejorado</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     body {
@@ -30,6 +30,10 @@
         font-weight: bold;
         color: #2c3e50;
     }
+    .kpi-small {
+        font-size: 18px;
+        color: #7f8c8d;
+    }
 </style>
 </head>
 
@@ -37,6 +41,7 @@
 
 <h1>📊 Reporte de Ventas - 12 Sucursales</h1>
 
+<!-- KPIs principales -->
 <div class="grid">
     <div class="card">
         <h3>Total Ventas</h3>
@@ -52,10 +57,21 @@
         <h3>Mejor Sucursal</h3>
         <div class="kpi">Sucursal 5</div>
     </div>
+
+    <div class="card">
+        <h3>Crecimiento Mensual</h3>
+        <div class="kpi">+12%</div>
+    </div>
+
+    <div class="card">
+        <h3>Ticket Promedio</h3>
+        <div class="kpi">$320</div>
+    </div>
 </div>
 
 <br>
 
+<!-- Gráficos de ventas -->
 <div class="grid">
     <div class="card">
         <h3>Ventas por Día</h3>
@@ -71,6 +87,21 @@
         <h3>Métodos de Pago</h3>
         <canvas id="metodosPago"></canvas>
     </div>
+
+    <div class="card">
+        <h3>Ventas por Sucursal</h3>
+        <canvas id="ventasSucursal"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Ventas Mes a Mes (2025 vs 2026)</h3>
+        <canvas id="ventasAnual"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Ventas por Categoría</h3>
+        <canvas id="ventasCategoria"></canvas>
+    </div>
 </div>
 
 <script>
@@ -83,9 +114,12 @@ new Chart(document.getElementById('ventasDia'), {
             label: 'Ventas',
             data: [1200, 1900, 3000, 2500, 3200, 4000, 2800],
             borderColor: '#3498db',
-            fill: false
+            backgroundColor: '#3498db33',
+            fill: true,
+            tension: 0.3
         }]
-    }
+    },
+    options: { responsive: true }
 });
 
 // Ventas por mes
@@ -98,7 +132,8 @@ new Chart(document.getElementById('ventasMes'), {
             data: [15000, 18000, 22000, 20000, 25000, 27000],
             backgroundColor: '#2ecc71'
         }]
-    }
+    },
+    options: { responsive: true }
 });
 
 // Métodos de pago
@@ -110,7 +145,60 @@ new Chart(document.getElementById('metodosPago'), {
             data: [40, 30, 15, 15],
             backgroundColor: ['#e74c3c','#3498db','#f1c40f','#9b59b6']
         }]
-    }
+    },
+    options: { responsive: true }
+});
+
+// Ventas por sucursal
+new Chart(document.getElementById('ventasSucursal'), {
+    type: 'bar',
+    data: {
+        labels: ['Suc 1','Suc 2','Suc 3','Suc 4','Suc 5','Suc 6','Suc 7','Suc 8','Suc 9','Suc 10','Suc 11','Suc 12'],
+        datasets: [{
+            label: 'Ventas',
+            data: [8000, 9500, 11000, 10500, 15000, 12000, 9000, 9800, 8700, 10200, 8800, 9400],
+            backgroundColor: '#1abc9c'
+        }]
+    },
+    options: { responsive: true }
+});
+
+// Comparación año a año
+new Chart(document.getElementById('ventasAnual'), {
+    type: 'line',
+    data: {
+        labels: ['Ene','Feb','Mar','Abr','May','Jun'],
+        datasets: [
+            {
+                label: '2025',
+                data: [14000, 16000, 20000, 19000, 22000, 25000],
+                borderColor: '#e67e22',
+                fill: false,
+                tension: 0.3
+            },
+            {
+                label: '2026',
+                data: [15000, 18000, 22000, 20000, 25000, 27000],
+                borderColor: '#3498db',
+                fill: false,
+                tension: 0.3
+            }
+        ]
+    },
+    options: { responsive: true }
+});
+
+// Ventas por categoría
+new Chart(document.getElementById('ventasCategoria'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Electrónica', 'Ropa', 'Hogar', 'Alimentos'],
+        datasets: [{
+            data: [35, 25, 20, 20],
+            backgroundColor: ['#3498db','#2ecc71','#e74c3c','#9b59b6']
+        }]
+    },
+    options: { responsive: true }
 });
 </script>
 
