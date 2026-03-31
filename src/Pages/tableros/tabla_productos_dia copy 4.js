@@ -22,48 +22,48 @@ export default class tabla_productos_dia extends React.Component {
         this.loadVentasPorFecha();
     }
 
-    generateDias = () => {
-        const dias = [];
+  generateDias = () => {
+    const dias = [];
 
-        // Función para formatear fecha en formato yyyy-mm-dd local
-        const formatLocalDate = (date) => {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        };
-
-        // Función para parsear string yyyy-mm-dd a fecha local (sin desfase)
-        const parseLocalDate = (str) => {
-            const [year, month, day] = str.split('-').map(Number);
-            return new Date(year, month - 1, day);
-        };
-
-        // Inicializamos fechas correctamente
-        let fechaActual = parseLocalDate(this.state.fecha_inicio);
-        const fechaFin = parseLocalDate(this.state.fecha_fin);
-
-        // Si quieres sumar un día para iniciar desde el día siguiente:
-        // fechaActual.setDate(fechaActual.getDate() + 1);
-
-        console.clear();
-        console.log("%cDddddddddddddddddddd", "color: #2ECC40; font-weight: bold;");
-        console.log("%c" + fechaActual, "color: #2ECC40; font-weight: bold;");
-        console.log("%c" + fechaFin, "color: #2ECC40; font-weight: bold;");
-
-        // Generar array de días
-        while (fechaActual <= fechaFin) {
-            dias.push({
-                dia: fechaActual.getDate(),
-                fecha: formatLocalDate(fechaActual)
-            });
-            fechaActual.setDate(fechaActual.getDate() + 1);
-        }
-
-        this.setState({ dias });
+    // Función para formatear fecha en formato yyyy-mm-dd local
+    const formatLocalDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     };
 
+    // Función para parsear string yyyy-mm-dd a fecha local (sin desfase)
+    const parseLocalDate = (str) => {
+        const [year, month, day] = str.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    };
 
+    // Inicializamos fechas correctamente
+    let fechaActual = parseLocalDate(this.state.fecha_inicio);
+    const fechaFin = parseLocalDate(this.state.fecha_fin);
+
+    // Si quieres sumar un día para iniciar desde el día siguiente:
+    // fechaActual.setDate(fechaActual.getDate() + 1);
+
+    console.clear();
+    console.log("%cDddddddddddddddddddd", "color: #2ECC40; font-weight: bold;");
+    console.log("%c" + fechaActual, "color: #2ECC40; font-weight: bold;");
+    console.log("%c" + fechaFin, "color: #2ECC40; font-weight: bold;");
+
+    // Generar array de días
+    while (fechaActual <= fechaFin) {
+        dias.push({
+            dia: fechaActual.getDate(),
+            fecha: formatLocalDate(fechaActual)
+        });
+        fechaActual.setDate(fechaActual.getDate() + 1);
+    }
+
+    this.setState({ dias });
+};
+
+ 
 
     loadVentasPorFecha = async () => {
         try {
@@ -160,7 +160,7 @@ export default class tabla_productos_dia extends React.Component {
         const { dataVentasPorDia, loadingVentasPorDia, fecha_inicio, fecha_fin, dias } = this.state;
 
         // console.clear();
-        console.log("%c" + fecha_inicio, `color: #2ECC40; font-weight: bold;`);
+        console.log("%c" + fecha_inicio,`color: #2ECC40; font-weight: bold;`);
         return (
             <SPage title={"Reporte de Totales de Ventas y Compras por Producto"}>
                 <ScrollView>
@@ -304,7 +304,7 @@ export default class tabla_productos_dia extends React.Component {
                                         />
                                         <DinamicTable.Col
                                             key="total_producto_compras"
-                                            label="Total Compras"
+                                            label="Total"
                                             width={100}
                                             data={e => e.row.dias.reduce((acc, d) => acc + (d.ventas_ganancia || 0), 0)}
                                             customComponent={(e) => {
