@@ -1,5 +1,5 @@
 import React from "react";
-import { SPage, SView, SText, SHr, SMath, STheme } from "servisofts-component";
+import { SPage, SView, SText, SHr, SMath, STheme, SDate } from "servisofts-component";
 import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
@@ -22,27 +22,48 @@ export default class tabla_productos_dia extends React.Component {
         this.loadVentasPorFecha();
     }
 
-    generateDias = () => {
-        const dias = [];
-        let fechaActual = new Date(this.state.fecha_inicio);
-        const fechaFin = new Date(this.state.fecha_fin);
+  generateDias = () => {
+    const dias = [];
 
-        console.clear();
-        console.log("%c" + JSON.stringify(fechaActual, null, 2), "color: #2ECC40; font-weight: bold;");
-        console.log("%c" + JSON.stringify(fechaFin, null, 2), "color: #2ECC40; font-weight: bold;");
+    // Función para formatear fecha en formato yyyy-mm-dd local
+    const formatLocalDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
 
-        while (fechaActual <= fechaFin) {
-            dias.push({
-                dia: fechaActual.getDate()+1,
-                fecha: fechaActual.toISOString().split('T')[0]
-            });
-            fechaActual.setDate(fechaActual.getDate() + 1);
-        }
+    // Función para parsear string yyyy-mm-dd a fecha local (sin desfase)
+    const parseLocalDate = (str) => {
+        const [year, month, day] = str.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    };
 
-        console.log("%c" + JSON.stringify(dias, null, 2), "color: #2ECC40; font-weight: bold;");
+    // Inicializamos fechas correctamente
+    let fechaActual = parseLocalDate(this.state.fecha_inicio);
+    const fechaFin = parseLocalDate(this.state.fecha_fin);
 
-        this.setState({ dias });
+    // Si quieres sumar un día para iniciar desde el día siguiente:
+    // fechaActual.setDate(fechaActual.getDate() + 1);
+
+    console.clear();
+    console.log("%cDddddddddddddddddddd", "color: #2ECC40; font-weight: bold;");
+    console.log("%c" + fechaActual, "color: #2ECC40; font-weight: bold;");
+    console.log("%c" + fechaFin, "color: #2ECC40; font-weight: bold;");
+
+    // Generar array de días
+    while (fechaActual <= fechaFin) {
+        dias.push({
+            dia: fechaActual.getDate(),
+            fecha: formatLocalDate(fechaActual)
+        });
+        fechaActual.setDate(fechaActual.getDate() + 1);
     }
+
+    this.setState({ dias });
+};
+
+ 
 
     loadVentasPorFecha = async () => {
         try {
@@ -138,6 +159,8 @@ export default class tabla_productos_dia extends React.Component {
     render() {
         const { dataVentasPorDia, loadingVentasPorDia, fecha_inicio, fecha_fin, dias } = this.state;
 
+        // console.clear();
+        console.log("%c" + fecha_inicio,`color: #2ECC40; font-weight: bold;`);
         return (
             <SPage title={"Reporte de Totales de Ventas y Compras por Producto"}>
                 <ScrollView>
