@@ -93,13 +93,6 @@ export default class PopupCrearTipoPago extends Component<Props> {
 
     render() {
         if (!this.state.cuentas || !this.state.monedas || !this.state.tipo_pago) return <SLoad />
-        let cuentaSeleccionada;
-        if (this.props?.editObject?.key_cuenta_contable) {
-            let allCuentas = this.state.cuentas;
-            console.log("allCuentas", allCuentas)
-            cuentaSeleccionada = allCuentas.filter(c => c.key === this.props?.editObject.key_cuenta_contable)[0]
-            console.log("cuentaSeleccionada", cuentaSeleccionada)
-        }
         return <SView col={"xs-12"} center padding={16}>
             <SText fontSize={16}>{this.props?.editObject ? "Editar" : "Crear"} Tipo De Pago</SText>
             <SText fontSize={16} style={{ userSelect: "text" }}>{this.props.editObject?.key}</SText>
@@ -143,18 +136,12 @@ export default class PopupCrearTipoPago extends Component<Props> {
                             //type: "custom",
                             customInputClass: InputSelector,
                             style: { width: "100%" },
-                            // defaultValue: this.props.editObject?.key_cuenta_contable || "",
-                            // defaultValue:
-                            //     this.state.cuentaSeleccionada
-                            //         ? `${this.state.cuentaSeleccionada.codigo} - ${this.state.cuentaSeleccionada.descripcion}`
-                            //         : ""
-                            // ,
+                            defaultValue: this.props.editObject?.key_cuenta_contable || "",
                             value:
                                 this.state.cuentaSeleccionada
                                     ? `${this.state.cuentaSeleccionada.codigo} - ${this.state.cuentaSeleccionada.descripcion}`
-                                    : this.props.editObject?.key_cuenta_contable ? `${cuentaSeleccionada?.codigo} - ${cuentaSeleccionada?.descripcion}` : ""
+                                    : ""
                             ,
-                            //cuentaSeleccionada
                             // options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0).map((item: any) => ({
                             //     label: cuentaToText(item),
                             //     value: item.key,
@@ -239,8 +226,6 @@ export default class PopupCrearTipoPago extends Component<Props> {
                     }}
                     onSubmit={(data: any) => {
                         data.key = this.props.editObject?.key;
-                        data.key_cuenta_contable = this.state.cuentaSeleccionada.key
-                        console.log("dataaa", data)
                         SNotification.send({ key: "tipo_pago", title: "Tipo de pago", type: "loading" });
                         MDL.caja.empresa_tipo_pago_save(data).then((resp: any) => {
                             if (this.props.onSuccess) this.props.onSuccess(resp);

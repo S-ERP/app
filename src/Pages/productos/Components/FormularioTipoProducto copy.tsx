@@ -4,7 +4,6 @@ import SSocket from 'servisofts-socket';
 import MDL from '../../../MDL';
 import Btn from '../../empresa/config/Components/Btn';
 import InputFoto from '../../../Components/InputFoto';
-import CuentasAnidadas from "../../../Pages/conta/cuentas_anidadas";
 
 type Props = { editObject?: any, onCancel?: Function, onSuccess?: Function, }
 
@@ -87,30 +86,7 @@ export default class FormularioTipoProducto extends Component<Props> {
         if (!this.state.cuentas) return <SLoad />
 
         const tipo = MDL.inventario.TIPOS_DE_PRODUCTOS.find(a => a.key === this.state.tipo);
-        let cuentaSeleccionadaG;
-        let cuentaSeleccionadaC;
-        let cuentaSeleccionadaI;
-        if (this.props?.editObject?.key_cuenta_contable_ganancia) {
-            let allCuentas = this.state.cuentas;
-            console.log(this.props?.editObject?.key_cuenta_contable_ganancia)
-            console.log("allCuentas", allCuentas)
-            cuentaSeleccionadaG = allCuentas.filter(c => c.key === this.props?.editObject.key_cuenta_contable_ganancia)[0]
-            console.log("cuentaSeleccionadaG", cuentaSeleccionadaG)
-        }
-        if (this.props?.editObject?.key_cuenta_contable_costo) {
-            let allCuentas = this.state.cuentas;
-            console.log(this.props?.editObject?.key_cuenta_contable_costo)
-            console.log("allCuentas", allCuentas)
-            cuentaSeleccionadaC = allCuentas.filter(c => c.key === this.props?.editObject.key_cuenta_contable_costo)[0]
-            console.log("cuentaSeleccionadaC", cuentaSeleccionadaC)
-        }
-        if (this.props?.editObject?.key_cuenta_contable) {
-            let allCuentas = this.state.cuentas;
-            console.log(this.props?.editObject?.key_cuenta_contable)
-            console.log("allCuentas", allCuentas)
-            cuentaSeleccionadaI = allCuentas.filter(c => c.key === this.props?.editObject.key_cuenta_contable)[0]
-            console.log("cuentaSeleccionadaI", cuentaSeleccionadaI)
-        }
+
         return (
             <SView col="xs-12" center padding={16}>
                 <SText fontSize={16}>{this.props.editObject ? "Editar" : "Crear"} Tipo Producto</SText>
@@ -176,125 +152,32 @@ export default class FormularioTipoProducto extends Component<Props> {
                         ...tipo?.cuentas?.includes("key_cuenta_contable_ganancia") ? {
                             key_cuenta_contable_ganancia: {
                                 col: "xs-12",
-                                // type: "select2",
+                                type: "select2",
                                 label: "Cuenta de Ganancia",
-                                // defaultValue: cuentaToText(this.state.cuentas.find(c => c.key === this.props.editObject?.key_cuenta_contable_ganancia)),
-                                value:
-                                    this.state.cuentaSeleccionadaG
-                                        ? `${this.state.cuentaSeleccionadaG.codigo} - ${this.state.cuentaSeleccionadaG.descripcion}`
-                                        : this.props.editObject?.key_cuenta_contable_ganancia ? `${cuentaSeleccionadaG?.codigo} - ${cuentaSeleccionadaG?.descripcion}` : ""
-                                ,
-                                // options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0 && c.tipo === "INGRESO").map(cuentaToText)
-                                onPress: () => {
-                                    SPopup.open({
-                                        key: "popup-cuentas",
-                                        content: <SView
-                                            style={{
-                                                width: "100%",
-                                                height: 500,
-                                                maxWidth: 1000,
-                                                borderRadius: 8,
-                                                borderWidth: 1,
-                                                borderColor: STheme.color.card,
-                                                backgroundColor: STheme.color.background,
-                                                overflow: "hidden"
-
-                                            }} withoutFeedback>
-                                            <CuentasAnidadas
-                                                select={(cuentaSelec: any) => {
-                                                    console.log("SELECCIONADO:", cuentaSelec)
-                                                    this.setState({
-                                                        cuentaSeleccionadaG: cuentaSelec
-                                                    });
-                                                    SPopup.close("popup-cuentas");
-                                                }}
-                                                filtroTipo="INGRESO"
-                                            />
-                                        </SView>
-                                    });
-                                },
+                                defaultValue: cuentaToText(this.state.cuentas.find(c => c.key === this.props.editObject?.key_cuenta_contable_ganancia)),
+                                options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0 && c.tipo === "INGRESO").map(cuentaToText)
                             }
                         } : {},
 
                         ...tipo?.cuentas?.includes("key_cuenta_contable_costo") ? {
                             key_cuenta_contable_costo: {
                                 col: "xs-12",
+                                type: "select2",
                                 label: "Cuenta de Costo",
-                                value:
-                                    this.state.cuentaSeleccionadaC
-                                        ? `${this.state.cuentaSeleccionadaC.codigo} - ${this.state.cuentaSeleccionadaC.descripcion}`
-                                        : this.props.editObject?.key_cuenta_contable_costo ? `${cuentaSeleccionadaC?.codigo} - ${cuentaSeleccionadaC?.descripcion}` : ""
-                                ,
-                                onPress: () => {
-                                    SPopup.open({
-                                        key: "popup-cuentas",
-                                        content: <SView
-                                            style={{
-                                                width: "100%",
-                                                height: 500,
-                                                maxWidth: 1000,
-                                                borderRadius: 8,
-                                                borderWidth: 1,
-                                                borderColor: STheme.color.card,
-                                                backgroundColor: STheme.color.background,
-                                                overflow: "hidden"
-
-                                            }} withoutFeedback>
-                                            <CuentasAnidadas
-                                                select={(cuentaSelec: any) => {
-                                                    console.log("SELECCIONADO:", cuentaSelec)
-                                                    this.setState({
-                                                        cuentaSeleccionadaC: cuentaSelec
-                                                    });
-                                                    SPopup.close("popup-cuentas");
-                                                }}
-                                                filtroTipo="GASTO"
-                                            />
-                                        </SView>
-                                    });
-                                },
+                                defaultValue: cuentaToText(this.state.cuentas.find(c => c.key === this.props.editObject?.key_cuenta_contable_costo)),
+                                options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0 && c.tipo === "GASTO").map(cuentaToText)
                             }
                         } : {},
 
                         ...tipo?.cuentas?.includes("key_cuenta_contable") ? {
                             key_cuenta_contable: {
                                 col: "xs-12",
-                                label: "Cuenta de Costo",
-                                value:
-                                    this.state.cuentaSeleccionadaI
-                                        ? `${this.state.cuentaSeleccionadaI.codigo} - ${this.state.cuentaSeleccionadaI.descripcion}`
-                                        : this.props.editObject?.key_cuenta_contable ? `${cuentaSeleccionadaI?.codigo} - ${cuentaSeleccionadaI?.descripcion}` : ""
-                                ,
-                                onPress: () => {
-                                    SPopup.open({
-                                        key: "popup-cuentas",
-                                        content: <SView
-                                            style={{
-                                                width: "100%",
-                                                height: 500,
-                                                maxWidth: 1000,
-                                                borderRadius: 8,
-                                                borderWidth: 1,
-                                                borderColor: STheme.color.card,
-                                                backgroundColor: STheme.color.background,
-                                                overflow: "hidden"
-
-                                            }} withoutFeedback>
-                                            <CuentasAnidadas
-                                                select={(cuentaSelec: any) => {
-                                                    console.log("SELECCIONADO:", cuentaSelec)
-                                                    this.setState({
-                                                        cuentaSeleccionadaI: cuentaSelec
-                                                    });
-                                                    SPopup.close("popup-cuentas");
-                                                }}
-                                                filtroTipo="ACTIVO"
-                                            />
-                                        </SView>
-                                    });
-                                },
+                                type: "select2",
+                                label: "Cuenta de Inventario",
+                                defaultValue: cuentaToText(this.state.cuentas.find(c => c.key === this.props.editObject?.key_cuenta_contable)),
+                                options: this.state.cuentas.filter(c => c.cantidad_hijas <= 0 && c.tipo === "ACTIVO").map(cuentaToText)
                             }
-                        } : {},
+                        } : {}
 
                     }}
                     onSubmit={(data: any) => {
@@ -305,14 +188,10 @@ export default class FormularioTipoProducto extends Component<Props> {
                             codigo_facturacion: this.state.codigoProductoSeleccionado,
                             unidad_medida_facturacion: this.state.unidadMedidaSeleccionada,
                             key_cuenta_contable_ganancia: findCuentaText(this.state.cuentas, data.key_cuenta_contable_ganancia)?.key ?? "",
-                            // key_cuenta_contable_ganancia2: this.state.cuentaSeleccionadaG?.key ?? "",
                             key_cuenta_contable_costo: findCuentaText(this.state.cuentas, data.key_cuenta_contable_costo)?.key ?? "",
-                            // key_cuenta_contable_costo2: this.state.cuentaSeleccionadaC?.key ?? "",
-                            key_cuenta_contable: findCuentaText(this.state.cuentas, data.key_cuenta_contable)?.key ?? "",
-                            // key_cuenta_contable2: this.state.cuentaSeleccionadaI?.key ?? "",
+                            key_cuenta_contable: findCuentaText(this.state.cuentas, data.key_cuenta_contable)?.key??""
                         }
 
-                        console.log("final_data", final_data)
                         MDL.inventario.saveTipoProducto(final_data)
                             .then((resp: any) => {
                                 if (this._ref.image_perfil) {

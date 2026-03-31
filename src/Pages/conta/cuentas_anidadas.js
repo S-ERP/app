@@ -31,7 +31,7 @@ export default class cuentas_anidadas extends React.Component {
 
     async loadData() {
         const resp = await MDL.contabilidad.getCuentas();
-        const arr = Object.values(resp);
+        let arr = Object.values(resp);
 
         const ajustes = await MDL.contabilidad.getAjustes();
         const empresa = await MDL.empresa.getFull();
@@ -44,7 +44,32 @@ export default class cuentas_anidadas extends React.Component {
             cuenta.ajustes = ajustes.filter((ajuste) => ajuste?.ajuste_empresa?.key_cuenta_contable == cuenta.key);
         })
 
-        this.setState({ cuentas: arr })
+        if (this.props.filtroTipo) {
+            console.log(this.props.filtroTipo)
+            arr = arr.filter((dat) => dat.tipo === this.props.filtroTipo);
+
+            console.log("ARRR", arr);
+        }
+
+        // 🔥 CONSTRUIR TREE PARA PODER EXPANDIR
+        const tree = this.buildTree(arr);
+
+        let openItems = {};
+
+        // 🔥 SI HAY FILTRO → ABRIR TODO
+        if (this.props.filtroTipo) {
+            const allCodes = this.getAllCodesWithChildren(tree);
+
+            allCodes.forEach(code => {
+                openItems[code] = true;
+            });
+        }
+
+        this.setState({
+            cuentas: arr,
+            openItems
+        });
+        // this.setState({ cuentas: arr })
     }
 
     constructor(props) {
@@ -57,6 +82,9 @@ export default class cuentas_anidadas extends React.Component {
             selectedItem: null,
 
         };
+
+        //    const filtroTipo = this.props.filtroTipo || "";
+
     }
 
     toggleItem = (codigo) => {
@@ -605,8 +633,8 @@ export default class cuentas_anidadas extends React.Component {
                             <SView col={"xs-12 sm-8 md-8 lg-8 xl-8"}>
                                 <SView width={25} height={25} style={{
                                     position: "absolute",
-                                    top: 5,
-                                    left: 20
+                                    top: 8,
+                                    left: 5
                                 }}>
                                     <SIconApp name="Search" width={25} height={25} fill={STheme.color.text} />
                                 </SView>
