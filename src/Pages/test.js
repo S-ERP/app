@@ -122,6 +122,7 @@ export default class FacturaFormSimple extends Component {
                       });
                       SPopup.close("popup-cuentas");
                     }}
+                     btnSelect={true}
                   />
                 </SView>
               });

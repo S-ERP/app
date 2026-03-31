@@ -96,6 +96,7 @@ export default class cuentas_anidadas extends React.Component {
             search: "",
             hoveredItem: null,
             selectedItem: null,
+            selectPosition: null // { x, y }
         };
 
         // 🔥 evitar que keyEdit se aplique múltiples veces
@@ -370,11 +371,23 @@ export default class cuentas_anidadas extends React.Component {
                     //borderBottomColor: STheme.color.card
                 }}>
                 <SView
-                    onPress={() => {
-                        this.setState({ selectedItem: item.codigo });
-                        // if (!isSearching && hasChildren) {
-                        //     this.toggleItem(item.codigo);
-                        // }
+                    // onPress={() => {
+                    //     this.setState({ selectedItem: item.codigo });
+                    //     // if (!isSearching && hasChildren) {
+                    //     //     this.toggleItem(item.codigo);
+                    //     // }
+                    //     if (hasChildren) {
+                    //         this.toggleItem(item.codigo);
+                    //     }
+                    // }}
+                    onPress={(evt) => {
+                        const { pageX, pageY } = evt.nativeEvent;
+
+                        this.setState({
+                            selectedItem: item.codigo,
+                            selectPosition: { x: pageX, y: pageY }
+                        });
+
                         if (hasChildren) {
                             this.toggleItem(item.codigo);
                         }
@@ -783,6 +796,46 @@ export default class cuentas_anidadas extends React.Component {
 
                     })
                 }} />
+
+                {this.props.btnSelect && this.state.selectedItem && this.state.selectPosition && (
+                    <SView
+                        style={{
+                            position: "absolute",
+                            top: this.state.selectPosition.y - 65,
+                            left: this.state.selectPosition.x + 10,
+                            zIndex: 999
+                        }}
+                    >
+                        <SView row
+                            onPress={() => {
+                                const cuenta = this.state.cuentas.find(
+                                    c => c.codigo === this.state.selectedItem
+                                );
+
+                                if (this.props.select && cuenta) {
+                                    this.props.select(cuenta);
+                                }
+
+                                // opcional: ocultar botón después
+                                this.setState({ selectPosition: null });
+                            }}
+                            style={{
+                                paddingHorizontal: 16,
+                                paddingVertical: 10,
+                                backgroundColor: STheme.color.primary,
+                                borderRadius: 8,
+                                shadowColor: "#000",
+                                shadowOpacity: 0.3,
+                                shadowRadius: 5,
+                                elevation: 5
+                            }}
+                        >
+                            <SIconApp width={18} height={18} name="vineta1" fill={STheme.color.success} />
+                            <SView width={10} />
+                            <SText color={STheme.color.white}>Seleccionar</SText>
+                        </SView>
+                    </SView>
+                )}
             </SPage>
         );
     }

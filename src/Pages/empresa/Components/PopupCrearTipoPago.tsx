@@ -194,7 +194,8 @@ export default class PopupCrearTipoPago extends Component<Props> {
                                                 });
                                                 SPopup.close("popup-cuentas");
                                             }}
-                                            keyEdit= {this.props.editObject?.key_cuenta_contable ? this.props.editObject?.key_cuenta_contable : null}
+                                            keyEdit={this.props.editObject?.key_cuenta_contable ? this.props.editObject?.key_cuenta_contable : null}
+                                            btnSelect={true}
                                         />
                                     </SView>
                                 });
