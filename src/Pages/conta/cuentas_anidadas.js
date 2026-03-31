@@ -31,32 +31,75 @@ export default class cuentas_anidadas extends React.Component {
 
     async loadData() {
         const resp = await MDL.contabilidad.getCuentas();
-        const arr = Object.values(resp);
+        let arr = Object.values(resp);
 
         const ajustes = await MDL.contabilidad.getAjustes();
         const empresa = await MDL.empresa.getFull();
 
         this.setState({ ajustes: ajustes });
+
         arr.map((cuenta) => {
             if (cuenta.key_moneda) {
                 cuenta.moneda = empresa.monedas.find((m) => m.key == cuenta.key_moneda);
             }
             cuenta.ajustes = ajustes.filter((ajuste) => ajuste?.ajuste_empresa?.key_cuenta_contable == cuenta.key);
-        })
+        });
 
-        this.setState({ cuentas: arr })
+        if (this.props.filtroTipo) {
+            arr = arr.filter((dat) => dat.tipo === this.props.filtroTipo);
+        }
+
+        const tree = this.buildTree(arr);
+
+        // 🔥 MANTENER estado anterior
+        let openItems = { ...(this.state.openItems || {}) };
+        let selectedItem = this.state.selectedItem || null;
+
+        // 🔥 APLICAR keyEdit SOLO UNA VEZ
+        if (this.props.keyEdit && !this.keyEditApplied) {
+            this.keyEditApplied = true;
+
+            const cuentaSelected = arr.find(c => c.key == this.props.keyEdit);
+
+            if (cuentaSelected) {
+                selectedItem = cuentaSelected.codigo;
+
+                const parts = cuentaSelected.codigo.split(".");
+                while (parts.length > 1) {
+                    parts.pop();
+                    const parentCode = parts.join(".");
+                    openItems[parentCode] = true;
+                }
+            }
+        }
+
+        // 🔥 SI HAY FILTRO → ABRIR TODO
+        if (this.props.filtroTipo) {
+            const allCodes = this.getAllCodesWithChildren(tree);
+            allCodes.forEach(code => {
+                openItems[code] = true;
+            });
+        }
+
+        this.setState({
+            cuentas: arr,
+            openItems,
+            selectedItem
+        });
     }
 
     constructor(props) {
         super(props);
         this.state = {
-            openItems: {}, // { codigo: true/false }
+            openItems: {},
             cuentas: [],
             search: "",
             hoveredItem: null,
             selectedItem: null,
-
         };
+
+        // 🔥 evitar que keyEdit se aplique múltiples veces
+        this.keyEditApplied = false;
     }
 
     toggleItem = (codigo) => {
@@ -235,13 +278,21 @@ export default class cuentas_anidadas extends React.Component {
 
                             const parentCode = parts.join(".");
 
-                            this.setState(prev => ({
-                                selectedItem: newCuenta.codigo,
-                                openItems: {
-                                    ...prev.openItems,
-                                    [parentCode]: true // 👈 abre el padre
+                            this.setState(prev => {
+                                const parts = newCuenta.codigo.split(".");
+                                let newOpenItems = { ...prev.openItems };
+
+                                while (parts.length > 1) {
+                                    parts.pop();
+                                    const parent = parts.join(".");
+                                    newOpenItems[parent] = true;
                                 }
-                            }));
+
+                                return {
+                                    selectedItem: newCuenta.codigo,
+                                    openItems: newOpenItems
+                                };
+                            });
 
                             this.loadData();
                             // this.loadData();
@@ -605,8 +656,8 @@ export default class cuentas_anidadas extends React.Component {
                             <SView col={"xs-12 sm-8 md-8 lg-8 xl-8"}>
                                 <SView width={25} height={25} style={{
                                     position: "absolute",
-                                    top: 5,
-                                    left: 20
+                                    top: 8,
+                                    left: 5
                                 }}>
                                     <SIconApp name="Search" width={25} height={25} fill={STheme.color.text} />
                                 </SView>
@@ -648,7 +699,9 @@ export default class cuentas_anidadas extends React.Component {
                             showsVerticalScrollIndicator={true}
                         >
                             {filteredTree.map(item => this.renderItem(item))}
+                            <SHr height={65} />
                         </ScrollView>
+
                     </SView>
 
                 </SView>
@@ -709,13 +762,21 @@ export default class cuentas_anidadas extends React.Component {
 
                             const parentCode = parts.join(".");
 
-                            this.setState(prev => ({
-                                selectedItem: newCuenta.codigo,
-                                openItems: {
-                                    ...prev.openItems,
-                                    [parentCode]: true // 👈 abre el padre
+                            this.setState(prev => {
+                                const parts = newCuenta.codigo.split(".");
+                                let newOpenItems = { ...prev.openItems };
+
+                                while (parts.length > 1) {
+                                    parts.pop();
+                                    const parent = parts.join(".");
+                                    newOpenItems[parent] = true;
                                 }
-                            }));
+
+                                return {
+                                    selectedItem: newCuenta.codigo,
+                                    openItems: newOpenItems
+                                };
+                            });
 
                             this.loadData();
                         }
