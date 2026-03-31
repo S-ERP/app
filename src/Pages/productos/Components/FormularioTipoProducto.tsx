@@ -228,6 +228,7 @@ export default class FormularioTipoProducto extends Component<Props> {
                                                     SPopup.close("popup-cuentas");
                                                 }}
                                                 keyEdit= {this.props.editObject?.key_cuenta_contable_ganancia ? this.props.editObject?.key_cuenta_contable_ganancia : null}
+                                                 btnSelect={true}
                                             // filtroTipo="INGRESO"
                                             />
                                         </SView>
@@ -269,6 +270,7 @@ export default class FormularioTipoProducto extends Component<Props> {
                                                     SPopup.close("popup-cuentas");
                                                 }}
                                                 keyEdit= {this.props.editObject?.key_cuenta_contable_costo ? this.props.editObject?.key_cuenta_contable_costo : null}
+                                                btnSelect={true}
                                             // filtroTipo="GASTO"
                                             />
                                         </SView>
@@ -310,6 +312,7 @@ export default class FormularioTipoProducto extends Component<Props> {
                                                     SPopup.close("popup-cuentas");
                                                 }}
                                                 keyEdit= {this.props.editObject?.key_cuenta_contable ? this.props.editObject?.key_cuenta_contable : null}
+                                                btnSelect={true}
                                             // filtroTipo="ACTIVO"
                                             />
                                         </SView>
@@ -351,6 +354,7 @@ export default class FormularioTipoProducto extends Component<Props> {
                                                     SPopup.close("popup-cuentas");
                                                 }}
                                                 keyEdit= {this.props.editObject?.key_cuenta_contable_depreciacion_activo ? this.props.editObject?.key_cuenta_contable_depreciacion_activo : null}
+                                                btnSelect={true}
                                             // filtroTipo="ACTIVO"
                                             />
                                         </SView>
@@ -392,6 +396,7 @@ export default class FormularioTipoProducto extends Component<Props> {
                                                     SPopup.close("popup-cuentas");
                                                 }}
                                                 keyEdit= {this.props.editObject?.key_cuenta_contable_depreciacion_gasto ? this.props.editObject?.key_cuenta_contable_depreciacion_gasto : null}
+                                                btnSelect={true}
                                             // filtroTipo="ACTIVO"
                                             />
                                         </SView>
