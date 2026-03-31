@@ -33,7 +33,7 @@ export default class FormularioTipoProducto extends Component<Props> {
     }
 
     state: any = {
-        tipo: MDL.inventario.TIPOS_DE_PRODUCTOS[0].key,
+        tipo: this.props.editObject ? this.props.editObject.tipo : MDL.inventario.TIPOS_DE_PRODUCTOS[0].key,
         cuentas: null,
         productosServicios: [],
         unidadMedida: [],
@@ -87,9 +87,14 @@ export default class FormularioTipoProducto extends Component<Props> {
         if (!this.state.cuentas) return <SLoad />
 
         const tipo = MDL.inventario.TIPOS_DE_PRODUCTOS.find(a => a.key === this.state.tipo);
+        console.log("SELECT OBJECT", this.props.editObject)
+        console.log("TIPOOO", this.state.tipo)
+        console.log("TIPOOO", tipo)
         let cuentaSeleccionadaG;
         let cuentaSeleccionadaC;
         let cuentaSeleccionadaI;
+        let cuentaSeleccionadaDA;
+        let cuentaSeleccionadaDG;
         if (this.props?.editObject?.key_cuenta_contable_ganancia) {
             let allCuentas = this.state.cuentas;
             console.log(this.props?.editObject?.key_cuenta_contable_ganancia)
@@ -110,6 +115,20 @@ export default class FormularioTipoProducto extends Component<Props> {
             console.log("allCuentas", allCuentas)
             cuentaSeleccionadaI = allCuentas.filter(c => c.key === this.props?.editObject.key_cuenta_contable)[0]
             console.log("cuentaSeleccionadaI", cuentaSeleccionadaI)
+        }
+        if (this.props?.editObject?.key_cuenta_contable_depreciacion_activo) {
+            let allCuentas = this.state.cuentas;
+            console.log(this.props?.editObject?.key_cuenta_contable_depreciacion_activo)
+            console.log("allCuentas", allCuentas)
+            cuentaSeleccionadaDA = allCuentas.filter(c => c.key === this.props?.editObject.key_cuenta_contable_depreciacion_activo)[0]
+            console.log("cuentaSeleccionadaDA", cuentaSeleccionadaDA)
+        }
+        if (this.props?.editObject?.key_cuenta_contable_depreciacion_gasto) {
+            let allCuentas = this.state.cuentas;
+            console.log(this.props?.editObject?.key_cuenta_contable_depreciacion_gasto)
+            console.log("allCuentas", allCuentas)
+            cuentaSeleccionadaDG = allCuentas.filter(c => c.key === this.props?.editObject.key_cuenta_contable_depreciacion_gasto)[0]
+            console.log("cuentaSeleccionadaDG", cuentaSeleccionadaDG)
         }
         return (
             <SView col="xs-12" center padding={16}>
@@ -208,7 +227,8 @@ export default class FormularioTipoProducto extends Component<Props> {
                                                     });
                                                     SPopup.close("popup-cuentas");
                                                 }}
-                                                filtroTipo="INGRESO"
+                                                keyEdit= {this.props.editObject?.key_cuenta_contable_ganancia ? this.props.editObject?.key_cuenta_contable_ganancia : null}
+                                            // filtroTipo="INGRESO"
                                             />
                                         </SView>
                                     });
@@ -248,7 +268,8 @@ export default class FormularioTipoProducto extends Component<Props> {
                                                     });
                                                     SPopup.close("popup-cuentas");
                                                 }}
-                                                filtroTipo="GASTO"
+                                                keyEdit= {this.props.editObject?.key_cuenta_contable_costo ? this.props.editObject?.key_cuenta_contable_costo : null}
+                                            // filtroTipo="GASTO"
                                             />
                                         </SView>
                                     });
@@ -259,7 +280,7 @@ export default class FormularioTipoProducto extends Component<Props> {
                         ...tipo?.cuentas?.includes("key_cuenta_contable") ? {
                             key_cuenta_contable: {
                                 col: "xs-12",
-                                label: "Cuenta de Costo",
+                                label: "Cuenta de Inventario",
                                 value:
                                     this.state.cuentaSeleccionadaI
                                         ? `${this.state.cuentaSeleccionadaI.codigo} - ${this.state.cuentaSeleccionadaI.descripcion}`
@@ -288,7 +309,90 @@ export default class FormularioTipoProducto extends Component<Props> {
                                                     });
                                                     SPopup.close("popup-cuentas");
                                                 }}
-                                                filtroTipo="ACTIVO"
+                                                keyEdit= {this.props.editObject?.key_cuenta_contable ? this.props.editObject?.key_cuenta_contable : null}
+                                            // filtroTipo="ACTIVO"
+                                            />
+                                        </SView>
+                                    });
+                                },
+                            }
+                        } : {},
+
+                        ...tipo?.cuentas?.includes("key_cuenta_contable_depreciacion_activo") ? {
+                            key_cuenta_contable_depreciacion_activo: {
+                                col: "xs-12",
+                                label: "Cuenta de Depreciación de Activo",
+                                value:
+                                    this.state.cuentaSeleccionadaDA
+                                        ? `${this.state.cuentaSeleccionadaDA.codigo} - ${this.state.cuentaSeleccionadaDA.descripcion}`
+                                        : this.props.editObject?.key_cuenta_contable_depreciacion_activo ? `${cuentaSeleccionadaDA?.codigo} - ${cuentaSeleccionadaDA?.descripcion}` : ""
+                                ,
+                                onPress: () => {
+                                    SPopup.open({
+                                        key: "popup-cuentas",
+                                        content: <SView
+                                            style={{
+                                                width: "100%",
+                                                height: 500,
+                                                maxWidth: 1000,
+                                                borderRadius: 8,
+                                                borderWidth: 1,
+                                                borderColor: STheme.color.card,
+                                                backgroundColor: STheme.color.background,
+                                                overflow: "hidden"
+
+                                            }} withoutFeedback>
+                                            <CuentasAnidadas
+                                                select={(cuentaSelec: any) => {
+                                                    console.log("SELECCIONADO:", cuentaSelec)
+                                                    this.setState({
+                                                        cuentaSeleccionadaDA: cuentaSelec
+                                                    });
+                                                    SPopup.close("popup-cuentas");
+                                                }}
+                                                keyEdit= {this.props.editObject?.key_cuenta_contable_depreciacion_activo ? this.props.editObject?.key_cuenta_contable_depreciacion_activo : null}
+                                            // filtroTipo="ACTIVO"
+                                            />
+                                        </SView>
+                                    });
+                                },
+                            }
+                        } : {},
+
+                        ...tipo?.cuentas?.includes("key_cuenta_contable_depreciacion_gasto") ? {
+                            key_cuenta_contable_depreciacion_gasto: {
+                                col: "xs-12",
+                                label: "Cuenta de Depreciación de Gasto",
+                                value:
+                                    this.state.cuentaSeleccionadaDG
+                                        ? `${this.state.cuentaSeleccionadaDG.codigo} - ${this.state.cuentaSeleccionadaDG.descripcion}`
+                                        : this.props.editObject?.key_cuenta_contable_depreciacion_gasto ? `${cuentaSeleccionadaDG?.codigo} - ${cuentaSeleccionadaDG?.descripcion}` : ""
+                                ,
+                                onPress: () => {
+                                    SPopup.open({
+                                        key: "popup-cuentas",
+                                        content: <SView
+                                            style={{
+                                                width: "100%",
+                                                height: 500,
+                                                maxWidth: 1000,
+                                                borderRadius: 8,
+                                                borderWidth: 1,
+                                                borderColor: STheme.color.card,
+                                                backgroundColor: STheme.color.background,
+                                                overflow: "hidden"
+
+                                            }} withoutFeedback>
+                                            <CuentasAnidadas
+                                                select={(cuentaSelec: any) => {
+                                                    console.log("SELECCIONADO:", cuentaSelec)
+                                                    this.setState({
+                                                        cuentaSeleccionadaDG: cuentaSelec
+                                                    });
+                                                    SPopup.close("popup-cuentas");
+                                                }}
+                                                keyEdit= {this.props.editObject?.key_cuenta_contable_depreciacion_gasto ? this.props.editObject?.key_cuenta_contable_depreciacion_gasto : null}
+                                            // filtroTipo="ACTIVO"
                                             />
                                         </SView>
                                     });
@@ -297,6 +401,7 @@ export default class FormularioTipoProducto extends Component<Props> {
                         } : {},
 
                     }}
+
                     onSubmit={(data: any) => {
                         const final_data = {
                             ...(this.props.editObject ?? { key_empresa: MDL.empresa.select?.key }),
@@ -309,6 +414,8 @@ export default class FormularioTipoProducto extends Component<Props> {
                             key_cuenta_contable_costo: findCuentaText(this.state.cuentas, data.key_cuenta_contable_costo)?.key ?? "",
                             // key_cuenta_contable_costo2: this.state.cuentaSeleccionadaC?.key ?? "",
                             key_cuenta_contable: findCuentaText(this.state.cuentas, data.key_cuenta_contable)?.key ?? "",
+                            key_cuenta_contable_depreciacion_activo: findCuentaText(this.state.cuentas, data.key_cuenta_contable_depreciacion_activo)?.key ?? "",
+                            key_cuenta_contable_depreciacion_gasto: findCuentaText(this.state.cuentas, data.key_cuenta_contable_depreciacion_gasto)?.key ?? "",
                             // key_cuenta_contable2: this.state.cuentaSeleccionadaI?.key ?? "",
                         }
 

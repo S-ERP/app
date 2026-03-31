@@ -55,6 +55,25 @@ export default class cuentas_anidadas extends React.Component {
         const tree = this.buildTree(arr);
 
         let openItems = {};
+        let selectedItem = null;
+
+        // SI ES EDITAR, MOSTRAR EXPANDIDO 
+        if (this.props.keyEdit) {
+            const cuentaSelected = arr.find(c => c.key == this.props.keyEdit);
+
+            if (cuentaSelected) {
+                selectedItem = cuentaSelected.codigo;
+
+                // 🔥 expandir todos los padres
+                const parts = cuentaSelected.codigo.split(".");
+
+                while (parts.length > 1) {
+                    parts.pop();
+                    const parentCode = parts.join(".");
+                    openItems[parentCode] = true;
+                }
+            }
+        }
 
         // 🔥 SI HAY FILTRO → ABRIR TODO
         if (this.props.filtroTipo) {
@@ -65,9 +84,14 @@ export default class cuentas_anidadas extends React.Component {
             });
         }
 
+        // this.setState({
+        //     cuentas: arr,
+        //     openItems
+        // });
         this.setState({
             cuentas: arr,
-            openItems
+            openItems,
+            selectedItem
         });
         // this.setState({ cuentas: arr })
     }
@@ -676,7 +700,9 @@ export default class cuentas_anidadas extends React.Component {
                             showsVerticalScrollIndicator={true}
                         >
                             {filteredTree.map(item => this.renderItem(item))}
+                            <SHr height={65} />
                         </ScrollView>
+
                     </SView>
 
                 </SView>
