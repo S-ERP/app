@@ -138,12 +138,14 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             <SView padding={8}>
                 <SText col={"xs-12"} style={{ textAlign: "right" }}>
                     {"Total:"} {selectedMoneda.observacion + " "}
-                    {SMath.formatMoney(
+                    {SMath.formatMoney(MDL.carrito.carrito_venta.monto_total)}
+
+                    {/* {SMath.formatMoney(
                         items.reduce((acc, item) => {
                             const precio = selectedMoneda ? item.modelo.precio_venta_moneda / (selectedMoneda.tipo_cambio || 1) : item.modelo.precio_venta_moneda;
                             return acc + precio * item.cantidad;
                         }, 0)
-                    )}
+                    )} */}
                 </SText>
             </SView>
             <SHr h={1} color={STheme.color.card} />
@@ -235,37 +237,20 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
 const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
 
     const [precio, setPrecio] = React.useState(0);
-    const [cantidad, setCantidad] = React.useState(item.cantidad || 1);
-
     const calcularPrecio = () => {
         if (!moneda) return item.modelo.precio_venta;
-
         if (item.modelo.venta_moneda.key === moneda.key) {
             return item.modelo.precio_venta;
-        } else {
-            const tipoCambioVenta = item.modelo.venta_moneda.tipo_cambio || 1;
-            const tipoCambioSeleccionada = moneda.tipo_cambio || 1;
-            return item.modelo.precio_venta * (tipoCambioVenta / tipoCambioSeleccionada);
         }
+        const tipoCambioVenta = item.modelo.venta_moneda.tipo_cambio || 1;
+        const tipoCambioSeleccionada = moneda.tipo_cambio || 1;
+        return item.modelo.precio_venta * (tipoCambioVenta / tipoCambioSeleccionada);
     };
-
-    // 🔥 inicializa precio correctamente
     React.useEffect(() => {
         setPrecio(calcularPrecio());
     }, [moneda, item.modelo.precio_venta]);
-
-    // 🔥 sincroniza hacia el item (opcional pero ordenado)
-    React.useEffect(() => {
-        item.cantidad = cantidad;
-    }, [cantidad]);
-
-    React.useEffect(() => {
-        item.modelo.precio_venta_moneda = moneda
-            ? precio * (moneda.tipo_cambio || 1)
-            : precio;
-    }, [precio]);
-
-    const totalItem = precio * cantidad;
+    const precioFormateado = Number.isInteger(precio) ? precio.toString() : (precio ?? 0);
+    // const totalItem = (item.modelo.precio_venta_moneda / (moneda?.tipo_cambio || 1)) * item.cantidad;
 
     return (
         <SView padding={8}>
@@ -301,27 +286,31 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
 
                         {/* PRECIO */}
 
-                        <SView width={60}>
+                        <SView width={70}>
 
                             <SInput
                                 style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
-                                // icon={
-                                //     <SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray}>
-                                //         {moneda ? moneda.observacion : "BS"}
-                                //     </SText>
-                                // }
-                                type="money2"
-                                value={precio}
+                                icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray} >{moneda ? moneda.observacion : "BS"}</SText>}
+                                type="money"
+                                value={precioFormateado}
+
+                                // value={precio ? precio.toFixed(2) : ""}
+
                                 onChangeText={(e) => {
-                                    const val = parseFloat(e || "0");
-                                    setPrecio(val);
+                                    setPrecio(e);
+                                    item.modelo.precio_venta_moneda = moneda ? e * (moneda.tipo_cambio || 1) : e;
                                     MDL.carrito.calcularValoresCarritDeVentas();
                                 }}
+                            // onChangeText={(e) => {
+                            //     const val = parseFloat(e || "0");
+                            //     setPrecio(val);
+                            //     MDL.carrito.calcularValoresCarritDeVentas();
+                            // }}
                             />
                         </SView>
 
                         <SView width={4} />
-                        <SView width={60}>
+                        <SView width={50}>
 
                             {/* CANTIDAD */}
                             <SInput
@@ -329,10 +318,9 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 type="money2"
                                 icon={<SText width={15} fontSize={10} color={STheme.color.lightGray}>x</SText>}
 
-                                value={cantidad.toString()}
+                                value={item.cantidad.toString()}
                                 onChangeText={(e) => {
-                                    const val = parseFloat(e || "0");
-                                    setCantidad(val);
+                                    item.cantidad = e;
                                     MDL.carrito.calcularValoresCarritDeVentas();
                                 }}
                             />
@@ -347,7 +335,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
 
                         <SView width={80} style={{ justifyContent: "center" }}>
                             <SText fontSize={12} bold style={{ textAlign: "right" }}>
-                                {SMath.formatMoney(totalItem)}
+                                {SMath.formatMoney(precio * item.cantidad)}
                             </SText>
                         </SView>
 
@@ -358,7 +346,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                     <ListaCostos
                         item={item}
                         moneda={moneda}
-                        totalItem={totalItem}
+                        totalItem={precio * item.cantidad}
                     />
 
                 </SView>
@@ -454,7 +442,9 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
                         style={{ height: 18, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
                         type="money2"
                         icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray} > {moneda ? moneda.observacion : "BS"} </SText>}
-                        value={monto}
+                        // value={monto}
+                                                value={SMath.formatMoney(monto)}
+
                         onChangeText={(e: string) => {
                             const valor = parseFloat(e || "0");
                             setMonto(valor);
