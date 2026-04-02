@@ -8,6 +8,7 @@ import edit from "./edit";
 import _delete from "./delete";
 import tabla from "./tabla";
 import perfil from "./perfil";
+import tabla_transacciones from "./tabla_transacciones";
 const model = Model.cliente;
 
 export const Parent = {
@@ -24,4 +25,5 @@ export default SPage.combinePages(Parent.name, {
     "edit": edit,
     "delete": _delete,
     "perfil": perfil,
+    "transacciones": tabla_transacciones,
 })
