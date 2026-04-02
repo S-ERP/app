@@ -42,7 +42,7 @@ export default class TablaTransacciones extends Component {
 
             if (!keyEmpresa || !keyCliente) return [];
 
-            const ventas = await MDL.compra_venta.execute_function("_get_detalles_bycliente", [keyEmpresa, keyCliente]);
+            const ventas = await MDL.compra_venta.execute_function("_get_detalles_bycliente2", [keyEmpresa, keyCliente]);
 
             if (!ventas || ventas.length === 0) return [];
 
@@ -132,128 +132,86 @@ export default class TablaTransacciones extends Component {
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => (e?.index ?? 0) + 1} />
                 <DinamicTable.Col key="fecha" label="Fecha" width={140} data={e => e?.row?.fecha_on ? new SDate(e.row.fecha_on).toString("dd/MM/yyyy") : ""} />
-                {/* <DinamicTable.Col key="sucursal" label="Sucursal" width={180} data={(e) => e.row?.sucursal?.descripcion}
-                    customComponent={e => <this.RowWithImage
-                        keyEntity={e.row?.key_sucursal}
-                        label={e.row?.sucursal?.descripcion}
-                        srcPrefix={`${SSocket.api.empresa}sucursal/`}
-                        styleText={e.textStyle}
-                    />}
-                />
-
-                <DinamicTable.Col key="almacen" label="Almacén" width={140} data={(e) => e.row?.almacen?.descripcion ?? ""}
-                    customComponent={e => <this.RowWithImage
-                        keyEntity={e.row?.almacen?.key}
-                        label={e.row?.almacen?.descripcion}
-                        srcPrefix={`${SSocket.api.empresa}sucursal/`}
-                        styleText={e.textStyle}
-                    />}
-                /> */}
-                {/* <DinamicTable.Col key="tipo_pago" label="Tipo de Pago" width={120} data={(e) => e.row?.tipo_pago} /> */}
-
                 <DinamicTable.Col key="tipo" label="Tipo" width={100} data={(e) => e?.row?.tipo || "-"} />
-                <DinamicTable.Col key="detalle" label="Detalle" width={200} data={(e) => e?.row?.descripcion || "-"} />
-
-                <DinamicTable.Col
-                    key="precio_unitario_base"
-                    label="Precio"
-                    width={90}
-                    data={(e) => e?.row?.precio_unitario_base ?? 0}
-                    cellStyle={{ alignItems: "flex-end" }}
-                    format={(e) => `${e?.row?.moneda?.observacion || ""} ${SMath.formatMoney(e.data || 0)}`}
-                />
-
-                <DinamicTable.Col
-                    key="cantidad"
-                    label="Cantidad"
-                    width={80}
-                    center
-                    data={(e) => e?.row?.cantidad ?? 0}
+                <DinamicTable.Col key="detalle" label="Detalle" width={200} data={(e) => e?.row?.descripcion || "-"}
                     footerComponent={() => (
-                        <SView style={{ alignItems: "center" }}>
+                        <SView style={{ alignItems: "flex-end", paddingRight: 8 }}>
                             <SText bold>Total</SText>
+
                         </SView>
                     )}
-                />
 
-                <DinamicTable.Col
-                    key="subtotal"
-                    label="Subtotal"
-                    width={90}
-                    data={(e) => e?.row?.subtotal ?? 0}
-                    cellStyle={{ alignItems: "flex-end" }}
-                    format={(e) => `${e?.row?.moneda?.observacion || ""} ${SMath.formatMoney(e.data || 0)}`}
-                    footerComponent={() => (
-                        <SView style={{ alignItems: "center" }}>
-                            <SText bold>Total Ofi</SText>
-                        </SView>
-                    )}
                 />
-
 
                 <DinamicTable.Col
                     key="debe"
                     label="Debe"
                     width={100}
-                    data={(e) => e?.row?.subtotal ?? 0}
+                    data={(e) => e?.row?.debe ?? 0}
                     cellStyle={{ alignItems: "flex-end" }}
-                    format={(e) => e.data ? SMath.formatMoney(e.data) : "0"}
+                    format={(e) => e.data?`${SMath.formatMoney(e.data || 0)}`:""} // Formatea el saldo
 
-
-                    footerComponent={() => (
-                        <SView style={{ alignItems: "flex-end", paddingRight: 8 }}>
-                            <SText bold>
-                                {/* {`${monedaLabel || ""} ${SMath.formatMoney(____totalDebe || 0)}`} */}
-                                {SMath.formatMoney(____totalDebe|| 0)}
-                            </SText>
+ 
+                    footerComponent={(e) => {
+                        let total = 0;
+                        e.dinamicTable.data.map(a => {
+                            total += a.debe || 0
+                        })
+                        return <SView style={{ alignItems: "center" }}>
+                            <SText >{`${SMath.formatMoney(total || 0)}`}</SText>
+                            {/* <SText >{total}</SText> */}
+                            {/* <SText style={e.dinamicTable.textStyle}>{total}</SText> */}
                         </SView>
-                    )}
-                // footerComponent={() => {
-
-                //     const data = ventasEnriquecidas|| [];
-                //     console.log("%c" + JSON.stringify(data, null, 2), "color: #2ECC40; font-weight: bold;");
-                //     const total = data.reduce((acc, row) => {
-                //         return acc + (row?.subtotal || 0);
-                //     }, 0);
-
-
-                //     return (
-                //         <SView style={{ alignItems: "flex-end", paddingRight: 8 }}>
-                //             <SText bold>
-
-                //                 {`${SMath.formatMoney(total || 0)}` }
-                //             </SText>
-                //         </SView>
-                //     );
-                // }}
+                    }}
+               
                 />
 
                 <DinamicTable.Col
                     key="haber"
                     label="Haber"
                     width={100}
-                    data={() => 0}
+                    data={(e) => e?.row?.haber ?? 0}
                     cellStyle={{ alignItems: "flex-end" }}
-                    format={(e) => e.data ? SMath.formatMoney(e.data) : "0"}
+                    // format={(e) => `${SMath.formatMoney(e.data || 0)}`} // Formatea el saldo
+                    format={(e) => e.data?`${SMath.formatMoney(e.data || 0)}`:""} // Formatea el saldo
+
+
+                    footerComponent={(e) => {
+                        let total = 0;
+                        e.dinamicTable.data.map(a => {
+                            total += a.haber || 0
+                        })
+                        return <SView style={{ alignItems: "center" }}>
+                            {/* <SText  >{total}</SText> */}
+
+
+                            <SText  > {`${SMath.formatMoney(total || 0)}`} </SText>
+
+                        </SView>
+                    }}
+
                 />
 
                 <DinamicTable.Col
                     key="saldo"
                     label="Saldo"
                     width={120}
-                    data={(e) => e?.row?.subtotal ?? 0}
+                    data={(e) => e?.row?.saldo ?? 0} // Muestra el saldo de cada fila
                     cellStyle={{ alignItems: "flex-end" }}
-                    format={(e) => `${e?.row?.moneda?.observacion || ""} ${SMath.formatMoney(e.data || 0)}`}
+                    format={(e) => `${SMath.formatMoney(e.data || 0)}`} // Formatea el saldo
+                    footerComponent={(e) => {
+                        // Mostrar el saldo del último registro como total final
+                        const lastRow = e.dinamicTable.data[e.dinamicTable.data.length - 1];
+                        const totalSaldo = lastRow?.saldo || 0;
+
+                        return (
+                            <SView style={{ alignItems: "flex-end", paddingRight: 8 }}>
+                                <SText  >{`${SMath.formatMoney(totalSaldo)}`}</SText>
+                            </SView>
+                        );
+                    }}
                 />
 
-                {/* <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
-                    customComponent={e => <this.RowWithImage
-                        keyEntity={e.row?.key_usuario}
-                        label={e.row?.usuario?.Nombres}
-                        srcPrefix={`${SSocket.api.root}usuario/`}
-                        styleText={e.textStyle}
-                    />}
-                /> */}
             </DinamicTable>
         );
     }
