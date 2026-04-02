@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 // import { SPage, SPopup, SView, SText, STheme, SHr, SDate, SMath } from 'servisofts-component';
 import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath, SNotification } from 'servisofts-component';
+import SSocket from 'servisofts-socket';
 
 import { DinamicTable } from 'servisofts-table';
 // import SNavigation from 'servisofts-component/SNavigation';
@@ -18,6 +19,19 @@ export default class TablaTransacciones extends Component {
             cliente: null,
         };
         this.key = SNavigation.getParam("key");
+    }
+
+    RowWithImage = ({ keyEntity, label, srcPrefix, styleText }) => {
+        if (!keyEntity) return null;
+        return (
+            <SView col={"xs-12"} center row>
+                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
+                    <SImage src={`${srcPrefix}${keyEntity}?date=${new Date().getTime()}`} style={{ resizeMode: "cover" }} />
+                </SView>
+                <SView width={5} />
+                <SText flex numberOfLines={1} style={styleText}>{label}</SText>
+            </SView>
+        );
     }
 
     async loadInitialData() {
@@ -98,6 +112,25 @@ export default class TablaTransacciones extends Component {
             >
                 <DinamicTable.Col key="index" label="N°" width={30} data={(e) => (e?.index ?? 0) + 1} />
                 <DinamicTable.Col key="fecha" label="Fecha" width={140} data={e => e?.row?.fecha_on ? new SDate(e.row.fecha_on).toString("dd/MM/yyyy") : ""} />
+                {/* <DinamicTable.Col key="sucursal" label="Sucursal" width={180} data={(e) => e.row?.sucursal?.descripcion}
+                    customComponent={e => <this.RowWithImage
+                        keyEntity={e.row?.key_sucursal}
+                        label={e.row?.sucursal?.descripcion}
+                        srcPrefix={`${SSocket.api.empresa}sucursal/`}
+                        styleText={e.textStyle}
+                    />}
+                />
+
+                <DinamicTable.Col key="almacen" label="Almacén" width={140} data={(e) => e.row?.almacen?.descripcion ?? ""}
+                    customComponent={e => <this.RowWithImage
+                        keyEntity={e.row?.almacen?.key}
+                        label={e.row?.almacen?.descripcion}
+                        srcPrefix={`${SSocket.api.empresa}sucursal/`}
+                        styleText={e.textStyle}
+                    />}
+                /> */}
+                {/* <DinamicTable.Col key="tipo_pago" label="Tipo de Pago" width={120} data={(e) => e.row?.tipo_pago} /> */}
+
                 <DinamicTable.Col key="tipo" label="Tipo" width={100} data={(e) => e?.row?.tipo || "-"} />
                 <DinamicTable.Col key="detalle" label="Detalle" width={200} data={(e) => e?.row?.descripcion || "-"} />
 
@@ -153,6 +186,15 @@ export default class TablaTransacciones extends Component {
                     cellStyle={{ alignItems: "flex-end" }}
                     format={(e) => `${e?.row?.moneda?.observacion || ""} ${SMath.formatMoney(e.data || 0)}`}
                 />
+
+                {/* <DinamicTable.Col key="admin" label="Admin" width={120} data={(e) => e.row?.usuario?.Nombres ?? ""}
+                    customComponent={e => <this.RowWithImage
+                        keyEntity={e.row?.key_usuario}
+                        label={e.row?.usuario?.Nombres}
+                        srcPrefix={`${SSocket.api.root}usuario/`}
+                        styleText={e.textStyle}
+                    />}
+                /> */}
             </DinamicTable>
         );
     }
@@ -175,7 +217,7 @@ export default class TablaTransacciones extends Component {
                     <SHr height={10} />
 
                     <SView col={"xs-12"} row>
-                        <SText fontSize={15}>Cliente: {cliente?.nombres || "-"}</SText>
+                        <SText fontSize={15}>Cliente: {cliente?.nombres + " " + cliente?.apellidos || "-"}</SText>
                     </SView>
                 </SView>
 
