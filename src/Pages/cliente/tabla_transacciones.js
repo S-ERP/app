@@ -80,7 +80,7 @@ export default class TablaTransacciones extends Component {
             });
 
 
-            console.clear();
+            // console.clear();
             console.log("%c" + JSON.stringify(first, null, 2), "color: #2ECC40; font-weight: bold;");
             console.log("%c" + JSON.stringify(last, null, 2), "color: #eeff00; font-weight: bold;");
             // console.log("%c" + first, `color: #2ECC40; font-weight: bold;`);
@@ -101,7 +101,23 @@ export default class TablaTransacciones extends Component {
     }
 
     mostrarTabla() {
-        const { ventasEnriquecidas } = this.state;
+
+        const data = this.state.ventasEnriquecidas || [];
+
+        const totalDebe = data.reduce((acc, row) => {
+            return acc + (row?.subtotal || 0);
+        }, 0);
+
+        console.clear();
+        console.log("%c" + JSON.stringify(data, null, 2), "color: #2ECC40; font-weight: bold;");
+
+        console.log("%c" + totalDebe, `color: #cc752e; font-weight: bold;`);
+        const monedaLabel = "dol";
+        // const monedaLabel = this.state?.moneda?.observacion || "";
+
+
+        const ____totalDebe = 55;
+        // const ____totalDebe = SMath.formatMoney(totalDebe || 0);
 
         return (
             <DinamicTable
@@ -174,7 +190,7 @@ export default class TablaTransacciones extends Component {
                     )}
                 />
 
-  
+
                 <DinamicTable.Col
                     key="debe"
                     label="Debe"
@@ -182,25 +198,13 @@ export default class TablaTransacciones extends Component {
                     data={(e) => e?.row?.subtotal ?? 0}
                     cellStyle={{ alignItems: "flex-end" }}
                     format={(e) => e.data ? SMath.formatMoney(e.data) : "0"}
-
-                    footerComponent={() => {
-
-                        const data = ventasEnriquecidas|| [];
-                        console.log("%c" + JSON.stringify(data, null, 2), "color: #2ECC40; font-weight: bold;");
-                        const total = data.reduce((acc, row) => {
-                            return acc + (row?.subtotal || 0);
-                        }, 0);
-
-
-                        return (
-                            <SView style={{ alignItems: "flex-end", paddingRight: 8 }}>
-                                <SText bold>
-
-                                    {`${SMath.formatMoney(total || 0)}` }
-                                </SText>
-                            </SView>
-                        );
-                    }}
+                    footerComponent={() => (
+                        <SView style={{ alignItems: "flex-end", paddingRight: 8 }}>
+                            <SText bold>
+                                {`${monedaLabel || ""} ${SMath.formatMoney(____totalDebe || 0)}`}
+                            </SText>
+                        </SView>
+                    )}
                 />
 
                 <DinamicTable.Col
