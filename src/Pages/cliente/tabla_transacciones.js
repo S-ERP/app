@@ -17,6 +17,7 @@ export default class TablaTransacciones extends Component {
             fecha_fin: null,
             moneda: null,
             cliente: null,
+            ventasEnriquecidas: null,
         };
         this.key = SNavigation.getParam("key");
     }
@@ -75,6 +76,7 @@ export default class TablaTransacciones extends Component {
                 fecha_fin: first?.fecha_on || null,
                 moneda: first?.moneda || null,
                 cliente: cliente || {},
+                ventasEnriquecidas: ventasEnriquecidas || {},
             });
 
 
@@ -99,6 +101,8 @@ export default class TablaTransacciones extends Component {
     }
 
     mostrarTabla() {
+        const { ventasEnriquecidas } = this.state;
+
         return (
             <DinamicTable
                 ref={ref => (this.DinamicTable = ref)}
@@ -149,6 +153,11 @@ export default class TablaTransacciones extends Component {
                     width={80}
                     center
                     data={(e) => e?.row?.cantidad ?? 0}
+                    footerComponent={() => (
+                        <SView style={{ alignItems: "center" }}>
+                            <SText bold>Total</SText>
+                        </SView>
+                    )}
                 />
 
                 <DinamicTable.Col
@@ -158,8 +167,14 @@ export default class TablaTransacciones extends Component {
                     data={(e) => e?.row?.subtotal ?? 0}
                     cellStyle={{ alignItems: "flex-end" }}
                     format={(e) => `${e?.row?.moneda?.observacion || ""} ${SMath.formatMoney(e.data || 0)}`}
+                    footerComponent={() => (
+                        <SView style={{ alignItems: "center" }}>
+                            <SText bold>Total Ofi</SText>
+                        </SView>
+                    )}
                 />
 
+  
                 <DinamicTable.Col
                     key="debe"
                     label="Debe"
@@ -167,6 +182,25 @@ export default class TablaTransacciones extends Component {
                     data={(e) => e?.row?.subtotal ?? 0}
                     cellStyle={{ alignItems: "flex-end" }}
                     format={(e) => e.data ? SMath.formatMoney(e.data) : "0"}
+
+                    footerComponent={() => {
+
+                        const data = ventasEnriquecidas|| [];
+                        console.log("%c" + JSON.stringify(data, null, 2), "color: #2ECC40; font-weight: bold;");
+                        const total = data.reduce((acc, row) => {
+                            return acc + (row?.subtotal || 0);
+                        }, 0);
+
+
+                        return (
+                            <SView style={{ alignItems: "flex-end", paddingRight: 8 }}>
+                                <SText bold>
+
+                                    {`${SMath.formatMoney(total || 0)}` }
+                                </SText>
+                            </SView>
+                        );
+                    }}
                 />
 
                 <DinamicTable.Col
