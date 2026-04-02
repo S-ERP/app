@@ -198,13 +198,34 @@ export default class TablaTransacciones extends Component {
                     data={(e) => e?.row?.subtotal ?? 0}
                     cellStyle={{ alignItems: "flex-end" }}
                     format={(e) => e.data ? SMath.formatMoney(e.data) : "0"}
+
+
                     footerComponent={() => (
                         <SView style={{ alignItems: "flex-end", paddingRight: 8 }}>
                             <SText bold>
-                                {`${monedaLabel || ""} ${SMath.formatMoney(____totalDebe || 0)}`}
+                                {/* {`${monedaLabel || ""} ${SMath.formatMoney(____totalDebe || 0)}`} */}
+                                {SMath.formatMoney(____totalDebe|| 0)}
                             </SText>
                         </SView>
                     )}
+                // footerComponent={() => {
+
+                //     const data = ventasEnriquecidas|| [];
+                //     console.log("%c" + JSON.stringify(data, null, 2), "color: #2ECC40; font-weight: bold;");
+                //     const total = data.reduce((acc, row) => {
+                //         return acc + (row?.subtotal || 0);
+                //     }, 0);
+
+
+                //     return (
+                //         <SView style={{ alignItems: "flex-end", paddingRight: 8 }}>
+                //             <SText bold>
+
+                //                 {`${SMath.formatMoney(total || 0)}` }
+                //             </SText>
+                //         </SView>
+                //     );
+                // }}
                 />
 
                 <DinamicTable.Col
