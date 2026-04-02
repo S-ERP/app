@@ -201,6 +201,14 @@ export default class ListaClientes extends Component {
                         },
                     });
 
+                    options.push({
+                        label: 'Ver trasabilidadd',
+                        icon: <SIcon name="Eyes" fill={STheme.color.text} />,
+                        onPress: () => {
+                            SNavigation.navigate("/cliente/transacciones", { key: e.row.key })
+                        },
+                    });
+
 
                     if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
                         options.push({
@@ -346,7 +354,7 @@ export default class ListaClientes extends Component {
     }
     render() {
         return (
-            <SPage title="Gestión de Clientes" disableScroll>
+            <SPage title="Gestión de Clientedddddddddds" disableScroll>
                 <SView row col={"xs-12"} style={{ borderBottomWidth: 1, borderColor: STheme.color.lightGray + "30", paddingVertical: 8, paddingHorizontal: 12, }} >
                     <SView col={"xs-12 sm-5 lg-2"} row center style={{ flexWrap: "wrap", }}>
                         <FiltroSelector
