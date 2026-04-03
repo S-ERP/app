@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath, SNotification, SLoad } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath, SNotification } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../Config';
@@ -10,9 +10,8 @@ export default class TablaTransacciones extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            // fecha_inicio: "2026-01-01",
-            fecha_inicio: new SDate().toString("yyyy-MM-dd"),
-            fecha_fin: new SDate().toString("yyyy-MM-dd"),
+            fecha_inicio: null,
+            fecha_fin: null,
             moneda: null,
             cliente: null,
             ventasEnriquecidas: null,
@@ -33,32 +32,17 @@ export default class TablaTransacciones extends Component {
         );
     }
 
-    componentDidMount() {
-        this.loadInitialData();
-    }
-
     async loadInitialData() {
         try {
             const keyEmpresa = await MDL?.empresa?.select?.key;
             const keyCliente = this.key;
-            const fecha_inicio = this.state.fecha_inicio;
-            const fecha_fin = this.state.fecha_fin;
-
-            console.clear();
-            console.log("%c" + "entro a loadInitialData", `color: #cc4e2e; font-weight: bold;`);
             if (!keyEmpresa || !keyCliente) return [];
-            const ventas = await MDL.compra_venta.execute_function("_get_detalles_bycliente2", [keyEmpresa, keyCliente, fecha_inicio, fecha_fin]);
-
-            const cliente =  await MDL.crm.cliente.getByKey(keyCliente);
-            console.log("%c" + "entro a loadInitialData", `color: #ccaf2e; font-weight: bold;`);
-
-            // Si no hay ventas, igual cargamos datos del cliente para mostrar su información.
-            if (!ventas || ventas.length === 0) {
-                this.setState({ cliente: cliente || {}, moneda: null });
-                return [];
-            }
-            const [empresa, usuarios = [], almacenes = []] = await Promise.all([
+            const ventas = await MDL.compra_venta.execute_function("_get_detalles_bycliente2", [keyEmpresa, keyCliente, '2026-03-31', '2026-03-31']);
+            // const ventas = await MDL.compra_venta.execute_function("_get_detalles_bycliente2", [keyEmpresa, keyCliente]);
+            if (!ventas || ventas.length === 0) return [];
+            const [empresa, cliente, usuarios = [], almacenes = []] = await Promise.all([
                 MDL.empresa.getFull(),
+                MDL.crm.cliente.getByKey(keyCliente),
                 MDL.usuario.getByKeys([...new Set(ventas.map(v => v?.key_usuario).filter(Boolean))]),
                 MDL.inventario.getAllAlmacen(),
             ]);
@@ -67,9 +51,6 @@ export default class TablaTransacciones extends Component {
             const monedasMap = Object.fromEntries((empresa?.monedas || []).map(m => [m.key, m]));
             const usuariosMap = Object.fromEntries((usuarios || []).map(u => [u.key, u]));
             const almacenesMap = Object.fromEntries((almacenes || []).map(a => [a.key, a]));
-
-            console.log("%c" + "entro a loadInitialData", `color: #0a7700; font-weight: bold;`);
-
             const ventasEnriquecidas = ventas.map(v => ({
                 ...v,
                 moneda: monedasMap[v?.key_moneda] || {},
@@ -80,13 +61,14 @@ export default class TablaTransacciones extends Component {
             }));
             const first = ventasEnriquecidas[0];
             const last = ventasEnriquecidas[ventasEnriquecidas.length - 1];
-            console.log("%c" + "entro a sss", `color: #2ECC40; font-weight: bold;`);
 
-            console.log("%c" + JSON.stringify(cliente, null, 2), "color: #2ECC40; font-weight: bold;");
-
-            this.state.moneda = first?.moneda;
-            // this.state.cliente = cliente || {};
-            this.setState({ cliente: cliente || {} });
+            this.setState({
+                fecha_inicio: last?.fecha_on || null,
+                fecha_fin: first?.fecha_on || null,
+                moneda: first?.moneda || null,
+                cliente: cliente || {},
+                ventasEnriquecidas: ventasEnriquecidas || {},
+            });
             return ventasEnriquecidas;
         } catch (error) {
             console.error("Error en loadInitialData:", error);
@@ -96,7 +78,7 @@ export default class TablaTransacciones extends Component {
     }
 
     mostrarTabla() {
-        // const data = this.state.ventasEnriquecidas || [];
+        const data = this.state.ventasEnriquecidas || [];
         return (
             <DinamicTable
                 ref={ref => (this.DinamicTable = ref)}
@@ -175,28 +157,45 @@ export default class TablaTransacciones extends Component {
 
     render() {
         const { cliente, moneda, fecha_inicio, fecha_fin } = this.state;
-
-        // if (!cliente) return <SLoad />;
+        const fi = fecha_inicio ? new SDate(fecha_inicio).toString("dd-MONTH-yyyy") : "-";
+        const ff = fecha_fin ? new SDate(fecha_fin).toString("dd-MONTH-yyyy") : "-";
+ 
+        const ___fecha_inicio = fecha_inicio ? new SDate(fecha_inicio).toString("yyyy-MM-dd") : null;
+        const ___fecha_fin = fecha_fin ? new SDate(fecha_fin).toString("yyyy-MM-dd") : null;
 
         return (
             <SPage title="Kardex Individual" disableScroll>
                 <SView row col={"xs-12"}>
-                    <SHr />
+                    <SView col={"xs-12"} center>
+                        <SHr height={12} />
+                        <SText fontSize={15}>Del {fi} al {ff}</SText>
+                        <SText fontSize={15}>Expresando en {moneda?.observacion || "-"}</SText>
+                    </SView>
+
+
                     <SHr />
                     <SView col={"xs-12"} row center style={{ flexWrap: "wrap", gap: 12 }}>
                         <SView col={"xs-12 sm-7.5"} row center>
                             <FechaFullFilter2
                                 label="fecha"
-                                key_opciones="hoy"
+                                key_opciones="entre"
+                                fecha_inicio={___fecha_inicio}
+                                fecha_fin={___fecha_fin}
                                 onChange={e => {
-                                    this.state.fecha_inicio = e.fecha_inicio;
-                                    this.state.fecha_fin = e.fecha_fin;
-                                    this.DinamicTable.loadData()
+                                    this.setState({
+                                        fecha_inicio: e.fecha_inicio,
+                                        fecha_fin: e.fecha_fin,
+                                        loadingVentasPorDia: true
+                                    }, () => {
+                                        console.clear();
+                                        console.log("%c" + "presiono filtro",`color: #2ECC40; font-weight: bold;`);
+                                    });
                                 }}
                             />
                         </SView>
                     </SView>
                     <SHr />
+
                     <SHr height={10} />
                     <SView col={"xs-12"} row>
                         <SText fontSize={15}>Cliente: {cliente?.nombres + " " + cliente?.apellidos || "-"}</SText>

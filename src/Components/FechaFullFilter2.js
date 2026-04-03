@@ -142,10 +142,10 @@ export default class FechaFullFilter2 extends Component {
                 <SView
                     col="xs-12"
                     style={{
-                        backgroundColor: STheme.color.card,
-                        borderRadius: 4,
-                        borderWidth: 1,
-                        borderColor: STheme.color.lightGray + "40",
+                        // backgroundColor: STheme.color.card,
+                        // borderRadius: 4,
+                        // borderWidth: 1,
+                        // borderColor: STheme.color.lightGray + "40",
                         padding: 8,
                     }}
                 >

@@ -220,7 +220,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                             <SInput
                                 style={{ height: 16, fontSize: 12, padding: 0, paddingRight: 4, textAlign: "right" }}
                                 icon={<SText width={20} fontSize={10} numberOfLines={1} color={STheme.color.lightGray} >{moneda ? moneda.observacion : "BS"}</SText>}
-                                type="money"
+                                type="money2"
                                 value={precioFormateado}
                                 onChangeText={(e) => {
                                     setPrecio(e);
