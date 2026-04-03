@@ -10,7 +10,6 @@ export default class TablaTransacciones extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            // fecha_inicio: "2026-01-01",
             fecha_inicio: new SDate().toString("yyyy-MM-dd"),
             fecha_fin: new SDate().toString("yyyy-MM-dd"),
             moneda: null,
