@@ -10,7 +10,6 @@ import FiltroMoneda from "../../Pages/puntoventa/Components/FiltroMoneda";
 
 type PopupCarritoProps = {}
 const DEFAULT_MONEDA_KEY = "";
-
 export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     state = {
         selectedMoneda: MDL.compra_venta.getMonedaSeleccionada() || null,
@@ -18,7 +17,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         contactosSeleccionados: [] as any[],
         tipoCostosSeleccionados: [] as any[],
     };
-
     rapido: any;
     evento: any;
     static open(props: PopupCarritoProps) {
@@ -44,9 +42,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         })
     }
 
-    handleChange = () => {
-        this.forceUpdate();
-    }
+    handleChange = () => { this.forceUpdate(); }
 
     componentDidMount(): void {
         MDL.carrito.addEventListener("handleChange", this.handleChange);
@@ -80,7 +76,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             console.error("Error cargando monedas:", e);
         }
     }
-
     componentWillUnmount(): void {
         MDL.carrito.removeEventListener(this.handleChange);
         if (this.evento) {
@@ -91,7 +86,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
     render() {
         const items = MDL.carrito.carrito_venta.items;
         const { selectedMoneda, options } = this.state;
-        if (!selectedMoneda || !options) return null;
         return <SView col={"xs-12"} height>
             <SHr />
             <SText center color={STheme.color.lightGray} bold>{"Carrito de ventas"}</SText>
@@ -185,7 +179,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
 }
 
 const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
-
     const [precio, setPrecio] = React.useState(0);
     const calcularPrecio = () => {
         if (!moneda) return item.modelo.precio_venta;
@@ -259,6 +252,7 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
         </SView>
     );
 };
+
 const ListaCostos = ({ item, moneda, totalItem }: any) => {
     const [isOpen, setIsOpen] = React.useState(true);
     if (!item?.modelo?.tipoCostos?.length) return null;
@@ -295,7 +289,6 @@ const CostoItem = ({ costo, moneda, totalItem }: any) => {
         setInputValue(nuevoMonto.toFixed(2));
         costo.monto = nuevoMonto;
     }, [totalItem]);
-
     return (
         <SView key={costo.key_tipo_costo} col={"md-12"} height={35}>
             <SText fontSize={10}>{costo.descripcion}</SText>

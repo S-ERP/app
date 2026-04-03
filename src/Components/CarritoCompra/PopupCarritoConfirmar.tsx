@@ -8,7 +8,6 @@ import SelectTipoPago from "../../Pages/caja2/components/SelectTipoPago";
 import SelectTipoPago2 from "../../Pages/caja2/components/SelectTipoPago2";
 import SelectorMoneda from "../Selectores/SelectorMoneda";
 import SelectorCliente from "../Selectores/SelectorCliente";
-import ComprobanteRollo from "../PDF/compra/ComprobanteRollo";
 import ComprobanteCarta from "../PDF/compra/ComprobanteCarta";
 type PopupCarritoConfirmarProps = {
 }
@@ -45,10 +44,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         esCredito: false, // 👈 bandera
         subtotal: null,
     }
+
     componentDidMount(): void {
-        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
-            this.cargarSubtotal();
-        });
+        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => { this.cargarSubtotal(); });
         this.cargarSubtotal();
     }
 
@@ -63,42 +61,10 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 const cantidad = item?.cantidad || 0;
                 return acc + precio * cantidad;
             }, 0);
-
             this.setState({ subtotal: subtotal });
-
         } catch (error) {
             console.error("%cError al calcular subtotal:", "color: #ff0000; font-weight: bold;", error);
             this.setState({ subtotal: 0 });
-        }
-    }
-
-    handleOnPress = async () => {
-        try {
-            const key_moneda = this.state.moneda.key
-            const almacen = this.state.almacen;
-            if (!almacen) {
-                console.log("%c" + "Debe seleccionar un almacen", `color: #ff0000; font-weight: bold;`);
-            }
-            if (!key_moneda) {
-                console.log("%c" + "Debe seleccionar una moneda", `color: #ff0000; font-weight: bold;`);
-            }
-            SelectTipoPago.openPopup({
-                key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
-                montoMaximo: MDL.carrito.carrito_compra.monto_total,
-                key_moneda: key_moneda,
-                onSelect: (tipos_pago: any) => this.handleSubmit(tipos_pago, key_moneda),
-                solo_para_caja: false,
-                compra: true
-            });
-        } catch (error: any) {
-            console.error("Error al realizar la compra:", error);
-            SNotification.send({
-                key: "compra_rapida",
-                title: "Error al realizar la compra1",
-                body: error?.error || JSON.stringify(error),
-                color: STheme.color.danger,
-                time: 4000,
-            });
         }
     }
 
@@ -106,23 +72,18 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         try {
             const key_moneda = this.state.moneda?.key;
             const almacen = this.state.almacen;
+            const moneda = this.props.moneda;
             if (!almacen) {
-                console.log("%c" + "Debe seleccionar un almacen", `color: #ff0000; font-weight: bold;`);
-                // return;
+                console.error("%c" + "Debe seleccionar un almacen", `color: #ff0000; font-weight: bold;`);
             }
-
             if (!key_moneda) {
-                console.log("%c" + "Debe seleccionar una moneda", `color: #ff0000; font-weight: bold;`);
-                // return;
+                console.error("%c" + "Debe seleccionar una moneda", `color: #ff0000; font-weight: bold;`);
             }
-
             const subtotal = this.state.subtotal || 0;
-            const selectedMoneda = MDL.carrito.selectedMoneda;
+            const selectedMoneda = MDL.carrito.selectedMoneda || moneda;
             if (!selectedMoneda) {
-                console.log("%c" + "No hay moneda seleccionada en el carrito compra", `color: #ff0000; font-weight: bold;`);
-                // return;
+                console.error("%c" + "No hay moneda seleccionada en el carrito compra", `color: #ff0000; font-weight: bold;`);
             }
-
             const total = subtotal * (selectedMoneda.tipo_cambio || 1);
             SelectTipoPago2.openPopup({
                 key_punto_venta: MDL.caja.activa?.key_punto_venta as any,
@@ -133,7 +94,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 solo_para_caja: false,
                 compra: true
             });
-
         } catch (error: any) {
             console.error("Error al realizar la compra:", error);
             SNotification.send({
@@ -146,35 +106,22 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         }
     };
 
-
     showCompraPopup(key_venta: String) {
         SPopup.open({
             key: "popup-venta-completada",
             content: (
                 <SView col="xs-11 md-4" backgroundColor={STheme.color.background} padding={24} style={{ borderRadius: 16, maxWidth: "100%", alignItems: "center" }} >
-                    {/* Icono de éxito */}
                     <SView width={80} height={80} borderRadius={40} backgroundColor={"#a741e6"} center style={{ marginBottom: 16 }} > <SText fontSize={36} color="white">✔</SText> </SView>
-
-                    {/* Título */}
                     <SText bold fontSize={20} center style={{ marginBottom: 8 }}> ¡Compra realizada con éxito! </SText>
-
-                    {/* Subtítulo */}
                     <SText fontSize={14} center style={{ color: STheme.color.text, marginBottom: 24 }}> Tu transacción se ha completado correctamente. Gracias por tu compra. </SText>
-
-                    {/* Botones */}
                     <SView row col="xs-12 md-11" style={{ justifyContent: "space-between", gap: 16, width: "100%", flexWrap: "nowrap" }} >
-                        {/* Salir */}
                         <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.text} onPress={() => SPopup.close("popup-venta-completada")} > <SText color={STheme.color.background} center>Salir</SText> </SView>
-
-
-                        {/* Ver venta */}
                         <SView flex height={40} borderRadius={8} center backgroundColor={"#a741e6"} onPress={() => { SPopup.close("popup-venta-completada"); SNavigation.navigate("/venta/profile2", { pk: key_venta }); }} > <SText color={STheme.color.text} center>Ver compra</SText> </SView>
-
-                        {/* Imprimir rollo */}
-                        <SView flex height={40} borderRadius={8} center backgroundColor={"#a741e644"} border={"#a741e6"} onPress={() => { SPopup.close("popup-venta-completada"); 
+                        <SView flex height={40} borderRadius={8} center backgroundColor={"#a741e644"} border={"#a741e6"} onPress={() => {
+                            SPopup.close("popup-venta-completada");
                             ComprobanteCarta.imprimir(key_venta)
                             // ComprobanteRollo.imprimir(key_venta)
-                             }} > <SText color={STheme.color.text} center>Imprimir Pdf</SText> </SView>
+                        }} > <SText color={STheme.color.text} center>Imprimir Pdf</SText> </SView>
                     </SView>
                 </SView>
             )
@@ -209,8 +156,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     "cantidad": ci.cantidad,
                     "precio_unitario": ci?.precio ?? 0,
                     "precio_unitario_base": ci.modelo?.precio_compra_moneda ?? 0,
-                    // "precio_unitario": ci.precio ?? ci.modelo.precio_compra_moneda,
-                    // "precio_unitario_base": ci.modelo.precio_compra_moneda,
                     "detalle": "",
                     "descuento": 0,
                     "descripcion": ci.modelo.descripcion,
@@ -237,7 +182,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 type: "loading",
             });
             if (saveRecurrente) {
-                console.log("entro a recurrente", data)
                 const compraResp = await SSocket.sendPromise({
                     "service": "caja",
                     "component": "recurrente",
@@ -258,7 +202,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 SelectTipoPago.closePopup();
                 SNotification.remove("compra_rapida");
             } else {
-
                 const compraResp = await SSocket.sendPromise({
                     "service": "caja",
                     "component": "caja_detalle",
@@ -266,24 +209,15 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     "estado": "cargando",
                     "data": data
                 })
+                
                 MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
                 SelectTipoPago.closePopup();
                 SNotification.remove("compra_rapida");
                 SPopup.close("PopupCarritoConfirmar");
                 SPopup.close("PopupCarrito");
                 MDL.carrito.limpiarCarritoCompras();
-
                 this.showCompraPopup(compraResp?.data?.key_compra_venta);
-
-                // SPopup.confirm({
-                //     title: "¡Compras realizada con éxito!",
-                //     message: "¿Deseas ir a la compra ahora?",
-                //     onPress: () => {
-                //         SNavigation.navigate("/venta/profile2", { pk: compraResp?.data?.key_compra_venta });
-                //     }
-                // });
                 MDL.caja.dispatchEvent({ type: "onDetalleChange" });
-
             }
         } catch (error: any) {
             console.error("Error al realizar la compra:", error);
@@ -373,7 +307,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         findInitialSelect={(arr) => {
                             return arr.find(a => a.tipo == "base")
                         }}
-
                         icon={<SText color={STheme.color.lightGray} bold>{"Moneda:"}</SText>}
                         placeholder={"Moneda"}
                         onChangeSelect={e => {

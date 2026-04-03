@@ -5,10 +5,9 @@ import SSocket from "servisofts-socket";
 import SIconApp from "../../Assets/SIconApp";
 import SelectorAlmacen from "../Selectores/SelectorAlmacen";
 import PopupCarritoConfirmarResumen from "./PopupCarritoConfirmarResumen";
-type PopupCarritoConfirmarProps = {
-}
-export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
+type PopupCarritoConfirmarProps = {}
 
+export default class PopupCarritoConfirmar extends React.Component<PopupCarritoConfirmarProps> {
     static open(props: PopupCarritoConfirmarProps) {
         SPopup.open({
             key: "PopupCarritoConfirmar",
@@ -53,19 +52,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         this.setState({ esCredito });
     };
 
-
-
-
     componentDidMount() {
-        this.evento = MDL.compra_venta.addEventListener(
-            "moneda_seleccionada",
-            this.cargarMonedaSeleccionada
-        );
-
-        // Cargar moneda actual
+        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", this.cargarMonedaSeleccionada);
         this.cargarMonedaSeleccionada();
-
-        // Cargar datos iniciales
         this.cargarClientes();
         this.cargarDescuentos();
     }
@@ -78,7 +67,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
 
     cargarMonedaSeleccionada = () => {
         const moneda = MDL.compra_venta.getMonedaSeleccionada();
-
         this.setState({
             moneda: moneda || null
         });
@@ -101,61 +89,44 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 type: "getAll",
                 key_empresa: MDL.empresa?.select?.key
             });
-
             const descuentos = Object.values(resp?.data || {});
             this.setState({ descuentos });
-
         } catch (e) {
             console.error("Error cargando descuentos", e);
         }
     }
 
-
     handleOnPress = async () => {
         try {
-
             const { moneda, almacen, descuentoSeleccionado, factura } = this.state;
-
             if (!moneda) {
                 SNotification.send({
                     title: "Moneda requerida",
                     body: "Debe seleccionar una moneda antes de continuar.",
                     color: STheme.color.danger,
                 });
-                // return;
             }
-
             if (!almacen) {
                 SNotification.send({
                     title: "Almacén requerido",
                     body: "Debe seleccionar un almacén.",
                     color: STheme.color.danger,
                 });
-                // return;
             }
 
             let subtotal = MDL.carrito.carrito_venta?.monto_total || 0;
             subtotal = parseFloat(Number(subtotal).toFixed(2));
-
             let porcentajeDescuento = 0;
             let montoFinal = subtotal;
             let descuentos = [];
-
             if (descuentoSeleccionado?.porcentaje) {
                 porcentajeDescuento = descuentoSeleccionado.porcentaje;
-
-                const descuentoMonto =
-                    Math.round((montoFinal * porcentajeDescuento) * 100) / 100;
-
-                montoFinal = parseFloat(
-                    (montoFinal - descuentoMonto).toFixed(2)
-                );
-
+                const descuentoMonto = Math.round((montoFinal * porcentajeDescuento) * 100) / 100;
+                montoFinal = parseFloat((montoFinal - descuentoMonto).toFixed(2));
                 descuentos = [descuentoSeleccionado];
             }
 
             const descripcionVenta = this.inputDescripcionVenta?.getValue?.() || "";
-
             PopupCarritoConfirmarResumen.open({
                 subtotal,
                 montoMaximo: montoFinal,
@@ -171,16 +142,17 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 onTipoPagoChange: this.onTipoPagoChange
             })
         } catch (error: any) {
-            console.error("Error al realizar la compra:", error);
+            console.error("Error al realizar la venta:", error);
             SNotification.send({
                 key: "venta_rapida",
-                title: "Error al realizar la compra",
+                title: "Error al realizar la venta",
                 body: error?.error || JSON.stringify(error),
                 color: STheme.color.danger,
                 time: 4000,
             });
         }
     }
+
     render() {
         return <SView col={"xs-12"} height>
             < SHr />
@@ -222,11 +194,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                     <SView row>
                         <SInput
                             ref={ref => (this.inputCliente = ref)}
-                            inputStyle={
-                                this.state.factura || this.state.esCredito
-                                    ? { borderColor: STheme.color.danger, borderWidth: 1 }
-                                    : undefined
-                            }
+                            inputStyle={this.state.factura || this.state.esCredito ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
                             icon={<SText color={STheme.color.lightGray} bold>{"Cliente: "}</SText>}
                             placeholder={"Escriba el nombre del cliente"}
                             height={40}
@@ -394,7 +362,6 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                         <SView row>
                             <SInput
                                 inputStyle={this.state.factura ? { borderColor: STheme.color.danger, borderWidth: 1 } : undefined}
-
                                 ref={ref => this.inputRazonSocial = ref} icon={<SText color={STheme.color.lightGray} bold>{"Razón Social:"}</SText>} placeholder={"Razón Social"} />
                         </SView>
                         <SHr h={10} />
@@ -408,13 +375,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                             }
                             ref={ref => (this.inputNit = ref)}
                             onChangeText={(e) => {
-
                                 const nit = (e || "").trim();
                                 if (nit.length < 6) {
                                     this.proveedor = null;
                                     return;
                                 }
-
                                 MDL.crm.cliente.buscar_nit(nit)
                                     .then(proveedor => {
                                         if (!proveedor) {
@@ -441,19 +406,11 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                     onPress={() => {
                                         SNavigation.navigate("/cliente", {
                                             onSelect: (proveedor: any) => {
-
                                                 if (!proveedor) return;
-
                                                 this.proveedor = proveedor;
-
                                                 this.inputCliente?.setSelect?.(proveedor);
-                                                this.inputRazonSocial?.setValue?.(
-                                                    proveedor?.razon_social || proveedor?.nombres || ""
-                                                );
-                                                this.inputNit?.setValue?.(
-                                                    proveedor?.nit || ""
-                                                );
-
+                                                this.inputRazonSocial?.setValue?.(proveedor?.razon_social || proveedor?.nombres || "");
+                                                this.inputNit?.setValue?.(proveedor?.nit || "");
                                                 SNavigation.goBack();
                                             }
                                         });

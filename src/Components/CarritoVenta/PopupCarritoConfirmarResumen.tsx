@@ -70,12 +70,14 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         this.cargarDescuentos();
         this.escucharCambioMoneda();
     }
-    componentWillUnmount(): void {
+
+    componentWillUnmount() {
         MDL.carrito.removeEventListener(this.handleChange);
         if (this.evento) {
             MDL.compra_venta.removeEventListener(this.evento);
         }
     }
+
     async cargarClientes() {
         try {
             const clientes = await MDL.crm.cliente.getAll();
@@ -84,6 +86,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             console.error("Error cargando clientes:", error);
         }
     }
+
     async cargarDescuentos() {
         try {
             const response = await SSocket.sendPromise({
@@ -101,9 +104,10 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
 
     escucharCambioMoneda() {
         this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
-            this.forceUpdate(); // recalcula subtotal en render
+            this.forceUpdate();
         });
     }
+
     calcularSubtotal() {
         const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
         const carritoItems = MDL.carrito.carrito_venta.items;
@@ -115,46 +119,33 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         }, 0);
     }
 
-
-
     handleOnPress = async () => {
         try {
-            // Desestructuramos props
-            const { porcentajeDescuento = 0, cliente, factura, almacen, descuentoSeleccionado } = this.props;
-            // Validamos datos críticos
+            const { porcentajeDescuento = 0, cliente, factura, almacen, descuentoSeleccionado, moneda } = this.props;
             if (!cliente) {
-                console.warn("Cliente no definido");
-                // return;
+                console.error("Cliente no definido");
             }
             if (!factura) {
-                console.warn("Factura no definida");
-                // return;
+                console.error("Factura no definida");
             }
             if (!almacen) {
-                console.warn("Almacén no definido");
-                // return;
+                console.error("Almacén no definido");
             }
-            // Validamos caja activa
             const keyPuntoVenta = MDL.caja.activa?.key_punto_venta;
             if (!keyPuntoVenta) {
                 console.warn("No hay caja activa");
-                // return;
             }
             // Calculamos subtotal y descuentos
             const subtotal = this.calcularSubtotal();
             const totalDescuento = subtotal * (porcentajeDescuento || 0);
             const total = subtotal - totalDescuento;
-
             // Validamos moneda y tipo de cambio
-            const selectedMoneda = MDL.carrito.selectedMoneda;
+            const selectedMoneda = MDL.carrito.selectedMoneda || moneda;
             if (!selectedMoneda || !selectedMoneda.tipo_cambio) {
                 console.warn("Moneda o tipo de cambio no definido");
-                // return;
             }
 
             const montoMaximo = total * (selectedMoneda.tipo_cambio || 1);
-
-            // Abrimos popup de selección de tipo de pago
             SelectTipoPago.openPopup({
                 key_punto_venta: keyPuntoVenta,
                 montoMaximo,
@@ -172,7 +163,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 venta: true,
             });
         } catch (error) {
-            // Manejo seguro de errores
             const mensaje = error instanceof Error ? error.message : JSON.stringify(error);
             SNotification.send({
                 key: "venta_rapida",
@@ -184,32 +174,18 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
         }
     };
 
-
     showVentaPopup(key_venta: String) {
         SPopup.open({
             key: "popup-venta-completada",
             content: (
                 <SView col="xs-11 md-4" backgroundColor={STheme.color.background} padding={24} style={{ borderRadius: 16, maxWidth: "100%", alignItems: "center" }} >
-                    {/* Icono de éxito */}
                     <SView width={80} height={80} borderRadius={40} backgroundColor={STheme.color.success} center style={{ marginBottom: 16 }} > <SText fontSize={36} color="white">✔</SText> </SView>
-
-                    {/* Título */}
                     <SText bold fontSize={20} center style={{ marginBottom: 8 }}> ¡Venta realizada con éxito! </SText>
-
-                    {/* Subtítulo */}
                     <SText fontSize={14} center style={{ color: STheme.color.text, marginBottom: 24 }}> Tu transacción se ha completado correctamente. Gracias por tu compra. </SText>
-
-                    {/* Botones */}
                     <SView row col="xs-12 md-11" style={{ justifyContent: "space-between", gap: 16, width: "100%", flexWrap: "nowrap" }} >
-                        {/* Salir */}
                         <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.text} onPress={() => SPopup.close("popup-venta-completada")} > <SText color={STheme.color.background} center>Salir</SText> </SView>
-
-                        {/* Ver venta */}
                         <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.success} onPress={() => { SPopup.close("popup-venta-completada"); SNavigation.navigate("/venta/profile2", { pk: key_venta }); }} > <SText color={STheme.color.text} center>Ver venta</SText> </SView>
-
-                        {/* Imprimir rollo */}
                         <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.card} border={STheme.color.success} onPress={() => {
-                            // SPopup.close("popup-venta-completada");
                             ComprobanteRollo.imprimir(key_venta)
                         }} > <SText color={STheme.color.text} center>Imprimir rollo</SText> </SView>
                     </SView>
@@ -238,9 +214,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 return;
             } else {
                 this.props.onTipoPagoChange(false);
-
             }
-
             if (!almacen) {
                 SPopup.alert("Debe seleccionar un almacen");
             }
@@ -268,13 +242,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     "costos": costos,
                 }
             })
-
-
-            console.clear();
-            console.log("%c" + JSON.stringify(detalle, null, 2), "color: #2ECC40; font-weight: bold;");
-
-            // console.clear();
-            // console.log("%c" + ingresar_texto, `color: #2ECC40; font-weight: bold;`);
             const data = {
                 "descripcion": this.props.descripcion || "",
                 "observacion": "Observación",
@@ -285,9 +252,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                     razon_social: this.props.cliente?.razon_social || ""
                 },
                 descuentos: this.props.descuentoSeleccionado || [],
-                // descuentos: descuentoSeleccionado || [],
                 "key_cliente": this.props.cliente?.key,
-                // "key_cliente": cliente?.key,
                 "key_usuario": MDL.usuario.session?.key,
                 "key_caja": MDL.caja.activa?.key,
                 "key_almacen": almacen.key,
@@ -295,13 +260,6 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
                 "detalle": detalle,
                 tipos_pago: tipos_pago,
             }
-
-            // console.clear();
-            // console.log("%c" + "venta", `color: #2ECC40; font-weight: bold;`);
-            // console.log(JSON.stringify(data))
-            // return;
-
-
             SNotification.send({
                 key: "venta_rapida",
                 title: "Cargando",
@@ -322,33 +280,25 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             SPopup.close("PopupCarrito");
             MDL.carrito.limpiarCarritoVentas();
             MDL.carrito.limpiarCarritoCompras();
-
             this.showVentaPopup(compraResp?.data?.key_compra_venta);
-
-            // SPopup.confirm({
-            //     title: "¡Venta realizada con éxito!",
-            //     message: "¿Deseas ir a la venta ahora?",
-            //     onPress: () => {
-            //         SNavigation.navigate("/venta/profile2", { pk: compraResp?.data?.key_compra_venta });
-            //     }
-            // });
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
         } catch (error: any) {
-            console.error("Error al realizdddsdar la venta:", error);
+            const mensaje = error instanceof Error ? error.message : JSON.stringify(error);
+            console.error("Error al realizar la venta:", error);
             SNotification.send({
                 key: "venta_rapida",
-                title: "Error al rsdsdealizar la venta",
-                body: error?.error || JSON.stringify(error),
+                title: "Error al realizar la venta",
+                body: mensaje,
                 color: STheme.color.danger,
                 time: 4000,
             });
         }
     }
+
     render() {
         const { porcentajeDescuento, cliente, factura, almacen, descuentoSeleccionado } = this.props;
         const monedaActual = MDL.compra_venta.getMonedaSeleccionada();
         const subtotal2 = this.calcularSubtotal();
-
         const totalDescuento = subtotal2 * (porcentajeDescuento || 0);
         const total = subtotal2 - totalDescuento;
         return <SView col={"xs-12"} height>

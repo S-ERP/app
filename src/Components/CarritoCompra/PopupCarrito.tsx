@@ -38,17 +38,18 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                 </SView>
         })
     }
+
     handleChange = () => {
         this.forceUpdate();
     }
+
     componentDidMount(): void {
         MDL.carrito.addEventListener("handleChange", this.handleChange.bind(this))
-        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => {
-            this.cargarMonedaSeleccionada();
-        });
+        this.evento = MDL.compra_venta.addEventListener("moneda_seleccionada", () => { this.cargarMonedaSeleccionada(); });
         this.cargarMonedaSeleccionada();
         this.cargarMonedas();
     }
+
     cargarMonedaSeleccionada() {
         const moneda = MDL.compra_venta.getMonedaSeleccionada();
         if (this.rapido && moneda) {
@@ -56,6 +57,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         }
         this.setState({ selectedMoneda: moneda || null });
     }
+
     async cargarMonedas() {
         try {
             const monedas = await MDL.empresa.getMonedas();
@@ -71,13 +73,14 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
             console.error("Error cargando monedas:", e);
         }
     }
+
     componentWillUnmount(): void {
         MDL.carrito.removeEventListener(this.handleChange.bind(this))
     }
+
     render() {
         const items = MDL.carrito.carrito_compra.items;
         const { selectedMoneda } = this.state;
-        if (!selectedMoneda) return null;
         return <SView col={"xs-12"} height>
             <SHr />
             <SText center color={STheme.color.lightGray} bold>{"Carrito de compras"}</SText>
@@ -147,20 +150,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                         padding={4}
                         card
                         onPress={() => {
-
                             const items = MDL.carrito.carrito_compra.items ?? [];
-
-                            console.clear();
-                            console.log("%c ITEMS DEL CARRITO", "color:#00BFFF; font-weight:bold; font-size:16px;");
-
-                            items.forEach((it, index) => {
-                                console.log("%c ITEM " + index, "color:#00BFFF; font-weight:bold;");
-                                console.log("%c precio: " + (it?.precio ?? "null"), "color:#2ECC40; font-weight:bold;");
-                                console.log("%c precio_compra_moneda: " + (it?.modelo?.precio_compra_moneda ?? "null"), "color:#2ECC40; font-weight:bold;");
-                                console.log("%c cantidad: " + (it?.cantidad ?? "null"), "color:#F39C12; font-weight:bold;");
-                                console.log(it);
-                            });
-
                             console.table(
                                 items.map(it => ({
                                     precio: it?.precio,
@@ -169,19 +159,14 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                 }))
                             );
 
-                            // -------------------------
-                            // Validar precios
-                            // -------------------------
                             const itemConPrecioInvalido = items.find(it => {
                                 const precio = it?.modelo?.precio_compra_moneda ?? 0;
-
                                 if (precio <= 0) {
-                                    console.log("ITEM CON PRECIO INVALIDO:", it);
+                                    console.error("ITEM CON PRECIO INVALIDO:", it);
                                     return true;
                                 }
                                 return false;
                             });
-
                             if (itemConPrecioInvalido) {
                                 SNotification.send({
                                     title: "precio_invalido",
@@ -190,20 +175,14 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                 });
                                 return;
                             }
-
-                            // -------------------------
-                            // Validar cantidades
-                            // -------------------------
                             const itemConCantidadInvalida = items.find(it => {
                                 const cantidad = it?.cantidad ?? 0;
-
                                 if (cantidad <= 0) {
-                                    console.log("ITEM CON CANTIDAD INVALIDA:", it);
+                                    console.error("ITEM CON CANTIDAD INVALIDA:", it);
                                     return true;
                                 }
                                 return false;
                             });
-
                             if (itemConCantidadInvalida) {
                                 SNotification.send({
                                     title: "cantidad_invalida",
@@ -212,11 +191,7 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
                                 });
                                 return;
                             }
-
-                            // -------------------------
-                            // Todo válido
-                            // -------------------------
-                            PopupCarritoConfirmar.open({});
+                            PopupCarritoConfirmar.open({ moneda: selectedMoneda });
                         }}
                     >
                         <SText fontSize={12}>
@@ -228,7 +203,6 @@ export default class PopupCarrito extends React.Component<PopupCarritoProps> {
         </SView>
     }
 }
-
 const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
     const [precio, setPrecio] = React.useState(0);
     const calcularPrecio = () => {
@@ -289,7 +263,6 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 }
                                 value={precioFormateado}
                                 onChangeText={(e) => {
-                                    // const valor = parseFloat(e || "0");
                                     setPrecio(e);
                                     item.modelo.precio_compra_moneda = moneda ? e * (moneda.tipo_cambio || 1) : e;
                                     MDL.carrito.calcularValoresCarritDeCompras();
@@ -304,7 +277,6 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                 value={item.cantidad.toString()}
                                 onChangeText={(e) => {
                                     item.cantidad = e;
-                                    // item.cantidad = parseFloat(e || "0");
                                     MDL.carrito.calcularValoresCarritDeCompras();
                                 }}
                             />
