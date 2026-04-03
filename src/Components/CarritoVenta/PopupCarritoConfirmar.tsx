@@ -100,18 +100,21 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         try {
             const { moneda, almacen, descuentoSeleccionado, factura } = this.state;
             if (!moneda) {
-                SNotification.send({
-                    title: "Moneda requerida",
-                    body: "Debe seleccionar una moneda antes de continuar.",
-                    color: STheme.color.danger,
-                });
+                console.error("Debe seleccionar una moneda antes de continuar.");
+                // SNotification.send({
+                //     title: "Moneda requerida",
+                //     body: "Debe seleccionar una moneda antes de continuar.",
+                //     color: STheme.color.danger,
+                // });
             }
             if (!almacen) {
-                SNotification.send({
-                    title: "Almacén requerido",
-                    body: "Debe seleccionar un almacén.",
-                    color: STheme.color.danger,
-                });
+                console.error("Debe seleccionar un almacén");
+                
+                // SNotification.send({
+                //     title: "Almacén requerido",
+                //     body: "Debe seleccionar un almacén.",
+                //     color: STheme.color.danger,
+                // });
             }
 
             let subtotal = MDL.carrito.carrito_venta?.monto_total || 0;
