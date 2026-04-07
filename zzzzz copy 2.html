@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kardex Individual</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #3a4a5c;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 4px 4px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 20px;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .filters {
+            background: #4a5f7f;
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-group label {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .filter-group select {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            background: #5a6f8f;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .filter-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .filter-btn:hover {
+            background: #229954;
+        }
+
+        .client-info {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .toolbar {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            gap: 10px;
+        }
+
+        .toolbar button {
+            background: white;
+            border: 1px solid #bdc3c7;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .toolbar button:hover {
+            background: #ecf0f1;
+        }
+
+        .table-container {
+            background: white;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #5a6f8f;
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            border: 1px solid #4a5f7f;
+        }
+
+        td {
+            padding: 12px 15px;
+            border: 1px solid #ecf0f1;
+            font-size: 14px;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tbody tr:hover {
+            background: #f0f0f0;
+        }
+
+        .tipo-venta {
+            color: #27ae60;
+        }
+
+        .tipo-cuota {
+            color: #e67e22;
+        }
+
+        .total-row {
+            background: #5a6f8f;
+            color: white;
+            font-weight: 600;
+        }
+
+        .total-row td {
+            border-color: #4a5f7f;
+        }
+
+        .btn-amortizar {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: background 0.3s ease;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-amortizar:hover {
+            background: #229954;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .modal-header p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #27ae60;
+            box-shadow: 0 0 5px rgba(39, 174, 96, 0.2);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #229954;
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .btn-secondary:hover {
+            background: #bdc3c7;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success {
+            display: none;
+            padding: 15px;
+            background: #d5f4e6;
+            color: #27ae60;
+            border-radius: 4px;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn">←</button>
+            <h1>Kardex Individual</h1>
+            <div style="width: 30px;"></div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>FECHA</label>
+                <select>
+                    <option>Este Mes</option>
+                    <option>Último Mes</option>
+                    <option>Últimos 3 Meses</option>
+                    <option>Este Año</option>
+                </select>
+            </div>
+            <button class="filter-btn">FILTRAR</button>
+        </div>
+
+        <!-- Client Info -->
+        <div class="client-info">
+            <strong>Cliente: Liceth Flores Santos</strong>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button>🔄</button>
+            <button>≡</button>
+            <button>↓</button>
+            <input type="text" placeholder="Search..." style="flex: 1; padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px;">
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nº</th>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Detalle</th>
+                        <th>Debe</th>
+                        <th>Haber</th>
+                        <th>Saldo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>01/04/2026</td>
+                        <td class="tipo-venta">venta</td>
+                        <td>Leche Pil 1 Litro</td>
+                        <td>120,00</td>
+                        <td></td>
+                        <td>120,00</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>06/04/2026</td>
+                        <td class="tipo-venta">venta</td>
+                        <td>Huari Miel</td>
+                        <td>16,00</td>
+                        <td></td>
+                        <td>136,00</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>06/04/2026</td>
+                        <td class="tipo-cuota">Cuota</td>
+                        <td>Cuota Amortizado</td>
+                        <td></td>
+                        <td>16,00</td>
+                        <td>120,00</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>06/04/2026</td>
+                        <td class="tipo-venta">venta</td>
+                        <td>Cuarto de pollo</td>
+                        <td>24,00</td>
+                        <td></td>
+                        <td>144,00</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="4"><strong>Total</strong></td>
+                        <td>160,00</td>
+                        <td>16,00</td>
+                        <td>144,00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Button Amortizar -->
+        <button class="btn-amortizar" onclick="abrirModal()">Amortizar</button>
+    </div>
+
+    <!-- Modal -->
+    <div id="miModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Amortizar Deuda</h2>
+                <p>Saldo pendiente: 144.00 bs</p>
+            </div>
+
+            <form onsubmit="confirmarAmortizacion(event)">
+                <div class="form-group">
+                    <label for="monto">Monto a Amortizar</label>
+                    <input 
+                        type="number" 
+                        id="monto" 
+                        placeholder="Ingrese el monto" 
+                        step="0.01"
+                        min="0"
+                        max="144"
+                        required
+                    >
+                    <div class="error" id="error"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Confirmar Amortización</button>
+                </div>
+            </form>
+
+            <div class="success" id="success">
+                ✓ Amortización realizada correctamente
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function abrirModal() {
+            document.getElementById("miModal").style.display = "block";
+            document.getElementById("monto").value = "";
+            document.getElementById("error").style.display = "none";
+            document.getElementById("success").style.display = "none";
+        }
+
+        function cerrarModal() {
+            document.getElementById("miModal").style.display = "none";
+        }
+
+        function confirmarAmortizacion(event) {
+            event.preventDefault();
+            
+            const monto = parseFloat(document.getElementById("monto").value);
+            const montoMaximo = 144;
+            const errorDiv = document.getElementById("error");
+            const successDiv = document.getElementById("success");
+
+            errorDiv.style.display = "none";
+            successDiv.style.display = "none";
+
+            if (monto <= 0) {
+                errorDiv.textContent = "El monto debe ser mayor a 0";
+                errorDiv.style.display = "block";
+                return;
+            }
+
+            if (monto > montoMaximo) {
+                errorDiv.textContent = "El monto no puede ser mayor a " + montoMaximo + " bs";
+                errorDiv.style.display = "block";
+                return;
+            }
+
+            successDiv.style.display = "block";
+            console.log("Amortización de " + monto + " bs realizada");
+
+            setTimeout(() => {
+                cerrarModal();
+            }, 2000);
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById("miModal");
+            if (event.target == modal) {
+                cerrarModal();
+            }
+        }
+    </script>
+</body>
+</html>
