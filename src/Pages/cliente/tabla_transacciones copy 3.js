@@ -134,7 +134,7 @@ export default class TablaTransacciones extends Component {
     mostrarTabla() {
         return (
             // <SView col={'xs-12'} style={{  alignSelf: 'center' }} flex>
-            <SView col={'xs-12'} style={{ width: 820, alignSelf: 'center' }} flex>
+            <SView col={'xs-12'} style={{ width: 820, minWidth: "100%", alignSelf: 'center' }} flex>
 
                 <DinamicTable
                     ref={ref => (this.DinamicTable = ref)}
@@ -382,8 +382,10 @@ export default class TablaTransacciones extends Component {
                 <SHr height={20} />
 
                 {this.state.saldo > 0 && (
+                    // <SView col={'xs-12'} style={{ width: 820, alignSelf: 'center' }} flex>
 
-                    <SView col={'xs-12  '} style={{ width: 820, paddingVertical: 12, alignSelf: 'center', borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
+                    // <SView col={'xs-12  '} style={{  minWidth:"100%",  paddingVertical: 12, alignSelf: 'center', borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
+                    <SView col={'xs-12  '} style={{ width: 820, minWidth: "100%", paddingVertical: 12, alignSelf: 'center', borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
                         <SView row col={'xs-12'} style={{ justifyContent: 'flex-end' }}   >
                             <SView
                                 onPress={() => this.showVentaPopup()}
