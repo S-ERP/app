@@ -40,106 +40,149 @@ export default class TablaTransacciones extends Component {
     componentDidMount() {
         this.loadInitialData();
     }
+ 
     async loadInitialData() {
-        try {
-            const keyEmpresa = await MDL?.empresa?.select?.key;
-            const keyCliente = this.key;
-            const fecha_inicio = this.state.fecha_inicio;
-            // const fecha_inicio = this.state.fecha_inicio;
-            const fecha_fin = this.state.fecha_fin;
+    try {
+        const keyEmpresa = await MDL?.empresa?.select?.key;
+        const keyCliente = this.key;
 
-            if (!keyEmpresa || !keyCliente) return [];
+        // 🔥 Traer todo el histórico (para cálculo correcto)
+        const fecha_inicio_total = "2024-01-01";
+        const fecha_inicio = this.state.fecha_inicio;
+        const fecha_fin = this.state.fecha_fin;
 
-            const ventas = await MDL.compra_venta.execute_function(
-                "_get_detalles_bycliente2",
-                [keyEmpresa, keyCliente, fecha_inicio, fecha_fin]
-            );
+        if (!keyEmpresa || !keyCliente) return [];
 
-            const cliente = await MDL.crm.cliente.getByKey(keyCliente);
+        const ventas = await MDL.compra_venta.execute_function(
+            "_get_detalles_bycliente2",
+            [keyEmpresa, keyCliente, fecha_inicio_total, fecha_fin]
+        );
 
-            if (!ventas || ventas.length === 0) {
-                this.setState({ cliente: cliente || {}, moneda: null, saldo: 0 });
-                return [];
-            }
+        const cliente = await MDL.crm.cliente.getByKey(keyCliente);
 
-            const [empresa, usuarios = [], almacenes = []] = await Promise.all([
-                MDL.empresa.getFull(),
-                MDL.usuario.getByKeys([...new Set(ventas.map(v => v?.key_usuario).filter(Boolean))]),
-                MDL.inventario.getAllAlmacen(),
-            ]);
-
-            const sucursalesMap = Object.fromEntries((empresa?.sucursales || []).map(s => [s.key, s]));
-            const monedasMap = Object.fromEntries((empresa?.monedas || []).map(m => [m.key, m]));
-            const usuariosMap = Object.fromEntries((usuarios || []).map(u => [u.key, u]));
-            const almacenesMap = Object.fromEntries((almacenes || []).map(a => [a.key, a]));
-
-            let ventasEnriquecidas = ventas.map(v => ({
-                ...v,
-                moneda: monedasMap[v?.key_moneda] || {},
-                sucursal: sucursalesMap[v?.key_sucursal] || {},
-                usuario: usuariosMap[v?.key_usuario] || {},
-                almacen: almacenesMap[v?.key_almacen] || {},
-                cliente: cliente || {},
-            }));
-
-            const moneda = ventasEnriquecidas[0]?.moneda || null;
-
-            // 🔥 Fila de saldo anterior (puedes cambiar el valor dinámicamente)
-            ventasEnriquecidas = [
-                {
-                    key: `saldo_anterior_${new Date().getTime()}`,
-                    fecha_on: fecha_inicio,
-                    tipo: "saldo",
-                    descripcion: "Saldo anterior",
-                    debe: 10,
-                    haber: 0,
-                    saldo: 0, // se recalcula abajo
-                    moneda,
-                    sucursal: {},
-                    usuario: {},
-                    almacen: {},
-                    cliente: cliente || {}
-                },
-                ...ventasEnriquecidas
-            ];
-
-            // 🔥 CALCULAR SALDO ACUMULADO
-            let saldoAcumulado = 0;
-
-            ventasEnriquecidas = ventasEnriquecidas.map((item) => {
-                const debe = item.debe || 0;
-                const haber = item.haber || 0;
-
-                saldoAcumulado += (debe - haber);
-
-                return {
-                    ...item,
-                    saldo: saldoAcumulado
-                };
-            });
-
-            const lastRow = ventasEnriquecidas[ventasEnriquecidas.length - 1];
-            const saldo = lastRow?.saldo || 0;
-
-            this.setState({
-                cliente: cliente || {},
-                moneda,
-                ventasEnriquecidas,
-                saldo,
-            });
-
-            console.clear();
-            console.log("%c" + JSON.stringify(ventasEnriquecidas, null, 2), "color: #2ECC40; font-weight: bold;");
-            console.log("%cSaldo final: " + saldo, "color: #2ECC40; font-weight: bold;");
-
-            return ventasEnriquecidas;
-
-        } catch (error) {
-            console.error("Error en loadInitialData:", error);
-            SPopup.alert("Error al cargar los datos.");
+        if (!ventas || ventas.length === 0) {
+            this.setState({ cliente: cliente || {}, moneda: null, saldo: 0 });
             return [];
         }
+
+        const [empresa, usuarios = [], almacenes = []] = await Promise.all([
+            MDL.empresa.getFull(),
+            MDL.usuario.getByKeys([...new Set(ventas.map(v => v?.key_usuario).filter(Boolean))]),
+            MDL.inventario.getAllAlmacen(),
+        ]);
+
+        const sucursalesMap = Object.fromEntries((empresa?.sucursales || []).map(s => [s.key, s]));
+        const monedasMap = Object.fromEntries((empresa?.monedas || []).map(m => [m.key, m]));
+        const usuariosMap = Object.fromEntries((usuarios || []).map(u => [u.key, u]));
+        const almacenesMap = Object.fromEntries((almacenes || []).map(a => [a.key, a]));
+
+        let ventasEnriquecidas = ventas.map(v => ({
+            ...v,
+            moneda: monedasMap[v?.key_moneda] || {},
+            sucursal: sucursalesMap[v?.key_sucursal] || {},
+            usuario: usuariosMap[v?.key_usuario] || {},
+            almacen: almacenesMap[v?.key_almacen] || {},
+            cliente: cliente || {},
+        }));
+
+        const moneda = ventasEnriquecidas[0]?.moneda || null;
+
+        // 🔥 1. Calcular saldo acumulado con TODO el histórico
+        let saldoAcumulado = 0;
+
+        ventasEnriquecidas = ventasEnriquecidas.map((item) => {
+            const debe = item.debe || 0;
+            const haber = item.haber || 0;
+
+            saldoAcumulado += (debe - haber);
+
+            return {
+                ...item,
+                saldo: saldoAcumulado
+            };
+        });
+
+        // 🔥 2. Calcular saldo anterior al filtro
+        let saldoAnterior = 0;
+
+        ventasEnriquecidas.forEach(item => {
+            const fechaItem = new SDate(item.fecha_on).toString("yyyy-MM-dd");
+
+            if (fechaItem < fecha_inicio) {
+                saldoAnterior = item.saldo;
+            }
+        });
+
+        // 🔥 3. Filtrar SOLO lo que se debe mostrar
+        let ventasFiltradas = ventasEnriquecidas.filter(item => {
+            const fechaItem = new SDate(item.fecha_on).toString("yyyy-MM-dd");
+
+            return fechaItem >= fecha_inicio && fechaItem <= fecha_fin;
+        });
+
+        // 🔥 4. Insertar fila saldo anterior REAL
+        if (saldoAnterior !== 0) {
+    ventasFiltradas = [
+        {
+            key: `saldo_anterior_${new Date().getTime()}`,
+            fecha_on: fecha_inicio,
+            tipo: "saldo",
+            descripcion: "Saldo anterior",
+            debe: 0,
+            haber: 0,
+            saldo: saldoAnterior,
+            moneda,
+            sucursal: {},
+            usuario: {},
+            almacen: {},
+            cliente: cliente || {}
+        },
+        ...ventasFiltradas
+    ];
+}
+
+        // ventasFiltradas = [
+        //     {
+        //         key: `saldo_anterior_${new Date().getTime()}`,
+        //         fecha_on: fecha_inicio,
+        //         tipo: "saldo",
+        //         descripcion: "Saldo anterior",
+        //         debe: 0,
+        //         haber: 0,
+        //         saldo: saldoAnterior,
+        //         moneda,
+        //         sucursal: {},
+        //         usuario: {},
+        //         almacen: {},
+        //         cliente: cliente || {}
+        //     },
+        //     ...ventasFiltradas
+        // ];
+
+        const lastRow = ventasFiltradas[ventasFiltradas.length - 1];
+        const saldo = lastRow?.saldo || 0;
+
+        this.setState({
+            cliente: cliente || {},
+            moneda,
+            ventasEnriquecidas: ventasFiltradas,
+            saldo,
+        });
+
+        console.clear();
+        console.log("%c" + JSON.stringify(ventasFiltradas, null, 2), "color: #2ECC40; font-weight: bold;");
+        console.log("%cSaldo anterior: " + saldoAnterior, "color: orange; font-weight: bold;");
+        console.log("%cSaldo final: " + saldo, "color: #2ECC40; font-weight: bold;");
+
+        return ventasFiltradas;
+
+    } catch (error) {
+        console.error("Error en loadInitialData:", error);
+        SPopup.alert("Error al cargar los datos.");
+        return [];
     }
+}
+
 
     mostrarTabla() {
 
