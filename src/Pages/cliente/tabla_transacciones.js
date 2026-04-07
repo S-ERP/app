@@ -18,23 +18,8 @@ export default class TablaTransacciones extends Component {
             cliente: null,
             ventasEnriquecidas: null,
             saldo: 0,
-            selectedCuotas: {},
-
         };
         this.key = SNavigation.getParam("key");
-    }
-
-    RowWithImage = ({ keyEntity, label, srcPrefix, styleText }) => {
-        if (!keyEntity) return null;
-        return (
-            <SView col={"xs-12"} center row>
-                <SView style={{ width: 24, height: 24, borderRadius: 100, overflow: "hidden", backgroundColor: STheme.color.card + "66" }}>
-                    <SImage src={`${srcPrefix}${keyEntity}?date=${new Date().getTime()}`} style={{ resizeMode: "cover" }} />
-                </SView>
-                <SView width={5} />
-                <SText flex numberOfLines={1} style={styleText}>{label}</SText>
-            </SView>
-        );
     }
 
     componentDidMount() {
@@ -45,8 +30,6 @@ export default class TablaTransacciones extends Component {
         try {
             const keyEmpresa = await MDL?.empresa?.select?.key;
             const keyCliente = this.key;
-
-            // 🔥 Traer todo el histórico (para cálculo correcto)
             const fecha_inicio_total = "2024-01-01";
             const fecha_inicio = this.state.fecha_inicio;
             const fecha_fin = this.state.fecha_fin;
@@ -87,40 +70,27 @@ export default class TablaTransacciones extends Component {
 
             const moneda = ventasEnriquecidas[0]?.moneda || null;
 
-            // 🔥 1. Calcular saldo acumulado con TODO el histórico
             let saldoAcumulado = 0;
-
             ventasEnriquecidas = ventasEnriquecidas.map((item) => {
                 const debe = item.debe || 0;
                 const haber = item.haber || 0;
-
                 saldoAcumulado += (debe - haber);
-
-                return {
-                    ...item,
-                    saldo: saldoAcumulado
-                };
+                return { ...item, saldo: saldoAcumulado };
             });
 
-            // 🔥 2. Calcular saldo anterior al filtro
             let saldoAnterior = 0;
-
             ventasEnriquecidas.forEach(item => {
                 const fechaItem = new SDate(item.fecha_on).toString("yyyy-MM-dd");
-
                 if (fechaItem < fecha_inicio) {
                     saldoAnterior = item.saldo;
                 }
             });
 
-            // 🔥 3. Filtrar SOLO lo que se debe mostrar
             let ventasFiltradas = ventasEnriquecidas.filter(item => {
                 const fechaItem = new SDate(item.fecha_on).toString("yyyy-MM-dd");
-
                 return fechaItem >= fecha_inicio && fechaItem <= fecha_fin;
             });
 
-            // 🔥 4. Insertar fila saldo anterior REAL
             if (saldoAnterior !== 0) {
                 ventasFiltradas = [
                     {
@@ -141,24 +111,6 @@ export default class TablaTransacciones extends Component {
                 ];
             }
 
-            // ventasFiltradas = [
-            //     {
-            //         key: `saldo_anterior_${new Date().getTime()}`,
-            //         fecha_on: fecha_inicio,
-            //         tipo: "saldo",
-            //         descripcion: "Saldo anterior",
-            //         debe: 0,
-            //         haber: 0,
-            //         saldo: saldoAnterior,
-            //         moneda,
-            //         sucursal: {},
-            //         usuario: {},
-            //         almacen: {},
-            //         cliente: cliente || {}
-            //     },
-            //     ...ventasFiltradas
-            // ];
-
             const lastRow = ventasFiltradas[ventasFiltradas.length - 1];
             const saldo = lastRow?.saldo || 0;
 
@@ -168,11 +120,6 @@ export default class TablaTransacciones extends Component {
                 ventasEnriquecidas: ventasFiltradas,
                 saldo,
             });
-
-            console.clear();
-            console.log("%c" + JSON.stringify(ventasFiltradas, null, 2), "color: #2ECC40; font-weight: bold;");
-            console.log("%cSaldo anterior: " + saldoAnterior, "color: orange; font-weight: bold;");
-            console.log("%cSaldo final: " + saldo, "color: #2ECC40; font-weight: bold;");
 
             return ventasFiltradas;
 
@@ -185,7 +132,6 @@ export default class TablaTransacciones extends Component {
 
 
     mostrarTabla() {
-
         return (
             <DinamicTable
                 ref={ref => (this.DinamicTable = ref)}
@@ -197,24 +143,50 @@ export default class TablaTransacciones extends Component {
                 selectType="single"
                 keyExtractor={(e) => e?.key}
             >
-                <DinamicTable.Col key="index" label="N°" width={30} data={(e) => (e?.index ?? 0) + 1} />
-                <DinamicTable.Col key="fecha" label="Fecha" width={140} data={e => e?.row?.fecha_on ? new SDate(e.row.fecha_on).toString("dd/MM/yyyy") : ""} />
-                <DinamicTable.Col key="tipo" label="Tipo" width={100} data={(e) => e?.row?.tipo || "-"} />
-                <DinamicTable.Col key="detalle" label="Detalle" width={200} data={(e) => e?.row?.descripcion || "-"}
+                <DinamicTable.Col key="index" label="N°" width={30}
+                    data={(e) => (e?.index ?? 0) + 1}
+                    cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
+                />
+                <DinamicTable.Col key="fecha" label="Fecha" width={140}
+                    data={e => e?.row?.fecha_on ? new SDate(e.row.fecha_on).toString("dd/MM/yyyy") : ""}
+                    cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
+                />
+                <DinamicTable.Col key="tipo" label="Tipo" width={100}
+                    data={(e) => e?.row?.tipo || "-"}
 
+                    cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
+                    customComponent={(e) => {
+                        const isSaldoAnterior = e?.row?.tipo === "saldo";
+
+
+                        return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: isSaldoAnterior ? STheme.color.success + "44" : null, borderWidth: 1, borderColor: isSaldoAnterior ? STheme.color.success : "transparent" }} center >
+                            <SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
+                        </SView>
+
+                        // return (
+                        //     <SText
+                        //         style={{ alignItems: "center" }}
+                        //         color={isSaldoAnterior ? '#1565c0' : '#aef30e'}
+                        //     >
+                        //         {e?.row?.tipo || "-"}
+                        //     </SText>
+                        // );
+                    }}
+
+
+                />
+                <DinamicTable.Col key="detalle" label="Detalle" width={200}
+                    data={(e) => e?.row?.descripcion || "-"}
                     customComponent={(e) => {
                         const isSaldoAnterior = e?.row?.descripcion === "Saldo anterior";
-
                         return (
-                            <SText
-                                color={isSaldoAnterior ? '#fc0505' : STheme.color.text}
-                                bold={isSaldoAnterior}
-                            >
+                            <SText color={STheme.color.text}   >
+                                {/* <SText color={isSaldoAnterior ? '#1565c0' : STheme.color.text} bold={isSaldoAnterior} fontSize={isSaldoAnterior ? 14 : 12} > */}
                                 {e?.row?.descripcion || "-"}
                             </SText>
                         );
                     }}
-
+                    cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
                     footerComponent={() => (
                         <SView style={{ alignItems: "flex-end", paddingRight: 8 }}>
                             <SText bold>Total</SText>
@@ -226,12 +198,15 @@ export default class TablaTransacciones extends Component {
                     label="Debe"
                     width={100}
                     data={(e) => e?.row?.debe ?? 0}
-                    cellStyle={{ alignItems: "flex-end" }}
+                    cellStyle={(e) => ({
+                        alignItems: "flex-end",
+                        ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {})
+                    })}
                     format={(e) => e.data ? `${SMath.formatMoney(e.data || 0)}` : ""}
                     footerComponent={(e) => {
                         let total = 0;
                         e.dinamicTable.data.map(a => { total += a.debe || 0 });
-                        return <SView style={{ alignItems: "center" }}><SText>{`${SMath.formatMoney(total || 0)}`}</SText></SView>
+                        return <SView ><SText>{`${SMath.formatMoney(total || 0)}`}</SText></SView>
                     }}
                 />
                 <DinamicTable.Col
@@ -239,12 +214,15 @@ export default class TablaTransacciones extends Component {
                     label="Haber"
                     width={100}
                     data={(e) => e?.row?.haber ?? 0}
-                    cellStyle={{ alignItems: "flex-end" }}
+                    cellStyle={(e) => ({
+                        alignItems: "flex-end",
+                        ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {})
+                    })}
                     format={(e) => e.data ? `${SMath.formatMoney(e.data || 0)}` : ""}
                     footerComponent={(e) => {
                         let total = 0;
                         e.dinamicTable.data.map(a => { total += a.haber || 0 });
-                        return <SView style={{ alignItems: "center" }}><SText>{`${SMath.formatMoney(total || 0)}`}</SText></SView>
+                        return <SView  ><SText>{`${SMath.formatMoney(total || 0)}`}</SText></SView>
                     }}
                 />
                 <DinamicTable.Col
@@ -252,8 +230,26 @@ export default class TablaTransacciones extends Component {
                     label="Saldo"
                     width={120}
                     data={(e) => e?.row?.saldo ?? 0}
-                    cellStyle={{ alignItems: "flex-end" }}
+                    cellStyle={(e) => ({
+                        alignItems: "flex-end",
+
+                        ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {})
+                    })}
+
+
+                    customComponent={(e) => {
+                        // const isSaldoAnterior = e?.row?.descripcion === "Saldo anterior";
+                        return (
+                            <SText color={STheme.color.text} style={{ alignItems: "flex-end", paddingRight: 8 }}   >
+                                {e?.data}
+                            </SText>
+                        );
+                    }}
+
                     format={(e) => `${SMath.formatMoney(e.data || 0)}`}
+
+
+                    dssdsdds
                     footerComponent={(e) => {
                         const lastRow = e.dinamicTable.data[e.dinamicTable.data.length - 1];
                         const totalSaldo = lastRow?.saldo || 0;
@@ -271,10 +267,7 @@ export default class TablaTransacciones extends Component {
         const moneda = this.state.moneda || {};
         const simboloBase = moneda?.observacion || 'BOB';
 
-
-
         try {
-            // Verificar caja activa
             const activa = await MDL.caja.getActiva();
             if (!activa) {
                 SNotification.send({
@@ -285,7 +278,6 @@ export default class TablaTransacciones extends Component {
                 });
                 return;
             }
-
 
             SPopup.open({
                 key: "popup-venta-completada",
@@ -304,7 +296,6 @@ export default class TablaTransacciones extends Component {
                             col={"xs-12"}
                             type='money2'
                             placeholder="Ingrese monto"
-                            // keyboardType="numeric"
                             onChangeText={(val) => { monto = parseFloat(val) || 0; }}
                         />
 
@@ -331,19 +322,11 @@ export default class TablaTransacciones extends Component {
                                         montoMaximo: saldo,
                                         monedaSymbol: simboloBase,
                                         onSelect: (item, selectedCuotas = []) => {
-
-                                            
                                             console.log("Amortización:", JSON.stringify(item));
-                                            // se hara un funcion para amortizar con ricky porque esta dificil+
                                             SelectTipoPago.closePopup();
                                             SPopup.close("popup-venta-completada");
                                         }
                                     });
-
-
-                                    // this.registrarAmortizacion(monto);
-
-                                    SPopup.close("popup-venta-completada");
                                 }}>
                                 <SText>Confirmar</SText>
                             </SView>
@@ -352,9 +335,6 @@ export default class TablaTransacciones extends Component {
                     </SView>
                 )
             });
-
-
-
 
         } catch (e) {
             console.error(e);
@@ -365,21 +345,6 @@ export default class TablaTransacciones extends Component {
                 time: 5000
             });
         }
-    }
-
-    registrarAmortizacion(monto) {
-        const saldoActual = this.state.saldo || 0;
-        const nuevoSaldo = saldoActual - monto;
-
-        // console.clear();
-        console.log("%c" + "saldo amortizar", `color: #2ECC40; font-weight: bold;`);
-        console.log("%c" + "saldo " + saldoActual, `color: #2ECC40; font-weight: bold;`);
-        console.log("%c" + "nuevo saldo " + nuevoSaldo, `color: #2ECC40; font-weight: bold;`);
-
-        this.setState({ saldo: nuevoSaldo }, () => {
-            if (this.DinamicTable) this.DinamicTable.loadData();
-            SPopup.alert("Amortización realizada");
-        });
     }
 
     render() {
@@ -411,9 +376,11 @@ export default class TablaTransacciones extends Component {
                 {this.mostrarTabla()}
                 <SHr height={20} />
 
-                <SView col={'xs-12'} center>
+                <SView col={'xs-2'}
+                >
                     <SView col={'xs-12'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
                         <SView
+                            style={{ alignItems: "flex-end", }}
                             col={'xs-12'}
                             onPress={() => {
                                 if (!this.state.saldo || this.state.saldo <= 0) { SPopup.alert("No hay saldo pendiente"); return; }
