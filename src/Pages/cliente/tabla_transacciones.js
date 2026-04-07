@@ -40,7 +40,6 @@ export default class TablaTransacciones extends Component {
     componentDidMount() {
         this.loadInitialData();
     }
-
     async loadInitialData() {
         try {
             const keyEmpresa = await MDL?.empresa?.select?.key;
@@ -50,7 +49,11 @@ export default class TablaTransacciones extends Component {
 
             if (!keyEmpresa || !keyCliente) return [];
 
-            const ventas = await MDL.compra_venta.execute_function("_get_detalles_bycliente2", [keyEmpresa, keyCliente, fecha_inicio, fecha_fin]);
+            const ventas = await MDL.compra_venta.execute_function(
+                "_get_detalles_bycliente2",
+                [keyEmpresa, keyCliente, fecha_inicio, fecha_fin]
+            );
+
             const cliente = await MDL.crm.cliente.getByKey(keyCliente);
 
             if (!ventas || ventas.length === 0) {
@@ -69,7 +72,7 @@ export default class TablaTransacciones extends Component {
             const usuariosMap = Object.fromEntries((usuarios || []).map(u => [u.key, u]));
             const almacenesMap = Object.fromEntries((almacenes || []).map(a => [a.key, a]));
 
-            const ventasEnriquecidas = ventas.map(v => ({
+            let ventasEnriquecidas = ventas.map(v => ({
                 ...v,
                 moneda: monedasMap[v?.key_moneda] || {},
                 sucursal: sucursalesMap[v?.key_sucursal] || {},
@@ -78,19 +81,58 @@ export default class TablaTransacciones extends Component {
                 cliente: cliente || {},
             }));
 
+            const moneda = ventasEnriquecidas[0]?.moneda || null;
+
+            // 🔥 Fila de saldo anterior (puedes cambiar el valor dinámicamente)
+            ventasEnriquecidas = [
+                {
+                    key: `saldo_anterior_${new Date().getTime()}`,
+                    fecha_on: fecha_inicio,
+                    tipo: "saldo",
+                    descripcion: "Saldo anterior",
+                    debe: 10,
+                    haber: 0,
+                    saldo: 0, // se recalcula abajo
+                    moneda,
+                    sucursal: {},
+                    usuario: {},
+                    almacen: {},
+                    cliente: cliente || {}
+                },
+                ...ventasEnriquecidas
+            ];
+
+            // 🔥 CALCULAR SALDO ACUMULADO
+            let saldoAcumulado = 0;
+
+            ventasEnriquecidas = ventasEnriquecidas.map((item) => {
+                const debe = item.debe || 0;
+                const haber = item.haber || 0;
+
+                saldoAcumulado += (debe - haber);
+
+                return {
+                    ...item,
+                    saldo: saldoAcumulado
+                };
+            });
+
             const lastRow = ventasEnriquecidas[ventasEnriquecidas.length - 1];
             const saldo = lastRow?.saldo || 0;
 
             this.setState({
                 cliente: cliente || {},
-                moneda: ventasEnriquecidas[0]?.moneda || null,
+                moneda,
                 ventasEnriquecidas,
                 saldo,
             });
 
             console.clear();
-            console.log("%c" + saldo, `color: #2ECC40; font-weight: bold;`);
+            console.log("%c" + JSON.stringify(ventasEnriquecidas, null, 2), "color: #2ECC40; font-weight: bold;");
+            console.log("%cSaldo final: " + saldo, "color: #2ECC40; font-weight: bold;");
+
             return ventasEnriquecidas;
+
         } catch (error) {
             console.error("Error en loadInitialData:", error);
             SPopup.alert("Error al cargar los datos.");
@@ -115,6 +157,20 @@ export default class TablaTransacciones extends Component {
                 <DinamicTable.Col key="fecha" label="Fecha" width={140} data={e => e?.row?.fecha_on ? new SDate(e.row.fecha_on).toString("dd/MM/yyyy") : ""} />
                 <DinamicTable.Col key="tipo" label="Tipo" width={100} data={(e) => e?.row?.tipo || "-"} />
                 <DinamicTable.Col key="detalle" label="Detalle" width={200} data={(e) => e?.row?.descripcion || "-"}
+
+                    customComponent={(e) => {
+                        const isSaldoAnterior = e?.row?.descripcion === "Saldo anterior";
+
+                        return (
+                            <SText
+                                color={isSaldoAnterior ? '#fc0505' : STheme.color.text}
+                                bold={isSaldoAnterior}
+                            >
+                                {e?.row?.descripcion || "-"}
+                            </SText>
+                        );
+                    }}
+
                     footerComponent={() => (
                         <SView style={{ alignItems: "flex-end", paddingRight: 8 }}>
                             <SText bold>Total</SText>
