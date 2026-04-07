@@ -45,6 +45,7 @@ export default class TablaTransacciones extends Component {
             const keyEmpresa = await MDL?.empresa?.select?.key;
             const keyCliente = this.key;
             const fecha_inicio = this.state.fecha_inicio;
+            // const fecha_inicio = this.state.fecha_inicio;
             const fecha_fin = this.state.fecha_fin;
 
             if (!keyEmpresa || !keyCliente) return [];
@@ -290,132 +291,7 @@ export default class TablaTransacciones extends Component {
             });
         }
     }
-    async showVentaPopup222222222222222222222222222222222222222() {
-        const saldo = this.state.saldo || 0;
-        let monto = 0;
-        const moneda = this.state.moneda || {};
-        const simboloBase = moneda?.observacion || 'BOB';
-
-        try {
-            // Verificar caja activa
-            const activa = await MDL.caja.getActiva();
-            if (!activa) {
-                SNotification.send({
-                    title: 'Caja no aperturada',
-                    body: 'Abre la caja primero.',
-                    color: STheme.color.danger,
-                    time: 5000
-                });
-                return;
-            }
-
-            // Abrir popup
-            SPopup.open({
-                key: "popup-venta-completada",
-                content: (
-                    <SView col="xs-11 md-4"
-                        backgroundColor={STheme.color.background}
-                        padding={24}
-                        withoutFeedback
-                        style={{ borderRadius: 16, alignItems: "center" }}>
-
-                        <SText bold fontSize={20} center style={{ marginBottom: 8 }}>¡Amortizar Deuda!</SText>
-
-                        <SText fontSize={14} center style={{ marginBottom: 16 }}>
-                            Saldo pendiente: {SMath.formatMoney(saldo)}
-                        </SText>
-
-                        <SInput
-                            col={"xs-12"}
-                            placeholder="Ingrese monto"
-                            keyboardType="numeric"
-                            onChangeText={(val) => { monto = parseFloat(val) || 0; }}
-                        />
-
-                        <SHr height={16} />
-
-                        <SView row col="xs-12" style={{ gap: 12 }}>
-
-                            {/* Cancelar */}
-                            <SView flex height={40} borderRadius={8} center
-                                backgroundColor={STheme.color.text}
-                                onPress={() => SPopup.close("popup-venta-completada")}>
-                                <SText color={STheme.color.background}>Cancelar</SText>
-                            </SView>
-
-                            {/* Confirmar */}
-                            <SView flex height={40} borderRadius={8} center
-                                backgroundColor={STheme.color.card}
-                                border={STheme.color.success}
-                                onPress={() => {
-                                    if (monto <= 0) {
-                                        SPopup.alert("El monto debe ser mayor a 0");
-                                        return;
-                                    }
-                                    if (monto > saldo) {
-                                        SPopup.alert("No puede ser mayor al saldo");
-                                        return;
-                                    }
-
-                                    // Abrir popup para seleccionar tipo de pago
-                                    SelectTipoPago.openPopup({
-                                        key_punto_venta: activa.key_punto_venta,
-                                        key_moneda: moneda.key,
-                                        montoMaximo: saldo,
-                                        // montoMaximo: monto,
-                                        monedaSymbol: simboloBase,
-                                        onSelect: (item, selectedCuotas = []) => {
-                                            // Generar objeto a enviar con tipos de pago y cuotas
-                                            const cuotasData = selectedCuotas.map(cuota => cuota.key);
-                                            const enviar = { tipos_pago: item, cuotas: cuotasData };
-
-                                            console.log("Amortización:", JSON.stringify(enviar));
-
-                                            // Aquí puedes llamar tu función real de registro de amortización
-                                            // this.registrarAmortizacion(monto, enviar);
-
-                                            SSocket.sendPromise({
-                                                service: "caja",
-                                                component: "caja_detalle",
-                                                type: "amortizarCuotaCompra",
-                                                data: enviar,
-                                                key_usuario: MDL.usuario.session?.key,
-                                                key_empresa: MDL.empresa.select?.key,
-                                                key_caja: MDL.caja.activa?.key,
-                                            }).then(resp => {
-                                                if (resp?.estado === "exito") {
-                                                    SNotification.send({ title: "Éxito", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
-                                                    // this.props.onSuccess?.();
-                                                    if (this.props.onSuccess) this.props.onSuccess(resp)
-                                                    SelectTipoPago.closePopup();
-                                                }
-                                            }).catch(err => {
-                                                SNotification.send({ title: 'Error', body: "dd" + err?.message || 'Falló el pago.', color: STheme.color.danger });
-                                            });
-
-
-                                            SPopup.close("popup-venta-completada");
-                                        }
-                                    });
-
-                                }}>
-                                <SText>Confirmar</SText>
-                            </SView>
-
-                        </SView>
-                    </SView>
-                )
-            });
-        } catch (e) {
-            console.error(e);
-            SNotification.send({
-                title: 'Error',
-                body: 'No se pudo verificar la caja.',
-                color: STheme.color.danger,
-                time: 5000
-            });
-        }
-    }
+ 
     registrarAmortizacion(monto) {
         const saldoActual = this.state.saldo || 0;
         const nuevoSaldo = saldoActual - monto;
