@@ -166,7 +166,7 @@ export default class tabla_productos_dia extends React.Component {
                                         textStyle={{ fontSize: 10 }}
                                         loadData={async () => dataVentasPorDia}
                                     >
-                                        <DinamicTable.Col
+                                        {[<DinamicTable.Col
                                             key="producto"
                                             label='Producto'
                                             width={180}
@@ -176,8 +176,8 @@ export default class tabla_productos_dia extends React.Component {
                                                     <SText bold>Total</SText>
                                                 </SView>
                                             )}
-                                        />
-                                        {...dias.flatMap(d => [
+                                        />,
+                                        ...dias.flatMap(d => [
                                             <DinamicTable.Col
                                                 key={`dia-${d.dia}-ventas`}
                                                 label={`${d.dia} - ventas`}
@@ -226,7 +226,7 @@ export default class tabla_productos_dia extends React.Component {
                                                     );
                                                 }}
                                             />
-                                        ])}
+                                        ]),
                                         <DinamicTable.Col
                                             key="total_producto_ventas"
                                             label="Total Ventas"
@@ -246,7 +246,7 @@ export default class tabla_productos_dia extends React.Component {
                                                     </SView>
                                                 );
                                             }}
-                                        />
+                                        />,
                                         <DinamicTable.Col
                                             key="total_producto_compras"
                                             label="Total Compras"
@@ -266,7 +266,7 @@ export default class tabla_productos_dia extends React.Component {
                                                     </SView>
                                                 );
                                             }}
-                                        />
+                                        />]}
                                     </DinamicTable>
                                 )}
                             </SView>
