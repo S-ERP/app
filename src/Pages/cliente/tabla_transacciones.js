@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath, SNotification, SLoad } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath, SNotification, SLoad, SInput } from 'servisofts-component';
 import SSocket from 'servisofts-socket';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../Config';
 import MDL from '../../MDL';
 import FechaFullFilter2 from '../../Components/FechaFullFilter2';
+import SIconApp from '../../Assets/SIconApp';
+import SelectTipoPago from '../caja2/components/SelectTipoPago';
 
 export default class TablaTransacciones extends Component {
     constructor(props) {
@@ -15,6 +17,9 @@ export default class TablaTransacciones extends Component {
             moneda: null,
             cliente: null,
             ventasEnriquecidas: null,
+            saldo: 0,
+            selectedCuotas: {},
+
         };
         this.key = SNavigation.getParam("key");
     }
@@ -43,19 +48,16 @@ export default class TablaTransacciones extends Component {
             const fecha_inicio = this.state.fecha_inicio;
             const fecha_fin = this.state.fecha_fin;
 
-            console.clear();
-            console.log("%c" + "entro a loadInitialData", `color: #cc4e2e; font-weight: bold;`);
             if (!keyEmpresa || !keyCliente) return [];
+
             const ventas = await MDL.compra_venta.execute_function("_get_detalles_bycliente2", [keyEmpresa, keyCliente, fecha_inicio, fecha_fin]);
+            const cliente = await MDL.crm.cliente.getByKey(keyCliente);
 
-            const cliente =  await MDL.crm.cliente.getByKey(keyCliente);
-            console.log("%c" + "entro a loadInitialData", `color: #ccaf2e; font-weight: bold;`);
-
-            // Si no hay ventas, igual cargamos datos del cliente para mostrar su información.
             if (!ventas || ventas.length === 0) {
-                this.setState({ cliente: cliente || {}, moneda: null });
+                this.setState({ cliente: cliente || {}, moneda: null, saldo: 0 });
                 return [];
             }
+
             const [empresa, usuarios = [], almacenes = []] = await Promise.all([
                 MDL.empresa.getFull(),
                 MDL.usuario.getByKeys([...new Set(ventas.map(v => v?.key_usuario).filter(Boolean))]),
@@ -67,8 +69,6 @@ export default class TablaTransacciones extends Component {
             const usuariosMap = Object.fromEntries((usuarios || []).map(u => [u.key, u]));
             const almacenesMap = Object.fromEntries((almacenes || []).map(a => [a.key, a]));
 
-            console.log("%c" + "entro a loadInitialData", `color: #0a7700; font-weight: bold;`);
-
             const ventasEnriquecidas = ventas.map(v => ({
                 ...v,
                 moneda: monedasMap[v?.key_moneda] || {},
@@ -77,15 +77,19 @@ export default class TablaTransacciones extends Component {
                 almacen: almacenesMap[v?.key_almacen] || {},
                 cliente: cliente || {},
             }));
-            const first = ventasEnriquecidas[0];
-            const last = ventasEnriquecidas[ventasEnriquecidas.length - 1];
-            console.log("%c" + "entro a sss", `color: #2ECC40; font-weight: bold;`);
 
-            console.log("%c" + JSON.stringify(cliente, null, 2), "color: #2ECC40; font-weight: bold;");
+            const lastRow = ventasEnriquecidas[ventasEnriquecidas.length - 1];
+            const saldo = lastRow?.saldo || 0;
 
-            this.state.moneda = first?.moneda;
-            // this.state.cliente = cliente || {};
-            this.setState({ cliente: cliente || {} });
+            this.setState({
+                cliente: cliente || {},
+                moneda: ventasEnriquecidas[0]?.moneda || null,
+                ventasEnriquecidas,
+                saldo,
+            });
+
+            console.clear();
+            console.log("%c" + saldo, `color: #2ECC40; font-weight: bold;`);
             return ventasEnriquecidas;
         } catch (error) {
             console.error("Error en loadInitialData:", error);
@@ -95,7 +99,7 @@ export default class TablaTransacciones extends Component {
     }
 
     mostrarTabla() {
-        // const data = this.state.ventasEnriquecidas || [];
+
         return (
             <DinamicTable
                 ref={ref => (this.DinamicTable = ref)}
@@ -126,12 +130,8 @@ export default class TablaTransacciones extends Component {
                     format={(e) => e.data ? `${SMath.formatMoney(e.data || 0)}` : ""}
                     footerComponent={(e) => {
                         let total = 0;
-                        e.dinamicTable.data.map(a => {
-                            total += a.debe || 0
-                        })
-                        return <SView style={{ alignItems: "center" }}>
-                            <SText >{`${SMath.formatMoney(total || 0)}`}</SText>
-                        </SView>
+                        e.dinamicTable.data.map(a => { total += a.debe || 0 });
+                        return <SView style={{ alignItems: "center" }}><SText>{`${SMath.formatMoney(total || 0)}`}</SText></SView>
                     }}
                 />
                 <DinamicTable.Col
@@ -143,12 +143,8 @@ export default class TablaTransacciones extends Component {
                     format={(e) => e.data ? `${SMath.formatMoney(e.data || 0)}` : ""}
                     footerComponent={(e) => {
                         let total = 0;
-                        e.dinamicTable.data.map(a => {
-                            total += a.haber || 0
-                        })
-                        return <SView style={{ alignItems: "center" }}>
-                            <SText> {`${SMath.formatMoney(total || 0)}`} </SText>
-                        </SView>
+                        e.dinamicTable.data.map(a => { total += a.haber || 0 });
+                        return <SView style={{ alignItems: "center" }}><SText>{`${SMath.formatMoney(total || 0)}`}</SText></SView>
                     }}
                 />
                 <DinamicTable.Col
@@ -161,27 +157,231 @@ export default class TablaTransacciones extends Component {
                     footerComponent={(e) => {
                         const lastRow = e.dinamicTable.data[e.dinamicTable.data.length - 1];
                         const totalSaldo = lastRow?.saldo || 0;
-                        return (
-                            <SView style={{ alignItems: "flex-end", paddingRight: 8 }}>
-                                <SText>{`${SMath.formatMoney(totalSaldo)}`}</SText>
-                            </SView>
-                        );
+                        return <SView style={{ alignItems: "flex-end", paddingRight: 8 }}><SText>{`${SMath.formatMoney(totalSaldo)}`}</SText></SView>
                     }}
                 />
             </DinamicTable>
         );
     }
 
-    render() {
-        const { cliente, moneda, fecha_inicio, fecha_fin } = this.state;
+    async showVentaPopup() {
+        const saldo = this.state.saldo || 0;
+        let monto = 0;
+        const moneda = this.state.moneda || {};
+        const simboloBase = moneda?.observacion || 'BOB';
 
-        // if (!cliente) return <SLoad />;
+
+
+        try {
+            // Verificar caja activa
+            const activa = await MDL.caja.getActiva();
+            if (!activa) {
+                SNotification.send({
+                    title: 'Caja no aperturada',
+                    body: 'Abre la caja primero.',
+                    color: STheme.color.danger,
+                    time: 5000
+                });
+                return;
+            }
+
+            SelectTipoPago.openPopup({
+                key_punto_venta: activa.key_punto_venta,
+                key_moneda: moneda.key,
+                montoMaximo: saldo,
+                monedaSymbol: simboloBase,
+                onSelect: (item, selectedCuotas = []) => {
+                    const enviar = { tipos_pago: item, cuotas: cuotasData };
+                    // item.monto_nacional
+                    console.log("Amortización:", JSON.stringify(enviar));
+
+
+
+                    // se hara un funcion para amortizar con ricky porque esta dificil
+
+                    // SSocket.sendPromise({
+                    //     service: "caja",
+                    //     component: "caja_detalle",
+                    //     type: "amortizarCuotaCompra",
+                    //     data: enviar,
+                    //     key_usuario: MDL.usuario.session?.key,
+                    //     key_empresa: MDL.empresa.select?.key,
+                    //     key_caja: MDL.caja.activa?.key,
+                    // }).then(resp => {
+                    //     if (resp?.estado === "exito") {
+                    //         SNotification.send({ title: "Éxito", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
+                    //         // this.props.onSuccess?.();
+                    //         if (this.props.onSuccess) this.props.onSuccess(resp)
+                    //         SelectTipoPago.closePopup();
+                    //     }
+                    // }).catch(err => {
+                    //     SNotification.send({ title: 'Error', body: "dd" + err?.message || 'Falló el pago.', color: STheme.color.danger });
+                    // });
+
+
+                    SPopup.close("popup-venta-completada");
+                }
+            });
+
+
+        } catch (e) {
+            console.error(e);
+            SNotification.send({
+                title: 'Error',
+                body: 'No se pudo verificar la caja.',
+                color: STheme.color.danger,
+                time: 5000
+            });
+        }
+    }
+    async showVentaPopup222222222222222222222222222222222222222() {
+        const saldo = this.state.saldo || 0;
+        let monto = 0;
+        const moneda = this.state.moneda || {};
+        const simboloBase = moneda?.observacion || 'BOB';
+
+        try {
+            // Verificar caja activa
+            const activa = await MDL.caja.getActiva();
+            if (!activa) {
+                SNotification.send({
+                    title: 'Caja no aperturada',
+                    body: 'Abre la caja primero.',
+                    color: STheme.color.danger,
+                    time: 5000
+                });
+                return;
+            }
+
+            // Abrir popup
+            SPopup.open({
+                key: "popup-venta-completada",
+                content: (
+                    <SView col="xs-11 md-4"
+                        backgroundColor={STheme.color.background}
+                        padding={24}
+                        withoutFeedback
+                        style={{ borderRadius: 16, alignItems: "center" }}>
+
+                        <SText bold fontSize={20} center style={{ marginBottom: 8 }}>¡Amortizar Deuda!</SText>
+
+                        <SText fontSize={14} center style={{ marginBottom: 16 }}>
+                            Saldo pendiente: {SMath.formatMoney(saldo)}
+                        </SText>
+
+                        <SInput
+                            col={"xs-12"}
+                            placeholder="Ingrese monto"
+                            keyboardType="numeric"
+                            onChangeText={(val) => { monto = parseFloat(val) || 0; }}
+                        />
+
+                        <SHr height={16} />
+
+                        <SView row col="xs-12" style={{ gap: 12 }}>
+
+                            {/* Cancelar */}
+                            <SView flex height={40} borderRadius={8} center
+                                backgroundColor={STheme.color.text}
+                                onPress={() => SPopup.close("popup-venta-completada")}>
+                                <SText color={STheme.color.background}>Cancelar</SText>
+                            </SView>
+
+                            {/* Confirmar */}
+                            <SView flex height={40} borderRadius={8} center
+                                backgroundColor={STheme.color.card}
+                                border={STheme.color.success}
+                                onPress={() => {
+                                    if (monto <= 0) {
+                                        SPopup.alert("El monto debe ser mayor a 0");
+                                        return;
+                                    }
+                                    if (monto > saldo) {
+                                        SPopup.alert("No puede ser mayor al saldo");
+                                        return;
+                                    }
+
+                                    // Abrir popup para seleccionar tipo de pago
+                                    SelectTipoPago.openPopup({
+                                        key_punto_venta: activa.key_punto_venta,
+                                        key_moneda: moneda.key,
+                                        montoMaximo: saldo,
+                                        // montoMaximo: monto,
+                                        monedaSymbol: simboloBase,
+                                        onSelect: (item, selectedCuotas = []) => {
+                                            // Generar objeto a enviar con tipos de pago y cuotas
+                                            const cuotasData = selectedCuotas.map(cuota => cuota.key);
+                                            const enviar = { tipos_pago: item, cuotas: cuotasData };
+
+                                            console.log("Amortización:", JSON.stringify(enviar));
+
+                                            // Aquí puedes llamar tu función real de registro de amortización
+                                            // this.registrarAmortizacion(monto, enviar);
+
+                                            SSocket.sendPromise({
+                                                service: "caja",
+                                                component: "caja_detalle",
+                                                type: "amortizarCuotaCompra",
+                                                data: enviar,
+                                                key_usuario: MDL.usuario.session?.key,
+                                                key_empresa: MDL.empresa.select?.key,
+                                                key_caja: MDL.caja.activa?.key,
+                                            }).then(resp => {
+                                                if (resp?.estado === "exito") {
+                                                    SNotification.send({ title: "Éxito", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
+                                                    // this.props.onSuccess?.();
+                                                    if (this.props.onSuccess) this.props.onSuccess(resp)
+                                                    SelectTipoPago.closePopup();
+                                                }
+                                            }).catch(err => {
+                                                SNotification.send({ title: 'Error', body: "dd" + err?.message || 'Falló el pago.', color: STheme.color.danger });
+                                            });
+
+
+                                            SPopup.close("popup-venta-completada");
+                                        }
+                                    });
+
+                                }}>
+                                <SText>Confirmar</SText>
+                            </SView>
+
+                        </SView>
+                    </SView>
+                )
+            });
+        } catch (e) {
+            console.error(e);
+            SNotification.send({
+                title: 'Error',
+                body: 'No se pudo verificar la caja.',
+                color: STheme.color.danger,
+                time: 5000
+            });
+        }
+    }
+    registrarAmortizacion(monto) {
+        const saldoActual = this.state.saldo || 0;
+        const nuevoSaldo = saldoActual - monto;
+
+        // console.clear();
+        console.log("%c" + "saldo amortizar", `color: #2ECC40; font-weight: bold;`);
+        console.log("%c" + "saldo " + saldoActual, `color: #2ECC40; font-weight: bold;`);
+        console.log("%c" + "nuevo saldo " + nuevoSaldo, `color: #2ECC40; font-weight: bold;`);
+
+        this.setState({ saldo: nuevoSaldo }, () => {
+            if (this.DinamicTable) this.DinamicTable.loadData();
+            SPopup.alert("Amortización realizada");
+        });
+    }
+
+    render() {
+        const { cliente } = this.state;
 
         return (
             <SPage title="Kardex Individual" disableScroll>
                 <SView row col={"xs-12"}>
-                    <SHr />
-                    <SHr />
+                    <SHr /><SHr />
                     <SView col={"xs-12"} row center style={{ flexWrap: "wrap", gap: 12 }}>
                         <SView col={"xs-12 sm-7.5"} row center>
                             <FechaFullFilter2
@@ -190,19 +390,41 @@ export default class TablaTransacciones extends Component {
                                 onChange={e => {
                                     this.state.fecha_inicio = e.fecha_inicio;
                                     this.state.fecha_fin = e.fecha_fin;
-                                    this.DinamicTable.loadData()
+                                    this.DinamicTable.loadData();
                                 }}
                             />
                         </SView>
                     </SView>
-                    <SHr />
-                    <SHr height={10} />
+                    <SHr /><SHr height={10} />
                     <SView col={"xs-12"} row>
                         <SText fontSize={15}>Cliente: {cliente?.nombres + " " + cliente?.apellidos || "-"}</SText>
                     </SView>
                 </SView>
                 <SHr height={10} />
                 {this.mostrarTabla()}
+                <SHr height={20} />
+
+                <SView col={'xs-12'} center>
+                    <SView col={'xs-12'} style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
+                        <SView
+                            col={'xs-12'}
+                            onPress={() => {
+                                if (!this.state.saldo || this.state.saldo <= 0) { SPopup.alert("No hay saldo pendiente"); return; }
+                                this.showVentaPopup();
+                            }}
+                            backgroundColor={"red"}
+                            style={{ padding: 12, borderRadius: 6, borderWidth: 1, borderColor: "blue" }}
+                            center
+                        >
+                            <SView row center>
+                                <SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.text} />
+                                <SView width={4} />
+                                <SText color={STheme.color.text}>Amortizar</SText>
+                            </SView>
+                        </SView>
+                    </SView>
+                </SView>
+
                 <SHr height={20} />
             </SPage>
         );
