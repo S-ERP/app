@@ -6,6 +6,9 @@ import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
 import MDL from '../../MDL';
 import Config from '../../Config';
+import FloatMenu from '../../Components/FloatMenu';
+import SIconApp from '../../Assets/SIconApp';
+import FormRegistroSuscriptor from './Components/FormRegistroSuscriptor';
 //  import Config from '../Config';
 //  import MDL from '../MDL';
 //  import Model from '../Model';
@@ -81,7 +84,7 @@ export default class Suscriptores extends Component {
     );
   }
 
- renderValidofecha(obj) {
+  renderValidofecha(obj) {
     if (!obj) return null;
 
     const now = new Date();
@@ -92,49 +95,49 @@ export default class Suscriptores extends Component {
     let backgroundColor = "#F0F0F0"; // gris por defecto
 
     if (fechaFin && fechaFin < now) {
-        mensaje = "Vencido";
-        backgroundColor = "#FF4D4F"; // rojo
+      mensaje = "Vencido";
+      backgroundColor = "#FF4D4F"; // rojo
     } else if (fechaInicio && fechaInicio <= now && fechaFin && fechaFin >= now) {
-        mensaje = "Activo";
-        backgroundColor = "#52C41A"; // verde
+      mensaje = "Activo";
+      backgroundColor = "#52C41A"; // verde
     } else if (fechaInicio && fechaInicio > now) {
-        mensaje = "Futuro";
-        backgroundColor = "#595959"; // gris oscuro
+      mensaje = "Futuro";
+      backgroundColor = "#595959"; // gris oscuro
     }
 
     return (
-        <SView col="xs-12" center row style={{ justifyContent: "center" }}>
-            <SView
-                style={{
-                    backgroundColor: backgroundColor,
-                    borderRadius: 12,
-                    paddingHorizontal: 10,
-                    paddingVertical: 4,
-                    minWidth: 60,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 1,
-                    elevation: 1, // para Android
-                }}
-            >
-                <SText
-                    numberOfLines={1}
-                    style={{
-                        fontSize: 11,
-                        color: "white",
-                        fontWeight: "bold",
-                        textAlign: "center",
-                    }}
-                >
-                    {mensaje}
-                </SText>
-            </SView>
+      <SView col="xs-12" center row style={{ justifyContent: "center" }}>
+        <SView
+          style={{
+            backgroundColor: backgroundColor,
+            borderRadius: 12,
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+            minWidth: 60,
+            alignItems: "center",
+            justifyContent: "center",
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.2,
+            shadowRadius: 1,
+            elevation: 1, // para Android
+          }}
+        >
+          <SText
+            numberOfLines={1}
+            style={{
+              fontSize: 11,
+              color: "white",
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            {mensaje}
+          </SText>
         </SView>
+      </SView>
     );
-}
+  }
 
 
   renderSucursal(sucursal = {}) {
@@ -266,6 +269,81 @@ export default class Suscriptores extends Component {
 
         loadInitialState={async () => {
           return { sorters: [{ key: "fecha_on", order: "desc", type: "date" }] }
+        }}
+
+        onSelect={(e) => {
+
+          console.log("Selected project:", e.row);
+          const { row, evt } = e;
+          const nombreTurno = `Suscripción: ${row?.cliente?.nombres ?? 'Sin nombre'}`;
+          const options = [];
+
+          // Opción de editar suscriptor
+          // if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'delete' })) {
+          options.push({
+            label: 'Editar Fechas',
+            icon: <SIconApp name="Edit" fill={STheme.color.text} />,
+            onPress: () => {
+              FormRegistroSuscriptor.open({
+                defaultData: row,
+                onActualizar: (nuevoDato) => {
+                  this.DinamicTable.loadData();
+                  console.log("Cliente actualizado:", nuevoDato);
+                }
+              });
+            }
+          });
+          // }
+
+          // Opción de eliminar suscriptor
+          // if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'delete' })) {
+          // options.push({
+          //   label: 'Eliminar',
+          //   icon: <SIconApp name="Delete" fill={STheme.color.text} />,
+          //   onPress: () => {
+          //     SPopup.confirm({
+          //       title: 'Eliminar Cliente',
+          //       message: `¿Estás seguro de eliminar a ${nombreTurno}?`,
+          //       onPress: () => {
+          //         SSocket.sendPromise({
+          //           service: 'empresa',
+          //           component: 'horario_atencion',
+          //           type: '_editarTurnosHorariosAtencion',
+          //           data: { ...row, estado: 0 },
+          //         })
+          //           .then(() => {
+          //             SNotification.send({
+          //               key: 'eliminar_ok',
+          //               title: 'Éxito',
+          //               body: `${nombreTurno} fue eliminado correctamente.`,
+          //               time: 1500,
+          //               color: STheme.color.success,
+          //             });
+          //             this.DinamicTable.loadData();
+          //           })
+          //           .catch(err => {
+          //             console.error('Error al eliminar turno:', err);
+          //             SNotification.send({
+          //               key: 'eliminar_error',
+          //               title: 'Error',
+          //               body: 'Ocurrió un error al eliminar. Intenta nuevamente.',
+          //               time: 3000,
+          //               color: STheme.color.danger,
+          //             });
+          //           });
+          //       },
+          //     });
+          //   },
+          // });
+          // }
+
+          FloatMenu.open({
+            e: evt,
+            label: nombreTurno,
+            options,
+          });
+
+          // this.mostrarPopup(e.row.key)
         }}
       >
 
