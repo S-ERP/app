@@ -40,148 +40,148 @@ export default class TablaTransacciones extends Component {
     componentDidMount() {
         this.loadInitialData();
     }
- 
+
     async loadInitialData() {
-    try {
-        const keyEmpresa = await MDL?.empresa?.select?.key;
-        const keyCliente = this.key;
+        try {
+            const keyEmpresa = await MDL?.empresa?.select?.key;
+            const keyCliente = this.key;
 
-        // 🔥 Traer todo el histórico (para cálculo correcto)
-        const fecha_inicio_total = "2024-01-01";
-        const fecha_inicio = this.state.fecha_inicio;
-        const fecha_fin = this.state.fecha_fin;
+            // 🔥 Traer todo el histórico (para cálculo correcto)
+            const fecha_inicio_total = "2024-01-01";
+            const fecha_inicio = this.state.fecha_inicio;
+            const fecha_fin = this.state.fecha_fin;
 
-        if (!keyEmpresa || !keyCliente) return [];
+            if (!keyEmpresa || !keyCliente) return [];
 
-        const ventas = await MDL.compra_venta.execute_function(
-            "_get_detalles_bycliente2",
-            [keyEmpresa, keyCliente, fecha_inicio_total, fecha_fin]
-        );
+            const ventas = await MDL.compra_venta.execute_function(
+                "_get_detalles_bycliente2",
+                [keyEmpresa, keyCliente, fecha_inicio_total, fecha_fin]
+            );
 
-        const cliente = await MDL.crm.cliente.getByKey(keyCliente);
+            const cliente = await MDL.crm.cliente.getByKey(keyCliente);
 
-        if (!ventas || ventas.length === 0) {
-            this.setState({ cliente: cliente || {}, moneda: null, saldo: 0 });
+            if (!ventas || ventas.length === 0) {
+                this.setState({ cliente: cliente || {}, moneda: null, saldo: 0 });
+                return [];
+            }
+
+            const [empresa, usuarios = [], almacenes = []] = await Promise.all([
+                MDL.empresa.getFull(),
+                MDL.usuario.getByKeys([...new Set(ventas.map(v => v?.key_usuario).filter(Boolean))]),
+                MDL.inventario.getAllAlmacen(),
+            ]);
+
+            const sucursalesMap = Object.fromEntries((empresa?.sucursales || []).map(s => [s.key, s]));
+            const monedasMap = Object.fromEntries((empresa?.monedas || []).map(m => [m.key, m]));
+            const usuariosMap = Object.fromEntries((usuarios || []).map(u => [u.key, u]));
+            const almacenesMap = Object.fromEntries((almacenes || []).map(a => [a.key, a]));
+
+            let ventasEnriquecidas = ventas.map(v => ({
+                ...v,
+                moneda: monedasMap[v?.key_moneda] || {},
+                sucursal: sucursalesMap[v?.key_sucursal] || {},
+                usuario: usuariosMap[v?.key_usuario] || {},
+                almacen: almacenesMap[v?.key_almacen] || {},
+                cliente: cliente || {},
+            }));
+
+            const moneda = ventasEnriquecidas[0]?.moneda || null;
+
+            // 🔥 1. Calcular saldo acumulado con TODO el histórico
+            let saldoAcumulado = 0;
+
+            ventasEnriquecidas = ventasEnriquecidas.map((item) => {
+                const debe = item.debe || 0;
+                const haber = item.haber || 0;
+
+                saldoAcumulado += (debe - haber);
+
+                return {
+                    ...item,
+                    saldo: saldoAcumulado
+                };
+            });
+
+            // 🔥 2. Calcular saldo anterior al filtro
+            let saldoAnterior = 0;
+
+            ventasEnriquecidas.forEach(item => {
+                const fechaItem = new SDate(item.fecha_on).toString("yyyy-MM-dd");
+
+                if (fechaItem < fecha_inicio) {
+                    saldoAnterior = item.saldo;
+                }
+            });
+
+            // 🔥 3. Filtrar SOLO lo que se debe mostrar
+            let ventasFiltradas = ventasEnriquecidas.filter(item => {
+                const fechaItem = new SDate(item.fecha_on).toString("yyyy-MM-dd");
+
+                return fechaItem >= fecha_inicio && fechaItem <= fecha_fin;
+            });
+
+            // 🔥 4. Insertar fila saldo anterior REAL
+            if (saldoAnterior !== 0) {
+                ventasFiltradas = [
+                    {
+                        key: `saldo_anterior_${new Date().getTime()}`,
+                        fecha_on: fecha_inicio,
+                        tipo: "saldo",
+                        descripcion: "Saldo anterior",
+                        debe: 0,
+                        haber: 0,
+                        saldo: saldoAnterior,
+                        moneda,
+                        sucursal: {},
+                        usuario: {},
+                        almacen: {},
+                        cliente: cliente || {}
+                    },
+                    ...ventasFiltradas
+                ];
+            }
+
+            // ventasFiltradas = [
+            //     {
+            //         key: `saldo_anterior_${new Date().getTime()}`,
+            //         fecha_on: fecha_inicio,
+            //         tipo: "saldo",
+            //         descripcion: "Saldo anterior",
+            //         debe: 0,
+            //         haber: 0,
+            //         saldo: saldoAnterior,
+            //         moneda,
+            //         sucursal: {},
+            //         usuario: {},
+            //         almacen: {},
+            //         cliente: cliente || {}
+            //     },
+            //     ...ventasFiltradas
+            // ];
+
+            const lastRow = ventasFiltradas[ventasFiltradas.length - 1];
+            const saldo = lastRow?.saldo || 0;
+
+            this.setState({
+                cliente: cliente || {},
+                moneda,
+                ventasEnriquecidas: ventasFiltradas,
+                saldo,
+            });
+
+            console.clear();
+            console.log("%c" + JSON.stringify(ventasFiltradas, null, 2), "color: #2ECC40; font-weight: bold;");
+            console.log("%cSaldo anterior: " + saldoAnterior, "color: orange; font-weight: bold;");
+            console.log("%cSaldo final: " + saldo, "color: #2ECC40; font-weight: bold;");
+
+            return ventasFiltradas;
+
+        } catch (error) {
+            console.error("Error en loadInitialData:", error);
+            SPopup.alert("Error al cargar los datos.");
             return [];
         }
-
-        const [empresa, usuarios = [], almacenes = []] = await Promise.all([
-            MDL.empresa.getFull(),
-            MDL.usuario.getByKeys([...new Set(ventas.map(v => v?.key_usuario).filter(Boolean))]),
-            MDL.inventario.getAllAlmacen(),
-        ]);
-
-        const sucursalesMap = Object.fromEntries((empresa?.sucursales || []).map(s => [s.key, s]));
-        const monedasMap = Object.fromEntries((empresa?.monedas || []).map(m => [m.key, m]));
-        const usuariosMap = Object.fromEntries((usuarios || []).map(u => [u.key, u]));
-        const almacenesMap = Object.fromEntries((almacenes || []).map(a => [a.key, a]));
-
-        let ventasEnriquecidas = ventas.map(v => ({
-            ...v,
-            moneda: monedasMap[v?.key_moneda] || {},
-            sucursal: sucursalesMap[v?.key_sucursal] || {},
-            usuario: usuariosMap[v?.key_usuario] || {},
-            almacen: almacenesMap[v?.key_almacen] || {},
-            cliente: cliente || {},
-        }));
-
-        const moneda = ventasEnriquecidas[0]?.moneda || null;
-
-        // 🔥 1. Calcular saldo acumulado con TODO el histórico
-        let saldoAcumulado = 0;
-
-        ventasEnriquecidas = ventasEnriquecidas.map((item) => {
-            const debe = item.debe || 0;
-            const haber = item.haber || 0;
-
-            saldoAcumulado += (debe - haber);
-
-            return {
-                ...item,
-                saldo: saldoAcumulado
-            };
-        });
-
-        // 🔥 2. Calcular saldo anterior al filtro
-        let saldoAnterior = 0;
-
-        ventasEnriquecidas.forEach(item => {
-            const fechaItem = new SDate(item.fecha_on).toString("yyyy-MM-dd");
-
-            if (fechaItem < fecha_inicio) {
-                saldoAnterior = item.saldo;
-            }
-        });
-
-        // 🔥 3. Filtrar SOLO lo que se debe mostrar
-        let ventasFiltradas = ventasEnriquecidas.filter(item => {
-            const fechaItem = new SDate(item.fecha_on).toString("yyyy-MM-dd");
-
-            return fechaItem >= fecha_inicio && fechaItem <= fecha_fin;
-        });
-
-        // 🔥 4. Insertar fila saldo anterior REAL
-        if (saldoAnterior !== 0) {
-    ventasFiltradas = [
-        {
-            key: `saldo_anterior_${new Date().getTime()}`,
-            fecha_on: fecha_inicio,
-            tipo: "saldo",
-            descripcion: "Saldo anterior",
-            debe: 0,
-            haber: 0,
-            saldo: saldoAnterior,
-            moneda,
-            sucursal: {},
-            usuario: {},
-            almacen: {},
-            cliente: cliente || {}
-        },
-        ...ventasFiltradas
-    ];
-}
-
-        // ventasFiltradas = [
-        //     {
-        //         key: `saldo_anterior_${new Date().getTime()}`,
-        //         fecha_on: fecha_inicio,
-        //         tipo: "saldo",
-        //         descripcion: "Saldo anterior",
-        //         debe: 0,
-        //         haber: 0,
-        //         saldo: saldoAnterior,
-        //         moneda,
-        //         sucursal: {},
-        //         usuario: {},
-        //         almacen: {},
-        //         cliente: cliente || {}
-        //     },
-        //     ...ventasFiltradas
-        // ];
-
-        const lastRow = ventasFiltradas[ventasFiltradas.length - 1];
-        const saldo = lastRow?.saldo || 0;
-
-        this.setState({
-            cliente: cliente || {},
-            moneda,
-            ventasEnriquecidas: ventasFiltradas,
-            saldo,
-        });
-
-        console.clear();
-        console.log("%c" + JSON.stringify(ventasFiltradas, null, 2), "color: #2ECC40; font-weight: bold;");
-        console.log("%cSaldo anterior: " + saldoAnterior, "color: orange; font-weight: bold;");
-        console.log("%cSaldo final: " + saldo, "color: #2ECC40; font-weight: bold;");
-
-        return ventasFiltradas;
-
-    } catch (error) {
-        console.error("Error en loadInitialData:", error);
-        SPopup.alert("Error al cargar los datos.");
-        return [];
     }
-}
 
 
     mostrarTabla() {
@@ -264,6 +264,7 @@ export default class TablaTransacciones extends Component {
         );
     }
 
+
     async showVentaPopup() {
         const saldo = this.state.saldo || 0;
         let monto = 0;
@@ -285,43 +286,74 @@ export default class TablaTransacciones extends Component {
                 return;
             }
 
-            SelectTipoPago.openPopup({
-                key_punto_venta: activa.key_punto_venta,
-                key_moneda: moneda.key,
-                montoMaximo: saldo,
-                monedaSymbol: simboloBase,
-                onSelect: (item, selectedCuotas = []) => {
-                    const enviar = { tipos_pago: item, cuotas: cuotasData };
-                    // item.monto_nacional
-                    console.log("Amortización:", JSON.stringify(enviar));
+
+            SPopup.open({
+                key: "popup-venta-completada",
+                content: (
+                    <SView col="xs-11 md-4"
+                        backgroundColor={STheme.color.background}
+                        padding={24}
+                        withoutFeedback
+                        style={{ borderRadius: 16, alignItems: "center" }}>
+
+                        <SText bold fontSize={20} center style={{ marginBottom: 8 }}>¡Amortizar Deuda!</SText>
+
+                        <SText fontSize={14} center style={{ marginBottom: 16 }}>Saldo pendiente: {SMath.formatMoney(saldo)}</SText>
+
+                        <SInput
+                            col={"xs-12"}
+                            type='money2'
+                            placeholder="Ingrese monto"
+                            // keyboardType="numeric"
+                            onChangeText={(val) => { monto = parseFloat(val) || 0; }}
+                        />
+
+                        <SHr height={16} />
+
+                        <SView row col="xs-12" style={{ gap: 12 }}>
+
+                            <SView flex height={40} borderRadius={8} center
+                                backgroundColor={STheme.color.text}
+                                onPress={() => SPopup.close("popup-venta-completada")}>
+                                <SText color={STheme.color.background}>Cancelar</SText>
+                            </SView>
+
+                            <SView flex height={40} borderRadius={8} center
+                                backgroundColor={STheme.color.card}
+                                border={STheme.color.success}
+                                onPress={() => {
+                                    if (monto <= 0) { SPopup.alert("El monto debe ser mayor a 0"); return; }
+                                    if (monto > saldo) { SPopup.alert("No puede ser mayor al saldo"); return; }
+
+                                    SelectTipoPago.openPopup({
+                                        key_punto_venta: activa.key_punto_venta,
+                                        key_moneda: moneda.key,
+                                        montoMaximo: saldo,
+                                        monedaSymbol: simboloBase,
+                                        onSelect: (item, selectedCuotas = []) => {
+
+                                            
+                                            console.log("Amortización:", JSON.stringify(item));
+                                            // se hara un funcion para amortizar con ricky porque esta dificil+
+                                            SelectTipoPago.closePopup();
+                                            SPopup.close("popup-venta-completada");
+                                        }
+                                    });
 
 
+                                    // this.registrarAmortizacion(monto);
 
-                    // se hara un funcion para amortizar con ricky porque esta dificil
+                                    SPopup.close("popup-venta-completada");
+                                }}>
+                                <SText>Confirmar</SText>
+                            </SView>
 
-                    // SSocket.sendPromise({
-                    //     service: "caja",
-                    //     component: "caja_detalle",
-                    //     type: "amortizarCuotaCompra",
-                    //     data: enviar,
-                    //     key_usuario: MDL.usuario.session?.key,
-                    //     key_empresa: MDL.empresa.select?.key,
-                    //     key_caja: MDL.caja.activa?.key,
-                    // }).then(resp => {
-                    //     if (resp?.estado === "exito") {
-                    //         SNotification.send({ title: "Éxito", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
-                    //         // this.props.onSuccess?.();
-                    //         if (this.props.onSuccess) this.props.onSuccess(resp)
-                    //         SelectTipoPago.closePopup();
-                    //     }
-                    // }).catch(err => {
-                    //     SNotification.send({ title: 'Error', body: "dd" + err?.message || 'Falló el pago.', color: STheme.color.danger });
-                    // });
-
-
-                    SPopup.close("popup-venta-completada");
-                }
+                        </SView>
+                    </SView>
+                )
             });
+
+
 
 
         } catch (e) {
@@ -334,7 +366,7 @@ export default class TablaTransacciones extends Component {
             });
         }
     }
- 
+
     registrarAmortizacion(monto) {
         const saldoActual = this.state.saldo || 0;
         const nuevoSaldo = saldoActual - monto;
