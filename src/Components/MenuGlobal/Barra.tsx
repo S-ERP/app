@@ -137,7 +137,7 @@ export default class Barra extends React.Component {
                     {/* <Page label={"Tipo de costo"} url={"/productos/tipo_costo"}  /> */}
                     <Page label={"Ventas"} icon={<ImagePage key_page="8becb109-9987-4520-840d-7f0efdb6e3c6" />} >
                         <Page label={"Clientes"} url={"/cliente"} permiso="ver" />
-                        <Page label={"Suscriptores"} url={"/suscriptores"} />
+                        <Page label={"Suscriptores"} url={"/suscriptores"}  />
                         <Page label={"Historial de Ventas"} url={"/venta/tabla"} permiso="ver" permiso_url="/venta" />
                         <Page label={"Cotizaciones"} url={"/cotizacion"} permiso="ver" permiso_url="/venta" />
                         {/* <Page label={"Ventas"} url={"/venta"} permiso="ver" /> */}

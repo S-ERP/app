@@ -1,7 +1,7 @@
 
 
 import React, { Component } from 'react';
-import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SDate, SMath, } from 'servisofts-component';
+import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SDate, SMath, SNotification, } from 'servisofts-component';
 import { DinamicTable } from 'servisofts-table';
 import SSocket from 'servisofts-socket';
 import MDL from '../../MDL';
@@ -12,6 +12,7 @@ import FormRegistroSuscriptor from './Components/FormRegistroSuscriptor';
 //  import Config from '../Config';
 //  import MDL from '../MDL';
 //  import Model from '../Model';
+const URL = "/suscriptores";
 
 
 
@@ -279,63 +280,99 @@ export default class Suscriptores extends Component {
           const options = [];
 
           // Opción de editar suscriptor
-          // if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'delete' })) {
-          options.push({
-            label: 'Editar Fechas',
-            icon: <SIconApp name="Edit" fill={STheme.color.text} />,
-            onPress: () => {
-              FormRegistroSuscriptor.open({
-                defaultData: row,
-                onActualizar: (nuevoDato) => {
-                  this.DinamicTable.loadData();
-                  console.log("Cliente actualizado:", nuevoDato);
-                }
-              });
-            }
-          });
-          // }
+          if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'edit' })) {
+            options.push({
+              label: 'Editar Fechas',
+              icon: <SIconApp name="Edit" fill={STheme.color.text} />,
+              onPress: () => {
+                FormRegistroSuscriptor.open({
+                  defaultData: row,
+                  onActualizar: (nuevoDato) => {
+                    this.DinamicTable.loadData();
+                    console.log("Cliente actualizado:", nuevoDato);
+                  }
+                });
+              }
+            });
+          }
 
           // Opción de eliminar suscriptor
-          // if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'delete' })) {
-          // options.push({
-          //   label: 'Eliminar',
-          //   icon: <SIconApp name="Delete" fill={STheme.color.text} />,
-          //   onPress: () => {
-          //     SPopup.confirm({
-          //       title: 'Eliminar Cliente',
-          //       message: `¿Estás seguro de eliminar a ${nombreTurno}?`,
-          //       onPress: () => {
-          //         SSocket.sendPromise({
-          //           service: 'empresa',
-          //           component: 'horario_atencion',
-          //           type: '_editarTurnosHorariosAtencion',
-          //           data: { ...row, estado: 0 },
-          //         })
-          //           .then(() => {
-          //             SNotification.send({
-          //               key: 'eliminar_ok',
-          //               title: 'Éxito',
-          //               body: `${nombreTurno} fue eliminado correctamente.`,
-          //               time: 1500,
-          //               color: STheme.color.success,
-          //             });
-          //             this.DinamicTable.loadData();
-          //           })
-          //           .catch(err => {
-          //             console.error('Error al eliminar turno:', err);
-          //             SNotification.send({
-          //               key: 'eliminar_error',
-          //               title: 'Error',
-          //               body: 'Ocurrió un error al eliminar. Intenta nuevamente.',
-          //               time: 3000,
-          //               color: STheme.color.danger,
-          //             });
-          //           });
-          //       },
-          //     });
-          //   },
-          // });
-          // }
+          if (MDL.rolesPermisos.getPermiso({ url: URL, permiso: 'delete' })) {
+            console.log(row)
+            options.push({
+              label: 'Eliminar',
+              icon: <SIconApp name="Delete" fill={STheme.color.text} />,
+              onPress: () => {
+                SPopup.confirm({
+                  title: 'Eliminar Suscripción',
+                  message: `¿Estás seguro de eliminar a ${nombreTurno}?`,
+                  onPress: () => {
+
+                    const data = { ...row}
+                    // const prom = data?.key ? MDL.crm.cliente.editar(data) : MDL.crm.cliente.registrar(data);
+
+                    //SNotification.send({ key: "registro", title: "Guardando...", type: "loading" });
+
+                    const datosParaEnviar = {
+                      key: data.key,
+                      key_cliente: data.key_cliente,
+                      fecha_inicio: data.fecha_inicio,
+                      fecha_fin: data.fecha_fin,
+                      estado: 0 
+                    };
+
+                    console.log("Datos para enviar:", datosParaEnviar);
+
+
+                    MDL.inventario.editSuscripcion(datosParaEnviar).then((resp) => {
+                      SNotification.send({
+                        title: 'Éxito',
+                        body: 'Suscripción actualizada correctamente.',
+                        time: 3000,
+                        color: STheme.color.success,
+                      });
+                      this.DinamicTable.loadData();
+                    }).catch((err) => {
+                      console.error("Error al eliminar el artículo del cliente", err);
+                      SNotification.send({
+                        title: 'Error',
+                        body: 'Suscripción no actualizada.',
+                        time: 3000,
+                        color: STheme.color.danger,
+                      });
+                    });
+
+                    // SSocket.sendPromise({
+                    //   service: 'empresa',
+                    //   component: 'horario_atencion',
+                    //   type: '_editarTurnosHorariosAtencion',
+                    //   data: { ...row, estado: 0 },
+                    // })
+                    //   .then(() => {
+                    //     SNotification.send({
+                    //       key: 'eliminar_ok',
+                    //       title: 'Éxito',
+                    //       body: `${nombreTurno} fue eliminado correctamente.`,
+                    //       time: 1500,
+                    //       color: STheme.color.success,
+                    //     });
+                    //     this.DinamicTable.loadData();
+                    //   })
+                    //   .catch(err => {
+                    //     console.error('Error al eliminar turno:', err);
+                    //     SNotification.send({
+                    //       key: 'eliminar_error',
+                    //       title: 'Error',
+                    //       body: 'Ocurrió un error al eliminar. Intenta nuevamente.',
+                    //       time: 3000,
+                    //       color: STheme.color.danger,
+                    //     });
+                    //   });
+                  },
+                });
+              },
+            });
+          }
 
           FloatMenu.open({
             e: evt,
