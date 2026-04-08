@@ -95,7 +95,8 @@ export default class TablaTransacciones extends Component {
                 ventasFiltradas = [
                     {
                         key: `saldo_anterior_${new Date().getTime()}`,
-                        fecha_on: fecha_inicio,
+                        fecha_on: "",
+                        // fecha_on: fecha_inicio,
                         tipo: "saldo",
                         descripcion: "Saldo anterior",
                         debe: 0,
