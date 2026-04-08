@@ -248,7 +248,9 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                                     fontSize: 12,
                                     padding: 0,
                                     paddingRight: 4,
-                                    textAlign: "right"
+                                    textAlign: "right",
+                                    backgroundColor: precioFormateado < 1 ? "#ffb5b5" : STheme.color.card
+                                    // backgroundColor: precioFormateado < 1 ? "#df6161" : STheme.color.card
                                 }}
                                 type="money2"
                                 icon={
