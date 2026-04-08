@@ -37,7 +37,7 @@ export default class TablaTransacciones extends Component {
             if (!keyEmpresa || !keyCliente) return [];
 
             const ventas = await MDL.compra_venta.execute_function(
-                "_get_detalles_bycliente2",
+                "_get_detalles_bycliente3",
                 [keyEmpresa, keyCliente, fecha_inicio_total, fecha_fin]
             );
 
