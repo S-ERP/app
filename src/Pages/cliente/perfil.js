@@ -51,7 +51,29 @@ export default class Perfil extends Component {
                 }
             });
             e.articulos = art;
+
+            //suscripciones
+            await SSocket.sendPromise({
+                service: "inventario",
+                component: "suscripcion",
+                estado: "cargando",
+                type: "getByKeyCliente",
+                key_cliente: this.key
+            }).then(f => {
+                // const hoy = new Date();
+                // const vigente = e.data.filter(item => {
+                //     const inicio = new Date(item.fecha_inicio);
+                //     const fin = new Date(item.fecha_fin);
+                //     return hoy >= inicio && hoy <= fin;
+                // });
+                // console.log("paquete actual ", vigente)
+                console.log("paquete suscripcion ", f)
+                // this.setState({ paquete: vigente[0] });
+                e.suscripcion = f.data;
+            }).catch(console.error);
+
             this.setState({ data: e });
+            console.log("dataaa: ", e)
             this.setState({ allArticulos: allArticulos });
         } catch (error) {
             console.error('Error al cargar datos del cliente:', error);
@@ -89,6 +111,9 @@ export default class Perfil extends Component {
                     </SView>
                     <SView col={"xs-12 md-12 lg-5"} padding={5}>
                         <Articulos cliente={this.data} onReload={this.loadData} />
+                    </SView>
+                    <SView col={"xs-12 md-12 lg-7"} padding={5}>
+                        <Suscripcion cliente={this.data} onReload={this.loadData} />
                     </SView>
                 </SView>
             </SPage>
@@ -197,7 +222,7 @@ const Habilidades = ({ cliente, onReload }) => {
             cursor: "pointer",
             zIndex: 10
         }}
-            onPress={() => { 
+            onPress={() => {
                 AdminsitrarHabilidades.open({
                     key_usuario: cliente.key,
                     onSuccess: () => {
@@ -490,5 +515,84 @@ const Articulos = ({ cliente, onReload }) => {
             </SView>
         )}
         {(!cliente.articulos || cliente.articulos.length === 0) && (<SText fontSize={16} color={STheme.color.lightGray}>No se han asignado artículos.</SText>)}
+    </SView>
+}
+
+const procesarData = (data) => {
+    const hoy = new Date();
+
+    return data
+        // ✅ 1. Filtrar solo estado = 0
+        .filter(item => item.estado !== 0)
+
+        // ✅ 2. Agregar campo activo
+        .map(item => {
+            const inicio = new Date(item.fecha_inicio);
+            const fin = new Date(item.fecha_fin);
+
+            let activo = 0;
+
+            if (hoy >= inicio && hoy <= fin) {
+                activo = 1; // activo
+            } else if (hoy > fin) {
+                activo = 0; // pasado
+            } else if (hoy < inicio) {
+                activo = 2; // futuro
+            }
+
+            return {
+                ...item,
+                activo
+            };
+        })
+
+        // ✅ 3. Ordenar por fecha_on DESC
+        .sort((a, b) => new Date(b.fecha_on) - new Date(a.fecha_on));
+};
+
+const Suscripcion = ({ cliente }) => {
+
+    console.log("clienterrrr: ", cliente)
+
+    console.log("cliente2: ", cliente?.suscripcion)
+    let suscripciones = []
+    if (cliente?.suscripcion) {
+        console.log("gggg")
+        suscripciones = procesarData(cliente?.suscripcion || []);
+    }
+    console.log("suscripcionesFilter: ", suscripciones)
+
+    // return cliente?.suscripcion;
+
+    return <SView col={"xs-12"} card padding={15} height >
+        <SText bold fontSize={16}>Suscripción</SText>
+        <SHr height={20} />
+        {suscripciones.length === 0 && (<SText fontSize={16} color={STheme.color.lightGray}>No hay suscripciones registradas.</SText>)}
+        <SView col={"xs-12"} >
+            {suscripciones.map(suscrip => (
+                <SView col={"xs-12"} row
+                    style={{
+                        marginBottom: 5,
+                        borderWidth: 1,
+                        borderColor: STheme.color.card,
+                        borderRadius: 4,
+                        backgroundColor: STheme.color.card,
+                        overflow: "hidden",
+                    }}>
+                    <SView col={"xs-4"} backgroundColor={suscrip.activo == 0 ? STheme.color.danger + "90" : suscrip.activo == 1 ? STheme.color.success + "90" : STheme.color.background + "90"} padding={5} center>
+                        <SText bold>{suscrip.activo == 0 ? "Vencido" : suscrip.activo == 1 ? "Activo" : "Futuro"}</SText>
+                    </SView>
+                    <SView col={"xs-8"} row padding={5}>
+                        <SView col={"xs-12"} row>
+                            <SText bold>{suscrip.producto?.nombre}</SText>
+                            <SHr height={3} />
+                            <SText>{new SDate(suscrip.fecha_inicio).toString("dd MON yyyy")}</SText>
+                            <SText> - </SText>
+                            <SText>{new SDate(suscrip.fecha_fin).toString("dd MON yyyy")}</SText>
+                        </SView>
+                    </SView>
+                </SView>
+            ))}
+        </SView>
     </SView>
 }
