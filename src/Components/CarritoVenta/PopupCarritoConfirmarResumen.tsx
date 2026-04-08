@@ -166,7 +166,7 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             const mensaje = error instanceof Error ? error.message : JSON.stringify(error);
             SNotification.send({
                 key: "venta_rapida",
-                title: "Error al realizssssar la venta",
+                title: "Error al realizar la venta",
                 body: mensaje,
                 color: STheme.color.danger,
                 time: 4000,
@@ -284,10 +284,10 @@ export default class PopupCarritoConfirmarResumen extends React.Component<PopupC
             MDL.caja.dispatchEvent({ type: "onDetalleChange" });
         } catch (error: any) {
             const mensaje = error instanceof Error ? error.message : JSON.stringify(error);
-            console.error("Error al realizar la venta333:", error);
+            console.error("Error al realizar la venta:", error);
             SNotification.send({
                 key: "venta_rapida",
-                title: "Error al realizar la venwwwwta",
+                title: "Error al realizar la venta",
                 body: mensaje,
                 color: STheme.color.danger,
                 time: 4000,
