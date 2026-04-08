@@ -35,8 +35,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
     inputAlmacen: SelectorAlmacen | undefined;
     proveedor: any;
     inputCliente = null;
-    descuentoSeleccionado = null;
-    state: { almacen: any, moneda: any, factura: boolean, razon_social: string, nit: string, clientes: any[], key_cliente: string | null, cliente_texto: string, descuentos: any[], esCredito: boolean, } = {
+    state: { almacen: any, moneda: any, factura: boolean, razon_social: string, nit: string, clientes: any[], key_cliente: string | null, cliente_texto: string, descuentos: any[], descuentoSeleccionado: any | null, esCredito: boolean, } = {
         almacen: null,
         moneda: null,
         factura: false,
@@ -46,6 +45,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
         key_cliente: null,
         cliente_texto: "",
         descuentos: [],
+        descuentoSeleccionado: null,
         esCredito: false,
     }
     onTipoPagoChange = (esCredito: boolean) => {
@@ -136,6 +136,9 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                 key_moneda: moneda?.key,
                 porcentajeDescuento,
                 descuentoSeleccionado: descuentos,
+
+// creo que aqui deberia ir el descuento
+
                 solo_para_caja: false,
                 cliente: this.proveedor,
                 factura: !!factura,
@@ -442,11 +445,7 @@ export default class PopupCarritoConfirmar extends React.Component<PopupCarritoC
                                     const encontradoD = (this.state.descuentos || []).find(c =>
                                         ((`${(c?.descripcion || "").trim()} - ${c?.porcentaje ?? 0}%`).trim().toLowerCase() === t.toLowerCase())
                                     );
-                                    if (encontradoD) {
-                                        this.descuentoSeleccionado = encontradoD;
-                                    } else {
-                                        this.descuentoSeleccionado = null;
-                                    }
+                                    this.setState({ descuentoSeleccionado: encontradoD || null });
                                 }}
                             />
                         </SView>

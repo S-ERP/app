@@ -135,7 +135,7 @@ export default class TablaTransacciones extends Component {
     mostrarTabla() {
         return (
             // <SView col={'xs-12'} style={{  alignSelf: 'center' }} flex>
-            <SView col={'xs-12'} style={{ width: 820, alignSelf: 'center' }} flex>
+            <SView col={'xs-12'} style={{ width: 950, alignSelf: 'center' }} flex>
 
                 <DinamicTable
                     ref={ref => (this.DinamicTable = ref)}
@@ -151,11 +151,11 @@ export default class TablaTransacciones extends Component {
                         data={(e) => (e?.index ?? 0) + 1}
                         cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
                     />
-                    <DinamicTable.Col key="fecha" label="Fecha" width={140}
+                    <DinamicTable.Col key="fecha" label="Fecha" width={80}
                         data={e => e?.row?.fecha_on ? new SDate(e.row.fecha_on).toString("dd/MM/yyyy") : ""}
                         cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
                     />
-                    <DinamicTable.Col key="tipo" label="Tipo" width={100}
+                    <DinamicTable.Col key="tipo" label="Tipo" width={80}
                         data={(e) => e?.row?.tipo || "-"}
 
                         cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
@@ -179,7 +179,7 @@ export default class TablaTransacciones extends Component {
 
 
                     />
-                    <DinamicTable.Col key="detalle" label="Detalle" width={200}
+                    <DinamicTable.Col key="detalle" label="Detalle" width={340}
                         data={(e) => e?.row?.descripcion || "-"}
                         customComponent={(e) => {
                             const isSaldoAnterior = e?.row?.descripcion === "Saldo anterior";
@@ -210,7 +210,7 @@ export default class TablaTransacciones extends Component {
                         footerComponent={(e) => {
                             let total = 0;
                             e.dinamicTable.data.map(a => { total += a.debe || 0 });
-                            return <SView ><SText>{`${SMath.formatMoney(total || 0)}`}</SText></SView>
+                            return <SView ><SText color={STheme.color.lightGray}>{`${SMath.formatMoney(total || 0)}`}</SText></SView>
                         }}
                     />
                     <DinamicTable.Col
@@ -226,7 +226,7 @@ export default class TablaTransacciones extends Component {
                         footerComponent={(e) => {
                             let total = 0;
                             e.dinamicTable.data.map(a => { total += a.haber || 0 });
-                            return <SView  ><SText>{`${SMath.formatMoney(total || 0)}`}</SText></SView>
+                            return <SView  ><SText color={STheme.color.lightGray} >{`${SMath.formatMoney(total || 0)}`}</SText></SView>
                         }}
                     />
                     <DinamicTable.Col
@@ -242,22 +242,25 @@ export default class TablaTransacciones extends Component {
 
 
                         customComponent={(e) => {
-                            // const isSaldoAnterior = e?.row?.descripcion === "Saldo anterior";
-                            return (
-                                <SText color={STheme.color.text} style={{ alignItems: "flex-end", paddingRight: 8 }}   >
-                                    {e?.data}
-                                </SText>
-                            );
+                            return <SView  ><SText style={{ alignItems: "flex-end", paddingRight: 8, fontSize: 12 }}>{`${SMath.formatMoney(e?.data || 0)}`}</SText></SView>
+
+
+                            // return (
+                            //     <SText color={STheme.color.text} style={{ alignItems: "flex-end", paddingRight: 8 }}   >
+                            //         {e?.data}
+                            //     </SText>
+                            // );
                         }}
 
                         format={(e) => `${SMath.formatMoney(e.data || 0)}`}
 
 
-                        dssdsdds
                         footerComponent={(e) => {
                             const lastRow = e.dinamicTable.data[e.dinamicTable.data.length - 1];
                             const totalSaldo = lastRow?.saldo || 0;
-                            return <SView style={{ alignItems: "flex-end", paddingRight: 8 }}><SText>{`${SMath.formatMoney(totalSaldo)}`}</SText></SView>
+
+
+                            return <SView style={{ alignItems: "flex-end", paddingRight: 8 }}><SText>{`${SMath.formatMoney(totalSaldo || "0")}`}</SText></SView>
                         }}
                     />
                 </DinamicTable>
@@ -360,7 +363,7 @@ export default class TablaTransacciones extends Component {
             <SPage title="Kardex Individual" disableScroll>
                 <SView row col={"xs-12"}>
                     <SHr /><SHr />
-                    <SView col={"xs-12"} row center style={{ flexWrap: "wrap", gap: 12 }}>
+                    <SView col={"xs-12"} row center style={{ flexWrap: "wrap", gap: 12 }} border={"transparent"} >
                         <SView col={"xs-12 sm-7.5"} row center>
                             <FechaFullFilter2
                                 label="fecha"
@@ -374,35 +377,39 @@ export default class TablaTransacciones extends Component {
                         </SView>
                     </SView>
                     <SHr /><SHr height={10} />
-                    <SView col={"xs-12"} row>
+                    <SView col={"xs-12"} row border={"transparent"}>
                         <SText fontSize={15}>Cliente: {cliente?.nombres + " " + cliente?.apellidos || "-"}</SText>
                     </SView>
-                </SView>
-                <SHr height={10} />
-                {this.mostrarTabla()}
-                <SHr height={20} />
+                    </SView>
 
-                {this.state.saldo > 0 && (
 
-                    <SView col={'xs-12  '} style={{ width: 820, paddingVertical: 12, alignSelf: 'center', borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
-                        <SView row col={'xs-12'} style={{ justifyContent: 'flex-end' }}   >
-                            <SView
-                                onPress={() => this.showVentaPopup()}
-                                backgroundColor={STheme.color.lightGray + '66'}
-                                style={{ padding: 12, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.primary || '#1565c0' }}
-                                center
-                            >
-                                <SView row center>
-                                    <SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.text} />
-                                    <SView width={6} />
-                                    <SText color={STheme.color.text} bold>Amortizar</SText>
+
+
+                    <SHr height={10} />
+                    {this.mostrarTabla()}
+                    <SHr height={20} />
+
+                    {this.state.saldo > 0 && (
+
+                        <SView col={'xs-12  '} style={{ width: 820, paddingVertical: 12, alignSelf: 'center', borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
+                            <SView row col={'xs-12'} style={{ justifyContent: 'flex-end' }}   >
+                                <SView
+                                    onPress={() => this.showVentaPopup()}
+                                    backgroundColor={STheme.color.lightGray + '66'}
+                                    style={{ padding: 12, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.primary || '#1565c0' }}
+                                    center
+                                >
+                                    <SView row center>
+                                        <SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.text} />
+                                        <SView width={6} />
+                                        <SText color={STheme.color.text} bold>Amortizar</SText>
+                                    </SView>
                                 </SView>
                             </SView>
                         </SView>
-                    </SView>
-                )}
+                    )}
 
-                <SHr height={20} />
+                    <SHr height={20} />
             </SPage>
         );
     }
