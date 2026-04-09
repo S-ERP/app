@@ -7,6 +7,8 @@ import FechaFullFilter2 from '../../Components/FechaFullFilter2';
 import SIconApp from '../../Assets/SIconApp';
 import SelectTipoPago from '../caja2/components/SelectTipoPago';
 import SSocket from 'servisofts-socket';
+import ComprobanteRollo from '../../Components/PDF/compra/ComprobanteRollo';
+import ComprobanteKardexIndividual from '../../Components/PDF/compra/ComprobanteKardexIndividual';
 
 export default class TablaTransacciones extends Component {
     constructor(props) {
@@ -30,14 +32,10 @@ export default class TablaTransacciones extends Component {
     async loadInitialData() {
         try {
             const keyEmpresa = await MDL?.empresa?.select?.key;
-            // const keyCliente = this.key;
             const fecha_inicio_total = "2024-01-01";
             const fecha_inicio = this.state.fecha_inicio;
             const fecha_fin = this.state.fecha_fin;
-            // if (!keyEmpresa || !keyCliente) return [];
             if (!keyEmpresa || !this.key) return;
-
-
             const ventas = await MDL.compra_venta.execute_function("_get_detalles_bycliente4", [keyEmpresa, this.key, fecha_inicio_total, fecha_fin]);
             const cliente = await MDL.crm.cliente.getByKey(this.key);
 
@@ -242,7 +240,6 @@ export default class TablaTransacciones extends Component {
                                 backgroundColor={STheme.color.card}
                                 border={STheme.color.success}
                                 onPress={() => {
-
                                     if (monto <= 0) {
                                         SNotification.send({
                                             title: "Monto inválido",
@@ -252,7 +249,6 @@ export default class TablaTransacciones extends Component {
                                         });
                                         return;
                                     }
-
                                     if (monto > saldo) {
                                         SNotification.send({
                                             title: "Monto inválido",
@@ -340,7 +336,8 @@ export default class TablaTransacciones extends Component {
                     <SView col={'xs-12'} style={{ width: 820, paddingVertical: 12, alignSelf: 'center', borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
                         <SView row col={'xs-12'} style={{ justifyContent: 'flex-end' }}>
                             <SView
-                                onPress={() => this.showVentaPopup()}
+                                // onPress={() => this.showVentaPopup()}
+                                onPress={() => ComprobanteKardexIndividual.imprimir(this.key)}
                                 backgroundColor={STheme.color.lightGray + '66'}
                                 style={{ padding: 12, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.primary || '#1565c0' }}
                                 center
