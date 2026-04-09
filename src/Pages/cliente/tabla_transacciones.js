@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { SPage, SPopup, SView, SText, STheme, SHr, SImage, SNavigation, SDate, SIcon, SMath, SNotification, SLoad, SInput } from 'servisofts-component';
-import SSocket from 'servisofts-socket';
 import { DinamicTable } from 'servisofts-table';
 import Config from '../../Config';
 import MDL from '../../MDL';
@@ -69,7 +68,6 @@ export default class TablaTransacciones extends Component {
             }));
 
             const moneda = ventasEnriquecidas[0]?.moneda || null;
-
             let saldoAcumulado = 0;
             ventasEnriquecidas = ventasEnriquecidas.map((item) => {
                 const debe = item.debe || 0;
@@ -96,7 +94,6 @@ export default class TablaTransacciones extends Component {
                     {
                         key: `saldo_anterior_${new Date().getTime()}`,
                         fecha_on: "",
-                        // fecha_on: fecha_inicio,
                         tipo: "saldo",
                         descripcion: "Saldo anterior",
                         debe: 0,
@@ -121,9 +118,7 @@ export default class TablaTransacciones extends Component {
                 ventasEnriquecidas: ventasFiltradas,
                 saldo,
             });
-
             return ventasFiltradas;
-
         } catch (error) {
             console.error("Error en loadInitialData:", error);
             SPopup.alert("Error al cargar los datos.");
@@ -131,10 +126,8 @@ export default class TablaTransacciones extends Component {
         }
     }
 
-
     mostrarTabla() {
         return (
-            // <SView col={'xs-12'} style={{  alignSelf: 'center' }} flex>
             <SView col={'xs-12'} style={{ width: 950, alignSelf: 'center' }} flex>
 
                 <DinamicTable
@@ -157,35 +150,21 @@ export default class TablaTransacciones extends Component {
                     />
                     <DinamicTable.Col key="tipo" label="Tipo" width={80}
                         data={(e) => e?.row?.tipo || "-"}
-
                         cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
                         customComponent={(e) => {
                             const isSaldoAnterior = e?.row?.tipo === "saldo";
-
-
                             return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: isSaldoAnterior ? STheme.color.success + "44" : null, borderWidth: 1, borderColor: isSaldoAnterior ? STheme.color.success : "transparent" }} center >
                                 <SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
                             </SView>
-
-                            // return (
-                            //     <SText
-                            //         style={{ alignItems: "center" }}
-                            //         color={isSaldoAnterior ? '#1565c0' : '#aef30e'}
-                            //     >
-                            //         {e?.row?.tipo || "-"}
-                            //     </SText>
-                            // );
                         }}
-
-
                     />
+
                     <DinamicTable.Col key="detalle" label="Detalle" width={340}
                         data={(e) => e?.row?.descripcion || "-"}
                         customComponent={(e) => {
                             const isSaldoAnterior = e?.row?.descripcion === "Saldo anterior";
                             return (
-                                <SText color={STheme.color.text}   >
-                                    {/* <SText color={isSaldoAnterior ? '#1565c0' : STheme.color.text} bold={isSaldoAnterior} fontSize={isSaldoAnterior ? 14 : 12} > */}
+                                <SText color={STheme.color.text}>
                                     {e?.row?.descripcion || "-"}
                                 </SText>
                             );
@@ -226,7 +205,7 @@ export default class TablaTransacciones extends Component {
                         footerComponent={(e) => {
                             let total = 0;
                             e.dinamicTable.data.map(a => { total += a.haber || 0 });
-                            return <SView  ><SText color={STheme.color.lightGray} >{`${SMath.formatMoney(total || 0)}`}</SText></SView>
+                            return <SView><SText color={STheme.color.lightGray} >{`${SMath.formatMoney(total || 0)}`}</SText></SView>
                         }}
                     />
                     <DinamicTable.Col
@@ -236,46 +215,28 @@ export default class TablaTransacciones extends Component {
                         data={(e) => e?.row?.saldo ?? 0}
                         cellStyle={(e) => ({
                             alignItems: "flex-end",
-
                             ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {})
                         })}
-
-
                         customComponent={(e) => {
-                            return <SView  ><SText style={{ alignItems: "flex-end", paddingRight: 8, fontSize: 12 }}>{`${SMath.formatMoney(e?.data || 0)}`}</SText></SView>
-
-
-                            // return (
-                            //     <SText color={STheme.color.text} style={{ alignItems: "flex-end", paddingRight: 8 }}   >
-                            //         {e?.data}
-                            //     </SText>
-                            // );
+                            return <SView><SText style={{ alignItems: "flex-end", paddingRight: 8, fontSize: 12 }}>{`${SMath.formatMoney(e?.data || 0)}`}</SText></SView>
                         }}
-
                         format={(e) => `${SMath.formatMoney(e.data || 0)}`}
-
-
                         footerComponent={(e) => {
                             const lastRow = e.dinamicTable.data[e.dinamicTable.data.length - 1];
                             const totalSaldo = lastRow?.saldo || 0;
-
-
                             return <SView style={{ alignItems: "flex-end", paddingRight: 8 }}><SText>{`${SMath.formatMoney(totalSaldo || "0")}`}</SText></SView>
                         }}
                     />
                 </DinamicTable>
             </SView>
-
         );
     }
-
 
     async showVentaPopup() {
         const saldo = this.state.saldo || 0;
         let monto = 0;
         const moneda = this.state.moneda || {};
         const simboloBase = moneda?.observacion || 'BOB';
-
         try {
             const activa = await MDL.caja.getActiva();
             if (!activa) {
@@ -287,7 +248,6 @@ export default class TablaTransacciones extends Component {
                 });
                 return;
             }
-
             SPopup.open({
                 key: "popup-venta-completada",
                 content: (
@@ -296,42 +256,33 @@ export default class TablaTransacciones extends Component {
                         padding={24}
                         withoutFeedback
                         style={{ borderRadius: 16, alignItems: "center" }}>
-
                         <SText bold fontSize={20} center style={{ marginBottom: 8 }}>¡Amortizar Deuda!</SText>
-
                         <SText fontSize={14} center style={{ marginBottom: 16 }}>Saldo pendiente: {SMath.formatMoney(saldo)}</SText>
-
                         <SInput
                             col={"xs-12"}
                             type='money2'
                             placeholder="Ingrese monto"
                             onChangeText={(val) => { monto = parseFloat(val) || 0; }}
                         />
-
                         <SHr height={16} />
-
                         <SView row col="xs-12" style={{ gap: 12 }}>
-
                             <SView flex height={40} borderRadius={8} center
                                 backgroundColor={STheme.color.text}
                                 onPress={() => SPopup.close("popup-venta-completada")}>
                                 <SText color={STheme.color.background}>Cancelar</SText>
                             </SView>
-
                             <SView flex height={40} borderRadius={8} center
                                 backgroundColor={STheme.color.card}
                                 border={STheme.color.success}
                                 onPress={() => {
                                     if (monto <= 0) { SPopup.alert("El monto debe ser mayor a 0"); return; }
                                     if (monto > saldo) { SPopup.alert("No puede ser mayor al saldo"); return; }
-
                                     SelectTipoPago.openPopup({
                                         key_punto_venta: activa.key_punto_venta,
                                         key_moneda: moneda.key,
                                         montoMaximo: saldo,
                                         monedaSymbol: simboloBase,
                                         onSelect: (item, selectedCuotas = []) => {
-                                            console.log("Amortización:", JSON.stringify(item));
                                             SelectTipoPago.closePopup();
                                             SPopup.close("popup-venta-completada");
                                         }
@@ -339,12 +290,10 @@ export default class TablaTransacciones extends Component {
                                 }}>
                                 <SText>Confirmar</SText>
                             </SView>
-
                         </SView>
                     </SView>
                 )
             });
-
         } catch (e) {
             console.error(e);
             SNotification.send({
@@ -358,7 +307,6 @@ export default class TablaTransacciones extends Component {
 
     render() {
         const { cliente } = this.state;
-
         return (
             <SPage title="Kardex Individual" disableScroll>
                 <SView row col={"xs-12"}>
@@ -380,36 +328,31 @@ export default class TablaTransacciones extends Component {
                     <SView col={"xs-12"} row border={"transparent"}>
                         <SText fontSize={15}>Cliente: {cliente?.nombres + " " + cliente?.apellidos || "-"}</SText>
                     </SView>
-                    </SView>
+                </SView>
 
+                <SHr height={10} />
+                {this.mostrarTabla()}
+                <SHr height={20} />
+                {this.state.saldo > 0 && (
 
-
-
-                    <SHr height={10} />
-                    {this.mostrarTabla()}
-                    <SHr height={20} />
-
-                    {this.state.saldo > 0 && (
-
-                        <SView col={'xs-12  '} style={{ width: 820, paddingVertical: 12, alignSelf: 'center', borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
-                            <SView row col={'xs-12'} style={{ justifyContent: 'flex-end' }}   >
-                                <SView
-                                    onPress={() => this.showVentaPopup()}
-                                    backgroundColor={STheme.color.lightGray + '66'}
-                                    style={{ padding: 12, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.primary || '#1565c0' }}
-                                    center
-                                >
-                                    <SView row center>
-                                        <SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.text} />
-                                        <SView width={6} />
-                                        <SText color={STheme.color.text} bold>Amortizar</SText>
-                                    </SView>
+                    <SView col={'xs-12'} style={{ width: 820, paddingVertical: 12, alignSelf: 'center', borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
+                        <SView row col={'xs-12'} style={{ justifyContent: 'flex-end' }}>
+                            <SView
+                                onPress={() => this.showVentaPopup()}
+                                backgroundColor={STheme.color.lightGray + '66'}
+                                style={{ padding: 12, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.primary || '#1565c0' }}
+                                center
+                            >
+                                <SView row center>
+                                    <SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.text} />
+                                    <SView width={6} />
+                                    <SText color={STheme.color.text} bold>Amortizar</SText>
                                 </SView>
                             </SView>
                         </SView>
-                    )}
-
-                    <SHr height={20} />
+                    </SView>
+                )}
+                <SHr height={20} />
             </SPage>
         );
     }
