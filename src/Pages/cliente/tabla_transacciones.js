@@ -6,6 +6,7 @@ import MDL from '../../MDL';
 import FechaFullFilter2 from '../../Components/FechaFullFilter2';
 import SIconApp from '../../Assets/SIconApp';
 import SelectTipoPago from '../caja2/components/SelectTipoPago';
+import SSocket from 'servisofts-socket';
 
 export default class TablaTransacciones extends Component {
     constructor(props) {
@@ -19,6 +20,8 @@ export default class TablaTransacciones extends Component {
             saldo: 0,
         };
         this.key = SNavigation.getParam("key");
+        this.keysCuotas = [];
+
     }
 
     componentDidMount() {
@@ -39,12 +42,12 @@ export default class TablaTransacciones extends Component {
             const cliente = await MDL.crm.cliente.getByKey(keyCliente);
 
             const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes", [keyEmpresa, keyCliente]);
-            const keysCuotas = (cuotas || []).map(c => c.key_cuota);
-
+            this.cuotasDetalle = cuotas || [];
+            this.keysCuotas = this.cuotasDetalle.map(c => c.key_cuota);
 
             console.clear();
-            console.log("%c" + "cuotas", `color: #2ECC40; font-weight: bold;`);
-            console.log("%c" + keysCuotas, "color: #2ECC40; font-weight: bold;");
+            console.log("%cCUOTAS:", "color: #2ECC40; font-weight: bold;");
+            console.log(this.cuotasDetalle);
 
 
 
@@ -244,9 +247,10 @@ export default class TablaTransacciones extends Component {
         const moneda = this.state.moneda || {};
         const simboloBase = moneda?.observacion || 'BOB';
 
-        
-            const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes", [keyEmpresa, keyCliente]);
-            const keysCuotas = (cuotas || []).map(c => c.key_cuota);
+        const cuotas = this.keysCuotas || [];
+
+        console.clear();
+        console.log("%c" + JSON.stringify(cuotas, null, 2), "color: #2ECC40; font-weight: bold;");
 
         try {
             const activa = await MDL.caja.getActiva();
@@ -295,10 +299,39 @@ export default class TablaTransacciones extends Component {
                                         monedaSymbol: simboloBase,
                                         onSelect: (item, selectedCuotas = []) => {
 
-                                            console.clear();
-                                            console.log("%c" + ingresar_texto,`color: #2ECC40; font-weight: bold;`);
+                                            const enviar = { tipos_pago: item, cuotas: cuotas };
 
-                                            
+
+                                            console.clear();
+                                            console.log("%c" + item, `color: #2ECC40; font-weight: bold;`);
+
+
+                                            // console.log("pintando " + JSON.stringify(enviar))
+
+                                            SSocket.sendPromise({
+                                                service: "caja",
+                                                component: "caja_detalle",
+                                                type: "amortizarCuotaCompra",
+                                                data: enviar,
+                                                key_usuario: MDL.usuario.session?.key,
+                                                key_empresa: MDL.empresa.select?.key,
+                                                key_caja: MDL.caja.activa?.key,
+                                            }).then(resp => {
+                                                if (resp?.estado === "exito") {
+                                                    SNotification.send({ title: "Éxito", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
+                                                    // this.props.onSuccess?.();
+                                                    if (this.props.onSuccess) this.props.onSuccess(resp)
+                                                    SelectTipoPago.closePopup();
+
+                                                }
+                                            }).catch(err => {
+                                                SNotification.send({ title: 'Error', body: "dd" + err?.message || 'Falló el pago.', color: STheme.color.danger });
+                                            });
+
+
+                                            // MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
+
+
                                             SelectTipoPago.closePopup();
                                             SPopup.close("popup-venta-completada");
                                         }
