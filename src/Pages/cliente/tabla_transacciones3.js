@@ -5,7 +5,7 @@ import Config from '../../Config';
 import MDL from '../../MDL';
 import FechaFullFilter2 from '../../Components/FechaFullFilter2';
 
-export default class TablaTransacciones2 extends Component {
+export default class tabla_transacciones3 extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -32,7 +32,8 @@ export default class TablaTransacciones2 extends Component {
 
             if (!keyEmpresa || !keyCliente) return [];
 
-            const ventas = await MDL.compra_venta.execute_function("_get_detalles_bycliente6", [keyEmpresa, keyCliente, fecha_inicio_total, fecha_fin]);
+            const ventas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes", [keyEmpresa, keyCliente]);
+            
             const cliente = await MDL.crm.cliente.getByKey(keyCliente);
 
             if (!ventas || ventas.length === 0) {
@@ -113,94 +114,68 @@ export default class TablaTransacciones2 extends Component {
                     <DinamicTable.Col
                         key="key_cuota"
                         label="key_cuota"
-                        width={40}
+                        width={180}
                         data={(e) => e?.row?.key_cuota}
                     />
 
                     <DinamicTable.Col
-                        key="fecha"
+                        key="fecha_on"
                         label="Fecha"
                         width={80}
                         data={(e) =>
                             e?.row?.fecha_on ? new SDate(e.row.fecha_on).toString("dd/MM/yyyy") : ""
                         }
-                        cellStyle={(e) =>
-                            e?.row?.descripcion === "Saldo anterior"
-                                ? { backgroundColor: '#e8f4fd' }
-                                : {}
-                        }
+
                     />
 
-                    <DinamicTable.Col
-                        key="otros"
-                        label="Tipo"
-                        width={120}
-                        data={(e) => e?.row?.otros}
-                    />
+
 
                     <DinamicTable.Col
                         key="descripcion"
                         label="Descripción"
-                        width={280}
+                        width={110}
                         data={(e) => e?.row?.descripcion}
                     />
 
                     <DinamicTable.Col
                         key="monto"
                         label="Monto"
-                        width={100}
+                        width={120}
                         data={(e) => e?.row?.monto ?? 0}
                         cellStyle={{ alignItems: "flex-end" }}
                         format={(e) => `${SMath.formatMoney(e.data || 0)}`}
-                        footerComponent={(e) => {
-                            const total = e.dinamicTable.data.reduce((sum, row) => sum + (row.monto || 0), 0);
-                            return (
-                                <SView>
-                                    <SText color={STheme.color.lightGray}>
-                                        {SMath.formatMoney(total)}
-                                    </SText>
-                                </SView>
-                            );
-                        }}
+                        // footerComponent={(e) => {
+                        //     const total = e.dinamicTable.data.reduce((sum, row) => sum + (row.monto || 0), 0);
+                        //     return (
+                        //         <SView>
+                        //             <SText color={STheme.color.lightGray}>
+                        //                 {SMath.formatMoney(total)}
+                        //             </SText>
+                        //         </SView>
+                        //     );
+                        // }}
                     />
-
                     <DinamicTable.Col
-                        key="monto_amortizado"
-                        label="Monto Amortizado"
-                        width={100}
-                        data={(e) => e?.row?.monto_amortizado ?? 0}
+                        key="total_amortizado"
+                        label="total_amortizado"
+                        width={120}
+                        data={(e) => e?.row?.total_amortizado ?? 0}
                         cellStyle={{ alignItems: "flex-end" }}
                         format={(e) => `${SMath.formatMoney(e.data || 0)}`}
-                        footerComponent={(e) => {
-                            const total = e.dinamicTable.data.reduce((sum, row) => sum + (row.monto_amortizado || 0), 0);
-                            return (
-                                <SView>
-                                    <SText color={STheme.color.lightGray}>
-                                        {SMath.formatMoney(total)}
-                                    </SText>
-                                </SView>
-                            );
-                        }}
+                       
                     />
 
+
                     <DinamicTable.Col
-                        key="saldo"
-                        label="Saldo"
-                        width={100}
-                        data={(e) => e?.row?.saldo ?? 0}
-                        cellStyle={{ alignItems: "flex-end" }}
-                        format={(e) => `${SMath.formatMoney(e.data || 0)}`}
-                        footerComponent={(e) => {
-                            const total = e.dinamicTable.data.reduce((sum, row) => sum + (row.saldo || 0), 0);
-                            return (
-                                <SView>
-                                    <SText color={STheme.color.lightGray}>
-                                        {SMath.formatMoney(total)}
-                                    </SText>
-                                </SView>
-                            );
-                        }}
+                        key="fecha_pago"
+                        label="fecha pago"
+                        width={90}
+                        data={(e) =>
+                            e?.row?.fecha_on ? new SDate(e.row.fecha_pago).toString("dd/MM/yyyy") : ""
+                        }
+
                     />
+
                 </DinamicTable>
             </SView>
         );
