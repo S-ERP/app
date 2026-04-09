@@ -21,7 +21,6 @@ export default class TablaTransacciones extends Component {
         };
         this.key = SNavigation.getParam("key");
         this.keysCuotas = [];
-
     }
 
     componentDidMount() {
@@ -31,23 +30,24 @@ export default class TablaTransacciones extends Component {
     async loadInitialData() {
         try {
             const keyEmpresa = await MDL?.empresa?.select?.key;
-            const keyCliente = this.key;
+            // const keyCliente = this.key;
             const fecha_inicio_total = "2024-01-01";
             const fecha_inicio = this.state.fecha_inicio;
             const fecha_fin = this.state.fecha_fin;
+            // if (!keyEmpresa || !keyCliente) return [];
+            if (!keyEmpresa || !this.key) return;
 
-            if (!keyEmpresa || !keyCliente) return [];
 
-            const ventas = await MDL.compra_venta.execute_function("_get_detalles_bycliente4", [keyEmpresa, keyCliente, fecha_inicio_total, fecha_fin]);
-            const cliente = await MDL.crm.cliente.getByKey(keyCliente);
+            const ventas = await MDL.compra_venta.execute_function("_get_detalles_bycliente4", [keyEmpresa, this.key, fecha_inicio_total, fecha_fin]);
+            const cliente = await MDL.crm.cliente.getByKey(this.key);
 
-            const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes", [keyEmpresa, keyCliente]);
+            const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes", [keyEmpresa, this.key]);
             this.cuotasDetalle = cuotas || [];
             this.keysCuotas = this.cuotasDetalle.map(c => c.key_cuota);
 
-            console.clear();
-            console.log("%cCUOTAS:", "color: #2ECC40; font-weight: bold;");
-            console.log(this.cuotasDetalle);
+            // console.clear();
+            // console.log("%cCUOTAS:", "color: #2ECC40; font-weight: bold;");
+            // console.log(this.cuotasDetalle);
 
 
 
@@ -149,27 +149,17 @@ export default class TablaTransacciones extends Component {
                     selectType="single"
                     keyExtractor={(e) => e?.key}
                 >
-                    <DinamicTable.Col key="index" label="N°" width={30}
-                        data={(e) => (e?.index ?? 0) + 1}
-                        cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
-                    />
-                    <DinamicTable.Col key="fecha" label="Fecha" width={80}
-                        data={e => e?.row?.fecha_on ? new SDate(e.row.fecha_on).toString("dd/MM/yyyy") : ""}
-                        cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
-                    />
-                    <DinamicTable.Col key="tipo" label="Tipo" width={80}
-                        data={(e) => e?.row?.tipo || "-"}
-                        cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}}
-                        customComponent={(e) => {
-                            const isSaldoAnterior = e?.row?.tipo === "saldo";
-                            return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: isSaldoAnterior ? STheme.color.success + "44" : null, borderWidth: 1, borderColor: isSaldoAnterior ? STheme.color.success : "transparent" }} center >
-                                <SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
-                            </SView>
-                        }}
+                    <DinamicTable.Col key="index" label="N°" width={30} data={(e) => (e?.index ?? 0) + 1} cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}} />
+                    <DinamicTable.Col key="fecha" label="Fecha" width={80} data={e => e?.row?.fecha_on ? new SDate(e.row.fecha_on).toString("dd/MM/yyyy") : ""} cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}} />
+                    <DinamicTable.Col key="tipo" label="Tipo" width={80} data={(e) => e?.row?.tipo || "-"} cellStyle={(e) => e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}} customComponent={(e) => {
+                        const isSaldoAnterior = e?.row?.tipo === "saldo";
+                        return <SView style={{ padding: 2, borderRadius: 4, backgroundColor: isSaldoAnterior ? STheme.color.success + "44" : null, borderWidth: 1, borderColor: isSaldoAnterior ? STheme.color.success : "transparent" }} center >
+                            <SText fontSize={10} style={{ textTransform: "uppercase" }} >{e.data}</SText>
+                        </SView>
+                    }}
                     />
 
-                    <DinamicTable.Col key="detalle" label="Detalle" width={340}
-                        data={(e) => e?.row?.descripcion || "-"}
+                    <DinamicTable.Col key="detalle" label="Detalle" width={340} data={(e) => e?.row?.descripcion || "-"}
                         customComponent={(e) => {
                             const isSaldoAnterior = e?.row?.descripcion === "Saldo anterior";
                             return (
@@ -185,15 +175,7 @@ export default class TablaTransacciones extends Component {
                             </SView>
                         )}
                     />
-                    <DinamicTable.Col
-                        key="debe"
-                        label="Debe"
-                        width={100}
-                        data={(e) => e?.row?.debe ?? 0}
-                        cellStyle={(e) => ({
-                            alignItems: "flex-end",
-                            ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {})
-                        })}
+                    <DinamicTable.Col key="debe" label="Debe" width={100} data={(e) => SMath.formatMoney(e?.row?.debe) ?? 0} cellStyle={(e) => ({ alignItems: "flex-end", ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}) })}
                         format={(e) => e.data ? `${SMath.formatMoney(e.data || 0)}` : ""}
                         footerComponent={(e) => {
                             let total = 0;
@@ -201,15 +183,7 @@ export default class TablaTransacciones extends Component {
                             return <SView ><SText color={STheme.color.lightGray}>{`${SMath.formatMoney(total || 0)}`}</SText></SView>
                         }}
                     />
-                    <DinamicTable.Col
-                        key="haber"
-                        label="Haber"
-                        width={100}
-                        data={(e) => e?.row?.haber ?? 0}
-                        cellStyle={(e) => ({
-                            alignItems: "flex-end",
-                            ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {})
-                        })}
+                    <DinamicTable.Col key="haber" label="Haber" width={100} data={(e) => e?.row?.haber ?? 0} cellStyle={(e) => ({ alignItems: "flex-end", ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}) })}
                         format={(e) => e.data ? `${SMath.formatMoney(e.data || 0)}` : ""}
                         footerComponent={(e) => {
                             let total = 0;
@@ -217,15 +191,7 @@ export default class TablaTransacciones extends Component {
                             return <SView><SText color={STheme.color.lightGray} >{`${SMath.formatMoney(total || 0)}`}</SText></SView>
                         }}
                     />
-                    <DinamicTable.Col
-                        key="saldo"
-                        label="Saldo"
-                        width={120}
-                        data={(e) => e?.row?.saldo ?? 0}
-                        cellStyle={(e) => ({
-                            alignItems: "flex-end",
-                            ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {})
-                        })}
+                    <DinamicTable.Col key="saldo" label="Saldo" width={120} data={(e) => SMath.formatMoney(e?.row?.saldo) ?? 0} cellStyle={(e) => ({ alignItems: "flex-end", ...(e?.row?.descripcion === "Saldo anterior" ? { backgroundColor: '#e8f4fd' } : {}) })}
                         customComponent={(e) => {
                             return <SView><SText style={{ alignItems: "flex-end", paddingRight: 8, fontSize: 12 }}>{`${SMath.formatMoney(e?.data || 0)}`}</SText></SView>
                         }}
@@ -242,18 +208,13 @@ export default class TablaTransacciones extends Component {
     }
 
     async showVentaPopup() {
-        const saldo = this.state.saldo || 0;
-        let monto = 0;
-        const moneda = this.state.moneda || {};
-        const simboloBase = moneda?.observacion || 'BOB';
-
-        const cuotas = this.keysCuotas || [];
-
-        console.clear();
-        console.log("%c" + JSON.stringify(cuotas, null, 2), "color: #2ECC40; font-weight: bold;");
-
         try {
             const activa = await MDL.caja.getActiva();
+            const saldo = this.state.saldo || 0;
+            let monto = 0;
+            const moneda = this.state.moneda || {};
+            const simboloBase = moneda?.observacion || 'BOB';
+            const cuotas = this.keysCuotas || [];
             if (!activa) {
                 SNotification.send({
                     title: 'Caja no aperturada',
@@ -273,41 +234,41 @@ export default class TablaTransacciones extends Component {
                         style={{ borderRadius: 16, alignItems: "center" }}>
                         <SText bold fontSize={20} center style={{ marginBottom: 8 }}>¡Amortizar Deuda!</SText>
                         <SText fontSize={14} center style={{ marginBottom: 16 }}>Saldo pendiente: {SMath.formatMoney(saldo)}</SText>
-                        <SInput
-                            col={"xs-12"}
-                            type='money2'
-                            placeholder="Ingrese monto"
-                            onChangeText={(val) => { monto = parseFloat(val) || 0; }}
-                        />
+                        <SInput col={"xs-12"} type='money2' placeholder="Ingrese monto" onChangeText={(val) => { monto = parseFloat(val) || 0; }} />
                         <SHr height={16} />
                         <SView row col="xs-12" style={{ gap: 12 }}>
-                            <SView flex height={40} borderRadius={8} center
-                                backgroundColor={STheme.color.text}
-                                onPress={() => SPopup.close("popup-venta-completada")}>
-                                <SText color={STheme.color.background}>Cancelar</SText>
-                            </SView>
+                            <SView flex height={40} borderRadius={8} center backgroundColor={STheme.color.text} onPress={() => SPopup.close("popup-venta-completada")}> <SText color={STheme.color.background}>Cancelar</SText> </SView>
                             <SView flex height={40} borderRadius={8} center
                                 backgroundColor={STheme.color.card}
                                 border={STheme.color.success}
                                 onPress={() => {
-                                    if (monto <= 0) { SPopup.alert("El monto debe ser mayor a 0"); return; }
-                                    if (monto > saldo) { SPopup.alert("No puede ser mayor al saldo"); return; }
+
+                                    if (monto <= 0) {
+                                        SNotification.send({
+                                            title: "Monto inválido",
+                                            body: "El monto debe ser mayor a 0",
+                                            color: STheme.color.danger,
+                                            time: 4000
+                                        });
+                                        return;
+                                    }
+
+                                    if (monto > saldo) {
+                                        SNotification.send({
+                                            title: "Monto inválido",
+                                            body: "No puede ser mayor al saldo",
+                                            color: STheme.color.danger,
+                                            time: 4000
+                                        });
+                                        return;
+                                    }
                                     SelectTipoPago.openPopup({
                                         key_punto_venta: activa.key_punto_venta,
                                         key_moneda: moneda.key,
-                                        montoMaximo: saldo,
+                                        montoMaximo: monto,
                                         monedaSymbol: simboloBase,
-                                        onSelect: (item, selectedCuotas = []) => {
-
+                                        onSelect: (item) => {
                                             const enviar = { tipos_pago: item, cuotas: cuotas };
-
-
-                                            console.clear();
-                                            console.log("%c" + item, `color: #2ECC40; font-weight: bold;`);
-
-
-                                            // console.log("pintando " + JSON.stringify(enviar))
-
                                             SSocket.sendPromise({
                                                 service: "caja",
                                                 component: "caja_detalle",
@@ -318,20 +279,14 @@ export default class TablaTransacciones extends Component {
                                                 key_caja: MDL.caja.activa?.key,
                                             }).then(resp => {
                                                 if (resp?.estado === "exito") {
-                                                    SNotification.send({ title: "Éxito", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
-                                                    // this.props.onSuccess?.();
+                                                    SNotification.send({ title: "Éxito: Pago registrado", body: "Pago registrado.", color: STheme.color.success, time: 3000 });
+                                                    this.DinamicTable.loadData();
                                                     if (this.props.onSuccess) this.props.onSuccess(resp)
                                                     SelectTipoPago.closePopup();
-
                                                 }
                                             }).catch(err => {
                                                 SNotification.send({ title: 'Error', body: "dd" + err?.message || 'Falló el pago.', color: STheme.color.danger });
                                             });
-
-
-                                            // MDL.compra_venta.dispatchEvent({ type: "venta_realizada" });
-
-
                                             SelectTipoPago.closePopup();
                                             SPopup.close("popup-venta-completada");
                                         }
@@ -378,12 +333,10 @@ export default class TablaTransacciones extends Component {
                         <SText fontSize={15}>Cliente: {cliente?.nombres + " " + cliente?.apellidos || "-"}</SText>
                     </SView>
                 </SView>
-
                 <SHr height={10} />
                 {this.mostrarTabla()}
                 <SHr height={20} />
                 {this.state.saldo > 0 && (
-
                     <SView col={'xs-12'} style={{ width: 820, paddingVertical: 12, alignSelf: 'center', borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
                         <SView row col={'xs-12'} style={{ justifyContent: 'flex-end' }}>
                             <SView
