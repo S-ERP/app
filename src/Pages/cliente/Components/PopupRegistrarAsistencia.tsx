@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { SPopup, SView, SText, STheme, SForm, SHr, SNotification, SImage } from "servisofts-component";
+import { SPopup, SView, SText, STheme, SForm, SHr, SNotification, SImage, SDate, SScrollView2 } from "servisofts-component";
 import MDL from "../../../MDL";
 import SSocket from "servisofts-socket";
 import SIconApp from "../../../Assets/SIconApp";
@@ -30,7 +30,7 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
                     borderColor: STheme.color.card,
                     borderWidth: 1,
                     backgroundColor: STheme.color.background
-                }} withoutFeedback >
+                }} withoutFeedback>
                     <PopupRegistrarAsistencia {...props} />
                 </SView>
             ),
@@ -53,27 +53,77 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
         this.setState({ clientes });
     };
 
-    setResultado = (data) => {
+    // setResultado = (data) => {
+    //     this.setState({ resultado: data });
+    //     if (!data) return;
+
+    //     SSocket.sendPromise({
+    //         service: "inventario",
+    //         component: "suscripcion",
+    //         estado: "cargando",
+    //         type: "getByKeyCliente",
+    //         key_cliente: data.key
+    //     }).then(e => {
+    //         const hoy = new Date();
+    //         const vigente = e.data.filter(item => {
+    //             const inicio = new Date(item.fecha_inicio);
+    //             const fin = new Date(item.fecha_fin);
+    //             return hoy >= inicio && hoy <= fin;
+    //         });
+    //         let sucursales = Object.values(this.getSucursales());
+    //         console.log(sucursales)
+
+    //         vigente[0].sucursal = sucursales.find(u => u.key === e.key_sucursal)
+    //         console.log("paquete actual ", vigente)
+    //         this.setState({ paquete: vigente[0] });
+    //     }).catch(console.error);
+    // };
+
+    setResultado = async (data) => {
         this.setState({ resultado: data });
         if (!data) return;
 
-        SSocket.sendPromise({
-            service: "inventario",
-            component: "suscripcion",
-            estado: "cargando",
-            type: "getByKeyCliente",
-            key_cliente: data.key
-        }).then(e => {
+        try {
+            const e = await SSocket.sendPromise({
+                service: "inventario",
+                component: "suscripcion",
+                estado: "cargando",
+                type: "getByKeyCliente",
+                key_cliente: data.key
+            });
+
             const hoy = new Date();
+
             const vigente = e.data.filter(item => {
                 const inicio = new Date(item.fecha_inicio);
                 const fin = new Date(item.fecha_fin);
                 return hoy >= inicio && hoy <= fin;
             });
-            console.log("paquete actual ", vigente)
+
+            // ✅ AQUÍ el await
+            const sucursalesObj = await this.getSucursales();
+            const sucursales = Object.values(sucursalesObj);
+
+            console.log(sucursales);
+
+            if (vigente.length > 0) {
+                vigente[0].sucursal = sucursales.find(
+                    u => u.key === vigente[0].key_sucursal
+                );
+            }
+
+            console.log("paquete actual ", vigente);
+
             this.setState({ paquete: vigente[0] });
-        }).catch(console.error);
+
+        } catch (err) {
+            console.error(err);
+        }
     };
+
+    async getSucursales() {
+        return await MDL.empresa.getAllSucursales();
+    }
 
     registrarAsistencia = () => {
         if (!this.state.resultado || !this.state.paquete || !this.state.selectedSucursal) {
@@ -114,134 +164,171 @@ export default class PopupRegistrarAsistencia extends Component<Props> {
         const hora = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
 
         return (
-            <SView col={"xs-12"} center padding={16}>
-                <SText fontSize={16}>{"Registrar Asistencia"}</SText>
-                <SView col="xs-12" padding={10}>
-                    <SText bold>Buscar Cliente</SText>
-                    <AgregarContacto clientes={this.state.clientes} onResultado={this.setResultado} />
-                </SView>
-                {this.state.resultado && (
-                    <>
-                        <SView col="xs-12" padding={10}>
-                            <SView col="xs-12" row
-                                style={{
-                                    paddingHorizontal: 12,
-                                    paddingVertical: 18,
-                                    borderWidth: 1,
-                                    borderColor: STheme.color.card,
-                                    borderRadius: 8,
-                                    backgroundColor: STheme.color.background,
-                                }}
-                            >
-                                <SView style={{ width: 64, height: 64, borderRadius: 64, overflow: "hidden", backgroundColor: STheme.color.card, }} >
-                                    <SImage src={SSocket.api.root + "usuario/" + this.state.resultado.key} style={{ resizeMode: "cover" }} enablePreview />
-                                </SView>
-                                <SView width={8} />
-                                <SView col="xs-6" justify="center">
-                                    <SView col={"xs-12"} row>
-                                        <SText color={STheme.color.lightGray}>Nombres: </SText>
-                                        <SText color={STheme.color.text} bold>{this.state.resultado.nombres ?? "---"}</SText>
+            <SScrollView2 >
+                <SView col={"xs-12"} center padding={16}>
+                    <SText fontSize={16}>{"Registrar Asistencia"}</SText>
+                    <SView col="xs-12" padding={10}>
+                        <SText bold>Buscar Cliente</SText>
+                        <AgregarContacto clientes={this.state.clientes} onResultado={this.setResultado} />
+                    </SView>
+                    {this.state.resultado && (
+                        <>
+                            <SView col="xs-12" padding={10}>
+                                <SView col="xs-12" row
+                                    style={{
+                                        paddingHorizontal: 12,
+                                        paddingVertical: 18,
+                                        borderWidth: 1,
+                                        borderColor: STheme.color.card,
+                                        borderRadius: 8,
+                                        backgroundColor: STheme.color.background,
+                                    }}
+                                >
+                                    <SView style={{ width: 64, height: 64, borderRadius: 64, overflow: "hidden", backgroundColor: STheme.color.card, }} >
+                                        <SImage src={SSocket.api.root + "usuario/" + this.state.resultado.key} style={{ resizeMode: "cover" }} enablePreview />
                                     </SView>
-                                    <SView col={"xs-12"} row>
-                                        <SText color={STheme.color.lightGray}>NIT: </SText>
-                                        <SText color={STheme.color.text} bold>{this.state.resultado.nit ?? "---"}</SText>
+                                    <SView width={8} />
+                                    <SView col="xs-6" justify="center">
+                                        <SView col={"xs-12"} row>
+                                            <SText color={STheme.color.lightGray}>Nombres: </SText>
+                                            <SText color={STheme.color.text} bold>{this.state.resultado.nombres ?? "---"}</SText>
+                                        </SView>
+                                        <SView col={"xs-12"} row>
+                                            <SText color={STheme.color.lightGray}>NIT: </SText>
+                                            <SText color={STheme.color.text} bold>{this.state.resultado.nit ?? "---"}</SText>
+                                        </SView>
+                                        <SView col={"xs-12"} row>
+                                            <SText color={STheme.color.lightGray}>Tel: </SText>
+                                            <SText color={STheme.color.text} bold>{this.state.resultado.telefono ?? "---"}</SText>
+                                        </SView>
+                                        <SView col={"xs-12"} row>
+                                            <SText color={STheme.color.lightGray}>Correo: </SText>
+                                            <SText color={STheme.color.text} bold>{this.state.resultado.correo ?? "---"}</SText>
+                                        </SView>
                                     </SView>
-                                    <SView col={"xs-12"} row>
-                                        <SText color={STheme.color.lightGray}>Tel: </SText>
-                                        <SText color={STheme.color.text} bold>{this.state.resultado.telefono ?? "---"}</SText>
+                                    <SView width={8} />
+                                    <SView flex center>
+                                        <SView padding={8} center style={{ borderRadius: 4, borderWidth: 1, borderColor: this.state.paquete ? STheme.color.success : STheme.color.danger, backgroundColor: (this.state.paquete ? STheme.color.success : STheme.color.danger) + "30", }} >
+                                            <SText bold fontSize={11} center>PAQUETE {this.state.paquete ? "ACTIVO" : "INACTIVO"} </SText>
+                                        </SView>
                                     </SView>
-                                    <SView col={"xs-12"} row>
-                                        <SText color={STheme.color.lightGray}>Correo: </SText>
-                                        <SText color={STheme.color.text} bold>{this.state.resultado.correo ?? "---"}</SText>
-                                    </SView>
-                                </SView>
-                                <SView width={8} />
-                                <SView flex center>
-                                    <SView padding={8} center style={{ borderRadius: 4, borderWidth: 1, borderColor: this.state.paquete ? STheme.color.success : STheme.color.danger, backgroundColor: (this.state.paquete ? STheme.color.success : STheme.color.danger) + "30", }} >
-                                        <SText bold fontSize={11} center>PAQUETE {this.state.paquete ? "ACTIVO" : "INACTIVO"} </SText>
-                                    </SView>
-                                </SView>
-                            </SView>
-                            <SHr height={16} />
-                            <SView
-                                col="xs-12"
-                                padding={14}
-                                style={{
-                                    paddingHorizontal: 12,
-                                    paddingVertical: 18,
-                                    borderWidth: 1,
-                                    borderColor: STheme.color.card,
-                                    borderRadius: 8,
-                                    backgroundColor: STheme.color.background,
-                                }}
-                            >
-                                {this.state.paquete ? (
-                                    <>
-                                        <SForm
-                                            ref={ref => this.form = ref}
-                                            row
-                                            style={{ justifyContent: "space-between" }}
-                                            inputs={{
-                                                fecha: {
-                                                    col: "xs-5.5", label: "Fecha", type: "date", defaultValue: new Date().toISOString().split("T")[0],
-                                                    style: { pointerEvents: "none", backgroundColor: STheme.color.background, borderColor: STheme.color.card, borderWidth: 1, },
-                                                    inputStyle: { borderWidth: 0, },
-                                                    iconR: (
-                                                        <SView width={15} height={15} center style={{ marginRight: 8, }} >
-                                                            <SIconApp name="Evento" fill={STheme.color.lightGray} />
-                                                        </SView>
-                                                    ),
-                                                },
-                                                hora: {
-                                                    isRequired: true, col: "xs-5.5", label: "Hora", type: "hour", defaultValue: hora,
-                                                    iconR: (
-                                                        <SView width={15} height={15} center style={{ marginRight: 8 }} >
-                                                            <SIconApp name="history" fill={STheme.color.lightGray} />
-                                                        </SView>
-                                                    ),
-                                                },
-                                                sucursal: {
-                                                    col: "xs-12",
-                                                    type: "select2",
-                                                    label: "Sucursal",
-                                                    placeholder: "Selecciona una sucursal",
-                                                    options: this.state.sucursales.map(s => s.descripcion),
-                                                    onChangeText: (text) => {
-                                                        const selected = this.state.sucursales.find(s => s.descripcion === text);
-                                                        this.setState({ selectedSucursal: selected });
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                        <SHr height={8} />
-                                        {this.state.paquete && (
-                                            <SView col="xs-12">
-                                                <SView width={"100%"} height={40} center backgroundColor={"#292929"} onPress={this.registrarAsistencia} style={{ borderRadius: 4 }}>
-                                                    <SText color={STheme.color.white} bold>Registrar asistencia</SText>
-                                                </SView>
+                                    {this.state.paquete?.producto && (<>
+                                        <SHr height={15} />
+                                        <SView col={"xs-12"} height={2} style={{ borderBottomColor: STheme.color.card, borderBottomWidth: 1 }} />
+                                        <SHr height={15} />
+                                        <SView col={"xs-12"}>
+                                            <SView col={"xs-12"} row>
+                                                <SIconApp name="blender/group" fill={STheme.color.text} width={18} height={18} />
+                                                <SView width={8} />
+                                                <SText fontSize={16} bold>{this.state.paquete?.producto?.nombre}</SText>
                                             </SView>
-                                        )}
-                                    </>
-                                ) : (
-                                    <SView
-                                        col="xs-12"
-                                        padding={12}
-                                        card
-                                        style={{
-                                            borderRadius: 6,
-                                        }}
-                                    >
-                                        <SText bold color={STheme.color.lightGray + "30"}>
-                                            Cliente sin paquete activo
-                                        </SText>
-                                    </SView>
-                                )
-                                }
+                                            <SHr height={7} />
+                                            <SView col={"xs-12"} row>
+                                                <SIconApp name="iconUbicacion" fill={STheme.color.text} width={18} height={18} />
+                                                <SView width={8} />
+                                                <SText fontSize={16} bold>{this.state.paquete?.sucursal?.descripcion}</SText>
+                                            </SView>
+                                            <SHr height={15} />
+                                            <SView col={"xs-12"} row>
+                                                <SView col={"xs-6"} flex style={{ alignItems: "flex-start" }}>
+                                                    <SText fontSize={16} >
+                                                        {new SDate(this.state.paquete?.fecha_inicio).toString("dd/MM/yyyy")}
+                                                    </SText>
+                                                    <SText color={STheme.color.lightGray}>Fecha de inicio</SText>
+                                                </SView>
+                                                <SView col={"xs-6"} flex style={{ alignItems: "flex-end" }}>
+                                                    <SText fontSize={16} >
+                                                        {new SDate(this.state.paquete?.fecha_fin).toString("dd/MM/yyyy")}
+                                                    </SText>
+                                                    <SText color={STheme.color.lightGray}>Fecha vencimiento</SText>
+                                                </SView>
+
+                                            </SView>
+                                        </SView>
+                                    </>)}
+
+                                </SView>
+                                <SHr height={16} />
+                                <SView
+                                    col="xs-12"
+                                    padding={14}
+                                    style={{
+                                        paddingHorizontal: 12,
+                                        paddingVertical: 18,
+                                        borderWidth: 1,
+                                        borderColor: STheme.color.card,
+                                        borderRadius: 8,
+                                        backgroundColor: STheme.color.background,
+                                    }}
+                                >
+                                    {this.state.paquete ? (
+                                        <>
+                                            <SForm
+                                                ref={ref => this.form = ref}
+                                                row
+                                                style={{ justifyContent: "space-between" }}
+                                                inputs={{
+                                                    fecha: {
+                                                        col: "xs-5.5", label: "Fecha", type: "date", defaultValue: new Date().toISOString().split("T")[0],
+                                                        style: { pointerEvents: "none", backgroundColor: STheme.color.background, borderColor: STheme.color.card, borderWidth: 1, },
+                                                        inputStyle: { borderWidth: 0, },
+                                                        iconR: (
+                                                            <SView width={15} height={15} center style={{ marginRight: 8, }} >
+                                                                <SIconApp name="Evento" fill={STheme.color.lightGray} />
+                                                            </SView>
+                                                        ),
+                                                    },
+                                                    hora: {
+                                                        isRequired: true, col: "xs-5.5", label: "Hora", type: "hour", defaultValue: hora,
+                                                        iconR: (
+                                                            <SView width={15} height={15} center style={{ marginRight: 8 }} >
+                                                                <SIconApp name="history" fill={STheme.color.lightGray} />
+                                                            </SView>
+                                                        ),
+                                                    },
+                                                    sucursal: {
+                                                        col: "xs-12",
+                                                        type: "select2",
+                                                        label: "Sucursal",
+                                                        placeholder: "Selecciona una sucursal",
+                                                        options: this.state.sucursales.map(s => s.descripcion),
+                                                        onChangeText: (text) => {
+                                                            const selected = this.state.sucursales.find(s => s.descripcion === text);
+                                                            this.setState({ selectedSucursal: selected });
+                                                        }
+                                                    }
+                                                }}
+                                            />
+                                            <SHr height={8} />
+                                            {this.state.paquete && (
+                                                <SView col="xs-12">
+                                                    <SView width={"100%"} height={40} center backgroundColor={"#292929"} onPress={this.registrarAsistencia} style={{ borderRadius: 4 }}>
+                                                        <SText color={STheme.color.white} bold>Registrar asistencia</SText>
+                                                    </SView>
+                                                </SView>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <SView
+                                            col="xs-12"
+                                            padding={12}
+                                            card
+                                            style={{
+                                                borderRadius: 6,
+                                            }}
+                                        >
+                                            <SText bold color={STheme.color.lightGray + "30"}>
+                                                Cliente sin paquete activo
+                                            </SText>
+                                        </SView>
+                                    )
+                                    }
+                                </SView>
                             </SView>
-                        </SView>
-                    </>
-                )}
-            </SView>
+                        </>
+                    )}
+                </SView>
+            </SScrollView2>
         );
     }
 }
