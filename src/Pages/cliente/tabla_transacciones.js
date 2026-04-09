@@ -35,12 +35,18 @@ export default class TablaTransacciones extends Component {
 
             if (!keyEmpresa || !keyCliente) return [];
 
-            const ventas = await MDL.compra_venta.execute_function(
-                "_get_detalles_bycliente4",
-                [keyEmpresa, keyCliente, fecha_inicio_total, fecha_fin]
-            );
-
+            const ventas = await MDL.compra_venta.execute_function("_get_detalles_bycliente4", [keyEmpresa, keyCliente, fecha_inicio_total, fecha_fin]);
             const cliente = await MDL.crm.cliente.getByKey(keyCliente);
+
+            const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes", [keyEmpresa, keyCliente]);
+            const keysCuotas = (cuotas || []).map(c => c.key_cuota);
+
+
+            console.clear();
+            console.log("%c" + "cuotas", `color: #2ECC40; font-weight: bold;`);
+            console.log("%c" + keysCuotas, "color: #2ECC40; font-weight: bold;");
+
+
 
             if (!ventas || ventas.length === 0) {
                 this.setState({ cliente: cliente || {}, moneda: null, saldo: 0 });
@@ -237,6 +243,11 @@ export default class TablaTransacciones extends Component {
         let monto = 0;
         const moneda = this.state.moneda || {};
         const simboloBase = moneda?.observacion || 'BOB';
+
+        
+            const cuotas = await MDL.compra_venta.execute_function("_get_cuotas_pendientes", [keyEmpresa, keyCliente]);
+            const keysCuotas = (cuotas || []).map(c => c.key_cuota);
+
         try {
             const activa = await MDL.caja.getActiva();
             if (!activa) {
@@ -283,6 +294,11 @@ export default class TablaTransacciones extends Component {
                                         montoMaximo: saldo,
                                         monedaSymbol: simboloBase,
                                         onSelect: (item, selectedCuotas = []) => {
+
+                                            console.clear();
+                                            console.log("%c" + ingresar_texto,`color: #2ECC40; font-weight: bold;`);
+
+                                            
                                             SelectTipoPago.closePopup();
                                             SPopup.close("popup-venta-completada");
                                         }
