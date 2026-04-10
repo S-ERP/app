@@ -92,6 +92,7 @@ import Asistencias from "./cliente/Asistencias";
 import Suscriptores from "./cliente/Suscriptores";
 import Test1 from "./test1";
 import costos from "./costos";
+import recharts from "./recharts/recharts";
 
 export default SPage.combinePages("/", {
   "": lobyRoot,
@@ -182,4 +183,5 @@ export default SPage.combinePages("/", {
   ...tableros,
   ...asistencia,
   ...costos,
+  recharts
 });
