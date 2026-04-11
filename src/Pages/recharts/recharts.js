@@ -34,6 +34,7 @@ export default class Recharts extends Component {
           <SHr height={10} />
           <CircularRecharts />
         </SView>
+        
       </SPage>
     );
   }
