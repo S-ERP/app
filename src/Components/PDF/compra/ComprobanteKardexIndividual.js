@@ -113,7 +113,9 @@ export default class ComprobanteKardexIndividual extends Component {
             if (saldoAnterior !== 0) {
                 ventasFiltradas = [
                     {
-                        key: `saldo_anterior_${new Date().getTime()}`,
+                        key: '001',
+                        // key: new Date().getTime(),
+                        // key: `saldo_anterior_${new Date().getTime()}`,
                         fecha_on: "",
                         tipo: "saldo",
                         descripcion: "Saldo anterior",
@@ -138,18 +140,9 @@ export default class ComprobanteKardexIndividual extends Component {
                 fecha_inicio: fecha_inicio_real,
                 fecha_fin: fecha_fin_real
             };
-            // console.clear();
-            // console.log("%c" + JSON.stringify(empresa, null, 2), "color: #e6c510; font-weight: bold;");
-            // console.log("%c" + JSON.stringify(compraVentaData, null, 2), "color: #e6c510; font-weight: bold;");
 
-
-            //    {
-            //         key: 'PINT-001',
-            //         descripcion: 'Bote de Pintura Acrílica, Blanco Mate, 5 Litros',
-            //         cantidad: 1,
-            //         precio_unitario: 25.0,
-            //     },
-
+            console.clear();
+            console.log("%c" + JSON.stringify(compraVentaData, null, 2), "color: #2ECC40; font-weight: bold;");
             SPDF.create(
                 <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}>
                     <SPDF.View style={{ width: "100%" }}>
@@ -163,16 +156,11 @@ export default class ComprobanteKardexIndividual extends Component {
                         <SPDF.View style={{ width: '100%', height: 16 }} />
 
                         {ComprobanteKardexIndividual.espacio()}
-                        {ComprobanteKardexIndividual.pagina()}
+                        {ComprobanteKardexIndividual.pagina(compraVentaData)}
                     </SPDF.View>
                 </SPDF.Page>
             );
 
-            // Aquí iría la lógica para generar el PDF o imprimir
-            // console.log("Ventas filtradas para imprimir:", ventasEnriquecidas);
-            // SPopup.alert("Kardex generado correctamente. (Revisa consola para datos)");
-
-            // return ventasEnriquecidas;
 
         } catch (error) {
             console.error("Error en ComprobanteKardexIndividual.imprimir:", error);
@@ -181,26 +169,6 @@ export default class ComprobanteKardexIndividual extends Component {
         }
     }
 
-    static getQR(key) {
-        if (!key) {
-            return Promise.reject(new Error("Key inválida para generar QR"));
-        }
-        const content = `https://darmotos.servisofts.com/venta/profile?pk=${encodeURIComponent(key)}`;
-        return SSocket.sendPromise({
-            "service": "sqr",
-            "component": "qr",
-            "type": "registro",
-            "estado": "cargando",
-            "data": {
-                "image_src": "https://darmotos.servisofts.com/logo512.png",
-                "framework": "Rounded",
-                "header": "Circle",
-                "body": "Dot",
-                "content": content,
-                "type_color": "solid",
-            }
-        });
-    }
 
     static espacio() {
         return <SPDF.View style={{ width: "100%", height: 16 }} />;
@@ -270,30 +238,37 @@ export default class ComprobanteKardexIndividual extends Component {
         return (
             <SPDF.View style={{ width: "100%" }}>
                 <SPDF.View style={{ width: "100%", height: 22, flexDirection: "row", backgroundColor: "#D0D0D0" }}>
-                    <SPDF.View style={{ width: tableCols.fecha, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}> {"FECHA"} </SPDF.Text> </SPDF.View>
-                    <SPDF.View style={{ width: tableCols.tipo, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}> {"TIPO"} </SPDF.Text> </SPDF.View>
-                    <SPDF.View style={{ width: tableCols.nro, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}> {"NRO"} </SPDF.Text> </SPDF.View>
-                    <SPDF.View style={{ width: tableCols.detalle, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold" }}> {"DESCRIPCION"} </SPDF.Text> </SPDF.View>
-                    <SPDF.View style={{ width: tableCols.debe, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}> {"DEBE"} </SPDF.Text> </SPDF.View>
-                    <SPDF.View style={{ width: tableCols.haber, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}> {"HABER"} </SPDF.Text> </SPDF.View>
-                    <SPDF.View style={{ width: tableCols.saldo, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}> {"SALDO"} </SPDF.Text> </SPDF.View>
+                    <SPDF.View style={{ width: tableCols.fecha, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}> {"Fecha"} </SPDF.Text> </SPDF.View>
+                    <SPDF.View style={{ width: tableCols.tipo, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}> {"Tipo"} </SPDF.Text> </SPDF.View>
+                    <SPDF.View style={{ width: tableCols.nro, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}> {"Nro."} </SPDF.Text> </SPDF.View>
+                    <SPDF.View style={{ width: tableCols.detalle, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold" }}> {"Detalle"} </SPDF.Text> </SPDF.View>
+                    <SPDF.View style={{ width: tableCols.debe, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}> {"Debe"} </SPDF.Text> </SPDF.View>
+                    <SPDF.View style={{ width: tableCols.haber, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}> {"Haber"} </SPDF.Text> </SPDF.View>
+                    <SPDF.View style={{ width: tableCols.saldo, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}> {"Saldo"} </SPDF.Text> </SPDF.View>
                 </SPDF.View>
                 {items.map((item, i) => {
-                    const debe = SMath.formatMoney(item.debe);
-                    const haber = SMath.formatMoney(item.haber);
-                    const saldo = SMath.formatMoney(item.saldo);
+                    const debeValue = toNumber(item?.debe);
+                    const haberValue = toNumber(item?.haber);
+                    const saldoValue = toNumber(item?.saldo);
+                    const debe = SMath.formatMoney(debeValue);
+                    const haber = SMath.formatMoney(haberValue);
+                    const saldo = SMath.formatMoney(saldoValue);
                     const fecha = item?.fecha_on ? new SDate(item.fecha_on).toString("dd/MM/yyyy") : "";
                     const isSaldoAnterior = item?.tipo === "saldo";
-
+                    const fechaText = isSaldoAnterior ? "" : fecha;
+                    const tipoText = isSaldoAnterior ? "" : (item?.tipo || "");
+                    const nroText = isSaldoAnterior ? "" : (item?.key || "");
+                    const debeText = isSaldoAnterior ? "" : debe;
+                    const haberText = isSaldoAnterior ? "" : haber;
                     return (
-                        <SPDF.View key={i} style={{ width: "100%", height: 20, flexDirection: "row", backgroundColor: isSaldoAnterior ? "#eef6ff" : "white" }}>
-                            <SPDF.View style={{ width: tableCols.fecha, borderWidth: 1, height: "100%", justifyContent: "center" }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, textAlign: "center" }}>{fecha}</SPDF.Text> </SPDF.View>
-                            <SPDF.View style={{ width: tableCols.tipo, borderWidth: 1, height: "100%", justifyContent: "center" }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, textAlign: "center" }}>{item?.tipo || "-"}</SPDF.Text> </SPDF.View>
-                            <SPDF.View style={{ width: tableCols.nro, borderWidth: 1, height: "100%", justifyContent: "center" }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, textAlign: "center" }}>{i + 1}</SPDF.Text> </SPDF.View>
-                            <SPDF.View style={{ width: tableCols.detalle, borderWidth: 1, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8 }}>{item?.descripcion || "-"}</SPDF.Text> </SPDF.View>
-                            <SPDF.View style={{ width: tableCols.debe, borderWidth: 1, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, textAlign: "right" }}>{debe}</SPDF.Text> </SPDF.View>
-                            <SPDF.View style={{ width: tableCols.haber, borderWidth: 1, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, textAlign: "right" }}>{haber}</SPDF.Text> </SPDF.View>
-                            <SPDF.View style={{ width: tableCols.saldo, borderWidth: 1, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, textAlign: "right", fontWeight: "bold" }}>{saldo}</SPDF.Text> </SPDF.View>
+                        <SPDF.View key={i} style={{ width: "100%", height: 18, flexDirection: "row", backgroundColor: isSaldoAnterior ? "#F5F5F5" : "#3dcf10" }}>
+                            <SPDF.View style={{ width: tableCols.fecha, height: "100%", justifyContent: "center" }}> {fechaText ? <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 7, textAlign: "center" }}>{fechaText}</SPDF.Text> : null} </SPDF.View>
+                            <SPDF.View style={{ width: tableCols.tipo, height: "100%", justifyContent: "center" }}> {tipoText ? <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 7, textAlign: "center" }}>{tipoText}</SPDF.Text> : null} </SPDF.View>
+                            <SPDF.View style={{ width: tableCols.nro, height: "100%", justifyContent: "center" }}> {nroText ? <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 7, textAlign: "center" }}>{nroText}</SPDF.Text> : null} </SPDF.View>
+                            <SPDF.View style={{ width: tableCols.detalle, height: "100%", justifyContent: "center", paddingHorizontal: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 7 }}>{item?.descripcion || (isSaldoAnterior ? "Saldo anterior" : "")}</SPDF.Text> </SPDF.View>
+                            <SPDF.View style={{ width: tableCols.debe, height: "100%", justifyContent: "center", paddingHorizontal: 3 }}> {debeText ? <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 7, textAlign: "right" }}>{debeText}</SPDF.Text> : null} </SPDF.View>
+                            <SPDF.View style={{ width: tableCols.haber, height: "100%", justifyContent: "center", paddingHorizontal: 3 }}> {haberText ? <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 7, textAlign: "right" }}>{haberText}</SPDF.Text> : null} </SPDF.View>
+                            <SPDF.View style={{ width: tableCols.saldo, height: "100%", justifyContent: "center", paddingHorizontal: 3 }}>   <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 7, textAlign: "right" }}>{saldo}</SPDF.Text>  </SPDF.View>
                         </SPDF.View>
                     );
                 })}
@@ -315,87 +290,46 @@ export default class ComprobanteKardexIndividual extends Component {
             }
         });
 
-        const lastItem = items[items.length - 1];
-        saldoFinal = toNumber(lastItem?.saldo);
+        const lastItem = items[items.length - 1] || {};
+        saldoFinal = toNumber(lastItem.saldo);
 
         return (
             <SPDF.View style={{ width: "100%", marginTop: 2 }}>
-                <SPDF.View style={{ width: "100%", height: 22, flexDirection: "row", backgroundColor: "#F3F3F3" }}>
-                    <SPDF.View style={{ width: tableCols.fecha, borderWidth: 1, height: "100%" }} />
-                    <SPDF.View style={{ width: tableCols.tipo, borderWidth: 1, height: "100%" }} />
-                    <SPDF.View style={{ width: tableCols.nro, borderWidth: 1, height: "100%" }} />
-                    <SPDF.View style={{ width: tableCols.detalle, borderWidth: 1, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}>
-                        <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold" }}>TOTALES</SPDF.Text>
+                <SPDF.View style={{ width: "100%", height: 22, flexDirection: "row", }}>
+
+                    <SPDF.View style={{ width: tableCols.fecha + tableCols.tipo + tableCols.nro + tableCols.detalle, height: "100%", justifyContent: "center", alignItems: "flex-end", paddingHorizontal: 4 }}>
+                        <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}>Totales Bs. :</SPDF.Text>
                     </SPDF.View>
-                    <SPDF.View style={{ width: tableCols.debe, borderWidth: 1, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}>
+                    <SPDF.View style={{ width: tableCols.debe, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}>
                         <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}>{SMath.formatMoney(totalDebe)}</SPDF.Text>
                     </SPDF.View>
-                    <SPDF.View style={{ width: tableCols.haber, borderWidth: 1, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}>
+                    <SPDF.View style={{ width: tableCols.haber, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}>
                         <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}>{SMath.formatMoney(totalHaber)}</SPDF.Text>
                     </SPDF.View>
-                    <SPDF.View style={{ width: tableCols.saldo, borderWidth: 1, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}>
+                    <SPDF.View style={{ width: tableCols.saldo, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}>
                         <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}>{SMath.formatMoney(saldoFinal)}</SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
-                {/* <SPDF.View style={{ width: "100%", marginTop: 8 }}>
-                    <SPDF.Text style={{ ...textStyle, fontSize: 9, fontWeight: "bold" }}>
-                        {"Son: "}{SMath.numberToLetter(saldoFinal, { p: "", s: "" }).toLowerCase()}{" 00/100 Bolivianos"}
-                    </SPDF.Text>
-                </SPDF.View> */}
+
             </SPDF.View>
         );
     }
 
-    static FooterRecibo(qr, data) {
-        return (
-            <SPDF.View style={{ width: "100%", alignItems: "center" }}>
-                <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
-                    <SPDF.View style={{ flex: 1, height: 50 }}>
-                        <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>
-                            {"ESTA ORDEN DE COMPRA DOCUMENTA EL PEDIDO REALIZADO. POR FAVOR PROCÉSELA SEGÚN LOS TÉRMINOS ACORDADOS."}
-                        </SPDF.Text>
-                        <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>
-                            {"PARA CONSULTAS, CONTÁCTENOS EN EL TELÉFONO O CORREO INDICADOS EN EL ENCABEZADO."}
-                        </SPDF.Text>
-                        <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>
-                            {"\"ESTE DOCUMENTO NO CONSTITUYE UN COMPROBANTE DE PAGO.\""}
-                        </SPDF.Text>
-                    </SPDF.View>
-                    {qr ? (
-                        <SPDF.Image src={`data:image/png;base64,${qr}`} style={{ width: 70, height: 70 }} />
-                    ) : (
-                        <SPDF.Text style={{ ...textStyle, fontSize: 8, color: 'red' }}>{"QR no disponible"}</SPDF.Text>
-                    )}
-                </SPDF.View>
-                <SPDF.View style={{ width: "100%", alignItems: "center", height: 40 }}>
-                    <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>Visítenos en www.{validarDato(data?.empresa?.razon_social, 'EMPRESA')}.com</SPDF.Text>
-                </SPDF.View>
-            </SPDF.View>
-        );
-    }
 
-    static firmas() {
-        return (
-            <SPDF.View style={{ width: "100%", alignItems: "center", height: 100, flexDirection: "row" }}>
-                <SPDF.View style={{ flex: 1 }} />
-                <SPDF.View style={{ flex: 3, alignItems: "center" }}>
-                    <SPDF.View style={{ width: "100%", height: 0.3, borderWidth: 1 }} />
-                    <SPDF.Text style={{ ...textStyle }}>AUTORIZADO</SPDF.Text>
-                </SPDF.View>
-                <SPDF.View style={{ flex: 1 }} />
-                <SPDF.View style={{ flex: 3, alignItems: "center" }}>
-                    <SPDF.View style={{ width: "100%", height: 0.3, borderWidth: 1 }} />
-                    <SPDF.Text style={{ ...textStyle }}>SOLICITANTE</SPDF.Text>
-                </SPDF.View>
-                <SPDF.View style={{ flex: 1 }} />
-            </SPDF.View>
-        );
-    }
 
-    static pagina() {
+    static pagina(data) {
+        const fechaPie = data?.fecha_fin ? new SDate(data.fecha_fin).toString("dd/MM/yyyy") : new SDate().toString("dd/MM/yyyy");
         return (
-            <SPDF.View style={{ width: "100%", height: 20, alignItems: "center", bottom: 0 }}>
-                <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>1/1</SPDF.Text>
+            <SPDF.View style={{ width: "100%", marginTop: 6 }} backgroundColor="#e72020" >
+                <SPDF.View style={{ width: "100%", height: 1, backgroundColor: "#7F7F7F" }} />
+                <SPDF.View style={{ width: "100%", height: 14, flexDirection: "row", alignItems: "center", paddingHorizontal: 8 }}>
+                    <SPDF.Text style={{ ...textStyle, fontSize: 7, textAlign: "left" }}>{fechaPie}</SPDF.Text>
+                    {/* <SPDF.View style={{ flex: 1 }} /> */}
+                    {/* <SPDF.View style={{ minWidth: 34, borderWidth: 1, borderColor: "#7F7F7F", height: 12, justifyContent: "center", alignItems: "center", paddingHorizontal: 4 }}> */}
+                    <SPDF.Text style={{ ...textStyle, fontSize: 7, textAlign: "right" }}>Pag. 1</SPDF.Text>
+                    {/* </SPDF.View> */}
+                </SPDF.View>
+                <SPDF.View style={{ width: "100%", height: 1, backgroundColor: "#7F7F7F" }} />
             </SPDF.View>
         );
     }
