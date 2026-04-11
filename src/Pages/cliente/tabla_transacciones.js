@@ -332,25 +332,37 @@ export default class TablaTransacciones extends Component {
                 <SHr height={10} />
                 {this.mostrarTabla()}
                 <SHr height={20} />
-                {this.state.saldo > 0 && (
-                    <SView col={'xs-12'} style={{ width: 820, paddingVertical: 12, alignSelf: 'center', borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
-                        <SView row col={'xs-12'} style={{ justifyContent: 'flex-end' }}>
+                <SView col={'xs-12'} style={{ width: 820, paddingVertical: 12, alignSelf: 'center', borderTopWidth: 1, borderColor: STheme.color.lightGray + '66' }}>
+                    <SView row col={'xs-12'} style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
+                        <SView
+                            onPress={() => ComprobanteKardexIndividual.imprimir(this.key, this.state.fecha_inicio, this.state.fecha_fin)}
+                            backgroundColor={STheme.color.card}
+                            style={{ paddingVertical: 12, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.primary || '#1565c0' }}
+                            center
+                        >
+                            <SView row center>
+                                <SIcon name="File" width={16} height={16} fill={STheme.color.primary || '#1565c0'} />
+                                <SView width={6} />
+                                <SText color={STheme.color.primary || '#1565c0'} bold>DESCARGAR PDF</SText>
+                            </SView>
+                        </SView>
+
+                        {this.state.saldo > 0 && (
                             <SView
-                                // onPress={() => this.showVentaPopup()}
-                                onPress={() => ComprobanteKardexIndividual.imprimir(this.key, this.state.fecha_inicio, this.state.fecha_fin)}
+                                onPress={() => this.showVentaPopup()}
                                 backgroundColor={STheme.color.lightGray + '66'}
-                                style={{ padding: 12, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.primary || '#1565c0' }}
+                                style={{ paddingVertical: 12, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.primary || '#1565c0' }}
                                 center
                             >
                                 <SView row center>
                                     <SIconApp name="pagotarjeta" width={16} height={16} fill={STheme.color.text} />
                                     <SView width={6} />
-                                    <SText color={STheme.color.text} bold>Amortizar</SText>
+                                    <SText color={STheme.color.text} bold>AMORTIZAR</SText>
                                 </SView>
                             </SView>
-                        </SView>
+                        )}
                     </SView>
-                )}
+                </SView>
                 <SHr height={20} />
             </SPage>
         );
