@@ -58,7 +58,9 @@ export default class ComprobanteCarta extends Component {
                         {ComprobanteCarta.proveedor(compraVentaData)}
                         {ComprobanteCarta.espacio()}
                         {ComprobanteCarta.detalle(compraVentaData)}
-                        <SPDF.View style={{ width: '100%', height: 30 }}></SPDF.View>
+                    </SPDF.View>
+                    <SPDF.View style={{ width: "100%", paddingBottom: 4 }}>
+                        <SPDF.View style={{ width: '100%', height: 10 }}></SPDF.View>
                         {ComprobanteCarta.firmas()}
                     </SPDF.View>
                 </SPDF.Page>
@@ -198,37 +200,37 @@ export default class ComprobanteCarta extends Component {
     static detalleHeader() {
         return (
             <SPDF.View style={{ width: "100%", height: 24, flexDirection: "row", backgroundColor: "#D0D0D0" }}>
-                <SPDF.View style={{ flex: 1, borderWidth: 0.6, borderColor: tableBorderColor, height: "100%", justifyContent: "center", padding: 4 }}>
+                <SPDF.View style={{ flex: 1, borderWidth: 1, borderColor: "#555555", height: "100%", justifyContent: "center", padding: 4 }}>
                     <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}>
                         {"CODIGO"}
                     </SPDF.Text>
                 </SPDF.View>
-                <SPDF.View style={{ flex: 1, borderWidth: 0.6, borderColor: tableBorderColor, height: "100%", justifyContent: "center", padding: 4 }}>
+                <SPDF.View style={{ flex: 1, borderWidth: 1, borderColor: "#555555", height: "100%", justifyContent: "center", padding: 4 }}>
                     <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}>
                         {"CANT."}
                     </SPDF.Text>
                 </SPDF.View>
-                <SPDF.View style={{ flex: 1, borderWidth: 0.6, borderColor: tableBorderColor, height: "100%", justifyContent: "center", padding: 4 }}>
+                <SPDF.View style={{ flex: 1, borderWidth: 1, borderColor: "#555555", height: "100%", justifyContent: "center", padding: 4 }}>
                     <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}>
                         {"UNIDAD"}
                     </SPDF.Text>
                 </SPDF.View>
-                <SPDF.View style={{ flex: 3, borderWidth: 0.6, borderColor: tableBorderColor, height: "100%", justifyContent: "center", padding: 4 }}>
+                <SPDF.View style={{ flex: 3, borderWidth: 1, borderColor: "#555555", height: "100%", justifyContent: "center", padding: 4 }}>
                     <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}>
                         {"DESCRIPCION"}
                     </SPDF.Text>
                 </SPDF.View>
-                <SPDF.View style={{ flex: 1, borderWidth: 0.6, borderColor: tableBorderColor, height: "100%", justifyContent: "center", padding: 4 }}>
+                <SPDF.View style={{ flex: 1, borderWidth: 1, borderColor: "#555555", height: "100%", justifyContent: "center", padding: 4 }}>
                     <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}>
                         {"P. UNIT."}
                     </SPDF.Text>
                 </SPDF.View>
-                <SPDF.View style={{ flex: 1, borderWidth: 0.6, borderColor: tableBorderColor, height: "100%", justifyContent: "center", padding: 4 }}>
+                <SPDF.View style={{ flex: 1, borderWidth: 1, borderColor: "#555555", height: "100%", justifyContent: "center", padding: 4 }}>
                     <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}>
                         {"DESC."}
                     </SPDF.Text>
                 </SPDF.View>
-                <SPDF.View style={{ flex: 1, borderWidth: 0.6, borderColor: tableBorderColor, height: "100%", justifyContent: "center", padding: 4 }}>
+                <SPDF.View style={{ flex: 1, borderWidth: 1, borderColor: "#555555", height: "100%", justifyContent: "center", padding: 4 }}>
                     <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}>
                         {"SUBTOTAL"}
                     </SPDF.Text>
@@ -248,25 +250,25 @@ export default class ComprobanteCarta extends Component {
                     const codigo = (item?.key ? String(item.key) : String(i + 1)).slice(0, 8);
                     return (
                         <SPDF.View key={i} style={{ width: "100%", minHeight: 20, flexDirection: "row" }}>
-                            <SPDF.View style={{ flex: 1, borderWidth: 0.6, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 3 }}>
+                            <SPDF.View style={{ flex: 1, borderWidth: 1, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 4 }}>
                                 <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, textAlign: "center" }}>{codigo}</SPDF.Text>
                             </SPDF.View>
-                            <SPDF.View style={{ flex: 1, borderWidth: 0.6, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 3 }}>
+                            <SPDF.View style={{ flex: 1, borderWidth: 1, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 4 }}>
                                 <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, textAlign: "center" }}>{cantidad.toFixed(2)}</SPDF.Text>
                             </SPDF.View>
-                            <SPDF.View style={{ flex: 1, borderWidth: 0.6, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 3 }}>
+                            <SPDF.View style={{ flex: 1, borderWidth: 1, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 4 }}>
                                 <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, textAlign: "center" }}>{"UNIDAD"}</SPDF.Text>
                             </SPDF.View>
-                            <SPDF.View style={{ flex: 3, borderWidth: 0.6, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 4 }}>
+                            <SPDF.View style={{ flex: 3, borderWidth: 1, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 4 }}>
                                 <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8 }}>{item.descripcion}</SPDF.Text>
                             </SPDF.View>
-                            <SPDF.View style={{ flex: 1, borderWidth: 0.6, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 3 }}>
+                            <SPDF.View style={{ flex: 1, borderWidth: 1, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 4 }}>
                                 <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, textAlign: "right" }}>{precio.toFixed(2)}</SPDF.Text>
                             </SPDF.View>
-                            <SPDF.View style={{ flex: 1, borderWidth: 0.6, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 3 }}>
+                            <SPDF.View style={{ flex: 1, borderWidth: 1, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 4 }}>
                                 <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, textAlign: "right" }}>{descuentoItem.toFixed(2)}</SPDF.Text>
                             </SPDF.View>
-                            <SPDF.View style={{ flex: 1, borderWidth: 0.6, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 3 }}>
+                            <SPDF.View style={{ flex: 1, borderWidth: 1, borderColor: tableBorderColor, minHeight: "100%", justifyContent: "center", padding: 4 }}>
                                 <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, textAlign: "right" }}>{subtotalItem.toFixed(2)}</SPDF.Text>
                             </SPDF.View>
                         </SPDF.View>
@@ -293,8 +295,8 @@ export default class ComprobanteCarta extends Component {
         const montoPagado = toNumber(data?.monto_pagado);
         const cambio = montoPagado - total;
         return (
-            <SPDF.View style={{ width: "100%", height: 88, flexDirection: "row", borderWidth: 0.6, borderColor: tableBorderColor }}>
-                <SPDF.View style={{ flex: 6, height: "100%", justifyContent: "flex-end", borderRightWidth: 0.6, borderColor: tableBorderColor, padding: 6 }}>
+            <SPDF.View style={{ width: "100%", height: 88, flexDirection: "row", }}>
+                <SPDF.View style={{ flex: 6, height: "100%", justifyContent: "flex-end", padding: 6 }}>
                     <SPDF.View style={{ width: "100%" }}>
                         <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold" }}>
                             {"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{"00/100 Bolivianos"}
@@ -318,8 +320,8 @@ export default class ComprobanteCarta extends Component {
 
     static renderTotalesDetalle({ label, monto }) {
         return (
-            <SPDF.View style={{ width: "100%", flexDirection: "row", height: 12, borderBottomWidth: 0.6, borderColor: tableBorderColor }}>
-                <SPDF.View style={{ flex: 2, height: "100%", borderRightWidth: 0.6, borderColor: tableBorderColor, justifyContent: "center", paddingHorizontal: 4 }}>
+            <SPDF.View style={{ width: "100%", flexDirection: "row", height: 12, borderBottomWidth: 1, borderColor: tableBorderColor }}>
+                <SPDF.View style={{ flex: 2, height: "100%", borderRightWidth: 1, borderColor: tableBorderColor, justifyContent: "center", paddingHorizontal: 4 }}>
                     <SPDF.Text style={{ ...textStyle, fontSize: 6 }}>{label}</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ flex: 1, height: "100%", justifyContent: "center", paddingHorizontal: 4 }}>
@@ -351,7 +353,7 @@ export default class ComprobanteCarta extends Component {
     static pagina() {
         return (
             <SPDF.View style={{ width: "100%", height: 20, alignItems: "center", bottom: 0 }}>
-                <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>1/1</SPDF.Text>
+                <SPDF.Text style={{ ...textStyle, fontSize: 7, }}>{"${current_page}/${cant_page}"}</SPDF.Text>
             </SPDF.View>
         );
     }
