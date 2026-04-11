@@ -307,7 +307,7 @@ export default class TablaTransacciones extends Component {
 
     render() {
         const { cliente } = this.state;
-        const clienteNombre = `${cliente?.nombres || ''} ${cliente?.apellidos || ''}` || '-';
+        const clienteNombre = `${cliente?.nombres || ''} ${cliente?.apellidos || ''}`|| '-';
         return (
             <SPage title="Kardex Individual" disableScroll>
                 <SView row col={"xs-12"}>
@@ -326,8 +326,8 @@ export default class TablaTransacciones extends Component {
                         </SView>
                     </SView>
                     <SHr /><SHr height={10} />
-                    <SView col={"xs-12"} row style={{ justifyContent: 'center' }}>
-                        <SText fontSize={15} style={{ textAlign: 'left' }}>CLIENTE: {clienteNombre}</SText>
+                    <SView col={"xs-12"} row border={"transparent"} style={{ justifyContent: 'center' }}>
+                        <SText fontSize={15} style={{ textAlign: 'center' }}>CLIENTE: {clienteNombre}</SText>
                     </SView>
                 </SView>
                 <SHr height={10} />
