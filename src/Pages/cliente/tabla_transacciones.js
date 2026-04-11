@@ -337,7 +337,7 @@ export default class TablaTransacciones extends Component {
                         <SView row col={'xs-12'} style={{ justifyContent: 'flex-end' }}>
                             <SView
                                 // onPress={() => this.showVentaPopup()}
-                                onPress={() => ComprobanteKardexIndividual.imprimir(this.key)}
+                                onPress={() => ComprobanteKardexIndividual.imprimir(this.key, this.state.fecha_inicio, this.state.fecha_fin)}
                                 backgroundColor={STheme.color.lightGray + '66'}
                                 style={{ padding: 12, borderRadius: 8, borderWidth: 1, borderColor: STheme.color.primary || '#1565c0' }}
                                 center

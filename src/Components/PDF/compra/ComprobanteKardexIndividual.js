@@ -12,7 +12,11 @@ const formatCurrency = (val) => `${toNumber(val).toFixed(2)} Bs`;
 export default class ComprobanteKardexIndividual extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            fecha_inicio: new SDate().toString("yyyy-MM-dd"),
+            fecha_fin: new SDate().toString("yyyy-MM-dd"),
+            saldo: 0,
+        };
     }
 
 
@@ -26,9 +30,12 @@ export default class ComprobanteKardexIndividual extends Component {
             }
 
             // Fechas por defecto
-            // const fecha_inicio_total = "2024-01-01";
             const fecha_inicio_real = fechaInicio || new SDate().toString("yyyy-MM-dd");
             const fecha_fin_real = fechaFin || new SDate().toString("yyyy-MM-dd");
+
+            console.clear();
+            console.log("%c" + fecha_inicio_real, `color: #2ECC40; font-weight: bold;`);
+            console.log("%c" + fecha_fin_real, `color: #2ECC40; font-weight: bold;`);
 
             // Obtener datos del cliente y sus ventas
             const [ventas, cliente, cuotas] = await Promise.all([
@@ -55,6 +62,11 @@ export default class ComprobanteKardexIndividual extends Component {
             const usuariosMap = Object.fromEntries((usuarios || []).map(u => [u.key, u]));
             const almacenesMap = Object.fromEntries((almacenes || []).map(a => [a.key, a]));
 
+
+            // MDL.sucursales
+            // MDL.usuario.session.
+
+            // MDL.usuario.session?.key,
             // Enriquecer ventas
             let saldoAcumulado = 0;
             let ventasEnriquecidas = ventas.map(v => {
@@ -63,14 +75,60 @@ export default class ComprobanteKardexIndividual extends Component {
                 saldoAcumulado += (debe - haber);
                 return {
                     ...v,
-                    moneda: monedasMap[v?.key_moneda] || {},
-                    sucursal: sucursalesMap[v?.key_sucursal] || {},
-                    usuario: usuariosMap[v?.key_usuario] || {},
-                    almacen: almacenesMap[v?.key_almacen] || {},
-                    cliente: cliente || {},
                     saldo: saldoAcumulado
                 };
             });
+
+            // Calcular saldo anterior
+            let saldoAnterior = 0;
+            ventasEnriquecidas.forEach(item => {
+                const fechaItem = new SDate(item.fecha_on).toString("yyyy-MM-dd");
+                if (fechaItem < fecha_inicio_real) {
+                    saldoAnterior = item.saldo;
+                }
+            });
+
+            // Filtrar ventas por rango de fechas
+            let ventasFiltradas = ventasEnriquecidas.filter(item => {
+                const fechaItem = new SDate(item.fecha_on).toString("yyyy-MM-dd");
+                return fechaItem >= fecha_inicio_real && fechaItem <= fecha_fin_real;
+            });
+
+            // Agregar saldo anterior si existe
+            const moneda = ventasEnriquecidas[0]?.moneda || empresa.monedas[0] || {};
+            if (saldoAnterior !== 0) {
+                ventasFiltradas = [
+                    {
+                        key: `saldo_anterior_${new Date().getTime()}`,
+                        fecha_on: "",
+                        tipo: "saldo",
+                        descripcion: "Saldo anterior",
+                        debe: 0,
+                        haber: 0,
+                        saldo: saldoAnterior,
+                        moneda,
+                        sucursal: {},
+                        usuario: {},
+                        almacen: {},
+                        cliente: cliente || {}
+                    },
+                    ...ventasFiltradas
+                ];
+            }
+
+            const compraVentaData = {
+                cliente: cliente || {},
+                cajero: MDL.usuario.session || {},
+                empresa: empresa || {},
+                moneda: empresa.monedas[0] || {},
+                detalle: [...ventasFiltradas],
+                fecha_inicio: fecha_inicio_real,
+                fecha_fin: fecha_fin_real
+            };
+            // console.clear();
+            // console.log("%c" + JSON.stringify(empresa, null, 2), "color: #e6c510; font-weight: bold;");
+            // console.log("%c" + JSON.stringify(compraVentaData, null, 2), "color: #e6c510; font-weight: bold;");
+
 
             //    {
             //         key: 'PINT-001',
@@ -82,15 +140,15 @@ export default class ComprobanteKardexIndividual extends Component {
             SPDF.create(
                 <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}>
                     <SPDF.View style={{ width: "100%" }}>
-                        {/* {ComprobanteKardexIndividual.HeaderRecibo(ventasEnriquecidas)} */}
+                        {ComprobanteKardexIndividual.HeaderRecibo(compraVentaData)}
                         {ComprobanteKardexIndividual.espacio()}
-                        {/* {ComprobanteKardexIndividual.proveedor(ventasEnriquecidas)} */}
+                        {ComprobanteKardexIndividual.proveedor(compraVentaData)}
                         {ComprobanteKardexIndividual.espacio()}
-                        {ComprobanteKardexIndividual.detalle(ventasEnriquecidas)}
+                        {ComprobanteKardexIndividual.detalle(compraVentaData)}
                         {ComprobanteKardexIndividual.espacio()}
                         <SPDF.View style={{ width: '100%', height: 70 }}></SPDF.View>.
-                        {ComprobanteKardexIndividual.firmas()}
-                        {ComprobanteKardexIndividual.espacio()}
+                        {/* {ComprobanteKardexIndividual.firmas()} */}
+                        {/* {ComprobanteKardexIndividual.espacio()} */}
                         {/* {ComprobanteKardexIndividual.FooterRecibo(dataQR?.data?.b64, data)} */}
                         {ComprobanteKardexIndividual.espacio()}
                         {ComprobanteKardexIndividual.pagina()}
@@ -137,14 +195,17 @@ export default class ComprobanteKardexIndividual extends Component {
     }
 
     static HeaderRecibo(data) {
+
+
+
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row", height: 110, alignItems: "center" }}>
                 <SPDF.View style={{ flex: 3, alignItems: "center" }}>
                     <SPDF.Image src={`${SSocket.api.empresa}empresa/${data?.empresa?.key}`} style={{ width: 100, height: 50 }} />
-                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{validarDato(data?.empresa?.razon_social, 'MI EMPRESA')}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>Empresa: {validarDato(data?.empresa?.razon_social, 'MI EMPRESA')}</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle }}>Sucursal: {validarDato(data?.sucursal?.descripcion, 'Mi Sucursal')}</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle, alignItems: "center" }}>No. Punto de Venta {validarDato(data?.venta, '1')}</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle }}>{validarDato(data?.sucursal?.direccion, 'Av. Sur Nro. 0')}</SPDF.Text>
+                    {/* <SPDF.Text style={{ ...textStyle, alignItems: "center" }}>No. Punto de Venta {validarDato(data?.venta, '1')}</SPDF.Text> */}
+                    {/* <SPDF.Text style={{ ...textStyle }}>{validarDato(data?.sucursal?.direccion, 'Av. Sur Nro. 0')}</SPDF.Text> */}
                     <SPDF.Text style={{ ...textStyle }}>Teléfono: {validarDato(data?.sucursal?.telefono, 'Tel: (123) 00000000')}</SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ flex: 2 }} />
@@ -165,12 +226,15 @@ export default class ComprobanteKardexIndividual extends Component {
     }
 
     static proveedor(data) {
-        const proveedor = data?.proveedor || {};
+        const cajero = data?.cajero || {};
+        const _fecha_inicio = data?.fecha_inicio || '';
+        const _fecha_fin = data?.fecha_fin || '';
         return (
             <SPDF.View style={{ width: "100%", alignItems: "center", height: 80 }}>
                 <SPDF.View style={{ width: "100%", alignItems: "center" }}>
-                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold", fontSize: 16 }}>{"ORDEN DE COMPRA"}</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle, fontSize: 10 }}>{"(COMPROBANTE DE PAGO COMPRADO)"}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold", fontSize: 16 }}>{"Kardex Individual"}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, fontSize: 10 }}>{"Del "} {_fecha_inicio} {" hasta "}  {_fecha_fin} </SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, fontSize: 10 }}>{"(Expresado en "} {data.moneda.descripcion}s{")"}  </SPDF.Text>
                 </SPDF.View>
                 <SPDF.View style={{ width: "100%", height: 12 }} />
                 <SPDF.View style={{ width: "100%", alignItems: "center", flexDirection: "row" }}>
@@ -179,14 +243,14 @@ export default class ComprobanteKardexIndividual extends Component {
                     <SPDF.View style={{ flex: 1, alignItems: "center", height: "100%" }}>
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
                             <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
-                                {"FECHA: "}
+                                {"deudor: "}
                             </SPDF.Text>
-                            <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {new SDate(data?.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("dd/MM/yyyy")?.toUpperCase() || 'Sin fecha'}
-                            </SPDF.Text>
+                            <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}> {cajero.Nombres} {cajero.Apellidos} </SPDF.Text>
                         </SPDF.View>
+
                         <SPDF.View style={{ height: 4 }} />
-                        <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
+
+                        {/* <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
                             <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
                                 {"COD. PROVEEDOR:"}
                             </SPDF.Text>
@@ -202,91 +266,52 @@ export default class ComprobanteKardexIndividual extends Component {
                             <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
                                 {validarDato(data?.tipo_pago?.toUpperCase(), 'S/D')}
                             </SPDF.Text>
-                        </SPDF.View>
+                        </SPDF.View> */}
                     </SPDF.View>
-                    <SPDF.View style={{ flex: 3 }} />
-                    <SPDF.View style={{ flex: 3, alignItems: "center", height: "100%" }}>
-                        <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
-                            <SPDF.Text style={{ ...textStyle, width: 95, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
-                                {"NIT:"}
-                            </SPDF.Text>
-                            <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {validarDato(proveedor?.nit, '0')}
-                            </SPDF.Text>
-                        </SPDF.View>
-                        <SPDF.View style={{ height: 4 }} />
-                        <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
-                            <SPDF.Text style={{ ...textStyle, width: 95, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
-                                {"PROVEEDOR:"}
-                            </SPDF.Text>
-                            <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {validarDato(proveedor?.razon_social?.toUpperCase(), 'S/N')}
-                            </SPDF.Text>
-                        </SPDF.View>
-                        <SPDF.View style={{ height: 4 }} />
-                        <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
-                            <SPDF.Text style={{ ...textStyle, width: 95, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
-                                {"CONTACTO:"}
-                            </SPDF.Text>
-                            <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
-                                {validarDato(proveedor?.telefono, '+591 00000000')}
-                            </SPDF.Text>
-                        </SPDF.View>
-                    </SPDF.View>
+
+
+
+
+
                 </SPDF.View>
             </SPDF.View>
         );
     }
 
     static detalle(data) {
-        const detalles = data?.detalle || {};
-        const items = data
-        // const items = Object.values(detalles).length
-        // ? Object.values(detalles)
-        // : [
-        //     {
-        //         key: 'PINT-001',
-        //         descripcion: 'Bote de Pintura Acrílica, Blanco Mate, 5 Litros',
-        //         cantidad: 1,
-        //         precio_unitario: 25.0,
-        //     },
-        // ];
-
-        console.clear();
-        console.log("%c" + JSON.stringify(data, null, 2), "color: #ab14e7; font-weight: bold;");
+        // const detalles = data?.detalle || {};
+        const items = data?.detalle;
+        // console.clear();
+        // console.log("%c" + JSON.stringify(data, null, 2), "color: #ab14e7; font-weight: bold;");
         return (
             <SPDF.View style={{ width: "100%" }}>
                 <SPDF.View style={{ width: "100%", height: 22, flexDirection: "row", backgroundColor: "#D0D0D0" }}>
 
-                    <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}> {"FECHA"} </SPDF.Text> </SPDF.View>
-                    <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}> {"TIPO"} </SPDF.Text> </SPDF.View>
-                    <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}> {"NRO"} </SPDF.Text> </SPDF.View>
-
+                    <SPDF.View style={{ width: 60, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: 50, fontSize: 8, fontWeight: "bold", alignItems: "center" }}> {"FECHA"} </SPDF.Text> </SPDF.View>
+                    <SPDF.View style={{ width: 32, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: 50, fontSize: 8, fontWeight: "bold", alignItems: "center" }}> {"TIPO"} </SPDF.Text> </SPDF.View>
+                    <SPDF.View style={{ width: 32, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: 50, fontSize: 8, fontWeight: "bold", alignItems: "center" }}> {"NRO"} </SPDF.Text> </SPDF.View>
                     <SPDF.View style={{ flex: 3, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}> {"DESCRIPCION"} </SPDF.Text> </SPDF.View>
-
                     <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}> {"DEBE"} </SPDF.Text> </SPDF.View>
                     <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}> {"HABER"} </SPDF.Text> </SPDF.View>
-                    <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}> {"SALDO"} </SPDF.Text> </SPDF.View>
+                    <SPDF.View style={{ width: 50, borderWidth: 1, height: "100%", justifyContent: "center", padding: 4 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", alignItems: "center" }}> {"SALDO"} </SPDF.Text> </SPDF.View>
 
 
                 </SPDF.View>
                 {items.map((item, i) => {
-                    const debe = toNumber(item.debe);
-                    const haber = toNumber(item.haber);
-                    const saldo = toNumber(item.saldo);
+                    const debe = SMath.formatMoney(item.debe);
+                    const haber = SMath.formatMoney(item.haber);
+                    const saldo = SMath.formatMoney(item.saldo);
                     const fecha = new SDate(item.fecha_on).toString("yyyy-MM-dd");
 
                     return (
                         <SPDF.View key={i} style={{ width: "100%", height: 20, flexDirection: "row" }}>
-                            <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center" }}>{fecha}</SPDF.Text> </SPDF.View>
-                            <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center" }}>{"cuota"}</SPDF.Text> </SPDF.View>
-                            <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center" }}>{item.key || (i + 1)}</SPDF.Text> </SPDF.View>
-
+                            <SPDF.View style={{ width: 60, borderWidth: 1, height: "100%", justifyContent: "center", }}> <SPDF.Text style={{ ...textStyle, width: 50, fontSize: 8, alignItems: "center" }}>{fecha}</SPDF.Text> </SPDF.View>
+                            <SPDF.View style={{ width: 32, borderWidth: 1, height: "100%", justifyContent: "center", }}> <SPDF.Text style={{ ...textStyle, width: 50, fontSize: 8, alignItems: "center" }}>{"cuota"}</SPDF.Text> </SPDF.View>
+                            <SPDF.View style={{ width: 32, borderWidth: 1, height: "100%", justifyContent: "center", }}> <SPDF.Text style={{ ...textStyle, width: 50, fontSize: 8, alignItems: "center" }}>{item.key || (i + 1)}</SPDF.Text> </SPDF.View>
                             <SPDF.View style={{ flex: 3, borderWidth: 1, height: "100%", justifyContent: "center", }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, alignItems: "center" }}>{item.descripcion}</SPDF.Text> </SPDF.View>
-
-                            <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row" }}> <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{SMath.formatMoney(debe)}</SPDF.Text> </SPDF.View>
-                            <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row" }}> <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{parseFloat(haber).toFixed(2)}</SPDF.Text> </SPDF.View>
-                            <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row" }}> <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{parseFloat(saldo).toFixed(2)}</SPDF.Text> </SPDF.View>
+                            <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row" }}> <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{debe}</SPDF.Text> </SPDF.View>
+                            <SPDF.View style={{ flex: 1, borderWidth: 1, height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row" }}> <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{haber}</SPDF.Text> </SPDF.View>
+                            <SPDF.View style={{ width: 50, borderWidth: 1, height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row" }}> <SPDF.Text style={{ ...textStyle, fontSize: 8 }}>{saldo}</SPDF.Text> </SPDF.View>
                         </SPDF.View>
                     );
                 })}
@@ -296,35 +321,37 @@ export default class ComprobanteKardexIndividual extends Component {
     }
 
     static subtotales(data) {
-        const detalles = data?.detalle || {};
-        const items = Object.values(detalles);
-        let subtotal = 0;
-        for (const item of items) {
-            subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
-        }
-        const descuento = toNumber(data?.descuento);
-        const montoGiftCard = toNumber(data?.monto_gift_card);
-        const total = subtotal - descuento - montoGiftCard;
-        const montoPagado = toNumber(data?.monto_pagado);
-        const cambio = montoPagado - total;
+        // Para Kardex Individual: sumar debe, haber y mostrar saldo final
+        const items = data?.detalle || [];
+        let totalDebe = 0;
+        let totalHaber = 0;
+        let saldoFinal = 0;
+
+        items.forEach(item => {
+            if (item.tipo !== "saldo") {  // No contar el saldo anterior en los totales
+                totalDebe += toNumber(item.debe);
+                totalHaber += toNumber(item.haber);
+            }
+        });
+
+        // El saldo final es el último item
+        const lastItem = items[items.length - 1];
+        saldoFinal = toNumber(lastItem?.saldo);
+
         return (
-            <SPDF.View style={{ width: "100%", height: 120, flexDirection: "row" }}>
+            <SPDF.View style={{ width: "100%", height: 80, flexDirection: "row" }}>
                 <SPDF.View style={{ flex: 6, height: "100%", justifyContent: "center" }}>
                     <SPDF.View style={{ width: "100%", height: "100%" }}>
                         <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 9, fontWeight: "bold" }}>
-                            {"Son: "}{SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}{"00/100 Bolivianos"}
+                            {"Saldo Final: "}{SMath.numberToLetter(saldoFinal, { p: "", s: "" }).toLowerCase()}{"00/100 Bolivianos"}
                         </SPDF.Text>
                     </SPDF.View>
                 </SPDF.View>
                 <SPDF.View style={{ flex: 3, height: "100%", justifyContent: "center", alignItems: "center" }}>
                     <SPDF.View style={{ width: "100%", height: "100%" }}>
-                        {ComprobanteKardexIndividual.renderTotalesDetalle({ label: "SUBTOTAL Bs", monto: formatCurrency(subtotal) })}
-                        {ComprobanteKardexIndividual.renderTotalesDetalle({ label: "DESCUENTO Bs", monto: formatCurrency(descuento) })}
-                        {ComprobanteKardexIndividual.renderTotalesDetalle({ label: "MONTO GIFT CARD Bs", monto: formatCurrency(montoGiftCard) })}
-                        {ComprobanteKardexIndividual.renderTotalesDetalle({ label: "TOTAL Bs", monto: formatCurrency(total) })}
-                        {ComprobanteKardexIndividual.renderTotalesDetalle({ label: "MONTO A PAGAR Bs", monto: formatCurrency(total) })}
-                        {ComprobanteKardexIndividual.renderTotalesDetalle({ label: "MONTO PAGADO Bs", monto: formatCurrency(montoPagado) })}
-                        {ComprobanteKardexIndividual.renderTotalesDetalle({ label: "CAMBIO Bs", monto: formatCurrency(cambio >= 0 ? cambio : 0) })}
+                        {ComprobanteKardexIndividual.renderTotalesDetalle({ label: "TOTAL DEBE Bs", monto: formatCurrency(totalDebe) })}
+                        {ComprobanteKardexIndividual.renderTotalesDetalle({ label: "TOTAL HABER Bs", monto: formatCurrency(totalHaber) })}
+                        {ComprobanteKardexIndividual.renderTotalesDetalle({ label: "SALDO FINAL Bs", monto: formatCurrency(saldoFinal) })}
                     </SPDF.View>
                 </SPDF.View>
             </SPDF.View>
