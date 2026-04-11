@@ -144,20 +144,17 @@ export default class ComprobanteKardexIndividual extends Component {
             console.clear();
             console.log("%c" + JSON.stringify(compraVentaData, null, 2), "color: #2ECC40; font-weight: bold;");
             SPDF.create(
-                <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}>
-                    <SPDF.View style={{ width: "100%" }}>
-                        {ComprobanteKardexIndividual.HeaderRecibo(compraVentaData)}
-                        {ComprobanteKardexIndividual.espacio()}
-                        {ComprobanteKardexIndividual.TituloKardex(compraVentaData)}
-                        {ComprobanteKardexIndividual.proveedor(compraVentaData)}
-                        {ComprobanteKardexIndividual.espacio()}
-                        {ComprobanteKardexIndividual.detalle(compraVentaData)}
-                        {ComprobanteKardexIndividual.espacio()}
-                        <SPDF.View style={{ width: '100%', height: 16 }} />
+                <SPDF.Page style={{ width: 612, height: 791, margin: 12, padding: 8 }}
+                    footer={this.pagina()}
+                >
+                    {ComprobanteKardexIndividual.HeaderRecibo(compraVentaData)}
+                    {ComprobanteKardexIndividual.espacio()}
+                    {ComprobanteKardexIndividual.TituloKardex(compraVentaData)}
+                    {ComprobanteKardexIndividual.espacio()}
+                    {ComprobanteKardexIndividual.proveedor(compraVentaData)}
+                    {ComprobanteKardexIndividual.espacio()}
+                    {ComprobanteKardexIndividual.detalle(compraVentaData)}
 
-                        {ComprobanteKardexIndividual.espacio()}
-                        {ComprobanteKardexIndividual.pagina(compraVentaData)}
-                    </SPDF.View>
                 </SPDF.Page>
             );
 
@@ -171,7 +168,7 @@ export default class ComprobanteKardexIndividual extends Component {
 
 
     static espacio() {
-        return <SPDF.View style={{ width: "100%", height: 16 }} />;
+        return <SPDF.View style={{ width: "100%", height: 8 }} />;
     }
 
     static HeaderRecibo(data) {
