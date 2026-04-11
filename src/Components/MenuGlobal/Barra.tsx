@@ -195,6 +195,7 @@ export default class Barra extends React.Component {
                     >
                         <Page label={"Icons"} url={"/icons"} />
                         <Page label={"Configurar íconos"} url={"/empresa/configIcon"} permiso={"edit"} permiso_url="/empresa/configIcon" />
+                         <Page label={"Recharts"} url={"/recharts"} />
                         <Page label={"Test"} url={"/test"} />
                         <Page label={"Test2"} url={"/test2"} />
                         <Page label={"Caja history"} url={"/caja/history"} />

@@ -11,6 +11,7 @@ import tabla_ventas_mes from "./tabla_ventas_mes";
 import tabla_compras_dia from "./tabla_compras_dia";
 import tabla_compras_mes from "./tabla_compras_mes";
 import tabla_productos_dia from "./tabla_productos_dia";
+import ricky from "./ricky";
 
 export default SPage.combinePages("tableros", {
    "": tabla_venta,
@@ -24,8 +25,8 @@ export default SPage.combinePages("tableros", {
    "tabla_compras_dia": tabla_compras_dia,
    "tabla_compras_mes": tabla_compras_mes,
    "tabla_alvaro2": tabla_alvaro2,
-   "tabla_productos_dia": tabla_productos_dia
-
+   "tabla_productos_dia": tabla_productos_dia,
+   "ricky":ricky
 
 
 
