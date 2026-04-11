@@ -207,7 +207,7 @@ export default class ComprobanteKardexIndividual extends Component {
         const fechaInicio = formatFechaES(data?.fecha_inicio);
         const fechaFin = formatFechaES(data?.fecha_fin);
         return (
-            <SPDF.View style={{ width: "100%", alignItems: "center", marginBottom: 12 }}>
+            <SPDF.View style={{ width: "100%", alignItems: "center", }}>
                 <SPDF.Text style={{ ...headerStyle }}>KARDEX INDIVIDUAL</SPDF.Text>
                 <SPDF.Text style={{ ...textStyle, fontSize: 9 }}>Del {fechaInicio} al {fechaFin}</SPDF.Text>
                 <SPDF.Text style={{ ...textStyle, fontSize: 9 }}>Expresado en {data?.moneda?.descripcion || 'Bs.'}</SPDF.Text>
@@ -220,16 +220,14 @@ export default class ComprobanteKardexIndividual extends Component {
         const cliente = data?.cliente || {};
         return (
             <SPDF.View style={{ width: "100%", alignItems: "center", flexDirection: "row" }}>
-                <SPDF.View style={{ flex: 1, alignItems: "center", height: "100%" }}>
-                    <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
-                        <SPDF.Text style={{ ...textStyle, fontSize: 10, fontWeight: "bold" }}>Deudor: </SPDF.Text>
-                        <SPDF.Text style={{ ...textStyle, fontSize: 10 }}>
-                            {validarDato(cliente?.nombres, '')} {validarDato(cliente?.apellidos, '')}
-                        </SPDF.Text>
-                    </SPDF.View>
-                    <SPDF.View style={{ width: "100%", height: 8 }} />
-                    <SPDF.View style={{ width: "100%", height: 1, backgroundColor: "#666" }} />
-                </SPDF.View>
+                {/* <SPDF.View style={{ flex: 1, alignItems: "center", height: "100%" }}> */}
+                {/* <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}> */}
+                <SPDF.Text style={{ ...textStyle, fontSize: 10, fontWeight: "bold" }}>Deudor: </SPDF.Text>
+                <SPDF.Text style={{ ...textStyle, fontSize: 10 }}> {validarDato(cliente?.nombres, '')} {validarDato(cliente?.apellidos, '')} </SPDF.Text>
+                {/* </SPDF.View> */}
+                {/* <SPDF.View style={{ width: "100%", height: 8 }} /> */}
+                {/* <SPDF.View style={{ width: "100%", height: 1, backgroundColor: "#666" }} /> */}
+                {/* </SPDF.View> */}
             </SPDF.View>
         );
     }
@@ -239,13 +237,13 @@ export default class ComprobanteKardexIndividual extends Component {
         return (
             // <SPDF.View style={{ width: "100%" }}>
             <SPDF.View style={{ width: "100%", height: 22, flexDirection: "row", backgroundColor: "#D0D0D0" }}>
-                <SPDF.View style={{ width: tableCols.fecha, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}> {"Fecha"} </SPDF.Text> </SPDF.View>
+                <SPDF.View style={{ width: tableCols.fecha, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}> {"Fecha"} </SPDF.Text> </SPDF.View>
                 <SPDF.View style={{ width: tableCols.tipo, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}> {"Tipo"} </SPDF.Text> </SPDF.View>
                 <SPDF.View style={{ width: tableCols.nro, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "center" }}> {"Nro."} </SPDF.Text> </SPDF.View>
                 <SPDF.View style={{ width: tableCols.detalle, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold" }}> {"Detalle"} </SPDF.Text> </SPDF.View>
                 <SPDF.View style={{ width: tableCols.debe, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}> {"Debe"} </SPDF.Text> </SPDF.View>
                 <SPDF.View style={{ width: tableCols.haber, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}> {"Haber"} </SPDF.Text> </SPDF.View>
-                <SPDF.View style={{ width: tableCols.saldo, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", padding: 3 }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}> {"Saldo"} </SPDF.Text> </SPDF.View>
+                <SPDF.View style={{ width: tableCols.saldo, borderWidth: 1, borderColor: "#7F7F7F", height: "100%", justifyContent: "center", }}> <SPDF.Text style={{ ...textStyle, width: "100%", fontSize: 8, fontWeight: "bold", textAlign: "right" }}> {"Saldo"} </SPDF.Text> </SPDF.View>
             </SPDF.View>
             // </SPDF.View>
         );
