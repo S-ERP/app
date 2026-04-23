@@ -27,7 +27,7 @@ export default class Cliente extends Component {
     seleccionarCliente() {
         SNavigation.navigate("/cliente", {
             onSelect: (obj) => {
-
+                console.log("Cliente seleccionado:", obj);
                 this.data.cliente = obj;
                 this.data.key_cliente = obj.key;
                 SNavigation.goBack();
@@ -35,10 +35,21 @@ export default class Cliente extends Component {
                     data: this.data,
                     key_usuario: Model.usuario.Action.getKey()
                 }).then((resp) => {
+                    console.log("RELOAD 1")
+                    this.componentDidMount();
+                    this.props.onReload();
 
                     console.log("Se agregó el cliente con éxito")
                 })
             }
+
+
+            //  onReload: () => {
+            //     console.log("RELOAD 1")
+            //     this.componentDidMount();
+            //     this.props.onReload();
+            //     SPopup.close("PopupCliente");
+            // }
         })
     }
     seleccionarSucursal() {
@@ -91,6 +102,9 @@ export default class Cliente extends Component {
                     // this.seleccionarSucursal()
                     // } else {
                     this.seleccionarCliente()
+
+                    
+
                     // }
                 }}>
                     <SText bold color={STheme.color.danger} >{"SELECCIONE EL CLIENTE"}</SText>
