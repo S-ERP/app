@@ -227,7 +227,7 @@ export default class ListaClientes extends Component {
                     if (row.ventas.length > 0) {
                         options.push({
                             label: 'Pagar Deuda',
-                            icon: <SIconApp name="addUser" />,
+                            icon: <SIconApp name="addUser" fill={STheme.color.text} />,
                             onPress: () => SNavigation.navigate('/caja/cuotas', { key_cliente: row?.key }),
                         });
                     }
@@ -273,7 +273,8 @@ export default class ListaClientes extends Component {
                     }
                     if (this.onSelect) {
                         options.push({
-                            label: "select",
+                            label: "Seleccionar usuario",
+                            icon: <SIcon name="bien" fill={STheme.color.text} />,
                             onPress: () => {
                                 this.onSelect(e.row);
                             }
