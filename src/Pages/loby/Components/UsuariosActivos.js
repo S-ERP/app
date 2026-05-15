@@ -129,7 +129,7 @@ export default class UsuariosActivos extends Component {
         // });
         // var dataOrder = Object.values(this.state.data).filter(o => o.key_tipo_pago == tipo_pago.key && o.estado != 0)
 
-        // console.log("dataUser", dataUser)
+        console.log("dataUser", this.state.data )
 
         return <SView col={"xs-12"} height={100}  >
             <SText bold fontSize={12}> Usuarios</SText>
