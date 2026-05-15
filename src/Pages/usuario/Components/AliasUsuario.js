@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SForm, SHr, SIcon, SList, SNavigation, SPage, SText, STheme, SView } from 'servisofts-component';
+import { SForm, SHr, SIcon, SList, SNavigation, SNotification, SPage, SText, STheme, SView } from 'servisofts-component';
 import Model from '../../../Model';
 import DatoItem from "./DatoItem";
 import SSocket from 'servisofts-socket'
@@ -56,10 +56,24 @@ class AliasUsuario extends Component {
                     }).then(e => {
                         this.setState({ loading: false })
                         // SNavigation.goBack();
+                        SNotification.send({
+                            key: "editar_alias_usuario",
+                            title: "Alias actualizado",
+                            body: "El alias del usuario ha sido actualizado correctamente.",
+                            color: STheme.color.success,
+                            time: 4000,
+                        });
                         SNavigation.replace("/")
 
                     }).catch(e => {
                         this.setState({ loading: false })
+                        SNotification.send({
+                            key: "editar_alias_usuario_error",
+                            title: "Error al actualizar alias",
+                            body: "Ha ocurrido un error al actualizar el alias del usuario. Por favor, intenta nuevamente.",
+                            color: STheme.color.danger,
+                            time: 4000,
+                        });
                         console.log("error", e)
                     })
 
