@@ -63,7 +63,11 @@ export default class ComprobanteCarta extends Component {
 
                     {ComprobanteCarta.detalleHeader()}
                     {ComprobanteCarta.detalle(compraVentaData)}
+
+                    <SPDF.View style={{ width: "100%", height: 8 }} />
                     {ComprobanteCarta.detalleFooter(compraVentaData)}
+                    {ComprobanteCarta.espacio()}
+                    {ComprobanteCarta.espacio()}
                     {ComprobanteCarta.espacio()}
                     {ComprobanteCarta.espacio()}
                     {ComprobanteCarta.espacio()}
@@ -170,9 +174,9 @@ export default class ComprobanteCarta extends Component {
             precio_unitario: 25.0,
         };
 
-        const items = Array.from({ length: 34 }, (_, index) => {
-            // const items = Array.from({ length: 18 }, (_, index) => {
-            // const items = Array.from({ length: 24 }, (_, index) => {
+        // const items = Array.from({ length: 34 }, (_, index) => {
+        // const items = Array.from({ length: 18 }, (_, index) => {
+        const items = Array.from({ length: 24 }, (_, index) => {
             const n = index + 1;
             return {
                 ...sampleItem,
@@ -269,45 +273,186 @@ export default class ComprobanteCarta extends Component {
     }
 
     static subtotales(data) {
+
         const detalles = data?.detalle || {};
         const items = Object.values(detalles);
+
         let subtotal = 0;
+
         for (const item of items) {
             subtotal += toNumber(item.cantidad) * toNumber(item.precio_unitario);
         }
-        const descuento = toNumber(data?.descuento);
-        const montoGiftCard = toNumber(data?.monto_gift_card);
-        const total = subtotal - descuento - montoGiftCard;
-        return (
-            <SPDF.View style={{ width: "100%", flexDirection: "row", gap: 12, marginTop: 8 }}>
-                {/* LITERAL */}
-                {/* <SPDF.View style={{ width: "40%", justifyContent: "flex-end" }}>
-                    <SPDF.Text style={{ ...textStyle, fontSize: 10, lineHeight: 1.4 }}>
-                        <SPDF.Text style={{ fontWeight: "bold" }}>{"Son: "}</SPDF.Text>
-                        {SMath.numberToLetter(total, { p: "", s: "" }).toLowerCase()}
-                        {"00/100 Bolivianos"}
-                    </SPDF.Text>
-                </SPDF.View> */}
 
-                {/* TABLA DE TOTALES */}
-                <SPDF.View style={{ width: "38%" }}>
-                    {ComprobanteCarta.renderRowTotales({ label: "SUBTOTAL Bs.", monto: formatCurrency(subtotal) })}
-                    {ComprobanteCarta.renderRowTotales({ label: "DESCUENTO Bs.", monto: formatCurrency(descuento) })}
-                    {ComprobanteCarta.renderRowTotales({ label: "TOTAL Bs.", monto: formatCurrency(total) })}
-                    {ComprobanteCarta.renderRowTotales({ label: "MONTO A PAGAR Bs.", monto: formatCurrency(total) })}
+        const descuento = toNumber(data?.descuento);
+        const total = subtotal - descuento;
+
+        return (
+            <SPDF.View
+                style={{
+                    width: "100%",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "flex-end",
+                    marginTop: 8,
+                }}
+            >
+
+                {/* TEXTO LITERAL */}
+                <SPDF.View
+                    style={{
+                        width: "58%",
+                        paddingRight: 10,
+                    }}
+                >
+
+                    <SPDF.Text
+                        style={{
+                            ...textStyle,
+                            fontSize: 10,
+                            lineHeight: 14,
+                        }}
+                    >
+                        <SPDF.Text style={{ fontWeight: "bold" }}>
+                            Son:
+                        </SPDF.Text>
+
+                        {" "}
+
+                        {SMath.numberToLetter(total, {
+                            p: "",
+                            s: ""
+                        }).toLowerCase()}
+
+                        {" 00/100 Bolivianos"}
+
+                    </SPDF.Text>
+
                 </SPDF.View>
+
+                {/* TABLA TOTALES */}
+                <SPDF.View
+                    style={{
+                        width: "38%",
+                        borderWidth: 1,
+                        borderColor: "#999",
+                    }}
+                >
+
+                    {ComprobanteCarta.totalRow(
+                        "SUBTOTAL Bs.",
+                        subtotal.toFixed(2)
+                    )}
+
+                    {ComprobanteCarta.totalRow(
+                        "DESCUENTO Bs.",
+                        descuento.toFixed(2)
+                    )}
+
+                    {ComprobanteCarta.totalRow(
+                        "TOTAL Bs.",
+                        total.toFixed(2)
+                    )}
+
+                    {ComprobanteCarta.totalRow(
+                        "MONTO A PAGAR Bs.",
+                        total.toFixed(2)
+                    )}
+
+                </SPDF.View>
+
             </SPDF.View>
         );
     }
 
-    static renderRowTotales({ label, monto }) {
+    static totalRow(label, value) {
+
         return (
-            <SPDF.View style={{ width: "100%", flexDirection: "row", height: 14, borderWidth: 1, borderColor: "#999999" }}>
-                <SPDF.View style={{ flex: 2, height: "100%", borderRightWidth: 1, borderColor: "#999999", justifyContent: "center", paddingHorizontal: 6, backgroundColor: "#F3F3F3" }}>
-                    <SPDF.Text style={{ ...textStyle, fontSize: 9, fontWeight: "bold" }}>{label}</SPDF.Text>
+            <SPDF.View
+                style={{
+                    width: "100%",
+                    flexDirection: "row",
+                    minHeight: 20,
+                }}
+            >
+
+                {/* LABEL */}
+                <SPDF.View
+                    style={{
+                        flex: 2,
+                        borderWidth: 1,
+                        borderColor: "#999",
+                        backgroundColor: "#F3F3F3",
+                        justifyContent: "center",
+                        paddingHorizontal: 6,
+                        paddingVertical: 4,
+                    }}
+                >
+
+                    <SPDF.Text
+                        style={{
+                            ...textStyle,
+                            fontSize: 9,
+                            fontWeight: "bold",
+                        }}
+                    >
+                        {label}
+                    </SPDF.Text>
+
                 </SPDF.View>
-                <SPDF.View style={{ flex: 1, height: "100%", justifyContent: "center", paddingHorizontal: 6 }}>
-                    <SPDF.Text style={{ ...textStyle, fontSize: 9, textAlign: "right" }}>{monto}</SPDF.Text>
+
+                {/* VALUE */}
+                <SPDF.View
+                    style={{
+                        flex: 1,
+                        borderWidth: 1,
+                        borderColor: "#999",
+                        justifyContent: "center",
+                        paddingHorizontal: 6,
+                        paddingVertical: 4,
+                    }}
+                >
+
+                    <SPDF.Text
+                        style={{
+                            ...textStyle,
+                            fontSize: 9,
+                            textAlign: "right",
+                            width: "100%",
+                        }}
+                    >
+                        {value}
+                    </SPDF.Text>
+
+                </SPDF.View>
+
+            </SPDF.View>
+        );
+    }
+
+
+
+    static renderTotalesDetalle({ label, monto }) {
+        return (
+            <SPDF.View style={{ width: "100%", flexDirection: "row", height: 13, borderWidth: 1, borderColor: tableBorderColor, }}>
+                {/* <SPDF.View style={{ flex: 2, height: "100%", borderWidth: 1, borderColor: tableBorderColor, }}> */}
+                <SPDF.View style={{ width: "100%", height: 36, flexDirection: "row", backgroundColor: "#D0D0D0" }}>
+
+                    {/* <SPDF.View
+                    style={{
+                        flex: 2,
+                        borderWidth: 1,
+                        borderColor: "#999",
+                        backgroundColor: "#F3F3F3",
+                        justifyContent: "center",
+                        paddingHorizontal: 6,
+                        paddingVertical: 4,
+                    }}
+                > */}
+
+                    <SPDF.Text style={{ ...textStyle, fontSize: 6, padding: 4 }}>{label}</SPDF.Text>
+                </SPDF.View>
+                <SPDF.View style={{ flex: 1, height: "100%", borderWidth: 1, borderColor: tableBorderColor, }}>
+                    <SPDF.Text style={{ ...textStyle, fontSize: 6, padding: 4 }}>{monto}</SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
         );
