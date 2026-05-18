@@ -59,10 +59,10 @@ export default class ComprobanteCarta extends Component {
                         {ComprobanteCarta.espacio()}
                         {ComprobanteCarta.detalle(compraVentaData)}
                     </SPDF.View>
-                    <SPDF.View style={{ width: "100%", paddingBottom: 4 }}>
+                    {/* <SPDF.View style={{ width: "100%", paddingBottom: 4 }}>
                         <SPDF.View style={{ width: '100%', height: 10 }}></SPDF.View>
                         {ComprobanteCarta.firmas()}
-                    </SPDF.View>
+                    </SPDF.View> */}
                 </SPDF.Page>
             );
         } catch (error) {
