@@ -224,7 +224,8 @@ const ItemComp = ({ item, moneda }: { item: any; moneda: any }) => {
                 <SView
                     center
                     style={{ width: 20, height: 20, padding: 2 }}
-                    onPress={() => MDL.carrito.removerItemAlCarritoDeVentas(item)}
+                    // onPress={() => MDL.carrito.removerItemAlCarritoDeVentas(item)}
+                    onPress={() => MDL.carrito.removerItemAlCarritoDeCompras(item)}
                 >
                     <SIconApp name="Close" fill={STheme.color.warning} />
                 </SView>
