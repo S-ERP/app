@@ -54,7 +54,7 @@ export default class ComprobanteCarta extends Component {
                 >
                     <SPDF.View style={{ width: "100%" }}>
                         {ComprobanteCarta.HeaderRecibo(compraVentaData)}
-                        {/* {ComprobanteCarta.espacio()} */}
+                        {ComprobanteCarta.espacio()}
                         {ComprobanteCarta.proveedor(compraVentaData)}
                         {/* {ComprobanteCarta.espacio()} */}
                         {/* {ComprobanteCarta.detalle(compraVentaData)} */}
@@ -72,14 +72,14 @@ export default class ComprobanteCarta extends Component {
 
 
     static espacio() {
-        return <SPDF.View style={{ width: "100%", height: 16 }} />;
+        return <SPDF.View style={{ width: "100%", height: 12 }} />;
     }
 
     static HeaderRecibo(data) {
         return (
-            <SPDF.View style={{ width: "100%", flexDirection: "row", height: 140, justifyContent: "space-between", alignItems: "flex-start", borderColor: "#555555", borderWidth: 1 }}>
-                
-                
+            <SPDF.View style={{ width: "100%", flexDirection: "row", height: 140, justifyContent: "space-between", alignItems: "flex-start", borderColor: "#B8B8B8", borderWidth: 1, }}>
+
+
                 <SPDF.View style={{ width: "80%", height: "100%", alignItems: "flex-start" }}>
                     <SPDF.Image src={`${SSocket.api.empresa}empresa/${data?.empresa?.key}`} style={{ width: 72, height: 72 }} />
                     <SPDF.View style={{ width: "100%", }}>
@@ -91,7 +91,7 @@ export default class ComprobanteCarta extends Component {
                     </SPDF.View>
                 </SPDF.View>
 
-                <SPDF.View style={{ width: "20%", height: "100%", alignItems: "flex-end", borderColor: "#555555", borderWidth: 1, padding: 4 }}>
+                <SPDF.View style={{ width: "20%", height: "100%", alignItems: "flex-end", padding: 4 }}>
                     <SPDF.Text style={{ ...textStyle, fontSize: 11, fontWeight: "bold", textAlign: "right", width: "100%" }}>{"NIT"}</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, fontSize: 11, textAlign: "right", width: "100%" }}>{validarDato(data?.empresa?.nit, 'S/N')}</SPDF.Text>
                     <SPDF.View style={{ height: 8 }} />
@@ -105,22 +105,22 @@ export default class ComprobanteCarta extends Component {
     static proveedor(data) {
         const proveedor = data?.proveedor || {};
         return (
-            <SPDF.View style={{ width: "100%", alignItems: "center", height: 94, borderColor: "#4335ff", borderWidth: 1,  }}>
+            <SPDF.View style={{ width: "100%", alignItems: "center", height: "100%", borderColor: "#B8B8B8", borderWidth: 1, }}>
 
-                <SPDF.View style={{ width: "100%", alignItems: "center" }}>
+                <SPDF.View style={{ width: "100%", height: 36, alignItems: "center", backgroundColor: "#e97272", borderColor: "#B8B8B8", borderWidth: 1 }}>
                     <SPDF.Text style={{ ...textStyle, fontWeight: "bold", fontSize: 16 }}>{"ORDEN DE COMPRA"}</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, fontSize: 10 }}>{"(COMPROBANTE DE PAGO COMPRADO)"}</SPDF.Text>
                 </SPDF.View>
-                
-                <SPDF.View style={{ width: "100%", height: 12 }} />
-                
-                <SPDF.View style={{ width: "100%", alignItems: "center", flexDirection: "row" }}>
+
+                <SPDF.View style={{ width: "100%", height: 8 }} />
+
+                <SPDF.View style={{ width: "100%", alignItems: "center", height: 50, flexDirection: "row", backgroundColor: "#8ae972", borderColor: "#B8B8B8", borderWidth: 1 }}>
                     <SPDF.View style={{ flex: 3, alignItems: "center", height: "100%" }}>
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
                             <SPDF.Text style={{ ...textStyle, width: 110, fontSize: 10, fontWeight: "bold", justifyContent: "center" }}>
                                 {"FECHA: "}
                             </SPDF.Text>
-                            <SPDF.Text style={{ ...textStyle, justifyContent: "center" }}>
+                            <SPDF.Text style={{ ...textStyle, justifyContent: "center", }}>
                                 {new SDate(data?.fecha_on, "yyyy-MM-ddThh:mm:ss").toString("dd/MM/yyyy")?.toUpperCase() || 'Sin fecha'}
                             </SPDF.Text>
                         </SPDF.View>
