@@ -54,10 +54,10 @@ export default class ComprobanteCarta extends Component {
                 >
                     <SPDF.View style={{ width: "100%" }}>
                         {ComprobanteCarta.HeaderRecibo(compraVentaData)}
-                        {ComprobanteCarta.espacio()}
+                        {/* {ComprobanteCarta.espacio()} */}
                         {ComprobanteCarta.proveedor(compraVentaData)}
-                        {ComprobanteCarta.espacio()}
-                        {ComprobanteCarta.detalle(compraVentaData)}
+                        {/* {ComprobanteCarta.espacio()} */}
+                        {/* {ComprobanteCarta.detalle(compraVentaData)} */}
                     </SPDF.View>
                     {/* <SPDF.View style={{ width: "100%", paddingBottom: 4 }}>
                         <SPDF.View style={{ width: '100%', height: 10 }}></SPDF.View>
@@ -77,27 +77,26 @@ export default class ComprobanteCarta extends Component {
 
     static HeaderRecibo(data) {
         return (
-            <SPDF.View style={{ width: "100%", flexDirection: "row", height: 110, alignItems: "center" }}>
-                <SPDF.View style={{ flex: 3, alignItems: "center" }}>
-                    <SPDF.Image src={`${SSocket.api.empresa}empresa/${data?.empresa?.key}`} style={{ width: 100, height: 50 }} />
-                    <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{validarDato(data?.empresa?.razon_social, 'MI EMPRESA')}</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle }}>Sucursal: {validarDato(data?.sucursal?.descripcion, 'Mi Sucursal')}</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle, alignItems: "center" }}>No. Punto de Venta {validarDato(data?.venta, '1')}</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle }}>{validarDato(data?.sucursal?.direccion, 'Av. Sur Nro. 0')}</SPDF.Text>
-                    <SPDF.Text style={{ ...textStyle }}>Teléfono: {validarDato(data?.sucursal?.telefono, 'Tel: (123) 00000000')}</SPDF.Text>
+            <SPDF.View style={{ width: "100%", flexDirection: "row", height: 140, justifyContent: "space-between", alignItems: "flex-start", borderColor: "#555555", borderWidth: 1 }}>
+                
+                
+                <SPDF.View style={{ width: "80%", height: "100%", alignItems: "flex-start" }}>
+                    <SPDF.Image src={`${SSocket.api.empresa}empresa/${data?.empresa?.key}`} style={{ width: 72, height: 72 }} />
+                    <SPDF.View style={{ width: "100%", }}>
+                        <SPDF.Text style={{ ...textStyle, fontSize: 12, fontWeight: "bold" }}>{validarDato(data?.empresa?.razon_social, 'MI EMPRESA')}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, fontSize: 10 }}>Sucursal: {validarDato(data?.sucursal?.descripcion, 'Mi Sucursal')}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, fontSize: 10 }}>No. Punto de Venta {validarDato(data?.venta, '1')}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, fontSize: 10 }}>{validarDato(data?.sucursal?.direccion, 'Av. Sur Nro. 0')}</SPDF.Text>
+                        <SPDF.Text style={{ ...textStyle, fontSize: 10 }}>Teléfono: {validarDato(data?.sucursal?.telefono, 'Tel: (123) 00000000')}</SPDF.Text>
+                    </SPDF.View>
                 </SPDF.View>
-                <SPDF.View style={{ flex: 2 }} />
-                <SPDF.View style={{ flex: 3, height: "100%" }}>
-                    <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
-                        <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{"NIT"}</SPDF.Text>
-                        <SPDF.View style={{ flex: 1 }} />
-                        <SPDF.Text style={{ ...textStyle, width: 90 }}>{validarDato(data?.empresa?.nit, 'S/N')}</SPDF.Text>
-                    </SPDF.View>
-                    <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
-                        <SPDF.Text style={{ ...textStyle, fontWeight: "bold" }}>{"ORDEN NRO."}</SPDF.Text>
-                        <SPDF.View style={{ flex: 1 }} />
-                        <SPDF.Text style={{ ...textStyle, width: 90 }}>{validarDato(data?.numero_recibo, '001-001-000001')}</SPDF.Text>
-                    </SPDF.View>
+
+                <SPDF.View style={{ width: "20%", height: "100%", alignItems: "flex-end", borderColor: "#555555", borderWidth: 1, padding: 4 }}>
+                    <SPDF.Text style={{ ...textStyle, fontSize: 11, fontWeight: "bold", textAlign: "right", width: "100%" }}>{"NIT"}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, fontSize: 11, textAlign: "right", width: "100%" }}>{validarDato(data?.empresa?.nit, 'S/N')}</SPDF.Text>
+                    <SPDF.View style={{ height: 8 }} />
+                    <SPDF.Text style={{ ...textStyle, fontSize: 11, fontWeight: "bold", textAlign: "right", width: "100%" }}>{"ORDEN NRO."}</SPDF.Text>
+                    <SPDF.Text style={{ ...textStyle, fontSize: 11, textAlign: "right", width: "100%" }}>{validarDato(data?.numero_recibo, '001-001-000001')}</SPDF.Text>
                 </SPDF.View>
             </SPDF.View>
         );
@@ -106,12 +105,15 @@ export default class ComprobanteCarta extends Component {
     static proveedor(data) {
         const proveedor = data?.proveedor || {};
         return (
-            <SPDF.View style={{ width: "100%", alignItems: "center", height: 80 }}>
+            <SPDF.View style={{ width: "100%", alignItems: "center", height: 94, borderColor: "#4335ff", borderWidth: 1,  }}>
+
                 <SPDF.View style={{ width: "100%", alignItems: "center" }}>
                     <SPDF.Text style={{ ...textStyle, fontWeight: "bold", fontSize: 16 }}>{"ORDEN DE COMPRA"}</SPDF.Text>
                     <SPDF.Text style={{ ...textStyle, fontSize: 10 }}>{"(COMPROBANTE DE PAGO COMPRADO)"}</SPDF.Text>
                 </SPDF.View>
+                
                 <SPDF.View style={{ width: "100%", height: 12 }} />
+                
                 <SPDF.View style={{ width: "100%", alignItems: "center", flexDirection: "row" }}>
                     <SPDF.View style={{ flex: 3, alignItems: "center", height: "100%" }}>
                         <SPDF.View style={{ width: "100%", flexDirection: "row", justifyContent: "center" }}>
