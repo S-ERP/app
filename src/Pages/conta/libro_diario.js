@@ -108,6 +108,7 @@ export default class libro_diario extends React.Component {
                         }
                         }
                     />
+                    <DinamicTable.Col key="key" label="key" data={e => e.row?.asiento_contable?.key} width={70} textStyle={{ color: STheme.color.text, }} />
 
                     <DinamicTable.Col key="tipo_comprobante" label="tipo_comprobante" data={e => e.row?.asiento_contable?.tipo_comprobante} width={110}
                         customComponent={e => {
