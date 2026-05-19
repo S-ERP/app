@@ -32,7 +32,7 @@ export default class libro_diario extends React.Component {
                 a.moneda_base = monedabase
                 if (a.tags) {
                     tagsKeys = { ...tagsKeys, ...a.tags }
-                    if(a.tags.key_cliente){
+                    if (a.tags.key_cliente) {
                         a.cliente = cliente.find(c => c.key == a.tags.key_cliente)
                     }
                 }
@@ -108,6 +108,29 @@ export default class libro_diario extends React.Component {
                         }
                         }
                     />
+
+                    <DinamicTable.Col key="tipo_comprobante" label="tipo_comprobante" data={e => e.row?.asiento_contable?.tipo_comprobante} width={110}
+                        customComponent={e => {
+                            let styles = { bg: "transparent", color: "transparent", border: "transparent" };
+                            switch ((e.data || "").toLowerCase()) {
+                                case "fiscal":
+                                    styles = { bg: "#22c55e22", color: "#22c55e", border: "#16a34a" };
+                                    break;
+                                case "interno":
+                                    styles = { bg: "#3b82f622", color: "#60a5fa", border: "#2563eb" };
+                                    break;
+                                case "mixto":
+                                    styles = { bg: "#a855f722", color: "#c084fc", border: "#9333ea" };
+                                    break;
+                            }
+                            return (
+                                <SView style={{ backgroundColor: styles.bg, borderColor: styles.border, borderWidth: 1, paddingVertical: 4, paddingHorizontal: 8, borderRadius: 20, alignItems: "center", justifyContent: "center", }} >
+                                    <SText center style={{ color: styles.color, fontSize: 10, fontWeight: "bold", }} > {e.data?.toUpperCase()} </SText>
+                                </SView>
+                            );
+                        }}
+                    />
+
                     <DinamicTable.Col key="codigo" label="Código" data={e => e.row?.asiento_contable?.codigo} width={80} customComponent={e => <SText
                         style={{
                             ...e.textStyle,
