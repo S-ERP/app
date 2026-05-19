@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Libro Diario</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Inter", sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            padding: 20px;
+            color: #1e293b;
+        }
+
+        .container {
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+        }
+
+        .header {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #0f172a;
+        }
+
+        .search {
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            width: 260px;
+            outline: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #0f172a;
+            color: white;
+        }
+
+        th {
+            padding: 14px 12px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+            letter-spacing: .5px;
+        }
+
+        .fiscal {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .interno {
+            background: #dbeafe;
+            color: #1d4ed8;
+            border: 1px solid #93c5fd;
+        }
+
+        .mixto {
+            background: #f3e8ff;
+            color: #7e22ce;
+            border: 1px solid #d8b4fe;
+        }
+
+        .ingreso {
+            background: #dcfce7;
+            color: #166534;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .egreso {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .cuenta {
+            background: #fff7ed;
+            color: #c2410c;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .debe {
+            color: #15803d;
+            font-weight: 700;
+        }
+
+        .haber {
+            color: #b91c1c;
+            font-weight: 700;
+        }
+
+        .moneda {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .codigo {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .descripcion {
+            color: #475569;
+        }
+
+        .sticky {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <h1>📘 Libro Diario</h1>
+
+            <input class="search" type="text" placeholder="Buscar movimiento..." />
+        </div>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead class="sticky">
+                    <tr>
+                        <th>Tipo Comp.</th>
+                        <th>Tipo</th>
+                        <th>Código</th>
+                        <th>Cuenta</th>
+                        <th>Descripción</th>
+                        <th>Moneda</th>
+                        <th>Debe</th>
+                        <th>Haber</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>
+                            <span class="badge fiscal">Fiscal</span>
+                        </td>
+
+                        <td>
+                            <span class="egreso">EGRESO</span>
+                        </td>
+
+                        <td class="codigo">
+                            E-2026-05-4
+                        </td>
+
+                        <td>
+                            <div class="cuenta">
+                                Caja MN Sucursal Santa María
+                            </div>
+                        </td>
+
+                        <td class="descripcion">
+                            Compra Caja
+                        </td>
+
+                        <td class="moneda">
+                            Boliviano
+                        </td>
+
+                        <td class="debe">
+                            BOB 0,00
+                        </td>
+
+                        <td class="haber">
+                            BOB 8,00
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <span class="badge interno">Interno</span>
+                        </td>
+
+                        <td>
+                            <span class="egreso">EGRESO</span>
+                        </td>
+
+                        <td class="codigo">
+                            E-2026-05-10
+                        </td>
+
+                        <td>
+                            <div class="cuenta">
+                                Inventario de Mercadería Snack
+                            </div>
+                        </td>
+
+                        <td class="descripcion">
+                            Compra Producto Coca Cola
+                        </td>
+
+                        <td class="moneda">
+                            Boliviano
+                        </td>
+
+                        <td class="debe">
+                            BOB 18,00
+                        </td>
+
+                        <td class="haber">
+                            BOB 0,00
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <span class="badge mixto">Mixto</span>
+                        </td>
+
+                        <td>
+                            <span class="ingreso">INGRESO</span>
+                        </td>
+
+                        <td class="codigo">
+                            I-2026-05-7
+                        </td>
+
+                        <td>
+                            <div class="cuenta">
+                                Ingresos por Ventas
+                            </div>
+                        </td>
+
+                        <td class="descripcion">
+                            Venta Caja - Producto Simba
+                        </td>
+
+                        <td class="moneda">
+                            Boliviano
+                        </td>
+
+                        <td class="debe">
+                            BOB 85,00
+                        </td>
+
+                        <td class="haber">
+                            BOB 0,00
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
