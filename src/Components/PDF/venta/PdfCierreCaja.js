@@ -19,11 +19,14 @@ export default class PdfCierreCaja {
         return <SPDF.View style={line} />;
     }
     static Header(caja) {
+        const empresaLogo = caja?.key_empresa ? `${SSocket.api.empresa}empresa/${caja.key_empresa}` : null;
 
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
                 <SPDF.View style={{ flex: 3 }}>
-                    <SPDF.Image src={`${SSocket.api.empresa}empresa/${caja?.key_empresa}`} style={{ width: 75, height: 50, resizeMode: "cover" }} />
+                    {empresaLogo
+                        ? <SPDF.Image src={empresaLogo} style={{ width: 75, height: 50, resizeMode: "cover" }} />
+                        : <SPDF.View style={{ width: 75, height: 50 }} />}
                     <SPDF.Text style={{ ...label, fontSize: 16 }}>{caja?.sucursal?.descripcion}</SPDF.Text>
                     <SPDF.Text style={text}>{caja?.sucursal?.direccion}</SPDF.Text>
                     <SPDF.Text style={text}>Tel: {caja?.sucursal?.telefono}</SPDF.Text>
@@ -44,7 +47,27 @@ export default class PdfCierreCaja {
     }
 
     static Cajero(caja) {
-        const urlFoto = SSocket.api.empresa + "sucursal/" + caja.key_sucursal + "?time=" + new SDate().toString("yyyy-MM-ddThh:mm");
+        if (!caja) {
+            return (
+                <SPDF.View style={{ width: "100%", flexDirection: "row" }}>
+                    <SPDF.Text style={text}>Sin datos de caja</SPDF.Text>
+                </SPDF.View>
+            );
+        }
+
+        const sucursalFoto = caja?.key_empresa ? `${SSocket.api.empresa}empresa/${caja.key_empresa}` : "https://www.w3schools.com/css/img_lights.jpg";
+        const usuarioFoto = "https://www.w3schools.com/w3images/avatar2.png";
+        // const usuarioFoto = caja?.cajero?.key ? `${SSocket.api.root}usuario/${caja.cajero.key}` : "https://www.w3schools.com/w3images/avatar2.png";
+
+        console.clear();
+
+        console.log("%c" + JSON.stringify(caja, null, 2), "color: #2ECC40; font-weight: bold;");
+        console.log("%c" + JSON.stringify(sucursalFoto, null, 2), "color: #2e58cc; font-weight: bold;");
+        console.log("%c" + JSON.stringify(usuarioFoto, null, 2), "color: #b22ecc; font-weight: bold;");
+
+
+        // const empresaLogo = caja?.key_empresa ? `${SSocket.api.empresa}empresa/${caja.key_empresa}` : null;
+
 
         return (
             <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
@@ -53,13 +76,13 @@ export default class PdfCierreCaja {
                     {PdfCierreCaja.espacio(8)}
                     <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
                         <SPDF.View style={{ width: 50, height: 40, }}>
-                            <SPDF.Image src={urlFoto} style={{ width: 40, height: 40, resizeMode: "cover" }} />
+                            <SPDF.Image src={sucursalFoto} style={{ width: 40, height: 40, resizeMode: "cover" }} />
                         </SPDF.View>
                         <SPDF.View style={{ flex: 1, marginTop: -4, }}>
-                            <SPDF.Text style={text}>{caja?.sucursal.descripcion}</SPDF.Text>
+                            <SPDF.Text style={text}>{caja?.sucursal?.descripcion || "-"}</SPDF.Text>
                             <SPDF.Text style={text}>Municipio: {caja?.sucursal?.municipio}</SPDF.Text>
-                            {caja?.sucursal?.direccion && (<SPDF.Text style={text}> {PdfCierreCaja.limitarTexto(caja.sucursal.direccion, 40)} </SPDF.Text>)}
-                            {caja?.sucursal?.Telefono && (<SPDF.Text style={text}> Teléfono: {caja.sucursal.Telefono} </SPDF.Text>)}
+                            {caja?.sucursal?.direccion && (<SPDF.Text style={text}> {PdfCierreCaja.limitarTexto(caja?.sucursal?.direccion, 40)} </SPDF.Text>)}
+                            {caja?.sucursal?.Telefono && (<SPDF.Text style={text}> Teléfono: {caja?.sucursal?.Telefono} </SPDF.Text>)}
                         </SPDF.View>
                     </SPDF.View>
                 </SPDF.View>
@@ -68,12 +91,12 @@ export default class PdfCierreCaja {
                     {PdfCierreCaja.espacio(8)}
                     <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
                         <SPDF.View style={{ width: 50, height: 40, }}>
-                            <SPDF.Image src={`${SSocket.api.root}usuario/${caja?.cajero.key}`} style={{ width: 40, height: 40, resizeMode: "cover" }} />
+                            <SPDF.Image src={usuarioFoto} style={{ width: 40, height: 40, resizeMode: "cover" }} />
                         </SPDF.View>
                         <SPDF.View style={{ flex: 1, marginTop: -4, height: 60, }}>
                             {(caja?.cajero?.Nombres) && (<SPDF.Text style={text}> {caja?.cajero?.Nombres} {caja?.cajero?.Apellidos} </SPDF.Text>)}
-                            {caja?.cajero?.Correo && (<SPDF.Text style={text}> {caja.cajero.Correo} </SPDF.Text>)}
-                            {caja?.cajero?.Telefono && (<SPDF.Text style={text}> Teléfono: {caja.cajero.Telefono} </SPDF.Text>)}
+                            {caja?.cajero?.Correo && (<SPDF.Text style={text}> {caja?.cajero?.Correo} </SPDF.Text>)}
+                            {caja?.cajero?.Telefono && (<SPDF.Text style={text}> Teléfono: {caja?.cajero?.Telefono} </SPDF.Text>)}
                         </SPDF.View>
                     </SPDF.View>
                 </SPDF.View>
