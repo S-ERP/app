@@ -15,6 +15,7 @@ export default class conta extends React.Component {
     dinamicTable: DinamicTable<any>;
     nivelLen = 1;
     nivelEQ = "Hasta";
+    nivelTipoComprobante = "Todos";
     componentDidMount() {
 
         MDL.rolesPermisos.getPermisoAsync({ url: "/conta/balance", permiso: "ver" }).then((permit) => {
@@ -37,20 +38,35 @@ export default class conta extends React.Component {
     async loadData() {
         try {
 
-
+            // 0679c302-66d3-4b78-bd3c-1c956afd28ac
+            // const cuentas = await MDL.contabilidad.reporte_balance_general_tipo_comprobante();
             const cuentas = await MDL.contabilidad.reporte_balance_general();
             console.log(this.niveles)
+
+            // console.clear();
+            console.log("%c" + JSON.stringify(cuentas, null, 2), "color: #2ECC40; font-weight: bold;");
+
+
             const nivelLen = this.niveles?.[this.nivelLen - 1]?.len || "1"
             return cuentas.filter(e => {
                 if (!e.codigo) return false;
+                let pasaNivel = false;
                 if (this.nivelEQ === "Hasta") {
-                    return e.codigo.length <= nivelLen;
+                    pasaNivel = e.codigo.length <= nivelLen;
                 } else if (this.nivelEQ === "Desde") {
-                    return e.codigo.length >= nivelLen;
+                    pasaNivel = e.codigo.length >= nivelLen;
                 } else if (this.nivelEQ === "Como") {
-                    return e.codigo.length == nivelLen;
+                    pasaNivel = e.codigo.length == nivelLen;
                 }
-                return false;
+                if (!pasaNivel) return false;
+                if (this.nivelTipoComprobante !== "Todos") {
+                    // Normaliza ambos valores para comparar correctamente
+                    const tipoComprobante = (e.tipo_comprobante == null ? "mixto" : e.tipo_comprobante).toLowerCase();
+                    // const tipoComprobante = (e.tipo_comprobante || "").toLowerCase();
+                    const filtro = this.nivelTipoComprobante.toLowerCase();
+                    return tipoComprobante === filtro;
+                }
+                return true;
             })
         } catch (error) {
             console.log(error);
@@ -65,7 +81,7 @@ export default class conta extends React.Component {
         return STheme.color.card;
     }
     render() {
-        return <SPage title={"Balance general"} center disableScroll>
+        return <SPage title={"Balance gerrrrneral"} center disableScroll>
             <SView row col={"xs-12"} style={{ alignItems: "center" }}>
                 {this.niveles && <SView width={60}><SInput type="select2"
                     style={{
@@ -93,6 +109,22 @@ export default class conta extends React.Component {
                         this.nivelLen = parseFloat(e || "1");
                         if (this.dinamicTable) this.dinamicTable.loadData();
                     }} /></SView>}
+
+                <SView width={20} />
+
+
+                {this.niveles && <SView width={60}><SInput type="select2"
+                    style={{
+                        padding: 2,
+                        height: 30,
+                        textAlign: "center"
+                    }}
+                    defaultValue={this.nivelTipoComprobante}
+                    options={["Todos", "Fiscal", "Interno", "Mixto"]} onChangeText={e => {
+                        this.nivelTipoComprobante = e;
+                        if (this.dinamicTable) this.dinamicTable.loadData();
+                    }} /></SView>}
+
             </SView>
 
             <SView col={"xs-12"} flex>
@@ -109,6 +141,7 @@ export default class conta extends React.Component {
                     }}
                     selectType="multiple"
                 >
+
                     <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{
                         alignItems: "center",
                         justifyContent: "center",
@@ -126,6 +159,19 @@ export default class conta extends React.Component {
                             return <SText clean style={{ ...e.textStyle, ...aditionalStyle }}>{e.data}</SText>
                         }}
                     />
+
+                    <DinamicTable.Col key={"tipo_comprobante"} label="Tipo Comprobante" width={100} data={e => e.row.tipo_comprobante || "-"} cellStyle={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }} textStyle={{
+                        fontSize: 7
+                    }}
+                        customComponent={e => {
+                            return <SText style={{ ...e.textStyle }}>{e.data ? e.data.toUpperCase() : "-"}</SText>
+                        }}
+                    />
+
+
                     <DinamicTable.Col key="codigo" label="Código" data={e => e.row.codigo} />
                     {/* <DinamicTable.Col key="descripcion" label="Descripcion" data={e => e.row.descripcion} /> */}
                     <DinamicTable.Col key={"descripcion"} label="descripcion" width={350}
