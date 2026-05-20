@@ -46,10 +46,7 @@ class index extends Component {
                             this.forceUpdate();
                         }} />
                     </SView>
-                    <AsientoContable2 key_gestion={this.key_gestion} key_asiento_contable={this.pk} clone={this.clone} 
-                    tags={this.state.tags} 
-                    key_diario={this.state.key_diario}
-                    />
+                    <AsientoContable2 key_gestion={this.key_gestion} key_asiento_contable={this.pk} clone={this.clone} tipo_comprobante={this.state.tipo_comprobante} tags={this.state.tags} key_diario={this.state.key_diario} />
                 </SView>
             </SPage>
         );
