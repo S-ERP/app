@@ -25,30 +25,26 @@ export default class conta extends React.Component {
             }
         })
 
-
         MDL.contabilidad.getNivelesPlanCuentas().then((niveles) => {
             this.niveles = niveles;
             this.nivelLen = niveles[0].len ?? 1;
             this.dinamicTable.loadData();
             this.forceUpdate();
         })
-
     }
 
     async loadData() {
         try {
 
-            // 0679c302-66d3-4b78-bd3c-1c956afd28ac
-            // const cuentas = await MDL.contabilidad.reporte_balance_general_tipo_comprobante();
-            const cuentas = await MDL.contabilidad.reporte_balance_general();
-            console.log(this.niveles)
-
-            // console.clear();
-            console.log("%c" + JSON.stringify(cuentas, null, 2), "color: #2ECC40; font-weight: bold;");
-
+            // Siempre obtenemos todas las cuentas para saber todos los códigos posibles
+            const todasCuentas = await MDL.contabilidad.reporte_balance_general();
+            const cuentas = this.nivelTipoComprobante === "Todos" ? todasCuentas : await MDL.contabilidad.reporte_balance_general_tipo_comprobante();
+            // console.log(this.niveles)
+            // console.log("%c" + JSON.stringify(cuentas, null, 2), "color: #2ECC40; font-weight: bold;");
 
             const nivelLen = this.niveles?.[this.nivelLen - 1]?.len || "1"
-            return cuentas.filter(e => {
+            // Filtrar todas las cuentas por nivel
+            const codigosNivel = todasCuentas.filter(e => {
                 if (!e.codigo) return false;
                 let pasaNivel = false;
                 if (this.nivelEQ === "Hasta") {
@@ -58,16 +54,40 @@ export default class conta extends React.Component {
                 } else if (this.nivelEQ === "Como") {
                     pasaNivel = e.codigo.length == nivelLen;
                 }
-                if (!pasaNivel) return false;
-                if (this.nivelTipoComprobante !== "Todos") {
-                    // Normaliza ambos valores para comparar correctamente
-                    const tipoComprobante = (e.tipo_comprobante == null ? "mixto" : e.tipo_comprobante).toLowerCase();
-                    // const tipoComprobante = (e.tipo_comprobante || "").toLowerCase();
-                    const filtro = this.nivelTipoComprobante.toLowerCase();
-                    return tipoComprobante === filtro;
-                }
-                return true;
-            })
+                return pasaNivel;
+            }).map(e => e.codigo);
+
+            if (this.nivelTipoComprobante === "Todos") {
+                // Modo original
+                return cuentas.filter(e => codigosNivel.includes(e.codigo));
+            }
+
+            // Para Fiscal, Interno, Mixto, etc: mostrar todas las cuentas, aunque no tengan registro para ese tipo
+            const cuentasPorCodigo = {};
+            cuentas.forEach(e => {
+                if (!e.codigo) return;
+                const tipoComprobante = (e.tipo_comprobante || "").toLowerCase();
+                // const tipoComprobante = (e.tipo_comprobante == null ? "mixto" : e.tipo_comprobante).toLowerCase();
+                // const tipoComprobante = (e.tipo_comprobante == null ? "mixto" : e.tipo_comprobante).toLowerCase();
+                cuentasPorCodigo[e.codigo + "__" + tipoComprobante] = e;
+            });
+
+            return codigosNivel.map(codigo => {
+                // Buscar registro con el tipo seleccionado
+                const key = codigo + "__" + this.nivelTipoComprobante.toLowerCase();
+                const found = cuentasPorCodigo[key];
+                if (found) return found;
+                // Si no existe, crear uno con montos en 0 y tipo_comprobante igual al filtro
+                const base = todasCuentas.find(e => e.codigo === codigo) || {};
+                return {
+                    ...base,
+                    tipo_comprobante: this.nivelTipoComprobante,
+                    debe: 0,
+                    haber: 0,
+                    debe_me: 0,
+                    haber_me: 0,
+                };
+            });
         } catch (error) {
             console.log(error);
             throw error
@@ -84,11 +104,7 @@ export default class conta extends React.Component {
         return <SPage title={"Balance gerrrrneral"} center disableScroll>
             <SView row col={"xs-12"} style={{ alignItems: "center" }}>
                 {this.niveles && <SView width={60}><SInput type="select2"
-                    style={{
-                        padding: 2,
-                        height: 30,
-                        textAlign: "center"
-                    }}
+                    style={{ padding: 2, height: 30, textAlign: "center" }}
                     defaultValue={this.nivelEQ + ""}
                     options={["Hasta", "Desde", "Como"]} onChangeText={e => {
                         this.nivelEQ = e;
@@ -100,9 +116,7 @@ export default class conta extends React.Component {
                 {this.niveles && <SView width={70}><SInput type="select2"
                     width={70}
                     style={{
-                        padding: 2,
-                        height: 30,
-                        textAlign: "center"
+                        padding: 2, height: 30, textAlign: "center"
                     }}
                     defaultValue={this.nivelLen + ""}
                     options={this.niveles.map((a, i) => (i + 1) + "")} onChangeText={e => {
