@@ -7,24 +7,24 @@ import { DinamicTable } from "servisofts-table";
 import Config from "../../Config";
 
 export default class conta extends React.Component {
+
     constructor(props) {
         super(props);
-        this.state = {
-        };
+        this.state = {};
     }
+
     dinamicTable: DinamicTable<any>;
     nivelLen = 1;
     nivelEQ = "Hasta";
     nivelTipoComprobante = "Todos";
-    componentDidMount() {
 
+    componentDidMount() {
         MDL.rolesPermisos.getPermisoAsync({ url: "/conta/balance", permiso: "ver" }).then((permit) => {
             if (!permit) {
                 SNavigation.goBack();
                 return;
             }
         })
-
         MDL.contabilidad.getNivelesPlanCuentas().then((niveles) => {
             this.niveles = niveles;
             this.nivelLen = niveles[0].len ?? 1;
@@ -35,15 +35,9 @@ export default class conta extends React.Component {
 
     async loadData() {
         try {
-
-            // Siempre obtenemos todas las cuentas para saber todos los códigos posibles
             const todasCuentas = await MDL.contabilidad.reporte_balance_general();
             const cuentas = this.nivelTipoComprobante === "Todos" ? todasCuentas : await MDL.contabilidad.reporte_balance_general_tipo_comprobante();
-            // console.log(this.niveles)
-            // console.log("%c" + JSON.stringify(cuentas, null, 2), "color: #2ECC40; font-weight: bold;");
-
             const nivelLen = this.niveles?.[this.nivelLen - 1]?.len || "1"
-            // Filtrar todas las cuentas por nivel
             const codigosNivel = todasCuentas.filter(e => {
                 if (!e.codigo) return false;
                 let pasaNivel = false;
@@ -56,28 +50,19 @@ export default class conta extends React.Component {
                 }
                 return pasaNivel;
             }).map(e => e.codigo);
-
             if (this.nivelTipoComprobante === "Todos") {
-                // Modo original
                 return cuentas.filter(e => codigosNivel.includes(e.codigo));
             }
-
-            // Para Fiscal, Interno, Mixto, etc: mostrar todas las cuentas, aunque no tengan registro para ese tipo
             const cuentasPorCodigo = {};
             cuentas.forEach(e => {
                 if (!e.codigo) return;
                 const tipoComprobante = (e.tipo_comprobante || "").toLowerCase();
-                // const tipoComprobante = (e.tipo_comprobante == null ? "mixto" : e.tipo_comprobante).toLowerCase();
-                // const tipoComprobante = (e.tipo_comprobante == null ? "mixto" : e.tipo_comprobante).toLowerCase();
                 cuentasPorCodigo[e.codigo + "__" + tipoComprobante] = e;
             });
-
             return codigosNivel.map(codigo => {
-                // Buscar registro con el tipo seleccionado
                 const key = codigo + "__" + this.nivelTipoComprobante.toLowerCase();
                 const found = cuentasPorCodigo[key];
                 if (found) return found;
-                // Si no existe, crear uno con montos en 0 y tipo_comprobante igual al filtro
                 const base = todasCuentas.find(e => e.codigo === codigo) || {};
                 return {
                     ...base,
@@ -100,6 +85,7 @@ export default class conta extends React.Component {
         if (val < 0) return STheme.color.danger;
         return STheme.color.card;
     }
+
     render() {
         return <SPage title={"Balance gerrrrneral"} center disableScroll>
             <SView row col={"xs-12"} style={{ alignItems: "center" }}>
@@ -115,32 +101,21 @@ export default class conta extends React.Component {
                 <SView width={2} />
                 {this.niveles && <SView width={70}><SInput type="select2"
                     width={70}
-                    style={{
-                        padding: 2, height: 30, textAlign: "center"
-                    }}
+                    style={{ padding: 2, height: 30, textAlign: "center" }}
                     defaultValue={this.nivelLen + ""}
                     options={this.niveles.map((a, i) => (i + 1) + "")} onChangeText={e => {
                         this.nivelLen = parseFloat(e || "1");
                         if (this.dinamicTable) this.dinamicTable.loadData();
                     }} /></SView>}
-
                 <SView width={20} />
-
-
                 {this.niveles && <SView width={60}><SInput type="select2"
-                    style={{
-                        padding: 2,
-                        height: 30,
-                        textAlign: "center"
-                    }}
+                    style={{ padding: 2, height: 30, textAlign: "center" }}
                     defaultValue={this.nivelTipoComprobante}
                     options={["Todos", "Fiscal", "Interno", "Mixto"]} onChangeText={e => {
                         this.nivelTipoComprobante = e;
                         if (this.dinamicTable) this.dinamicTable.loadData();
                     }} /></SView>}
-
             </SView>
-
             <SView col={"xs-12"} flex>
                 <DinamicTable
                     ref={(e) => this.dinamicTable = e}
@@ -156,12 +131,7 @@ export default class conta extends React.Component {
                     selectType="multiple"
                 >
 
-                    <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }} textStyle={{
-                        fontSize: 7
-                    }}
+                    <DinamicTable.Col key={"tipo"} label="Tipo" width={80} data={e => e.row.tipo} cellStyle={{ alignItems: "center", justifyContent: "center", }} textStyle={{ fontSize: 7 }}
                         customComponent={e => {
                             const aditionalStyle = {
                                 borderWidth: 1,
@@ -174,34 +144,24 @@ export default class conta extends React.Component {
                         }}
                     />
 
-                    <DinamicTable.Col key={"tipo_comprobante"} label="Tipo Comprobante" width={100} data={e => e.row.tipo_comprobante || "-"} cellStyle={{
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }} textStyle={{
-                        fontSize: 7
-                    }}
+                    <DinamicTable.Col key={"tipo_comprobante"} label="Tipo Comprobante" width={100} data={e => e.row.tipo_comprobante || "-"} cellStyle={{ alignItems: "center", justifyContent: "center", }} textStyle={{ fontSize: 7 }}
                         customComponent={e => {
                             return <SText style={{ ...e.textStyle }}>{e.data ? e.data.toUpperCase() : "-"}</SText>
                         }}
                     />
 
-
                     <DinamicTable.Col key="codigo" label="Código" data={e => e.row.codigo} />
-                    {/* <DinamicTable.Col key="descripcion" label="Descripcion" data={e => e.row.descripcion} /> */}
                     <DinamicTable.Col key={"descripcion"} label="descripcion" width={350}
                         data={e => e.row.descripcion}
                         customComponent={(e) => {
                             const space = (e?.row?.codigo || "").length * 2;
                             const aditionalStyle = {}
-
                             if (e?.row?.codigo?.length == 1) {
                                 aditionalStyle.fontWeight = "bold";
                             }
                             return <SText style={{ ...e.textStyle, paddingStart: space, ...aditionalStyle }}>{e.data}</SText>
                         }}
                     />
-                    {/* <DinamicTable.Col key="debe" label="Debe" data={e => e.row.debe}/> */}
-
                     <DinamicTable.Col key="debe" label="Debe"
                         data={e => e.row.debe}
                         customComponent={(e) => {
