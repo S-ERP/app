@@ -87,8 +87,11 @@ export default class conta extends React.Component {
     }
 
     render() {
-        return <SPage title={"Balance gerrrrneral"} center disableScroll>
+        return <SPage title={"Balance general"} center disableScroll>
             <SView row col={"xs-12"} style={{ alignItems: "center" }}>
+
+                <SView width={"100%"} height={80} />
+
                 {this.niveles && <SView width={60}><SInput type="select2"
                     style={{ padding: 2, height: 30, textAlign: "center" }}
                     defaultValue={this.nivelEQ + ""}
@@ -109,7 +112,12 @@ export default class conta extends React.Component {
                     }} /></SView>}
                 <SView width={20} />
                 {this.niveles && <SView width={60}><SInput type="select2"
-                    style={{ padding: 2, height: 30, textAlign: "center" }}
+                    label={"Tipo comprobante"}
+
+                    customStyle={"erp"}
+
+
+                    style={{ padding: 2, height: 30, textAlign: "center", width: 110 }}
                     defaultValue={this.nivelTipoComprobante}
                     options={["Todos", "Fiscal", "Interno", "Mixto"]} onChangeText={e => {
                         this.nivelTipoComprobante = e;
