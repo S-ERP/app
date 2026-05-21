@@ -7,7 +7,6 @@ import { ScrollView } from "react-native";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 
-
 // #region Sample data
 const data = [
     {
