@@ -27,6 +27,7 @@ export default class Root extends React.Component {
         carritoModalData: [],
         conStock: false, // Mover conStock al estado, inicializado en false
         conPrecio: false, // Mover conStock al estado, inicializado en false
+        conServicio: false, // Mover conServicio al estado, inicializado en false
     };
 
     setTipoKey = (key) => {
@@ -52,6 +53,10 @@ export default class Root extends React.Component {
 
     setConPrecio = (value) => {
         this.setState({ conPrecio: value });
+    };
+
+    setConServicio = (value) => {
+        this.setState({ conServicio: value });
     };
 
     async checkCaja() {
@@ -237,6 +242,8 @@ export default class Root extends React.Component {
                                 onChangeConStock={this.setConStock} // Pasar función para actualizar conStock
                                 conPrecio={this.state.conPrecio}// <-- Pasar prop
                                 onChangeConPrecio={this.setConPrecio}// <-- Pasar función
+                                conServicio={this.state.conServicio}
+                                onChangeConServicio={this.setConServicio}
 
                             />
                             {this.cajaActiva && (
@@ -247,6 +254,7 @@ export default class Root extends React.Component {
                                     selectedMoneda={this.selectedMoneda}
                                     conStock={this.state.conStock} // Usar estado conStock
                                     conPrecio={this.state.conPrecio}// <-- Pasar prop
+                                    conServicio={this.state.conServicio}
                                     onPressProducto={(producto) => {
                                         console.log("PRODUCTO SELECT ", producto)
                                         this.carritoRef?.addProducto2(producto);

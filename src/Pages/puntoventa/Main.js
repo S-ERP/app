@@ -20,6 +20,7 @@ export default class Main extends Component {
             carritoModalData: [],
             conStock: false, // Mover conStock al estado, inicializado en false
             conPrecio: true, // Mover conStock al estado, inicializado en false
+            conServicio: false, // Mover conServicio al estado, inicializado en false
         };
     }
 
@@ -46,6 +47,10 @@ export default class Main extends Component {
 
     setConPrecio = (value) => {
         this.setState({ conPrecio: value });
+    };
+
+    setConServicio = (value) => {
+        this.setState({ conServicio: value });
     };
 
     async checkCaja() {
@@ -204,6 +209,8 @@ borderRightColor: STheme.color.card,
                             onChangeConStock={this.setConStock} // Pasar función para actualizar conStock
                             conPrecio={this.state.conPrecio}// <-- Pasar prop
                             onChangeConPrecio={this.setConPrecio}// <-- Pasar función
+                            conServicio={this.state.conServicio}
+                            onChangeConServicio={this.setConServicio}
                         />
                         {this.cajaActiva && (
                             <Modelo
@@ -213,6 +220,7 @@ borderRightColor: STheme.color.card,
                                 selectedMoneda={this.selectedMoneda}
                                 conStock={this.state.conStock} // Usar estado conStock
                                 conPrecio={this.state.conPrecio}// <-- Pasar prop
+                                conServicio={this.state.conServicio}
                                 onPressProducto={(producto) => {
                                     // MDL.carrito.agregarItemAlCarritoDeVentas(producto)
                                     this.carritoRef?.addProducto(producto);

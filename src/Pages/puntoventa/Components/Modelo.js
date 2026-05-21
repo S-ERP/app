@@ -83,6 +83,10 @@ export default class Modelo extends Component {
             productosFiltrados = productosFiltrados.filter((m) => m.stock > 0);
         }
 
+        if (this.props.conServicio) {
+            productosFiltrados = productosFiltrados.filter((m) => m.tipo_producto?.tipo === "servicio");
+        }
+
         if (this.props.searchText) {
             const search = this.props.searchText.toLowerCase();
             productosFiltrados = productosFiltrados.filter(
