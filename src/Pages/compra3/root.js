@@ -121,18 +121,38 @@ export default class Root extends React.Component {
         this.evento = MDL.compra_venta.addEventListener("carrito_globo", () => {
             this.forceUpdate()
         });
-        MDL.inventario.getAllModeloStock().then(modelos => {
-            this.setState({ modelos });
-        });
-        MDL.crm.cliente.getAll().then(proveedores => {
-            this.setState({ proveedores });
-        });
-        MDL.inventario.getAllAlmacen().then(almacenes => {
-            const arr = almacenes.filter(a => a.key_sucursal == MDL.caja?.activa?.key_sucursal);
+        MDL.inventario.getAllModeloStock()
+            .then(modelos => {
+                this.setState({ modelos });
+            })
+            .catch(error => {
+                console.error("Error cargando modelos:", error);
+            });
 
-            if (this.inputs["almacen"]) this.inputs["almacen"].setValue(arr[0]?.descripcion)
-            this.setState({ almacenes: arr })
-        });
+        MDL.crm.cliente.getAll()
+            .then(proveedores => {
+                this.setState({ proveedores });
+            })
+            .catch(error => {
+                console.error("Error cargando proveedores:", error);
+                SNotification.send({
+                    title: "No se pudieron cargar proveedores",
+                    body: error?.error || "Verifique conexión con CRM.",
+                    type: "warning",
+                    time: 4000,
+                });
+            });
+
+        MDL.inventario.getAllAlmacen()
+            .then(almacenes => {
+                const arr = almacenes.filter(a => a.key_sucursal == MDL.caja?.activa?.key_sucursal);
+
+                if (this.inputs["almacen"]) this.inputs["almacen"].setValue(arr[0]?.descripcion)
+                this.setState({ almacenes: arr })
+            })
+            .catch(error => {
+                console.error("Error cargando almacenes:", error);
+            });
     }
 
     onChangeDimensions = () => {
