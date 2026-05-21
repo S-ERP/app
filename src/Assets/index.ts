@@ -315,6 +315,7 @@ import alert2, { ReactComponent as alert2W, } from "./svg/alert2.svg";
 
 import expand, { ReactComponent as expandW, } from "./svg/expand.svg";
 import collapse, { ReactComponent as collapseW, } from "./svg/collapse.svg";
+import dashboard, { ReactComponent as dashboardW, } from "./svg/dashboard.svg";
 
 
 
@@ -519,6 +520,7 @@ export const svg = {
 
   expand: { Native: expand, Web: expandW },
   collapse: { Native: collapse, Web: collapseW },
+  dashboard: { Native: dashboard, Web: dashboardW },
 
 
 

@@ -1,0 +1,462 @@
+import React from "react";
+import { SPage, SView, SText, SHr, STheme, SButtom } from "servisofts-component";
+import { DinamicTable } from 'servisofts-table';
+import MDL from "../../MDL";
+import { ScrollView } from "react-native-gesture-handler";
+import FechaFullFilter from "../../Components/FechaFullFilter";
+import BarraRechartsBd from "../recharts/Components/BarraRechartsBd";
+import LineaRechartsBd from "../recharts/Components/LineaRechartsBd";
+import CircularRechartsBd from "../recharts/Components/CircularRechartsBd";
+
+export default class ventas extends React.Component {
+    state = {
+        periodo: "semana",
+        fecha_inicio: this.formatDate(new Date(new Date().setDate(new Date().getDate() - 6))),
+        fecha_fin: this.formatDate(new Date()),
+        selectedSucursal: null,
+        sucursales: [],
+        dataTimeSeries: [],
+        dataTopProducts: [],
+        dataBranchShare: [],
+        dataMetodoPago: [],
+        loading: true,
+        empresaSeleccionada: null,
+    };
+
+    componentDidMount() {
+        this._mounted = true;
+        this.initDashboard();
+    }
+
+    componentWillUnmount() {
+        this._mounted = false;
+    }
+
+    formatDate(date) {
+        if (!date) return "";
+        const d = new Date(date);
+        const pad = (n) => n.toString().padStart(2, "0");
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    }
+
+    startOfWeek = (date) => {
+        const d = new Date(date);
+        const day = d.getDay() || 7;
+        d.setDate(d.getDate() - day + 1);
+        return d;
+    };
+
+    endOfWeek = (date) => {
+        const d = this.startOfWeek(date);
+        d.setDate(d.getDate() + 6);
+        return d;
+    };
+
+    startOfYear = (date) => new Date(date.getFullYear(), 0, 1);
+    endOfYear = (date) => new Date(date.getFullYear(), 11, 31);
+
+    getRangeForPeriodo = (periodo) => {
+        const today = new Date();
+        switch (periodo) {
+            case "hoy":
+                return { fecha_inicio: this.formatDate(today), fecha_fin: this.formatDate(today) };
+            case "semana":
+                return { fecha_inicio: this.formatDate(this.startOfWeek(today)), fecha_fin: this.formatDate(today) };
+            case "año":
+                return { fecha_inicio: this.formatDate(this.startOfYear(today)), fecha_fin: this.formatDate(this.endOfYear(today)) };
+            default:
+                return { fecha_inicio: this.formatDate(this.startOfWeek(today)), fecha_fin: this.formatDate(today) };
+        }
+    };
+
+    initDashboard = async () => {
+        const waitForSelect = async (timeout = 3000, interval = 200) => {
+            const start = Date.now();
+            while (!MDL.empresa.select && Date.now() - start < timeout) {
+                await new Promise((res) => setTimeout(res, interval));
+            }
+            return MDL.empresa.select;
+        };
+
+        const selected = MDL.empresa.select || await waitForSelect();
+        if (!selected) {
+            if (this._mounted) {
+                this.setState({ loading: false });
+            }
+            return;
+        }
+
+        const sucursales = await MDL.empresa.getAllSucursales();
+        if (this._mounted) {
+            this.setState({ empresaSeleccionada: selected, sucursales }, this.loadDashboardData);
+        }
+    };
+
+    loadDashboardData = async () => {
+        const { empresaSeleccionada } = this.state;
+        if (!empresaSeleccionada) return;
+        this.setState({ loading: true });
+        await Promise.all([
+            this.loadTimeSeries(empresaSeleccionada.key),
+            this.loadTopProducts(empresaSeleccionada.key),
+            this.loadMetodoPago(empresaSeleccionada.key),
+        ]);
+        if (this._mounted) this.setState({ loading: false });
+    };
+
+    loadTimeSeries = async (keyEmpresa) => {
+        try {
+            const { fecha_inicio, fecha_fin, selectedSucursal } = this.state;
+            const res = await MDL.compra_venta.execute_function("ventas_por_dia2", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
+            const raw = Array.isArray(res) ? res : res?.data ?? res?.result ?? [];
+            const data = this.transformTimeSeries(raw, selectedSucursal?.key);
+            const branchShare = this.transformBranchShare(raw);
+            if (this._mounted) {
+                this.setState({ dataTimeSeries: data, dataBranchShare: branchShare });
+            }
+        } catch (e) {
+            console.error("Error en ventas_por_dia2:", e);
+            if (this._mounted) {
+                this.setState({ dataTimeSeries: [], dataBranchShare: [] });
+            }
+        }
+    };
+
+    loadTopProducts = async (keyEmpresa) => {
+        try {
+            const { fecha_inicio, fecha_fin, selectedSucursal } = this.state;
+            const res = await MDL.compra_venta.execute_function("productos_mas_vendidos2", [keyEmpresa, "venta", fecha_inicio, fecha_fin]);
+            const raw = Array.isArray(res) ? res : res?.data ?? res?.result ?? [];
+            const products = raw
+                .map((item) => ({
+                    producto: item.producto ?? item.nombre ?? "Sin nombre",
+                    cantidad_total_vendida: Number(item.cantidad_total_vendida ?? item.cantidad ?? item.total_ventas ?? 0),
+                    total_bs_ganado: Number(item.total_bs_ganado ?? item.total_bs ?? item.total ?? 0),
+                    sucursales: Array.isArray(item.sucursales) ? item.sucursales : [],
+                }))
+                .filter((item) => {
+                    if (!selectedSucursal?.key) return true;
+                    return item.sucursales.length === 0 || item.sucursales.includes(selectedSucursal.key);
+                })
+                .sort((a, b) => b.cantidad_total_vendida - a.cantidad_total_vendida)
+                .slice(0, 5);
+            if (this._mounted) {
+                this.setState({ dataTopProducts: products });
+            }
+        } catch (e) {
+            console.error("Error en productos_mas_vendidos2:", e);
+            if (this._mounted) {
+                this.setState({ dataTopProducts: [] });
+            }
+        }
+    };
+
+    loadMetodoPago = async (keyEmpresa) => {
+        try {
+            const res = await MDL.compra_venta.execute_function("ventas_por_metodo_pago", [keyEmpresa]);
+            const raw = Array.isArray(res) ? res : res?.data ?? res?.result ?? [];
+            const data = raw.map((item) => ({
+                metodo_pago: item.metodo_pago ?? item.tipo_pago ?? "N/A",
+                total_bs: Number(item.total_bs ?? item.total ?? item.total_ventas ?? 0),
+            }));
+            if (this._mounted) {
+                this.setState({ dataMetodoPago: data });
+            }
+        } catch (e) {
+            console.error("Error en ventas_por_metodo_pago:", e);
+            if (this._mounted) {
+                this.setState({ dataMetodoPago: [] });
+            }
+        }
+    };
+
+    transformTimeSeries = (raw, selectedSucursalKey) => {
+        if (!Array.isArray(raw)) return [];
+        const seriesMap = {};
+        const rows = selectedSucursalKey ? raw.filter((row) => row.key_sucursal === selectedSucursalKey) : raw;
+
+        rows.forEach((row) => {
+            const dias = Array.isArray(row.dias) ? row.dias : [row];
+            dias.forEach((item) => {
+                const label = item.hora || item.fecha || item.mes || (item.dia != null ? String(item.dia) : null);
+                if (!label) return;
+                const key = String(label);
+                if (!seriesMap[key]) {
+                    seriesMap[key] = {
+                        label: key,
+                        cantidad_ventas: 0,
+                        monto_total: 0,
+                    };
+                }
+                seriesMap[key].cantidad_ventas += Number(item.cantidad_ventas ?? item.total_ventas ?? item.cantidad ?? 0);
+                seriesMap[key].monto_total += Number(item.monto_total ?? item.total_bs ?? item.total ?? 0);
+            });
+        });
+
+        return Object.values(seriesMap).sort((a, b) => {
+            const aN = Number(a.label.replace(/\D/g, ""));
+            const bN = Number(b.label.replace(/\D/g, ""));
+            if (!isNaN(aN) && !isNaN(bN)) return aN - bN;
+            return a.label.localeCompare(b.label, "es", { numeric: true });
+        });
+    };
+
+    transformBranchShare = (raw) => {
+        if (!Array.isArray(raw)) return [];
+        const branchTotals = {};
+        raw.forEach((row) => {
+            const key = row.key_sucursal || row.key;
+            const name = row.descripcion || row.sucursal || row.sucursal_descripcion || row.descripcion_sucursal || "Sucursal";
+            const dias = Array.isArray(row.dias) ? row.dias : [row];
+            const total = dias.reduce((sum, item) => sum + Number(item.monto_total ?? item.total_bs ?? item.total ?? 0), 0);
+            if (!branchTotals[key]) {
+                branchTotals[key] = { name, value: 0 };
+            }
+            branchTotals[key].value += total;
+        });
+        return Object.values(branchTotals)
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 6);
+    };
+
+    handleChangePeriodo = (periodo) => {
+        const range = this.getRangeForPeriodo(periodo);
+        this.setState({ periodo, ...range }, this.loadDashboardData);
+    };
+
+    handleSucursalSelect = (sucursal) => {
+        this.setState({ selectedSucursal: sucursal }, () => this.loadDashboardData());
+    };
+
+    render() {
+        const {
+            periodo,
+            fecha_inicio,
+            fecha_fin,
+            sucursales,
+            selectedSucursal,
+            dataTimeSeries,
+            dataTopProducts,
+            dataBranchShare,
+            dataMetodoPago,
+            loading,
+        } = this.state;
+
+        const selectedBranchName = selectedSucursal?.descripcion || "Todas las sucursales";
+        const lineTitle = periodo === "hoy" ? "Ventas por hora" : periodo === "año" ? "Ventas por mes" : "Ventas por día";
+
+        const renderResumenTarjetas = () => {
+            const totalMonto = dataTimeSeries.reduce((sum, item) => sum + Number(item.monto_total || 0), 0);
+            const totalTickets = dataTimeSeries.reduce((sum, item) => sum + Number(item.cantidad_ventas || 0), 0);
+            const topProduct = dataTopProducts[0]?.producto || "N/A";
+
+            return (
+                <SView col="xs-12" row style={{ gap: 12, flexWrap: 'wrap' }}>
+                    {[{
+                        label: "Sucursal",
+                        value: selectedBranchName,
+                    }, {
+                        label: "Total ventas",
+                        value: `Bs. ${Number(totalMonto).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
+                    }, {
+                        label: "Tickets",
+                        value: totalTickets,
+                    }, {
+                        label: "Top producto",
+                        value: topProduct,
+                    }].map((item, index) => (
+                        <SView
+                            key={index}
+                            col="xs-12 md-6 lg-3"
+                            card
+                            style={{ padding: 16, minHeight: 110, backgroundColor: '#ffffff', borderRadius: 10, borderWidth: 1, borderColor: '#e5e5e5' }}
+                        >
+                            <SText fontSize={12} color={STheme.color.gray}>{item.label}</SText>
+                            <SText fontSize={18} bold>{item.value}</SText>
+                        </SView>
+                    ))}
+                </SView>
+            );
+        };
+
+        return (
+            <SPage title="Dashboard de Ventas">
+                <ScrollView>
+                    <SView col="xs-12" padding={16}>
+                        <SText fontSize={18} bold>Dashboard de Ventas</SText>
+                        <SHr />
+
+                        <SView col="xs-12" row style={{ gap: 12, flexWrap: 'wrap' }}>
+                            {['hoy', 'semana', 'año'].map((item) => (
+                                <SButtom
+                                    key={item}
+                                    type={periodo === item ? 'primary' : 'outline'}
+                                    onPress={() => this.handleChangePeriodo(item)}
+                                    style={{ minWidth: 100 }}
+                                >
+                                    <SText>{item === 'hoy' ? 'Día' : item === 'semana' ? 'Semana' : 'Año'}</SText>
+                                </SButtom>
+                            ))}
+                        </SView>
+
+                        <SView col="xs-12" row center style={{ gap: 12, flexWrap: 'wrap', marginTop: 12 }}>
+                            <SView col="xs-12 md-6 lg-4">
+                                <FechaFullFilter
+                                    key_opciones={periodo === 'hoy' ? 'hoy' : periodo === 'año' ? 'este_año' : 'esta_semana'}
+                                    fecha_inicio={fecha_inicio}
+                                    fecha_fin={fecha_fin}
+                                    onChange={(dates) => {
+                                        this.setState({ fecha_inicio: dates.fecha_inicio, fecha_fin: dates.fecha_fin }, this.loadDashboardData);
+                                    }}
+                                />
+                            </SView>
+                            <SView col="xs-12 md-6 lg-8" row center style={{ gap: 8, flexWrap: 'wrap' }}>
+                                <SButtom
+                                    type={!selectedSucursal ? 'primary' : 'outline'}
+                                    onPress={() => this.handleSucursalSelect(null)}
+                                    style={{ minWidth: 120 }}
+                                >
+                                    <SText>Todos</SText>
+                                </SButtom>
+                                {(sucursales || []).slice(0, 4).map((sucursal) => (
+                                    <SButtom
+                                        key={sucursal.key}
+                                        type={selectedSucursal?.key === sucursal.key ? 'primary' : 'outline'}
+                                        onPress={() => this.handleSucursalSelect(sucursal)}
+                                        style={{ minWidth: 120 }}
+                                    >
+                                        <SText>{sucursal.descripcion}</SText>
+                                    </SButtom>
+                                ))}
+                            </SView>
+                        </SView>
+
+                        <SView col="xs-12" style={{ marginVertical: 16 }}>
+                            <SText fontSize={14} color={STheme.color.gray}>Período seleccionado: {fecha_inicio} → {fecha_fin}</SText>
+                            <SText fontSize={14} color={STheme.color.gray}>Sucursal: {selectedBranchName}</SText>
+                        </SView>
+
+                        {renderResumenTarjetas()}
+
+                        <SHr style={{ marginVertical: 16 }} />
+
+                        <SView col="xs-12" row>
+                            <SView col="xs-12 lg-8" padding={8}>
+                                <SText fontSize={16} bold>{lineTitle}</SText>
+                                <SHr />
+                                {loading ? (
+                                    <SText>Cargando datos...</SText>
+                                ) : dataTimeSeries.length === 0 ? (
+                                    <SText>No hay datos para este período.</SText>
+                                ) : (
+                                    <LineaRechartsBd
+                                        data={dataTimeSeries}
+                                        nameKey="label"
+                                        valueKey="monto_total"
+                                        height={320}
+                                    />
+                                )}
+                            </SView>
+                            <SView col="xs-12 lg-4" padding={8}>
+                                <SText fontSize={16} bold>Participación por sucursal</SText>
+                                <SHr />
+                                {loading ? (
+                                    <SText>Cargando datos...</SText>
+                                ) : dataBranchShare.length === 0 ? (
+                                    <SText>No hay datos por sucursal.</SText>
+                                ) : (
+                                    <CircularRechartsBd
+                                        data={dataBranchShare}
+                                        nameKey="name"
+                                        valueKey="value"
+                                        height={320}
+                                    />
+                                )}
+                            </SView>
+                        </SView>
+
+                        <SView col="xs-12" row>
+                            <SView col="xs-12 lg-6" padding={8}>
+                                <SText fontSize={16} bold>TOP 5 Productos</SText>
+                                <SHr />
+                                {loading ? (
+                                    <SText>Cargando datos...</SText>
+                                ) : dataTopProducts.length === 0 ? (
+                                    <SText>No hay productos disponibles.</SText>
+                                ) : (
+                                    <BarraRechartsBd
+                                        data={dataTopProducts}
+                                        nameKey="producto"
+                                        valueKey="cantidad_total_vendida"
+                                        height={320}
+                                    />
+                                )}
+                            </SView>
+                            <SView col="xs-12 lg-6" padding={8}>
+                                <SText fontSize={16} bold>Ventas por método de pago</SText>
+                                <SHr />
+                                {loading ? (
+                                    <SText>Cargando datos...</SText>
+                                ) : dataMetodoPago.length === 0 ? (
+                                    <SText>No hay datos disponibles.</SText>
+                                ) : (
+                                    <CircularRechartsBd
+                                        data={dataMetodoPago}
+                                        nameKey="metodo_pago"
+                                        valueKey="total_bs"
+                                        height={320}
+                                    />
+                                )}
+                            </SView>
+                        </SView>
+
+                        <SHr style={{ marginVertical: 16 }} />
+
+                        <SView col="xs-12" padding={8}>
+                            <SText fontSize={16} bold>Detalle de ventas por producto</SText>
+                            <SHr />
+                            {loading ? (
+                                <SText>Cargando datos...</SText>
+                            ) : dataTopProducts.length === 0 ? (
+                                <SText>No hay datos de productos.</SText>
+                            ) : (
+                                <DinamicTable
+                                    language="es"
+                                    hiddenMenu
+                                    textTitleStyle={{ fontSize: 12, lineHeight: 14 }}
+                                    colors={{ header: "#2E86AB", textHeader: "white" }}
+                                    cellStyle={{ padding: 4 }}
+                                    textStyle={{ fontSize: 10 }}
+                                    loadData={async () => dataTopProducts}
+                                >
+                                    <DinamicTable.Col
+                                        key="producto"
+                                        label='Producto'
+                                        width={200}
+                                        data={e => e.row.producto}
+                                    />
+                                    <DinamicTable.Col
+                                        key="cantidad_total_vendida"
+                                        label='Cantidad Vendida'
+                                        width={100}
+                                        data={e => e.row.cantidad_total_vendida}
+                                    />
+                                    <DinamicTable.Col
+                                        key="total_bs_ganado"
+                                        label='Total Bs'
+                                        width={120}
+                                        data={e => `Bs. ${Number(e.row.total_bs_ganado).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`}
+                                    />
+                                </DinamicTable>
+                            )}
+                        </SView>
+                    </SView>
+                </ScrollView>
+            </SPage>
+        );
+    }
+
+    componentWillUnmount() {
+        this._mounted = false;
+    }
+}

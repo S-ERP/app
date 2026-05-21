@@ -205,7 +205,8 @@ export default class Barra extends React.Component {
                         }} />{/* <SText onPress={() => {
 
                         }}>{"Tema"}</SText> */}
-                    </Page><Page label={"Tableros"}
+                    </Page>
+                    <Page label={"Tableros"}
                         permiso="page"
                         permiso_url="/tableros"
                         icon={<SIconApp name="menuAll" fill={STheme.color.text} />}
@@ -223,6 +224,15 @@ export default class Barra extends React.Component {
                         <Page label={"Tabla Compras_x_Mes"} url={"/tableros/tabla_compras_mes"}   icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
                         <Page label={"Tabla Productos_dia"} url={"/tableros/tabla_productos_dia"}   icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
 
+
+                     </Page>
+                     <Page label={"Dashboards"}
+                        // permiso="page"
+                        permiso_url="/tableros"
+                        icon={<SIconApp name="dashboard" fill={STheme.color.text} />}
+                    >
+                        <Page label={"Ventas"} url={"/dashboard"}  icon={<SIconApp name="iconLista" fill={STheme.color.text} />} />
+                       
 
                      </Page>
 
