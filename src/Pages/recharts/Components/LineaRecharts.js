@@ -12,49 +12,49 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 const data = [
     {
         name: 'Page A',
-        uv: 4000,
+        egreso: 4000,
         pv: 2400,
         ov: 3500,
         amt: 2400,
     },
     {
         name: 'Page B',
-        uv: 3000,
+        egreso: 3000,
         pv: 1398,
         ov: 2800,
         amt: 2210,
     },
     {
         name: 'Page C',
-        uv: 2000,
+        egreso: 2000,
         pv: 9800,
         ov: 7500,
         amt: 2290,
     },
     {
         name: 'Page D',
-        uv: 2780,
+        egreso: 2780,
         pv: 3908,
         ov: 500,
         amt: 2000,
     },
     {
         name: 'Page E',
-        uv: 1890,
+        egreso: 1890,
         pv: 4800,
         ov: 8500,
         amt: 2181,
     },
     {
         name: 'Page F',
-        uv: 2390,
+        egreso: 2390,
         pv: 3800,
         ov: 1100,
         amt: 2500,
     },
     {
         name: 'Page G',
-        uv: 3490,
+        egreso: 3490,
         pv: 4300,
         ov: 9200,
         amt: 2100,
@@ -116,7 +116,7 @@ export default class LineaRecharts extends Component {
                                 />
                                 <Line
                                     type="monotone"
-                                    dataKey="uv"
+                                    dataKey="egreso"
                                     strokeDasharray="5 5"
                                     stroke="#ff0000"
                                     dot={{
@@ -133,6 +133,16 @@ export default class LineaRecharts extends Component {
                                         fill: STheme.color.success,
                                     }}
                                     activeDot={{ stroke: STheme.color.success }}
+                                />
+                                 <Line
+                                    type="linear"
+                                    dataKey="amt"
+                                   strokeWidth={4}
+                                    stroke={STheme.color.warning}
+                                    dot={{
+                                        fill: STheme.color.warning,
+                                    }}
+                                    activeDot={{ stroke: STheme.color.warning }}
                                 />
                             </LineChart>
                         </ResponsiveContainer>

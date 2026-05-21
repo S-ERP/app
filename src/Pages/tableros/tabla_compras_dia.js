@@ -84,6 +84,7 @@ export default class tabla_compras_dia extends React.Component {
             const totalCantidad = (item.dias || []).reduce((acc, d) => acc + (d.cantidad_ventas || 0), 0);
             chartData[item.descripcion] = totalCantidad;
         });
+        console.log("chartData", chartData);
         return (
             <SPage title={tipo_modulo === "compra" ? "Reporte de compras diarias" : "Reporte de ventas diarias"}>
                 <ScrollView>

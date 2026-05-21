@@ -87,6 +87,25 @@ export default class Recharts extends Component {
               />
             ))}
           </Bar>
+          {/* <Bar dataKey="amt" fill={STheme.color.warning} barSize={30}>
+            {data.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={
+                  [
+                    "#FFA07A",
+                    "#4ECDC4",
+                    "#45B7D1",
+                    
+                    "#98D8C8",
+                    "#F7DC6F",
+                    "#BB8FCE",
+                    "#FF6B6B",
+                  ][index % 7]
+                }
+              />
+            ))}
+          </Bar> */}
           {/* <Bar dataKey="uv" fill={STheme.color.success} /> */}
         </BarChart>
       </ResponsiveContainer>

@@ -4,6 +4,9 @@ import { DinamicTable } from 'servisofts-table';
 import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
 import SCharts from "servisofts-charts";
+// import BarraRecharts from "../Components/BarraRecharts";
+import BarraRechartsBd from "../recharts/Components/BarraRechartsBd";
+import LineaRechartsBd from "../recharts/Components/LineaRechartsBd";
 
 export default class tabla_venta extends React.Component {
     state = {
@@ -131,10 +134,10 @@ export default class tabla_venta extends React.Component {
 
         const size = 80;
         const cellstyle = { padding: 4 };
-
+        console.log("Datos originales de ventas_por_dia:", dataVentasPorDia);
         // Transformar datos para el gráfico
         const chartData = this.transformDataForChart(dataVentasPorDia);
-
+        console.log("Datos transformados para SCharts:", chartData);
         return (
             <SPage title="Estadísticas de Ventas">
                 <ScrollView>
@@ -168,6 +171,32 @@ export default class tabla_venta extends React.Component {
                         </SView>
 
                         <SHr />
+
+                       
+
+                         <SText fontSize={18} bold>Estadísticas de Ventas por día 3</SText>
+                        <SHr />
+
+                        {/* Tabla de Ventas por Día */}
+                        <SView col={"xs-12"} padding={8} >
+                            <SText fontSize={16} bold>Ventas por Día 3</SText>
+                            <SHr />
+                            {loadingVentasPorDia ? (
+                                <SText>Cargando...</SText>
+                            ) : Object.keys(chartData).length === 0 ? (
+                                <SText>No hay datos disponibles</SText>
+                            ) : (
+                                <SView col={"xs-12"} flex >
+                                    <LineaRechartsBd
+                                        data={dataVentasPorDia}
+                                        nameKey="fecha"
+                                        valueKey="total"
+                                        height={320}
+                                    />
+                                </SView>
+                            )}
+                        </SView>
+
 
                         {/* Tabla de Ventas por Mes */}
                         <SView col={"xs-12"} padding={8}>

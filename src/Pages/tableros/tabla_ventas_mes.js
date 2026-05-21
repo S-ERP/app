@@ -5,6 +5,7 @@ import MDL from "../../MDL";
 import { ScrollView } from "react-native-gesture-handler";
 import FechaFullFilter2 from "../../Components/FechaFullFilter2";
 import SCharts from "servisofts-charts";
+import BarraRechartsBd from "../recharts/Components/BarraRechartsBd";
 
 const color_bajito = "#8888887a";
 
@@ -65,6 +66,8 @@ export default class tabla_ventas_mes extends React.Component {
     (dataVentasPorDia || []).forEach(item => {
       chartData[item.descripcion] = item.cantidad_ventas || 0;
     });
+    console.log("chartData:", chartData);
+    console.log("dataVentasPorDia:", dataVentasPorDia);
     return (
       <SPage title={tipo_modulo == "compra" ? "Estadísticas de Compras" : "Estadísticas de Ventas"}>
         <ScrollView>
@@ -130,6 +133,33 @@ export default class tabla_ventas_mes extends React.Component {
                   />
                 )}
               </SView>
+
+              <SView col={"xs-12 lg-12"} padding={8}>
+                <SText fontSize={16} bold>
+                  Gráfico {tipo_modulo == "compra" ? "Compras" : "Ventas"} por Sucursales 2
+                </SText>
+                <SHr />
+                {loadingVentasPorDia ? (
+                  <SView style={{ alignItems: "center", padding: 20 }}>
+                    <SText>⏳ Cargando datos...</SText>
+                  </SView>
+                ) : Object.keys(chartData).length === 0 ? (
+                  <SText>📊 No hay datos disponibles en este período</SText>
+                ) : (
+                  <SView col={"xs-12"} flex >
+                    <BarraRechartsBd
+                      data={loadingVentasPorDia ? [] : Object.keys(dataVentasPorDia).map(key => ({ fecha: dataVentasPorDia[key].descripcion, cantidad: dataVentasPorDia[key].cantidad_ventas , total: dataVentasPorDia[key].monto_total }))}
+                      // data={loadingVentasPorDia }
+
+                      nameKey="fecha"
+                      valueKey="cantidad"
+                      valueKey2="total"
+                      height={320}
+                    />
+                  </SView>
+                )}
+              </SView>
+
               <SView col={"xs-12 lg-6"} padding={8}>
                 <SText fontSize={16} bold>
                   {tipo_modulo == "compra" ? "Compras" : "Ventas"} por Sucursales
