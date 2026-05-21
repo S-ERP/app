@@ -55,9 +55,20 @@ export default class PdfCierreCaja {
             );
         }
 
-        const sucursalFoto = caja?.key_empresa ? `${SSocket.api.empresa}empresa/${caja.key_empresa}` : "https://www.w3schools.com/css/img_lights.jpg";
-        const usuarioFoto = "https://www.w3schools.com/w3images/avatar2.png";
+        // <SImage src={require("/src/Assets/img/cajero.png")} style={{ resizeMode: "cover", width: 50, height: 50 }} />
+        // <SImage src={require("/src/Assets/img/sucursal.png")} style={{ resizeMode: "cover", width: 50, height: 50 }} />
+
+        // const sucursalFoto = "../../../assets/img/bancoContinental.jpg";
+        // const sucursalFoto = require("/src/Assets/img/sucursal.png");
+        // const usuarioFoto = require("/src/Assets/img/cajero.png");
+        // const sucursalFoto = require("../../../Assets/img/sucursal.png");
+        // const usuarioFoto = require("../../../Assets/img/cajero.png");
+        const sucursalFoto = "https://raw.githubusercontent.com/S-ERP/app/refs/heads/three/src/Assets/img/sucursal.png";
+        // const sucursalFoto = caja?.key_empresa ? `${SSocket.api.empresa}empresa/${caja.key_empresa}` : "https://www.w3schools.com/css/img_lights.jpg";
+        // const usuarioFoto = "https://www.w3schools.com/w3images/avatar2.png";
         // const usuarioFoto = caja?.cajero?.key ? `${SSocket.api.root}usuario/${caja.cajero.key}` : "https://www.w3schools.com/w3images/avatar2.png";
+        const usuarioFoto = "https://raw.githubusercontent.com/S-ERP/app/refs/heads/three/src/Assets/img/cajero.png";
+        // const usuarioFoto = "https://raw.githubusercontent.com/S-ERP/app/2117c66a09f5dd50795807fdeda6dffae0e71c47/src/Assets/svg/cajero___.svg";
 
         console.clear();
 
@@ -75,8 +86,8 @@ export default class PdfCierreCaja {
                     <SPDF.Text style={label}>Sucursal</SPDF.Text>
                     {PdfCierreCaja.espacio(8)}
                     <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
-                        <SPDF.View style={{ width: 50, height: 40, }}>
-                            <SPDF.Image src={sucursalFoto} style={{ width: 40, height: 40, resizeMode: "cover" }} />
+                        <SPDF.View style={{ width: 29, height: 30, }}>
+                            <SPDF.Image src={sucursalFoto} style={{ width: 25, height: 30, resizeMode: "cover" }} />
                         </SPDF.View>
                         <SPDF.View style={{ flex: 1, marginTop: -4, }}>
                             <SPDF.Text style={text}>{caja?.sucursal?.descripcion || "-"}</SPDF.Text>
@@ -90,8 +101,9 @@ export default class PdfCierreCaja {
                     <SPDF.Text style={label}>Cajero</SPDF.Text>
                     {PdfCierreCaja.espacio(8)}
                     <SPDF.View style={{ width: "100%", flexDirection: "row", }}>
-                        <SPDF.View style={{ width: 50, height: 40, }}>
-                            <SPDF.Image src={usuarioFoto} style={{ width: 40, height: 40, resizeMode: "cover" }} />
+                        <SPDF.View style={{ width: 29, height: 30, }}>
+                            {/* <SPDF.Image src={usuarioFoto} style={{  height: "100%", resizeMode: "cover" }} /> */}
+                            <SPDF.Image src={usuarioFoto} style={{ width: 25, height: 30, resizeMode: "cover" }} />
                         </SPDF.View>
                         <SPDF.View style={{ flex: 1, marginTop: -4, height: 60, }}>
                             {(caja?.cajero?.Nombres) && (<SPDF.Text style={text}> {caja?.cajero?.Nombres} {caja?.cajero?.Apellidos} </SPDF.Text>)}

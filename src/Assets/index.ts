@@ -63,6 +63,8 @@ import iconCall, { ReactComponent as iconCallW } from "./svg/social/iconCall.svg
 import iconHome, { ReactComponent as iconHomeW } from "./svg/social/iconHome.svg";
 import iconUbicacion, { ReactComponent as iconUbicacionW } from "./svg/social/iconUbicacion.svg";
 import iconMail, { ReactComponent as iconMailW } from "./svg/social/iconMail.svg";
+import cajero, { ReactComponent as cajeroW } from "./svg/cajero.svg";
+import sucursal_, { ReactComponent as sucursal_W } from "./svg/sucursal.svg";
 
 import Comment2, {
   ReactComponent as Comment2W,
@@ -425,6 +427,9 @@ export const svg = {
   imprimir: { Native: imprimir, Web: imprimirW },
   revertir: { Native: revertir, Web: revertirW },
   sucursal: { Native: sucursal, Web: sucursalW },
+  sucursal_: { Native: sucursal_, Web: sucursal_W },
+  cajero: { Native: cajero, Web: cajeroW },
+
   eliminarI: { Native: eliminarI, Web: eliminarIW },
   adicionar: { Native: adicionar, Web: adicionarW },
   whatsapp: { Native: whatsappIcon, Web: whatsappIconW },

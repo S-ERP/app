@@ -98,6 +98,11 @@ export default class Abierta extends Component {
 
             }}>
                 <SText bold fontSize={16}>Estado de la Caja</SText>
+                {/* <SImage src={require("/src/Assets/img/cajero.png")} style={{ resizeMode: "cover", width: 50, height: 50 }} />
+                <SImage src={require("/src/Assets/img/sucursal.png")} style={{ resizeMode: "cover", width: 50, height: 50 }} />
+                <SIcon name='cajero' width={50} height={50} fill={"#020000"} />
+                <SIcon name='cajero' width={50} height={50} fill={"#090909"} /> */}
+
                 <SHr height={10} />
                 <SView col={"xs-12"} style={{ borderBottomWidth: 0.5, borderColor: STheme.color.card }} height={5} />
                 <SHr height={20} />
